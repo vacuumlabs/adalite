@@ -22,8 +22,11 @@
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {
     "blake2": "^1.4.0",
+    "bs58": "^4.0.1",
     "cbor": "^3.0.3",
     "express": "^4.16.2",
+    "got": "^8.0.3",
+    "request": "^2.83.0",
     "sha1": "^1.1.1"
   }
 }
