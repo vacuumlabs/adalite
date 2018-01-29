@@ -31,14 +31,15 @@ function hex2buf(hexString) {
 }
 
 class TxInput {
-    constructor (txId) {
+    constructor (txId, outputIndex) {
         this.id = txId;
+        this.outputIndex = outputIndex;
     }
     
     encodeCBOR (encoder) {
         const tagged = new cbor.Tagged(24, cbor.encode([
             hex2buf(this.id),
-            0
+            this.outputIndex
         ]));
 
         return encoder.pushAny(tagged);
@@ -85,9 +86,11 @@ class CBORIndefiniteLengthArray {
     encodeCBOR (encoder) {
 
         var elementsEncoded = cbor.encode(this.elements);
+        
         elementsEncoded[0] = 0x9f;
+        elementsEncoded = Buffer.concat([elementsEncoded, Buffer.from('ff', 'hex')])
 
-        return encoder.push(Buffer.concat([elementsEncoded, Buffer.from('ff', 'hex')]));
+        return encoder.push(elementsEncoded);
     }
 }
 
@@ -102,21 +105,42 @@ class CBORIndexedMap {
     }
 }
 
-class Transaction {
-    constructor (inputs, outputs, witnesses) {
+class UnsignedTransaction {
+    constructor (inputs, outputs, attributes) {
         this.inputs = inputs;
         this.outputs = outputs;
-        this.witnesses = witnesses;
+        this.attributes = attributes;
     }
 
     encodeCBOR (encoder) {
         return encoder.pushAny([
-            [
-                new CBORIndefiniteLengthArray(new CBORIndexedMap(this.inputs)),
-                new CBORIndefiniteLengthArray(this.outputs),
-                {}
-            ],
-            new CBORIndexedMap(this.witnesses)
+            new CBORIndefiniteLengthArray(new CBORIndexedMap(this.inputs)),
+            new CBORIndefiniteLengthArray(this.outputs),
+            this.attributes
+        ]);
+    }
+}
+
+class FinalTransaction {
+    constructor (transaction) {
+        this.transaction = transaction;
+    }
+
+    getWitnesses() {
+        return [ // witnesses of transaction inputs - currently hardcoded
+            new Witness(
+                // public key
+                '76EAEF312A3E90C13B0EA1A7B3C0E16D8549345BEC84826D9B1CE98C57AD8BADBA8598CF9314D97DF4BA0051E1471A99C4F77A3021C77212BBCA6AEA699A38DB',                    // signature                    
+                // signature
+                'ACCD5281BA0E7ADA54A6456D1DF8DCD05BF9A96BDD7A5C2C41DE10FFBF66E41CD729F81396F166A2E0E64422637BFF3C914CB62BE0E2694975ADE111EC75F405'
+            )
+        ];
+    }
+
+    encodeCBOR (encoder) {
+        return encoder.pushAny([
+            this.transaction,
+            new CBORIndexedMap(this.getWitnesses())
         ]);
     }
 }
@@ -128,12 +152,11 @@ function getTxFee(transaction) {
     return Math.ceil(a + cbor.encode(transaction).length * b);
 }
 
-function getTransaction() {
-    return new Transaction(
+function getUnsignedTransaction() {
+    return new UnsignedTransaction(
         [
-            new TxInput('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18')
-        ]
-        ,
+            new TxInput('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18', 0)
+        ],
         [
             new TxOutput(
                 new WalletAddress('DdzFFzCqrhtCAAhzES3fi9ow81cyWKxJ4dFm4fUVHgaqToJtnmVkgRDFhGQE2S5U5G6zuHXYna5jaDE1bpvh4jymoGpVzzseNH8KAeUX'),
@@ -144,14 +167,7 @@ function getTransaction() {
                 1
             )
         ],
-        [ // witnessovia inputov
-            new Witness(
-                // public key
-                '76EAEF312A3E90C13B0EA1A7B3C0E16D8549345BEC84826D9B1CE98C57AD8BADBA8598CF9314D97DF4BA0051E1471A99C4F77A3021C77212BBCA6AEA699A38DB',                    // signature                    
-                // signature
-                'ACCD5281BA0E7ADA54A6456D1DF8DCD05BF9A96BDD7A5C2C41DE10FFBF66E41CD729F81396F166A2E0E64422637BFF3C914CB62BE0E2694975ADE111EC75F405'
-            )
-        ]
+        {}
     );
 }
 
@@ -180,9 +196,13 @@ app.get('/', function (req, res) {
     */
     //res.send(hash([1, "AAA", "BBB", true]))
   
-    res.send(cbor.encode(getTransaction()).toString('hex'));
+    var unsignedTx = getUnsignedTransaction();
+    var finalTx = new FinalTransaction(unsignedTx);
 
-    console.log(getTxFee(getTransaction()));
+    res.send(cbor.encode(finalTx).toString('hex'));
+
+    console.log("Tx id: " + hash(unsignedTx));
+    console.log("Tx fee: " + getTxFee(finalTx));
 
     //var address = 'DdzFFzCqrht3ZMo1JFBiHJJxQAudUNt4eLfRhV7uBHxX1E3XoDWSru89MSenwacBdLjRTQL68WWsWsRjfJRSf5A89SpFDShuZUkJxdfc';
   
