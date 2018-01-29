@@ -121,6 +121,13 @@ class Transaction {
     }
 }
 
+function getTxFee(transaction) {
+    var a = 155381;
+    var b = 43.946;
+
+    return Math.ceil(a + cbor.encode(transaction).length * b);
+}
+
 function getTransaction() {
     return new Transaction(
         [
@@ -174,6 +181,8 @@ app.get('/', function (req, res) {
     //res.send(hash([1, "AAA", "BBB", true]))
   
     res.send(cbor.encode(getTransaction()).toString('hex'));
+
+    console.log(getTxFee(getTransaction()));
 
     //var address = 'DdzFFzCqrht3ZMo1JFBiHJJxQAudUNt4eLfRhV7uBHxX1E3XoDWSru89MSenwacBdLjRTQL68WWsWsRjfJRSf5A89SpFDShuZUkJxdfc';
   
