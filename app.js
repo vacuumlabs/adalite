@@ -5,6 +5,7 @@ var cbor = require('cbor');
 var blake2 = require('blake2');
 var request = require('request');
 var base58 = require('bs58');
+var ed25519 = require('ed25519');
 
 // this is the hash function used in cardano-sl
 function hash(input) {
@@ -34,15 +35,17 @@ class TxInput {
     constructor (txId, outputIndex) {
         this.id = txId;
         this.outputIndex = outputIndex;
+        this.type = 0; // default output type
     }
     
     encodeCBOR (encoder) {
-        const tagged = new cbor.Tagged(24, cbor.encode([
-            hex2buf(this.id),
-            this.outputIndex
-        ]));
-
-        return encoder.pushAny(tagged);
+        return encoder.pushAny([
+            this.type,
+            new cbor.Tagged(24, cbor.encode([
+                hex2buf(this.id),
+                this.outputIndex
+            ]))
+        ]);
     }
 }
 
@@ -71,10 +74,14 @@ class Witness {
     constructor (publicKey, signature) {
         this.publicKey = publicKey;
         this.signature = signature;
+        this.type = 0; // default - PkWitness
     }
 
     encodeCBOR (encoder) {
-        return encoder.pushAny(new cbor.Tagged(24, cbor.encode([hex2buf(this.publicKey), hex2buf(this.signature)])));
+        return encoder.pushAny([
+            this.type,
+            new cbor.Tagged(24, cbor.encode([hex2buf(this.publicKey), hex2buf(this.signature)]))
+        ]);
     }
 }
 
@@ -94,17 +101,6 @@ class CBORIndefiniteLengthArray {
     }
 }
 
-class CBORIndexedMap {
-    constructor (elements) {
-        this.elements = elements;
-    }
-
-    encodeCBOR (encoder) {
-        // example of the transformation: [2,6,7] => [[0,2], [1, 6], [2,7]]
-        return encoder.pushAny(this.elements.map((elem, i) => { return [i, elem]; }));
-    }
-}
-
 class UnsignedTransaction {
     constructor (inputs, outputs, attributes) {
         this.inputs = inputs;
@@ -114,7 +110,7 @@ class UnsignedTransaction {
 
     encodeCBOR (encoder) {
         return encoder.pushAny([
-            new CBORIndefiniteLengthArray(new CBORIndexedMap(this.inputs)),
+            new CBORIndefiniteLengthArray(this.inputs),
             new CBORIndefiniteLengthArray(this.outputs),
             this.attributes
         ]);
@@ -140,7 +136,7 @@ class FinalTransaction {
     encodeCBOR (encoder) {
         return encoder.pushAny([
             this.transaction,
-            new CBORIndexedMap(this.getWitnesses())
+            this.getWitnesses()
         ]);
     }
 }
@@ -169,6 +165,28 @@ function getUnsignedTransaction() {
         ],
         {}
     );
+}
+
+function signRaw(messageRaw, keyPair) {
+    return ed25519.Sign(
+        messageRaw, {
+            privateKey: new Buffer(keyPair.privateKey, "hex"),
+            publicKey: new Buffer(keyPair.publicKey, "hex")
+        }
+    );
+}
+
+function signTx(obj, keyPair) {   
+    return signRaw(Buffer.concat([new Buffer('011A2D964A09', 'hex'), cbor.encode(obj)]), keyPair);
+}
+
+function verifyRaw(messageRaw, data) {
+    return ed25519.Verify(messageRaw, new Buffer(data.signature, "hex"), new Buffer(data.publicKey, "hex")) 
+}
+
+function verify(obj, data) {
+    console.log(data);
+    return verifyRaw(cbor.encode(obj), data) 
 }
 
 app.get('/', function (req, res) {
@@ -204,9 +222,7 @@ app.get('/', function (req, res) {
     console.log("Tx id: " + hash(unsignedTx));
     console.log("Tx fee: " + getTxFee(finalTx));
 
-    //var address = 'DdzFFzCqrht3ZMo1JFBiHJJxQAudUNt4eLfRhV7uBHxX1E3XoDWSru89MSenwacBdLjRTQL68WWsWsRjfJRSf5A89SpFDShuZUkJxdfc';
-  
-    //getAddressStatus(address, result => res.json(result))
+    var txi = new TxInput('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18', 0);
 });
 
 app.listen(3000, function () {
