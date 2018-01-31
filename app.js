@@ -8,6 +8,7 @@ var base58 = require('bs58');
 
 var EdDSA = require('elliptic').eddsa;
 var ec = new EdDSA('ed25519');
+var ed25519 = require('ed25519-supercop')
 
 // this is the hash function used in cardano-sl
 function hash(input) {
@@ -151,7 +152,7 @@ class TxPublicString {
     }
 
     getChainCode() {
-        return this.txPublicKey.substr(64, 128);
+        return this.txPublicKey.substr(64, 64);
     }
 
     encodeCBOR (encoder) {
@@ -230,23 +231,16 @@ function getUnsignedTransaction() {
     );
 }
 
-function signRaw(messageRaw, keyPair) {
-    var pubKey = new Buffer(keyPair.publicKey, 'hex');
-    var privKey = new Buffer(keyPair.privateKey, 'hex');
-    var msg = messageRaw;
+function sign(message, extendedPrivateKey) {
+    var privKey = extendedPrivateKey.substr(0,128);
+    var pubKey = extendedPrivateKey.substr(128,64);
+    var chainCode = extendedPrivateKey.substr(192,64);
 
-    return supercopEd25519.sign(msg, pubKey, privKey);
-}
+    var key = ec.keyFromSecret(privKey);
 
-function signTx(obj, keyPair) {   
-    return signRaw(Buffer.concat([new Buffer('011A2D964A09', 'hex'), cbor.encode(obj)]), keyPair);
-}
+    var messageToSign = new Buffer(message, 'hex');
 
-function verify(message, data) {
-
-    var key = ec.keyFromPublic(data.publicKey, 'hex');
-
-    return key.verify(message, data.signature)
+    return ed25519.sign(messageToSign, new Buffer(pubKey, 'hex'), new Buffer(privKey, 'hex')).toString('hex');
 }
 
 app.get('/', function (req, res) {
@@ -288,12 +282,12 @@ app.get('/', function (req, res) {
 
     //res.send(Buffer.concat([new Buffer('012D964A09', 'hex'), cbor.encode(new Buffer('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18', 'hex'))]).toString('hex'));
 
-    console.log(finalTx.verify());
+    console.log(sign(
+        '011a2d964a095820009e7136f7b6d4cee95df0c546c0ab04552e0c5b333e84e2ca98cb9031f131c5',
+        'd10fb5b73cfbdbde1657f5c2e7efa7b047268a9a798b28b9cca1d9773e803c088a64d56893c464385194527f441a06730afdca7453eda31adbe2e1b901a9dd54ba58b329478fe4563faee5d4c452146d004cda4f64254b660f03dc95b82855efdd45348149dc858aa355169baea60d1645a780edaf759678204d9cf7253cdb4e'
+    ));
 
-    console.log(verify('011a2d964a0958203b5b8b937d46bd21ede2db07f89d5886bbaf2ed1c74514471504061f14c84b3f', {
-        publicKey: '4724b2b8d6ac9a230db50f6ca2a666b24bc3833138031d2ae964c69887a51378',
-        signature: 'b2865720437755ccc39aedb39e92e0c4cadd4252a6aad87a643a3e5f3c8f60acf146f32bf37cb830d549a691ced5a1fc7dcd021643d654d5bd0a9bf07d22c80c'
-    }));
+    // the signature should be: 2E5F42AC23B0758D29EAE09D8FFAF935A15DFC2A60E58F3C5039CC250A8B75F530BF368E8CE77D682DB0600ACF505F3275FA8F7112EFB3537B49F4FFB7BA2709
 
     res.send('AAAAA');
 
