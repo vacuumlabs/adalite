@@ -37,8 +37,8 @@ function hex2buf(hexString) {
 class TxInput {
     constructor (txId, outputIndex) {
         this.id = txId;
-        this.outputIndex = outputIndex;
-        this.type = 0; // default output type
+        this.outputIndex = outputIndex; // the index of the input transaction when it was the output of another
+        this.type = 0; // default input type
     }
     
     encodeCBOR (encoder) {
@@ -91,7 +91,7 @@ class Witness {
     encodeCBOR (encoder) {
         return encoder.pushAny([
             this.type,
-            new cbor.Tagged(24, cbor.encode([this.publicKey, this.signature]))
+            new cbor.Tagged(24, cbor.encode([this.publicString, this.signature]))
         ]);
     }
 }
@@ -126,9 +126,17 @@ class UnsignedTransaction {
     getSigned(privateKey) {
         return new SignedTransaction(this, [ // witnesses of transaction inputs - currently hardcoded
             new Witness(
-                new TxPublicString('76EAEF312A3E90C13B0EA1A7B3C0E16D8549345BEC84826D9B1CE98C57AD8BADBA8598CF9314D97DF4BA0051E1471A99C4F77A3021C77212BBCA6AEA699A38DB'),
-                new TxSignature('ACCD5281BA0E7ADA54A6456D1DF8DCD05BF9A96BDD7A5C2C41DE10FFBF66E41CD729F81396F166A2E0E64422637BFF3C914CB62BE0E2694975ADE111EC75F405')
-            )
+                new TxPublicString('140D31459D822826515315CE965AEA82276130A9503D1465177352A8AE232171CC8BDCD93AD67107B1BDFAE759C241E2F40C7ADD308FFDD83B59D41B03343CDA'),
+                new TxSignature('72ED9F3CD4EEDCD761B8F8008968A321E713578EB8E7788ABA4904003F24FE98BEDA0A83BD6CB3A5538EBA828E1C28661640E02BFACC743935B01FC97793C205')
+            ),
+            new Witness(
+                new TxPublicString('D8C6472977695C1234D6DEB2210484B76E12AF5C05AD18C2FF4A768F85BF07F0C6AA501B0A25D0E7C18A342E5ECC0B7DEE9A26EBFDF6E6B0A3D3606EEB1D0C2D'),
+                new TxSignature('8EBF3201644269B4B73FF06C67EBC9DF7AC4B5FF9C2F25F393618AA21DF2744797540158E220F38E106C0653CEB57811E403DF3811A5A12CC0DCE0CCB7A2F20E')
+            ),
+            new Witness(
+                new TxPublicString('6C230A4F5FBD0A546E6232F84AF0E2B7BB3FC1C8E3A5A2B88280DAC7B6D79645304A2A9A3EB17AB87A8D98CD953C0EBF98B251280B102B30CAD825C6094E0404'),
+                new TxSignature('2293E1223D56710F84669CB5D15E20198B49B8A88F72CDD44A0B9439690A8E2461A32058741DF3ECBA909256A1949179FB986B5C26718C20D16A1D6AFB271D00')
+            ),
         ]);
     }
 
@@ -143,20 +151,20 @@ class UnsignedTransaction {
 
 class TxPublicString {
     // hex string representing 64 bytes
-    constructor (txPublicKey) {
-        this.txPublicKey = txPublicKey;
+    constructor (txPublicString) {
+        this.txPublicString = txPublicString;
     }
 
     getPublicKey() {
-        return  this.txPublicKey.substr(0, 64);
+        return  this.txPublicString.substr(0, 64);
     }
 
     getChainCode() {
-        return this.txPublicKey.substr(64, 64);
+        return this.txPublicString.substr(64, 64);
     }
 
     encodeCBOR (encoder) {
-        return encoder.pushAny(this.txPublicKey);
+        return encoder.pushAny(new Buffer(this.txPublicString, 'hex'));
     }
 }
 
@@ -166,7 +174,7 @@ class TxSignature {
     }
 
     encodeCBOR (encoder) {
-        return encoder.pushAny(this.signature);
+        return encoder.pushAny(new Buffer(this.signature, 'hex'));
     }
 }
 
@@ -181,20 +189,19 @@ class SignedTransaction {
     }
 
     verify() {
-        var witness = this.witnesses[0];
-        var key = ec.keyFromPublic(witness.getPublicKey(), 'hex');
-        
-        /*
-        * '011a2d964a095820' is a magic prefix from the cardano-sl code
-           the '01' byte is a constant to denote signatures of transactions
-           the '1a2d964a09' part is the CBOR representation of the blockchain-specific magic constant
-           the '5820' part the CBOR prefix for a hex string
-        */
-        var message = '011a2d964a095820' + this.getId();
+        return this.witnesses.map(witness => {
+            var key = ec.keyFromPublic(witness.getPublicKey(), 'hex');
+            
+            /*
+            * '011a2d964a095820' is a magic prefix from the cardano-sl code
+               the '01' byte is a constant to denote signatures of transactions
+               the '1a2d964a09' part is the CBOR representation of the blockchain-specific magic constant
+               the '5820' part is the CBOR prefix for a hex string
+            */
+            var message = '011a2d964a095820' + this.getId();
 
-        console.log(this.getId());
-
-        return key.verify(message, witness.getSignature());
+            return key.verify(message, witness.getSignature());
+        }).reduce((a, b) => a && b, true);
     }
 
     encodeCBOR (encoder) {
@@ -215,17 +222,19 @@ function getTxFee(transaction) {
 function getUnsignedTransaction() {
     return new UnsignedTransaction(
         [
-            new TxInput('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18', 0)
+            new TxInput('308244BE8550AEA4780E527A377CAFBF62BB20F899C8B528C569DAA43A6C0544', 1),
+            new TxInput('2B051E692725C5319EB438EE48E8BFA0B7448EDF7045D732F3148B6875963103', 1),
+            new TxInput('68768AB60F52B0B9B3B4BD84160B2700FAD32A0DA35B21755CF52273D41451A5', 0)
         ],
         [
             new TxOutput(
-                new WalletAddress('DdzFFzCqrhtCAAhzES3fi9ow81cyWKxJ4dFm4fUVHgaqToJtnmVkgRDFhGQE2S5U5G6zuHXYna5jaDE1bpvh4jymoGpVzzseNH8KAeUX'),
-                5651560
+                new WalletAddress('DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF'),
+                115078
             ),
             new TxOutput(
-                new WalletAddress('DdzFFzCqrht3ZMo1JFBiHJJxQAudUNt4eLfRhV7uBHxX1E3XoDWSru89MSenwacBdLjRTQL68WWsWsRjfJRSf5A89SpFDShuZUkJxdfc'),
-                1
-            )
+                new WalletAddress('DdzFFzCqrhsxJZXW35PCYcF6RJ5QLoEmJvsTpV5SKy5xWPyyqyvFFxD2EwAABynutBrw3AcR9Mx5QaEYHRtAWgf2VL6U3G1yngYCD9zi'),
+                3100719
+            ),
         ],
         {}
     );
@@ -275,8 +284,7 @@ app.get('/', function (req, res) {
 
     console.log("Tx id: " + hash(unsignedTx));
     console.log("Tx fee: " + getTxFee(finalTx));
-
-    var txi = new TxInput('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18', 0);
+    console.log(finalTx.verify());
 
     //res.send(cbor.encode(new Buffer(hash("AAA"), 'hex')).toString('hex'));
 
@@ -289,7 +297,7 @@ app.get('/', function (req, res) {
 
     // the signature should be: 2E5F42AC23B0758D29EAE09D8FFAF935A15DFC2A60E58F3C5039CC250A8B75F530BF368E8CE77D682DB0600ACF505F3275FA8F7112EFB3537B49F4FFB7BA2709
 
-    res.send('AAAAA');
+    res.send(cbor.encode(finalTx).toString('hex'));
 
     /*console.log(verify(new Buffer('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18', 'hex'), {
         signature: 'ACCD5281BA0E7ADA54A6456D1DF8DCD05BF9A96BDD7A5C2C41DE10FFBF66E41CD729F81396F166A2E0E64422637BFF3C914CB62BE0E2694975ADE111EC75F405',
