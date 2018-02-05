@@ -5,15 +5,13 @@ var cbor = require('cbor');
 var blake2 = require('blake2');
 var request = require('request');
 var base58 = require('bs58');
-
 var EdDSA = require('elliptic').eddsa;
 var ec = new EdDSA('ed25519');
 var ed25519 = require('ed25519-supercop');
-
 const crypto = require('crypto');
 var bignum = require('bignum');
-
-//const { derivePath, getMasterKeyFromSeed, getPublicKey } = require('ed25519-hd-key')
+const fetch = require('node-fetch');
+const exceptions = require('node-exceptions')
 
 // this is the hash function used in cardano-sl
 function hash(input) {
@@ -235,6 +233,17 @@ class SignedTransaction {
     }
 }
 
+async function apiRequest (url, method = 'get', body = null) {
+  let res = await fetch(url , {
+    method: method,
+    body: body,
+  })
+  if (res.status >= 400) {
+    throw new exceptions.HttpException(res.status)
+  }
+  return await res.json()
+}
+
 function getTxFee(transaction) {
     var a = 155381;
     var b = 43.946;
@@ -424,6 +433,8 @@ app.get('/', function (req, res) {
     //getAddressStatus(address, result => res.json(result))
 });
 
-app.listen(3000, function () {
+app.listen(3000, async function () {
     console.log('Example app listening on port 3000!');
+    const res =  await apiRequest(`https://cardanoexplorer.com/api/addresses/summary/DdzFFzCqrht5VfcR4vMBJRByxJZyNdW5RnJXQFQnNziWeyueFdHrieESw7QbMiX5VaHABHUgcuJ4viv26j6cc21Ju56twU8QF3wh9y4A`);
+    console.log("example api call", res);
 });
