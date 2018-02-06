@@ -20,17 +20,9 @@ function hash(input) {
     return h.digest("hex")
 }
 
-function getAddressStatus(address, callback) {
-    var url = 'https://cardanoexplorer.com/api/addresses/summary/' + address;
-    
-    var result = undefined;
-
-    return request({
-      'url' : url,
-      'method' : 'GET'
-    }, function (err, output, body) {
-        callback(JSON.parse(body));
-    });
+async function getAddressStatus(address, callback) {
+    const  url = 'https://cardanoexplorer.com/api/addresses/summary/' + address;
+    return await apiRequest(url)
 }
 
 function hex2buf(hexString) {
