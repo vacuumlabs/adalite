@@ -8,7 +8,12 @@ var base58 = require('bs58');
 
 var EdDSA = require('elliptic').eddsa;
 var ec = new EdDSA('ed25519');
-var ed25519 = require('ed25519-supercop')
+var ed25519 = require('ed25519-supercop');
+
+const crypto = require('crypto');
+var bignum = require('bignum');
+
+//const { derivePath, getMasterKeyFromSeed, getPublicKey } = require('ed25519-hd-key')
 
 // this is the hash function used in cardano-sl
 function hash(input) {
@@ -168,6 +173,24 @@ class TxPublicString {
     }
 }
 
+class WalletSecretString {
+    constructor (secretString) {
+        this.secretString = secretString;
+    }
+
+    getSecretKey() {
+        return this.secretString.substr(0,128);
+    }
+
+    getPublicKey() {
+        return this.secretString.substr(128, 64);
+    }
+
+    getChainCode() {
+        return this.secretString.substr(192, 64);
+    }
+}
+
 class TxSignature {
     constructor (signature) {
         this.signature = signature;
@@ -252,7 +275,103 @@ function sign(message, extendedPrivateKey) {
     return ed25519.sign(messageToSign, new Buffer(pubKey, 'hex'), new Buffer(privKey, 'hex')).toString('hex');
 }
 
+function add256NoCarry(b1, b2) {
+    var result = '';
+
+    for (var i = 0; i < 32; i++) {
+        result += ((b1[i] + b2[i]) & 0xff).toString(16).padStart(2, '0');
+    }
+
+    return new Buffer(result, 'hex');
+}
+
+function scalarAdd256ModM(b1, b2) {
+    var m = bignum.fromBuffer(new Buffer('1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed', 'hex'), {
+        endian: 'big',
+        size: 'auto',
+    });
+
+    var a = bignum.fromBuffer(b1, {
+        endian : 'little',
+        size : 'auto'
+    });
+
+    var b = bignum.fromBuffer(b2, {
+        endian : 'little',
+        size : 'auto'
+    });
+
+    var resultAsHexString = a.add(b).mod(m).toBuffer({
+        endian : 'little',
+        size : 'auto'
+    }).toString('hex').padEnd(64, '0');
+
+    return new Buffer(resultAsHexString, 'hex');
+}
+
+function multiply8(buf) {
+    var result = '';
+    var prevAcc = 0;
+
+    for (var i = 0; i < buf.length; i++) {
+        result += ((((buf[i] * 8) & 0xff) + (prevAcc & 0x8)) & 0xff).toString(16).padStart(2, '0');
+        prevAcc = buf[i] * 32;
+    }
+
+    return new Buffer(result, 'hex');
+}
+
+function deriveSK(parentSecretString, childIndex) {
+    var parentSecretString = new WalletSecretString(parentSecretString);
+    var chainCode = new Buffer(parentSecretString.getChainCode(), 'hex');
+
+    var hmac1 = crypto.createHmac('sha512', chainCode);
+    hmac1.update(new Buffer('00', 'hex'));
+    hmac1.update(new Buffer(parentSecretString.getSecretKey(), 'hex'));
+    hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'));
+    
+    var z = new Buffer(hmac1.digest('hex'), 'hex');
+
+    var zl8 = multiply8(z, new Buffer('08', 'hex')).slice(0,32);
+    var parentKey = new Buffer(parentSecretString.getSecretKey(), 'hex');
+
+    var kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32));
+    var kr = add256NoCarry(z.slice(32, 64), parentKey.slice(32, 64));
+
+    var resKey = Buffer.concat([kl, kr]);
+
+    var hmac2 = crypto.createHmac('sha512', chainCode);
+    hmac2.update(new Buffer('01', 'hex'));
+    hmac2.update(new Buffer(parentSecretString.getSecretKey(), 'hex'));
+    hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'));
+
+    var newChainCode = new Buffer(hmac2.digest('hex').slice(64, 128), 'hex');
+
+    /*
+    * TODO - to derive the public key, we need to import this C library:
+    * https://github.com/floodyberry/ed25519-donna
+    * more exactly, the function ed25519_publickey(secret_key, pub_key)
+    * which takes as an argument the secret key (its first 32 bytes) and returns
+    * the public key.
+    * Then we could also replace the function scalarAdd256ModM with ed25519_scalar_add
+    */
+    var newPublicKey = new Buffer(32);
+
+    return new WalletSecretString(Buffer.concat([resKey, newPublicKey, newChainCode]).toString('hex'));
+}
+
 app.get('/', function (req, res) {
+    var parentSK = '28EF77600EECD471759EA745BBBB7A661056424F8B83649B0F1E554209BCB944607A2C14CF22D2FB33ADE875452CFD29D62EBDA62DAA1A2FFFA98DFA6539F8B5955DFBC21C49588A2CB74CE60E5800601AA8BEFF746F765AC73FBF6CE0FA117478CEA3F02354DDB44F208A72D4F10D33D740384FBCBFC895022C005784B4CFF5';
+    var childIndex = 0x80000000;
+
+    const hexSeed = 'fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542';
+
+    //console.log(add256BitsNoCarry(new Buffer('aa', 'hex'), new Buffer('ff', 'hex')));
+    deriveSK(parentSK, childIndex).secretString;
+    //console.log('child secret key: ' + deriveSK(parentSK, childIndex).secretString);
+
+    // should be E7936BB0820521FA75A6119F0A3B207E103ECB3F2CEC0CCC97EEDDDA993C62055D5C3DB61814BF7EED2D232F32C3F5CDED3BB2B5821DC5C0FD153A6F07BCA213FD4676EDD8543C7366EAADB0D8809303E40A8E475D31516D8CB46BFB3C4D046B6A4ADB978F650C0715E9088353D1B7BA27707C066B71D6C1425AC9F758577FB3
+
     //res.send(sha1('<b>Hello World!</b>'));
 
     // takto sa zahashuje prazdny objekt Atributes ()
@@ -282,18 +401,15 @@ app.get('/', function (req, res) {
 
     //res.send(cbor.encode(finalTx).toString('hex'));
 
-    console.log("Tx id: " + hash(unsignedTx));
-    console.log("Tx fee: " + getTxFee(finalTx));
-    console.log(finalTx.verify());
+    //console.log("Tx id: " + hash(unsignedTx));
+    //console.log("Tx fee: " + getTxFee(finalTx));
+    //console.log(finalTx.verify());
 
     //res.send(cbor.encode(new Buffer(hash("AAA"), 'hex')).toString('hex'));
 
     //res.send(Buffer.concat([new Buffer('012D964A09', 'hex'), cbor.encode(new Buffer('E88716E0E5060A92DC3B6441C4F3BE45B3575A99799A737F3B07732656B03D18', 'hex'))]).toString('hex'));
 
-    console.log(sign(
-        '011a2d964a095820009e7136f7b6d4cee95df0c546c0ab04552e0c5b333e84e2ca98cb9031f131c5',
-        'd10fb5b73cfbdbde1657f5c2e7efa7b047268a9a798b28b9cca1d9773e803c088a64d56893c464385194527f441a06730afdca7453eda31adbe2e1b901a9dd54ba58b329478fe4563faee5d4c452146d004cda4f64254b660f03dc95b82855efdd45348149dc858aa355169baea60d1645a780edaf759678204d9cf7253cdb4e'
-    ));
+    //console.log(hash(""));
 
     // the signature should be: 2E5F42AC23B0758D29EAE09D8FFAF935A15DFC2A60E58F3C5039CC250A8B75F530BF368E8CE77D682DB0600ACF505F3275FA8F7112EFB3537B49F4FFB7BA2709
 
