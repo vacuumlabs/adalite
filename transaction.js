@@ -1,8 +1,9 @@
+const exceptions = require("node-exceptions");
 const cbor = require("cbor");
 const base58 = require("bs58");
-const { hex2buf, add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
-const crypto = require('crypto');
 var EdDSA = require('elliptic-cardano').eddsa;
+const crypto = require('crypto');
+const { hex2buf, add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
 var ec = new EdDSA('ed25519');
 
 exports.TxInput = class TxInput{
@@ -115,6 +116,17 @@ exports.TxWitness = class TxWitness {
 }
 
 exports.deriveSK = function(parentSecretString, childIndex) {
+  var childIndexFirstBit  = childIndex >> 31;
+  if (!childIndexFirstBit) throw new exceptions.InvalidArgumentException("childindex starts with zero bit," +
+    " we don't " +
+    "support non-hardened derivation for private keys");
+  var firstround = deriveSkIteration(parentSecretString, 0x80000000);
+  if (childIndex === 0x80000000)
+    return firstround;
+  return deriveSkIteration(firstround.secretString, childIndex);
+}
+
+function deriveSkIteration (parentSecretString, childIndex) {
     var parentSecretString = new exports.WalletSecretString(parentSecretString);
     var chainCode = new Buffer(parentSecretString.getChainCode(), 'hex');
 
