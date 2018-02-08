@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var cbor = require('cbor');
-var EdDSA = require('elliptic').eddsa;
+var EdDSA = require('elliptic-cardano').eddsa;
 var ec = new EdDSA('ed25519');
 
 const { hash, sign, getAddressStatus } = require("./utils");
@@ -109,10 +109,8 @@ function getUnsignedTransaction() {
 }
 
 app.get('/', function (req, res) {
-    var parentSK = '28EF77600EECD471759EA745BBBB7A661056424F8B83649B0F1E554209BCB944607A2C14CF22D2FB33ADE875452CFD29D62EBDA62DAA1A2FFFA98DFA6539F8B5955DFBC21C49588A2CB74CE60E5800601AA8BEFF746F765AC73FBF6CE0FA117478CEA3F02354DDB44F208A72D4F10D33D740384FBCBFC895022C005784B4CFF5';
-    var childIndex = 0x80000000;
-
-    const hexSeed = 'fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542';
+    var parentSK = '28e375ee5af42a9641c5c31b1b2d24df7f1d2212116bc0b0fc58816f06985b072cf5960d205736cac2e8224dd6018f7223c1bdc630d2b866703670a37316f44003b5417131136bd53174f09b129ae0499bd718ca55c5d40877c33b5ee10e5ba89661f96070a9d39df75c21f6142415502e254523cbacff2b4d58aa87d9021d65586431347c387c317c5743444d717639614345576c56534e75467a71356857635a76512b39664a49375239394f6975435a427a354b66513d3d7c6b2f6b44623075566a6e4659704a6d4c4c664e6e4d495241512b53546b76637272643775666b526c7535343d';
+    var childIndex = 0xa078ec7e;
 
     //console.log(add256BitsNoCarry(new Buffer('aa', 'hex'), new Buffer('ff', 'hex')));
     console.log(tx.deriveSK(parentSK, childIndex).secretString);

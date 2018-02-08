@@ -2,8 +2,6 @@ const blake2 = require("blake2");
 const cbor = require("cbor");
 const fetch = require("node-fetch");
 const exceptions = require("node-exceptions");
-var EdDSA = require('elliptic').eddsa;
-var ec = new EdDSA('ed25519');
 var ed25519 = require('ed25519-supercop');
 var bignum = require('bignum');
 
@@ -58,8 +56,6 @@ exports.sign = function(message, extendedPrivateKey) {
   var privKey = extendedPrivateKey.substr(0, 128);
   var pubKey = extendedPrivateKey.substr(128, 64);
   var chainCode = extendedPrivateKey.substr(192, 64);
-
-  var key = ec.keyFromSecret(privKey);
 
   var messageToSign = new Buffer(message, "hex");
 

@@ -2,6 +2,8 @@ const cbor = require("cbor");
 const base58 = require("bs58");
 const { hex2buf, add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
 const crypto = require('crypto');
+var EdDSA = require('elliptic-cardano').eddsa;
+var ec = new EdDSA('ed25519');
 
 exports.TxInput = class TxInput{
   constructor(txId, outputIndex) {
@@ -137,16 +139,7 @@ exports.deriveSK = function(parentSecretString, childIndex) {
     hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'));
 
     var newChainCode = new Buffer(hmac2.digest('hex').slice(64, 128), 'hex');
-
-    /*
-    * TODO - to derive the public key, we need to import this C library:
-    * https://github.com/floodyberry/ed25519-donna
-    * more exactly, the function ed25519_publickey(secret_key, pub_key)
-    * which takes as an argument the secret key (its first 32 bytes) and returns
-    * the public key.
-    * Then we could also replace the function scalarAdd256ModM with ed25519_scalar_add
-    */
-    var newPublicKey = new Buffer(32);
+    var newPublicKey = new Buffer(ec.keyFromSecret(resKey.toString('hex').slice(0,64)).getPublic('hex'), 'hex');
 
     return new exports.WalletSecretString(Buffer.concat([resKey, newPublicKey, newChainCode]).toString('hex'));
 }
