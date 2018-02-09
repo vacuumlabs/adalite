@@ -23,6 +23,7 @@
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {
     "bignum": "^0.12.5",
+    "bip39": "^2.5.0",
     "blake2": "^1.4.0",
     "bs58": "^4.0.1",
     "cbor": "^3.0.3",
