@@ -65,9 +65,9 @@ class SignedTransaction {
 
       /*
       * "011a2d964a095820" is a magic prefix from the cardano-sl code
-         the "01" byte is a constant to denote signatures of transactions
-         the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
-         the "5820" part is the CBOR prefix for a hex string
+        the "01" byte is a constant to denote signatures of transactions
+        the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
+        the "5820" part is the CBOR prefix for a hex string
       */
       var message = "011a2d964a095820" + this.getId();
 
@@ -93,22 +93,22 @@ function getTxFee(transaction) {
 
 function getUnsignedTransaction() {
   return new UnsignedTransaction(
-    [
-      new tx.TxInput("308244BE8550AEA4780E527A377CAFBF62BB20F899C8B528C569DAA43A6C0544", 1),
-      new tx.TxInput("2B051E692725C5319EB438EE48E8BFA0B7448EDF7045D732F3148B6875963103", 1),
-      new tx.TxInput("68768AB60F52B0B9B3B4BD84160B2700FAD32A0DA35B21755CF52273D41451A5", 0)
-    ],
-    [
-      new tx.TxOutput(
-        new tx.WalletAddress("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF"),
-        115078
-      ),
-      new tx.TxOutput(
-        new tx.WalletAddress("DdzFFzCqrhsxJZXW35PCYcF6RJ5QLoEmJvsTpV5SKy5xWPyyqyvFFxD2EwAABynutBrw3AcR9Mx5QaEYHRtAWgf2VL6U3G1yngYCD9zi"),
-        3100719
-      ),
-    ],
-    {}
+  [
+    new tx.TxInput("308244BE8550AEA4780E527A377CAFBF62BB20F899C8B528C569DAA43A6C0544", 1),
+    new tx.TxInput("2B051E692725C5319EB438EE48E8BFA0B7448EDF7045D732F3148B6875963103", 1),
+    new tx.TxInput("68768AB60F52B0B9B3B4BD84160B2700FAD32A0DA35B21755CF52273D41451A5", 0)
+  ],
+  [
+    new tx.TxOutput(
+      new tx.WalletAddress("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF"),
+      115078
+    ),
+    new tx.TxOutput(
+      new tx.WalletAddress("DdzFFzCqrhsxJZXW35PCYcF6RJ5QLoEmJvsTpV5SKy5xWPyyqyvFFxD2EwAABynutBrw3AcR9Mx5QaEYHRtAWgf2VL6U3G1yngYCD9zi"),
+      3100719
+    ),
+  ],
+  {}
   );
 }
 
@@ -163,6 +163,7 @@ app.get("/", function (req, res) {
 
 app.listen(3000, async function () {
   console.log("Example app listening on port 3000!");
+
   const txHash = "56fe463c07376328c538df81195b4c431539267c64067ab5559e84f996103773";
   // tx CBOR encoded
   const txBody = "820182839f8200d81858248258206d4470051958285efd392e02b83643227e0176ff4c" +
@@ -187,4 +188,6 @@ app.listen(3000, async function () {
   } catch (err) {
     console.log("txSubmiter unreachable " + err);
   }
+
+  console.log(recovery.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
 });

@@ -8,40 +8,40 @@ const { hex2buf, add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils
 
 exports.TxInput = class TxInput {
   constructor(txId, outputIndex) {
-    this.id = txId;
-    this.outputIndex = outputIndex; // the index of the input transaction when it was the output of another
-    this.type = 0; // default input type
+  this.id = txId;
+  this.outputIndex = outputIndex; // the index of the input transaction when it was the output of another
+  this.type = 0; // default input type
   }
 
   encodeCBOR(encoder) {
-    return encoder.pushAny([
-      this.type,
-      new cbor.Tagged(24, cbor.encode([
-        hex2buf(this.id),
-        this.outputIndex
-      ]))
-    ]);
+  return encoder.pushAny([
+    this.type,
+    new cbor.Tagged(24, cbor.encode([
+    hex2buf(this.id),
+    this.outputIndex
+    ]))
+  ]);
   }
 }
 
 exports.TxOutput = class TxOutput {
   constructor(walletAddress, coins) {
-    this.walletAddress = walletAddress;
-    this.coins = coins;
+  this.walletAddress = walletAddress;
+  this.coins = coins;
   }
 
   encodeCBOR(encoder) {
-    return encoder.pushAny([this.walletAddress, this.coins]);
+  return encoder.pushAny([this.walletAddress, this.coins]);
   }
 }
 
 exports.WalletAddress = class WalletAddress {
   constructor(address) {
-    this.address = address;
+  this.address = address;
   }
 
   encodeCBOR(encoder) {
-    return encoder.push(base58.decode(this.address));
+  return encoder.push(base58.decode(this.address));
   }
 }
 
@@ -115,14 +115,18 @@ exports.TxWitness = class TxWitness {
   }
 }
 
-exports.deriveSK = function (parentSecretString, childIndex) {
-  var childIndexFirstBit = childIndex >> 31;
-  if (!childIndexFirstBit) throw new exceptions.InvalidArgumentException("childindex starts with zero bit," +
-    " we don't " +
-    "support non-hardened derivation for private keys");
+exports.deriveSK = function(parentSecretString, childIndex) {
+  var childIndexFirstBit  = childIndex >> 31;
+    if (!childIndexFirstBit) throw new exceptions.InvalidArgumentException("childindex starts with zero bit," +
+      " we don't " +
+      "support non-hardened derivation for private keys");
+  
   var firstround = deriveSkIteration(parentSecretString, 0x80000000);
-  if (childIndex === 0x80000000)
+  
+  if (childIndex === 0x80000000) {
     return firstround;
+  }
+  
   return deriveSkIteration(firstround.secretString, childIndex);
 }
 
