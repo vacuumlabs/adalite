@@ -189,5 +189,5 @@ app.listen(3000, async function () {
     console.log("txSubmiter unreachable " + err);
   }
 
-  console.log(recovery.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
+  console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
 });

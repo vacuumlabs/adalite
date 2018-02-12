@@ -1,4 +1,4 @@
-const blake2 = require("blake2");
+const blake2 = require("blakejs");
 const cbor = require("cbor");
 const fetch = require("node-fetch");
 const exceptions = require("node-exceptions");
@@ -8,9 +8,12 @@ var bignum = require("bignum");
 class HttpException extends exceptions.LogicalException {};
 
 exports.hash = function (input) {
-  const h = blake2.createHash("blake2b", {digestLength: 32});
-  h.update(cbor.encode(input));
-  return h.digest("hex");
+  var context = blake2.blake2bInit(32);
+  blake2.blake2bUpdate(context, new Buffer(cbor.encode(input), 'hex'));
+  
+  result = new Buffer(blake2.blake2bFinal(context));
+
+  return result.toString('hex');
 };
 
 exports.hex2buf = function (hexString) {
