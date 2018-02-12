@@ -7,32 +7,6 @@ var bignum = require("bignum");
 
 class HttpException extends exceptions.LogicalException {};
 
-/**
- *
- * @param input
- * @returns {*|PromiseLike<ArrayBuffer>}
- *
- * examples:
- * hash empty object Atributes ()
- * hash({})
- *
- * hash of  CCoin 1 object - hash the value
- * hash(1);
- *
- * hash of the obj User
- * data User
- * = Login { login :: String
- *       , age   :: Int }
- * | FullName { firstName :: String
- *          , lastName  :: String
- *          , sex       :: Bool }
- *d eriving (Show, Eq)
- *
- * concrete instance:  FullName "AAA" "BBB" True
- * similarly are hashed other object  The initial 1 is  "tag" indicating the usage of the second
- * data type i.e.  FullName
- * hash([1, "AAA", "BBB", true])
- */
 exports.hash = function (input) {
   const h = blake2.createHash("blake2b", {digestLength: 32});
   h.update(cbor.encode(input));

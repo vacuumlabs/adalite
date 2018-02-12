@@ -8,6 +8,7 @@ var ec = new EdDSA("ed25519");
 const {hash, sign, getAddressStatus, request} = require("./utils");
 const tx = require("./transaction");
 const CBORIndefiniteLengthArray = require("./helpers").CBORIndefiniteLengthArray;
+const mnemonic = require("./mnemonic")
 
 app.use(bodyParser.json());
 

@@ -1,11 +1,10 @@
 const exceptions = require("node-exceptions");
 const cbor = require("cbor");
 const base58 = require("bs58");
-const EdDSA = require('elliptic-cardano').eddsa;
-const crypto = require('crypto');
-const {hex2buf, add256NoCarry, scalarAdd256ModM, multiply8} = require("./utils");
-
-var ec = new EdDSA('ed25519');
+const EdDSA = require("elliptic-cardano").eddsa;
+const ec = new EdDSA("ed25519");
+const crypto = require("crypto");
+const { hex2buf, add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
 
 exports.TxInput = class TxInput {
   constructor(txId, outputIndex) {
