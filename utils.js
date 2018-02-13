@@ -41,6 +41,8 @@ exports.hex2buf = function(hexString) {
   return Buffer.from(hexString, "hex");
 }
 
+class HttpException extends exceptions.LogicalException {};
+
 exports.request = async function (url, method = "get", body = null, headers = null) {
   const res = await fetch(url , {
     method: method,
@@ -48,7 +50,7 @@ exports.request = async function (url, method = "get", body = null, headers = nu
     headers: headers,
   });
   if (res.status >= 400) {
-    throw new exceptions.HttpException(res.status)
+    throw new HttpException(await res.text(), res.status, res.status);
   }
   return await res.json()
 };

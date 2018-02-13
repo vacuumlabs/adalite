@@ -27,9 +27,17 @@ let app = express();
 app.use(bodyParser.json());
 
 
-app.post('/', function (req, res) {
-  const txHash = req.body.txHash; // as hexstring
-  const txAux = req.body.txBody; // [1, TxAux] in CBOR
+app.post("/", function (req, res) {
+
+  let txHash = undefined;
+  let txAux = undefined; // [1, TxAux] in CBOR
+  try {
+    txHash = req.body.txHash; // as hexstring
+    txAux = req.body.txBody; // [1, TxAux] in CBOR
+    if (!txHash || !txHash) throw new Error("bad format");
+  } catch (err) {
+    return res.status(500).send("bad request format");
+  }
 
   console.log("submitting transaction " + txHash);
 
@@ -50,77 +58,90 @@ app.post('/', function (req, res) {
     client.write(new Buffer("00000000000000" + "08" + "0000000000000000", "hex"));
   }
 
-  client.on("connect", initHandshake);
+  try {
+    client.on("connect", initHandshake);
+  } catch (err) {
+    res.status(503).send("relay node unreachable");
+  }
 
-  client.on("data",(data) => {
-    // console.log(phase + "  " + data.toString("hex"));
-    switch (phase) {
-      case "initilal ping":
-        if (data.toString("hex") !== "00000000") throw new Error("server error");
-        client.write(new Buffer("000000000000" + "0400", "hex"));
-        client.write(new Buffer(cmdtable, "hex"));
-        phase = "first actual packet in stream - serial code 400";
-        break;
-      case "first actual packet in stream - serial code 400":
-        if (data.toString("hex") !== "0000000000000400") throw new Error("server error");
-        phase = "exchange of tables of message codes";
-        break;
-      case "exchange of tables of message codes":
-        if (data.toString("hex") !== serverCmdTable) throw new Error("server error");
-        client.write(new Buffer("00000400000000010d", "hex"));
-        client.write(new Buffer("0000040000000002182a", "hex"));
-        phase = "frame 401";
-        break;
-      case "frame 401":
-        if (data.toString("hex") !== "0000000000000401") throw new Error("server error");
-        phase = "frame 401 code";
-        break;
-      case "frame 401 code":
-        code = data.toString("hex");
-        client.write(new Buffer("0000000000000401", "hex"));
-        client.write(new Buffer(code.replace("953", "941"), "hex"));
-        phase = "frame 401 answer";
-        break;
-      case "frame 401 answer":
-        if (data.toString("hex") !== "000004010000000105") throw new Error("server error");
-        phase = "frame 401 chunk";
-        break;
-      case "frame 401 chunk":
-        client.write(new Buffer("0000000100000401", "hex"));
-        phase = "submit transaction hash";
-        break;
-      case "submit transaction hash":
-        if (data.toString("hex") !== "0000000100000401") throw new Error("server error");
-        client.write(new Buffer("0000000000000402", "hex"));
-        client.write(new Buffer(code.replace("0401", "0402"), "hex"));
+  client.on("data", (data) => {
+    try {
+      // console.log(phase + "  " + data.toString("hex"));
+      switch (phase) {
+        case "initilal ping":
+          if (data.toString("hex") !== "00000000") throw new Error("server error");
+          client.write(new Buffer("000000000000" + "0400", "hex"));
+          client.write(new Buffer(cmdtable, "hex"));
+          phase = "first actual packet in stream - serial code 400";
+          break;
+        case "first actual packet in stream - serial code 400":
+          if (data.toString("hex") !== "0000000000000400") throw new Error("server error");
+          phase = "exchange of tables of message codes";
+          break;
+        case "exchange of tables of message codes":
+          if (data.toString("hex") !== serverCmdTable) throw new Error("server error");
+          client.write(new Buffer("00000400000000010d", "hex"));
+          client.write(new Buffer("0000040000000002182a", "hex"));
+          phase = "frame 401";
+          break;
+        case "frame 401":
+          if (data.toString("hex") !== "0000000000000401") throw new Error("server error");
+          phase = "frame 401 code";
+          break;
+        case "frame 401 code":
+          code = data.toString("hex");
+          client.write(new Buffer("0000000000000401", "hex"));
+          client.write(new Buffer(code.replace("953", "941"), "hex"));
+          phase = "frame 401 answer";
+          break;
+        case "frame 401 answer":
+          if (data.toString("hex") !== "000004010000000105") throw new Error("server error");
+          phase = "frame 401 chunk";
+          break;
+        case "frame 401 chunk":
+          client.write(new Buffer("0000000100000401", "hex"));
+          phase = "submit transaction hash";
+          break;
+        case "submit transaction hash":
+          if (data.toString("hex") !== "0000000100000401") throw new Error("server error");
+          client.write(new Buffer("0000000000000402", "hex"));
+          client.write(new Buffer(code.replace("0401", "0402"), "hex"));
 
-        client.write(new Buffer(prefix + "000000021825", "hex"));
-        client.write(new Buffer(prefix + encodedtxHash, "hex"));
-        phase = "hash submited";
-        break;
-      case "hash submited":
-        if (data.toString("hex") !== "0000000000000402") throw new Error("server error");
-        phase = "submit transaction";
-        break;
-      case "submit transaction":
-        if (data.toString("hex").startsWith("0000402000000094") &&
-          data.toString("hex").endsWith("25" + encodedtxHash.substr(9))) throw new Error("server error");
-        client.write(new Buffer(prefix + encodedTx, "hex"));
-        phase = "result";
-        break;
-      case "result":
-        result = data.toString("hex").endsWith("f5");
-        client.write(new Buffer("0000000100000402", "hex"));
-        phase = "done";
-        break;
-      default:
-        client.destroy();
-        console.log(result + " " + txHash);
-        res.end(JSON.stringify({result, txHash}));
-    };
+          client.write(new Buffer(prefix + "000000021825", "hex"));
+          client.write(new Buffer(prefix + encodedtxHash, "hex"));
+          phase = "hash submited";
+          break;
+        case "hash submited":
+          if (data.toString("hex") !== "0000000000000402") throw new Error("server error");
+          phase = "submit transaction";
+          break;
+        case "submit transaction":
+          if (data.toString("hex").startsWith("0000402000000094") &&
+            data.toString("hex").endsWith("25" + encodedtxHash.substr(9))) throw new Error("server error");
+          client.write(new Buffer(prefix + encodedTx, "hex"));
+          phase = "result";
+          break;
+        case "result":
+          result = data.toString("hex").endsWith("f5");
+          client.write(new Buffer("0000000100000402", "hex"));
+          phase = "done";
+          break;
+        default:
+          client.destroy();
+          console.log(result + " " + txHash);
+          res.end(JSON.stringify({result, txHash}));
+      }
+      ;
+    } catch (err) {
+      return res.status(500).send("Submitting transaction failure!  comunication " +
+        "with relay node broken during " + phase + " phase. Please try again later");
+    }
   });
 
-  client.on("error",(err) => {console.log(err); res.send("error: " + err) });
+  client.on("error", (err) => {
+    console.log(err);
+    res.status(500).send("error: " + err);
+  });
 });
 
 app.listen(3001, function () {
