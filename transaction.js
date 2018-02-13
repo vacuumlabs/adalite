@@ -8,9 +8,9 @@ const { hex2buf, add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils
 
 exports.TxInput = class TxInput {
   constructor(txId, outputIndex) {
-  this.id = txId;
-  this.outputIndex = outputIndex; // the index of the input transaction when it was the output of another
-  this.type = 0; // default input type
+    this.id = txId;
+    this.outputIndex = outputIndex; // the index of the input transaction when it was the output of another
+    this.type = 0; // default input type
   }
 
   encodeCBOR(encoder) {
@@ -26,8 +26,8 @@ exports.TxInput = class TxInput {
 
 exports.TxOutput = class TxOutput {
   constructor(walletAddress, coins) {
-  this.walletAddress = walletAddress;
-  this.coins = coins;
+    this.walletAddress = walletAddress;
+    this.coins = coins;
   }
 
   encodeCBOR(encoder) {
@@ -37,7 +37,7 @@ exports.TxOutput = class TxOutput {
 
 exports.WalletAddress = class WalletAddress {
   constructor(address) {
-  this.address = address;
+    this.address = address;
   }
 
   encodeCBOR(encoder) {

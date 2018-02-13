@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {
+    "@stablelib/chacha20poly1305": "^0.10.2",
     "bignum": "^0.12.5",
     "bip39": "^2.5.0",
 <<<<<<< HEAD
@@ -32,12 +33,15 @@
 >>>>>>> 95cf5ef... blake2 replaced with pure javascript implementation
     "bs58": "^4.0.1",
     "cbor": "^3.0.3",
+    "crc-32": "^1.2.0",
     "ed25519-supercop": "^1.0.2",
     "elliptic": "^6.4.0",
     "elliptic-cardano": "^6.4.0",
     "express": "^4.16.2",
+    "js-sha3": "^0.7.0",
     "node-exceptions": "^3.0.0",
     "node-fetch": "^2.0.0",
+    "pbkdf2": "^3.0.14",
     "request": "^2.83.0",
     "sha1": "^1.1.1"
   }

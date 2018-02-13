@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const EdDSAOriginal = require('elliptic').eddsa;
 const ecOriginal = new EdDSAOriginal('ed25519');
 
-const hash = require('./utils').hash
+const hashBlake2b256 = require('./utils').hashBlake2b256
 const validWords = require("./assets/valid-words.en").words;
 const transaction = require("./transaction");
 
@@ -70,7 +70,7 @@ function mnemonicToHashSeed (mnemonic) {
 
   result = (result[0] === "0") ? result.substr(1, result.length) : result;
 
-  var result = new Buffer(cbor.encode(new Buffer(hash(new Buffer(result, 'hex')), 'hex')), 'hex');
+  var result = new Buffer(cbor.encode(new Buffer(hashBlake2b256(new Buffer(result, 'hex')), 'hex')), 'hex');
 
   return result;
 }

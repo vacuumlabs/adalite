@@ -4,10 +4,11 @@ const fetch = require("node-fetch");
 const exceptions = require("node-exceptions");
 var ed25519 = require("ed25519-supercop");
 var bignum = require("bignum");
+var sha3_256 = require('js-sha3').sha3_256;
 
 class HttpException extends exceptions.LogicalException {};
 
-exports.hash = function (input) {
+exports.hashBlake2b256 = function (input) {
   var context = blake2.blake2bInit(32);
   blake2.blake2bUpdate(context, new Buffer(cbor.encode(input), 'hex'));
   
@@ -16,7 +17,23 @@ exports.hash = function (input) {
   return result.toString('hex');
 };
 
-exports.hex2buf = function (hexString) {
+exports.addressHash = function (input) {
+  var serializedInput = cbor.encode(input);
+
+  //var serializedInput = new Buffer('8300820058407e5e5bc4c1bdc07d67ab6cd3a2bbcf6bb722db9366165d6ebc76644dbfb0b7a81c274b7cc400fe69e34ff4b451da95516836e5144f943a961a99506c5c2ae162a101581e581ce8c35580a823d8dd8fe1a9ccf5e8ec1632a212f41226706b5bc9fd6e', 'hex')
+
+  var firstHash = new Buffer(sha3_256(serializedInput), 'hex');
+  
+  var context = blake2.blake2bInit(28); // blake2b-224
+  blake2.blake2bUpdate(context, firstHash);
+  
+  result = new Buffer(blake2.blake2bFinal(context));
+
+  return result.toString('hex');
+};
+
+
+exports.hex2buf = function(hexString) {
   return Buffer.from(hexString, "hex");
 };
 

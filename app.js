@@ -5,10 +5,11 @@ var cbor = require("cbor");
 var EdDSA = require("elliptic-cardano").eddsa;
 var ec = new EdDSA("ed25519");
 
-const {hash, sign, getAddressStatus, request} = require("./utils");
+const { hashBlake2b256, sign, getAddressStatus } = require("./utils");
 const tx = require("./transaction");
 const CBORIndefiniteLengthArray = require("./helpers").CBORIndefiniteLengthArray;
-const mnemonic = require("./mnemonic")
+const mnemonic = require("./mnemonic");
+const address = require("./address");
 
 app.use(bodyParser.json());
 
@@ -20,7 +21,7 @@ class UnsignedTransaction {
   }
 
   getId() {
-    return hash(this);
+    return hashBlake2b256(this);
   }
 
   getSigned(privateKey) {
@@ -190,4 +191,15 @@ app.listen(3000, async function () {
   }
 
   console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
+
+  //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
+  console.log(address.secretToAddress(
+    new tx.WalletSecretString(
+      'B0D4187B81B5C2FB8234378EBCF33A1C2E2293369BD2263B6DCF672A29676A5A2E73D1F6E660365EACDDE77052625F0CC6E50C0710B35E45095FB1B51B9B9315F83D8464268BBB19FE416000FA846EAED7171D4390242AA966AB80C36694B7FA6EEC090FD6C6498BB4A28B61F8C4C5AE19B635E20052CB0BC7E0D17404B1717E'
+    ),
+    new tx.WalletSecretString(
+      '10DFBB3CFDD4345327A87D7FF35DD30FC6235477C4EA67241E2098DB99D0C30B3EA5B8D59FC6BD0033E43C3A60A7FFB07617E59B2AAB3ADB3FF7645E8DE3630C7E5E5BC4C1BDC07D67AB6CD3A2BBCF6BB722DB9366165D6EBC76644DBFB0B7A81C274B7CC400FE69E34FF4B451DA95516836E5144F943A961A99506C5C2AE162'
+    ),
+    [2147483648, 217131980]
+  ));
 });
