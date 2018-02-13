@@ -41,10 +41,11 @@ exports.hex2buf = function(hexString) {
   return Buffer.from(hexString, "hex");
 }
 
-exports.request = async function (url, method = "get", body = null) {
+exports.request = async function (url, method = "get", body = null, headers = null) {
   const res = await fetch(url , {
     method: method,
     body: body,
+    headers: headers,
   });
   if (res.status >= 400) {
     throw new exceptions.HttpException(res.status)

@@ -1,12 +1,15 @@
 var express = require('express');
 var app = express();
+var bodyParser = require("body-parser");
 var cbor = require('cbor');
 var EdDSA = require('elliptic-cardano').eddsa;
 var ec = new EdDSA('ed25519');
 
-const { hash, sign, getAddressStatus } = require("./utils");
+const {hash, sign, getAddressStatus, request} = require("./utils");
 const tx = require("./transaction");
-const CBORIndefiniteLengthArray = require("./helpers").CBORIndefiniteLengthArray
+const CBORIndefiniteLengthArray = require("./helpers").CBORIndefiniteLengthArray;
+
+app.use(bodyParser.json());
 
 class UnsignedTransaction {
   constructor(inputs, outputs, attributes) {
@@ -180,6 +183,22 @@ app.get('/', function (req, res) {
     //getAddressStatus(address, result => res.json(result))
 });
 
+app.post('/a', (req, res) => {
+  console.log(req.body);
+  res.end(JSON.stringify("yes"));
+});
+
 app.listen(3000, async function () {
   console.log("Example app listening on port 3000!");
+  const txHash = "56fe463c07376328c538df81195b4c431539267c64067ab5559e84f996103773";
+  const txBody ="820182839f8200d81858248258206d4470051958285efd392e02b83643227e0176ff4c" +
+    "7db399b5c0b1a6eeb70f9e01ff9f8282d818584283581c90adbb1eccedb270cb27964ee6ceb7cbe237e833a13ccff7" +
+    "25dc8de6a101581e581c0c54a726973aaa6c9fe0ca213ac20db19ef9c1e13724dc288966f66a001aa825f71d1a001d" +
+    "72618282d818584283581c606dee4b1dd9a6586dc4dfaf07d948c35a4e2be0dc2057d53cf7a69ca101581e581c2eab" +
+    "4601bfe583ff36c14d4f8467083e0723ba8c7aae861885321346001a52127e911a000f4240ffa0818200d818588582" +
+    "58404a2427be54bcabf815b76e984d6c5b127ae967c98777ba705bbe996bd7b912028b30cd8761b9a58970a42b4166" +
+    "29fb7f73344e664db526a712c69384f116d4815840520727b0ffda18a586f1c040a36a16e945d691c863fd0b113bff" +
+    "d39d489f765004b4d79c5f2893b93cb3290cac25b105ce802131d13b8dae5d17b80c7b06c00d";
+  const res = await request("http://localhost:3001/", "post", JSON.stringify({txHash, txBody}), {"Content-Type": "application/json"});
+  console.log (JSON.stringify(res));
 });
