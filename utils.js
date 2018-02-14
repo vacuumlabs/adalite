@@ -20,8 +20,6 @@ exports.hashBlake2b256 = function (input) {
 exports.addressHash = function (input) {
   var serializedInput = cbor.encode(input);
 
-  //var serializedInput = new Buffer('8300820058407e5e5bc4c1bdc07d67ab6cd3a2bbcf6bb722db9366165d6ebc76644dbfb0b7a81c274b7cc400fe69e34ff4b451da95516836e5144f943a961a99506c5c2ae162a101581e581ce8c35580a823d8dd8fe1a9ccf5e8ec1632a212f41226706b5bc9fd6e', 'hex')
-
   var firstHash = new Buffer(sha3_256(serializedInput), 'hex');
   
   var context = blake2.blake2bInit(28); // blake2b-224
@@ -37,22 +35,10 @@ exports.hex2buf = function(hexString) {
   return Buffer.from(hexString, "hex");
 };
 
-exports.request = async function (url, method = "get", body = null, headers = null) {
-  const res = await fetch(url, {
-    method: method,
-    body: body,
-    headers: headers,
-  });
-  if (res.status >= 400) {
-    throw new HttpException(await res.text(), res.status, res.status);
-  }
-  return await res.json()
-};
-
-exports.sign = function (message, extendedPrivateKey) {
-  var privKey = extendedPrivateKey.substr(0, 128);
-  var pubKey = extendedPrivateKey.substr(128, 64);
-  var chainCode = extendedPrivateKey.substr(192, 64);
+exports.sign = function(message, extendedPrivateKey) {
+  var privKey = extendedPrivateKey.getSecretKey(); //extendedPrivateKey.substr(0, 128);
+  var pubKey = extendedPrivateKey.getPublicKey(); //substr(128, 64);
+  var chainCode = extendedPrivateKey.getChainCode(); //substr(192, 64);
 
   var messageToSign = new Buffer(message, "hex");
 
@@ -105,7 +91,13 @@ exports.multiply8 = function (buf) {
   return new Buffer(result, "hex");
 }
 
-exports.getAddressStatus = async function (address, callback) {
-  const url = "https://cardanoexplorer.com/api/addresses/summary/" + address;
-  return await exports.request(url);
-}
+exports.request = async function (url, method = "get", body = null) {
+  const res = await fetch(url , {
+    method: method,
+    body: body,
+  });
+  if (res.status >= 400) {
+    throw new exceptions.HttpException(res.status)
+  }
+  return await res.json()
+};

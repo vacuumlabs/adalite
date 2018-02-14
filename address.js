@@ -13,11 +13,12 @@ const tx = require("./transaction");
 const { add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
 
 
-exports.deriveAddress = function (rootSecretString, childIndex) {
+exports.deriveAddressAndSecret = function (rootSecretString, childIndex) {
   if (childIndex === 0x80000000) { // root address
     var addressPayload = new Buffer(0);
     var addressAttributes = new Map();
-    var addressRoot = new Buffer(getAddressRoot(rootSecretString, addressPayload), "hex");
+    var derivedSecretString = rootSecretString
+    var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex');
   } else { // the remaining addresses
     var hdPassphrase = deriveHDPassphrase(rootSecretString);
     var derivedSecretString = exports.deriveSK(rootSecretString, childIndex);
@@ -34,10 +35,15 @@ exports.deriveAddress = function (rootSecretString, childIndex) {
   
   var addressDataEncoded = new Buffer(cbor.encode(addressData), "hex");
 
-  return base58.encode(cbor.encode([
+  var address = base58.encode(cbor.encode([
     new cbor.Tagged(24, addressDataEncoded),
     getCheckSum(addressDataEncoded)
   ]));
+
+  return {
+    "address" : address,
+    "secret" : derivedSecretString
+  }
 };
 
 exports.deriveSK = function(rootSecretString, childIndex) {
