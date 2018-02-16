@@ -10,11 +10,12 @@ const utils = require("./utils");
 const helpers = require("./helpers");
 
 exports.TxInput = class TxInput{
-  constructor (txId, outputIndex, secret) {
+  constructor (txId, outputIndex, secret, coins) {
     this.id = txId;
     this.outputIndex = outputIndex; // the index of the input transaction when it was the output of another
     this.type = 0; // default input type
     this.secret = secret; // so we are able to sign the input
+    this.coins = coins;
   }
 
   getWitness (txHash) {

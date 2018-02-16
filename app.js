@@ -58,13 +58,13 @@ app.listen(3000, async function () {
     )
   );
 
-  // console.log(await wallet.getBalance());
+  console.log(await wallet.getBalance());
 
   //console.log(await wallet.getUnspentTxOutputsWithSecrets());
 
   //console.log(JSON.stringify(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)));
 
-  console.log(await wallet.sendAda("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47));
+  console.log(await wallet.getTxFee("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47));
 
   const txHash = "56fe463c07376328c538df81195b4c431539267c64067ab5559e84f996103773";
   // tx CBOR encoded

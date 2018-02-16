@@ -1,11 +1,20 @@
 const request = require("./utils").request;
 
 exports.getUnspentTxOutputs = async function (address) {
+
+  if (exports.getAddressBallance(address) === 0) {
+    // if ballance is zero, all outputs must be spent so we don't waste time and return []
+    return [];
+  }
+
   var unspentTxOutputs = [];
 
   var addressInfo = await exports.getAddressInfo(address);
 
-  var txList = Object.values(addressInfo.caTxList);
+  // order transactions by time from earliest to latest
+  var txList = Object.values(addressInfo.caTxList).sort((a, b) => {
+    return parseInt(a.ctbTimeIssued) - parseInt(b.ctbTimeIssued);
+  });
 
   for (var i = 0; i < txList.length; i++) {
     var txInputs = Object.values(txList[i].ctbInputs);
