@@ -27,8 +27,8 @@
     "bignumber.js": "^6.0.0",
     "bip39": "^2.5.0",
     "blake2": "^1.4.0",
-    "body-parser": "^1.18.2",
     "blakejs": "^1.1.0",
+    "body-parser": "^1.18.2",
     "bs58": "^4.0.1",
     "cbor": "^3.0.3",
     "crc-32": "^1.2.0",
@@ -42,6 +42,7 @@
     "node-int64": "^0.4.0",
     "pbkdf2": "^3.0.14",
     "request": "^2.83.0",
-    "sha1": "^1.1.1"
+    "sha1": "^1.1.1",
+    "string.prototype.padstart": "^3.0.0"
   }
 }

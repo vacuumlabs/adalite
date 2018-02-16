@@ -31,13 +31,13 @@ exports.TxInput = class TxInput{
   }
 
   encodeCBOR (encoder) {
-  return encoder.pushAny([
-    this.type,
-    new cbor.Tagged(24, cbor.encode([
-      hex2buf(this.id),
-      this.outputIndex
-    ]))
-  ]);
+    return encoder.pushAny([
+      this.type,
+      new cbor.Tagged(24, cbor.encode([
+        hex2buf(this.id),
+        this.outputIndex
+      ]))
+    ]);
   }
 }
 
@@ -48,7 +48,7 @@ exports.TxOutput = class TxOutput {
   }
 
   encodeCBOR(encoder) {
-  return encoder.pushAny([this.walletAddress, this.coins]);
+    return encoder.pushAny([this.walletAddress, this.coins]);
   }
 }
 
@@ -58,7 +58,7 @@ exports.WalletAddress = class WalletAddress {
   }
 
   encodeCBOR(encoder) {
-  return encoder.push(base58.decode(this.address));
+    return encoder.push(base58.decode(this.address));
   }
 }
 

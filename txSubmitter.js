@@ -1,5 +1,7 @@
 const net = require("net");
 const express = require("express");
+const padStart = require('string.prototype.padstart');
+padStart.shim();
 
 var bodyParser = require("body-parser");
 const URL = "relays.cardano-mainnet.iohk.io";
@@ -26,7 +28,6 @@ let app = express();
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
 app.post("/", function (req, res) {
 
   let txHash = undefined;
@@ -34,6 +35,7 @@ app.post("/", function (req, res) {
   try {
     txHash = req.body.txHash; // as hexstring
     txAux = req.body.txBody; // [1, TxAux] in CBOR
+    console.log(req.body.txHash);
     if (!txHash || !txHash) throw new Error("bad format");
   } catch (err) {
     return res.status(500).send("bad request format");

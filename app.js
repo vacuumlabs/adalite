@@ -60,11 +60,11 @@ app.listen(3000, async function () {
 
   // console.log(await wallet.getBalance());
 
-  console.log(await wallet.getUnspentTxOutputsWithSecrets());
+  //console.log(await wallet.getUnspentTxOutputsWithSecrets());
 
   //console.log(JSON.stringify(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)));
 
-  console.log(cbor.encode(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)).toString('hex'));
+  //console.log(cbor.encode(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)).toString('hex'));
 
   const txHash = "56fe463c07376328c538df81195b4c431539267c64067ab5559e84f996103773";
   // tx CBOR encoded
@@ -76,30 +76,16 @@ app.listen(3000, async function () {
     "58404a2427be54bcabf815b76e984d6c5b127ae967c98777ba705bbe996bd7b912028b30cd8761b9a58970a42b4166" +
     "29fb7f73344e664db526a712c69384f116d4815840520727b0ffda18a586f1c040a36a16e945d691c863fd0b113bff" +
     "d39d489f765004b4d79c5f2893b93cb3290cac25b105ce802131d13b8dae5d17b80c7b06c00d";
-  try {
-    const res = await request("http://localhost:3001/", "post", JSON.stringify({
-      txHash,
-      txBody
-    }), {"Content-Type": "application/json"});
-    if (res.status >= 300) {
-      console.log(res.status + " " + JSON.stringify(res));
-    }
-    else {
-      console.log(JSON.stringify(res));
-    }
-  } catch (err) {
-    console.log("txSubmiter unreachable " + err);
-  }
-
-  console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
 
   //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
-  console.log(address.deriveAddressAndSecret(
+
+  //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
+  /*console.log(address.deriveAddressAndSecret(
     new tx.WalletSecretString(
       '28EF77600EECD471759EA745BBBB7A661056424F8B83649B0F1E554209BCB944607A2C14CF22D2FB33ADE875452CFD29D62EBDA62DAA1A2FFFA98DFA6539F8B5955DFBC21C49588A2CB74CE60E5800601AA8BEFF746F765AC73FBF6CE0FA117478CEA3F02354DDB44F208A72D4F10D33D740384FBCBFC895022C005784B4CFF5'
     ),
     0x4c194bfd
-  ));
+  ));*/
 
   //console.log(await blockChainExplorer.getUnspentTxOutputs("DdzFFzCqrhsdrw7okJHkY7gCPUTEGNyND5QpfQpuWAP7GHF9AWyaYPpGFWSvnxpQ3Tth2xbRRCi3boWABkHYHJvjDAv6un5fQmpphYuJ"));
 });

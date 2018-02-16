@@ -48,15 +48,16 @@ exports.CardanoWallet = class CardanoWallet{
       {}
     );
 
-    var txId = unsignedTx.getId();
+    var txHash = unsignedTx.getId();
 
     var witnesses = unsignedTx.inputs.map((input) => {
-      return input.getWitness(txId);
+      return input.getWitness(txHash);
     });
 
     var finalTx = new tx.SignedTransaction(unsignedTx, witnesses);
 
-    return finalTx;
+    return cbor.encode(finalTx);
+    //return await this.submitTxRaw(txHash, cbor.encode(finalTx));
   }
 
   getTxFeeEstimate(txInputs) {
@@ -113,5 +114,30 @@ exports.CardanoWallet = class CardanoWallet{
     var b = 43.946;
 
     return Math.ceil(a + txSizeInBytes * b);
+  }
+
+  async submitTxRaw (txHash, txBody) {
+    try {
+      const res = await utils.request(
+        "http://localhost:3001/",
+        "post",
+        JSON.stringify({
+          txHash,
+          txBody
+        }),
+        {
+          "Content-Type": "application/json"
+        }
+      );
+
+      if (res.status >= 300) {
+        console.log(res.status + " " + JSON.stringify(res));
+      }
+      else {
+        return res.result;
+      }
+    } catch (err) {
+      console.log("txSubmiter unreachable " + err);
+    }
   }
 }

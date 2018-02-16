@@ -2,9 +2,11 @@ const blake2 = require("blakejs");
 const cbor = require("cbor");
 const fetch = require("node-fetch");
 const exceptions = require("node-exceptions");
-var ed25519 = require("ed25519-supercop");
-var bignum = require("bignum");
-var sha3_256 = require('js-sha3').sha3_256;
+const ed25519 = require("ed25519-supercop");
+const bignum = require("bignum");
+const sha3_256 = require('js-sha3').sha3_256;
+const padStart = require('string.prototype.padstart');
+padStart.shim();
 
 class HttpException extends exceptions.LogicalException {};
 
@@ -91,9 +93,10 @@ exports.multiply8 = function (buf) {
   return new Buffer(result, "hex");
 }
 
-exports.request = async function (url, method = "get", body = null) {
+exports.request = async function (url, method = "get", body = null, headers = null) {
   const res = await fetch(url , {
     method: method,
+    headers: headers,
     body: body,
   });
   if (res.status >= 400) {
