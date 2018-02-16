@@ -54,16 +54,15 @@ exports.CardanoWallet = class CardanoWallet{
       return input.getWitness(txHash);
     });
 
-    var finalTx = new tx.SignedTransaction(unsignedTx, witnesses);
+    var txBody = new tx.SignedTransaction(unsignedTx, witnesses);
 
-    return cbor.encode(finalTx);
-    //return await this.submitTxRaw(txHash, cbor.encode(finalTx));
+    return await this.submitTxRaw(txHash, cbor.encode(txBody).toString("hex"));
   }
 
   getTxFeeEstimate(txInputs) {
     // we should be able to determine the fee based just on the txInputs, since the
     // size of the remainder of the transaction is predictable
-    return this.computeTxFee(531);
+    return this.computeTxFee(600);
   }
 
   getChangeAddress() {

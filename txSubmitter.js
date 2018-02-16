@@ -35,11 +35,12 @@ app.post("/", function (req, res) {
   try {
     txHash = req.body.txHash; // as hexstring
     txAux = req.body.txBody; // [1, TxAux] in CBOR
-    console.log(req.body.txHash);
     if (!txHash || !txHash) throw new Error("bad format");
   } catch (err) {
     return res.status(500).send("bad request format");
   }
+
+  txAux = "8201" + txAux;
 
   console.log("submitting transaction " + txHash);
 

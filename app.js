@@ -64,11 +64,11 @@ app.listen(3000, async function () {
 
   //console.log(JSON.stringify(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)));
 
-  //console.log(cbor.encode(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)).toString('hex'));
+  console.log(await wallet.sendAda("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47));
 
   const txHash = "56fe463c07376328c538df81195b4c431539267c64067ab5559e84f996103773";
   // tx CBOR encoded
-  const txBody = "820182839f8200d81858248258206d4470051958285efd392e02b83643227e0176ff4c" +
+  const txBody = "82839f8200d81858248258206d4470051958285efd392e02b83643227e0176ff4c" +
     "7db399b5c0b1a6eeb70f9e01ff9f8282d818584283581c90adbb1eccedb270cb27964ee6ceb7cbe237e833a13ccff7" +
     "25dc8de6a101581e581c0c54a726973aaa6c9fe0ca213ac20db19ef9c1e13724dc288966f66a001aa825f71d1a001d" +
     "72618282d818584283581c606dee4b1dd9a6586dc4dfaf07d948c35a4e2be0dc2057d53cf7a69ca101581e581c2eab" +
@@ -76,6 +76,8 @@ app.listen(3000, async function () {
     "58404a2427be54bcabf815b76e984d6c5b127ae967c98777ba705bbe996bd7b912028b30cd8761b9a58970a42b4166" +
     "29fb7f73344e664db526a712c69384f116d4815840520727b0ffda18a586f1c040a36a16e945d691c863fd0b113bff" +
     "d39d489f765004b4d79c5f2893b93cb3290cac25b105ce802131d13b8dae5d17b80c7b06c00d";
+
+  //console.log(await wallet.submitTxRaw(txHash, txBody));
 
   //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
 
