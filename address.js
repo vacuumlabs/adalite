@@ -1,4 +1,5 @@
 const crc32 = require("crc-32");
+const exceptions = require("node-exceptions");
 const cbor = require("cbor");
 const pbkdf2 = require("pbkdf2");
 const chacha20 = require("@stablelib/chacha20poly1305");
@@ -43,8 +44,46 @@ exports.deriveAddressAndSecret = function (rootSecretString, childIndex) {
   return {
     "address" : address,
     "secret" : derivedSecretString
-  }
+  }//*/ return address;
 };
+
+exports.getKeysFromAddressUnsafe =function (rootSecretString, address) {
+  var cborAddr = base58.decode(address);
+
+  console.log("a:" + cborAddr);
+  
+  var addrbuff = cbor.decode(cborAddr);
+
+  console.log("b:" + addrbuff);
+
+  var addr = JSON.parse(addrbuff[0].toString().slice(3, -1)).data;
+
+  console.log("b.5:" + addr);
+
+  var addrarray = addr.toString().split(",").map(x => parseInt(x));//.toString(16)).reduce((accumulator, currentValue)=> accumulator + currentValue);
+
+  console.log("b.75:" + addrarray);
+
+  var addrcbor = new Buffer(addrarray);
+
+  console.log("b.825:" + addrcbor);
+
+  var addressData = cbor.decode(addrcbor);
+
+  console.log("c:" + addressData);
+
+  var addressPayload = cbor.decode(addressData[1].get(1));
+
+  console.log("d:" + addressPayload);
+
+  var hdPassphrase = deriveHDPassphrase(rootSecretString);
+
+  console.log("e:" + hdPassphrase);
+
+  var derivationPath = decryptDerivationPath(addressPayload, hdPassphrase);
+
+  return derivationPath;
+}
 
 exports.deriveSK = function(rootSecretString, childIndex) {
 
@@ -76,6 +115,24 @@ function encryptDerivationPath(derivationPath, hdPassphrase) {
   var cipher = new chacha20.ChaCha20Poly1305(hdPassphrase);
 
   return new Buffer(cipher.seal(new Buffer("serokellfore"), serializedDerivationPath));
+}
+
+function decryptDerivationPath(addressPayload, hdPassphrase) {
+  var cipher = new chacha20.ChaCha20Poly1305(hdPassphrase);
+
+  var serializedDerivationPath = new Buffer(cipher.open(new Buffer("serokellfore"), addressPayload));
+
+  if (serializedDerivationPath == null) {
+    throw exceptions.RuntimeException('incorrect address or passphrase');
+  }
+
+  try {
+    var derivationPath = cbor.decode(serializedDerivationPath);
+  } catch (err) {
+    throw exceptions.RuntimeException('incorrect address or passphrase');
+  }
+
+  return derivationPath;
 }
 
 function getCheckSum(input) {

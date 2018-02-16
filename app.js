@@ -40,7 +40,7 @@ app.get("/", function (req, res) {
 });
 
 app.listen(3000, async function () {
-  console.log("Example app listening on port 3000!");
+  console.log("Example app listening on port 3000!");/*
   //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
   
   /*for (var i = 345000; i < 345010; i++) {
@@ -50,7 +50,7 @@ app.listen(3000, async function () {
       ),
       i
     ));
-  }*/
+  }*//*
 
   var wallet = new CardanoWallet(
     new tx.WalletSecretString(
@@ -87,7 +87,19 @@ app.listen(3000, async function () {
       '28EF77600EECD471759EA745BBBB7A661056424F8B83649B0F1E554209BCB944607A2C14CF22D2FB33ADE875452CFD29D62EBDA62DAA1A2FFFA98DFA6539F8B5955DFBC21C49588A2CB74CE60E5800601AA8BEFF746F765AC73FBF6CE0FA117478CEA3F02354DDB44F208A72D4F10D33D740384FBCBFC895022C005784B4CFF5'
     ),
     0x4c194bfd
-  ));*/
+  ));*//*
+  //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));*//*
+  var secretstring = new tx.WalletSecretString('28EF77600EECD471759EA745BBBB7A661056424F8B83649B0F1E554209BCB944607A2C14CF22D2FB33ADE875452CFD29D62EBDA62DAA1A2FFFA98DFA6539F8B5955DFBC21C49588A2CB74CE60E5800601AA8BEFF746F765AC73FBF6CE0FA117478CEA3F02354DDB44F208A72D4F10D33D740384FBCBFC895022C005784B4CFF5');
+
+  var newAddress = address.deriveAddressAndSecret(secretstring, 0x4c194bfd);
+  console.log("derived address:" + newAddress);
+
+  //var newaddr = JSON.parse(newAddress).address;
+
+  var derivationPath = address.getKeysFromAddressUnsafe(secretstring, newAddress);
+
+  console.log("derivation path:[");
+  console.log(derivationPath[0].toString() + "," + derivationPath[1].toString(16) + "]");*/
 
   //console.log(await blockChainExplorer.getUnspentTxOutputs("DdzFFzCqrhsdrw7okJHkY7gCPUTEGNyND5QpfQpuWAP7GHF9AWyaYPpGFWSvnxpQ3Tth2xbRRCi3boWABkHYHJvjDAv6un5fQmpphYuJ"));
 });
