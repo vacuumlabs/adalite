@@ -5,14 +5,14 @@ const pbkdf2 = require("pbkdf2");
 const chacha20 = require("@stablelib/chacha20poly1305");
 const base58 = require("bs58");
 const crypto = require("crypto");
-var EdDSA = require('elliptic-cardano').eddsa;
-var ec = new EdDSA('ed25519');
+const EdDSA = require('elliptic-cardano').eddsa;
+const ec = new EdDSA('ed25519');
 
+const {AddressDecodingException} = require('./custom-exceptions');
 const CBORIndefiniteLengthArray = require("./helpers").CBORIndefiniteLengthArray;
-const addressHash = require("./utils").addressHash;
-const tx = require("./transaction");
+const addressHash = require('./utils').addressHash;
+const tx = require('./transaction');
 const { add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
-
 
 exports.deriveAddressAndSecret = function (rootSecretString, childIndex) {
   if (childIndex === 0x80000000) { // root address
@@ -44,45 +44,41 @@ exports.deriveAddressAndSecret = function (rootSecretString, childIndex) {
   return {
     "address" : address,
     "secret" : derivedSecretString
-  }//*/ return address;
+  }
 };
 
-exports.getKeysFromAddressUnsafe =function (rootSecretString, address) {
-  var cborAddr = base58.decode(address);
+exports.isAddressDerivableFromSecretString = function (address, rootSecretString) {
+  try {
+    exports.tryDeriveSecretStringFromAddress(address, rootSecretString);
+  } catch (e) {
+    if (e instanceof AddressDecodingException) {
+      return false;
+    }
 
-  console.log("a:" + cborAddr);
-  
-  var addrbuff = cbor.decode(cborAddr);
+    throw e;
+  }
 
-  console.log("b:" + addrbuff);
+  return true;
+}
 
-  var addr = JSON.parse(addrbuff[0].toString().slice(3, -1)).data;
+exports.tryDeriveSecretStringFromAddress = function (address, rootSecretString) {
+  // we decode the address from the base58 string and then we strip the 24 CBOR data taga (the "[0].value" part)
+  var addressAsBuffer = cbor.decode(base58.decode(address))[0].value;
+  var addressData = cbor.decode(addressAsBuffer);
+  var addressAttributes = addressData[1];
 
-  console.log("b.5:" + addr);
+  if (addressAttributes.length === 0) {
+    // the root address (derrived straight from the root secret key)
+    var childIndex = 0x80000000; 
+  } else {
+    // the remaining addresses have a nontrivial child index therefore the derivation path is nonempty
+    var addressPayload = cbor.decode(addressAttributes.get(1));
+    var hdPassphrase = deriveHDPassphrase(rootSecretString);
+    var derivationPath = decryptDerivationPath(addressPayload, hdPassphrase);
+    var childIndex = derivationPath[1];
+  }
 
-  var addrarray = addr.toString().split(",").map(x => parseInt(x));//.toString(16)).reduce((accumulator, currentValue)=> accumulator + currentValue);
-
-  console.log("b.75:" + addrarray);
-
-  var addrcbor = new Buffer(addrarray);
-
-  console.log("b.825:" + addrcbor);
-
-  var addressData = cbor.decode(addrcbor);
-
-  console.log("c:" + addressData);
-
-  var addressPayload = cbor.decode(addressData[1].get(1));
-
-  console.log("d:" + addressPayload);
-
-  var hdPassphrase = deriveHDPassphrase(rootSecretString);
-
-  console.log("e:" + hdPassphrase);
-
-  var derivationPath = decryptDerivationPath(addressPayload, hdPassphrase);
-
-  return derivationPath;
+  return exports.deriveAddressAndSecret(rootSecretString, childIndex).secret;
 }
 
 exports.deriveSK = function(rootSecretString, childIndex) {
@@ -119,17 +115,12 @@ function encryptDerivationPath(derivationPath, hdPassphrase) {
 
 function decryptDerivationPath(addressPayload, hdPassphrase) {
   var cipher = new chacha20.ChaCha20Poly1305(hdPassphrase);
-
-  var serializedDerivationPath = new Buffer(cipher.open(new Buffer("serokellfore"), addressPayload));
-
-  if (serializedDerivationPath == null) {
-    throw exceptions.RuntimeException('incorrect address or passphrase');
-  }
+  var decipheredDerivationPath = cipher.open(new Buffer("serokellfore"), addressPayload);
 
   try {
-    var derivationPath = cbor.decode(serializedDerivationPath);
+    var derivationPath = cbor.decode(new Buffer(decipheredDerivationPath));
   } catch (err) {
-    throw exceptions.RuntimeException('incorrect address or passphrase');
+    throw new AddressDecodingException('incorrect address or passphrase');
   }
 
   return derivationPath;
