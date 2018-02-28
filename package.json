@@ -24,7 +24,6 @@
   "dependencies": {
     "@stablelib/chacha20poly1305": "^0.10.2",
     "base-58": "0.0.1",
-    "bignum": "^0.12.5",
     "bignumber.js": "^6.0.0",
     "bip39": "^2.5.0",
     "blake2": "^1.4.0",
