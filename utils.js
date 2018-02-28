@@ -2,7 +2,7 @@ const blake2 = require("blakejs");
 const cbor = require("cbor");
 const fetch = require("node-fetch");
 const exceptions = require("node-exceptions");
-const EdDSA = require("elliptic-cardano").eddsa;
+const EdDSA = require("elliptic-cardano").eddsaVariant;
 const ec = new EdDSA("ed25519");
 const ed25519 = require("ed25519-supercop");
 const bigNumber = require("bignumber.js");
@@ -40,19 +40,17 @@ exports.hex2buf = function (hexString) {
 
 exports.sign = function (message, extendedPrivateKey) {
   var privKey = extendedPrivateKey.getSecretKey(); //extendedPrivateKey.substr(0, 128);
-  console.log(extendedPrivateKey.getSecretKey());
   var pubKey = extendedPrivateKey.getPublicKey(); //substr(128, 64);
-  var chainCode = extendedPrivateKey.getChainCode(); //substr(192, 64);
 
   var messageToSign = new Buffer(message, "hex");
-  // var signed = ed25519.sign(messageToSign, new Buffer(pubKey, "hex"), new Buffer(privKey, "hex")).toString("hex");
 
-  var key = ec.keyFromSecret(privKey);
-  // console.log("supercop: " + signed);
-  // console.log("elliptic: " + key.sign(message).toHex());
   return ed25519.sign(messageToSign, new Buffer(pubKey, "hex"), new Buffer(privKey, "hex")).toString("hex");
-  // to get rid of eddsa25519 supercop
-  // return key.sign(message).toHex();
+}
+
+exports.verify = function (message, publicKey, signature) {
+  var key = ec.keyFromPublic(publicKey, "hex");
+
+  return key.verify(message, signature);
 }
 
 exports.add256NoCarry = function (b1, b2) {

@@ -4,7 +4,7 @@
   "description": "A simple Cardano wallet",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test/all.js",
     "start": "node app.js"
   },
   "repository": {
@@ -35,7 +35,7 @@
     "crc-32": "^1.2.0",
     "ed25519-supercop": "^1.0.2",
     "elliptic": "^6.4.0",
-    "elliptic-cardano": "^6.4.0-b",
+    "elliptic-cardano": "6.4.0-b",
     "express": "^4.16.2",
     "js-sha3": "^0.7.0",
     "node-exceptions": "^3.0.0",
@@ -44,6 +44,7 @@
     "pbkdf2": "^3.0.14",
     "request": "^2.83.0",
     "sha1": "^1.1.1",
-    "string.prototype.padstart": "^3.0.0"
+    "string.prototype.padstart": "^3.0.0",
+    "test": "^0.6.0"
   }
 }

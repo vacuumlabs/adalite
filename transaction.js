@@ -165,8 +165,6 @@ exports.SignedTransaction = class SignedTransaction {
 
   verify() {
     return this.witnesses.map(witness => {
-      var key = ec.keyFromPublic(witness.getPublicKey(), "hex");
-
       /*
       * "011a2d964a095820" is a magic prefix from the cardano-sl code
         the "01" byte is a constant to denote signatures of transactions
@@ -175,7 +173,7 @@ exports.SignedTransaction = class SignedTransaction {
       */
       var message = "011a2d964a095820" + this.getId();
 
-      return key.verify(message, witness.getSignature());
+      return utils.verify(message, witness.getPublicKey(), witness.getSignature());
     }).reduce((a, b) => a && b, true);
   }
 
