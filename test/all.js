@@ -23,12 +23,36 @@ exports["test signature verification"] = function() {
   assert.equal(utils.verify(message, extPrivKey.getPublicKey(), wrongSignature), false);
 }
 
-exports["test mnemonic to secret key conversion"] = function() {
+exports["test secret key derivation from mnemonic"] = function() {
   var mnemonicString = "cruise bike bar reopen mimic title style fence race solar million clean";
   var generatedWalletSecret = mnemonic.mnemonicToWalletSecretString(mnemonicString).secretString;
   var expectedWalletSecret = "b0d4187b81b5c2fb8234378ebcf33a1c2e2293369bd2263b6dcf672a29676a5a2e73d1f6e660365eacdde77052625f0cc6e50c0710b35e45095fb1b51b9b9315f83d8464268bbb19fe416000fa846eaed7171d4390242aa966ab80c36694b7fa6eec090fd6c6498bb4a28b61f8c4c5ae19b635e20052cb0bc7e0d17404b1717e";
 
   assert.equal(generatedWalletSecret, expectedWalletSecret);
+}
+
+exports["test address generation from secret key"] = function() {
+  // TODO
+}
+
+exports["test private key derivation"] = function() {
+  // TODO
+}
+
+exports["test address ownership verification"] = function() {
+  // TODO
+}
+
+exports["test transaction serialization"] = function() {
+  // TODO
+}
+
+exports["test transaction hash computation"] = function() {
+  // TODO
+}
+
+exports["test transaction fee computation"] = function() {
+  // TODO
 }
 
 if (module == require.main) require("test").run(exports)
