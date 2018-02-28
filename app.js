@@ -1,6 +1,5 @@
 var express = require("express");
 var app = express();
-var bodyParser = require("body-parser");
 var cbor = require('cbor');
 
 const mnemonic = require("./mnemonic");
@@ -9,8 +8,6 @@ const CardanoWallet = require("./cardano-wallet").CardanoWallet;
 const address = require("./address");
 const request = require("./utils").request;
 const sign = require("./utils").sign;
-
-app.use(bodyParser.json());
 
 
 app.get("/", function (req, res) {
