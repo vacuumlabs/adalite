@@ -1,9 +1,45 @@
 // using nodejs's build in asserts that throw on failure 
-var assert = require("assert")
+var assert = require("assert");
+require("isomorphic-fetch");
+var fetchMock = require("fetch-mock");
+
 var utils = require("../utils")
 var transaction = require("../transaction");
 var mnemonic = require("../mnemonic");
 var address = require("../address");
+
+function mockBlockChainExplorer() {
+  var addressesAndResponses = {
+    "DdzFFzCqrht4XR8CKm4dPXikMyaSt6Y4iPvEwGYW7GYDgXyVHBbvRvGhzzEQT5XvZ3zVCJR7VB15PbVBzKeabPHruC3JvcFjFV8CynEG" : {"Right":{"caAddress":"DdzFFzCqrht4XR8CKm4dPXikMyaSt6Y4iPvEwGYW7GYDgXyVHBbvRvGhzzEQT5XvZ3zVCJR7VB15PbVBzKeabPHruC3JvcFjFV8CynEG","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrht6dzaKMAgFmnkAiyDrdppXw9Pchpf5xofYxgogZTAETLCai7xFwWALmt1vZbwmF2oawDeapBYgkaECcZzYvUmHujuqTiAf" : {"Right":{"caAddress":"DdzFFzCqrht6dzaKMAgFmnkAiyDrdppXw9Pchpf5xofYxgogZTAETLCai7xFwWALmt1vZbwmF2oawDeapBYgkaECcZzYvUmHujuqTiAf","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrht7AoRnNfdGquuiSppnRkN1Ywb1EWH5AKgJbxN2e73y7mZTuY2ayf1qCWrvg8pp38qEDcsbxiAAB3XWzYqnQnohKJXNW8xC" : {"Right":{"caAddress":"DdzFFzCqrht7AoRnNfdGquuiSppnRkN1Ywb1EWH5AKgJbxN2e73y7mZTuY2ayf1qCWrvg8pp38qEDcsbxiAAB3XWzYqnQnohKJXNW8xC","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhspk8W7hHE2DnTroA1jdi5iWTQWNHThdrCr14UxTikuKic6M36FdEGhAjVsuoJfvDbsvXnsWPuuPbuzV9542P5usS1qrabS" : {"Right":{"caAddress":"DdzFFzCqrhspk8W7hHE2DnTroA1jdi5iWTQWNHThdrCr14UxTikuKic6M36FdEGhAjVsuoJfvDbsvXnsWPuuPbuzV9542P5usS1qrabS","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrht4im71gK9VsrbpqQ3hXmUktPekHGHYzZroSqLk2gBzPeEgVQ6vtumqSmcyNmdeMA7MTNeWhxavDVo7cepwPEqXxyFyyXu4" : {"Right":{"caAddress":"DdzFFzCqrht4im71gK9VsrbpqQ3hXmUktPekHGHYzZroSqLk2gBzPeEgVQ6vtumqSmcyNmdeMA7MTNeWhxavDVo7cepwPEqXxyFyyXu4","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhsi3CPXnAidDcHmgEmVyeGmgKV8qoSsnwzjAMjQQj2Rr6i5x2yv2qtqVeJiyvEoUpEMGNtD8xR1VJkX26j4yVoqo3WggEki" : {"Right":{"caAddress":"DdzFFzCqrhsi3CPXnAidDcHmgEmVyeGmgKV8qoSsnwzjAMjQQj2Rr6i5x2yv2qtqVeJiyvEoUpEMGNtD8xR1VJkX26j4yVoqo3WggEki","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrht7nLWxuwUaJcAoBAb1M93sEgp1AAgm8VCqgGkAbVucpLGJEq1bxkeRtX7Jddd4wueJ73KHos7316dVjUScXf3uhpXgTjQd" : {"Right":{"caAddress":"DdzFFzCqrht7nLWxuwUaJcAoBAb1M93sEgp1AAgm8VCqgGkAbVucpLGJEq1bxkeRtX7Jddd4wueJ73KHos7316dVjUScXf3uhpXgTjQd","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrht8KhWRRunt1iHt9oQhCpZFQgt6J4fGfCxvVu5as2NhanRusBYyKgrW8eXtfUCFXmeTGJRQkk9hyXLW4HcUE9KqMBFFxUBo" : {"Right":{"caAddress":"DdzFFzCqrht8KhWRRunt1iHt9oQhCpZFQgt6J4fGfCxvVu5as2NhanRusBYyKgrW8eXtfUCFXmeTGJRQkk9hyXLW4HcUE9KqMBFFxUBo","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhswQUeSvvYbArL3XHAnnk6VpgEgY6KMEi9fE8sSDPPK51FqLkNzGYf6Z9H7CfLrLhwqoGu4HTVvpWV5WwyvQyd3rrkuePSV" : {"Right":{"caAddress":"DdzFFzCqrhswQUeSvvYbArL3XHAnnk6VpgEgY6KMEi9fE8sSDPPK51FqLkNzGYf6Z9H7CfLrLhwqoGu4HTVvpWV5WwyvQyd3rrkuePSV","caType":"CPubKeyAddress","caTxNum":1,"caBalance":{"getCoin":"750000"},"caTxList":[{"ctbId":"3b8573d901522d73114b1c9671698d36b42931c863540fc699a636d3d93a1d68","ctbTimeIssued":1519820491,"ctbInputs":[["DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF",{"getCoin":"115078"}],["DdzFFzCqrhtAThjMBZNSbed3Dw7GmsEprFphaiasLVvCubwJ5oyfzntR9XDAAT8hCDmuAs2wCxXntcrQvxqsqBboiuCrHSApJnN8XebJ",{"getCoin":"821151"}]],"ctbOutputs":[["DdzFFzCqrhsoggT7JpYS5HeB4BXW5RP2gq8U4pSMmNkREGrby187nbeVDiXTHBAssvHHmVdf7xSRMnAxtR3yHLWqP4GVQqWcsMtVLM4R",{"getCoin":"7468"}],["DdzFFzCqrhswQUeSvvYbArL3XHAnnk6VpgEgY6KMEi9fE8sSDPPK51FqLkNzGYf6Z9H7CfLrLhwqoGu4HTVvpWV5WwyvQyd3rrkuePSV",{"getCoin":"750000"}]],"ctbInputSum":{"getCoin":"936229"},"ctbOutputSum":{"getCoin":"757468"}}]}},
+    "DdzFFzCqrhsk4Eyx4CJyr1ymTEDef2A74gMykjTzcBYSV8iXBwYyMC89MJHMdV3itzsCPmc7Cr6yE2H6CRHioWjUs9XkA3UiQpSWzRgP" : {"Right":{"caAddress":"DdzFFzCqrhsk4Eyx4CJyr1ymTEDef2A74gMykjTzcBYSV8iXBwYyMC89MJHMdV3itzsCPmc7Cr6yE2H6CRHioWjUs9XkA3UiQpSWzRgP","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhsvoV83E3MKsrvSLXYMZcTUbTQnTi8gsWsLWPsowVeKADN8phbQ5kkzqGWveFCW4r7SUotDYiGgwdRu67QRRbqTets5jA7g" : {"Right":{"caAddress":"DdzFFzCqrhsvoV83E3MKsrvSLXYMZcTUbTQnTi8gsWsLWPsowVeKADN8phbQ5kkzqGWveFCW4r7SUotDYiGgwdRu67QRRbqTets5jA7g","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrht4Nb7C6niLFvwV3Jwdn2iRZoiBaDqCUdcVChYPZSMh4D8nNpHJtSY9KRF3go2CzVrESmCTjrAQmxYY3S2MDdp2k22sQV8r" : {"Right":{"caAddress":"DdzFFzCqrht4Nb7C6niLFvwV3Jwdn2iRZoiBaDqCUdcVChYPZSMh4D8nNpHJtSY9KRF3go2CzVrESmCTjrAQmxYY3S2MDdp2k22sQV8r","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhseq4DEn7FgcjTQoXXTy9A6wNasdNJT2aapydxAgHLhxMNn9ByQtXhNUKLwku3AQp3usHtvcbNncqyUTuf34ZLQVnA7Bq5J" : {"Right":{"caAddress":"DdzFFzCqrhseq4DEn7FgcjTQoXXTy9A6wNasdNJT2aapydxAgHLhxMNn9ByQtXhNUKLwku3AQp3usHtvcbNncqyUTuf34ZLQVnA7Bq5J","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhspG8UcV5EWC8ZZ51PhiYdrjBF5K8VwugoW75hNWcsgiiGwt19XK6Wjwrj9Dgo8MFLr3p5NqCpmGpwr1feSbknQQWWZnAqu" : {"Right":{"caAddress":"DdzFFzCqrhspG8UcV5EWC8ZZ51PhiYdrjBF5K8VwugoW75hNWcsgiiGwt19XK6Wjwrj9Dgo8MFLr3p5NqCpmGpwr1feSbknQQWWZnAqu","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhsue978fp3K36FRKcjijkRjQTzQPqZ6q9BpMNR5jGSSHsKAPACekuud9bb3Fw5uhZxt4vMQkSWREJUp3vVc1nagk4ygSQt6" : {"Right":{"caAddress":"DdzFFzCqrhsue978fp3K36FRKcjijkRjQTzQPqZ6q9BpMNR5jGSSHsKAPACekuud9bb3Fw5uhZxt4vMQkSWREJUp3vVc1nagk4ygSQt6","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "DdzFFzCqrhsmagp4fDZpcY9UaBJk4Z8GaDfxqMCSwxPs3PnVoXmJWUZcgAxw3diCHVYauontEfk7YGeAu2LvAwq3aG2XQ8Mtsz7Vc8LA" : {"Right":{"caAddress":"DdzFFzCqrhsmagp4fDZpcY9UaBJk4Z8GaDfxqMCSwxPs3PnVoXmJWUZcgAxw3diCHVYauontEfk7YGeAu2LvAwq3aG2XQ8Mtsz7Vc8LA","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}}
+  }
+  for (var address in addressesAndResponses) {
+    fetchMock.mock({
+      "matcher" : "https://cardanoexplorer.com/api/addresses/summary/" + address,
+      "response" : {
+        "status" : 200,
+        "body" : addressesAndResponses[address],
+        "sendAsJson" : true,
+      }
+    });
+  }
+}
+
+mockBlockChainExplorer();
 
 exports["test signing"] = function() {
   var secret = new transaction.WalletSecretString("50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c");

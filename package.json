@@ -34,6 +34,8 @@
     "elliptic": "^6.4.0",
     "elliptic-cardano": "6.4.0-b",
     "express": "^4.16.2",
+    "fetch-mock": "^6.0.1",
+    "isomorphic-fetch": "^2.2.1",
     "js-sha3": "^0.7.0",
     "node-exceptions": "^3.0.0",
     "node-fetch": "^2.0.0",

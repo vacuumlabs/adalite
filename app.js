@@ -1,6 +1,8 @@
 var express = require("express");
 var app = express();
 var cbor = require('cbor');
+require("isomorphic-fetch");
+var fetchMock = require("fetch-mock");
 
 const mnemonic = require("./mnemonic");
 const tx = require("./transaction");
@@ -8,7 +10,6 @@ const CardanoWallet = require("./cardano-wallet").CardanoWallet;
 const address = require("./address");
 const request = require("./utils").request;
 const sign = require("./utils").sign;
-
 
 app.get("/", function (req, res) {
   var parentSK = new tx.WalletSecretString("28e375ee5af42a9641c5c31b1b2d24df7f1d2212116bc0b0fc58816f06985b072cf5960d205736cac2e8224dd6018f7223c1bdc630d2b866703670a37316f44003b5417131136bd53174f09b129ae0499bd718ca55c5d40877c33b5ee10e5ba89661f96070a9d39df75c21f6142415502e254523cbacff2b4d58aa87d9021d65586431347c387c317c5743444d717639614345576c56534e75467a71356857635a76512b39664a49375239394f6975435a427a354b66513d3d7c6b2f6b44623075566a6e4659704a6d4c4c664e6e4d495241512b53546b76637272643775666b526c7535343d");
@@ -49,10 +50,10 @@ app.listen(3000, async function () {
       i
     ));
   }*//*
-
+  */
   var wallet = new CardanoWallet(
     new tx.WalletSecretString(
-      "B0D4187B81B5C2FB8234378EBCF33A1C2E2293369BD2263B6DCF672A29676A5A2E73D1F6E660365EACDDE77052625F0CC6E50C0710B35E45095FB1B51B9B9315F83D8464268BBB19FE416000FA846EAED7171D4390242AA966AB80C36694B7FA6EEC090FD6C6498BB4A28B61F8C4C5AE19B635E20052CB0BC7E0D17404B1717E"
+      "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
     )
   );
 
@@ -63,7 +64,7 @@ app.listen(3000, async function () {
   //console.log(JSON.stringify(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)));
 
   console.log(await wallet.getTxFee("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47));
-
+  /*
   const txHash = "56fe463c07376328c538df81195b4c431539267c64067ab5559e84f996103773";
   // tx CBOR encoded
   const txBody = "82839f8200d81858248258206d4470051958285efd392e02b83643227e0176ff4c" +

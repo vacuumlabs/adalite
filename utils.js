@@ -1,6 +1,6 @@
 const blake2 = require("blakejs");
 const cbor = require("cbor");
-const fetch = require("node-fetch");
+require("isomorphic-fetch");
 const exceptions = require("node-exceptions");
 const EdDSA = require("elliptic-cardano").eddsaVariant;
 const ec = new EdDSA("ed25519");
@@ -102,5 +102,5 @@ exports.request = async function (url, method = "get", body = null, headers = nu
   if (res.status >= 400) {
     throw new exceptions.HttpException(res.status)
   }
-  return await res.json()
+  return res.json()
 };
