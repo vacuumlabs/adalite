@@ -1,7 +1,7 @@
 const bip39 = require("bip39");
 const exceptions = require("node-exceptions");
 const cbor = require("cbor");
-const bignum = require("bignum");
+const bigNumber = require("bignumber.js");
 const crypto = require("crypto");
 const EdDSAOriginal = require("elliptic").eddsa;
 const ecOriginal = new EdDSAOriginal("ed25519");
@@ -36,7 +36,7 @@ exports.mnemonicToWalletSecretString = function (mnemonic) {
       }
       continue;
     }
-    
+
     return new transaction.WalletSecretString(Buffer.concat([secretKey, publicKey, chainCode]).toString("hex"));
   }
 }
@@ -65,8 +65,8 @@ function mnemonicToHashSeed (mnemonic) {
   }
 
   var result = mnemonicToIndices(mnemonic).reduce((acc, elem) => {
-    return acc.shiftLeft(11).add(bignum(elem.toString(10)));
-  }, bignum("0")).toString(16);
+    return acc.multipliedBy("800", 16).plus(bigNumber(elem.toString(10)));
+  }, bigNumber("0")).toString(16);
 
   result = (result[0] === "0") ? result.substr(1, result.length) : result;
 

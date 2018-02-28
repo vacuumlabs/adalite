@@ -28,6 +28,7 @@ exports.CardanoWallet = class CardanoWallet{
 
     var fee = this.computeTxFee(txInputs, coins);
 
+    //comment this for developement
     if (fee === -1) {
       return false;
     }
@@ -97,7 +98,7 @@ exports.CardanoWallet = class CardanoWallet{
     if (coins > Number.MAX_SAFE_INTEGER) {
       throw new Error("Unsupported amount of coins: " + coins)
     }
-    
+
     var txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins;
     }, 0);
@@ -112,9 +113,9 @@ exports.CardanoWallet = class CardanoWallet{
     * we assume that only two outputs (destination and change address) will be present
     * encoded in an indefinite length array
     */
-    var txOutputsSize = 2*77 + cbor.encode(out1coins).length + cbor.encode(out2coinsUpperBound).length + 2; 
+    var txOutputsSize = 2*77 + cbor.encode(out1coins).length + cbor.encode(out2coinsUpperBound).length + 2;
     var txMetaSize = 1; // currently empty Map
-    
+
     // the 1 is there for the CBOR "tag" for an array of 3 elements
     var txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize;
 
@@ -155,7 +156,7 @@ exports.CardanoWallet = class CardanoWallet{
       var addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(addresses[i].address);
 
       addressUnspentOutputs.map((element) => {
-        element.secret = addresses[i].secret;  
+        element.secret = addresses[i].secret;
       });
 
       var result = result.concat(addressUnspentOutputs);

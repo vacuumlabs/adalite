@@ -8,6 +8,7 @@ const tx = require("./transaction");
 const CardanoWallet = require("./cardano-wallet").CardanoWallet;
 const address = require("./address");
 const request = require("./utils").request;
+const sign = require("./utils").sign;
 
 app.use(bodyParser.json());
 
@@ -41,8 +42,8 @@ app.get("/", function (req, res) {
 
 app.listen(3000, async function () {
   console.log("Example app listening on port 3000!");/*
-  //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
-  
+  // console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
+
   /*for (var i = 345000; i < 345010; i++) {
     console.log(address.deriveAddressAndSecret(
       new tx.WalletSecretString(
@@ -60,7 +61,7 @@ app.listen(3000, async function () {
 
   console.log(await wallet.getBalance());
 
-  //console.log(await wallet.getUnspentTxOutputsWithSecrets());
+  // console.log(await wallet.getUnspentTxOutputsWithSecrets());
 
   //console.log(JSON.stringify(await wallet.sendAda("DdzFFzCqrhswXkREAGRUQRGm3fYnhiujfFsXELpP3FDfSA7atExtvqBuWSk8C5PwD9PnDF7qXJjs9yX48QpkqRVgV4YCfuiVAZN2rEVF", 47)));
 
@@ -77,7 +78,7 @@ app.listen(3000, async function () {
     "29fb7f73344e664db526a712c69384f116d4815840520727b0ffda18a586f1c040a36a16e945d691c863fd0b113bff" +
     "d39d489f765004b4d79c5f2893b93cb3290cac25b105ce802131d13b8dae5d17b80c7b06c00d";
 
-  //console.log(await wallet.submitTxRaw(txHash, txBody));
+  // console.log(await wallet.submitTxRaw(txHash, txBody));
 
   //console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
 

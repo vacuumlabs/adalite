@@ -1,11 +1,11 @@
 const exceptions = require("node-exceptions");
 const cbor = require("cbor");
 const base58 = require("bs58");
-const EdDSA = require("elliptic-cardano").eddsa;
+const EdDSA = require("elliptic-cardano").eddsaVariant;
 const ec = new EdDSA("ed25519");
 const crypto = require("crypto");
 
-const { hex2buf, add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
+const {hex2buf} = require("./utils");
 const utils = require("./utils");
 const helpers = require("./helpers");
 
