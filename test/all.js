@@ -2,13 +2,18 @@
 var assert = require("assert");
 require("isomorphic-fetch");
 var fetchMock = require("fetch-mock");
+var cbor = require("cbor");
+var sinon = require("sinon");
 
 var utils = require("../utils")
 var transaction = require("../transaction");
 var mnemonic = require("../mnemonic");
 var address = require("../address");
+var CardanoWallet = require("../cardano-wallet").CardanoWallet;
 
 function mockBlockChainExplorer() {
+  fetchMock.config.overwriteRoutes = true;
+
   var addressesAndResponses = {
     "DdzFFzCqrht4XR8CKm4dPXikMyaSt6Y4iPvEwGYW7GYDgXyVHBbvRvGhzzEQT5XvZ3zVCJR7VB15PbVBzKeabPHruC3JvcFjFV8CynEG" : {"Right":{"caAddress":"DdzFFzCqrht4XR8CKm4dPXikMyaSt6Y4iPvEwGYW7GYDgXyVHBbvRvGhzzEQT5XvZ3zVCJR7VB15PbVBzKeabPHruC3JvcFjFV8CynEG","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
     "DdzFFzCqrht6dzaKMAgFmnkAiyDrdppXw9Pchpf5xofYxgogZTAETLCai7xFwWALmt1vZbwmF2oawDeapBYgkaECcZzYvUmHujuqTiAf" : {"Right":{"caAddress":"DdzFFzCqrht6dzaKMAgFmnkAiyDrdppXw9Pchpf5xofYxgogZTAETLCai7xFwWALmt1vZbwmF2oawDeapBYgkaECcZzYvUmHujuqTiAf","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
@@ -25,7 +30,8 @@ function mockBlockChainExplorer() {
     "DdzFFzCqrhseq4DEn7FgcjTQoXXTy9A6wNasdNJT2aapydxAgHLhxMNn9ByQtXhNUKLwku3AQp3usHtvcbNncqyUTuf34ZLQVnA7Bq5J" : {"Right":{"caAddress":"DdzFFzCqrhseq4DEn7FgcjTQoXXTy9A6wNasdNJT2aapydxAgHLhxMNn9ByQtXhNUKLwku3AQp3usHtvcbNncqyUTuf34ZLQVnA7Bq5J","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
     "DdzFFzCqrhspG8UcV5EWC8ZZ51PhiYdrjBF5K8VwugoW75hNWcsgiiGwt19XK6Wjwrj9Dgo8MFLr3p5NqCpmGpwr1feSbknQQWWZnAqu" : {"Right":{"caAddress":"DdzFFzCqrhspG8UcV5EWC8ZZ51PhiYdrjBF5K8VwugoW75hNWcsgiiGwt19XK6Wjwrj9Dgo8MFLr3p5NqCpmGpwr1feSbknQQWWZnAqu","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
     "DdzFFzCqrhsue978fp3K36FRKcjijkRjQTzQPqZ6q9BpMNR5jGSSHsKAPACekuud9bb3Fw5uhZxt4vMQkSWREJUp3vVc1nagk4ygSQt6" : {"Right":{"caAddress":"DdzFFzCqrhsue978fp3K36FRKcjijkRjQTzQPqZ6q9BpMNR5jGSSHsKAPACekuud9bb3Fw5uhZxt4vMQkSWREJUp3vVc1nagk4ygSQt6","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
-    "DdzFFzCqrhsmagp4fDZpcY9UaBJk4Z8GaDfxqMCSwxPs3PnVoXmJWUZcgAxw3diCHVYauontEfk7YGeAu2LvAwq3aG2XQ8Mtsz7Vc8LA" : {"Right":{"caAddress":"DdzFFzCqrhsmagp4fDZpcY9UaBJk4Z8GaDfxqMCSwxPs3PnVoXmJWUZcgAxw3diCHVYauontEfk7YGeAu2LvAwq3aG2XQ8Mtsz7Vc8LA","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}}
+    "DdzFFzCqrhsmagp4fDZpcY9UaBJk4Z8GaDfxqMCSwxPs3PnVoXmJWUZcgAxw3diCHVYauontEfk7YGeAu2LvAwq3aG2XQ8Mtsz7Vc8LA" : {"Right":{"caAddress":"DdzFFzCqrhsmagp4fDZpcY9UaBJk4Z8GaDfxqMCSwxPs3PnVoXmJWUZcgAxw3diCHVYauontEfk7YGeAu2LvAwq3aG2XQ8Mtsz7Vc8LA","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
+    "*" : {},
   }
   for (var address in addressesAndResponses) {
     fetchMock.mock({
@@ -39,7 +45,9 @@ function mockBlockChainExplorer() {
   }
 }
 
-mockBlockChainExplorer();
+function mockRandomNumberGenerator(value) {
+  sinon.stub(Math, 'random').returns(value);
+}
 
 exports["test signing"] = function() {
   var secret = new transaction.WalletSecretString("50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c");
@@ -116,16 +124,111 @@ exports["test address ownership verification"] = function() {
   assert.equal(address.isAddressDerivableFromSecretString(foreignAddress, secret), false);
 }
 
-exports["test transaction serialization"] = function() {
-  // TODO
+exports["test transaction fee function"] = async function() {
+  assert.equal(CardanoWallet.txFeeFunction(50), 157579);
+  assert.equal(CardanoWallet.txFeeFunction(351), 170807);
 }
 
-exports["test transaction hash computation"] = function() {
-  // TODO
+exports["test wallet addresses derivation"] = function() {
+  var expectedWalletAddresses = [
+    "DdzFFzCqrht4XR8CKm4dPXikMyaSt6Y4iPvEwGYW7GYDgXyVHBbvRvGhzzEQT5XvZ3zVCJR7VB15PbVBzKeabPHruC3JvcFjFV8CynEG",
+    "DdzFFzCqrht6dzaKMAgFmnkAiyDrdppXw9Pchpf5xofYxgogZTAETLCai7xFwWALmt1vZbwmF2oawDeapBYgkaECcZzYvUmHujuqTiAf",
+    "DdzFFzCqrht7AoRnNfdGquuiSppnRkN1Ywb1EWH5AKgJbxN2e73y7mZTuY2ayf1qCWrvg8pp38qEDcsbxiAAB3XWzYqnQnohKJXNW8xC",
+    "DdzFFzCqrhspk8W7hHE2DnTroA1jdi5iWTQWNHThdrCr14UxTikuKic6M36FdEGhAjVsuoJfvDbsvXnsWPuuPbuzV9542P5usS1qrabS",
+    "DdzFFzCqrht4im71gK9VsrbpqQ3hXmUktPekHGHYzZroSqLk2gBzPeEgVQ6vtumqSmcyNmdeMA7MTNeWhxavDVo7cepwPEqXxyFyyXu4",
+    "DdzFFzCqrhsi3CPXnAidDcHmgEmVyeGmgKV8qoSsnwzjAMjQQj2Rr6i5x2yv2qtqVeJiyvEoUpEMGNtD8xR1VJkX26j4yVoqo3WggEki",
+    "DdzFFzCqrht7nLWxuwUaJcAoBAb1M93sEgp1AAgm8VCqgGkAbVucpLGJEq1bxkeRtX7Jddd4wueJ73KHos7316dVjUScXf3uhpXgTjQd",
+    "DdzFFzCqrht8KhWRRunt1iHt9oQhCpZFQgt6J4fGfCxvVu5as2NhanRusBYyKgrW8eXtfUCFXmeTGJRQkk9hyXLW4HcUE9KqMBFFxUBo",
+    "DdzFFzCqrhswQUeSvvYbArL3XHAnnk6VpgEgY6KMEi9fE8sSDPPK51FqLkNzGYf6Z9H7CfLrLhwqoGu4HTVvpWV5WwyvQyd3rrkuePSV",
+    "DdzFFzCqrhsk4Eyx4CJyr1ymTEDef2A74gMykjTzcBYSV8iXBwYyMC89MJHMdV3itzsCPmc7Cr6yE2H6CRHioWjUs9XkA3UiQpSWzRgP",
+    "DdzFFzCqrhsvoV83E3MKsrvSLXYMZcTUbTQnTi8gsWsLWPsowVeKADN8phbQ5kkzqGWveFCW4r7SUotDYiGgwdRu67QRRbqTets5jA7g",
+    "DdzFFzCqrht4Nb7C6niLFvwV3Jwdn2iRZoiBaDqCUdcVChYPZSMh4D8nNpHJtSY9KRF3go2CzVrESmCTjrAQmxYY3S2MDdp2k22sQV8r",
+    "DdzFFzCqrhseq4DEn7FgcjTQoXXTy9A6wNasdNJT2aapydxAgHLhxMNn9ByQtXhNUKLwku3AQp3usHtvcbNncqyUTuf34ZLQVnA7Bq5J",
+    "DdzFFzCqrhspG8UcV5EWC8ZZ51PhiYdrjBF5K8VwugoW75hNWcsgiiGwt19XK6Wjwrj9Dgo8MFLr3p5NqCpmGpwr1feSbknQQWWZnAqu",
+    "DdzFFzCqrhsue978fp3K36FRKcjijkRjQTzQPqZ6q9BpMNR5jGSSHsKAPACekuud9bb3Fw5uhZxt4vMQkSWREJUp3vVc1nagk4ygSQt6",
+    "DdzFFzCqrhsmagp4fDZpcY9UaBJk4Z8GaDfxqMCSwxPs3PnVoXmJWUZcgAxw3diCHVYauontEfk7YGeAu2LvAwq3aG2XQ8Mtsz7Vc8LA",
+  ];
+
+  var wallet = new CardanoWallet(
+    new transaction.WalletSecretString(
+      "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
+    )
+  );
+  var walletAddresses = wallet.getUsedAddresses();
+
+  assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses));
 }
 
-exports["test transaction fee computation"] = function() {
-  // TODO
+exports["test transaction fee function"] = async function() {
+  assert.equal(CardanoWallet.txFeeFunction(50), 157579);
+  assert.equal(CardanoWallet.txFeeFunction(351), 170807);
+}
+
+exports["test successful transaction fee computation"] = async function() {
+  mockBlockChainExplorer();
+  var wallet = new CardanoWallet(
+    new transaction.WalletSecretString(
+      "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
+    )
+  );
+
+  assert.equal(await wallet.getTxFee("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47), 170938);
+}
+
+exports["test unsuccessful transaction fee computation"] = async function() {
+  mockBlockChainExplorer();
+  var wallet = new CardanoWallet(
+    new transaction.WalletSecretString(
+      "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
+    )
+  );
+
+  assert.equal(await wallet.getTxFee("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 750000), -1);
+}
+
+exports["test transaction serialization"] = async function() {
+  mockBlockChainExplorer();
+  mockRandomNumberGenerator(0.7);
+
+  var wallet = new CardanoWallet(
+    new transaction.WalletSecretString(
+      "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
+    )
+  );
+
+  var utx = await wallet.prepareUnsignedTx("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47);
+  
+  // transaction serialization before providing witnesses
+  var utxSerialized = cbor.encode(utx).toString("hex");
+  var expectedUtxSerialized = "839f8200d81858248258203b8573d901522d73114b1c9671698d36b42931c863540fc699a636d3d93a1d6801ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cbbf99967ed781b4742106b6cf5c1cdfd4dcddb021e1709ad3f75a9f4a101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001adee0cecf1a0008d5c7ffa0";
+  assert.equal(utxSerialized, expectedUtxSerialized, "unsigned transaction body is wrong");
+
+  // transaction hash computation
+  var txHash = utx.getId();
+  var expectedTxHash = "b0a258bd8369ab409eab45c216fcddbd437821e2dff471ccb8b9f6e29e6ae29f";
+  assert.equal(txHash, expectedTxHash, "transaction hash is wrong");
+
+  // transaction witnesses computation
+  var witnesses = utx.getWitnesses();
+  var witnessesSerialized = cbor.encode(witnesses).toString("hex");
+  var expectedWitnessesSerialized = "818200d8185885825840fa77e95ab9462cc64ff4499be26fdb2588a64102fc2dc07d8b9f3082d8fc3e5d494c450cdc2817cd0461a8df6625cbf69d5d767d91eac26e84f05436d57c937f58408d764dde1097d6690af2a8bf470090a853e877996cb08b019a97726c7eacb6027c6af3dd5afab5ac4a0e7230ff2560fcea1052fc07ad1c04121fb33ea7992b07";
+  assert.equal(witnessesSerialized, expectedWitnessesSerialized, "transaction witnesses are wrong");
+
+  // whole transaction serialization
+  var txBody = cbor.encode(new transaction.SignedTransaction(utx, witnesses)).toString("hex");
+  var expectedTxBody = "82839f8200d81858248258203b8573d901522d73114b1c9671698d36b42931c863540fc699a636d3d93a1d6801ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cbbf99967ed781b4742106b6cf5c1cdfd4dcddb021e1709ad3f75a9f4a101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001adee0cecf1a0008d5c7ffa0818200d8185885825840fa77e95ab9462cc64ff4499be26fdb2588a64102fc2dc07d8b9f3082d8fc3e5d494c450cdc2817cd0461a8df6625cbf69d5d767d91eac26e84f05436d57c937f58408d764dde1097d6690af2a8bf470090a853e877996cb08b019a97726c7eacb6027c6af3dd5afab5ac4a0e7230ff2560fcea1052fc07ad1c04121fb33ea7992b07";
+  assert.equal(txBody, expectedTxBody, "transaction serialization is wrong");
+}
+
+exports["test wallet balance computation"] = async function() {
+  mockBlockChainExplorer();
+  var wallet = new CardanoWallet(
+    new transaction.WalletSecretString(
+      "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
+    )
+  );
+
+  assert.equal(await wallet.getBalance(), 750000);
 }
 
 if (module == require.main) require("test").run(exports)

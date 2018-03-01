@@ -17,10 +17,18 @@ exports.CardanoWallet = class CardanoWallet{
   }
 
   async sendAda(address, coins) {
-    if (coins > Number.MAX_SAFE_INTEGER) {
-      throw new Error("Unsupported amount of coins: " + coins)
-    }
+    var unsignedTx = this.prepareUnsignedTx(address, coins);
 
+    var txHash = unsignedTx.getId();
+
+    var witnesses = unsignedTx.getWitnesses();
+
+    var txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString("hex");
+
+    return await this.submitTxRaw(txHash, txBody);
+  }
+
+  async prepareUnsignedTx(address, coins) {
     var txInputs = await this.prepareTxInputs(coins);
     var txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins;
@@ -44,21 +52,11 @@ exports.CardanoWallet = class CardanoWallet{
       )
     ];
 
-    var unsignedTx = new tx.UnsignedTransaction(
+    return new tx.UnsignedTransaction(
       txInputs,
       txOutputs,
       {}
     );
-
-    var txHash = unsignedTx.getId();
-
-    var witnesses = unsignedTx.inputs.map((input) => {
-      return input.getWitness(txHash);
-    });
-
-    var txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString("hex");
-
-    return await this.submitTxRaw(txHash, txBody);
   }
 
   async getTxFee(address, coins) {
@@ -130,7 +128,7 @@ exports.CardanoWallet = class CardanoWallet{
     */
     var deviation = 4;
 
-    var fee = this.txFeeFunction(txSizeInBytes + deviation);
+    var fee = this.constructor.txFeeFunction(txSizeInBytes + deviation);
 
     if (txInputsCoinsSum - coins - fee < 0) {
       return -1;
@@ -176,7 +174,13 @@ exports.CardanoWallet = class CardanoWallet{
     return result;
   }
 
-  txFeeFunction(txSizeInBytes) {
+  getUsedAddresses() {
+    return this.getUsedAddressesAndSecrets().map((item) => {
+      return item.address;
+    });
+  }
+
+  static txFeeFunction(txSizeInBytes) {
     var a = 155381;
     var b = 43.946;
 

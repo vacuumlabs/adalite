@@ -144,6 +144,13 @@ exports.UnsignedTransaction = class UnsignedTransaction {
     return utils.hashBlake2b256(this);
   }
 
+  getWitnesses() {
+    var txHash = this.getId();
+    return this.inputs.map((input) => {
+      return input.getWitness(txHash);
+    });
+  }
+
   encodeCBOR(encoder) {
     return encoder.pushAny([
       new helpers.CBORIndefiniteLengthArray(this.inputs),
