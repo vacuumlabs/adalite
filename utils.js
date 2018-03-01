@@ -6,8 +6,8 @@ const EdDSA = require("elliptic-cardano").eddsaVariant;
 const ec = new EdDSA("ed25519");
 const ed25519 = require("supercop.js");
 const bigNumber = require("bignumber.js");
-const sha3_256 = require('js-sha3').sha3_256;
-const padStart = require('string.prototype.padstart');
+const sha3_256 = require("js-sha3").sha3_256;
+const padStart = require("string.prototype.padstart");
 padStart.shim();
 
 

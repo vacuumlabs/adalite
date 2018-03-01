@@ -26,25 +26,21 @@
     "base-58": "0.0.1",
     "bignumber.js": "^6.0.0",
     "bip39": "^2.5.0",
-    "blake2": "^1.4.0",
     "blakejs": "^1.1.0",
     "bs58": "^4.0.1",
     "cbor": "^3.0.3",
     "crc-32": "^1.2.0",
-    "elliptic": "^6.4.0",
     "elliptic-cardano": "6.4.0-b",
     "express": "^4.16.2",
-    "fetch-mock": "^6.0.1",
     "isomorphic-fetch": "^2.2.1",
     "js-sha3": "^0.7.0",
     "node-exceptions": "^3.0.0",
-    "node-fetch": "^2.0.0",
-    "node-int64": "^0.4.0",
     "pbkdf2": "^3.0.14",
-    "request": "^2.83.0",
-    "sha1": "^1.1.1",
     "string.prototype.padstart": "^3.0.0",
-    "supercop.js": "^2.0.1",
-    "test": "^0.6.0"
+    "supercop.js": "^2.0.1"
+  },
+  "devDependencies": {
+    "test": "^0.6.0",
+    "fetch-mock": "^6.0.1"
   }
 }

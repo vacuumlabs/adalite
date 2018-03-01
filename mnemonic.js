@@ -3,7 +3,7 @@ const exceptions = require("node-exceptions");
 const cbor = require("cbor");
 const bigNumber = require("bignumber.js");
 const crypto = require("crypto");
-const EdDSAOriginal = require("elliptic").eddsa;
+const EdDSAOriginal = require("elliptic-cardano").eddsa;
 const ecOriginal = new EdDSAOriginal("ed25519");
 
 const hashBlake2b256 = require("./utils").hashBlake2b256
