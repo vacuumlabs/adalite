@@ -1,15 +1,16 @@
 // using nodejs's build in asserts that throw on failure 
-var assert = require("assert");
+const assert = require("assert");
 require("isomorphic-fetch");
-var fetchMock = require("fetch-mock");
-var cbor = require("cbor");
-var sinon = require("sinon");
+const fetchMock = require("fetch-mock");
+const cbor = require("cbor");
+const sinon = require("sinon");
 
-var utils = require("../utils")
-var transaction = require("../transaction");
-var mnemonic = require("../mnemonic");
-var address = require("../address");
-var CardanoWallet = require("../cardano-wallet").CardanoWallet;
+const utils = require("../utils")
+const transaction = require("../transaction");
+const mnemonic = require("../mnemonic");
+const address = require("../address");
+const CardanoWallet = require("../cardano-wallet").CardanoWallet;
+const config = require("../config");
 
 function mockBlockChainExplorer() {
   fetchMock.config.overwriteRoutes = true;
@@ -35,7 +36,7 @@ function mockBlockChainExplorer() {
   }
   for (var address in addressesAndResponses) {
     fetchMock.mock({
-      "matcher" : "https://cardanoexplorer.com/api/addresses/summary/" + address,
+      "matcher" : config.blockchain_explorer_url + "/api/addresses/summary/" + address,
       "response" : {
         "status" : 200,
         "body" : addressesAndResponses[address],

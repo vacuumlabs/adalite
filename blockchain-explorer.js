@@ -1,4 +1,5 @@
 const request = require("./utils").request;
+const config = require("./config");
 
 exports.getUnspentTxOutputs = async function (address) {
 
@@ -60,7 +61,7 @@ exports.getAddressTxList = async function (address) {
 }
 
 exports.getAddressInfo = async function (address) {
-  const url = "https://cardanoexplorer.com/api/addresses/summary/" + address;
+  const url = config.blockchain_explorer_url + "/api/addresses/summary/" + address;
   var result = await request(url);
 
   return result.Right;

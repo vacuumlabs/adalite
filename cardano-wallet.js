@@ -6,6 +6,7 @@ const address = require("./address");
 const blockchainExplorer = require("./blockchain-explorer");
 const utils = require("./utils");
 const helpers = require("./helpers");
+const config = require("./config");
 
 exports.CardanoWallet = class CardanoWallet{
   constructor(rootSecret) {
@@ -190,7 +191,7 @@ exports.CardanoWallet = class CardanoWallet{
   async submitTxRaw (txHash, txBody) {
     try {
       const res = await utils.request(
-        "http://localhost:3001/",
+        config.transaction_submitter_url,
         "post",
         JSON.stringify({
           txHash,

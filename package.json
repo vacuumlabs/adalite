@@ -32,7 +32,6 @@
     "cbor": "^3.0.3",
     "crc-32": "^1.2.0",
     "elliptic-cardano": "6.4.0-b",
-    "express": "^4.16.2",
     "isomorphic-fetch": "^2.2.1",
     "js-sha3": "^0.7.0",
     "node-exceptions": "^3.0.0",
