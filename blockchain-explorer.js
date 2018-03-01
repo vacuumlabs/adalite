@@ -67,8 +67,7 @@ exports.getAddressInfo = async function (address) {
 }
 
 exports.getAddressBalance = async function (address) {
-  const url = "https://cardanoexplorer.com/api/addresses/summary/" + address;
-  var result = await request(url);
+  var result = await exports.getAddressInfo(address);
 
-  return parseInt(result.Right.caBalance.getCoin);
+  return parseInt(result.caBalance.getCoin);
 }
