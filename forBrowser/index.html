@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Example page with loaded cardano js bundle</title>
+
+</head>
+
+<body>
+<script src="./cardano.bundle.js"></script>
+<!--<script src="./example.usage.js"></script>-->
+
+<script language="javascript">
+    let wallet = null;
+
+    function printMenmonic() {
+      document.getElementById("mnemonic-generated").innerHTML = Cardano.Mnemonic.generate();
+    }
+
+    async function submitMenmonic() {
+      const words = document.getElementById("mnemonic-submitted").value;
+      wallet = new Cardano.CardanoWallet(Cardano.Mnemonic.submit(words));
+      await updateWallet();
+    }
+
+    async function submitSecret() {
+      const secret = document.getElementById("secret-submitted").value;
+      wallet = new Cardano.CardanoWallet(new Cardano.WalletSecretString(secret));
+      await updateWallet();
+    }
+
+    async function updateWallet() {
+      document.getElementById("wallet-sec").innerHTML = wallet.rootSecret.secretString;
+      // document.getElementById("mnemonic-to-sec").innerHTML = await wallet.getBalance();
+    }
+    function getAddress() {
+      document.getElementById("recieve-address").innerHTML = wallet.getChangeAddress();
+
+    }
+
+
+      // console.log(mnemonic.generateMnemonic());
+      // // let wallet = new CardanoWallet(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean") );
+      // let wallet = new CardanoWallet(new tx.WalletSecretString("A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"));
+      //
+      // // console.log(wallet.rootSecret);
+      // console.log(await wallet.getBalance());
+      // const freeAddress = wallet.getChangeAddress();
+      // console.log(await wallet.getTxFee(freeAddress, 1));
+      // console.log(wallet.getChangeAddress());
+      // console.log(await wallet.sendAda(freeAddress, 1));
+
+
+       // 750 000 uAda at DdzFFzCqrhswQUeSvvYbArL3XHAnnk6VpgEgY6KMEi9fE8sSDPPK51FqLkNzGYf6Z9H7CfLrLhwqoGu4HTVvpWV5WwyvQyd3rrkuePSV
+      // wallet.sendAda("DdzFFzCqrhtAieWnh4rDeBX3vfhFVQnL6LrxNLYcikD8MoqPTAhPGzdvAMKnjGACW6yEdeMrV12uc4UJhaE74oqnJaDfd2gyQjJ5P5YB", 0.000001);
+
+
+</script>
+
+
+<p>
+    <button onclick="printMenmonic()">Generate mnemonic</button>
+    <span id="mnemonic-generated"></span>
+</p>
+<p>
+    <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="cruise bike bar reopen mimic title style fence race solar million clean">
+    <button onclick="submitMenmonic()">Wallet from mnemonic</button>
+</p>
+<p>
+    <input type="text" id="secret-submitted" name="secret-submitted" size="256" value="A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3">
+    <button onclick="submitSecret()">Wallet from secret</button>
+</p>
+<p>
+    <p>Wallet secretKey: <span id="wallet-sec"></span></p>
+    <p>Wallet ballance: <span id="wallet-ballance"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada) <button onclick="refreshBalance()">Refresh</button></p>
+</p>
+<p>
+    <button onclick="getAddress()">Get address to recieve Ada</button>
+    <span id="recieve-address"></span>
+</p>
+
+
+
+</body>
+
+</html>
