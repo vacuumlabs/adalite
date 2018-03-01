@@ -1,8 +1,6 @@
 var express = require("express");
 var app = express();
 var cbor = require('cbor');
-require("isomorphic-fetch");
-var fetchMock = require("fetch-mock");
 
 const mnemonic = require("./mnemonic");
 const tx = require("./transaction");

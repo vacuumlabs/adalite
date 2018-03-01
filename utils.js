@@ -1,6 +1,6 @@
 const blake2 = require("blakejs");
 const cbor = require("cbor");
-require("whatwg-fetch");
+require("isomorphic-fetch");
 const exceptions = require("node-exceptions");
 const EdDSA = require("elliptic-cardano").eddsaVariant;
 const ec = new EdDSA("ed25519");

@@ -33,12 +33,12 @@
     "crc-32": "^1.2.0",
     "elliptic-cardano": "6.4.0-b",
     "express": "^4.16.2",
+    "isomorphic-fetch": "^2.2.1",
     "js-sha3": "^0.7.0",
     "node-exceptions": "^3.0.0",
     "pbkdf2": "^3.0.14",
     "string.prototype.padstart": "^3.0.0",
-    "supercop.js": "^2.0.1",
-    "whatwg-fetch": "^2.0.3"
+    "supercop.js": "^2.0.1"
   },
   "devDependencies": {
     "test": "^0.6.0",
