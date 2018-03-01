@@ -35,7 +35,11 @@
     }
     function getAddress() {
       document.getElementById("recieve-address").innerHTML = wallet.getChangeAddress();
-
+    }
+    async function calculateFee() {
+      document.getElementById("fee").innerHTML = await wallet.getTxFee(
+        document.getElementById("send-adress").innerHTML,
+        document.getElementById("send-ammount").innerHTML);
     }
 
 
@@ -71,12 +75,21 @@
     <button onclick="submitSecret()">Wallet from secret</button>
 </p>
 <p>
-    <p>Wallet secretKey: <span id="wallet-sec"></span></p>
-    <p>Wallet ballance: <span id="wallet-ballance"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada) <button onclick="updateWallet()">Refresh</button></p>
+    <p>Wallet secretKey: <span id="wallet-sec" style="background-color: #454545"></span></p>
+    <p>Wallet ballance: <span id="wallet-ballance" style="background-color: #4dc71f"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada) <button onclick="updateWallet()">Refresh</button></p>
 </p>
 <p>
     <button onclick="getAddress()">Get address to recieve Ada</button>
     <span id="recieve-address"></span>
+</p>
+
+<p>
+    address: <input type="text" id="send-adress" name="send-adress" size="120" value="DdzFFzCqrht4Nb7C6niLFvwV3Jwdn2iRZoiBaDqCUdcVChYPZSMh4D8nNpHJtSY9KRF3go2CzVrESmCTjrAQmxYY3S2MDdp2k22sQV8r"></br>
+    ammount: <input type="number" id="send-ammount" name="send-ammount" size="8" value="185000"> Lovelace (1 Lovelace = 1/1,000,000 Ada)</br>
+    Fee: <span id="fee"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
+    <button onclick="calculateFee()">Calculate fee</button>
+    <button onclick="submitTransaction()">Send Ada</button>
+
 </p>
 
 
