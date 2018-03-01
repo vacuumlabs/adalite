@@ -31,7 +31,7 @@
 
     async function updateWallet() {
       document.getElementById("wallet-sec").innerHTML = wallet.rootSecret.secretString;
-      // document.getElementById("mnemonic-to-sec").innerHTML = await wallet.getBalance();
+      document.getElementById("wallet-ballance").innerHTML = await wallet.getBalance();
     }
     function getAddress() {
       document.getElementById("recieve-address").innerHTML = wallet.getChangeAddress();
@@ -72,7 +72,7 @@
 </p>
 <p>
     <p>Wallet secretKey: <span id="wallet-sec"></span></p>
-    <p>Wallet ballance: <span id="wallet-ballance"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada) <button onclick="refreshBalance()">Refresh</button></p>
+    <p>Wallet ballance: <span id="wallet-ballance"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada) <button onclick="updateWallet()">Refresh</button></p>
 </p>
 <p>
     <button onclick="getAddress()">Get address to recieve Ada</button>
