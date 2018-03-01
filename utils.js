@@ -93,7 +93,7 @@ exports.multiply8 = function (buf) {
   return new Buffer(result, "hex");
 }
 
-exports.request = async function (url, method = "get", body = null, headers = null) {
+exports.request = async function (url, method = "get", body = null, headers = {}) {
   const res = await fetch(url, {
     method: method,
     headers: headers,
@@ -102,5 +102,6 @@ exports.request = async function (url, method = "get", body = null, headers = nu
   if (res.status >= 400) {
     throw new exceptions.HttpException(res.status)
   }
+
   return res.json()
 };
