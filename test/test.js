@@ -192,7 +192,7 @@ describe("test transaction fee function", function() {
   });
 });
 
-describe("test successful transaction fee computation", async function() {
+describe("test successful transaction fee computation", function() {
   mockBlockChainExplorer();
   var wallet = new CardanoWallet(
     "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
@@ -206,43 +206,52 @@ describe("test successful transaction fee computation", async function() {
   });
 });
 
-describe("test transaction serialization", async function() {
+describe("test transaction serialization", function() {
   mockBlockChainExplorer();
   mockRandomNumberGenerator(0.7);
 
   var wallet = new CardanoWallet(
     "A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3"
   );
+  
+  it("should properly serialize transaction inner body", async function() {
+    var utx = await wallet.prepareUnsignedTx("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47);
+  
+    // transaction serialization before providing witnesses
+    var utxSerialized = cbor.encode(utx).toString("hex");
+    var expectedUtxSerialized = "839f8200d81858248258203b8573d901522d73114b1c9671698d36b42931c863540fc699a636d3d93a1d6801ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cbbf99967ed781b4742106b6cf5c1cdfd4dcddb021e1709ad3f75a9f4a101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001adee0cecf1a0008d5c7ffa0";
 
-  var utx = await wallet.prepareUnsignedTx("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47);
-  
-  // transaction serialization before providing witnesses
-  var utxSerialized = cbor.encode(utx).toString("hex");
-  var expectedUtxSerialized = "839f8200d81858248258203b8573d901522d73114b1c9671698d36b42931c863540fc699a636d3d93a1d6801ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cbbf99967ed781b4742106b6cf5c1cdfd4dcddb021e1709ad3f75a9f4a101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001adee0cecf1a0008d5c7ffa0";
-  
-  it("should properly serialize transaction inner body", function() {
     assert.equal(utxSerialized, expectedUtxSerialized)
   });
 
   // transaction hash computation
-  var txHash = utx.getId();
-  var expectedTxHash = "b0a258bd8369ab409eab45c216fcddbd437821e2dff471ccb8b9f6e29e6ae29f";
-  it("should properly compute transaction hash", function() {
+  it("should properly compute transaction hash", async function() {
+    var utx = await wallet.prepareUnsignedTx("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47);
+    
+    var txHash = utx.getId();
+    var expectedTxHash = "b0a258bd8369ab409eab45c216fcddbd437821e2dff471ccb8b9f6e29e6ae29f";
+
     assert.equal(txHash, expectedTxHash, "transaction hash is wrong");
   });
 
   // transaction witnesses computation
-  var witnesses = utx.getWitnesses();
-  var witnessesSerialized = cbor.encode(witnesses).toString("hex");
-  var expectedWitnessesSerialized = "818200d8185885825840fa77e95ab9462cc64ff4499be26fdb2588a64102fc2dc07d8b9f3082d8fc3e5d494c450cdc2817cd0461a8df6625cbf69d5d767d91eac26e84f05436d57c937f58408d764dde1097d6690af2a8bf470090a853e877996cb08b019a97726c7eacb6027c6af3dd5afab5ac4a0e7230ff2560fcea1052fc07ad1c04121fb33ea7992b07";
-  it("should properly compute transaction witnesses", function() {
+  it("should properly compute transaction witnesses", async function() {
+    var utx = await wallet.prepareUnsignedTx("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47);
+    var witnesses = utx.getWitnesses();
+    var witnessesSerialized = cbor.encode(witnesses).toString("hex");
+    var expectedWitnessesSerialized = "818200d8185885825840fa77e95ab9462cc64ff4499be26fdb2588a64102fc2dc07d8b9f3082d8fc3e5d494c450cdc2817cd0461a8df6625cbf69d5d767d91eac26e84f05436d57c937f58408d764dde1097d6690af2a8bf470090a853e877996cb08b019a97726c7eacb6027c6af3dd5afab5ac4a0e7230ff2560fcea1052fc07ad1c04121fb33ea7992b07";
+
     assert.equal(witnessesSerialized, expectedWitnessesSerialized, "transaction witnesses are wrong");
   });
 
   // whole transaction serialization
-  var txBody = cbor.encode(new transaction.SignedTransaction(utx, witnesses)).toString("hex");
-  var expectedTxBody = "82839f8200d81858248258203b8573d901522d73114b1c9671698d36b42931c863540fc699a636d3d93a1d6801ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cbbf99967ed781b4742106b6cf5c1cdfd4dcddb021e1709ad3f75a9f4a101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001adee0cecf1a0008d5c7ffa0818200d8185885825840fa77e95ab9462cc64ff4499be26fdb2588a64102fc2dc07d8b9f3082d8fc3e5d494c450cdc2817cd0461a8df6625cbf69d5d767d91eac26e84f05436d57c937f58408d764dde1097d6690af2a8bf470090a853e877996cb08b019a97726c7eacb6027c6af3dd5afab5ac4a0e7230ff2560fcea1052fc07ad1c04121fb33ea7992b07";
-  it("should properly serialize the whole transaction", function() {
+  it("should properly serialize the whole transaction", async function() {
+    var utx = await wallet.prepareUnsignedTx("DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY", 47);
+    var witnesses = utx.getWitnesses();
+
+    var txBody = cbor.encode(new transaction.SignedTransaction(utx, witnesses)).toString("hex");
+    var expectedTxBody = "82839f8200d81858248258203b8573d901522d73114b1c9671698d36b42931c863540fc699a636d3d93a1d6801ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cbbf99967ed781b4742106b6cf5c1cdfd4dcddb021e1709ad3f75a9f4a101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001adee0cecf1a0008d5c7ffa0818200d8185885825840fa77e95ab9462cc64ff4499be26fdb2588a64102fc2dc07d8b9f3082d8fc3e5d494c450cdc2817cd0461a8df6625cbf69d5d767d91eac26e84f05436d57c937f58408d764dde1097d6690af2a8bf470090a853e877996cb08b019a97726c7eacb6027c6af3dd5afab5ac4a0e7230ff2560fcea1052fc07ad1c04121fb33ea7992b07";
+
     assert.equal(txBody, expectedTxBody, "transaction serialization is wrong");
   });
 });
