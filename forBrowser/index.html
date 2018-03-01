@@ -30,16 +30,22 @@
     }
 
     async function updateWallet() {
-      document.getElementById("wallet-sec").innerHTML = wallet.rootSecret.secretString;
       document.getElementById("wallet-ballance").innerHTML = await wallet.getBalance();
     }
     function getAddress() {
       document.getElementById("recieve-address").innerHTML = wallet.getChangeAddress();
     }
     async function calculateFee() {
-      document.getElementById("fee").innerHTML = await wallet.getTxFee(
-        document.getElementById("send-adress").innerHTML,
-        document.getElementById("send-ammount").innerHTML);
+      const address = document.getElementById("send-adress").innerHTML;
+      const ammount = document.getElementById("send-ammount").innerHTML;
+      document.getElementById("fee").innerHTML = await wallet.getTxFee(address, ammount);
+    }
+    async function submitTransaction() {
+      document.getElementById("transacton-submitted").innerHTML = "processing ..";
+      const address = document.getElementById("send-adress").innerHTML;
+      const ammount = document.getElementById("send-ammount").innerHTML;
+      document.getElementById("transacton-submitted").innerHTML = await wallet.sendAda(address, ammount);
+      await updateWallet();
     }
 
 
@@ -67,16 +73,16 @@
     <span id="mnemonic-generated"></span>
 </p>
 <p>
-    <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="cruise bike bar reopen mimic title style fence race solar million clean">
+    Mnemonic: <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="cruise bike bar reopen mimic title style fence race solar million clean">
     <button onclick="submitMenmonic()">Wallet from mnemonic</button>
 </p>
 <p>
-    <input type="text" id="secret-submitted" name="secret-submitted" size="256" value="A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3">
+    secretKey: <input type="text" id="secret-submitted" name="secret-submitted" size="64" value="A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3">
     <button onclick="submitSecret()">Wallet from secret</button>
 </p>
 <p>
-    <p>Wallet secretKey: <span id="wallet-sec" style="background-color: #454545"></span></p>
-    <p>Wallet ballance: <span id="wallet-ballance" style="background-color: #4dc71f"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada) <button onclick="updateWallet()">Refresh</button></p>
+    <p>Wallet ballance: <span id="wallet-ballance" style="background-color: #4dc71f"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
+    <button onclick="updateWallet()">Refresh</button></p>
 </p>
 <p>
     <button onclick="getAddress()">Get address to recieve Ada</button>
@@ -84,11 +90,11 @@
 </p>
 
 <p>
-    address: <input type="text" id="send-adress" name="send-adress" size="120" value="DdzFFzCqrht4Nb7C6niLFvwV3Jwdn2iRZoiBaDqCUdcVChYPZSMh4D8nNpHJtSY9KRF3go2CzVrESmCTjrAQmxYY3S2MDdp2k22sQV8r"></br>
+    address: <input type="text" id="send-adress" name="send-adress" size="110" value="DdzFFzCqrht4Nb7C6niLFvwV3Jwdn2iRZoiBaDqCUdcVChYPZSMh4D8nNpHJtSY9KRF3go2CzVrESmCTjrAQmxYY3S2MDdp2k22sQV8r"></br>
     ammount: <input type="number" id="send-ammount" name="send-ammount" size="8" value="185000"> Lovelace (1 Lovelace = 1/1,000,000 Ada)</br>
     Fee: <span id="fee"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
-    <button onclick="calculateFee()">Calculate fee</button>
-    <button onclick="submitTransaction()">Send Ada</button>
+    <button onclick="calculateFee()">Calculate fee</button></br>
+    <button onclick="submitTransaction()">Send Ada</button><span id="transacton-submitted" style="background-color: #ffc520"></span>
 
 </p>
 

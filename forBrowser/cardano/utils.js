@@ -96,7 +96,7 @@ exports.multiply8 = function (buf) {
 
 exports.request = async function (url, method = "GET", body = {}, headers = {}) {
   const res = await fetch(url, {
-    method: method
+    method: method,
     headers: headers,
     body: body,
   });

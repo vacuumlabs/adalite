@@ -51,8 +51,8 @@ app.listen(3000, async function () {
   const freeAddress = wallet.getChangeAddress();
   console.log(await wallet.getTxFee(freeAddress, 1));
   console.log(wallet.getChangeAddress());
-  // console.log(await wallet.sendAda(freeAddress, 1));
-
+  console.log(await wallet.sendAda("DdzFFzCqrhseq4DEn7FgcjTQoXXTy9A6wNasdNJT2aapydxAgHLhxMNn9ByQtXhNUKLwku3AQp3usHtvcbNncqyUTuf34ZLQVnA7Bq5J", 1));
+  console.log(await wallet.getBalance());
   /*
   // console.log(mnemonic.mnemonicToWalletSecretString("cruise bike bar reopen mimic title style fence race solar million clean"));
 

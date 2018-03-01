@@ -187,7 +187,7 @@ exports.CardanoWallet = class CardanoWallet{
     try {
       const res = await utils.request(
         "http://localhost:3001/",
-        "post",
+        "POST",
         JSON.stringify({
           txHash,
           txBody
