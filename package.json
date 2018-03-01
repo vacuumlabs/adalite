@@ -4,7 +4,7 @@
   "description": "A simple Cardano wallet",
   "main": "app.js",
   "scripts": {
-    "test": "node test/all.js",
+    "test": "mocha",
     "start": "node app.js",
     "bundle": "browserify cardano-wallet.js -o bundle.js"
   },
@@ -40,8 +40,8 @@
     "supercop.js": "^2.0.1"
   },
   "devDependencies": {
-    "test": "^0.6.0",
     "fetch-mock": "^6.0.1",
+    "mocha": "^5.0.1",
     "sinon": "^4.4.2"
   }
 }
