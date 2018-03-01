@@ -2,7 +2,7 @@ const request = require("./utils").request;
 
 exports.getUnspentTxOutputs = async function (address) {
 
-  if (exports.getAddressBallance(address) === 0) {
+  if (exports.getAddressBalance(address) === 0) {
     // if ballance is zero, all outputs must be spent so we don't waste time and return []
     return [];
   }
@@ -66,7 +66,7 @@ exports.getAddressInfo = async function (address) {
   return result.Right;
 }
 
-exports.getAddressBallance = async function (address) {
+exports.getAddressBalance = async function (address) {
   const url = "https://cardanoexplorer.com/api/addresses/summary/" + address;
   var result = await request(url);
 

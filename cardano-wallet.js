@@ -9,7 +9,7 @@ const helpers = require("./helpers");
 
 exports.CardanoWallet = class CardanoWallet{
   constructor(rootSecret) {
-    this.rootSecret = rootSecret;
+    this.rootSecret = new tx.WalletSecretString(rootSecret);
   }
 
   fromMnemonic(mnemonic) {
@@ -71,7 +71,7 @@ exports.CardanoWallet = class CardanoWallet{
     var addresses = this.getUsedAddressesAndSecrets();
 
     for (var i = 0; i < addresses.length; i++) {
-      result += await blockchainExplorer.getAddressBallance(addresses[i].address);
+      result += await blockchainExplorer.getAddressBalance(addresses[i].address);
     }
 
     return result;
@@ -211,4 +211,8 @@ exports.CardanoWallet = class CardanoWallet{
       console.log("txSubmiter unreachable " + err);
     }
   }
+}
+
+if (typeof window !== 'undefined') {
+  window.CardanoWallet = exports.CardanoWallet;
 }
