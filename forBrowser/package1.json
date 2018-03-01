@@ -1,0 +1,44 @@
+{
+  "name": "cardano-in-browser",
+  "version": "1.0.0",
+  "description": "A simple Cardano wallet packed for browser",
+  "main": "app.js",
+  "scripts": {
+    "package": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vacuumlabs/cardano.git"
+  },
+  "keywords": [
+    "cardano",
+    "wallet"
+  ],
+  "author": "Rafael Korbas, Janci Hreha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vacuumlabs/cardano/issues"
+  },
+  "homepage": "https://github.com/vacuumlabs/cardano#readme",
+  "dependencies": {
+    "@stablelib/chacha20poly1305": "^0.10.2",
+    "base-58": "0.0.1",
+    "bignum": "^0.12.5",
+    "bignumber.js": "^6.0.0",
+    "bip39": "^2.5.0",
+    "blake2": "^1.4.0",
+    "blakejs": "^1.1.0",
+    "body-parser": "^1.18.2",
+    "bs58": "^4.0.1",
+    "cbor": "^3.0.3",
+    "crc-32": "^1.2.0",
+    "elliptic-cardano": "^6.4.0-b",
+    "js-sha3": "^0.7.0",
+    "node-int64": "^0.4.0",
+    "pbkdf2": "^3.0.14",
+    "sha1": "^1.1.1",
+  },
+  "devDependencies": {
+    "eslint": "^4.18.1"
+  }
+}
