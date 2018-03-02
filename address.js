@@ -50,7 +50,7 @@ exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
 
 exports.isAddressDerivableFromSecretString = function(address, rootSecretString) {
   try {
-    exports.tryDeriveSecretStringFromAddress(address, rootSecretString)
+    exports.deriveSecretStringFromAddressOrFail(address, rootSecretString);
   } catch (e) {
     if (e instanceof AddressDecodingException) {
       return false
@@ -62,7 +62,7 @@ exports.isAddressDerivableFromSecretString = function(address, rootSecretString)
   return true
 }
 
-exports.tryDeriveSecretStringFromAddress = function(address, rootSecretString) {
+exports.deriveSecretStringFromAddressOrFail = function (address, rootSecretString) {
   // we decode the address from the base58 string and then we strip the 24 CBOR data taga (the "[0].value" part)
   const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
   const addressData = cbor.decode(addressAsBuffer)
@@ -113,7 +113,7 @@ function encryptDerivationPath(derivationPath, hdPassphrase) {
   return new Buffer(cipher.seal(new Buffer('serokellfore'), serializedDerivationPath))
 }
 
-function decryptDerivationPath(addressPayload, hdPassphrase) {
+function decryptDerivationPathOrFail(addressPayload, hdPassphrase) {
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
   const decipheredDerivationPath = cipher.open(new Buffer('serokellfore'), addressPayload)
 
