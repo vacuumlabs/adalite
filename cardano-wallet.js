@@ -14,11 +14,21 @@ exports.CardanoWallet = class CardanoWallet {
   }
 
   fromMnemonic(mnemonic) {
-    return exports.Wallet(mnemonic.mnemonicToWalletSecretString(mnemonic))
+    var rootSecret = mnemonic.mnemonicToWalletSecretString(mnemonic);
+    return exports.CardanoWallet(rootSecret);
   }
 
   async sendAda(address, coins) {
-    const unsignedTx = this.prepareUnsignedTx(address, coins)
+    var transaction = await this.prepareTx(address, coins);
+
+    var txHash = transaction.getId();
+    var txBody = cbor.encode(transaction).toString("hex");
+
+    return await this.submitTxRaw(txHash, txBody);
+  }
+
+  async prepareTx(destination_address, coins) {
+    var unsignedTx = await this.prepareUnsignedTx(destination_address, coins);
 
     const txHash = unsignedTx.getId()
 
@@ -26,7 +36,7 @@ exports.CardanoWallet = class CardanoWallet {
 
     const txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString('hex')
 
-    return await this.submitTxRaw(txHash, txBody)
+    return new tx.SignedTransaction(unsignedTx, witnesses);
   }
 
   async prepareUnsignedTx(address, coins) {
@@ -186,7 +196,7 @@ exports.CardanoWallet = class CardanoWallet {
     try {
       const res = await utils.request(
         config.transaction_submitter_url,
-        'post',
+        "POST",
         JSON.stringify({
           txHash,
           txBody,
@@ -197,12 +207,13 @@ exports.CardanoWallet = class CardanoWallet {
       )
 
       if (res.status >= 300) {
-        console.log(`${res.status} ${JSON.stringify(res)}`)
-      } else {
-        return res.result
+        throw Error(res.status + " " + JSON.stringify(res));
+      }
+      else {
+        return res.result;
       }
     } catch (err) {
-      console.log(`txSubmiter unreachable ${err}`)
+      throw Error("txSubmiter unreachable " + err);
     }
   }
 }
