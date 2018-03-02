@@ -63,3 +63,6 @@ typings/
 
 # local config file
 config.js
+
+#local sandbox for trying out things
+sandbox.js
