@@ -142,7 +142,9 @@ exports.CardanoWallet = class CardanoWallet {
     const addresses = this.getUsedAddressesAndSecrets()
 
     for (var i = 0; i < addresses.length; i++) {
-      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(addresses[i].address)
+      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(
+        addresses[i].address
+      )
 
       addressUnspentOutputs.map((element) => {
         element.secret = addresses[i].secret
@@ -193,13 +195,12 @@ exports.CardanoWallet = class CardanoWallet {
       )
 
       if (res.status >= 300) {
-        throw Error(res.status + " " + JSON.stringify(res));
-      }
-      else {
-        return res.result;
+        throw Error(`${res.status} ${JSON.stringify(res)}`)
+      } else {
+        return res.result
       }
     } catch (err) {
-      throw Error("txSubmiter unreachable " + err);
+      throw Error(`txSubmiter unreachable ${err}`)
     }
   }
 }

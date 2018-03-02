@@ -5,11 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "mocha",
-    "start": "node app.js",
-    "bundle": "browserify cardano-wallet.js -o bundle.js",
     "precommit": "lint-staged",
-    "fixbundle": "prettier-eslint --write \"./forforBrowser/*.js\" \"./forBrowser/cardano/*.js\"",
-    "fix": "prettier-eslint --write \"*.js\" \"./test/*.js\""
+    "fix": "prettier-eslint --write \"*.js\" \"./test/*.js\" \"./forforBrowser/*.js\" \"./forBrowser/cardano/*.js\""
   },
   "lint-staged": {
     "*.js": ["prettier-eslint --write", "git add"]

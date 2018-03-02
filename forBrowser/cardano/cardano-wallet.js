@@ -142,7 +142,9 @@ exports.CardanoWallet = class CardanoWallet {
     const addresses = this.getUsedAddressesAndSecrets()
 
     for (var i = 0; i < addresses.length; i++) {
-      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(addresses[i].address)
+      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(
+        addresses[i].address
+      )
 
       addressUnspentOutputs.map((element) => {
         element.secret = addresses[i].secret

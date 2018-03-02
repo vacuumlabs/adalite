@@ -105,7 +105,7 @@ function getAddressRoot(walletSecretString, addressPayload) {
   ])
 }
 
-exports.encryptDerivationPath = function (derivationPath, hdPassphrase) {
+exports.encryptDerivationPath = function(derivationPath, hdPassphrase) {
   const serializedDerivationPath = cbor.encode(new CBORIndefiniteLengthArray(derivationPath))
 
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
