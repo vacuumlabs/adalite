@@ -1,6 +1,6 @@
 const cbor = require('cbor')
 
-const mnemonic = require('./mnemonic')
+const Mnemonic = require('./mnemonic')
 const tx = require('./transaction')
 const address = require('./address')
 const blockchainExplorer = require('./blockchain-explorer')
