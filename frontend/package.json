@@ -1,0 +1,22 @@
+{
+  "name": "cardano-wallet-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "precommit": "lint-staged",
+    "fix": "prettier-eslint --write \"{,!(node_modules)/**/}*.js\" \"./src/**/*.js\" \"*.js\""
+  },
+  "lint-staged": {
+    "*.js": ["prettier-eslint --write", "git add"]
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.18.0",
+    "eslint-config-vacuumlabs": "^1.5.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-react": "^7.6.1",
+    "lint-staged": "^7.0.0",
+    "prettier": "^1.10.2",
+    "prettier-eslint-cli": "^4.7.1"
+  }
+}
