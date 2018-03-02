@@ -27,19 +27,7 @@ exports.CardanoWallet = class CardanoWallet {
     return await this.submitTxRaw(txHash, txBody);
   }
 
-  async prepareTx(destination_address, coins) {
-    var unsignedTx = await this.prepareUnsignedTx(destination_address, coins);
-
-    const txHash = unsignedTx.getId()
-
-    const witnesses = unsignedTx.getWitnesses()
-
-    const txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString('hex')
-
-    return new tx.SignedTransaction(unsignedTx, witnesses);
-  }
-
-  async prepareUnsignedTx(address, coins) {
+  async prepareTx(address, coins) {
     const txInputs = await this.prepareTxInputs(coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins
@@ -60,7 +48,7 @@ exports.CardanoWallet = class CardanoWallet {
       ),
     ]
 
-    return new tx.UnsignedTransaction(txInputs, txOutputs, {})
+    return new tx.Transaction(txInputs, txOutputs, {})
   }
 
   async getTxFee(address, coins) {
