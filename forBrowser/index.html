@@ -19,23 +19,25 @@
 
     async function submitMenmonic() {
       const words = document.getElementById("mnemonic-submitted").value;
-      wallet = new Cardano.CardanoWallet(Cardano.Mnemonic.submit(words));
+      wallet = new Cardano.CardanoWallet(words);
       await updateWallet();
     }
 
     async function submitSecret() {
       const secret = document.getElementById("secret-submitted").value;
-      wallet = new Cardano.CardanoWallet(new Cardano.WalletSecretString(secret));
+      wallet = new Cardano.CardanoWallet(secret);
       await updateWallet();
     }
 
     async function updateWallet() {
+      document.getElementById("wallet-ballance").innerHTML = "processing ..";
       document.getElementById("wallet-ballance").innerHTML = await wallet.getBalance();
     }
     function getAddress() {
       document.getElementById("recieve-address").innerHTML = wallet.getChangeAddress();
     }
     async function calculateFee() {
+      document.getElementById("fee").innerHTML = "processing ..";
       const address = document.getElementById("send-adress").innerHTML;
       const ammount = document.getElementById("send-ammount").innerHTML;
       document.getElementById("fee").innerHTML = await wallet.getTxFee(address, ammount);
@@ -92,7 +94,7 @@
 <p>
     address: <input type="text" id="send-adress" name="send-adress" size="110" value="DdzFFzCqrht4Nb7C6niLFvwV3Jwdn2iRZoiBaDqCUdcVChYPZSMh4D8nNpHJtSY9KRF3go2CzVrESmCTjrAQmxYY3S2MDdp2k22sQV8r"></br>
     ammount: <input type="number" id="send-ammount" name="send-ammount" size="8" value="185000"> Lovelace (1 Lovelace = 1/1,000,000 Ada)</br>
-    Fee: <span id="fee"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
+    Fee: <span id="fee" style="background-color: aquamarine"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
     <button onclick="calculateFee()">Calculate fee</button></br>
     <button onclick="submitTransaction()">Send Ada</button><span id="transacton-submitted" style="background-color: #ffc520"></span>
 

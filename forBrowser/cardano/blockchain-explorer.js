@@ -1,8 +1,9 @@
 const request = require("./utils").request;
+const config = require("./config");
 
 exports.getUnspentTxOutputs = async function (address) {
 
-  if (exports.getAddressBallance(address) === 0) {
+  if (exports.getAddressBalance(address) === 0) {
     // if ballance is zero, all outputs must be spent so we don't waste time and return []
     return [];
   }
@@ -60,15 +61,14 @@ exports.getAddressTxList = async function (address) {
 }
 
 exports.getAddressInfo = async function (address) {
-  const url = "https://cardanoexplorer.com/api/addresses/summary/" + address;
+  const url = config.blockchain_explorer_url + "/api/addresses/summary/" + address;
   var result = await request(url);
 
   return result.Right;
 }
 
-exports.getAddressBallance = async function (address) {
-  const url = "https://cardanoexplorer.com/api/addresses/summary/" + address;
-  var result = await request(url);
+exports.getAddressBalance = async function (address) {
+  var result = await exports.getAddressInfo(address);
 
-  return parseInt(result.Right.caBalance.getCoin);
+  return parseInt(result.caBalance.getCoin);
 }

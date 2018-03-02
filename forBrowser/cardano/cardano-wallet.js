@@ -1,26 +1,38 @@
 var cbor = require('cbor');
 
-const mnemonic = require("./mnemonic");
+const Mnemonic = require("./mnemonic");
 const tx = require("./transaction");
 const address = require("./address");
 const blockchainExplorer = require("./blockchain-explorer");
 const utils = require("./utils");
 const helpers = require("./helpers");
+const config = require("./config");
 
 exports.CardanoWallet = class CardanoWallet{
-  constructor(rootSecret) {
-    this.rootSecret = rootSecret;
-  }
-
-  fromMnemonic(mnemonic) {
-    return exports.Wallet(mnemonic.mnemonicToWalletSecretString(mnemonic));
+  constructor(secret) {
+    this.rootSecret = (secret.search(" ") >= 0)?  Mnemonic.mnemonicToWalletSecretString(secret): new tx.WalletSecretString(secret);
   }
 
   async sendAda(address, coins) {
-    if (coins > Number.MAX_SAFE_INTEGER) {
-      throw new Error("Unsupported amount of coins: " + coins)
+    var transaction = await this.prepareTx(address, coins);
+
+    var txHash = transaction.getId();
+    var txBody = cbor.encode(transaction).toString("hex");
+
+    return await this.submitTxRaw(txHash, txBody);
     }
 
+  async prepareTx(destination_address, coins) {
+    var unsignedTx = await this.prepareUnsignedTx(destination_address, coins);
+
+    var txHash = unsignedTx.getId();
+
+    var witnesses = unsignedTx.getWitnesses();
+
+    return new tx.SignedTransaction(unsignedTx, witnesses);
+  }
+
+  async prepareUnsignedTx(address, coins) {
     var txInputs = await this.prepareTxInputs(coins);
     var txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins;
@@ -44,21 +56,11 @@ exports.CardanoWallet = class CardanoWallet{
       )
     ];
 
-    var unsignedTx = new tx.UnsignedTransaction(
+    return new tx.UnsignedTransaction(
       txInputs,
       txOutputs,
       {}
     );
-
-    var txHash = unsignedTx.getId();
-
-    var witnesses = unsignedTx.inputs.map((input) => {
-      return input.getWitness(txHash);
-    });
-
-    var txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString("hex");
-
-    return await this.submitTxRaw(txHash, txBody);
   }
 
   async getTxFee(address, coins) {
@@ -73,7 +75,7 @@ exports.CardanoWallet = class CardanoWallet{
     var addresses = this.getUsedAddressesAndSecrets();
 
     for (var i = 0; i < addresses.length; i++) {
-      result += await blockchainExplorer.getAddressBallance(addresses[i].address);
+      result += await blockchainExplorer.getAddressBalance(addresses[i].address);
     }
 
     return result;
@@ -130,7 +132,7 @@ exports.CardanoWallet = class CardanoWallet{
     */
     var deviation = 4;
 
-    var fee = this.txFeeFunction(txSizeInBytes + deviation);
+    var fee = this.constructor.txFeeFunction(txSizeInBytes + deviation);
 
     if (txInputsCoinsSum - coins - fee < 0) {
       return -1;
@@ -176,7 +178,13 @@ exports.CardanoWallet = class CardanoWallet{
     return result;
   }
 
-  txFeeFunction(txSizeInBytes) {
+  getUsedAddresses() {
+    return this.getUsedAddressesAndSecrets().map((item) => {
+      return item.address;
+    });
+  }
+
+  static txFeeFunction(txSizeInBytes) {
     var a = 155381;
     var b = 43.946;
 
@@ -186,7 +194,7 @@ exports.CardanoWallet = class CardanoWallet{
   async submitTxRaw (txHash, txBody) {
     try {
       const res = await utils.request(
-        "http://localhost:3001/",
+        config.transaction_submitter_url,
         "POST",
         JSON.stringify({
           txHash,
@@ -198,13 +206,17 @@ exports.CardanoWallet = class CardanoWallet{
       );
 
       if (res.status >= 300) {
-        console.log(res.status + " " + JSON.stringify(res));
+        throw Error(res.status + " " + JSON.stringify(res));
       }
       else {
         return res.result;
       }
     } catch (err) {
-      console.log("txSubmiter unreachable " + err);
+      throw Error("txSubmiter unreachable " + err);
     }
   }
+}
+
+if (typeof window !== 'undefined') {
+  window.CardanoWallet = exports.CardanoWallet;
 }

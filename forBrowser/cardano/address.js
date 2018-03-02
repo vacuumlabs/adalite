@@ -31,9 +31,9 @@ exports.deriveAddressAndSecret = function (rootSecretString, childIndex) {
   }
 
   var addressType = 0; // Public key address
-  
+
   var addressData = [addressRoot, addressAttributes, addressType];
-  
+
   var addressDataEncoded = new Buffer(cbor.encode(addressData), "hex");
 
   var address = base58.encode(cbor.encode([
@@ -49,7 +49,7 @@ exports.deriveAddressAndSecret = function (rootSecretString, childIndex) {
 
 exports.isAddressDerivableFromSecretString = function (address, rootSecretString) {
   try {
-    exports.tryDeriveSecretStringFromAddress(address, rootSecretString);
+    exports.deriveSecretStringFromAddressOrFail(address, rootSecretString);
   } catch (e) {
     if (e instanceof AddressDecodingException) {
       return false;
@@ -61,7 +61,7 @@ exports.isAddressDerivableFromSecretString = function (address, rootSecretString
   return true;
 }
 
-exports.tryDeriveSecretStringFromAddress = function (address, rootSecretString) {
+exports.deriveSecretStringFromAddressOrFail = function (address, rootSecretString) {
   // we decode the address from the base58 string and then we strip the 24 CBOR data taga (the "[0].value" part)
   var addressAsBuffer = cbor.decode(base58.decode(address))[0].value;
   var addressData = cbor.decode(addressAsBuffer);
@@ -69,12 +69,12 @@ exports.tryDeriveSecretStringFromAddress = function (address, rootSecretString) 
 
   if (addressAttributes.length === 0) {
     // the root address (derrived straight from the root secret key)
-    var childIndex = 0x80000000; 
+    var childIndex = 0x80000000;
   } else {
     // the remaining addresses have a nontrivial child index therefore the derivation path is nonempty
     var addressPayload = cbor.decode(addressAttributes.get(1));
     var hdPassphrase = deriveHDPassphrase(rootSecretString);
-    var derivationPath = decryptDerivationPath(addressPayload, hdPassphrase);
+    var derivationPath = decryptDerivationPathOrFail(addressPayload, hdPassphrase);
     var childIndex = derivationPath[1];
   }
 
@@ -84,7 +84,7 @@ exports.tryDeriveSecretStringFromAddress = function (address, rootSecretString) 
 exports.deriveSK = function(rootSecretString, childIndex) {
 
   var firstround = deriveSkIteration(rootSecretString, 0x80000000);
-  
+
   if (childIndex === 0x80000000) {
     return firstround;
   }
@@ -113,7 +113,7 @@ function encryptDerivationPath(derivationPath, hdPassphrase) {
   return new Buffer(cipher.seal(new Buffer("serokellfore"), serializedDerivationPath));
 }
 
-function decryptDerivationPath(addressPayload, hdPassphrase) {
+function decryptDerivationPathOrFail(addressPayload, hdPassphrase) {
   var cipher = new chacha20.ChaCha20Poly1305(hdPassphrase);
   var decipheredDerivationPath = cipher.open(new Buffer("serokellfore"), addressPayload);
 
@@ -162,7 +162,7 @@ function deriveSkIteration (parentSecretString, childIndex) {
 
   var hmac2 = crypto.createHmac('sha512', chainCode);
 
-  if (indexIsHardened(childIndex)) {  
+  if (indexIsHardened(childIndex)) {
     hmac2.update(new Buffer("01", "hex")); // TAG_DERIVE_CC_HARDENED
     hmac2.update(new Buffer(parentSecretString.getSecretKey(), "hex"));
   } else {

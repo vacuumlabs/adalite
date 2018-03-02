@@ -9,13 +9,8 @@ const helpers = require('./helpers')
 const config = require('./config')
 
 exports.CardanoWallet = class CardanoWallet {
-  constructor(rootSecret) {
-    this.rootSecret = new tx.WalletSecretString(rootSecret)
-  }
-
-  fromMnemonic(mnemonic) {
-    var rootSecret = mnemonic.mnemonicToWalletSecretString(mnemonic);
-    return exports.CardanoWallet(rootSecret);
+  constructor(secret) {
+    this.rootSecret = (secret.search(" ") >= 0)?  Mnemonic.mnemonicToWalletSecretString(secret): new tx.WalletSecretString(secret);
   }
 
   async sendAda(address, coins) {
