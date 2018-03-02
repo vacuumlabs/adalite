@@ -1,4 +1,4 @@
-// using nodejs's build in asserts that throw on failure 
+// using nodejs's build in asserts that throw on failure
 const assert = require('assert')
 require('isomorphic-fetch')
 const fetchMock = require('fetch-mock')
@@ -83,7 +83,7 @@ describe('test signing', function() {
   const secret = new transaction.WalletSecretString('50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c')
   const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
   const signature = 'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
-  
+
   it('should produce proper signature', function() {
     // test signing
     assert.equal(utils.sign(message, secret), signature)
@@ -95,7 +95,7 @@ describe('test signature verification', function() {
   const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
   const rightSignature = 'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
   const wrongSignature = 'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02'
-  
+
   it('should accept signature', function() {
     assert.equal(utils.verify(message, secret.getPublicKey(), rightSignature), true)
   })
@@ -153,7 +153,7 @@ describe('test private key derivation', function() {
 
 describe('test address generation from secret key', function() {
   const secret = new transaction.WalletSecretString('a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3')
-  
+
   const childIndex1 = 0x80000000
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it('should properly generate root public address (the one used as \'wallet id\' in Daedalus)', function() {
@@ -248,10 +248,10 @@ describe('test transaction serialization', function() {
   const wallet = new CardanoWallet(
     'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
   )
-  
+
   it('should properly serialize transaction inner body', async function() {
     const tx = await wallet.prepareTx('DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY', 47)
-  
+
     // transaction serialization before providing witnesses
     const utxSerialized = cbor.encode(tx.getTxAux()).toString('hex')
     const expectedUtxSerialized = '839f8200d8185824825820832a3801a9e46cc938a988d4c97ce82e53b20aea765624a89e3c7d35ef7e3650018200d8185824825820d733abd1d3db639ce0ae29df3a0958c0eb19ace60434336d1705509492b4c76101ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc5df000ed6ec84d14db177b71f5b63520a3847d1361e383543d2d3afa101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001a8eb0e6c619c39bffa0'
@@ -262,7 +262,7 @@ describe('test transaction serialization', function() {
   // transaction hash computation
   it('should properly compute transaction hash', async function() {
     const tx = await wallet.prepareTx('DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY', 47)
-    
+
     const txHash = tx.getId()
     const expectedTxHash = '60cc8a3a766f99b630dbf7b4396f04e1ca8db0f562d54e1fade91235c798d4c6'
 
