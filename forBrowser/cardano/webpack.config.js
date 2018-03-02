@@ -1,14 +1,13 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
   entry: './index',
   output: {
     filename: 'cardano.bundle.js',
     libraryTarget: 'var',
-    library: 'Cardano'
+    library: 'Cardano',
   },
   node: {
-    fs: "empty"
-  }
-
+    fs: 'empty',
+  },
 }

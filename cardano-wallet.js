@@ -10,16 +10,19 @@ const config = require('./config')
 
 exports.CardanoWallet = class CardanoWallet {
   constructor(secret) {
-    this.rootSecret = (secret.search(" ") >= 0)?  Mnemonic.mnemonicToWalletSecretString(secret): new tx.WalletSecretString(secret);
+    this.rootSecret =
+      secret.search(' ') >= 0
+        ? Mnemonic.mnemonicToWalletSecretString(secret)
+        : new tx.WalletSecretString(secret)
   }
 
   async sendAda(address, coins) {
-    var transaction = await this.prepareTx(address, coins);
+    const transaction = await this.prepareTx(address, coins)
 
-    var txHash = transaction.getId();
-    var txBody = cbor.encode(transaction).toString("hex");
+    const txHash = transaction.getId()
+    const txBody = cbor.encode(transaction).toString('hex')
 
-    return await this.submitTxRaw(txHash, txBody);
+    return await this.submitTxRaw(txHash, txBody)
   }
 
   async prepareTx(address, coins) {
@@ -179,7 +182,7 @@ exports.CardanoWallet = class CardanoWallet {
     try {
       const res = await utils.request(
         config.transaction_submitter_url,
-        "POST",
+        'POST',
         JSON.stringify({
           txHash,
           txBody,

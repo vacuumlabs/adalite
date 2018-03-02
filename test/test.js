@@ -123,22 +123,24 @@ describe('test secret key derivation from mnemonic', function() {
   })
 })
 
-
-describe("test wallet initialization", function() {
+describe('test wallet initialization', () => {
   // a test case where the hash seed has an odd number of bytes
-  var mnemonicString1 = "cruise bike bar reopen mimic title style fence race solar million clean";
-  var wallet1 = new CardanoWallet(mnemonicString1);
-  var expectedWalletSecret1 = "b0d4187b81b5c2fb8234378ebcf33a1c2e2293369bd2263b6dcf672a29676a5a2e73d1f6e660365eacdde77052625f0cc6e50c0710b35e45095fb1b51b9b9315f83d8464268bbb19fe416000fa846eaed7171d4390242aa966ab80c36694b7fa6eec090fd6c6498bb4a28b61f8c4c5ae19b635e20052cb0bc7e0d17404b1717e";
-  it("by menmonic should initialize right secretKey", function() {
-    assert.equal(wallet1.rootSecret.secretString, expectedWalletSecret1);
-  });
-  var wallet2 = new CardanoWallet(expectedWalletSecret1);
-  it("by secretKey should initialize right secretKey", function() {
-    assert.equal(wallet2.rootSecret.secretString, expectedWalletSecret1);
-  });
-
-});describe('test private key derivation', () =>{
-  const secret = new transaction.WalletSecretString('a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3')
+  const mnemonicString1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
+  const wallet1 = new CardanoWallet(mnemonicString1)
+  const expectedWalletSecret1 =
+    'b0d4187b81b5c2fb8234378ebcf33a1c2e2293369bd2263b6dcf672a29676a5a2e73d1f6e660365eacdde77052625f0cc6e50c0710b35e45095fb1b51b9b9315f83d8464268bbb19fe416000fa846eaed7171d4390242aa966ab80c36694b7fa6eec090fd6c6498bb4a28b61f8c4c5ae19b635e20052cb0bc7e0d17404b1717e'
+  it('by menmonic should initialize right secretKey', () => {
+    assert.equal(wallet1.rootSecret.secretString, expectedWalletSecret1)
+  })
+  const wallet2 = new CardanoWallet(expectedWalletSecret1)
+  it('by secretKey should initialize right secretKey', () => {
+    assert.equal(wallet2.rootSecret.secretString, expectedWalletSecret1)
+  })
+})
+describe('test private key derivation', () => {
+  const secret = new transaction.WalletSecretString(
+    'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
+  )
 
 describe('test private key derivation', function() {
   const secret = new transaction.WalletSecretString('a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3')

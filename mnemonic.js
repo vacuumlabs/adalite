@@ -74,7 +74,8 @@ function mnemonicToHashSeed(mnemonic) {
       return acc.multipliedBy('800', 16).plus(bigNumber(elem.toString(10)))
     }, bigNumber('0'))
     .toString(16)
-
+  // result = (result[0] === "0") ? result.substr(1, result.length) : result;
+  result = result.length % 2 != 0 ? result.substr(0, result.length - 1) : result
   var result = new Buffer(
     cbor.encode(new Buffer(hashBlake2b256(new Buffer(result, 'hex')), 'hex')),
     'hex'
