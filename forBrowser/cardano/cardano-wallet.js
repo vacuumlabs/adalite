@@ -32,7 +32,9 @@ exports.CardanoWallet = class CardanoWallet {
 
     const witnesses = unsignedTx.getWitnesses()
 
-    return new tx.SignedTransaction(unsignedTx, witnesses)
+    const txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString('hex')
+
+    return new tx.SignedTransaction(unsignedTx, witnesses);
   }
 
   async prepareUnsignedTx(address, coins) {
