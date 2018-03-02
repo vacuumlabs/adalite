@@ -137,10 +137,6 @@ describe('test wallet initialization', () => {
     assert.equal(wallet2.rootSecret.secretString, expectedWalletSecret1)
   })
 })
-describe('test private key derivation', () => {
-  const secret = new transaction.WalletSecretString(
-    'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
-  )
 
 describe('test private key derivation', function() {
   const secret = new transaction.WalletSecretString('a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3')
