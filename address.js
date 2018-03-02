@@ -27,7 +27,7 @@ exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
     var derivedSecretString = exports.deriveSK(rootSecretString, childIndex)
     const derivationPath = [0x80000000, childIndex]
 
-    var addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
+    var addressPayload = exports.encryptDerivationPath(derivationPath, hdPassphrase)
     var addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
     var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   }
@@ -75,7 +75,7 @@ exports.deriveSecretStringFromAddressOrFail = function (address, rootSecretStrin
     // the remaining addresses have a nontrivial child index therefore the derivation path is nonempty
     const addressPayload = cbor.decode(addressAttributes.get(1))
     const hdPassphrase = deriveHDPassphrase(rootSecretString)
-    const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
+    const derivationPath = decryptDerivationPathOrFail(addressPayload, hdPassphrase)
     var childIndex = derivationPath[1]
   }
 
@@ -105,7 +105,7 @@ function getAddressRoot(walletSecretString, addressPayload) {
   ])
 }
 
-function encryptDerivationPath(derivationPath, hdPassphrase) {
+exports.encryptDerivationPath = function (derivationPath, hdPassphrase) {
   const serializedDerivationPath = cbor.encode(new CBORIndefiniteLengthArray(derivationPath))
 
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)

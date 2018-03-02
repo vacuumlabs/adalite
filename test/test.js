@@ -5,7 +5,7 @@ const fetchMock = require("fetch-mock");
 const cbor = require("cbor");
 const sinon = require("sinon");
 
-const utils = require("../utils")
+const utils = require("../utils");
 const transaction = require("../transaction");
 const mnemonic = require("../mnemonic");
 const address = require("../address");
@@ -15,7 +15,7 @@ const config = require("../config");
 function mockBlockChainExplorer() {
   fetchMock.config.overwriteRoutes = true;
 
-  var addressesAndResponses = {
+  const addressesAndResponses = {
     "DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1" : {"Right":{"caAddress":"DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1","caType":"CPubKeyAddress","caTxNum":2,"caBalance":{"getCoin":"129015"},"caTxList":[{"ctbId":"832a3801a9e46cc938a988d4c97ce82e53b20aea765624a89e3c7d35ef7e3650","ctbTimeIssued":1519994871,"ctbInputs":[["DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1",{"getCoin":"300000"}]],"ctbOutputs":[["DdzFFzCqrhswmyfTS3u8VtJyQNopv4MkGt3trhwKG9s4kfvJwinCnCXBYR5nw6tTYSchxY7rdM2SUxZDu69t7WLVWx4orbqDQfgNguR6",{"getCoin":"47"}],["DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1",{"getCoin":"129015"}]],"ctbInputSum":{"getCoin":"300000"},"ctbOutputSum":{"getCoin":"129062"}},{"ctbId":"5811c19f26a224b7078164bc1b58b40b9f3f2d4db8fc75ae6c3da0efc62f2ab9","ctbTimeIssued":1519994651,"ctbInputs":[["DdzFFzCqrht7sGUFDwVzstZWxxEjF4LA9fXqKp8ukpQE79qkKfUeWaJMaNpYpdsQiP1sfHv4oTzPNZQs86wzS5revG6vxqa7SikRXQCV",{"getCoin":"909363"}]],"ctbOutputs":[["DdzFFzCqrhsfcrGg11KhEmyDmdk3hLRQKH6QRj9ZpafraFzLH2iXivzdAGPbC6E5YcgjgysAoev7q4e9Ugq3ognhz6FgKQCQkSbkPxT6",{"getCoin":"438469"}],["DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1",{"getCoin":"300000"}]],"ctbInputSum":{"getCoin":"909363"},"ctbOutputSum":{"getCoin":"738469"}}]}},
     "DdzFFzCqrhswKekq5Ysev3wL15MndorSfEF82TV5dxHihGjjVweXvmkza4zGnQj3jkvrobwFTnoBpxqes447eVbUDopk3NpLAcQnmfdF" : {"Right":{"caAddress":"DdzFFzCqrhswKekq5Ysev3wL15MndorSfEF82TV5dxHihGjjVweXvmkza4zGnQj3jkvrobwFTnoBpxqes447eVbUDopk3NpLAcQnmfdF","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
     "DdzFFzCqrhsmccT3YihDKQ5KCD38J2UFJk6RUASm9SRtTUdUjk8ckefYex6vBGEThiga4Rxwguo41jR9Z3V1S8BBDYxaU4qaWNrsFhb6" : {"Right":{"caAddress":"DdzFFzCqrhsmccT3YihDKQ5KCD38J2UFJk6RUASm9SRtTUdUjk8ckefYex6vBGEThiga4Rxwguo41jR9Z3V1S8BBDYxaU4qaWNrsFhb6","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
@@ -34,7 +34,7 @@ function mockBlockChainExplorer() {
     "DdzFFzCqrhsrASdDq8FwYFZSQWjrRW85HFMNS9d5dNk5DdXs5UYei14m7h1YgNEBEBQsKSLQERL1pa7GaT5Hjo2YGeuxSo4xS8mja8WC" : {"Right":{"caAddress":"DdzFFzCqrhsrASdDq8FwYFZSQWjrRW85HFMNS9d5dNk5DdXs5UYei14m7h1YgNEBEBQsKSLQERL1pa7GaT5Hjo2YGeuxSo4xS8mja8WC","caType":"CPubKeyAddress","caTxNum":0,"caBalance":{"getCoin":"0"},"caTxList":[]}},
     "*" : {},
   }
-  for (var address in addressesAndResponses) {
+  for (let address in addressesAndResponses) {
     fetchMock.mock({
       "matcher" : config.blockchain_explorer_url + "/api/addresses/summary/" + address,
       "response" : {
