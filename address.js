@@ -1,182 +1,190 @@
-const crc32 = require("crc-32");
-const exceptions = require("node-exceptions");
-const cbor = require("cbor");
-const pbkdf2 = require("pbkdf2");
-const chacha20 = require("@stablelib/chacha20poly1305");
-const base58 = require("bs58");
-const crypto = require("crypto");
-const EdDSA = require('elliptic-cardano').eddsa;
-const ec = new EdDSA('ed25519');
+const crc32 = require('crc-32')
+const exceptions = require('node-exceptions')
+const cbor = require('cbor')
+const pbkdf2 = require('pbkdf2')
+const chacha20 = require('@stablelib/chacha20poly1305')
+const base58 = require('bs58')
+const crypto = require('crypto')
+const EdDSA = require('elliptic-cardano').eddsa
+const ec = new EdDSA('ed25519')
 
-const {AddressDecodingException} = require('./custom-exceptions');
-const CBORIndefiniteLengthArray = require("./helpers").CBORIndefiniteLengthArray;
-const addressHash = require('./utils').addressHash;
-const tx = require('./transaction');
-const { add256NoCarry, scalarAdd256ModM, multiply8 } = require("./utils");
+const {AddressDecodingException} = require('./custom-exceptions')
+const CBORIndefiniteLengthArray = require('./helpers').CBORIndefiniteLengthArray
+const addressHash = require('./utils').addressHash
+const tx = require('./transaction')
+const {add256NoCarry, scalarAdd256ModM, multiply8} = require('./utils')
 
-exports.deriveAddressAndSecret = function (rootSecretString, childIndex) {
-  if (childIndex === 0x80000000) { // root address
-    var addressPayload = new Buffer(0);
-    var addressAttributes = new Map();
+exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
+  if (childIndex === 0x80000000) {
+    // root address
+    var addressPayload = new Buffer(0)
+    var addressAttributes = new Map()
     var derivedSecretString = rootSecretString
-    var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex');
-  } else { // the remaining addresses
-    var hdPassphrase = deriveHDPassphrase(rootSecretString);
-    var derivedSecretString = exports.deriveSK(rootSecretString, childIndex);
-    var derivationPath = [0x80000000, childIndex];
+    var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
+  } else {
+    // the remaining addresses
+    const hdPassphrase = deriveHDPassphrase(rootSecretString)
+    var derivedSecretString = exports.deriveSK(rootSecretString, childIndex)
+    const derivationPath = [0x80000000, childIndex]
 
-    var addressPayload = encryptDerivationPath(derivationPath, hdPassphrase);
-    var addressAttributes = new Map([[1, cbor.encode(addressPayload)]]);
-    var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), "hex");
+    var addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
+    var addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
+    var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   }
 
-  var addressType = 0; // Public key address
-  
-  var addressData = [addressRoot, addressAttributes, addressType];
-  
-  var addressDataEncoded = new Buffer(cbor.encode(addressData), "hex");
+  const addressType = 0 // Public key address
 
-  var address = base58.encode(cbor.encode([
-    new cbor.Tagged(24, addressDataEncoded),
-    getCheckSum(addressDataEncoded)
-  ]));
+  const addressData = [addressRoot, addressAttributes, addressType]
+
+  const addressDataEncoded = new Buffer(cbor.encode(addressData), 'hex')
+
+  const address = base58.encode(
+    cbor.encode([new cbor.Tagged(24, addressDataEncoded), getCheckSum(addressDataEncoded)])
+  )
 
   return {
-    "address" : address,
-    "secret" : derivedSecretString
+    address,
+    secret: derivedSecretString,
   }
-};
-
-exports.isAddressDerivableFromSecretString = function (address, rootSecretString) {
-  try {
-    exports.tryDeriveSecretStringFromAddress(address, rootSecretString);
-  } catch (e) {
-    if (e instanceof AddressDecodingException) {
-      return false;
-    }
-
-    throw e;
-  }
-
-  return true;
 }
 
-exports.tryDeriveSecretStringFromAddress = function (address, rootSecretString) {
+exports.isAddressDerivableFromSecretString = function(address, rootSecretString) {
+  try {
+    exports.tryDeriveSecretStringFromAddress(address, rootSecretString)
+  } catch (e) {
+    if (e instanceof AddressDecodingException) {
+      return false
+    }
+
+    throw e
+  }
+
+  return true
+}
+
+exports.tryDeriveSecretStringFromAddress = function(address, rootSecretString) {
   // we decode the address from the base58 string and then we strip the 24 CBOR data taga (the "[0].value" part)
-  var addressAsBuffer = cbor.decode(base58.decode(address))[0].value;
-  var addressData = cbor.decode(addressAsBuffer);
-  var addressAttributes = addressData[1];
+  const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
+  const addressData = cbor.decode(addressAsBuffer)
+  const addressAttributes = addressData[1]
 
   if (addressAttributes.length === 0) {
     // the root address (derrived straight from the root secret key)
-    var childIndex = 0x80000000; 
+    var childIndex = 0x80000000
   } else {
     // the remaining addresses have a nontrivial child index therefore the derivation path is nonempty
-    var addressPayload = cbor.decode(addressAttributes.get(1));
-    var hdPassphrase = deriveHDPassphrase(rootSecretString);
-    var derivationPath = decryptDerivationPath(addressPayload, hdPassphrase);
-    var childIndex = derivationPath[1];
+    const addressPayload = cbor.decode(addressAttributes.get(1))
+    const hdPassphrase = deriveHDPassphrase(rootSecretString)
+    const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
+    var childIndex = derivationPath[1]
   }
 
-  return exports.deriveAddressAndSecret(rootSecretString, childIndex).secret;
+  return exports.deriveAddressAndSecret(rootSecretString, childIndex).secret
 }
 
 exports.deriveSK = function(rootSecretString, childIndex) {
+  const firstround = deriveSkIteration(rootSecretString, 0x80000000)
 
-  var firstround = deriveSkIteration(rootSecretString, 0x80000000);
-  
   if (childIndex === 0x80000000) {
-    return firstround;
+    return firstround
   }
 
-  return deriveSkIteration(firstround, childIndex);
+  return deriveSkIteration(firstround, childIndex)
 }
 
 function getAddressRoot(walletSecretString, addressPayload) {
-  var extendedPublicKey = new Buffer(walletSecretString.getPublicKey() + walletSecretString.getChainCode(), "hex");
+  const extendedPublicKey = new Buffer(
+    walletSecretString.getPublicKey() + walletSecretString.getChainCode(),
+    'hex'
+  )
 
   return addressHash([
     0,
-    [
-      0,
-      extendedPublicKey
-    ],
-    (addressPayload.length > 0) ? new Map([[1, cbor.encode(addressPayload)]]) : new Map()
-  ]);
+    [0, extendedPublicKey],
+    addressPayload.length > 0 ? new Map([[1, cbor.encode(addressPayload)]]) : new Map(),
+  ])
 }
 
 function encryptDerivationPath(derivationPath, hdPassphrase) {
-  var serializedDerivationPath = cbor.encode(new CBORIndefiniteLengthArray(derivationPath));
+  const serializedDerivationPath = cbor.encode(new CBORIndefiniteLengthArray(derivationPath))
 
-  var cipher = new chacha20.ChaCha20Poly1305(hdPassphrase);
+  const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
 
-  return new Buffer(cipher.seal(new Buffer("serokellfore"), serializedDerivationPath));
+  return new Buffer(cipher.seal(new Buffer('serokellfore'), serializedDerivationPath))
 }
 
 function decryptDerivationPath(addressPayload, hdPassphrase) {
-  var cipher = new chacha20.ChaCha20Poly1305(hdPassphrase);
-  var decipheredDerivationPath = cipher.open(new Buffer("serokellfore"), addressPayload);
+  const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
+  const decipheredDerivationPath = cipher.open(new Buffer('serokellfore'), addressPayload)
 
   try {
-    var derivationPath = cbor.decode(new Buffer(decipheredDerivationPath));
+    var derivationPath = cbor.decode(new Buffer(decipheredDerivationPath))
   } catch (err) {
-    throw new AddressDecodingException('incorrect address or passphrase');
+    throw new AddressDecodingException('incorrect address or passphrase')
   }
 
-  return derivationPath;
+  return derivationPath
 }
 
 function getCheckSum(input) {
-  return crc32.buf(input)>>>0;
-};
-
-function deriveHDPassphrase(walletSecretString) {
-  var extendedPublicKey = new Buffer(walletSecretString.getPublicKey() + walletSecretString.getChainCode(), "hex");
-
-  var derivedKey = pbkdf2.pbkdf2Sync(extendedPublicKey, "address-hashing", 500, 32, "sha512")
-  return new Buffer(derivedKey.toString("hex"), "hex");
+  return crc32.buf(input) >>> 0
 }
 
-function deriveSkIteration (parentSecretString, childIndex) {
-  var chainCode = new Buffer(parentSecretString.getChainCode(), "hex");
+function deriveHDPassphrase(walletSecretString) {
+  const extendedPublicKey = new Buffer(
+    walletSecretString.getPublicKey() + walletSecretString.getChainCode(),
+    'hex'
+  )
 
-  var hmac1 = crypto.createHmac("sha512", chainCode);
+  const derivedKey = pbkdf2.pbkdf2Sync(extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
+  return new Buffer(derivedKey.toString('hex'), 'hex')
+}
+
+function deriveSkIteration(parentSecretString, childIndex) {
+  const chainCode = new Buffer(parentSecretString.getChainCode(), 'hex')
+
+  const hmac1 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
-    hmac1.update(new Buffer("00", "hex")); // TAG_DERIVE_Z_HARDENED
-    hmac1.update(new Buffer(parentSecretString.getSecretKey(), "hex"));
+    hmac1.update(new Buffer('00', 'hex')) // TAG_DERIVE_Z_HARDENED
+    hmac1.update(new Buffer(parentSecretString.getSecretKey(), 'hex'))
   } else {
-    hmac1.update(new Buffer("02", "hex")); // TAG_DERIVE_Z_NORMAL
-    hmac1.update(new Buffer(parentSecretString.getPublicKey(), "hex"));
+    hmac1.update(new Buffer('02', 'hex')) // TAG_DERIVE_Z_NORMAL
+    hmac1.update(new Buffer(parentSecretString.getPublicKey(), 'hex'))
   }
-  hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), "hex"));
-  var z = new Buffer(hmac1.digest("hex"), "hex");
+  hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
+  const z = new Buffer(hmac1.digest('hex'), 'hex')
 
-  var zl8 = multiply8(z, new Buffer("08", "hex")).slice(0,32);
-  var parentKey = new Buffer(parentSecretString.getSecretKey(), "hex");
+  const zl8 = multiply8(z, new Buffer('08', 'hex')).slice(0, 32)
+  const parentKey = new Buffer(parentSecretString.getSecretKey(), 'hex')
 
-  var kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32));
-  var kr = add256NoCarry(z.slice(32, 64), parentKey.slice(32, 64));
+  const kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32))
+  const kr = add256NoCarry(z.slice(32, 64), parentKey.slice(32, 64))
 
-  var resKey = Buffer.concat([kl, kr]);
+  const resKey = Buffer.concat([kl, kr])
 
-  var hmac2 = crypto.createHmac('sha512', chainCode);
+  const hmac2 = crypto.createHmac('sha512', chainCode)
 
-  if (indexIsHardened(childIndex)) {  
-    hmac2.update(new Buffer("01", "hex")); // TAG_DERIVE_CC_HARDENED
-    hmac2.update(new Buffer(parentSecretString.getSecretKey(), "hex"));
+  if (indexIsHardened(childIndex)) {
+    hmac2.update(new Buffer('01', 'hex')) // TAG_DERIVE_CC_HARDENED
+    hmac2.update(new Buffer(parentSecretString.getSecretKey(), 'hex'))
   } else {
-    hmac2.update(new Buffer("03", "hex")); // TAG_DERIVE_CC_NORMAL
-    hmac2.update(new Buffer(parentSecretString.getPublicKey(), "hex"));
+    hmac2.update(new Buffer('03', 'hex')) // TAG_DERIVE_CC_NORMAL
+    hmac2.update(new Buffer(parentSecretString.getPublicKey(), 'hex'))
   }
-  hmac2.update(new Buffer(childIndex.toString(16).padStart(8, "0"), "hex"));
+  hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
 
-  var newChainCode = new Buffer(hmac2.digest("hex").slice(64, 128), "hex");
-  var newPublicKey = new Buffer(ec.keyFromSecret(resKey.toString("hex").slice(0,64)).getPublic("hex"), "hex");
+  const newChainCode = new Buffer(hmac2.digest('hex').slice(64, 128), 'hex')
+  const newPublicKey = new Buffer(
+    ec.keyFromSecret(resKey.toString('hex').slice(0, 64)).getPublic('hex'),
+    'hex'
+  )
 
-  return new tx.WalletSecretString(Buffer.concat([resKey, newPublicKey, newChainCode]).toString("hex"));
+  return new tx.WalletSecretString(
+    Buffer.concat([resKey, newPublicKey, newChainCode]).toString('hex')
+  )
 }
 
 function indexIsHardened(childIndex) {
-  return !!(childIndex >> 31);
+  return !!(childIndex >> 31)
 }

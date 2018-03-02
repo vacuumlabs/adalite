@@ -1,219 +1,212 @@
-var cbor = require('cbor');
+const cbor = require('cbor')
 
-const mnemonic = require("./mnemonic");
-const tx = require("./transaction");
-const address = require("./address");
-const blockchainExplorer = require("./blockchain-explorer");
-const utils = require("./utils");
-const helpers = require("./helpers");
-const config = require("./config");
+const mnemonic = require('./mnemonic')
+const tx = require('./transaction')
+const address = require('./address')
+const blockchainExplorer = require('./blockchain-explorer')
+const utils = require('./utils')
+const helpers = require('./helpers')
+const config = require('./config')
 
-exports.CardanoWallet = class CardanoWallet{
+exports.CardanoWallet = class CardanoWallet {
   constructor(rootSecret) {
-    this.rootSecret = new tx.WalletSecretString(rootSecret);
+    this.rootSecret = new tx.WalletSecretString(rootSecret)
   }
 
   fromMnemonic(mnemonic) {
-    return exports.Wallet(mnemonic.mnemonicToWalletSecretString(mnemonic));
+    return exports.Wallet(mnemonic.mnemonicToWalletSecretString(mnemonic))
   }
 
   async sendAda(address, coins) {
-    var unsignedTx = this.prepareUnsignedTx(address, coins);
+    const unsignedTx = this.prepareUnsignedTx(address, coins)
 
-    var txHash = unsignedTx.getId();
+    const txHash = unsignedTx.getId()
 
-    var witnesses = unsignedTx.getWitnesses();
+    const witnesses = unsignedTx.getWitnesses()
 
-    var txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString("hex");
+    const txBody = cbor.encode(new tx.SignedTransaction(unsignedTx, witnesses)).toString('hex')
 
-    return await this.submitTxRaw(txHash, txBody);
+    return await this.submitTxRaw(txHash, txBody)
   }
 
   async prepareUnsignedTx(address, coins) {
-    var txInputs = await this.prepareTxInputs(coins);
-    var txInputsCoinsSum = txInputs.reduce((acc, elem) => {
-      return acc + elem.coins;
-    }, 0);
+    const txInputs = await this.prepareTxInputs(coins)
+    const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
+      return acc + elem.coins
+    }, 0)
 
-    var fee = this.computeTxFee(txInputs, coins);
+    const fee = this.computeTxFee(txInputs, coins)
 
     //comment this for developement
     if (fee === -1) {
-      return false;
+      return false
     }
 
-    var txOutputs = [
-      new tx.TxOutput(
-        new tx.WalletAddress(address),
-        coins
-      ),
+    const txOutputs = [
+      new tx.TxOutput(new tx.WalletAddress(address), coins),
       new tx.TxOutput(
         new tx.WalletAddress(this.getChangeAddress()),
         txInputsCoinsSum - fee - coins
-      )
-    ];
+      ),
+    ]
 
-    return new tx.UnsignedTransaction(
-      txInputs,
-      txOutputs,
-      {}
-    );
+    return new tx.UnsignedTransaction(txInputs, txOutputs, {})
   }
 
   async getTxFee(address, coins) {
-    var txInputs = await this.prepareTxInputs(coins);
+    const txInputs = await this.prepareTxInputs(coins)
 
-    return this.computeTxFee(txInputs, coins);
+    return this.computeTxFee(txInputs, coins)
   }
 
   async getBalance() {
-    var result = 0;
+    let result = 0
 
-    var addresses = this.getUsedAddressesAndSecrets();
+    const addresses = this.getUsedAddressesAndSecrets()
 
-    for (var i = 0; i < addresses.length; i++) {
-      result += await blockchainExplorer.getAddressBalance(addresses[i].address);
+    for (let i = 0; i < addresses.length; i++) {
+      result += await blockchainExplorer.getAddressBalance(addresses[i].address)
     }
 
-    return result;
+    return result
   }
 
   async prepareTxInputs(coins) {
     // TODO optimize tx inputs selection, now it takes all utxos
-    var utxos = await this.getUnspentTxOutputsWithSecrets();
+    const utxos = await this.getUnspentTxOutputsWithSecrets()
 
-    var txInputs = [];
-    for (var i = 0; i < utxos.length; i++) {
+    const txInputs = []
+    for (let i = 0; i < utxos.length; i++) {
       txInputs.push(
         new tx.TxInput(utxos[i].txHash, utxos[i].outputIndex, utxos[i].secret, utxos[i].coins)
-      );
+      )
     }
 
-    return txInputs;
+    return txInputs
   }
 
   // if the fee cannot be paid it returns -1, otherwise it returns the fee
   computeTxFee(txInputs, coins) {
     if (coins > Number.MAX_SAFE_INTEGER) {
-      throw new Error("Unsupported amount of coins: " + coins)
+      throw new Error(`Unsupported amount of coins: ${coins}`)
     }
 
-    var txInputsCoinsSum = txInputs.reduce((acc, elem) => {
-      return acc + elem.coins;
-    }, 0);
+    const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
+      return acc + elem.coins
+    }, 0)
 
-    var out1coins = coins;
-    var out2coinsUpperBound = txInputsCoinsSum - coins;
+    const out1coins = coins
+    const out2coinsUpperBound = txInputsCoinsSum - coins
 
     // the +1 is there because in the actual transaction the txInputs are encoded as indefinite length array
-    var txInputsSize = cbor.encode(txInputs).length + 1;
+    const txInputsSize = cbor.encode(txInputs).length + 1
 
     /*
     * we assume that only two outputs (destination and change address) will be present
     * encoded in an indefinite length array
     */
-    var txOutputsSize = 2*77 + cbor.encode(out1coins).length + cbor.encode(out2coinsUpperBound).length + 2;
-    var txMetaSize = 1; // currently empty Map
+    const txOutputsSize =
+      2 * 77 + cbor.encode(out1coins).length + cbor.encode(out2coinsUpperBound).length + 2
+    const txMetaSize = 1 // currently empty Map
 
     // the 1 is there for the CBOR "tag" for an array of 3 elements
-    var txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize;
+    const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
 
-    var txWitnessesSize = txInputs.length * 139 + 1;
+    const txWitnessesSize = txInputs.length * 139 + 1
 
     // the 1 is there for the CBOR "tag" for an array of 2 elements
-    var txSizeInBytes = 1 + txAuxSize + txWitnessesSize;
+    const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
 
     /*
     * the deviation is there for the array of tx witnesses - it may have more than 1 byte of overhead
     * if more than 16 elements are present
     */
-    var deviation = 4;
+    const deviation = 4
 
-    var fee = this.constructor.txFeeFunction(txSizeInBytes + deviation);
+    const fee = this.constructor.txFeeFunction(txSizeInBytes + deviation)
 
     if (txInputsCoinsSum - coins - fee < 0) {
-      return -1;
+      return -1
     }
 
-    return fee;
+    return fee
   }
 
   getChangeAddress() {
-    var availableAddresses = this.getUsedAddressesAndSecrets();
+    const availableAddresses = this.getUsedAddressesAndSecrets()
 
     // TODO - do something smarter, now it just returns a random address from the pool of available ones
 
-    return availableAddresses[Math.floor(Math.random()*availableAddresses.length)].address;
+    return availableAddresses[Math.floor(Math.random() * availableAddresses.length)].address
   }
 
   async getUnspentTxOutputsWithSecrets() {
-    var result = [];
+    var result = []
 
-    var addresses = this.getUsedAddressesAndSecrets();
+    const addresses = this.getUsedAddressesAndSecrets()
 
     for (var i = 0; i < addresses.length; i++) {
-      var addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(addresses[i].address);
+      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(addresses[i].address)
 
       addressUnspentOutputs.map((element) => {
-        element.secret = addresses[i].secret;
-      });
+        element.secret = addresses[i].secret
+      })
 
-      var result = result.concat(addressUnspentOutputs);
+      var result = result.concat(addressUnspentOutputs)
     }
 
-    return result;
+    return result
   }
 
   getUsedAddressesAndSecrets() {
     // TODO - do something smarter, now it just returns 16 addresses with consecutive child indices
 
-    var result = [];
-    for (var i = 345000; i < 345016; i++) {
-      result.push(address.deriveAddressAndSecret(this.rootSecret, i));
+    const result = []
+    for (let i = 345000; i < 345016; i++) {
+      result.push(address.deriveAddressAndSecret(this.rootSecret, i))
     }
 
-    return result;
+    return result
   }
 
   getUsedAddresses() {
     return this.getUsedAddressesAndSecrets().map((item) => {
-      return item.address;
-    });
+      return item.address
+    })
   }
 
   static txFeeFunction(txSizeInBytes) {
-    var a = 155381;
-    var b = 43.946;
+    const a = 155381
+    const b = 43.946
 
-    return Math.ceil(a + txSizeInBytes * b);
+    return Math.ceil(a + txSizeInBytes * b)
   }
 
-  async submitTxRaw (txHash, txBody) {
+  async submitTxRaw(txHash, txBody) {
     try {
       const res = await utils.request(
         config.transaction_submitter_url,
-        "post",
+        'post',
         JSON.stringify({
           txHash,
-          txBody
+          txBody,
         }),
         {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         }
-      );
+      )
 
       if (res.status >= 300) {
-        console.log(res.status + " " + JSON.stringify(res));
-      }
-      else {
-        return res.result;
+        console.log(`${res.status} ${JSON.stringify(res)}`)
+      } else {
+        return res.result
       }
     } catch (err) {
-      console.log("txSubmiter unreachable " + err);
+      console.log(`txSubmiter unreachable ${err}`)
     }
   }
 }
 
 if (typeof window !== 'undefined') {
-  window.CardanoWallet = exports.CardanoWallet;
+  window.CardanoWallet = exports.CardanoWallet
 }
