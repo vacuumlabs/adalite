@@ -10,6 +10,70 @@ const {hex2buf} = require('./utils')
 const utils = require('./utils')
 const helpers = require('./helpers')
 
+exports.Transaction = class Transaction {
+  constructor(inputs, outputs, attributes, witnesses = undefined) {
+    this.inputs = inputs
+    this.outputs = outputs
+    this.attributes = attributes
+    this.witnesses = witnesses
+  }
+
+  getId() {
+    return this.getTxAux().getId()
+  }
+
+  getTxAux() {
+    return new TxAux(this.inputs, this.outputs, this.attributes)
+  }
+
+  getWitnesses() {
+    const txHash = this.getId()
+    return this.inputs.map((input) => {
+      return input.getWitness(txHash)
+    })
+  }
+
+  verify() {
+    return this.getWitnesses()
+      .map((witness) => {
+        /*
+      * "011a2d964a095820" is a magic prefix from the cardano-sl code
+        the "01" byte is a constant to denote signatures of transactions
+        the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
+        the "5820" part is the CBOR prefix for a hex string
+      */
+        const message = `011a2d964a095820${this.getId()}`
+
+        return utils.verify(message, witness.getPublicKey(), witness.getSignature())
+      })
+      .reduce((a, b) => a && b, true)
+  }
+
+  encodeCBOR(encoder) {
+    return encoder.pushAny([this.getTxAux(), this.getWitnesses()])
+  }
+}
+
+class TxAux {
+  constructor(inputs, outputs, attributes) {
+    this.inputs = inputs
+    this.outputs = outputs
+    this.attributes = attributes
+  }
+
+  getId() {
+    return utils.hashBlake2b256(this)
+  }
+
+  encodeCBOR(encoder) {
+    return encoder.pushAny([
+      new helpers.CBORIndefiniteLengthArray(this.inputs),
+      new helpers.CBORIndefiniteLengthArray(this.outputs),
+      this.attributes,
+    ])
+  }
+}
+
 exports.TxInput = class TxInput {
   constructor(txId, outputIndex, secret, coins) {
     this.id = txId
@@ -128,63 +192,5 @@ exports.TxWitness = class TxWitness {
       this.type,
       new cbor.Tagged(24, cbor.encode([this.publicString, this.signature])),
     ])
-  }
-}
-
-exports.UnsignedTransaction = class UnsignedTransaction {
-  constructor(inputs, outputs, attributes) {
-    this.inputs = inputs
-    this.outputs = outputs
-    this.attributes = attributes
-  }
-
-  getId() {
-    return utils.hashBlake2b256(this)
-  }
-
-  getWitnesses() {
-    const txHash = this.getId()
-    return this.inputs.map((input) => {
-      return input.getWitness(txHash)
-    })
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny([
-      new helpers.CBORIndefiniteLengthArray(this.inputs),
-      new helpers.CBORIndefiniteLengthArray(this.outputs),
-      this.attributes,
-    ])
-  }
-}
-
-exports.SignedTransaction = class SignedTransaction {
-  constructor(transaction, witnesses) {
-    this.transaction = transaction
-    this.witnesses = witnesses
-  }
-
-  getId() {
-    return this.transaction.getId()
-  }
-
-  verify() {
-    return this.witnesses
-      .map((witness) => {
-        /*
-      * "011a2d964a095820" is a magic prefix from the cardano-sl code
-        the "01" byte is a constant to denote signatures of transactions
-        the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
-        the "5820" part is the CBOR prefix for a hex string
-      */
-        const message = `011a2d964a095820${this.getId()}`
-
-        return utils.verify(message, witness.getPublicKey(), witness.getSignature())
-      })
-      .reduce((a, b) => a && b, true)
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny([this.transaction, this.witnesses])
   }
 }
