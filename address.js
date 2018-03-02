@@ -5,7 +5,7 @@ const pbkdf2 = require('pbkdf2')
 const chacha20 = require('@stablelib/chacha20poly1305')
 const base58 = require('bs58')
 const crypto = require('crypto')
-const EdDSA = require('elliptic-cardano').eddsa
+const EdDSA = require('elliptic-cardano').eddsaVariant
 const ec = new EdDSA('ed25519')
 
 const {AddressDecodingException} = require('./custom-exceptions')
