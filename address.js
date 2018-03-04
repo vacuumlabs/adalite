@@ -1,5 +1,4 @@
 const crc32 = require('crc-32')
-const exceptions = require('node-exceptions')
 const cbor = require('cbor')
 const pbkdf2 = require('pbkdf2')
 const chacha20 = require('@stablelib/chacha20poly1305')
@@ -15,21 +14,23 @@ const tx = require('./transaction')
 const {add256NoCarry, scalarAdd256ModM, multiply8} = require('./utils')
 
 exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
+  let addressPayload, addressAttributes, derivedSecretString, addressRoot
+
   if (childIndex === 0x80000000) {
     // root address
-    var addressPayload = new Buffer(0)
-    var addressAttributes = new Map()
-    var derivedSecretString = rootSecretString
-    var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
+    addressPayload = new Buffer(0)
+    addressAttributes = new Map()
+    derivedSecretString = rootSecretString
+    addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   } else {
     // the remaining addresses
     const hdPassphrase = deriveHDPassphrase(rootSecretString)
-    var derivedSecretString = exports.deriveSK(rootSecretString, childIndex)
+    derivedSecretString = exports.deriveSK(rootSecretString, childIndex)
     const derivationPath = [0x80000000, childIndex]
 
-    var addressPayload = exports.encryptDerivationPath(derivationPath, hdPassphrase)
-    var addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
-    var addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
+    const addressPayload = exports.encryptDerivationPath(derivationPath, hdPassphrase)
+    addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
+    addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   }
 
   const addressType = 0 // Public key address
@@ -51,6 +52,7 @@ exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
 exports.isAddressDerivableFromSecretString = function(address, rootSecretString) {
   try {
     exports.deriveSecretStringFromAddressOrFail(address, rootSecretString)
+    return true
   } catch (e) {
     if (e instanceof AddressDecodingException) {
       return false
@@ -58,25 +60,26 @@ exports.isAddressDerivableFromSecretString = function(address, rootSecretString)
 
     throw e
   }
-
-  return true
 }
 
 exports.deriveSecretStringFromAddressOrFail = function(address, rootSecretString) {
-  // we decode the address from the base58 string and then we strip the 24 CBOR data taga (the "[0].value" part)
+  // we decode the address from the base58 string
+  // and then we strip the 24 CBOR data taga (the "[0].value" part)
   const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
   const addressData = cbor.decode(addressAsBuffer)
   const addressAttributes = addressData[1]
+  let childIndex
 
   if (addressAttributes.length === 0) {
     // the root address (derrived straight from the root secret key)
-    var childIndex = 0x80000000
+    childIndex = 0x80000000
   } else {
-    // the remaining addresses have a nontrivial child index therefore the derivation path is nonempty
+    // the remaining addresses have a nontrivial child index
+    // therefore the derivation path is nonempty
     const addressPayload = cbor.decode(addressAttributes.get(1))
     const hdPassphrase = deriveHDPassphrase(rootSecretString)
     const derivationPath = decryptDerivationPathOrFail(addressPayload, hdPassphrase)
-    var childIndex = derivationPath[1]
+    childIndex = derivationPath[1]
   }
 
   return exports.deriveAddressAndSecret(rootSecretString, childIndex).secret
@@ -118,12 +121,10 @@ function decryptDerivationPathOrFail(addressPayload, hdPassphrase) {
   const decipheredDerivationPath = cipher.open(new Buffer('serokellfore'), addressPayload)
 
   try {
-    var derivationPath = cbor.decode(new Buffer(decipheredDerivationPath))
+    return cbor.decode(new Buffer(decipheredDerivationPath))
   } catch (err) {
     throw new AddressDecodingException('incorrect address or passphrase')
   }
-
-  return derivationPath
 }
 
 function getCheckSum(input) {

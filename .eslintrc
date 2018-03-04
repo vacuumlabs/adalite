@@ -2,6 +2,10 @@
   "extends": "vacuumlabs",
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+  	"no-bitwise": "off"
   }
 }

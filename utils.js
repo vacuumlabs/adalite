@@ -1,12 +1,11 @@
 const blake2 = require('blakejs')
 const cbor = require('cbor')
 require('isomorphic-fetch')
-const exceptions = require('node-exceptions')
 const EdDSA = require('elliptic-cardano').eddsaVariant
 const ec = new EdDSA('ed25519')
 const ed25519 = require('supercop.js')
 const bigNumber = require('bignumber.js')
-const sha3_256 = require('js-sha3').sha3_256
+const sha3256 = require('js-sha3').sha3_256
 const padStart = require('string.prototype.padstart')
 padStart.shim()
 
@@ -14,22 +13,18 @@ exports.hashBlake2b256 = function(input) {
   const context = blake2.blake2bInit(32)
   blake2.blake2bUpdate(context, new Buffer(cbor.encode(input), 'hex'))
 
-  result = new Buffer(blake2.blake2bFinal(context))
-
-  return result.toString('hex')
+  return (new Buffer(blake2.blake2bFinal(context))).toString('hex')
 }
 
 exports.addressHash = function(input) {
   const serializedInput = cbor.encode(input)
 
-  const firstHash = new Buffer(sha3_256(serializedInput), 'hex')
+  const firstHash = new Buffer(sha3256(serializedInput), 'hex')
 
   const context = blake2.blake2bInit(28) // blake2b-224
   blake2.blake2bUpdate(context, firstHash)
 
-  result = new Buffer(blake2.blake2bFinal(context))
-
-  return result.toString('hex')
+  return (new Buffer(blake2.blake2bFinal(context))).toString('hex')
 }
 
 exports.hex2buf = function(hexString) {
@@ -65,7 +60,7 @@ exports.add256NoCarry = function(b1, b2) {
 
 function toLittleEndian(str) {
   // from https://stackoverflow.com/questions/7946094/swap-endianness-javascript
-  s = str.replace(/^(.(..)*)$/, '0$1') // add a leading zero if needed
+  const s = str.replace(/^(.(..)*)$/, '0$1') // add a leading zero if needed
   const a = s.match(/../g) // split number in groups of two
   a.reverse() // reverse the goups
   return a.join('') // join the groups back together
