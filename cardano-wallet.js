@@ -1,20 +1,22 @@
 const cbor = require('cbor')
 
-const Mnemonic = require('./mnemonic')
+
+const {mnemonicToWalletSecretString} = require('./mnemonic')
 const tx = require('./transaction')
 const address = require('./address')
 const blockchainExplorer = require('./blockchain-explorer')
 const utils = require('./utils')
-const helpers = require('./helpers')
 const config = require('./config')
 
 exports.CardanoWallet = class CardanoWallet {
+
   constructor(secret) {
     this.rootSecret =
       secret.search(' ') >= 0
-        ? Mnemonic.mnemonicToWalletSecretString(secret)
+        ? mnemonicToWalletSecretString(secret)
         : new tx.WalletSecretString(secret)
   }
+
 
   async sendAda(address, coins) {
     const transaction = await this.prepareTx(address, coins)
@@ -94,7 +96,8 @@ exports.CardanoWallet = class CardanoWallet {
     const out1coins = coins
     const out2coinsUpperBound = txInputsCoinsSum - coins
 
-    // the +1 is there because in the actual transaction the txInputs are encoded as indefinite length array
+    // the +1 is there because in the actual transaction
+    // the txInputs are encoded as indefinite length array
     const txInputsSize = cbor.encode(txInputs).length + 1
 
     /*
@@ -114,7 +117,8 @@ exports.CardanoWallet = class CardanoWallet {
     const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
 
     /*
-    * the deviation is there for the array of tx witnesses - it may have more than 1 byte of overhead
+    * the deviation is there for the array of tx witnesses
+    * because it may have more than 1 byte of overhead
     * if more than 16 elements are present
     */
     const deviation = 4
@@ -131,26 +135,26 @@ exports.CardanoWallet = class CardanoWallet {
   getChangeAddress() {
     const availableAddresses = this.getUsedAddressesAndSecrets()
 
-    // TODO - do something smarter, now it just returns a random address from the pool of available ones
+    // TODO - do something smarter, now it just returns a random address
+    // from the pool of available ones
 
     return availableAddresses[Math.floor(Math.random() * availableAddresses.length)].address
   }
 
   async getUnspentTxOutputsWithSecrets() {
-    var result = []
+    let result = []
 
     const addresses = this.getUsedAddressesAndSecrets()
 
-    for (var i = 0; i < addresses.length; i++) {
-      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(
-        addresses[i].address
-      )
+    for (let i = 0; i < addresses.length; i++) {
+      const addressUnspentOutputs = await blockchainExplorer
+        .getUnspentTxOutputs(addresses[i].address)
 
       addressUnspentOutputs.map((element) => {
         element.secret = addresses[i].secret
       })
 
-      var result = result.concat(addressUnspentOutputs)
+      result = result.concat(addressUnspentOutputs)
     }
 
     return result

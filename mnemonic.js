@@ -16,8 +16,9 @@ exports.generateMnemonic = function() {
 
 exports.mnemonicToWalletSecretString = function(mnemonic) {
   const hashSeed = mnemonicToHashSeed(mnemonic)
+  let result
 
-  for (let i = 1; i <= 1001; i++) {
+  for (let i = 1; result === undefined && i <= 1000; i++) {
     const hmac = crypto.createHmac('sha512', hashSeed)
     hmac.update(`Root Seed Chain ${i}`)
 
@@ -26,24 +27,31 @@ exports.mnemonicToWalletSecretString = function(mnemonic) {
     const secret = new Buffer(digest.substr(0, 64), 'hex')
 
     try {
-      var secretKey = extendSecretToSecretKey(secret)
-      var publicKey = new Buffer(
+      const secretKey = extendSecretToSecretKey(secret)
+      const publicKey = new Buffer(
         ecOriginal.keyFromSecret(secret.toString('hex')).getPublic('hex'),
         'hex'
       )
 
-      var chainCode = new Buffer(digest.substr(64, 64), 'hex')
-    } catch (e) {
-      if (i > 1000) {
-        throw exceptions.RuntimeException('Secret key generation from mnemonic is looping forever')
-      }
-      continue
-    }
+      const chainCode = new Buffer(digest.substr(64, 64), 'hex')
 
-    return new transaction.WalletSecretString(
-      Buffer.concat([secretKey, publicKey, chainCode]).toString('hex')
-    )
+      result = new transaction.WalletSecretString(
+        Buffer.concat([secretKey, publicKey, chainCode]).toString('hex')
+      )
+    } catch (e) {
+      if (e instanceof exceptions.InvalidArgumentException) {
+        continue
+      }
+
+      throw e
+    }
   }
+
+  if (result === undefined) {
+    throw exceptions.RuntimeException('Secret key generation from mnemonic is looping forever')
+  }
+
+  return result
 }
 
 function extendSecretToSecretKey(secret) {
@@ -69,14 +77,14 @@ function mnemonicToHashSeed(mnemonic) {
     throw new exceptions.InvalidArgumentException('Mnemonic with invalid checksum')
   }
 
-  var result = mnemonicToIndices(mnemonic)
+  const mnemonicAsHex = mnemonicToIndices(mnemonic)
     .reduce((acc, elem) => {
       return acc.multipliedBy('800', 16).plus(bigNumber(elem.toString(10)))
     }, bigNumber('0'))
     .toString(16)
-  result = result.length % 2 != 0 ? result.substr(0, result.length - 1) : result
-  var result = new Buffer(
-    cbor.encode(new Buffer(hashBlake2b256(new Buffer(result, 'hex')), 'hex')),
+
+  const result = new Buffer(
+    cbor.encode(new Buffer(hashBlake2b256(new Buffer(mnemonicAsHex, 'hex')), 'hex')),
     'hex'
   )
 
@@ -90,7 +98,7 @@ function mnemonicToIndices(mnemonic) {
 function mnemonicWordToIndex(word) {
   const result = validWords.indexOf(word)
 
-  if (result == -1) {
+  if (result === -1) {
     throw new exceptions.InvalidArgumentException(`Not a valid mnemonic word: ${word}`)
   }
 
