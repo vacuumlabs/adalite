@@ -4,12 +4,12 @@ const fetchMock = require('fetch-mock')
 const cbor = require('cbor')
 const sinon = require('sinon')
 
-const utils = require('../utils')
-const transaction = require('../transaction')
-const mnemonic = require('../mnemonic')
-const address = require('../address')
-const {CardanoWallet, generateMenmonic} = require('../cardano-wallet')
-const config = require('../config')
+const utils = require('./utils')
+const transaction = require('./transaction')
+const mnemonic = require('./mnemonic')
+const address = require('./address')
+const {CardanoWallet, generateMenmonic} = require('./cardano-wallet')
+const config = require('./config')
 
 function mockBlockChainExplorer() {
   fetchMock.config.overwriteRoutes = true
@@ -294,7 +294,6 @@ function mockRandomNumberGenerator(value) {
   sinon.stub(Math, 'random').returns(value)
 }
 
-
 describe('test generating mnemonic', () => {
   const mnemonic = generateMenmonic()
 
@@ -302,7 +301,6 @@ describe('test generating mnemonic', () => {
     assert.equal(mnemonic.split(' ').length, 12)
   })
 })
-
 
 describe('test signing', () => {
   const secret = new transaction.WalletSecretString(
