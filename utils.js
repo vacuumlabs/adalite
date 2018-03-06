@@ -8,8 +8,6 @@ const ec = new EdDSA('ed25519')
 const ed25519 = require('supercop.js')
 const bigNumber = require('bignumber.js')
 const sha3256 = require('js-sha3').sha3_256
-const padStart = require('string.prototype.padstart')
-padStart.shim()
 
 exports.hashBlake2b256 = function(input) {
   const context = blake2.blake2bInit(32)

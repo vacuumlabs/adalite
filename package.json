@@ -35,16 +35,11 @@
     "crc-32": "^1.2.0",
     "elliptic": "^6.4.0",
     "elliptic-cardano": "6.4.0-b",
-    "node-fetch": "^2.0.0",
-    "express": "^4.16.2",
     "js-sha3": "^0.7.0",
     "isomorphic-fetch": "^2.2.1",
     "node-exceptions": "^3.0.0",
-    "node-int64": "^0.4.0",
     "pbkdf2": "^3.0.14",
-    "request": "^2.83.0",
     "sha1": "^1.1.1",
-    "string.prototype.padstart": "^3.0.0",
     "supercop.js": "^2.0.1"
   },
   "devDependencies": {
