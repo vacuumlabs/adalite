@@ -1,12 +1,13 @@
 const cbor = require('cbor')
 
-
-const {mnemonicToWalletSecretString} = require('./mnemonic')
+const {mnemonicToWalletSecretString, generateMnemonic} = require('./mnemonic')
 const tx = require('./transaction')
 const address = require('./address')
 const blockchainExplorer = require('./blockchain-explorer')
 const utils = require('./utils')
 const config = require('./config')
+
+exports.generateMenmonic = generateMnemonic
 
 exports.CardanoWallet = class CardanoWallet {
 

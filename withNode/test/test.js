@@ -9,7 +9,7 @@ const utils = require('../utils')
 const transaction = require('../transaction')
 const mnemonic = require('../mnemonic')
 const address = require('../address')
-const CardanoWallet = require('../cardano-wallet').CardanoWallet
+const {CardanoWallet, generateMenmonic} = require('../cardano-wallet')
 const config = require('../config')
 
 function mockBlockChainExplorer() {
@@ -80,6 +80,17 @@ function mockTransactionSubmitter() {
 function mockRandomNumberGenerator(value) {
   sinon.stub(Math, 'random').returns(value)
 }
+
+
+describe('test generating mnemonic', () => {
+  const mnemonic = generateMenmonic()
+
+  it('should produce 12 words', () => {
+    assert.equal(mnemonic.split(' ').length, 12)
+  })
+
+})
+
 
 describe('test signing', () => {
   const secret = new transaction.WalletSecretString('50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c')
