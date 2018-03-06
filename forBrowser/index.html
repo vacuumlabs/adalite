@@ -14,7 +14,7 @@
     let wallet = null;
 
     function printMenmonic() {
-      document.getElementById("mnemonic-generated").innerHTML = Cardano.Mnemonic.generate();
+      document.getElementById("mnemonic-generated").innerHTML = Cardano.generateMenmonic();
     }
 
     async function submitMenmonic() {
