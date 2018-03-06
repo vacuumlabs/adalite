@@ -1,7 +1,7 @@
 // var Buffer = require("buffer/").Buffer;
 const bip39 = require('bip39')
 const exceptions = require('node-exceptions')
-const cbor = require('cbor-js')
+const cbor = require('cbor')
 const bigNumber = require('bignumber.js')
 const crypto = require('crypto')
 const EdDSAOriginal = require('elliptic-cardano').eddsa

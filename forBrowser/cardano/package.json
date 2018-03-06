@@ -31,7 +31,7 @@
     "blakejs": "^1.1.0",
     "bs58": "^4.0.1",
     "buffer": "^5.1.0",
-    "cbor-js": "^0.1.0",
+    "cbor": "^4.0.0",
     "crc-32": "^1.2.0",
     "elliptic": "^6.4.0",
     "elliptic-cardano": "6.4.0-b",
