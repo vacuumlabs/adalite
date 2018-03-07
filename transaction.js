@@ -26,6 +26,7 @@ class TxAux {
   }
 }
 
+// export only what you really need
 exports.TxInput = class TxInput {
   constructor(txId, outputIndex, secret, coins) {
     this.id = txId

@@ -14,6 +14,21 @@ const addressHash = require('./utils').addressHash
 const tx = require('./transaction')
 const {add256NoCarry, scalarAdd256ModM, multiply8} = require('./utils')
 
+// refactor how exports work. First define everything:
+// function fn1(){...}
+//
+// const const2 = ...
+//
+// class Class3 {...
+//
+// finally, be explicit about what you want to export at the end of file:
+//
+// module.exports = {fn1, const2, Class3}
+//
+// in a case of exporting a single variable, do it such as:
+//
+// module.exports = fn
+
 exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
   let addressPayload, addressAttributes, derivedSecretString, addressRoot
 
@@ -63,12 +78,14 @@ exports.isAddressDerivableFromSecretString = function(address, rootSecretString)
   }
 }
 
+// strip 'OrFail' i.e. rename to deriveSecretStringFromAddress
 exports.deriveSecretStringFromAddressOrFail = function(address, rootSecretString) {
   // we decode the address from the base58 string
   // and then we strip the 24 CBOR data taga (the "[0].value" part)
   const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
   const addressData = cbor.decode(addressAsBuffer)
   const addressAttributes = addressData[1]
+  //const childIndex = addressAttributes.length === 0 ? xxx : yyy
   let childIndex
 
   if (addressAttributes.length === 0) {

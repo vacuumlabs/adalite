@@ -245,7 +245,6 @@ function mockBlockChainExplorer() {
     },
     '*': {},
   }
-  // eslint-disable-next-line guard-for-in
   for (const address in addressesAndResponses) {
     fetchMock.mock({
       matcher: `${config.blockchain_explorer_url}/api/addresses/summary/${address}`,
@@ -303,6 +302,7 @@ describe('test generating mnemonic', () => {
 })
 
 describe('test signing', () => {
+  // factor out the repetitiveness; make global secret1, secret2 vars
   const secret = new transaction.WalletSecretString(
     '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c'
   )

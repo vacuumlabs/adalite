@@ -4,6 +4,8 @@ const exceptions = require('node-exceptions')
 const cbor = require('cbor')
 const bigNumber = require('bignumber.js')
 const crypto = require('crypto')
+// use pattern:
+// `const {EdDSAOriginal} = require('elliptic-cardano')`
 const EdDSAOriginal = require('elliptic-cardano').eddsa
 const ecOriginal = new EdDSAOriginal('ed25519')
 
