@@ -97,6 +97,7 @@ function deriveAddressAndSecret(rootSecretString, childIndex) {
 
   return {
     address,
+    childIndex,
     secret: derivedSecretString,
   }
 }

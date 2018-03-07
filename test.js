@@ -32,228 +32,446 @@ function mockBlockChainExplorer() {
   fetchMock.config.overwriteRoutes = true
 
   const addressesAndResponses = {
-    'DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1': {
+    'DdzFFzCqrhsgeBwYfYqJojCSPquZVLVoqAWjoBXsxCE9gJ44881GzVXMverRYLBU5KeArqW3EPThfeucWj1UzBU49c2e87dkdVaVSZ3s': {
       Right: {
         caAddress:
-          'DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1',
-        caType: 'CPubKeyAddress',
-        caTxNum: 2,
-        caBalance: {getCoin: '129015'},
-        caTxList: [
-          {
-            ctbId: '832a3801a9e46cc938a988d4c97ce82e53b20aea765624a89e3c7d35ef7e3650',
-            ctbTimeIssued: 1519994871,
-            ctbInputs: [
-              [
-                'DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1',
-                {getCoin: '300000'},
-              ],
-            ],
-            ctbOutputs: [
-              [
-                'DdzFFzCqrhswmyfTS3u8VtJyQNopv4MkGt3trhwKG9s4kfvJwinCnCXBYR5nw6tTYSchxY7rdM2SUxZDu69t7WLVWx4orbqDQfgNguR6',
-                {getCoin: '47'},
-              ],
-              [
-                'DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1',
-                {getCoin: '129015'},
-              ],
-            ],
-            ctbInputSum: {getCoin: '300000'},
-            ctbOutputSum: {getCoin: '129062'},
-          },
-          {
-            ctbId: '5811c19f26a224b7078164bc1b58b40b9f3f2d4db8fc75ae6c3da0efc62f2ab9',
-            ctbTimeIssued: 1519994651,
-            ctbInputs: [
-              [
-                'DdzFFzCqrht7sGUFDwVzstZWxxEjF4LA9fXqKp8ukpQE79qkKfUeWaJMaNpYpdsQiP1sfHv4oTzPNZQs86wzS5revG6vxqa7SikRXQCV',
-                {getCoin: '909363'},
-              ],
-            ],
-            ctbOutputs: [
-              [
-                'DdzFFzCqrhsfcrGg11KhEmyDmdk3hLRQKH6QRj9ZpafraFzLH2iXivzdAGPbC6E5YcgjgysAoev7q4e9Ugq3ognhz6FgKQCQkSbkPxT6',
-                {getCoin: '438469'},
-              ],
-              [
-                'DdzFFzCqrhsivVgm2FLicfDdsSpfJEcEE9g88zvcpCj7V6AWZgopLjtR7c9nhGNC2gLB4UYoJMjMhmnXtQciQAy1PJCY7Y33tvNybzf1',
-                {getCoin: '300000'},
-              ],
-            ],
-            ctbInputSum: {getCoin: '909363'},
-            ctbOutputSum: {getCoin: '738469'},
-          },
-        ],
-      },
-    },
-    'DdzFFzCqrhswKekq5Ysev3wL15MndorSfEF82TV5dxHihGjjVweXvmkza4zGnQj3jkvrobwFTnoBpxqes447eVbUDopk3NpLAcQnmfdF': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhswKekq5Ysev3wL15MndorSfEF82TV5dxHihGjjVweXvmkza4zGnQj3jkvrobwFTnoBpxqes447eVbUDopk3NpLAcQnmfdF',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhsmccT3YihDKQ5KCD38J2UFJk6RUASm9SRtTUdUjk8ckefYex6vBGEThiga4Rxwguo41jR9Z3V1S8BBDYxaU4qaWNrsFhb6': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhsmccT3YihDKQ5KCD38J2UFJk6RUASm9SRtTUdUjk8ckefYex6vBGEThiga4Rxwguo41jR9Z3V1S8BBDYxaU4qaWNrsFhb6',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhsjXT3cnX4bQz962iPoYN8Dg86fUcbE9LcZgGqh6M2q3cVn8T8YFk6YnJy6ktEZwTrpBu2UFppjP278vhaZtqxP1zJLD45g': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhsjXT3cnX4bQz962iPoYN8Dg86fUcbE9LcZgGqh6M2q3cVn8T8YFk6YnJy6ktEZwTrpBu2UFppjP278vhaZtqxP1zJLD45g',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhsjiaipx1j73iVt71CXzyBdXKwcxjvr1yjvrDiT2nFe4habRYDGCju8K15h4r94XgGUCippXSDWpvw4Ced8u9nQquXggPJN': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhsjiaipx1j73iVt71CXzyBdXKwcxjvr1yjvrDiT2nFe4habRYDGCju8K15h4r94XgGUCippXSDWpvw4Ced8u9nQquXggPJN',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhstbzRrLTb1JyBnCMRYiVd6oHSW1HVNGxQWM1NaJpQdqe1GWJcTmmwgXgxYzUVSwQiuVquNHuiYeaBDrGxBZz8ZWdXJ3TeV': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhstbzRrLTb1JyBnCMRYiVd6oHSW1HVNGxQWM1NaJpQdqe1GWJcTmmwgXgxYzUVSwQiuVquNHuiYeaBDrGxBZz8ZWdXJ3TeV',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhseRqK4diUWHnfDTUwa2QJL3aG1Jiq6RyDnVsCScEbjYKRtxeGtaF5FnvEQA1yub5w9xvu9ATJwbV3Jr2Hx2asPzWd25DFZ': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhseRqK4diUWHnfDTUwa2QJL3aG1Jiq6RyDnVsCScEbjYKRtxeGtaF5FnvEQA1yub5w9xvu9ATJwbV3Jr2Hx2asPzWd25DFZ',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhsyVbmK9eZqrrT4x8PhfDWtiuH8C22u7vqUCW37c2piwvVwsat8vZAF3enDx4qX5f8BTVLioKJVfZL6eHXxod3RL8QmQUaA': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhsyVbmK9eZqrrT4x8PhfDWtiuH8C22u7vqUCW37c2piwvVwsat8vZAF3enDx4qX5f8BTVLioKJVfZL6eHXxod3RL8QmQUaA',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhsrSTaAUjjU5kXshDzWEpiTUARJEmWbYjPHvX29jQKgtAqh68xsFAVFfmztuattaKfbVxQAatA1FYU5aD92TaQ91JKncNvG': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhsrSTaAUjjU5kXshDzWEpiTUARJEmWbYjPHvX29jQKgtAqh68xsFAVFfmztuattaKfbVxQAatA1FYU5aD92TaQ91JKncNvG',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhsgErn96PqpDUMPupiHhyMUMpgppcN4Xd4Lf8FBZLmwChfzHaEYC5obPhTA3vt3fEWUsyrpXdxsCBYWcbBxsG6orjSvbJst': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhsgErn96PqpDUMPupiHhyMUMpgppcN4Xd4Lf8FBZLmwChfzHaEYC5obPhTA3vt3fEWUsyrpXdxsCBYWcbBxsG6orjSvbJst',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrhst6rR3xHiQ33vfWAcVMZGvDbygSUK7i3WgmUy3v5YbTYAGaHzsayjxY5fp3ykDxeLdfciJfpo7hqHUzzGaeFBKSNdrYjKj': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrhst6rR3xHiQ33vfWAcVMZGvDbygSUK7i3WgmUy3v5YbTYAGaHzsayjxY5fp3ykDxeLdfciJfpo7hqHUzzGaeFBKSNdrYjKj',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrht5fgT1Hr855QzvMsxagivGV5kiaf2hV3857VTMoD2bfoakcCMz4xWFLJ4qHXRtxc6GPQPMdQ8GPir74SrW7GLnwRSm5oBB': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrht5fgT1Hr855QzvMsxagivGV5kiaf2hV3857VTMoD2bfoakcCMz4xWFLJ4qHXRtxc6GPQPMdQ8GPir74SrW7GLnwRSm5oBB',
-        caType: 'CPubKeyAddress',
-        caTxNum: 0,
-        caBalance: {getCoin: '0'},
-        caTxList: [],
-      },
-    },
-    'DdzFFzCqrht1vxD2QC4R7JdEja8GexgxknMQu7NNwKtwz2iS87rCKGkHocrC8aq9Xa1sSJkWAjtgrHZn5NQe6FUdKos1K5gLWRU4VYdz': {
-      Right: {
-        caAddress:
-          'DdzFFzCqrht1vxD2QC4R7JdEja8GexgxknMQu7NNwKtwz2iS87rCKGkHocrC8aq9Xa1sSJkWAjtgrHZn5NQe6FUdKos1K5gLWRU4VYdz',
+          'DdzFFzCqrhsgeBwYfYqJojCSPquZVLVoqAWjoBXsxCE9gJ44881GzVXMverRYLBU5KeArqW3EPThfeucWj1UzBU49c2e87dkdVaVSZ3s',
         caType: 'CPubKeyAddress',
         caTxNum: 1,
-        caBalance: {getCoin: '100000'},
+        caBalance: {getCoin: '1000000'},
         caTxList: [
           {
-            ctbId: 'd733abd1d3db639ce0ae29df3a0958c0eb19ace60434336d1705509492b4c761',
-            ctbTimeIssued: 1519999111,
+            ctbId: '14fab8b89cc003da76c147af4ce3619bc36f7064b69f48b7fbad63673753f351',
+            ctbTimeIssued: 1520526111,
             ctbInputs: [
               [
-                'DdzFFzCqrhsfcrGg11KhEmyDmdk3hLRQKH6QRj9ZpafraFzLH2iXivzdAGPbC6E5YcgjgysAoev7q4e9Ugq3ognhz6FgKQCQkSbkPxT6',
-                {getCoin: '438469'},
+                'DdzFFzCqrhswKekq5Ysev3wL15MndorSfEF82TV5dxHihGjjVweXvmkza4zGnQj3jkvrobwFTnoBpxqes447eVbUDopk3NpLAcQnmfdF',
+                {getCoin: '20000000'},
               ],
             ],
             ctbOutputs: [
               [
-                'DdzFFzCqrhtCyU8KiQmhL711iAJ9ccTw1CxAtNwHij5GdshGCFmMzDEqnGuf6TGh5uQDhy1qAHRXqCexkTvU8cxy3aXk3qFyeK6oZ8be',
-                {getCoin: '167575'},
+                'DdzFFzCqrhsjWQpNmu9QWV89P4UDjbha5wAeasKevqTuv7bf2DpNmdXTh5xQJKJftgWWyNQg242YErYXbuM3yagzsGJdpescQPihJJmr',
+                {getCoin: '18829106'},
               ],
               [
-                'DdzFFzCqrht1vxD2QC4R7JdEja8GexgxknMQu7NNwKtwz2iS87rCKGkHocrC8aq9Xa1sSJkWAjtgrHZn5NQe6FUdKos1K5gLWRU4VYdz',
-                {getCoin: '100000'},
+                'DdzFFzCqrhsgeBwYfYqJojCSPquZVLVoqAWjoBXsxCE9gJ44881GzVXMverRYLBU5KeArqW3EPThfeucWj1UzBU49c2e87dkdVaVSZ3s',
+                {getCoin: '1000000'},
               ],
             ],
-            ctbInputSum: {getCoin: '438469'},
-            ctbOutputSum: {getCoin: '267575'},
+            ctbInputSum: {getCoin: '20000000'},
+            ctbOutputSum: {getCoin: '19829106'},
           },
         ],
       },
     },
-    'DdzFFzCqrhshrgCvjfpvptY5FhXKniVvikpuPNRnu7hbEmbawfjgib1ZoT39hERjCbmA8nZ4AG6Zf6A4DXnvL67dGSXVwQZ8kvFpQTbv': {
+    'DdzFFzCqrhspskHcFWK16DuGgjVdDSaoWZZCgV8gp256ZufbioHSQCnxSefuAoECZHrFSaF6veHoVxkwSV5eYx6Vi3NGV1qu58NGzS9d': {
       Right: {
         caAddress:
-          'DdzFFzCqrhshrgCvjfpvptY5FhXKniVvikpuPNRnu7hbEmbawfjgib1ZoT39hERjCbmA8nZ4AG6Zf6A4DXnvL67dGSXVwQZ8kvFpQTbv',
+          'DdzFFzCqrhspskHcFWK16DuGgjVdDSaoWZZCgV8gp256ZufbioHSQCnxSefuAoECZHrFSaF6veHoVxkwSV5eYx6Vi3NGV1qu58NGzS9d',
         caType: 'CPubKeyAddress',
         caTxNum: 0,
         caBalance: {getCoin: '0'},
         caTxList: [],
       },
     },
-    'DdzFFzCqrhsqzqdwV3YG9Y3zTGQaoY28u777yn95WpF7yCvcdYGyx5MF5qBUWhnboWn9Ma17kVGdmUo2YEbxr7YVZ6bhenRL2snJVoWf': {
+    'DdzFFzCqrhsoNpMFaQfYFHiuKN5NjNWtypJcKpWsNJX6miADvKxhZxyeDyNkfnBDxswNnGpLCuB6MkNy7uhD4eu4jgMgFkBgySiPegkY': {
       Right: {
         caAddress:
-          'DdzFFzCqrhsqzqdwV3YG9Y3zTGQaoY28u777yn95WpF7yCvcdYGyx5MF5qBUWhnboWn9Ma17kVGdmUo2YEbxr7YVZ6bhenRL2snJVoWf',
+          'DdzFFzCqrhsoNpMFaQfYFHiuKN5NjNWtypJcKpWsNJX6miADvKxhZxyeDyNkfnBDxswNnGpLCuB6MkNy7uhD4eu4jgMgFkBgySiPegkY',
         caType: 'CPubKeyAddress',
         caTxNum: 0,
         caBalance: {getCoin: '0'},
         caTxList: [],
       },
     },
-    'DdzFFzCqrhsrASdDq8FwYFZSQWjrRW85HFMNS9d5dNk5DdXs5UYei14m7h1YgNEBEBQsKSLQERL1pa7GaT5Hjo2YGeuxSo4xS8mja8WC': {
+    'DdzFFzCqrhsnwP6vhJfe3Zs7aRdFkp6kwiFs9GkGdvT98Bdg6es5ojMe94kcdKVVit7uqtm4bwJwKpgckkH4HwsVQapzACQb4Hqebmfy': {
       Right: {
         caAddress:
-          'DdzFFzCqrhsrASdDq8FwYFZSQWjrRW85HFMNS9d5dNk5DdXs5UYei14m7h1YgNEBEBQsKSLQERL1pa7GaT5Hjo2YGeuxSo4xS8mja8WC',
+          'DdzFFzCqrhsnwP6vhJfe3Zs7aRdFkp6kwiFs9GkGdvT98Bdg6es5ojMe94kcdKVVit7uqtm4bwJwKpgckkH4HwsVQapzACQb4Hqebmfy',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhssuRDi1EGGjCajnyTGqA3HVFownbkTA9M9638Ro3o8CGyZN5NFNQMaHAbhnZgevHqoCwghoq9aScHyoWptamKzwQK7RWFw': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhssuRDi1EGGjCajnyTGqA3HVFownbkTA9M9638Ro3o8CGyZN5NFNQMaHAbhnZgevHqoCwghoq9aScHyoWptamKzwQK7RWFw',
+        caType: 'CPubKeyAddress',
+        caTxNum: 1,
+        caBalance: {getCoin: '500000'},
+        caTxList: [
+          {
+            ctbId: '1ce7a1e2606271a7f085262fb7c509c98d60912a943c9be3871ac3ace48ae6d6',
+            ctbTimeIssued: 1520526191,
+            ctbInputs: [
+              [
+                'DdzFFzCqrhsjWQpNmu9QWV89P4UDjbha5wAeasKevqTuv7bf2DpNmdXTh5xQJKJftgWWyNQg242YErYXbuM3yagzsGJdpescQPihJJmr',
+                {getCoin: '18829106'},
+              ],
+            ],
+            ctbOutputs: [
+              [
+                'DdzFFzCqrhszkkEYCCAutkxJkX82CWEsXYqNsVz4mLvL8c87PwbuwUsKM4dcDe7WodJtrsJdv4yRzHMKU2LyBb2yUxtMB1ifqBAYYjKt',
+                {getCoin: '18158212'},
+              ],
+              [
+                'DdzFFzCqrhssuRDi1EGGjCajnyTGqA3HVFownbkTA9M9638Ro3o8CGyZN5NFNQMaHAbhnZgevHqoCwghoq9aScHyoWptamKzwQK7RWFw',
+                {getCoin: '500000'},
+              ],
+            ],
+            ctbInputSum: {getCoin: '18829106'},
+            ctbOutputSum: {getCoin: '18658212'},
+          },
+        ],
+      },
+    },
+    'DdzFFzCqrhtDCf6a547LpcwLmpseYwBUhC8vtv274kA1uwvziJ5ZUmi1VVyGrsS7zButfcFTbTqrrV3TyEoE4ZzqjVp7f1Y52NzS4Qfr': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhtDCf6a547LpcwLmpseYwBUhC8vtv274kA1uwvziJ5ZUmi1VVyGrsS7zButfcFTbTqrrV3TyEoE4ZzqjVp7f1Y52NzS4Qfr',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht8DEWfNqPZVZg1HK5Jmdqqi6oXfyLSan2sJrAokbSZ7BmXjkD7v4bWYQsuuvTAVQGpH6E3aeJ7pMuRBTV2ypUYLuS23M1h': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht8DEWfNqPZVZg1HK5Jmdqqi6oXfyLSan2sJrAokbSZ7BmXjkD7v4bWYQsuuvTAVQGpH6E3aeJ7pMuRBTV2ypUYLuS23M1h',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsetWr6ScRnzreftN8nde7Xhf6K3sJqUT8GQPX2bLJNeEz1YhbhyNcewSuymkwPyo21uoAcALJDe8uP44gU9MXnM3EJhVNx': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsetWr6ScRnzreftN8nde7Xhf6K3sJqUT8GQPX2bLJNeEz1YhbhyNcewSuymkwPyo21uoAcALJDe8uP44gU9MXnM3EJhVNx',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsqBKENVMB5fXpJMAwLiAsThoL4BQ52QyUbomKATrZz8bLeAxSCWKyw6yYHXD99ASatFiAcfUsD827JiCW3o23dyWCUwEKz': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsqBKENVMB5fXpJMAwLiAsThoL4BQ52QyUbomKATrZz8bLeAxSCWKyw6yYHXD99ASatFiAcfUsD827JiCW3o23dyWCUwEKz',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsv4YrCT87R1yt7KK6364b5rBzM2TLHJN3Xh7hekm2i8ezTYgVLi6cxUCggCpEvGoKs52MwCgUn6Uxp3uPJ81DuYbUkxV19': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsv4YrCT87R1yt7KK6364b5rBzM2TLHJN3Xh7hekm2i8ezTYgVLi6cxUCggCpEvGoKs52MwCgUn6Uxp3uPJ81DuYbUkxV19',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsynmqGHyFcQME9faAJ3PWtwyhfK5wW5vj8hfff46H6KsMSQvFdRUpexGZPgTDrRmvHVfpWZLGjymEPFh4mJnaMyW7k3XRk': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsynmqGHyFcQME9faAJ3PWtwyhfK5wW5vj8hfff46H6KsMSQvFdRUpexGZPgTDrRmvHVfpWZLGjymEPFh4mJnaMyW7k3XRk',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsmzxyw7miPZpbb8BuftQfmCZF3Lmc3tAQtKp1d8CnWd6BnnrqP6EoDPaD3m63Ri6Jxuduuy8fkPNDTeA2HxfvEnt4rLufU': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsmzxyw7miPZpbb8BuftQfmCZF3Lmc3tAQtKp1d8CnWd6BnnrqP6EoDPaD3m63Ri6Jxuduuy8fkPNDTeA2HxfvEnt4rLufU',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht59PjE6SYEXztqHAQusqXeEf5V4ARn4VrMCLEYiTveM1Q3UUSkNLjUtszFJcb6zCa8BAiQg6bErE8xqZH7872doULFDWRa': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht59PjE6SYEXztqHAQusqXeEf5V4ARn4VrMCLEYiTveM1Q3UUSkNLjUtszFJcb6zCa8BAiQg6bErE8xqZH7872doULFDWRa',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht1CofRyjVZov8G67nHW7cPZwUfLhJehYtMcGB3Zo8CwM2ogYUer5QecKP5xnp4SajKFuXMTYk1SNavrbGVtyoShMMbJdzh': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht1CofRyjVZov8G67nHW7cPZwUfLhJehYtMcGB3Zo8CwM2ogYUer5QecKP5xnp4SajKFuXMTYk1SNavrbGVtyoShMMbJdzh',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsnRKoLhvAKjmxKXGd7uP8NkgLiwgAsSAAw8uETJBmsRgFQfTFBtFeZ2EV2fQ5KijX6mp4brdYwXB4QtduHe2z7wTh6UVWw': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsnRKoLhvAKjmxKXGd7uP8NkgLiwgAsSAAw8uETJBmsRgFQfTFBtFeZ2EV2fQ5KijX6mp4brdYwXB4QtduHe2z7wTh6UVWw',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhtCupHueaWLLSq65zi6Qqbd5X8j8HEJs8m7vAqw5JMcDgYQNMVB3rzBy9nm6VK4UzbaXkNYSB9VahHPN8Rh17SkQk8qi7rr': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhtCupHueaWLLSq65zi6Qqbd5X8j8HEJs8m7vAqw5JMcDgYQNMVB3rzBy9nm6VK4UzbaXkNYSB9VahHPN8Rh17SkQk8qi7rr',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht7623beBMy2y21WaAMMngyVEB6nBUG61JXdrh9EZTtN9K5aNQJWjKka8fCxeN46HdLhVJSJw3YQQabm9NVJoH14GMVyT4R': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht7623beBMy2y21WaAMMngyVEB6nBUG61JXdrh9EZTtN9K5aNQJWjKka8fCxeN46HdLhVJSJw3YQQabm9NVJoH14GMVyT4R',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhshEcF1JBBBF73csrRjXKQ9tR86ZyGzT1PJby6ByktW9HjjJpvi4RVo4uU9KY6E1hq4ogsh59aXfrsh4hKbkkTErewZ8n3v': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhshEcF1JBBBF73csrRjXKQ9tR86ZyGzT1PJby6ByktW9HjjJpvi4RVo4uU9KY6E1hq4ogsh59aXfrsh4hKbkkTErewZ8n3v',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsq9z82fWeapSYt6dFa5gahqe3asqoYtMJhaaaBtT9hbj7m2PrQqQERNjeWuNrSnHXWj2ya2kCQyAkfkNTjPWW3t1Rq9adU': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsq9z82fWeapSYt6dFa5gahqe3asqoYtMJhaaaBtT9hbj7m2PrQqQERNjeWuNrSnHXWj2ya2kCQyAkfkNTjPWW3t1Rq9adU',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsun6D8CTjDfzWTZbHaxxvv2RcoAexkBiavN2npSxEciGMprxg8tEu3jMrzZ4enx7Le4eWaiFtoRX6LidsPkcVdF58TTbrr': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsun6D8CTjDfzWTZbHaxxvv2RcoAexkBiavN2npSxEciGMprxg8tEu3jMrzZ4enx7Le4eWaiFtoRX6LidsPkcVdF58TTbrr',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht7vBDpRdkoEvoF9aBbEDV1vyQN5JNu33cALADuFSxWgxLTPtG2v39mfc5KkgMU9xLYdvX87t4RxCwo1P2NBeNtEuRnqviw': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht7vBDpRdkoEvoF9aBbEDV1vyQN5JNu33cALADuFSxWgxLTPtG2v39mfc5KkgMU9xLYdvX87t4RxCwo1P2NBeNtEuRnqviw',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhshzCpfTgKb9A2FAXhL55pxzg3K4txFfTGEMCU1yVBx8SHUbTfB9J4Z95gbGxnU9JN4utDdG2Zd3dWMiUyoiDE7TguZdf7i': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhshzCpfTgKb9A2FAXhL55pxzg3K4txFfTGEMCU1yVBx8SHUbTfB9J4Z95gbGxnU9JN4utDdG2Zd3dWMiUyoiDE7TguZdf7i',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht9oGpmqe6Q5RiNtpX83nDEwXv8Q4Qx5rRCq7RjY7mEW14LxeLwVNNyWghu1HszBtGxJNktw696xCC71z2HLT5UQXYYBNZ2': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht9oGpmqe6Q5RiNtpX83nDEwXv8Q4Qx5rRCq7RjY7mEW14LxeLwVNNyWghu1HszBtGxJNktw696xCC71z2HLT5UQXYYBNZ2',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht2oeQBoqiWpSxRt3DZWq4cQWS7F7JoYEsjZwc2xfTa9JGSf1Y7MmayqgQcRC8xi7bpoTMK58W1a6zeNT9YStbeATNp8GeX': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht2oeQBoqiWpSxRt3DZWq4cQWS7F7JoYEsjZwc2xfTa9JGSf1Y7MmayqgQcRC8xi7bpoTMK58W1a6zeNT9YStbeATNp8GeX',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsmwF529PJmb8iLZ87vV5zgktCHxAKpepo6TbjWR98Z1LNM5CzKZkgyNzn2pmJQRqGSAPK5x79ZAYmAzhoZApArjyhHw21g': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsmwF529PJmb8iLZ87vV5zgktCHxAKpepo6TbjWR98Z1LNM5CzKZkgyNzn2pmJQRqGSAPK5x79ZAYmAzhoZApArjyhHw21g',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsp2esip3QoPog4C25Wzip8RhF1FHzsxSGMX97FqPRn7BCTUZJez6Z61oxjjxKdQk8ULUXgEdfcYfMqK2Rpcdu3oVbFt4cP': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsp2esip3QoPog4C25Wzip8RhF1FHzsxSGMX97FqPRn7BCTUZJez6Z61oxjjxKdQk8ULUXgEdfcYfMqK2Rpcdu3oVbFt4cP',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhssNCYyKRHgX2Y3qi5E4DtCr3pSiVypqTypT6tFheBWYyKLKkNTXqNPHRYV53nGNAKJo2PHBiE8SJrhwqQYFkHHUwNu8yod': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhssNCYyKRHgX2Y3qi5E4DtCr3pSiVypqTypT6tFheBWYyKLKkNTXqNPHRYV53nGNAKJo2PHBiE8SJrhwqQYFkHHUwNu8yod',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsiHdniQ3hwLNuvwopzRSsvb6jNtKTbVeVvo9i2WZNf9MVaAs1W69cTgP4UCaMP7ad4WKwWGCEPS5CHUF3RbhB2mpUZ8wYy': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsiHdniQ3hwLNuvwopzRSsvb6jNtKTbVeVvo9i2WZNf9MVaAs1W69cTgP4UCaMP7ad4WKwWGCEPS5CHUF3RbhB2mpUZ8wYy',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsw6jJthDnW3uRQ5gj6M6NYTVtHShzPz86K1exCiE1Cgzd5searczsRmykC15nSXZq9WjKtHRayPfqTWyGkqGgcDjtzFrC8': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsw6jJthDnW3uRQ5gj6M6NYTVtHShzPz86K1exCiE1Cgzd5searczsRmykC15nSXZq9WjKtHRayPfqTWyGkqGgcDjtzFrC8',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhszprABVfGD7enKjSzomz15ewKR7ut1wDtZQXhUDLANZUjMsJYqQ1u6j1ri6gvYRgNL2JkoMV1bTyG1CoRieFyvaWksvZZp': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhszprABVfGD7enKjSzomz15ewKR7ut1wDtZQXhUDLANZUjMsJYqQ1u6j1ri6gvYRgNL2JkoMV1bTyG1CoRieFyvaWksvZZp',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhseD1hQD3FwT3jzgf6BHZGjVkT8iUfCX2gnTjyC4KUywtfNx2TA1cVWLfs3HWurU9fQUVz2WURmUhAD8zvcGQb62GCoaqHV': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhseD1hQD3FwT3jzgf6BHZGjVkT8iUfCX2gnTjyC4KUywtfNx2TA1cVWLfs3HWurU9fQUVz2WURmUhAD8zvcGQb62GCoaqHV',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhstVbtQwqVihhSvhnHoGBhVh82xKDdyHuypN2BCh1kCqjdYNqJYBw2nii2YEPZuY1pwzVKepSiKZqoiy4eTFcpeRTLpaWqT': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhstVbtQwqVihhSvhnHoGBhVh82xKDdyHuypN2BCh1kCqjdYNqJYBw2nii2YEPZuY1pwzVKepSiKZqoiy4eTFcpeRTLpaWqT',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsxGmNaXoXY4KPLPwuFdDZHenKHf5uZmYxU7MePCQjCqCULvQtLcAfcP5FGj2YX5aPsi2RTKN8muwYJ5enax2RtK2cydjth': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsxGmNaXoXY4KPLPwuFdDZHenKHf5uZmYxU7MePCQjCqCULvQtLcAfcP5FGj2YX5aPsi2RTKN8muwYJ5enax2RtK2cydjth',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht5ssBL2LXXAHQAFwJEZ54xT1RGqLrFnz6m62BFcUKMLp63c9EshSwqHLm5YHWqmFiShtWhKeyCUZhEhqu7rTTV7xewXBYw': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht5ssBL2LXXAHQAFwJEZ54xT1RGqLrFnz6m62BFcUKMLp63c9EshSwqHLm5YHWqmFiShtWhKeyCUZhEhqu7rTTV7xewXBYw',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsgejq4tVbeatmrNT6kKqnsgpMcCbtAVNroRjc2tCU7d1tXBko6kWjmPKYAap9iu8eBDatakXRpvLQ5djdVKxhacbuGM9YJ': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsgejq4tVbeatmrNT6kKqnsgpMcCbtAVNroRjc2tCU7d1tXBko6kWjmPKYAap9iu8eBDatakXRpvLQ5djdVKxhacbuGM9YJ',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht8YAoPHDXKniGBQ4kDnWGrHFxcusBJF7SRaYddEvKc3jqWkmkoGkUwTDb6aAmLEGppQFb8yiCKpfvWyBi338iVNA3LSoLm': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht8YAoPHDXKniGBQ4kDnWGrHFxcusBJF7SRaYddEvKc3jqWkmkoGkUwTDb6aAmLEGppQFb8yiCKpfvWyBi338iVNA3LSoLm',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsrTfrWLj67FdMjkikfU5tnPro9Wj5xNBRRkJ7qJoeW6s7YeYKUorXh6DryPfwUEbaVZXwhYtpQ9QtdnFmdJMPUt5nDB8aQ': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsrTfrWLj67FdMjkikfU5tnPro9Wj5xNBRRkJ7qJoeW6s7YeYKUorXh6DryPfwUEbaVZXwhYtpQ9QtdnFmdJMPUt5nDB8aQ',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsiCqrw6sK96bV573hXuAki5R67bhmwVSQhmZgCBY9cSV3bh4UdSbfY3ZfC7ryKj9PD8CXf4JGAFYV5Wc91xA73zFVYS3Vb': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsiCqrw6sK96bV573hXuAki5R67bhmwVSQhmZgCBY9cSV3bh4UdSbfY3ZfC7ryKj9PD8CXf4JGAFYV5Wc91xA73zFVYS3Vb',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrht3jUCsKsDQR9VEXReKrCVE72tcBJQRoLRp2NeJsy7DwmKsMFtrJ7LXZ5kgA14ASBUUiRKvyHNYQW4EW2LLHcyujeHAk4Yz': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrht3jUCsKsDQR9VEXReKrCVE72tcBJQRoLRp2NeJsy7DwmKsMFtrJ7LXZ5kgA14ASBUUiRKvyHNYQW4EW2LLHcyujeHAk4Yz',
+        caType: 'CPubKeyAddress',
+        caTxNum: 0,
+        caBalance: {getCoin: '0'},
+        caTxList: [],
+      },
+    },
+    'DdzFFzCqrhsdyHBTENgndn6yiXLFcu2XjvDTjrPKapJLeay2qpKqnrbyysj4ChFdHmMattnQRQgcmkoy2A3Gca9RfWyVGLpMoCCT3zzz': {
+      Right: {
+        caAddress:
+          'DdzFFzCqrhsdyHBTENgndn6yiXLFcu2XjvDTjrPKapJLeay2qpKqnrbyysj4ChFdHmMattnQRQgcmkoy2A3Gca9RfWyVGLpMoCCT3zzz',
         caType: 'CPubKeyAddress',
         caTxNum: 0,
         caBalance: {getCoin: '0'},
@@ -278,7 +496,7 @@ function mockTransactionSubmitter() {
   fetchMock.config.overwriteRoutes = true
 
   const requestsAndResponses = {
-    '{"txHash":"60cc8a3a766f99b630dbf7b4396f04e1ca8db0f562d54e1fade91235c798d4c6","txBody":"82839f8200d8185824825820832a3801a9e46cc938a988d4c97ce82e53b20aea765624a89e3c7d35ef7e3650018200d8185824825820d733abd1d3db639ce0ae29df3a0958c0eb19ace60434336d1705509492b4c76101ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc5df000ed6ec84d14db177b71f5b63520a3847d1361e383543d2d3afa101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001a8eb0e6c619c39bffa0828200d818588582584051e7ce6dd9f07afa880a2d55d65396ebc4588850038775b70c9cbb19e003b1cb1db0b4a17591363ca72123e98746268a0c9c09c1293d70d00885ca37861a650358404ab6db12094ce22ddca8995fa4b9b95636124e0ec658c57b728b1d23d87af81e7ceb878760d8067258f03fcd4d2181a5c706ac923f26db1c261765f23847ec098200d8185885825840021172f166d00a69bbedd52b093a161d2c1de3483d6c0c9ee8ed53d1a15c9b5dabc9def063f90350503c20856073d4690ff00257943c701867771e59e377c4ab5840380063e4f2f060ece8fe2204cd8e28c2cfaf9a7640153191cb2a8f34b8b5a7ed8ab9423c5d454fd2157634518c32004a117ee14ed66604dbfb0ed9be9398e503"}': {
+    '{"txHash":"d9cbe3036b13fb877d0c30ec2d80317ec0833e52216b216b04258b5c35afea96","txBody":"82839f8200d818582482582014fab8b89cc003da76c147af4ce3619bc36f7064b69f48b7fbad63673753f351018200d81858248258201ce7a1e2606271a7f085262fb7c509c98d60912a943c9be3871ac3ace48ae6d601ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581c0878fbeaf6d490d49664c99c9284108e0a58387f31224b8b34428fc9a101581e581c2eab4601bfe5834281489b4f0a202c5a8cf558ba330004952411670a001a9c8c59d91a00142864ffa0828200d8185885825840fa5955500ecacca4939204a8f1af4639747a161cd35a35368c9c8d48df32685b0f48b0997c0e22e87e9533ba19310ba4a9bf0c6cf37bfed513c37de15761d56e584009209ef220b4588cd7b73c436366194ef5cf78091f7fbec4e3f5953a325e34740e0850f6c5efd7ed7a90e5579a431b083b7e79c244ba9b4340d3c73797f89f008200d8185885825840545448ff0dba05dcc4587f522c11b358afe8b974a588364ba074b9017f241b71eac253db1f265e409beeca1858664002572715de9533094eb757525b4f372af558405fdc18f4b49ce8bdb503ea213dea9b8ac1b880cacf08c283b7c8cacef7d1f04154532a5e12f6807608595db9398594855c792e94e34a008bb767ff6f5172060f"}': {
       result: true,
     },
   }
@@ -422,25 +640,29 @@ describe('test address ownership verification', () => {
 
 describe('test wallet addresses derivation', () => {
   const expectedWalletAddresses = [
-    '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',
+    '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',
   ]
 
-  const walletAddresses = wallet.getUsedAddresses()
+  const walletAddresses = wallet.deriveAddresses()
 
   it('should derive the right sequence of addresses from the root secret key', () => {
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
@@ -454,49 +676,50 @@ describe('test transaction fee function', () => {
   })
 })
 
-describe('test successful transaction fee computation', () => {
+describe('test successful transaction fee computation', async () => {
   mockBlockChainExplorer()
   it('should compute the right transaction fee for given transaction', async () => {
     assert.equal(await wallet.getTxFee(myAddress, 47), 178893)
   })
 
   it('should return fee -1 for an unallowed transaction (not enough resources on the account)', async () => {
-    assert.equal(await wallet.getTxFee(myAddress, 750000), -1)
+    assert.equal(await wallet.getTxFee(myAddress, 1450000), -1)
   })
 })
 
-describe('test transaction serialization', () => {
+describe('test transaction serialization', (suite) => {
   mockBlockChainExplorer()
   mockRandomNumberGenerator(0.7)
+  suite.timeout(5000)
 
-  it('should properly serialize transaction inner body', async () => {
+  suite.it('should properly serialize transaction inner body', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
 
     // transaction serialization before providing witnesses
     const utxSerialized = cbor.encode(tx.getTxAux()).toString('hex')
     const expectedUtxSerialized =
-      '839f8200d8185824825820832a3801a9e46cc938a988d4c97ce82e53b20aea765624a89e3c7d35ef7e3650018200d8185824825820d733abd1d3db639ce0ae29df3a0958c0eb19ace60434336d1705509492b4c76101ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc5df000ed6ec84d14db177b71f5b63520a3847d1361e383543d2d3afa101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001a8eb0e6c619c39bffa0'
+      '839f8200d818582482582014fab8b89cc003da76c147af4ce3619bc36f7064b69f48b7fbad63673753f351018200d81858248258201ce7a1e2606271a7f085262fb7c509c98d60912a943c9be3871ac3ace48ae6d601ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581c0878fbeaf6d490d49664c99c9284108e0a58387f31224b8b34428fc9a101581e581c2eab4601bfe5834281489b4f0a202c5a8cf558ba330004952411670a001a9c8c59d91a00142864ffa0'
 
     assert.equal(utxSerialized, expectedUtxSerialized)
   })
 
   // transaction hash computation
-  it('should properly compute transaction hash', async () => {
+  suite.it('should properly compute transaction hash', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
 
     const txHash = tx.getId()
-    const expectedTxHash = '60cc8a3a766f99b630dbf7b4396f04e1ca8db0f562d54e1fade91235c798d4c6'
+    const expectedTxHash = 'd9cbe3036b13fb877d0c30ec2d80317ec0833e52216b216b04258b5c35afea96'
 
     assert.equal(txHash, expectedTxHash, 'transaction hash is wrong')
   })
 
   // transaction witnesses computation
-  it('should properly compute transaction witnesses', async () => {
+  suite.it('should properly compute transaction witnesses', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
     const witnesses = tx.getWitnesses()
     const witnessesSerialized = cbor.encode(witnesses).toString('hex')
     const expectedWitnessesSerialized =
-      '828200d818588582584051e7ce6dd9f07afa880a2d55d65396ebc4588850038775b70c9cbb19e003b1cb1db0b4a17591363ca72123e98746268a0c9c09c1293d70d00885ca37861a650358404ab6db12094ce22ddca8995fa4b9b95636124e0ec658c57b728b1d23d87af81e7ceb878760d8067258f03fcd4d2181a5c706ac923f26db1c261765f23847ec098200d8185885825840021172f166d00a69bbedd52b093a161d2c1de3483d6c0c9ee8ed53d1a15c9b5dabc9def063f90350503c20856073d4690ff00257943c701867771e59e377c4ab5840380063e4f2f060ece8fe2204cd8e28c2cfaf9a7640153191cb2a8f34b8b5a7ed8ab9423c5d454fd2157634518c32004a117ee14ed66604dbfb0ed9be9398e503'
+      '828200d8185885825840fa5955500ecacca4939204a8f1af4639747a161cd35a35368c9c8d48df32685b0f48b0997c0e22e87e9533ba19310ba4a9bf0c6cf37bfed513c37de15761d56e584009209ef220b4588cd7b73c436366194ef5cf78091f7fbec4e3f5953a325e34740e0850f6c5efd7ed7a90e5579a431b083b7e79c244ba9b4340d3c73797f89f008200d8185885825840545448ff0dba05dcc4587f522c11b358afe8b974a588364ba074b9017f241b71eac253db1f265e409beeca1858664002572715de9533094eb757525b4f372af558405fdc18f4b49ce8bdb503ea213dea9b8ac1b880cacf08c283b7c8cacef7d1f04154532a5e12f6807608595db9398594855c792e94e34a008bb767ff6f5172060f'
 
     assert.equal(
       witnessesSerialized,
@@ -506,29 +729,30 @@ describe('test transaction serialization', () => {
   })
 
   // whole transaction serialization
-  it('should properly serialize the whole transaction', async () => {
+  suite.it('should properly serialize the whole transaction', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
 
     const txBody = cbor.encode(tx).toString('hex')
     const expectedTxBody =
-      '82839f8200d8185824825820832a3801a9e46cc938a988d4c97ce82e53b20aea765624a89e3c7d35ef7e3650018200d8185824825820d733abd1d3db639ce0ae29df3a0958c0eb19ace60434336d1705509492b4c76101ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc5df000ed6ec84d14db177b71f5b63520a3847d1361e383543d2d3afa101581e581c2eab4601bfe583c2840b2b4fee027ac05963bc8f8f5ef30ddc77b4a1001a8eb0e6c619c39bffa0828200d818588582584051e7ce6dd9f07afa880a2d55d65396ebc4588850038775b70c9cbb19e003b1cb1db0b4a17591363ca72123e98746268a0c9c09c1293d70d00885ca37861a650358404ab6db12094ce22ddca8995fa4b9b95636124e0ec658c57b728b1d23d87af81e7ceb878760d8067258f03fcd4d2181a5c706ac923f26db1c261765f23847ec098200d8185885825840021172f166d00a69bbedd52b093a161d2c1de3483d6c0c9ee8ed53d1a15c9b5dabc9def063f90350503c20856073d4690ff00257943c701867771e59e377c4ab5840380063e4f2f060ece8fe2204cd8e28c2cfaf9a7640153191cb2a8f34b8b5a7ed8ab9423c5d454fd2157634518c32004a117ee14ed66604dbfb0ed9be9398e503'
+      '82839f8200d818582482582014fab8b89cc003da76c147af4ce3619bc36f7064b69f48b7fbad63673753f351018200d81858248258201ce7a1e2606271a7f085262fb7c509c98d60912a943c9be3871ac3ace48ae6d601ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581c0878fbeaf6d490d49664c99c9284108e0a58387f31224b8b34428fc9a101581e581c2eab4601bfe5834281489b4f0a202c5a8cf558ba330004952411670a001a9c8c59d91a00142864ffa0828200d8185885825840fa5955500ecacca4939204a8f1af4639747a161cd35a35368c9c8d48df32685b0f48b0997c0e22e87e9533ba19310ba4a9bf0c6cf37bfed513c37de15761d56e584009209ef220b4588cd7b73c436366194ef5cf78091f7fbec4e3f5953a325e34740e0850f6c5efd7ed7a90e5579a431b083b7e79c244ba9b4340d3c73797f89f008200d8185885825840545448ff0dba05dcc4587f522c11b358afe8b974a588364ba074b9017f241b71eac253db1f265e409beeca1858664002572715de9533094eb757525b4f372af558405fdc18f4b49ce8bdb503ea213dea9b8ac1b880cacf08c283b7c8cacef7d1f04154532a5e12f6807608595db9398594855c792e94e34a008bb767ff6f5172060f'
 
     assert.equal(txBody, expectedTxBody, 'transaction serialization is wrong')
   })
 })
 
-describe('test wallet balance computation', () => {
+describe('test wallet balance computation', async () => {
   mockBlockChainExplorer()
 
   it('should properly fetch wallet balance', async () => {
-    assert.equal(await wallet.getBalance(), 229015)
+    assert.equal(await wallet.getBalance(), 1500000)
   })
 })
 
-describe('test transaction submission', () => {
+describe('test transaction submission', (suite) => {
   mockTransactionSubmitter()
+  suite.timeout(5000)
 
-  it('should properly submit transaction', async () => {
+  suite.it('should properly submit transaction', async () => {
     const result = await wallet.sendAda(myAddress, 47)
     assert.equal(result, true)
   })
