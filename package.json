@@ -22,6 +22,7 @@
     "fix": "prettier-eslint --write \"*.js\" \"./helpers/*.js\""
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
+  "todo": "remove unused dependencies",
   "dependencies": {
     "@stablelib/chacha20poly1305": "^0.10.2",
     "bignumber.js": "^6.0.0",

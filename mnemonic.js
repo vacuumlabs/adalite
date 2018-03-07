@@ -1,4 +1,3 @@
-// var Buffer = require("buffer/").Buffer;
 const bip39 = require('bip39')
 const cbor = require('cbor')
 const bigNumber = require('bignumber.js')

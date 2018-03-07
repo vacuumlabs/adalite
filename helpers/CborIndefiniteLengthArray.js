@@ -13,3 +13,11 @@ module.exports = class CborIndefiniteLengthArray {
     return encoder.push(elementsEncoded)
   }
 }
+
+exports.filter = async function(arr, callback) {
+  return (await Promise.all(
+    arr.map(async (item) => {
+      return (await callback(item)) ? item : undefined
+    })
+  )).filter((i) => i !== undefined)
+}

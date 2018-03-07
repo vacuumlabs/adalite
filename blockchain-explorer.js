@@ -72,4 +72,8 @@ async function getAddressBalance(address) {
   return parseInt(result.caBalance.getCoin, 10)
 }
 
-module.exports = {getUnspentTxOutputs, getAddressTxList, getAddressInfo, getAddressBalance}
+async function isAddressUsed(address) {
+  return (await getAddressInfo(address)).caTxNum > 0
+}
+
+module.exports = {getUnspentTxOutputs, getAddressTxList, getAddressInfo, getAddressBalance, isAddressUsed}

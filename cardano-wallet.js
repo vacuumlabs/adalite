@@ -14,6 +14,14 @@ function txFeeFunction(txSizeInBytes) {
   return Math.ceil(a + txSizeInBytes * b)
 }
 
+async function filterUsed(arr, callback) {
+  return (await Promise.all(
+    arr.map(async (item) => {
+      return (await callback(item)) ? item : undefined
+    })
+  )).filter((i) => i !== undefined)
+}
+
 const CardanoWallet = (secretOrMnemonic) => {
   const rootSecret =
     secretOrMnemonic.search(' ') >= 0
@@ -44,7 +52,7 @@ const CardanoWallet = (secretOrMnemonic) => {
 
     const txOutputs = [
       new tx.TxOutput(new tx.WalletAddress(address), coins),
-      new tx.TxOutput(new tx.WalletAddress(getChangeAddress()), txInputsCoinsSum - fee - coins),
+      new tx.TxOutput(new tx.WalletAddress(await getChangeAddress()), txInputsCoinsSum - fee - coins),
     ]
 
     return new tx.Transaction(txInputs, txOutputs, {})
@@ -59,10 +67,10 @@ const CardanoWallet = (secretOrMnemonic) => {
   async function getBalance() {
     let result = 0
 
-    const addresses = getUsedAddressesAndSecrets()
+    const addresses = await getUsedAddresses()
 
     for (let i = 0; i < addresses.length; i++) {
-      result += await blockchainExplorer.getAddressBalance(addresses[i].address)
+      result += await blockchainExplorer.getAddressBalance(addresses[i])
     }
 
     return result
@@ -131,19 +139,29 @@ const CardanoWallet = (secretOrMnemonic) => {
     return fee
   }
 
-  function getChangeAddress() {
-    const availableAddresses = getUsedAddressesAndSecrets()
+  async function getChangeAddress(usedAddressesLimit = 20) {
+    const usedAddressesAndSecrets = await getUsedAddressesAndSecrets()
 
-    // TODO - do something smarter, now it just returns a random address
-    // from the pool of available ones
+    let result
 
-    return availableAddresses[Math.floor(Math.random() * availableAddresses.length)].address
+    if (usedAddressesAndSecrets.length < usedAddressesLimit) {
+      const highestUsedChildIndex = usedAddressesAndSecrets.reduce((acc, item) => {
+        return Math.max(item.childIndex, acc)
+      }, 0)
+
+      result = address.deriveAddressAndSecret(rootSecret, highestUsedChildIndex + 1).address
+    } else {
+      result =
+        usedAddressesAndSecrets[Math.floor(Math.random() * usedAddressesAndSecrets.length)].address
+    }
+
+    return result
   }
 
   async function getUnspentTxOutputsWithSecrets() {
     let result = []
 
-    const addresses = getUsedAddressesAndSecrets()
+    const addresses = await getUsedAddressesAndSecrets()
 
     for (let i = 0; i < addresses.length; i++) {
       const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(
@@ -160,21 +178,51 @@ const CardanoWallet = (secretOrMnemonic) => {
     return result
   }
 
-  function getUsedAddressesAndSecrets() {
-    // TODO - do something smarter, now it just returns 16 addresses with consecutive child indices
+  async function getUsedAddressesAndSecrets() {
+    let result = []
 
-    const result = []
-    for (let i = 345000; i < 345016; i++) {
-      result.push(address.deriveAddressAndSecret(rootSecret, i))
+    for (let i = 0; ; i++) {
+      const usedAddresses = await filterUsed(
+        deriveAddressesAndSecrets(i * 20, (i + 1) * 20),
+        async (addressData) => {
+          return await blockchainExplorer.isAddressUsed(addressData.address)
+        }
+      )
+
+      if (usedAddresses.length === 0) {
+        break
+      }
+
+      result = result.concat(usedAddresses)
     }
 
     return result
   }
 
-  function getUsedAddresses() {
-    return getUsedAddressesAndSecrets().map((item) => {
+  function deriveAddresses(begin = 0, end = 20) {
+    return deriveAddressesAndSecrets(begin, end).map((item) => item.address)
+  }
+
+  function deriveAddressesAndSecrets(begin = 0, end = 20) {
+    const result = []
+    for (let i = begin; i < end; i++) {
+      result.push(address.deriveAddressAndSecret(rootSecret, 0x80000001 + i))
+    }
+
+    return result
+  }
+
+  async function getUsedAddresses() {
+    return (await getUsedAddressesAndSecrets()).map((item) => {
       return item.address
     })
+  }
+
+  function txFeeFunction(txSizeInBytes) {
+    const a = 155381
+    const b = 43.946
+
+    return Math.ceil(a + txSizeInBytes * b)
   }
 
   async function submitTxRaw(txHash, txBody) {
@@ -201,7 +249,7 @@ const CardanoWallet = (secretOrMnemonic) => {
     }
   }
 
-  return {sendAda, getBalance, getChangeAddress, getTxFee, getUsedAddresses, prepareTx}
+  return {sendAda, getBalance, getChangeAddress, getTxFee, getUsedAddresses, prepareTx, deriveAddresses}
 }
 
 if (typeof window !== 'undefined') {
