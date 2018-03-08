@@ -2,10 +2,8 @@
 // - if function is used only in one other module, just move it there
 // - if function really needs to be exported, move it into './helpers/[fnName].js'
 const Buffer = require('buffer/').Buffer
-// var fetch = require("isomorphic-fetch");
 const blake2 = require('blakejs')
 const cbor = require('cbor')
-const exceptions = require('node-exceptions')
 const EdDSA = require('elliptic-cardano').eddsaVariant
 const ec = new EdDSA('ed25519')
 const ed25519 = require('supercop.js')

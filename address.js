@@ -1,5 +1,4 @@
 const crc32 = require('crc-32')
-const exceptions = require('node-exceptions')
 const cbor = require('cbor')
 const pbkdf2 = require('pbkdf2')
 const chacha20 = require('@stablelib/chacha20poly1305')
@@ -8,7 +7,6 @@ const crypto = require('crypto')
 const EdDSA = require('elliptic-cardano').eddsaVariant
 const ec = new EdDSA('ed25519')
 
-const {AddressDecodingException} = require('./custom-exceptions')
 const CBORIndefiniteLengthArray = require('./helpers').CBORIndefiniteLengthArray
 const addressHash = require('./utils').addressHash
 const tx = require('./transaction')
@@ -70,7 +68,7 @@ exports.isAddressDerivableFromSecretString = function(address, rootSecretString)
     exports.deriveSecretStringFromAddressOrFail(address, rootSecretString)
     return true
   } catch (e) {
-    if (e instanceof AddressDecodingException) {
+    if (e.name === 'AddressDecodingException') {
       return false
     }
 
@@ -141,7 +139,9 @@ function decryptDerivationPathOrFail(addressPayload, hdPassphrase) {
   try {
     return cbor.decode(new Buffer(decipheredDerivationPath))
   } catch (err) {
-    throw new AddressDecodingException('incorrect address or passphrase')
+    const e = new Error('incorrect address or passphrase')
+    e.name = 'AddressDecodingException'
+    throw e
   }
 }
 
