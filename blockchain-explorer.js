@@ -1,4 +1,4 @@
-const request = require('./utils').request
+const request = require('./helpers/request')
 const config = require('./config')
 
 async function getUnspentTxOutputs(address) {

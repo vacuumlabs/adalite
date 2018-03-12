@@ -4,7 +4,7 @@ const {mnemonicToWalletSecretString, generateMnemonic} = require('./mnemonic')
 const tx = require('./transaction')
 const address = require('./address')
 const blockchainExplorer = require('./blockchain-explorer')
-const utils = require('./utils')
+const request = require('./helpers/request')
 const config = require('./config')
 
 exports.generateMenmonic = generateMnemonic
@@ -186,7 +186,7 @@ exports.CardanoWallet = class CardanoWallet {
 
   async submitTxRaw(txHash, txBody) {
     try {
-      const res = await utils.request(
+      const res = await request(
         config.transaction_submitter_url,
         'POST',
         JSON.stringify({

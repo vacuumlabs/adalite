@@ -4,7 +4,6 @@ const fetchMock = require('fetch-mock')
 const cbor = require('cbor')
 const sinon = require('sinon')
 
-const utils = require('./utils')
 const transaction = require('./transaction')
 const mnemonic = require('./mnemonic')
 const address = require('./address')
@@ -322,7 +321,7 @@ describe('test generating mnemonic', () => {
 describe('test signing', () => {
   it('should produce proper signature', () => {
     // test signing
-    assert.equal(utils.sign(message, secret1), signature)
+    assert.equal(transaction.sign(message, secret1), signature)
   })
 })
 
@@ -331,11 +330,11 @@ describe('test signature verification', () => {
     'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02'
 
   it('should accept signature', () => {
-    assert.equal(utils.verify(message, secret1.getPublicKey(), signature), true)
+    assert.equal(transaction.verify(message, secret1.getPublicKey(), signature), true)
   })
 
   it('should reject signature', () => {
-    assert.equal(utils.verify(message, secret1.getPublicKey(), wrongSignature), false)
+    assert.equal(transaction.verify(message, secret1.getPublicKey(), wrongSignature), false)
   })
 })
 

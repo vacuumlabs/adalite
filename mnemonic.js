@@ -8,7 +8,7 @@ const crypto = require('crypto')
 const EdDSAOriginal = require('elliptic-cardano').eddsa
 const ecOriginal = new EdDSAOriginal('ed25519')
 
-const hashBlake2b256 = require('./utils').hashBlake2b256
+const hashBlake2b256 = require('./helpers/hashBlake2b256')
 const validWords = require('./valid-words.en').words
 const transaction = require('./transaction')
 
