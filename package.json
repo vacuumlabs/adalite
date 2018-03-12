@@ -17,7 +17,7 @@
     "url": "https://github.com/vacuumlabs/cardano/issues"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.build.js",
+    "build": "webpack --mode production --config webpack.config.build.js",
     "test": "webpack --config webpack.config.test.js",
     "fix": "prettier-eslint --write \"*.js\" \"./helpers/*.js\""
   },

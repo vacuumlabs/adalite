@@ -7,7 +7,7 @@ const EdDSA = require('elliptic-cardano').eddsaVariant
 const ec = new EdDSA('ed25519')
 
 const hashBlake2b256 = require('./helpers/hashBlake2b256')
-const {CborIndefiniteLengthArray} = require('./helpers/CborIndefiniteLengthArray')
+const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
 function hex2buf(hexString) {
   return Buffer.from(hexString, 'hex')

@@ -11,7 +11,7 @@ const EdDsa = require('elliptic-cardano').eddsaVariant
 const ec = new EdDsa('ed25519')
 const sha3 = require('js-sha3')
 
-const {CborIndefiniteLengthArray} = require('./helpers/CborIndefiniteLengthArray')
+const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const tx = require('./transaction')
 
 // refactor how exports work. First define everything:

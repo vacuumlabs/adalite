@@ -7,7 +7,7 @@ const sinon = require('sinon')
 const transaction = require('./transaction')
 const mnemonic = require('./mnemonic')
 const address = require('./address')
-const {CardanoWallet, generateMenmonic} = require('./cardano-wallet')
+const {CardanoWallet, generateMnemonic, txFeeFunction} = require('./cardano-wallet')
 const config = require('./config')
 
 const secret1 = new transaction.WalletSecretString(
@@ -16,7 +16,7 @@ const secret1 = new transaction.WalletSecretString(
 const secret2 = new transaction.WalletSecretString(
   'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
 )
-const wallet = new CardanoWallet(
+const wallet = CardanoWallet(
   'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
 )
 const childIndex1 = 0x80000000
@@ -311,7 +311,7 @@ function mockRandomNumberGenerator(value) {
 }
 
 describe('test generating mnemonic', () => {
-  const mnemonic = generateMenmonic()
+  const mnemonic = generateMnemonic()
 
   it('should produce 12 words', () => {
     assert.equal(mnemonic.split(' ').length, 12)
@@ -449,8 +449,8 @@ describe('test wallet addresses derivation', () => {
 
 describe('test transaction fee function', () => {
   it('should properly compute transaction fee based on transaction size parameter', () => {
-    assert.equal(CardanoWallet.txFeeFunction(50), 157579)
-    assert.equal(CardanoWallet.txFeeFunction(351), 170807)
+    assert.equal(txFeeFunction(50), 157579)
+    assert.equal(txFeeFunction(351), 170807)
   })
 })
 

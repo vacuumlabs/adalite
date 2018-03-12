@@ -7,32 +7,35 @@ const blockchainExplorer = require('./blockchain-explorer')
 const request = require('./helpers/request')
 const config = require('./config')
 
-exports.generateMenmonic = generateMnemonic
+function txFeeFunction(txSizeInBytes) {
+  const a = 155381
+  const b = 43.946
 
-exports.CardanoWallet = class CardanoWallet {
-  constructor(secret) {
-    this.rootSecret =
-      secret.search(' ') >= 0
-        ? mnemonicToWalletSecretString(secret)
-        : new tx.WalletSecretString(secret)
-  }
+  return Math.ceil(a + txSizeInBytes * b)
+}
 
-  async sendAda(address, coins) {
-    const transaction = await this.prepareTx(address, coins)
+const CardanoWallet = (secret) => {
+  const rootSecret =
+    secret.search(' ') >= 0
+      ? mnemonicToWalletSecretString(secret)
+      : new tx.WalletSecretString(secret)
+
+  async function sendAda(address, coins) {
+    const transaction = await prepareTx(address, coins)
 
     const txHash = transaction.getId()
     const txBody = cbor.encode(transaction).toString('hex')
 
-    return await this.submitTxRaw(txHash, txBody)
+    return await submitTxRaw(txHash, txBody)
   }
 
-  async prepareTx(address, coins) {
-    const txInputs = await this.prepareTxInputs(coins)
+  async function prepareTx(address, coins) {
+    const txInputs = await prepareTxInputs(coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins
     }, 0)
 
-    const fee = this.computeTxFee(txInputs, coins)
+    const fee = computeTxFee(txInputs, coins)
 
     //comment this for developement
     if (fee === -1) {
@@ -41,25 +44,22 @@ exports.CardanoWallet = class CardanoWallet {
 
     const txOutputs = [
       new tx.TxOutput(new tx.WalletAddress(address), coins),
-      new tx.TxOutput(
-        new tx.WalletAddress(this.getChangeAddress()),
-        txInputsCoinsSum - fee - coins
-      ),
+      new tx.TxOutput(new tx.WalletAddress(getChangeAddress()), txInputsCoinsSum - fee - coins),
     ]
 
     return new tx.Transaction(txInputs, txOutputs, {})
   }
 
-  async getTxFee(address, coins) {
-    const txInputs = await this.prepareTxInputs(coins)
+  async function getTxFee(address, coins) {
+    const txInputs = await prepareTxInputs(coins)
 
-    return this.computeTxFee(txInputs, coins)
+    return computeTxFee(txInputs, coins)
   }
 
-  async getBalance() {
+  async function getBalance() {
     let result = 0
 
-    const addresses = this.getUsedAddressesAndSecrets()
+    const addresses = getUsedAddressesAndSecrets()
 
     for (let i = 0; i < addresses.length; i++) {
       result += await blockchainExplorer.getAddressBalance(addresses[i].address)
@@ -68,9 +68,9 @@ exports.CardanoWallet = class CardanoWallet {
     return result
   }
 
-  async prepareTxInputs(coins) {
+  async function prepareTxInputs(coins) {
     // TODO optimize tx inputs selection, now it takes all utxos
-    const utxos = await this.getUnspentTxOutputsWithSecrets()
+    const utxos = await getUnspentTxOutputsWithSecrets()
 
     const txInputs = []
     for (let i = 0; i < utxos.length; i++) {
@@ -83,7 +83,7 @@ exports.CardanoWallet = class CardanoWallet {
   }
 
   // if the fee cannot be paid it returns -1, otherwise it returns the fee
-  computeTxFee(txInputs, coins) {
+  function computeTxFee(txInputs, coins) {
     if (coins > Number.MAX_SAFE_INTEGER) {
       throw new Error(`Unsupported amount of coins: ${coins}`)
     }
@@ -122,7 +122,7 @@ exports.CardanoWallet = class CardanoWallet {
     */
     const deviation = 4
 
-    const fee = this.constructor.txFeeFunction(txSizeInBytes + deviation)
+    const fee = txFeeFunction(txSizeInBytes + deviation)
 
     if (txInputsCoinsSum - coins - fee < 0) {
       return -1
@@ -131,8 +131,8 @@ exports.CardanoWallet = class CardanoWallet {
     return fee
   }
 
-  getChangeAddress() {
-    const availableAddresses = this.getUsedAddressesAndSecrets()
+  function getChangeAddress() {
+    const availableAddresses = getUsedAddressesAndSecrets()
 
     // TODO - do something smarter, now it just returns a random address
     // from the pool of available ones
@@ -140,10 +140,10 @@ exports.CardanoWallet = class CardanoWallet {
     return availableAddresses[Math.floor(Math.random() * availableAddresses.length)].address
   }
 
-  async getUnspentTxOutputsWithSecrets() {
+  async function getUnspentTxOutputsWithSecrets() {
     let result = []
 
-    const addresses = this.getUsedAddressesAndSecrets()
+    const addresses = getUsedAddressesAndSecrets()
 
     for (let i = 0; i < addresses.length; i++) {
       const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(
@@ -160,31 +160,24 @@ exports.CardanoWallet = class CardanoWallet {
     return result
   }
 
-  getUsedAddressesAndSecrets() {
+  function getUsedAddressesAndSecrets() {
     // TODO - do something smarter, now it just returns 16 addresses with consecutive child indices
 
     const result = []
     for (let i = 345000; i < 345016; i++) {
-      result.push(address.deriveAddressAndSecret(this.rootSecret, i))
+      result.push(address.deriveAddressAndSecret(rootSecret, i))
     }
 
     return result
   }
 
-  getUsedAddresses() {
-    return this.getUsedAddressesAndSecrets().map((item) => {
+  function getUsedAddresses() {
+    return getUsedAddressesAndSecrets().map((item) => {
       return item.address
     })
   }
 
-  static txFeeFunction(txSizeInBytes) {
-    const a = 155381
-    const b = 43.946
-
-    return Math.ceil(a + txSizeInBytes * b)
-  }
-
-  async submitTxRaw(txHash, txBody) {
+  async function submitTxRaw(txHash, txBody) {
     try {
       const res = await request(
         config.transaction_submitter_url,
@@ -207,8 +200,12 @@ exports.CardanoWallet = class CardanoWallet {
       throw Error(`txSubmiter unreachable ${err}`)
     }
   }
+
+  return {sendAda, getBalance, getChangeAddress, getTxFee, getUsedAddresses, prepareTx}
 }
 
 if (typeof window !== 'undefined') {
   window.CardanoWallet = exports.CardanoWallet
 }
+
+module.exports = {CardanoWallet, generateMnemonic, txFeeFunction}

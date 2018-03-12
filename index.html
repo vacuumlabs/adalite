@@ -19,13 +19,13 @@
 
     async function submitMenmonic() {
       const words = document.getElementById("mnemonic-submitted").value;
-      wallet = new Cardano.CardanoWallet(words);
+      wallet = Cardano.CardanoWallet(words);
       await updateWallet();
     }
 
     async function submitSecret() {
       const secret = document.getElementById("secret-submitted").value;
-      wallet = new Cardano.CardanoWallet(secret);
+      wallet = Cardano.CardanoWallet(secret);
       await updateWallet();
     }
 

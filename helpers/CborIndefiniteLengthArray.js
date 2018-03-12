@@ -1,5 +1,5 @@
 const cbor = require('cbor')
-module.exports.CborIndefiniteLengthArray = class CborIndefiniteLengthArray {
+module.exports = class CborIndefiniteLengthArray {
   constructor(elements) {
     this.elements = elements
   }
