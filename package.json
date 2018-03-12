@@ -25,21 +25,16 @@
   "todo": "remove unused dependencies",
   "dependencies": {
     "@stablelib/chacha20poly1305": "^0.10.2",
-    "base-58": "0.0.1",
     "bignumber.js": "^6.0.0",
     "bip39": "^2.5.0",
-    "blake2": "^1.4.0",
     "blakejs": "^1.1.0",
     "bs58": "^4.0.1",
     "buffer": "^5.1.0",
     "cbor": "^4.0.0",
     "crc-32": "^1.2.0",
-    "elliptic": "^6.4.0",
     "elliptic-cardano": "6.4.0-b",
     "js-sha3": "^0.7.0",
-    "isomorphic-fetch": "^2.2.1",
     "pbkdf2": "^3.0.14",
-    "sha1": "^1.1.1",
     "supercop.js": "^2.0.1"
   },
   "devDependencies": {
