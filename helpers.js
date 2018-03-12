@@ -5,7 +5,7 @@ const cbor = require('cbor')
 // don't capitablize at all)
 //
 // see remarks in ./utils.js
-exports.CBORIndefiniteLengthArray = class CBORIndefiniteLengthArray {
+module.exports.CborIndefiniteLengthArray = class CborIndefiniteLengthArray {
   constructor(elements) {
     this.elements = elements
   }

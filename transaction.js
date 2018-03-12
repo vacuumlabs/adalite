@@ -19,8 +19,8 @@ class TxAux {
 
   encodeCBOR(encoder) {
     return encoder.pushAny([
-      new helpers.CBORIndefiniteLengthArray(this.inputs),
-      new helpers.CBORIndefiniteLengthArray(this.outputs),
+      new helpers.CborIndefiniteLengthArray(this.inputs),
+      new helpers.CborIndefiniteLengthArray(this.outputs),
       this.attributes,
     ])
   }

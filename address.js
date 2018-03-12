@@ -4,10 +4,10 @@ const pbkdf2 = require('pbkdf2')
 const chacha20 = require('@stablelib/chacha20poly1305')
 const base58 = require('bs58')
 const crypto = require('crypto')
-const EdDSA = require('elliptic-cardano').eddsaVariant
-const ec = new EdDSA('ed25519')
+const EdDsa = require('elliptic-cardano').eddsaVariant
+const ec = new EdDsa('ed25519')
 
-const CBORIndefiniteLengthArray = require('./helpers').CBORIndefiniteLengthArray
+const CborIndefiniteLengthArray = require('./helpers').CborIndefiniteLengthArray
 const addressHash = require('./utils').addressHash
 const tx = require('./transaction')
 const {add256NoCarry, scalarAdd256ModM, multiply8} = require('./utils')
@@ -125,7 +125,7 @@ function getAddressRoot(walletSecretString, addressPayload) {
 }
 
 exports.encryptDerivationPath = function(derivationPath, hdPassphrase) {
-  const serializedDerivationPath = cbor.encode(new CBORIndefiniteLengthArray(derivationPath))
+  const serializedDerivationPath = cbor.encode(new CborIndefiniteLengthArray(derivationPath))
 
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
 

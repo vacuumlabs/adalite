@@ -10,14 +10,14 @@ const ed25519 = require('supercop.js')
 const bigNumber = require('bignumber.js')
 const sha3256 = require('js-sha3').sha3_256
 
-exports.hashBlake2b256 = function(input) {
+function hashBlake2b256(input) {
   const context = blake2.blake2bInit(32)
   blake2.blake2bUpdate(context, new Buffer(cbor.encode(input), 'hex'))
 
   return new Buffer(blake2.blake2bFinal(context)).toString('hex')
 }
 
-exports.addressHash = function(input) {
+function addressHash(input) {
   const serializedInput = cbor.encode(input)
 
   const firstHash = new Buffer(sha3256(serializedInput), 'hex')
@@ -28,11 +28,11 @@ exports.addressHash = function(input) {
   return new Buffer(blake2.blake2bFinal(context)).toString('hex')
 }
 
-exports.hex2buf = function(hexString) {
+function hex2buf(hexString) {
   return Buffer.from(hexString, 'hex')
 }
 
-exports.sign = function(message, extendedPrivateKey) {
+function sign(message, extendedPrivateKey) {
   const privKey = extendedPrivateKey.getSecretKey() //extendedPrivateKey.substr(0, 128);
   const pubKey = extendedPrivateKey.getPublicKey() //substr(128, 64);
 
@@ -43,13 +43,13 @@ exports.sign = function(message, extendedPrivateKey) {
     .toString('hex')
 }
 
-exports.verify = function(message, publicKey, signature) {
+function verify(message, publicKey, signature) {
   const key = ec.keyFromPublic(publicKey, 'hex')
 
   return key.verify(message, signature)
 }
 
-exports.add256NoCarry = function(b1, b2) {
+function add256NoCarry(b1, b2) {
   let result = ''
 
   for (let i = 0; i < 32; i++) {
@@ -67,7 +67,7 @@ function toLittleEndian(str) {
   return a.join('') // join the groups back together
 }
 
-exports.scalarAdd256ModM = function(b1, b2) {
+function scalarAdd256ModM(b1, b2) {
   let resultAsHexString = bigNumber(toLittleEndian(b1.toString('hex')), 16)
     .plus(bigNumber(toLittleEndian(b2.toString('hex')), 16))
     .mod(bigNumber('1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed', 16))
@@ -77,7 +77,7 @@ exports.scalarAdd256ModM = function(b1, b2) {
   return new Buffer(resultAsHexString, 'hex')
 }
 
-exports.multiply8 = function(buf) {
+function multiply8(buf) {
   let result = ''
   let prevAcc = 0
 
@@ -89,7 +89,7 @@ exports.multiply8 = function(buf) {
   return new Buffer(result, 'hex')
 }
 
-exports.request = async function(url, method = 'GET', body = {}, headers = {}) {
+async function request(url, method = 'GET', body = {}, headers = {}) {
   const res = await fetch(url, {
     method,
     headers,
@@ -100,4 +100,16 @@ exports.request = async function(url, method = 'GET', body = {}, headers = {}) {
   }
 
   return res.json()
+}
+
+module.exports = {
+  hashBlake2b256,
+  addressHash,
+  hex2buf,
+  sign,
+  verify,
+  add256NoCarry,
+  scalarAdd256ModM,
+  multiply8,
+  request,
 }
