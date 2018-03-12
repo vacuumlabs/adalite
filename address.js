@@ -85,7 +85,7 @@ function deriveSecretStringFromAddress(address, rootSecretString) {
   const addressPayload = cbor.decode(addressAttributes.get(1))
   const hdPassphrase = deriveHDPassphrase(rootSecretString)
   const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
-  const childIndex = (addressAttributes.length === 0) ? 0x80000000 : derivationPath[1]
+  const childIndex = addressAttributes.length === 0 ? 0x80000000 : derivationPath[1]
 
   return deriveAddressAndSecret(rootSecretString, childIndex).secret
 }

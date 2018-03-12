@@ -11,6 +11,24 @@ const address = require('./address')
 const {CardanoWallet, generateMenmonic} = require('./cardano-wallet')
 const config = require('./config')
 
+const secret1 = new transaction.WalletSecretString(
+  '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c'
+)
+const secret2 = new transaction.WalletSecretString(
+  'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
+)
+const wallet = new CardanoWallet(
+  'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
+)
+const childIndex1 = 0x80000000
+const childIndex2 = 0xf9745151
+const childIndex3 = 0x10000323
+const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
+const signature =
+  'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
+const myAddress =
+  'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY'
+
 function mockBlockChainExplorer() {
   fetchMock.config.overwriteRoutes = true
 
@@ -302,36 +320,22 @@ describe('test generating mnemonic', () => {
 })
 
 describe('test signing', () => {
-  // factor out the repetitiveness; make global secret1, secret2 vars
-  const secret = new transaction.WalletSecretString(
-    '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c'
-  )
-  const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
-  const signature =
-    'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
-
   it('should produce proper signature', () => {
     // test signing
-    assert.equal(utils.sign(message, secret), signature)
+    assert.equal(utils.sign(message, secret1), signature)
   })
 })
 
 describe('test signature verification', () => {
-  const secret = new transaction.WalletSecretString(
-    '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c'
-  )
-  const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
-  const rightSignature =
-    'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
   const wrongSignature =
     'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02'
 
   it('should accept signature', () => {
-    assert.equal(utils.verify(message, secret.getPublicKey(), rightSignature), true)
+    assert.equal(utils.verify(message, secret1.getPublicKey(), signature), true)
   })
 
   it('should reject signature', () => {
-    assert.equal(utils.verify(message, secret.getPublicKey(), wrongSignature), false)
+    assert.equal(utils.verify(message, secret1.getPublicKey(), wrongSignature), false)
   })
 })
 
@@ -357,81 +361,63 @@ describe('test secret key derivation from mnemonic', () => {
 })
 
 describe('test private key derivation', () => {
-  const secret = new transaction.WalletSecretString(
-    'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
-  )
-
   // root public secret key (the one used as 'wallet id' in Daedalus)
-  const childIndex1 = 0x80000000
   const expectedSecret1 =
     '28e375ee5af42a9641c5c31b1b2d24df7f1d2212116bc0b0fc58816f06985b072cf5960d205736cac2e8224dd6018f7223c1bdc630d2b866703670a37316f44003b5417131136bd53174f09b129ae0499bd718ca55c5d40877c33b5ee10e5ba89661f96070a9d39df75c21f6142415502e254523cbacff2b4d58aa87d9021d65'
   it("should properly derive root public secret key (the one used as 'wallet id' in Daedalus)", () => {
-    const derivedSecret1 = address.deriveSK(secret, childIndex1).secretString
+    const derivedSecret1 = address.deriveSK(secret2, childIndex1).secretString
     assert.equal(derivedSecret1, expectedSecret1)
   })
 
   // some hardened secret key - child index starts with 1 in binary
-  const childIndex2 = 0xf9745151
   const expectedSecret2 =
     'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
   it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
-    const derivedSecret2 = address.deriveSK(secret, childIndex2).secretString
+    const derivedSecret2 = address.deriveSK(secret2, childIndex2).secretString
     assert.equal(derivedSecret2, expectedSecret2)
   })
 
-  const childIndex3 = 0x10000323
   const expectedSecret3 =
     'e0f31d972365bb76a2dd837c7ba5b4b7c065fa4ad1fbf808ddc17130bf10c40f63772cbaa1cdf7e847543f3cbcb3da7065498c71c04ca1f5cd9dccc18226461efdade44a3c35cfb6ab9c834dbc418da2cba30501139db384f194ef060847d0bd164f072124bcf55af0f01c1b5cd7759a7262b4d205717f4afb282cf98fed3026'
   it('should properly derive some nonhardened secret key - child index starts with 0 in binary', () => {
-    const derivedSecret3 = address.deriveSK(secret, childIndex3).secretString
+    const derivedSecret3 = address.deriveSK(secret2, childIndex3).secretString
     assert.equal(derivedSecret3, expectedSecret3)
   })
 })
 
 describe('test address generation from secret key', () => {
-  const secret = new transaction.WalletSecretString(
-    'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
-  )
-
-  const childIndex1 = 0x80000000
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", () => {
-    const derivedAddress1 = address.deriveAddressAndSecret(secret, childIndex1).address
+    const derivedAddress1 = address.deriveAddressAndSecret(secret2, childIndex1).address
     assert.equal(derivedAddress1, expectedAddress1)
   })
 
-  const childIndex2 = 0xf9745151
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
   it('should properly generate some address from hardened key - child index starts with 1 in binary', () => {
-    const derivedAddress2 = address.deriveAddressAndSecret(secret, childIndex2).address
+    const derivedAddress2 = address.deriveAddressAndSecret(secret2, childIndex2).address
     assert.equal(derivedAddress2, expectedAddress2)
   })
 
-  const childIndex3 = 0x10000323
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
   it('should properly generate some address from nonhardened key - child index starts with 0 in binary', () => {
-    const derivedAddress3 = address.deriveAddressAndSecret(secret, childIndex3).address
+    const derivedAddress3 = address.deriveAddressAndSecret(secret2, childIndex3).address
     assert.equal(derivedAddress3, expectedAddress3)
   })
 })
 
 describe('test address ownership verification', () => {
-  const secret = new transaction.WalletSecretString(
-    'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
-  )
-
   const ownAddress =
     'DdzFFzCqrhsoStdHaBGfa5ZaLysiTnVuu7SHRcJvvu4yKg94gVBx3TzEV9CjphrFxLhnu1DJUKm2kdcrxYDZBGosrv4Gq3HuiFWRYVdZ'
   it('should accept own address', () => {
-    assert.equal(address.isAddressDerivableFromSecretString(ownAddress, secret), true)
+    assert.equal(address.isAddressDerivableFromSecretString(ownAddress, secret2), true)
   })
 
   const foreignAddress =
     'DdzFFzCqrht1Su7MEaCbFUcKpZnqQp5aUudPjrJZ2h8YADJBDvpsXZk9BducpXcSgujYJGKaTuZye9hb9z3Hff42TXDft5yrsKka6rDW'
   it('should reject foreign address', () => {
-    assert.equal(address.isAddressDerivableFromSecretString(foreignAddress, secret), false)
+    assert.equal(address.isAddressDerivableFromSecretString(foreignAddress, secret2), false)
   })
 })
 
@@ -455,9 +441,6 @@ describe('test wallet addresses derivation', () => {
     'DdzFFzCqrhsrASdDq8FwYFZSQWjrRW85HFMNS9d5dNk5DdXs5UYei14m7h1YgNEBEBQsKSLQERL1pa7GaT5Hjo2YGeuxSo4xS8mja8WC',
   ]
 
-  const wallet = new CardanoWallet(
-    'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
-  )
   const walletAddresses = wallet.getUsedAddresses()
 
   it('should derive the right sequence of addresses from the root secret key', () => {
@@ -474,27 +457,12 @@ describe('test transaction fee function', () => {
 
 describe('test successful transaction fee computation', () => {
   mockBlockChainExplorer()
-  const wallet = new CardanoWallet(
-    'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
-  )
   it('should compute the right transaction fee for given transaction', async () => {
-    assert.equal(
-      await wallet.getTxFee(
-        'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
-        47
-      ),
-      178893
-    )
+    assert.equal(await wallet.getTxFee(myAddress, 47), 178893)
   })
 
   it('should return fee -1 for an unallowed transaction (not enough resources on the account)', async () => {
-    assert.equal(
-      await wallet.getTxFee(
-        'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
-        750000
-      ),
-      -1
-    )
+    assert.equal(await wallet.getTxFee(myAddress, 750000), -1)
   })
 })
 
@@ -502,15 +470,8 @@ describe('test transaction serialization', () => {
   mockBlockChainExplorer()
   mockRandomNumberGenerator(0.7)
 
-  const wallet = new CardanoWallet(
-    'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
-  )
-
   it('should properly serialize transaction inner body', async () => {
-    const tx = await wallet.prepareTx(
-      'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
-      47
-    )
+    const tx = await wallet.prepareTx(myAddress, 47)
 
     // transaction serialization before providing witnesses
     const utxSerialized = cbor.encode(tx.getTxAux()).toString('hex')
@@ -522,10 +483,7 @@ describe('test transaction serialization', () => {
 
   // transaction hash computation
   it('should properly compute transaction hash', async () => {
-    const tx = await wallet.prepareTx(
-      'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
-      47
-    )
+    const tx = await wallet.prepareTx(myAddress, 47)
 
     const txHash = tx.getId()
     const expectedTxHash = '60cc8a3a766f99b630dbf7b4396f04e1ca8db0f562d54e1fade91235c798d4c6'
@@ -535,10 +493,7 @@ describe('test transaction serialization', () => {
 
   // transaction witnesses computation
   it('should properly compute transaction witnesses', async () => {
-    const tx = await wallet.prepareTx(
-      'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
-      47
-    )
+    const tx = await wallet.prepareTx(myAddress, 47)
     const witnesses = tx.getWitnesses()
     const witnessesSerialized = cbor.encode(witnesses).toString('hex')
     const expectedWitnessesSerialized =
@@ -553,10 +508,7 @@ describe('test transaction serialization', () => {
 
   // whole transaction serialization
   it('should properly serialize the whole transaction', async () => {
-    const tx = await wallet.prepareTx(
-      'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
-      47
-    )
+    const tx = await wallet.prepareTx(myAddress, 47)
 
     const txBody = cbor.encode(tx).toString('hex')
     const expectedTxBody =
@@ -568,9 +520,6 @@ describe('test transaction serialization', () => {
 
 describe('test wallet balance computation', () => {
   mockBlockChainExplorer()
-  const wallet = new CardanoWallet(
-    'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
-  )
 
   it('should properly fetch wallet balance', async () => {
     assert.equal(await wallet.getBalance(), 229015)
@@ -579,15 +528,9 @@ describe('test wallet balance computation', () => {
 
 describe('test transaction submission', () => {
   mockTransactionSubmitter()
-  const wallet = new CardanoWallet(
-    'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
-  )
 
   it('should properly submit transaction', async () => {
-    const result = await wallet.sendAda(
-      'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
-      47
-    )
+    const result = await wallet.sendAda(myAddress, 47)
     assert.equal(result, true)
   })
 })
