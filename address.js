@@ -27,7 +27,7 @@ const {add256NoCarry, scalarAdd256ModM, multiply8} = require('./utils')
 //
 // module.exports = fn
 
-exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
+function deriveAddressAndSecret(rootSecretString, childIndex) {
   let addressPayload, addressAttributes, derivedSecretString, addressRoot
 
   if (childIndex === 0x80000000) {
@@ -39,10 +39,10 @@ exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
   } else {
     // the remaining addresses
     const hdPassphrase = deriveHDPassphrase(rootSecretString)
-    derivedSecretString = exports.deriveSK(rootSecretString, childIndex)
+    derivedSecretString = deriveSK(rootSecretString, childIndex)
     const derivationPath = [0x80000000, childIndex]
 
-    const addressPayload = exports.encryptDerivationPath(derivationPath, hdPassphrase)
+    const addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
     addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
     addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   }
@@ -63,9 +63,9 @@ exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
   }
 }
 
-exports.isAddressDerivableFromSecretString = function(address, rootSecretString) {
+function isAddressDerivableFromSecretString(address, rootSecretString) {
   try {
-    exports.deriveSecretStringFromAddressOrFail(address, rootSecretString)
+    deriveSecretStringFromAddress(address, rootSecretString)
     return true
   } catch (e) {
     if (e.name === 'AddressDecodingException') {
@@ -76,32 +76,21 @@ exports.isAddressDerivableFromSecretString = function(address, rootSecretString)
   }
 }
 
-// strip 'OrFail' i.e. rename to deriveSecretStringFromAddress
-exports.deriveSecretStringFromAddressOrFail = function(address, rootSecretString) {
+function deriveSecretStringFromAddress(address, rootSecretString) {
   // we decode the address from the base58 string
   // and then we strip the 24 CBOR data taga (the "[0].value" part)
   const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
   const addressData = cbor.decode(addressAsBuffer)
   const addressAttributes = addressData[1]
-  //const childIndex = addressAttributes.length === 0 ? xxx : yyy
-  let childIndex
+  const addressPayload = cbor.decode(addressAttributes.get(1))
+  const hdPassphrase = deriveHDPassphrase(rootSecretString)
+  const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
+  const childIndex = (addressAttributes.length === 0) ? 0x80000000 : derivationPath[1]
 
-  if (addressAttributes.length === 0) {
-    // the root address (derrived straight from the root secret key)
-    childIndex = 0x80000000
-  } else {
-    // the remaining addresses have a nontrivial child index
-    // therefore the derivation path is nonempty
-    const addressPayload = cbor.decode(addressAttributes.get(1))
-    const hdPassphrase = deriveHDPassphrase(rootSecretString)
-    const derivationPath = decryptDerivationPathOrFail(addressPayload, hdPassphrase)
-    childIndex = derivationPath[1]
-  }
-
-  return exports.deriveAddressAndSecret(rootSecretString, childIndex).secret
+  return deriveAddressAndSecret(rootSecretString, childIndex).secret
 }
 
-exports.deriveSK = function(rootSecretString, childIndex) {
+function deriveSK(rootSecretString, childIndex) {
   const firstround = deriveSkIteration(rootSecretString, 0x80000000)
 
   if (childIndex === 0x80000000) {
@@ -124,7 +113,7 @@ function getAddressRoot(walletSecretString, addressPayload) {
   ])
 }
 
-exports.encryptDerivationPath = function(derivationPath, hdPassphrase) {
+function encryptDerivationPath(derivationPath, hdPassphrase) {
   const serializedDerivationPath = cbor.encode(new CborIndefiniteLengthArray(derivationPath))
 
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
@@ -132,7 +121,7 @@ exports.encryptDerivationPath = function(derivationPath, hdPassphrase) {
   return new Buffer(cipher.seal(new Buffer('serokellfore'), serializedDerivationPath))
 }
 
-function decryptDerivationPathOrFail(addressPayload, hdPassphrase) {
+function decryptDerivationPath(addressPayload, hdPassphrase) {
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
   const decipheredDerivationPath = cipher.open(new Buffer('serokellfore'), addressPayload)
 
@@ -206,4 +195,12 @@ function deriveSkIteration(parentSecretString, childIndex) {
 
 function indexIsHardened(childIndex) {
   return !!(childIndex >> 31)
+}
+
+module.exports = {
+  deriveAddressAndSecret,
+  isAddressDerivableFromSecretString,
+  deriveSecretStringFromAddress,
+  deriveSK,
+  encryptDerivationPath,
 }

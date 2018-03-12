@@ -12,11 +12,11 @@ const hashBlake2b256 = require('./utils').hashBlake2b256
 const validWords = require('./valid-words.en').words
 const transaction = require('./transaction')
 
-exports.generateMnemonic = function() {
+function generateMnemonic() {
   return bip39.generateMnemonic(null, null, validWords)
 }
 
-exports.mnemonicToWalletSecretString = function(mnemonic) {
+function mnemonicToWalletSecretString(mnemonic) {
   const hashSeed = mnemonicToHashSeed(mnemonic)
   let result
 
@@ -118,3 +118,5 @@ function mnemonicWordToIndex(word) {
 
   return result
 }
+
+module.exports = {generateMnemonic, mnemonicToWalletSecretString}
