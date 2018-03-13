@@ -14,11 +14,11 @@ function txFeeFunction(txSizeInBytes) {
   return Math.ceil(a + txSizeInBytes * b)
 }
 
-const CardanoWallet = (secret) => {
+const CardanoWallet = (secretOrMnemonic) => {
   const rootSecret =
-    secret.search(' ') >= 0
-      ? mnemonicToWalletSecretString(secret)
-      : new tx.WalletSecretString(secret)
+    secretOrMnemonic.search(' ') >= 0
+      ? mnemonicToWalletSecretString(secretOrMnemonic)
+      : new tx.WalletSecretString(secretOrMnemonic)
 
   async function sendAda(address, coins) {
     const transaction = await prepareTx(address, coins)
