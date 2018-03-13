@@ -1,32 +1,49 @@
 // actions are just functions which also call update
-{
-  const {update} = window.e.redux
+const {dispatch} = require('./simpleRedux.js')
 
-  const hello = () => {
-    update({...window.store, hello: 'World'}, 'Say Hello')
+let counter = 0
+
+const executeKey = '__cardano__global_fns'
+window[executeKey] = {}
+
+const fnNames = new Map()
+function execute(fn, ...stringArgs) {
+  if (fnNames.get(fn) == null) {
+    const name = `function_number_${counter++}`
+    fnNames.set(fn, name)
+    window[executeKey][name] = fn
   }
+  const name = fnNames.get(fn)
+  const argStr = stringArgs.join(', ')
+  return `window['${executeKey}']['${name}'](${argStr})`
+}
 
-  const delayedHello = () => {
-    update({...window.store, loading: true})
-    setTimeout(() => {
-      update({...window.store, loading: false, hello: 'Internet'}, 'Say... Hello')
-    }, 1000)
-  }
+const hello = () => {
+  dispatch((state) => ({...state, hello: 'World'}), 'Say Hello')
+}
 
-  const addTodo = (todo) => {
-    update({...window.store, todos: window.store.todos.concat(todo)})
-  }
+const delayedHello = () => {
+  dispatch((state) => ({...state, loading: true}))
+  setTimeout(() => {
+    dispatch((state) => ({...state, loading: false, hello: 'Internet'}), 'Say... Hello')
+  }, 1000)
+}
 
-  const setInputValue = (element) => {
-    update({...window.store, controlledInputValue: element.value})
-  }
+const addTodo = (todo) => {
+  // this is how you can get the event object
+  // this is just demo, it's not necessary to call this now.
+  console.log(window.event) // eslint-disable-line no-console
+  dispatch((state) => ({...state, todos: state.todos.concat(todo)}))
+}
 
-  const exported = {
-    delayedHello,
-    hello,
-    addTodo,
-    setInputValue,
-  }
+const setInputValue = (element) => {
+  dispatch((state) => ({...state, controlledInputValue: element.value}))
+}
 
-  window.e = window.e ? {...window.e, actions: exported} : {actions: exported}
+module.exports = {
+  delayedHello,
+  hello,
+  addTodo,
+  setInputValue,
+  execute,
 }
