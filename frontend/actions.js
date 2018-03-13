@@ -23,7 +23,7 @@ const hello = () => {
 }
 
 const delayedHello = () => {
-  dispatch((state) => ({...state, loading: true}))
+  dispatch((state) => ({...state, loading: true}), 'set loading')
   setTimeout(() => {
     dispatch((state) => ({...state, loading: false, hello: 'Internet'}), 'Say... Hello')
   }, 1000)
@@ -33,11 +33,11 @@ const addTodo = (todo) => {
   // this is how you can get the event object
   // this is just demo, it's not necessary to call this now.
   console.log(window.event) // eslint-disable-line no-console
-  dispatch((state) => ({...state, todos: state.todos.concat(todo)}))
+  dispatch((state) => ({...state, todos: state.todos.concat(todo)}), 'add todo')
 }
 
-const setInputValue = (element) => {
-  dispatch((state) => ({...state, controlledInputValue: element.value}))
+const setInputValue = () => {
+  dispatch((state) => ({...state, controlledInputValue: window.event.target.value}), 'set input value')
 }
 
 module.exports = {
