@@ -7,3 +7,10 @@ yarn-error.log
 sandbox.js
 build/
 config.js
+cardano.bundle.js
+cardano.bundle.test.js
+frontend.bundle.js
+build/
+config.js
+yarn-error.log
+sandbox.js
