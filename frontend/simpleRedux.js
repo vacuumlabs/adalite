@@ -9,33 +9,24 @@ let root = () => ''
 let rootTarget = ''
 let middlewares = []
 
-const logStateChange = (previousState, nextState, message) => {
-  const t = new Date()
-  console.group(
-    `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
-      'NAMELESS_ACTION'}`
-  )
-  console.log(previousState)
-  console.log(nextState)
-  console.groupEnd()
-}
-
 // message is optional, side-effects handled outside
 const dispatch = (updater, message) => {
   const previousState = state
-  let nextStateAfterMiddleware = updater(state)
+  let nextState = updater(state)
   try {
     middlewares.forEach((midFn) => {
-      nextStateAfterMiddleware = midFn(previousState, nextStateAfterMiddleware)
+      nextState = midFn(nextState, previousState)
     })
-    state = nextStateAfterMiddleware
-    logStateChange(previousState, nextStateAfterMiddleware, message)
-    document.getElementById(rootTarget).innerHTML = root(previousState, nextStateAfterMiddleware)
-  } catch (e) {
-    console.group(message)
-    console.error(e)
+    state = nextState
+    document.getElementById(rootTarget).innerHTML = root(nextState, previousState)
+  } finally {
+    const t = new Date()
+    console.group(
+      `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
+        'NAMELESS_ACTION'}`
+    )
     console.log(previousState)
-    console.log(nextStateAfterMiddleware)
+    console.log(nextState)
     console.groupEnd()
   }
 }
@@ -71,8 +62,8 @@ const init = (initialState, middlewareArray, rootComponent, rootId) => {
   window.onpopstate = routerAction
   window.history.onpushstate = routerAction
   window.onhashchange = routerAction
-  logStateChange({}, initialState, 'INIT')
-  document.getElementById(rootTarget).innerHTML = root({}, initialState)
+  console.log('initial state', initialState)
+  document.getElementById(rootTarget).innerHTML = root(initialState, {})
 }
 
 module.exports = {

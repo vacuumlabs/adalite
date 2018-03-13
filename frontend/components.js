@@ -2,9 +2,9 @@
 // component functions should expect prev and next state as the only arguments
 // higher-order components should return component functions (or other HOCs)
 
-const {execute, hello, delayedHello, addTodo} = require('./actions')
+const {execute, hello, delayedHello, addTodo, setInputValue} = require('./actions')
 
-const Index = (prev, next) => {
+const Index = (state) => {
   return `
   <a onclick="window.history.pushState({}, 'Sync Hello', 'hello')">Hello World!</a>
   <a onclick="window.history.pushState({}, 'Async Hello', 'asynchello')">Async Hello World!</a>
@@ -13,7 +13,7 @@ const Index = (prev, next) => {
 `
 }
 
-const HOCHello = (isAsync) => (prev, state) => `${
+const HOCHello = (isAsync) => (state) => `${
   state.loading
     ? 'Loading...'
     : state.hello
@@ -30,7 +30,7 @@ const HOCHello = (isAsync) => (prev, state) => `${
     </div>
   </div>
 `
-const TODOList = (prev, state) => `
+const TODOList = (state) => `
   <div>
     ${state.todos.join('<br/>')}
   </div>
@@ -38,30 +38,29 @@ const TODOList = (prev, state) => `
   <input type="submit" onclick="${execute(addTodo, "document.getElementById('todo').value")}" value="Submit" />
 `
 
-const ControlledInput = (prev, state) => `
-  <input type="text" value=
-"${state.controlledInputValue}" oninput="window.e.actions.setInputValue(this)">
+const ControlledInput = (state) => `
+  <input type="text" value="${state.controlledInputValue}" oninput="${execute(setInputValue)}">
 `
 
-const TopLevelRouter = (prev, next) => {
+const TopLevelRouter = (state, prevState) => {
   const {pathname} = window.location
   const topLevelRoute = pathname.split('/')[1]
   let body = ''
   switch (topLevelRoute) {
     case '':
-      body = Index(prev, next)
+      body = Index(state, prevState)
       break
     case 'hello':
-      body = HOCHello(false)(prev, next)
+      body = HOCHello(false)(state, prevState)
       break
     case 'asynchello':
-      body = HOCHello(true)(prev, next)
+      body = HOCHello(true)(state, prevState)
       break
     case 'todo':
-      body = TODOList(prev, next)
+      body = TODOList(state, prevState)
       break
     case 'controlled':
-      body = ControlledInput(prev, next)
+      body = ControlledInput(state, prevState)
       break
     default:
       body = '404 - not found'
