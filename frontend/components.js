@@ -13,7 +13,7 @@ const Index = (state) => {
 `
 }
 
-const HOCHello = (isAsync) => (state) => `${
+const Hello = (isAsync) => (state) => `${
   state.loading
     ? 'Loading...'
     : state.hello
@@ -30,7 +30,7 @@ const HOCHello = (isAsync) => (state) => `${
     </div>
   </div>
 `
-const TODOList = (state) => `
+const TodoList = (state) => `
   <div>
     ${state.todos.join('<br/>')}
   </div>
@@ -51,13 +51,13 @@ const TopLevelRouter = (state, prevState) => {
       body = Index(state, prevState)
       break
     case 'hello':
-      body = HOCHello(false)(state, prevState)
+      body = Hello(false)(state, prevState)
       break
     case 'asynchello':
-      body = HOCHello(true)(state, prevState)
+      body = Hello(true)(state, prevState)
       break
     case 'todo':
-      body = TODOList(state, prevState)
+      body = TodoList(state, prevState)
       break
     case 'controlled':
       body = ControlledInput(state, prevState)

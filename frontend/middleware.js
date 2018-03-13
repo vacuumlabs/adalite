@@ -1,3 +1,4 @@
+// TODO(TK) change this to [updater, message, payload] to new [updater, message, payload]
 // middleware (state, prevState) => nextState
 
 // clears loading and hello on url change
