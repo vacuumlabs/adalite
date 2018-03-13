@@ -1,10 +1,34 @@
 //var Buffer = require("buffer/").Buffer;
 const cbor = require('cbor')
+const {Buffer} = require('buffer/')
 const base58 = require('bs58')
+const ed25519 = require('supercop.js')
+const EdDSA = require('elliptic-cardano').eddsaVariant
+const ec = new EdDSA('ed25519')
 
-const {hex2buf} = require('./utils')
-const utils = require('./utils')
-const helpers = require('./helpers')
+const hashBlake2b256 = require('./helpers/hashBlake2b256')
+const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
+
+function hex2buf(hexString) {
+  return Buffer.from(hexString, 'hex')
+}
+
+exports.sign = function sign(message, extendedPrivateKey) {
+  const privKey = extendedPrivateKey.getSecretKey() //extendedPrivateKey.substr(0, 128);
+  const pubKey = extendedPrivateKey.getPublicKey() //substr(128, 64);
+
+  const messageToSign = new Buffer(message, 'hex')
+
+  return ed25519
+    .sign(messageToSign, new Buffer(pubKey, 'hex'), new Buffer(privKey, 'hex'))
+    .toString('hex')
+}
+
+exports.verify = function verify(message, publicKey, signature) {
+  const key = ec.keyFromPublic(publicKey, 'hex')
+
+  return key.verify(message, signature)
+}
 
 class TxAux {
   constructor(inputs, outputs, attributes) {
@@ -14,13 +38,13 @@ class TxAux {
   }
 
   getId() {
-    return utils.hashBlake2b256(this)
+    return hashBlake2b256(this)
   }
 
   encodeCBOR(encoder) {
     return encoder.pushAny([
-      new helpers.CBORIndefiniteLengthArray(this.inputs),
-      new helpers.CBORIndefiniteLengthArray(this.outputs),
+      new CborIndefiniteLengthArray(this.inputs),
+      new CborIndefiniteLengthArray(this.outputs),
       this.attributes,
     ])
   }
@@ -52,7 +76,7 @@ exports.TxInput = class TxInput {
         the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
         the "5820" part is the CBOR prefix for a hex string
       */
-      new exports.TxSignature(utils.sign(`011a2d964a095820${txHash}`, this.secret))
+      new exports.TxSignature(exports.sign(`011a2d964a095820${txHash}`, this.secret))
     )
   }
 
@@ -189,7 +213,7 @@ exports.Transaction = class Transaction {
       */
         const message = `011a2d964a095820${this.getId()}`
 
-        return utils.verify(message, witness.getPublicKey(), witness.getSignature())
+        return exports.verify(message, witness.getPublicKey(), witness.getSignature())
       })
       .reduce((a, b) => a && b, true)
   }
