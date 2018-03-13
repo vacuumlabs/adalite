@@ -1,14 +1,9 @@
 /* eslint no-console: 0 */
 
-// super-simple 'redux' pattern
+let state, root, rootTarget, middlewares
 
-let state = {}
-
-// component from which we start rendering and id where we render it stored here internally
-let root = () => ''
-let rootTarget = ''
-let middlewares = []
-
+// TODO(TK): make dispatch accept also 'payload' param, so it'll be updater, message, payload.
+// Updater's signature will then be (state, payload) => newState
 // message is optional, side-effects handled outside
 const dispatch = (updater, message) => {
   const previousState = state
@@ -47,6 +42,7 @@ const routerAction = function(state) {
   )
 }
 
+// TODO(TK) init should accept the the component directly, not 'rootId'.
 const init = (initialState, middlewareArray, rootComponent, rootId) => {
   state = {
     ...initialState,
@@ -56,6 +52,7 @@ const init = (initialState, middlewareArray, rootComponent, rootId) => {
     },
   }
   middlewares = middlewareArray
+  // TODO(TK) unify the naming. Why root in this module but rootComponent in the function signature?
   root = rootComponent
   rootTarget = rootId
   // Super-simple routing - listen to route changes and push them as router actions

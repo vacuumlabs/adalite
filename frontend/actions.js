@@ -7,6 +7,7 @@ const executeKey = '__cardano__global_fns'
 window[executeKey] = {}
 
 const fnNames = new Map()
+// first arg is function to be called, rest of the arguments are to be passed inside fn.
 function execute(fn, ...stringArgs) {
   if (fnNames.get(fn) == null) {
     const name = `function_number_${counter++}`
