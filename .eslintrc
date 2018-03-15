@@ -6,6 +6,7 @@
     "mocha": true
   },
   "rules": {
-  	"no-bitwise": "off"
+    "no-bitwise": "off",
+    "guard-for-in": "off"
   }
 }

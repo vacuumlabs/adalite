@@ -1,15 +1,15 @@
-const request = require('./utils').request
+const request = require('./helpers/request')
 const config = require('./config')
 
-exports.getUnspentTxOutputs = async function(address) {
-  if (exports.getAddressBalance(address) === 0) {
+async function getUnspentTxOutputs(address) {
+  if (getAddressBalance(address) === 0) {
     // if ballance is zero, all outputs must be spent so we don't waste time and return []
     return []
   }
 
   const unspentTxOutputs = []
 
-  const addressInfo = await exports.getAddressInfo(address)
+  const addressInfo = await getAddressInfo(address)
 
   // order transactions by time from earliest to latest
   const txList = Object.values(addressInfo.caTxList).sort((a, b) => {
@@ -53,21 +53,23 @@ exports.getUnspentTxOutputs = async function(address) {
   return unspentTxOutputs
 }
 
-exports.getAddressTxList = async function(address) {
-  const addressInfo = await exports.getAddressInfo(address)
+async function getAddressTxList(address) {
+  const addressInfo = await getAddressInfo(address)
 
   return addressInfo.caTxList
 }
 
-exports.getAddressInfo = async function(address) {
+async function getAddressInfo(address) {
   const url = `${config.blockchain_explorer_url}/api/addresses/summary/${address}`
   const result = await request(url)
 
   return result.Right
 }
 
-exports.getAddressBalance = async function(address) {
-  const result = await exports.getAddressInfo(address)
+async function getAddressBalance(address) {
+  const result = await getAddressInfo(address)
 
   return parseInt(result.caBalance.getCoin, 10)
 }
+
+module.exports = {getUnspentTxOutputs, getAddressTxList, getAddressInfo, getAddressBalance}

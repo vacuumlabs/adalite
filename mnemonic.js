@@ -1,21 +1,20 @@
 // var Buffer = require("buffer/").Buffer;
 const bip39 = require('bip39')
-const exceptions = require('node-exceptions')
 const cbor = require('cbor')
 const bigNumber = require('bignumber.js')
 const crypto = require('crypto')
-const EdDSAOriginal = require('elliptic-cardano').eddsa
-const ecOriginal = new EdDSAOriginal('ed25519')
+const {eddsa: EdDsa} = require('elliptic-cardano')
+const ec = new EdDsa('ed25519')
 
-const hashBlake2b256 = require('./utils').hashBlake2b256
-const validWords = require('./valid-words.en').words
+const hashBlake2b256 = require('./helpers/hashBlake2b256')
+const {words} = require('./valid-words.en')
 const transaction = require('./transaction')
 
-exports.generateMnemonic = function() {
-  return bip39.generateMnemonic(null, null, validWords)
+function generateMnemonic() {
+  return bip39.generateMnemonic(null, null, words)
 }
 
-exports.mnemonicToWalletSecretString = function(mnemonic) {
+function mnemonicToWalletSecretString(mnemonic) {
   const hashSeed = mnemonicToHashSeed(mnemonic)
   let result
 
@@ -29,10 +28,7 @@ exports.mnemonicToWalletSecretString = function(mnemonic) {
 
     try {
       const secretKey = extendSecretToSecretKey(secret)
-      const publicKey = new Buffer(
-        ecOriginal.keyFromSecret(secret.toString('hex')).getPublic('hex'),
-        'hex'
-      )
+      const publicKey = new Buffer(ec.keyFromSecret(secret.toString('hex')).getPublic('hex'), 'hex')
 
       const chainCode = new Buffer(digest.substr(64, 64), 'hex')
 
@@ -40,7 +36,7 @@ exports.mnemonicToWalletSecretString = function(mnemonic) {
         Buffer.concat([secretKey, publicKey, chainCode]).toString('hex')
       )
     } catch (e) {
-      if (e instanceof exceptions.InvalidArgumentException) {
+      if (e.name === 'InvalidArgumentException') {
         continue
       }
 
@@ -49,7 +45,9 @@ exports.mnemonicToWalletSecretString = function(mnemonic) {
   }
 
   if (result === undefined) {
-    throw exceptions.RuntimeException('Secret key generation from mnemonic is looping forever')
+    const e = new Error('Secret key generation from mnemonic is looping forever')
+    e.name = 'RuntimeException'
+    throw e
   }
 
   return result
@@ -67,7 +65,9 @@ function extendSecretToSecretKey(secret) {
   hashResult[31] |= 64
 
   if (hashResult[31] & 0x20) {
-    throw new exceptions.InvalidArgumentException('Invalid secret')
+    const e = new Error('Invalid secret')
+    e.name = 'InvalidArgumentException'
+    throw e
   }
 
   return hashResult
@@ -75,7 +75,9 @@ function extendSecretToSecretKey(secret) {
 
 function mnemonicToHashSeed(mnemonic) {
   if (!bip39.validateMnemonic(mnemonic)) {
-    throw new exceptions.InvalidArgumentException('Mnemonic with invalid checksum')
+    const e = new Error('Mnemonic with invalid checksum')
+    e.name = 'InvalidArgumentException'
+    throw e
   }
 
   let mnemonicAsHex = mnemonicToIndices(mnemonic)
@@ -101,11 +103,15 @@ function mnemonicToIndices(mnemonic) {
 }
 
 function mnemonicWordToIndex(word) {
-  const result = validWords.indexOf(word)
+  const result = words.indexOf(word)
 
   if (result === -1) {
-    throw new exceptions.InvalidArgumentException(`Not a valid mnemonic word: ${word}`)
+    const e = new Error(`Not a valid mnemonic word: ${word}`)
+    e.name = 'InvalidArgumentException'
+    throw e
   }
 
   return result
 }
+
+module.exports = {generateMnemonic, mnemonicToWalletSecretString}

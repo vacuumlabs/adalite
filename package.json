@@ -19,27 +19,21 @@
   "scripts": {
     "build": "webpack --config webpack.config.build.js",
     "test": "webpack --config webpack.config.test.js",
-    "fix": "prettier-eslint --write \"*.js\""
+    "fix": "prettier-eslint --write \"*.js\" \"./helpers/*.js\""
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {
     "@stablelib/chacha20poly1305": "^0.10.2",
-    "base-58": "0.0.1",
     "bignumber.js": "^6.0.0",
     "bip39": "^2.5.0",
-    "blake2": "^1.4.0",
     "blakejs": "^1.1.0",
     "bs58": "^4.0.1",
     "buffer": "^5.1.0",
     "cbor": "^4.0.0",
     "crc-32": "^1.2.0",
-    "elliptic": "^6.4.0",
     "elliptic-cardano": "6.4.0-b",
     "js-sha3": "^0.7.0",
-    "isomorphic-fetch": "^2.2.1",
-    "node-exceptions": "^3.0.0",
     "pbkdf2": "^3.0.14",
-    "sha1": "^1.1.1",
     "supercop.js": "^2.0.1"
   },
   "devDependencies": {

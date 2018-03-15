@@ -1,20 +1,71 @@
+const bigNumber = require('bignumber.js')
+const blake2 = require('blakejs')
+const {Buffer} = require('buffer/')
 const crc32 = require('crc-32')
-const exceptions = require('node-exceptions')
 const cbor = require('cbor')
 const pbkdf2 = require('pbkdf2')
 const chacha20 = require('@stablelib/chacha20poly1305')
 const base58 = require('bs58')
 const crypto = require('crypto')
-const EdDSA = require('elliptic-cardano').eddsaVariant
-const ec = new EdDSA('ed25519')
+const EdDsa = require('elliptic-cardano').eddsaVariant
+const ec = new EdDsa('ed25519')
+const sha3 = require('js-sha3')
 
-const {AddressDecodingException} = require('./custom-exceptions')
-const CBORIndefiniteLengthArray = require('./helpers').CBORIndefiniteLengthArray
-const addressHash = require('./utils').addressHash
+const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const tx = require('./transaction')
-const {add256NoCarry, scalarAdd256ModM, multiply8} = require('./utils')
 
-exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
+function addressHash(input) {
+  const serializedInput = cbor.encode(input)
+
+  const firstHash = new Buffer(sha3.sha3_256(serializedInput), 'hex')
+
+  const context = blake2.blake2bInit(28) // blake2b-224
+  blake2.blake2bUpdate(context, firstHash)
+
+  return new Buffer(blake2.blake2bFinal(context)).toString('hex')
+}
+
+function add256NoCarry(b1, b2) {
+  let result = ''
+
+  for (let i = 0; i < 32; i++) {
+    result += ((b1[i] + b2[i]) & 0xff).toString(16).padStart(2, '0')
+  }
+
+  return new Buffer(result, 'hex')
+}
+
+function toLittleEndian(str) {
+  // from https://stackoverflow.com/questions/7946094/swap-endianness-javascript
+  const s = str.replace(/^(.(..)*)$/, '0$1') // add a leading zero if needed
+  const a = s.match(/../g) // split number in groups of two
+  a.reverse() // reverse the goups
+  return a.join('') // join the groups back together
+}
+
+function scalarAdd256ModM(b1, b2) {
+  let resultAsHexString = bigNumber(toLittleEndian(b1.toString('hex')), 16)
+    .plus(bigNumber(toLittleEndian(b2.toString('hex')), 16))
+    .mod(bigNumber('1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed', 16))
+    .toString(16)
+  resultAsHexString = toLittleEndian(resultAsHexString).padEnd(64, '0')
+
+  return new Buffer(resultAsHexString, 'hex')
+}
+
+function multiply8(buf) {
+  let result = ''
+  let prevAcc = 0
+
+  for (let i = 0; i < buf.length; i++) {
+    result += ((((buf[i] * 8) & 0xff) + (prevAcc & 0x8)) & 0xff).toString(16).padStart(2, '0')
+    prevAcc = buf[i] * 32
+  }
+
+  return new Buffer(result, 'hex')
+}
+
+function deriveAddressAndSecret(rootSecretString, childIndex) {
   let addressPayload, addressAttributes, derivedSecretString, addressRoot
 
   if (childIndex === 0x80000000) {
@@ -26,10 +77,10 @@ exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
   } else {
     // the remaining addresses
     const hdPassphrase = deriveHDPassphrase(rootSecretString)
-    derivedSecretString = exports.deriveSK(rootSecretString, childIndex)
+    derivedSecretString = deriveSK(rootSecretString, childIndex)
     const derivationPath = [0x80000000, childIndex]
 
-    const addressPayload = exports.encryptDerivationPath(derivationPath, hdPassphrase)
+    const addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
     addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
     addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   }
@@ -50,12 +101,12 @@ exports.deriveAddressAndSecret = function(rootSecretString, childIndex) {
   }
 }
 
-exports.isAddressDerivableFromSecretString = function(address, rootSecretString) {
+function isAddressDerivableFromSecretString(address, rootSecretString) {
   try {
-    exports.deriveSecretStringFromAddressOrFail(address, rootSecretString)
+    deriveSecretStringFromAddress(address, rootSecretString)
     return true
   } catch (e) {
-    if (e instanceof AddressDecodingException) {
+    if (e.name === 'AddressDecodingException') {
       return false
     }
 
@@ -63,30 +114,21 @@ exports.isAddressDerivableFromSecretString = function(address, rootSecretString)
   }
 }
 
-exports.deriveSecretStringFromAddressOrFail = function(address, rootSecretString) {
+function deriveSecretStringFromAddress(address, rootSecretString) {
   // we decode the address from the base58 string
   // and then we strip the 24 CBOR data taga (the "[0].value" part)
   const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
   const addressData = cbor.decode(addressAsBuffer)
   const addressAttributes = addressData[1]
-  let childIndex
+  const addressPayload = cbor.decode(addressAttributes.get(1))
+  const hdPassphrase = deriveHDPassphrase(rootSecretString)
+  const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
+  const childIndex = addressAttributes.length === 0 ? 0x80000000 : derivationPath[1]
 
-  if (addressAttributes.length === 0) {
-    // the root address (derrived straight from the root secret key)
-    childIndex = 0x80000000
-  } else {
-    // the remaining addresses have a nontrivial child index
-    // therefore the derivation path is nonempty
-    const addressPayload = cbor.decode(addressAttributes.get(1))
-    const hdPassphrase = deriveHDPassphrase(rootSecretString)
-    const derivationPath = decryptDerivationPathOrFail(addressPayload, hdPassphrase)
-    childIndex = derivationPath[1]
-  }
-
-  return exports.deriveAddressAndSecret(rootSecretString, childIndex).secret
+  return deriveAddressAndSecret(rootSecretString, childIndex).secret
 }
 
-exports.deriveSK = function(rootSecretString, childIndex) {
+function deriveSK(rootSecretString, childIndex) {
   const firstround = deriveSkIteration(rootSecretString, 0x80000000)
 
   if (childIndex === 0x80000000) {
@@ -109,22 +151,24 @@ function getAddressRoot(walletSecretString, addressPayload) {
   ])
 }
 
-exports.encryptDerivationPath = function(derivationPath, hdPassphrase) {
-  const serializedDerivationPath = cbor.encode(new CBORIndefiniteLengthArray(derivationPath))
+function encryptDerivationPath(derivationPath, hdPassphrase) {
+  const serializedDerivationPath = cbor.encode(new CborIndefiniteLengthArray(derivationPath))
 
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
 
   return new Buffer(cipher.seal(new Buffer('serokellfore'), serializedDerivationPath))
 }
 
-function decryptDerivationPathOrFail(addressPayload, hdPassphrase) {
+function decryptDerivationPath(addressPayload, hdPassphrase) {
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
   const decipheredDerivationPath = cipher.open(new Buffer('serokellfore'), addressPayload)
 
   try {
     return cbor.decode(new Buffer(decipheredDerivationPath))
   } catch (err) {
-    throw new AddressDecodingException('incorrect address or passphrase')
+    const e = new Error('incorrect address or passphrase')
+    e.name = 'AddressDecodingException'
+    throw e
   }
 }
 
@@ -189,4 +233,12 @@ function deriveSkIteration(parentSecretString, childIndex) {
 
 function indexIsHardened(childIndex) {
   return !!(childIndex >> 31)
+}
+
+module.exports = {
+  deriveAddressAndSecret,
+  isAddressDerivableFromSecretString,
+  deriveSecretStringFromAddress,
+  deriveSK,
+  encryptDerivationPath,
 }
