@@ -2,6 +2,4 @@ const config = {}
 
 config.blockchain_explorer_url = 'http://localhost:3001'
 config.transaction_submitter_url = 'http://localhost:3001'
-// webpack complains about missing 'mode' param?
-
 module.exports = config

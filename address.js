@@ -14,20 +14,6 @@ const sha3 = require('js-sha3')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const tx = require('./transaction')
 
-// refactor how exports work. First define everything:
-// function fn1(){...}
-//
-// const const2 = ...
-//
-// class Class3 {...
-//
-// finally, be explicit about what you want to export at the end of file:
-//
-// module.exports = {fn1, const2, Class3}
-//
-// in a case of exporting a single variable, do it such as:
-//
-// module.exports = fn
 function addressHash(input) {
   const serializedInput = cbor.encode(input)
 

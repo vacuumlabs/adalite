@@ -13,7 +13,7 @@ function hex2buf(hexString) {
   return Buffer.from(hexString, 'hex')
 }
 
-exports.sign = function sign(message, extendedPrivateKey) {
+function sign(message, extendedPrivateKey) {
   const privKey = extendedPrivateKey.getSecretKey() //extendedPrivateKey.substr(0, 128);
   const pubKey = extendedPrivateKey.getPublicKey() //substr(128, 64);
 
@@ -24,7 +24,7 @@ exports.sign = function sign(message, extendedPrivateKey) {
     .toString('hex')
 }
 
-exports.verify = function verify(message, publicKey, signature) {
+function verify(message, publicKey, signature) {
   const key = ec.keyFromPublic(publicKey, 'hex')
 
   return key.verify(message, signature)
@@ -50,84 +50,7 @@ class TxAux {
   }
 }
 
-// export only what you really need
-exports.TxInput = class TxInput {
-  constructor(txId, outputIndex, secret, coins) {
-    this.id = txId
-
-    // the index of the input transaction when it was the output of another
-    this.outputIndex = outputIndex
-
-    // default input type
-    this.type = 0
-
-    // so we are able to sign the input
-    this.secret = secret
-
-    this.coins = coins
-  }
-
-  getWitness(txHash) {
-    return new exports.TxWitness(
-      new exports.TxPublicString(this.secret.getPublicKey() + this.secret.getChainCode()),
-      /*
-      * "011a2d964a095820" is a magic prefix from the cardano-sl code
-        the "01" byte is a constant to denote signatures of transactions
-        the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
-        the "5820" part is the CBOR prefix for a hex string
-      */
-      new exports.TxSignature(exports.sign(`011a2d964a095820${txHash}`, this.secret))
-    )
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny([
-      this.type,
-      new cbor.Tagged(24, cbor.encode([hex2buf(this.id), this.outputIndex])),
-    ])
-  }
-}
-
-exports.TxOutput = class TxOutput {
-  constructor(walletAddress, coins) {
-    this.walletAddress = walletAddress
-    this.coins = coins
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny([this.walletAddress, this.coins])
-  }
-}
-
-exports.WalletAddress = class WalletAddress {
-  constructor(address) {
-    this.address = address
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.push(base58.decode(this.address))
-  }
-}
-
-exports.WalletSecretString = class WalletSecretString {
-  constructor(secretString) {
-    this.secretString = secretString
-  }
-
-  getSecretKey() {
-    return this.secretString.substr(0, 128)
-  }
-
-  getPublicKey() {
-    return this.secretString.substr(128, 64)
-  }
-
-  getChainCode() {
-    return this.secretString.substr(192, 64)
-  }
-}
-
-exports.TxPublicString = class TxPublicString {
+class TxPublicString {
   // hex string representing 64 bytes
   constructor(txPublicString) {
     this.txPublicString = txPublicString
@@ -146,7 +69,83 @@ exports.TxPublicString = class TxPublicString {
   }
 }
 
-exports.TxSignature = class TxSignature {
+class TxInput {
+  constructor(txId, outputIndex, secret, coins) {
+    this.id = txId
+
+    // the index of the input transaction when it was the output of another
+    this.outputIndex = outputIndex
+
+    // default input type
+    this.type = 0
+
+    // so we are able to sign the input
+    this.secret = secret
+
+    this.coins = coins
+  }
+
+  getWitness(txHash) {
+    return new TxWitness(
+      new TxPublicString(this.secret.getPublicKey() + this.secret.getChainCode()),
+      /*
+      * "011a2d964a095820" is a magic prefix from the cardano-sl code
+        the "01" byte is a constant to denote signatures of transactions
+        the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
+        the "5820" part is the CBOR prefix for a hex string
+      */
+      new TxSignature(sign(`011a2d964a095820${txHash}`, this.secret))
+    )
+  }
+
+  encodeCBOR(encoder) {
+    return encoder.pushAny([
+      this.type,
+      new cbor.Tagged(24, cbor.encode([hex2buf(this.id), this.outputIndex])),
+    ])
+  }
+}
+
+class TxOutput {
+  constructor(walletAddress, coins) {
+    this.walletAddress = walletAddress
+    this.coins = coins
+  }
+
+  encodeCBOR(encoder) {
+    return encoder.pushAny([this.walletAddress, this.coins])
+  }
+}
+
+class WalletAddress {
+  constructor(address) {
+    this.address = address
+  }
+
+  encodeCBOR(encoder) {
+    return encoder.push(base58.decode(this.address))
+  }
+}
+
+class WalletSecretString {
+  constructor(secretString) {
+    this.secretString = secretString
+  }
+
+  getSecretKey() {
+    return this.secretString.substr(0, 128)
+  }
+
+  getPublicKey() {
+    return this.secretString.substr(128, 64)
+  }
+
+  getChainCode() {
+    return this.secretString.substr(192, 64)
+  }
+}
+
+class TxSignature {
   constructor(signature) {
     this.signature = signature
   }
@@ -156,7 +155,7 @@ exports.TxSignature = class TxSignature {
   }
 }
 
-exports.TxWitness = class TxWitness {
+class TxWitness {
   constructor(publicString, signature) {
     this.publicString = publicString
     this.signature = signature
@@ -179,7 +178,7 @@ exports.TxWitness = class TxWitness {
   }
 }
 
-exports.Transaction = class Transaction {
+class Transaction {
   constructor(inputs, outputs, attributes, witnesses = undefined) {
     this.inputs = inputs
     this.outputs = outputs
@@ -213,7 +212,7 @@ exports.Transaction = class Transaction {
       */
         const message = `011a2d964a095820${this.getId()}`
 
-        return exports.verify(message, witness.getPublicKey(), witness.getSignature())
+        return verify(message, witness.getPublicKey(), witness.getSignature())
       })
       .reduce((a, b) => a && b, true)
   }
@@ -222,3 +221,5 @@ exports.Transaction = class Transaction {
     return encoder.pushAny([this.getTxAux(), this.getWitnesses()])
   }
 }
+
+module.exports = {verify, sign, TxInput, TxOutput, WalletAddress, WalletSecretString, Transaction}
