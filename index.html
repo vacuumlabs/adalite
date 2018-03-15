@@ -12,6 +12,7 @@
 
 <script language="javascript">
     let wallet = null;
+    let historyRaw = null;
 
     function printMenmonic() {
       document.getElementById("mnemonic-generated").innerHTML = Cardano.generateMnemonic();
@@ -50,6 +51,54 @@
       document.getElementById("transacton-submitted").innerHTML = await wallet.sendAda(address, ammount);
       await updateWallet();
     }
+    async function updateHistory() {
+      document.getElementById("history").innerHTML = "processing ..";
+      historyRaw = await wallet.getHistory();
+      window.h = historyRaw
+
+      histtable =
+      "<div style='display: flex; flex-direction:column'>"
+      for (const transaction of historyRaw) {
+        histtable +=
+        `<div id='${transaction.ctbId}' onclick='expandTransaction(this)' style='cursor: pointer; display: flex; flex-direction: row; justify-content:space-around; flex-wrap: wrap;'>
+             <div>${transaction.ctbTimeIssued}</div>
+             <div>${transaction.ctbId}</div>
+             <div>${transaction.effect}</div>
+             <div class="detail" style='width: 100%; background-color: #999999; display: none'>`
+      histtable += "<div style='display: flex; flex-direction: row; justify-content:space-around;'>"
+
+      histtable += "<div style='display: flex; flex-direction: column;'>"
+      for (const input of transaction.ctbInputs) {
+        histtable += "<div style='display: flex; flex-direction: row; justify-content:space-between;'>"
+        histtable += `  <div style="width: 250px; overflow: hidden;text-overflow: ellipsis;">${input[0]}</div><div>${input[1].getCoin}</div>`
+        histtable += `</div>`
+      }
+      histtable += `</div>`
+      histtable += `<div>=></div>`
+      histtable += "<div style='display: flex; flex-direction: column;'>"
+      for (const output of transaction.ctbOutputs) {
+        histtable += "<div style='display: flex; flex-direction: row; justify-content:space-between;'>"
+        histtable += `  <div style="width: 250px; overflow: hidden;text-overflow: ellipsis;">${output[0]}</div><div>${output[1].getCoin}</div>`
+        histtable += `</div>`
+      }
+      histtable += `</div>`
+
+
+      histtable += `</div></div></div>`
+    }
+    histtable += "</div>";
+      document.getElementById("history").innerHTML = histtable;
+    }
+
+  function expandTransaction(parent) {
+    if (!!parent.getAttribute("detail")) {
+      parent.setAttribute("detail", "");
+      parent.getElementsByClassName("detail")[0].style.display = "none";
+    } else {
+      parent.setAttribute("detail", true);
+      parent.getElementsByClassName("detail")[0].style.display = "block";
+    }
+  }
 
 </script>
 
@@ -76,15 +125,19 @@
 </p>
 
 <p>
+    <h3>send Ada:</h3>
     address: <input type="text" id="send-adress" name="send-adress" size="110" value="DdzFFzCqrhsoNpMFaQfYFHiuKN5NjNWtypJcKpWsNJX6miADvKxhZxyeDyNkfnBDxswNnGpLCuB6MkNy7uhD4eu4jgMgFkBgySiPegkY"></br>
     ammount: <input type="number" id="send-ammount" name="send-ammount" size="8" value="185000"> Lovelace (1 Lovelace = 1/1,000,000 Ada)</br>
     Fee: <span id="fee" style="background-color: aquamarine"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
     <button onclick="calculateFee()">Calculate fee</button></br>
     <button onclick="submitTransaction()">Send Ada</button><span id="transacton-submitted" style="background-color: #ffc520"></span>
-
 </p>
 
-
+<p>
+    <h3>history:</h3>
+    <p id="history"></p>>
+    <button onclick="updateHistory()">Update history</button>
+</p>
 
 </body>
 
