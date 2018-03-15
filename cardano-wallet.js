@@ -52,7 +52,10 @@ const CardanoWallet = (secretOrMnemonic) => {
 
     const txOutputs = [
       new tx.TxOutput(new tx.WalletAddress(address), coins),
-      new tx.TxOutput(new tx.WalletAddress(await getChangeAddress()), txInputsCoinsSum - fee - coins),
+      new tx.TxOutput(
+        new tx.WalletAddress(await getChangeAddress()),
+        txInputsCoinsSum - fee - coins
+      ),
     ]
 
     return new tx.Transaction(txInputs, txOutputs, {})
@@ -74,6 +77,34 @@ const CardanoWallet = (secretOrMnemonic) => {
     }
 
     return result
+  }
+
+  async function getHistory() {
+    const transactions = {}
+
+    const addresses = await getUsedAddresses()
+
+    for (const a of addresses) {
+      const myTransactions = await blockchainExplorer.getAddressTxList(a)
+      for (const t of myTransactions) {
+        transactions[t.ctbId] = t
+      }
+    }
+    for (const t of Object.values(transactions)) {
+      let effect = 0 //effect on wallet balance accumulated
+      for (const input of t.ctbInputs) {
+        if (addresses.includes(input[0])) {
+          effect -= +input[1].getCoin
+        }
+      }
+      for (const output of t.ctbOutputs) {
+        if (addresses.includes(output[0])) {
+          effect += +output[1].getCoin
+        }
+      }
+      t.effect = effect
+    }
+    return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
   async function prepareTxInputs(coins) {
@@ -249,7 +280,16 @@ const CardanoWallet = (secretOrMnemonic) => {
     }
   }
 
-  return {sendAda, getBalance, getChangeAddress, getTxFee, getUsedAddresses, prepareTx, deriveAddresses}
+  return {
+    sendAda,
+    getBalance,
+    getChangeAddress,
+    getTxFee,
+    getUsedAddresses,
+    prepareTx,
+    deriveAddresses,
+    getHistory,
+  }
 }
 
 if (typeof window !== 'undefined') {

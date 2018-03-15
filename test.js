@@ -27,6 +27,54 @@ const signature =
   'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
 const myAddress =
   'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY'
+const history = [
+  {
+    ctbId: '1ce7a1e2606271a7f085262fb7c509c98d60912a943c9be3871ac3ace48ae6d6',
+    ctbTimeIssued: 1520526191,
+    ctbInputs: [
+      [
+        'DdzFFzCqrhsjWQpNmu9QWV89P4UDjbha5wAeasKevqTuv7bf2DpNmdXTh5xQJKJftgWWyNQg242YErYXbuM3yagzsGJdpescQPihJJmr',
+        {getCoin: '18829106'},
+      ],
+    ],
+    ctbOutputs: [
+      [
+        'DdzFFzCqrhszkkEYCCAutkxJkX82CWEsXYqNsVz4mLvL8c87PwbuwUsKM4dcDe7WodJtrsJdv4yRzHMKU2LyBb2yUxtMB1ifqBAYYjKt',
+        {getCoin: '18158212'},
+      ],
+      [
+        'DdzFFzCqrhssuRDi1EGGjCajnyTGqA3HVFownbkTA9M9638Ro3o8CGyZN5NFNQMaHAbhnZgevHqoCwghoq9aScHyoWptamKzwQK7RWFw',
+        {getCoin: '500000'},
+      ],
+    ],
+    ctbInputSum: {getCoin: '18829106'},
+    ctbOutputSum: {getCoin: '18658212'},
+    effect: 500000,
+  },
+  {
+    ctbId: '14fab8b89cc003da76c147af4ce3619bc36f7064b69f48b7fbad63673753f351',
+    ctbTimeIssued: 1520526111,
+    ctbInputs: [
+      [
+        'DdzFFzCqrhswKekq5Ysev3wL15MndorSfEF82TV5dxHihGjjVweXvmkza4zGnQj3jkvrobwFTnoBpxqes447eVbUDopk3NpLAcQnmfdF',
+        {getCoin: '20000000'},
+      ],
+    ],
+    ctbOutputs: [
+      [
+        'DdzFFzCqrhsjWQpNmu9QWV89P4UDjbha5wAeasKevqTuv7bf2DpNmdXTh5xQJKJftgWWyNQg242YErYXbuM3yagzsGJdpescQPihJJmr',
+        {getCoin: '18829106'},
+      ],
+      [
+        'DdzFFzCqrhsgeBwYfYqJojCSPquZVLVoqAWjoBXsxCE9gJ44881GzVXMverRYLBU5KeArqW3EPThfeucWj1UzBU49c2e87dkdVaVSZ3s',
+        {getCoin: '1000000'},
+      ],
+    ],
+    ctbInputSum: {getCoin: '20000000'},
+    ctbOutputSum: {getCoin: '19829106'},
+    effect: 1000000,
+  },
+]
 
 function mockBlockChainExplorer() {
   fetchMock.config.overwriteRoutes = true
@@ -687,12 +735,13 @@ describe('test successful transaction fee computation', async () => {
   })
 })
 
-describe('test transaction serialization', (suite) => {
+// eslint-disable-next-line prefer-arrow-callback
+describe('test transaction serialization', function() {
   mockBlockChainExplorer()
   mockRandomNumberGenerator(0.7)
-  suite.timeout(5000)
+  this.timeout(5000)
 
-  suite.it('should properly serialize transaction inner body', async () => {
+  it('should properly serialize transaction inner body', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
 
     // transaction serialization before providing witnesses
@@ -704,7 +753,7 @@ describe('test transaction serialization', (suite) => {
   })
 
   // transaction hash computation
-  suite.it('should properly compute transaction hash', async () => {
+  it('should properly compute transaction hash', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
 
     const txHash = tx.getId()
@@ -714,7 +763,7 @@ describe('test transaction serialization', (suite) => {
   })
 
   // transaction witnesses computation
-  suite.it('should properly compute transaction witnesses', async () => {
+  it('should properly compute transaction witnesses', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
     const witnesses = tx.getWitnesses()
     const witnessesSerialized = cbor.encode(witnesses).toString('hex')
@@ -729,7 +778,7 @@ describe('test transaction serialization', (suite) => {
   })
 
   // whole transaction serialization
-  suite.it('should properly serialize the whole transaction', async () => {
+  it('should properly serialize the whole transaction', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
 
     const txBody = cbor.encode(tx).toString('hex')
@@ -748,11 +797,20 @@ describe('test wallet balance computation', async () => {
   })
 })
 
-describe('test transaction submission', (suite) => {
-  mockTransactionSubmitter()
-  suite.timeout(5000)
+describe('test wallet history parsing', async () => {
+  mockBlockChainExplorer()
 
-  suite.it('should properly submit transaction', async () => {
+  it('should properly fetch wallet history', async () => {
+    assert.equal(JSON.stringify(await wallet.getHistory()), JSON.stringify(history))
+  })
+})
+
+// eslint-disable-next-line prefer-arrow-callback
+describe('test transaction submission', function() {
+  mockTransactionSubmitter()
+  this.timeout(5000)
+
+  it('should properly submit transaction', async () => {
     const result = await wallet.sendAda(myAddress, 47)
     assert.equal(result, true)
   })
