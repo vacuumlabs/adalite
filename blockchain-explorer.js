@@ -3,7 +3,7 @@ const config = require('./config')
 
 async function getUnspentTxOutputs(address) {
   if (getAddressBalance(address) === 0) {
-    // if ballance is zero, all outputs must be spent so we don't waste time and return []
+    // if balance is zero, all outputs must be spent so we don't waste time and return []
     return []
   }
 

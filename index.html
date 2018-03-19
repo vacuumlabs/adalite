@@ -31,8 +31,8 @@
     }
 
     async function updateWallet() {
-      document.getElementById("wallet-ballance").innerHTML = "processing ..";
-      document.getElementById("wallet-ballance").innerHTML = await wallet.getBalance();
+      document.getElementById("wallet-balance").innerHTML = "processing ..";
+      document.getElementById("wallet-balance").innerHTML = await wallet.getBalance();
     }
     async function getAddress() {
       document.getElementById("recieve-address").innerHTML = "processing ..";
@@ -40,15 +40,15 @@
     }
     async function calculateFee() {
       document.getElementById("fee").innerHTML = "processing ..";
-      const address = document.getElementById("send-adress").innerHTML;
-      const ammount = document.getElementById("send-ammount").innerHTML;
-      document.getElementById("fee").innerHTML = await wallet.getTxFee(address, ammount);
+      const address = document.getElementById("send-address").value;
+      const amount = parseInt(document.getElementById("send-amount").value, 10);
+      document.getElementById("fee").innerHTML = await wallet.getTxFee(address, amount);
     }
     async function submitTransaction() {
       document.getElementById("transacton-submitted").innerHTML = "processing ..";
-      const address = document.getElementById("send-adress").innerHTML;
-      const ammount = document.getElementById("send-ammount").innerHTML;
-      document.getElementById("transacton-submitted").innerHTML = await wallet.sendAda(address, ammount);
+      const address = document.getElementById("send-address").value;
+      const amount = parseInt(document.getElementById("send-amount").value, 10);
+      document.getElementById("transacton-submitted").innerHTML = await wallet.sendAda(address, amount);
       await updateWallet();
     }
     async function updateHistory() {
@@ -116,7 +116,7 @@
     <button onclick="submitSecret()">Wallet from secret</button>
 </p>
 <p>
-    <p>Wallet ballance: <span id="wallet-ballance" style="background-color: #4dc71f"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
+    <p>Wallet balance: <span id="wallet-balance" style="background-color: #4dc71f"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
     <button onclick="updateWallet()">Refresh</button></p>
 </p>
 <p>
@@ -126,8 +126,8 @@
 
 <p>
     <h3>send Ada:</h3>
-    address: <input type="text" id="send-adress" name="send-adress" size="110" value="DdzFFzCqrhsoNpMFaQfYFHiuKN5NjNWtypJcKpWsNJX6miADvKxhZxyeDyNkfnBDxswNnGpLCuB6MkNy7uhD4eu4jgMgFkBgySiPegkY"></br>
-    ammount: <input type="number" id="send-ammount" name="send-ammount" size="8" value="185000"> Lovelace (1 Lovelace = 1/1,000,000 Ada)</br>
+    address: <input type="text" id="send-address" name="send-address" size="110" value="DdzFFzCqrhsoNpMFaQfYFHiuKN5NjNWtypJcKpWsNJX6miADvKxhZxyeDyNkfnBDxswNnGpLCuB6MkNy7uhD4eu4jgMgFkBgySiPegkY"></br>
+    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="185000"> Lovelace (1 Lovelace = 1/1,000,000 Ada)</br>
     Fee: <span id="fee" style="background-color: aquamarine"></span> Lovelace (1 Lovelace = 1/1,000,000 Ada)
     <button onclick="calculateFee()">Calculate fee</button></br>
     <button onclick="submitTransaction()">Send Ada</button><span id="transacton-submitted" style="background-color: #ffc520"></span>

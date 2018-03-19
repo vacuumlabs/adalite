@@ -29,6 +29,9 @@ const CardanoWallet = (secretOrMnemonic) => {
       : new tx.WalletSecretString(secretOrMnemonic)
 
   async function sendAda(address, coins) {
+    console.log(address)
+    console.log("BBBBBB")
+
     const transaction = await prepareTx(address, coins)
 
     const txHash = transaction.getId()
