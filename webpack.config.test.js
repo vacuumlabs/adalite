@@ -4,7 +4,7 @@ module.exports = {
     filename: 'cardano.bundle.test.js',
     libraryTarget: 'var',
     library: 'CardanoTest',
-    path: __dirname,
+    path: __dirname + "/build",
   },
   node: {
     fs: 'empty',

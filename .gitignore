@@ -1,7 +1,6 @@
 .idea/
 node_modules/
-cardano.bundle.js
-cardano.bundle.test.js
+build/
 config.js
 yarn-error.log
 sandbox.js
