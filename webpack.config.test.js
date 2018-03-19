@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './test.js',
+  entry: './test/test.js',
   output: {
     filename: 'cardano.bundle.test.js',
     libraryTarget: 'var',
