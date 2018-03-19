@@ -1,4 +1,4 @@
-module.exports = async function request(url, method = 'GET', body = {}, headers = {}) {
+module.exports = async function request(url, method = 'GET', body = null, headers = {}) {
   const res = await fetch(url, {
     method,
     headers,
