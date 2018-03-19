@@ -22,6 +22,19 @@ Open `test.html` in a browser
 ## run
 `yarn install`
 
-`yarn build` (produces `cardano.bundle.js`)
+### plain html + js
+`yarn build-bundle` (produces `cardano.bundle.js`)
 
-Open `index.html` in a browser
+Open `index-simple.html` in a browser
+
+### simple Redux
+
+```
+yarn run build-frontend && yarn run run-frontend
+```
+
+TODOs:
+- unify build with building cardano wallet itself. No special webpack config and frontend.html are
+  needed
+- get rid of live-server; setup hot-reloading with webpack for easier development
+- check out TODO(TK) within the codebase

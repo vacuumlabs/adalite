@@ -17,7 +17,7 @@
     "url": "https://github.com/vacuumlabs/cardano/issues"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.build.js",
+    "build-bundle": "webpack --config webpack.config.build.js",
     "build-frontend": "webpack --config webpack.config.frontend.js",
     "run-frontend": "live-server --entry-file=./frontend.html --ignorePattern=node_modules",
     "test": "webpack --config webpack.config.test.js",

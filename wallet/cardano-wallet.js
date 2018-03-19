@@ -36,6 +36,10 @@ const CardanoWallet = (secretOrMnemonic) => {
     return await submitTxRaw(txHash, txBody)
   }
 
+  function getRootSecret() {
+    return rootSecret
+  }
+
   async function prepareTx(address, coins) {
     const txInputs = await prepareTxInputs(coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
@@ -288,6 +292,7 @@ const CardanoWallet = (secretOrMnemonic) => {
     prepareTx,
     deriveAddresses,
     getHistory,
+    getRootSecret,
   }
 }
 

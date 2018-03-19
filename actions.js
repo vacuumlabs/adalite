@@ -1,4 +1,7 @@
 // actions are just functions which also call update
+
+const Cardano = require('./cardano-wallet')
+
 const {dispatch} = require('./simpleRedux.js')
 
 let counter = 0
@@ -41,10 +44,31 @@ const setInputValue = () => {
   dispatch((state) => ({...state, controlledInputValue: window.event.target.value}), 'set input value')
 }
 
+const submitMenmonic = (mnemonic) => {
+  const rootSecret = Cardano.CardanoWallet(mnemonic).getRootSecret().getSecretKey()
+  dispatch((state) => ({...state, rootSecret}), 'submit mnemonic')
+}
+
+const generateMenmonic = () => {
+  const newMnemonic = Cardano.generateMnemonic()
+  dispatch((state) => ({...state, newMnemonic}), 'generate mnemonic')
+}
+
+const logout = () => dispatch((state) => ({...state, rootSecret: null}), 'close the wallet')
+
+const reloadBalance = () => {
+  dispatch((state) => ({...state, balance: 'loading...'}), 'loading balance')
+  // dispatch(async (state) => ({...state, balance: await Cardano.CardanoWallet(state.rootSecret).getBalance()}), 'balance loaded')
+}
+
 module.exports = {
   delayedHello,
   hello,
   addTodo,
   setInputValue,
+  submitMenmonic,
+  generateMenmonic,
+  reloadBalance,
+  logout,
   execute,
 }
