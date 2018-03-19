@@ -1,5 +1,4 @@
 const request = require('./helpers/request')
-const config = require('./config')
 
 async function getUnspentTxOutputs(address) {
   if (getAddressBalance(address) === 0) {
@@ -60,7 +59,7 @@ async function getAddressTxList(address) {
 }
 
 async function getAddressInfo(address) {
-  const url = `${config.blockchain_explorer_url}/api/addresses/summary/${address}`
+  const url = `${process.env.BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`
   const result = await request(url)
 
   return result.Right

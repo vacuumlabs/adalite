@@ -19,7 +19,8 @@
   "scripts": {
     "build": "webpack --config webpack.config.build.js",
     "test": "webpack --config webpack.config.test.js",
-    "fix": "prettier-eslint --write \"*.js\" \"./helpers/*.js\""
+    "fix": "prettier-eslint --write \"*.js\" \"./helpers/*.js\"",
+    "postinstall": "webpack --config webpack.config.build.js"
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {
@@ -31,7 +32,10 @@
     "buffer": "^5.1.0",
     "cbor": "^4.0.0",
     "crc-32": "^1.2.0",
+    "dotenv": "^5.0.1",
+    "dotenv-webpack": "^1.5.5",
     "elliptic-cardano": "6.4.0-b",
+    "express": "^4.16.3",
     "js-sha3": "^0.7.0",
     "pbkdf2": "^3.0.14",
     "supercop.js": "^2.0.1"

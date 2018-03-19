@@ -1,8 +1,6 @@
 const fetchMock = require('fetch-mock')
 const sinon = require('sinon')
 
-const config = require('../config')
-
 function mockBlockChainExplorer() {
   fetchMock.config.overwriteRoutes = true
 
@@ -457,7 +455,7 @@ function mockBlockChainExplorer() {
   }
   for (const address in addressesAndResponses) {
     fetchMock.mock({
-      matcher: `${config.blockchain_explorer_url}/api/addresses/summary/${address}`,
+      matcher: `${process.env.BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`,
       response: {
         status: 200,
         body: addressesAndResponses[address],
@@ -479,7 +477,7 @@ function mockTransactionSubmitter() {
   for (const request in requestsAndResponses) {
     fetchMock.mock({
       matcher: (url, opts) => {
-        return url === config.transaction_submitter_url && opts && opts.body === request
+        return url === process.env.TRANSACTION_SUBMITTER_URL && opts && opts.body === request
       },
       response: {
         status: 200,

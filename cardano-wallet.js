@@ -5,7 +5,6 @@ const tx = require('./transaction')
 const address = require('./address')
 const blockchainExplorer = require('./blockchain-explorer')
 const request = require('./helpers/request')
-const config = require('./config')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -29,9 +28,6 @@ const CardanoWallet = (secretOrMnemonic) => {
       : new tx.WalletSecretString(secretOrMnemonic)
 
   async function sendAda(address, coins) {
-    console.log(address)
-    console.log("BBBBBB")
-
     const transaction = await prepareTx(address, coins)
 
     const txHash = transaction.getId()
@@ -262,7 +258,7 @@ const CardanoWallet = (secretOrMnemonic) => {
   async function submitTxRaw(txHash, txBody) {
     try {
       const res = await request(
-        config.transaction_submitter_url,
+        process.env.TRANSACTION_SUBMITTER_URL,
         'POST',
         JSON.stringify({
           txHash,

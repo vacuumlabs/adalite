@@ -223,7 +223,10 @@ describe('test transaction fee function', () => {
 })
 
 describe('test successful transaction fee computation', async () => {
+  this.timeout(10000)
+
   mockBlockChainExplorer()
+
   it('should compute the right transaction fee for given transaction', async () => {
     assert.equal(await wallet.getTxFee(myAddress, 47), 178893)
   })
@@ -235,9 +238,10 @@ describe('test successful transaction fee computation', async () => {
 
 // eslint-disable-next-line prefer-arrow-callback
 describe('test transaction serialization', function() {
+  this.timeout(10000)
+
   mockBlockChainExplorer()
   mockRandomNumberGenerator(0.7)
-  this.timeout(5000)
 
   it('should properly serialize transaction inner body', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
@@ -288,6 +292,8 @@ describe('test transaction serialization', function() {
 })
 
 describe('test wallet balance computation', async () => {
+  this.timeout(10000)
+
   mockBlockChainExplorer()
 
   it('should properly fetch wallet balance', async () => {
@@ -296,6 +302,8 @@ describe('test wallet balance computation', async () => {
 })
 
 describe('test wallet history parsing', async () => {
+  this.timeout(10000)
+
   mockBlockChainExplorer()
 
   it('should properly fetch wallet history', async () => {
@@ -305,8 +313,9 @@ describe('test wallet history parsing', async () => {
 
 // eslint-disable-next-line prefer-arrow-callback
 describe('test transaction submission', function() {
+  this.timeout(10000)
+
   mockTransactionSubmitter()
-  this.timeout(5000)
 
   it('should properly submit transaction', async () => {
     const result = await wallet.sendAda(myAddress, 47)

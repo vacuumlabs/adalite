@@ -7,14 +7,14 @@
 </head>
 
 <body>
-<script src="./build/cardano.bundle.js"></script>
+<script src="js/cardano.bundle.js"></script>
 <!--<script src="./example.usage.js"></script>-->
 
 <script language="javascript">
     let wallet = null;
     let historyRaw = null;
 
-    function printMenmonic() {
+    function printMnemonic() {
       document.getElementById("mnemonic-generated").innerHTML = Cardano.generateMnemonic();
     }
 
@@ -104,7 +104,7 @@
 
 
 <p>
-    <button onclick="printMenmonic()">Generate mnemonic</button>
+    <button onclick="printMnemonic()">Generate mnemonic</button>
     <span id="mnemonic-generated"></span>
 </p>
 <p>
