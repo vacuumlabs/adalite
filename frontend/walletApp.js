@@ -11,5 +11,5 @@ init(
     controlledInputValue: ''},
   [sampleMid],
   TopLevelRouter,
-  'root'
+  document.getElementById('root')
 )
