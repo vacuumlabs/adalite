@@ -1,19 +1,19 @@
 /* eslint no-console: 0 */
 
-let state, root, rootTarget, middlewares
+let state, root = {}, middlewares
 
 // TODO(TK): make dispatch accept also 'payload' param, so it'll be updater, message, payload.
 // Updater's signature will then be (state, payload) => newState
 // message is optional, side-effects handled outside
-const dispatch = (updater, message) => {
+const dispatch = (updater, message, payload) => {
   const previousState = state
-  let nextState = updater(state)
+  let nextState = updater(state, payload)
   try {
     middlewares.forEach((midFn) => {
       nextState = midFn(nextState, previousState)
     })
     state = nextState
-    document.getElementById(rootTarget).innerHTML = root(nextState, previousState)
+    root.target.innerHTML = root.component(nextState, previousState)
   } finally {
     const t = new Date()
     console.group(
@@ -42,8 +42,8 @@ const routerAction = function(state) {
   )
 }
 
-// TODO(TK) init should accept the the component directly, not 'rootId'.
-const init = (initialState, middlewareArray, rootComponent, rootId) => {
+
+const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
   state = {
     ...initialState,
     router: {
@@ -52,15 +52,14 @@ const init = (initialState, middlewareArray, rootComponent, rootId) => {
     },
   }
   middlewares = middlewareArray
-  // TODO(TK) unify the naming. Why root in this module but rootComponent in the function signature?
-  root = rootComponent
-  rootTarget = rootId
+  root.component = rootComponent
+  root.target = rootTarget
   // Super-simple routing - listen to route changes and push them as router actions
   window.onpopstate = routerAction
   window.history.onpushstate = routerAction
   window.onhashchange = routerAction
   console.log('initial state', initialState)
-  document.getElementById(rootTarget).innerHTML = root(initialState, {})
+  root.target.innerHTML = root.component(initialState, {})
 }
 
 module.exports = {
