@@ -30,21 +30,23 @@ const loadWalletFromMnemonic = async (mnemonic) => {
   const unusedAddresses = [await wallet.getChangeAddress()]
   const balance = await wallet.getBalance()
   const amount = 0
-  const sendAddress = ""
-  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress}), 'load wallet from mnemonic')
+  const sendAddress = ''
+  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress,}), 'load wallet from mnemonic')
 }
 
 const generateMnemonic = () => {
   const newWalletMnemonic = Cardano.generateMnemonic()
   const currentWalletMnemonicOrSecret = newWalletMnemonic
-  dispatch((state) => ({...state, newWalletMnemonic, currentWalletMnemonicOrSecret, activeWalletId: null, }), 'generate mnemonic')
+  dispatch(
+    (state) => ({...state, newWalletMnemonic, currentWalletMnemonicOrSecret, activeWalletId: null}),
+    'generate mnemonic'
+  )
 }
 
 const logout = () => {
   dispatch((state) => ({...state, activeWalletId: null}), 'close the wallet')
   wallet = null
 }
-
 
 const reloadBalance = async () => {
   dispatch((state) => ({...state, balance: 'loading...'}), 'loading balance')

@@ -133,3 +133,7 @@ body {
   overflow:scroll;
   height: 1em;
 }
+
+.small {
+    font-size: small;
+}

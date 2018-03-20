@@ -24,8 +24,11 @@ const Unlock = (state) => `
   <div>
       Mnemonic: <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="${state.currentWalletMnemonicOrSecret}"
       nblur="${execute(saveMnemonic, "document.getElementById('mnemonic-submitted').value")}">
-      <input type="submit" onclick="${execute(loadWalletFromMnemonic, "document.getElementById('mnemonic-submitted').value")}" value="Load" />
-      <div>You can load a wallet even by submitting its root secret.</div>
+      <input type="submit" onclick="${execute(
+    loadWalletFromMnemonic,
+    "document.getElementById('mnemonic-submitted').value"
+  )}" value="Load" />
+      <div class="small">You can load a wallet even by submitting its root secret.</div>
   </div>
 </div>`
 
@@ -61,7 +64,6 @@ const WalletHeader = (state) => `
     </div>
 `
 
-
 const UsedAddressesList = (state) => `
   <div class="box address-list"> Already used addresses: <br/>
     ${state.usedAddresses.reduce((acc, elem) => (`${acc}<span class="address">${elem}</span>`), '')}
@@ -74,23 +76,29 @@ const UnusedAddressesList = (state) => {
 
   return `
   <div class="box address-list"> Unused addresses: <br/>
-    ${state.unusedAddresses.reduce((acc, elem) => (`${acc}<span class="address">${elem}</span>`), '')}
-    <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() => generateNewUnusedAddress(state.unusedAddresses.length))}" value="Get one more" /> 
+    ${state.unusedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
+    <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
+    generateNewUnusedAddress(state.unusedAddresses.length)
+  )}" value="Get one more" /> 
   </div>  
 `
 }
 
 const Fee = (state) => `
-  <div style="display: flex; flex-direction: row; justify-content: flex-start">
-      <button onclick="${execute(calculateFee,
-    "document.getElementById('send-address').value",
-    "parseInt(document.getElementById('send-amount').value)")}">Calculate fee</button>
-    ${state.fee && `<div>  
-      Fee: <span id="fee" style="background-color: aquamarine">${state.fee}</span> Lovelace
-      <div style="font-size: smaller">1 Lovelace = 1/1,000,000 Ada</div>
-    </div>`}
-  </div>`
+<div class="box">
 
+      <button onclick="${execute(
+    calculateFee,
+    "document.getElementById('send-address').value",
+    "parseInt(document.getElementById('send-amount').value)"
+  )}">Calculate fee</button>
+     <span style="${!state.fee && 'visibility: hidden'}">  
+      Fee: ${
+  isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`
+}
+    </span>
+
+</div>`
 
 const SendAda = (state) => `
 <div class="box">
@@ -99,15 +107,24 @@ const SendAda = (state) => `
   "document.getElementById('send-address').value")}">
     </div>
     <div>
-    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${state.amount}" onblur="${execute(saveAmount, "parseInt(document.getElementById('send-amount').value)")}"> Lovelace 
-    <div style="font-size: smaller">1 Lovelace = 1/1,000,000 Ada</div>
+    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${
+  state.amount
+}" onblur="${execute(
+  saveAmount,
+  "parseInt(document.getElementById('send-amount').value)"
+)}"> ADA &nbsp;&nbsp;&nbsp;
+    <span class="small"> Amount includes the fee! </span>
     </div>
-    ${Fee(state)}
-    <button onclick="${execute(submitTransaction, "document.getElementById('send-address').value",
-  "parseInt(document.getElementById('send-amount').value)")}">Send Ada</button>
-    <span id="transacton-submitted">${state.sendSuccess}</span>
-</div>`
-
+    <button onclick="${execute(
+    submitTransaction,
+    "document.getElementById('send-address').value",
+    "parseInt(document.getElementById('send-amount').value)"
+  )}">Send Ada</button>
+    ${state.sendSuccess &&
+      `<span id="transacton-submitted">Transaction  tatus: ${state.sendSuccess}</span>`}
+</div>
+${Fee(state)}
+`
 
 const WalletInfo = (state) => `
   ${WalletHeader(state)}
@@ -122,18 +139,17 @@ const SendAdaScreen = (state) => `
 `
 
 const Index = (state) => {
-  switch(state.currentTab) {
+  switch (state.currentTab) {
     case 'new-wallet':
-        return NewMnemonic(state)
+      return NewMnemonic(state)
     case 'wallet-info':
-        return state.activeWalletId ? WalletInfo(state) : Unlock(state)
+      return state.activeWalletId ? WalletInfo(state) : Unlock(state)
     case 'send-ada':
-        return state.activeWalletId ? SendAdaScreen(state) : Unlock(state)
+      return state.activeWalletId ? SendAdaScreen(state) : Unlock(state)
     default:
-        return
+      return 'CardanoLite  wallet'
   }
 }
-
 
 const Navbar = (state) => `
   <div class="navbar">
@@ -165,7 +181,7 @@ const TopLevelRouter = (state, prevState) => {
       break
     default:
       body = Index(state, prevState)
-      // body = '404 - not found'
+    // body = '404 - not found'
   }
   return `
   ${AboutOverlay(state, prevState)}

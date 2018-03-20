@@ -1,7 +1,7 @@
 // polyfill to trigger onpushstate events on history api
 // http://felix-kling.de/blog/2011/01/06/how-to-detect-history-pushstate/
 
-(function(history) {
+;(function(history) {
   const pushState = history.pushState
   history.pushState = function(state) {
     // must be before our function so that url changes before we dispatch the action
@@ -13,12 +13,10 @@
   }
 })(window.history)
 
-
 // init the application
 const TopLevelRouter = require('./components')
 const sampleMid = require('./middleware')
 const {init} = require('./simpleRedux')
-
 
 init(
   {

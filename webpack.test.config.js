@@ -1,6 +1,5 @@
 const Dotenv = require('dotenv-webpack')
 
-
 module.exports = {
   entry: './test/test.js',
   output: {

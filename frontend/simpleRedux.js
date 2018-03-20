@@ -19,7 +19,7 @@ const dispatch = (updater, message, payload) => {
     const t = new Date()
     console.group(
       `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
-      'NAMELESS_ACTION'}`
+        'NAMELESS_ACTION'}`
     )
     console.log(previousState)
     console.log(nextState)
@@ -30,8 +30,8 @@ const dispatch = (updater, message, payload) => {
 // special action that serves as a minimal redux routing - we want the
 // route processed in state so we can react in middleware when it changes
 const routerAction = function(state) {
-  dispatch((state) =>
-    ({
+  dispatch(
+    (state) => ({
       ...state,
       router: {
         // assume we're pushing just paths
@@ -39,10 +39,9 @@ const routerAction = function(state) {
         hash: window.location.hash,
       },
     }),
-  'ROUTER ACTION'
+    'ROUTER ACTION'
   )
 }
-
 
 const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
   state = {
