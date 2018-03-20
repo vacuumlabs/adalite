@@ -50,6 +50,8 @@ const logout = () => {
 
 const reloadBalance = async () => {
   dispatch((state) => ({...state, balance: 'loading...'}), 'loading balance')
+
+
   const balance = await wallet.getBalance()
   dispatch((state) => ({...state, balance}), 'balance loaded')
 }
