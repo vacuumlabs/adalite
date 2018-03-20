@@ -27,9 +27,6 @@
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {
     "@stablelib/chacha20poly1305": "^0.10.2",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.4",
-    "babel-preset-env": "^1.6.1",
     "bignumber.js": "^6.0.0",
     "bip39": "^2.5.0",
     "blakejs": "^1.1.0",
@@ -44,7 +41,8 @@
     "pbkdf2": "^3.0.14",
     "start-server-webpack-plugin": "^2.2.5",
     "supercop.js": "^2.0.1",
-    "webpack-node-externals": "^1.6.0"
+    "webpack-node-externals": "^1.6.0",
+    "webpack": "^4.1.1"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.2",
@@ -59,7 +57,6 @@
     "prettier": "^1.10.2",
     "prettier-eslint-cli": "^4.7.1",
     "sinon": "^4.4.2",
-    "webpack": "^4.1.1",
     "webpack-cli": "^2.0.10"
   }
 }
