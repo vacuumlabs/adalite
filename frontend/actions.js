@@ -1,6 +1,6 @@
 // actions are just functions which also call update
 
-const Cardano = require('./cardano-wallet')
+const Cardano = require('../wallet/cardano-wallet')
 
 const {dispatch} = require('./simpleRedux.js')
 
