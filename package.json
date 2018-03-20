@@ -17,12 +17,12 @@
     "url": "https://github.com/vacuumlabs/cardano/issues"
   },
   "scripts": {
-    "build-bundle": "webpack --config webpack.config.build.js",
-    "build-frontend": "webpack --config webpack.config.frontend.js",
+    "build-bundle": "webpack --config webpack.build.config.js",
+    "build-frontend": "webpack --config webpack.frontend.config.js",
     "run-frontend": "live-server --entry-file=./frontend.html --ignorePattern=node_modules",
-    "test": "webpack --config webpack.config.test.js",
+    "test": "webpack --config webpack.test.config.js",
     "fix": "prettier-eslint --write \"*.js\" \"./helpers/*.js\"",
-    "postinstall": "webpack --config webpack.config.build.js"
+    "heroku-postbuild": "webpack --config webpack.prod.config.js --progress"
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {
@@ -37,7 +37,6 @@
     "buffer": "^5.1.0",
     "cbor": "^4.0.0",
     "crc-32": "^1.2.0",
-    "dotenv": "^5.0.1",
     "dotenv-webpack": "^1.5.5",
     "elliptic-cardano": "6.4.0-b",
     "express": "^4.16.3",

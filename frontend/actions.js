@@ -23,31 +23,13 @@ function execute(fn, ...stringArgs) {
   return `window['${executeKey}']['${name}'](${argStr})`
 }
 
-const hello = () => {
-  dispatch((state) => ({...state, hello: 'World'}), 'Say Hello')
-}
-
-const delayedHello = () => {
-  dispatch((state) => ({...state, loading: true}), 'set loading')
-  setTimeout(() => {
-    dispatch((state) => ({...state, loading: false, hello: 'Internet'}), 'Say... Hello')
-  }, 1000)
-}
-
-const addTodo = (todo) => {
-  // this is how you can get the event object
-  // this is just demo, it's not necessary to call this now.
-  console.log(window.event) // eslint-disable-line no-console
-  dispatch((state) => ({...state, todos: state.todos.concat(todo)}), 'add todo')
-}
-
 const setInputValue = () => {
   dispatch((state) => ({...state, controlledInputValue: window.event.target.value}), 'set input value')
 }
 
-const submitMenmonic = (mnemonic) => {
-  const rootSecret = Cardano.CardanoWallet(mnemonic).getRootSecret().getSecretKey()
-  wallet = Cardano.CardanoWallet(rootSecret)
+const submitMnemonic = (mnemonic) => {
+  wallet = Cardano.CardanoWallet(mnemonic)
+  const rootSecret = wallet.getRootSecret().getSecretKey()
   dispatch((state) => ({...state, rootSecret}), 'submit mnemonic')
 }
 
@@ -61,6 +43,8 @@ const logout = () => dispatch((state) => ({...state, rootSecret: null}), 'close 
 
 const reloadBalance = async () => {
   dispatch((state) => ({...state, balance: 'loading...'}), 'loading balance')
+
+
   const balance = await wallet.getBalance()
   dispatch((state) => ({...state, balance}), 'balance loaded')
 }
@@ -73,11 +57,8 @@ const getRecieveAddress = async () => {
 
 
 module.exports = {
-  delayedHello,
-  hello,
-  addTodo,
   setInputValue,
-  submitMenmonic,
+  submitMnemonic,
   generateMenmonic,
   reloadBalance,
   getRecieveAddress,

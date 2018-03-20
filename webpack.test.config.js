@@ -1,15 +1,5 @@
 const Dotenv = require('dotenv-webpack')
-const webpack = require('webpack')
 
-
-const plugins = []
-
-// detect heroku environment by checking the process.env variable
-if (process !== undefined && process.env !== undefined) {
-  plugins.push(new webpack.EnvironmentPlugin({...process.env}))
-} else {
-  plugins.push(new Dotenv())
-}
 
 module.exports = {
   entry: './test/test.js',
@@ -22,6 +12,6 @@ module.exports = {
   node: {
     fs: 'empty',
   },
-  plugins,
+  plugins: [new Dotenv()],
   mode: 'development',
 }
