@@ -13,17 +13,13 @@ const {
   generateNewUnusedAddress,
   calculateFee,
   submitTransaction,
-  saveAddress,
-  saveAmount,
-  saveMnemonic,
 } = require('./actions')
 
 const Unlock = (state) => `
 <div class="box">
-  <div>Load wallet</div>
+  <div class="label">Load wallet</div>
   <div>
-      Mnemonic: <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="${state.currentWalletMnemonicOrSecret}"
-      nblur="${execute(saveMnemonic, "document.getElementById('mnemonic-submitted').value")}">
+      Mnemonic: <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="${state.currentWalletMnemonicOrSecret}">
       <input type="submit" onclick="${execute(
     loadWalletFromMnemonic,
     "document.getElementById('mnemonic-submitted').value"
@@ -101,18 +97,11 @@ const Fee = (state) => `
 
 const SendAda = (state) => `
 <div class="box">
-    <h3>send Ada:</h3>
-    <div>To address: <input type="text" id="send-address" name="send-address" size="110" value="${
-  state.sendAddress
-}" onblur="${execute(saveAddress, "document.getElementById('send-address').value")}">
+    <div class="label">Send Ada</div>
+    <div>To address: <input type="text" id="send-address" name="send-address" size="110" value="${state.sendAddress}" >
     </div>
     <div>
-    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${
-  state.amount
-}" onblur="${execute(
-  saveAmount,
-  "parseInt(document.getElementById('send-amount').value)"
-)}"> ADA &nbsp;&nbsp;&nbsp;
+    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${state.amount}"> ADA &nbsp;&nbsp;&nbsp;
     <span class="small"> Amount includes the fee! </span>
     </div>
     <button onclick="${execute(

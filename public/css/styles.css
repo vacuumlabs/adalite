@@ -57,6 +57,7 @@ body {
 }
 .wallet-header {
   background-color: cornflowerblue;
+  padding: 3px;
 }
 
 .address {
@@ -142,4 +143,11 @@ button, input {
     padding: 5px 15px;
     margin: 5px 10px;
     letter-spacing: 1px;
+}
+
+.label {
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #333333;
 }

@@ -77,11 +77,6 @@ const setCurrentTab = (currentTab) => {
   dispatch((state) => ({...state, currentTab}), 'set current tab')
 }
 
-const saveAddress = (sendAddress) => dispatch((state) => ({...state, sendAddress}), 'address saved')
-
-const saveAmount = (amount) => dispatch((state) => ({...state, amount}), 'amount saved')
-
-const saveMnemonic = (mnemonic) => dispatch((state) => ({...state, mnemonic}), 'amount saved')
 
 const calculateFee = async (address, amount) => {
   dispatch((state) => ({...state, fee: 'loading...'}), 'loading fee')
@@ -104,9 +99,6 @@ module.exports = {
   submitTransaction,
   logout,
   execute,
-  saveAddress,
-  saveMnemonic,
-  saveAmount,
   toggleAboutOverlay,
   setCurrentTab,
 }
