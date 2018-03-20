@@ -40,6 +40,10 @@ const CardanoWallet = (secretOrMnemonic) => {
     return rootSecret
   }
 
+  function getId() {
+    return address.deriveAddress(rootSecret, 0x80000000)
+  }
+
   async function prepareTx(address, coins) {
     const txInputs = await prepareTxInputs(coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
@@ -214,10 +218,11 @@ const CardanoWallet = (secretOrMnemonic) => {
 
   async function getUsedAddressesAndSecrets() {
     let result = []
+    const gapLength = process.env.ADDRESS_RECOVERY_GAP_LENGTH
 
     for (let i = 0; ; i++) {
       const usedAddresses = await filterUsed(
-        deriveAddressesAndSecrets(i * 20, (i + 1) * 20),
+        deriveAddressesAndSecrets(i * gapLength, (i + 1) * gapLength),
         async (addressData) => {
           return await blockchainExplorer.isAddressUsed(addressData.address)
         }
@@ -233,11 +238,11 @@ const CardanoWallet = (secretOrMnemonic) => {
     return result
   }
 
-  function deriveAddresses(begin = 0, end = 20) {
+  function deriveAddresses(begin = 0, end = process.env.ADDRESS_RECOVERY_GAP_LENGTH) {
     return deriveAddressesAndSecrets(begin, end).map((item) => item.address)
   }
 
-  function deriveAddressesAndSecrets(begin = 0, end = 20) {
+  function deriveAddressesAndSecrets(begin = 0, end = process.env.ADDRESS_RECOVERY_GAP_LENGTH) {
     const result = []
     for (let i = begin; i < end; i++) {
       result.push(address.deriveAddressAndSecret(rootSecret, 0x80000001 + i))
@@ -284,6 +289,7 @@ const CardanoWallet = (secretOrMnemonic) => {
   }
 
   return {
+    getId,
     sendAda,
     getBalance,
     getChangeAddress,

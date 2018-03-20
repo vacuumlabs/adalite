@@ -25,20 +25,20 @@ function execute(fn, ...stringArgs) {
 
 const loadWalletFromMnemonic = async (mnemonic) => {
   wallet = Cardano.CardanoWallet(mnemonic)
-  const rootSecret = wallet.getRootSecret().getSecretKey()
+  const activeWalletId = wallet.getId()
   const usedAddresses = await wallet.getUsedAddresses()
   const unusedAddresses = [await wallet.getChangeAddress()]
   const balance = await wallet.getBalance()
-  dispatch((state) => ({...state, rootSecret, usedAddresses, unusedAddresses, balance}), 'load wallet from mnemonic')
+  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance}), 'load wallet from mnemonic')
 }
 
 const generateMnemonic = () => {
   const newWalletMnemonic = Cardano.generateMnemonic()
   const currentWalletMnemonicOrSecret = newWalletMnemonic
-  dispatch((state) => ({...state, newWalletMnemonic, currentWalletMnemonicOrSecret, rootSecret: null, }), 'generate mnemonic')
+  dispatch((state) => ({...state, newWalletMnemonic, currentWalletMnemonicOrSecret, activeWalletId: null, }), 'generate mnemonic')
 }
 
-const logout = () => dispatch((state) => ({...state, rootSecret: null}), 'close the wallet')
+const logout = () => dispatch((state) => ({...state, activeWalletId: null}), 'close the wallet')
 
 
 const reloadBalance = async () => {

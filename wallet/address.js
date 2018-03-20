@@ -102,6 +102,10 @@ function deriveAddressAndSecret(rootSecretString, childIndex) {
   }
 }
 
+function deriveAddress(rootSecretString, childIndex) {
+  return deriveAddressAndSecret(rootSecretString, childIndex).address
+}
+
 function isAddressDerivableFromSecretString(address, rootSecretString) {
   try {
     deriveSecretStringFromAddress(address, rootSecretString)
@@ -238,6 +242,7 @@ function indexIsHardened(childIndex) {
 
 module.exports = {
   deriveAddressAndSecret,
+  deriveAddress,
   isAddressDerivableFromSecretString,
   deriveSecretStringFromAddress,
   deriveSK,

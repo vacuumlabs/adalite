@@ -46,8 +46,8 @@ const Balance = (state) => `
 const WalletHeader = (state) => `
     <div class="wallet-header box"">
         <div style="display: flex; flex-direction: row; justify-content:space-around; flex-wrap: wrap; align-items:baseline">
-        <div class="wallet-name" style="width: 350px; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;">Wallet:  
-            ${state.rootSecret ? state.rootSecret : 'error, not initialized'}
+        <div class="wallet-name">Wallet Id:  
+            ${state.activeWalletId ? state.activeWalletId : 'error, not initialized'}
         </div>
         ${Logout(state)}
         </div>
@@ -62,12 +62,16 @@ const UsedAddressesList = (state) => `
 `
 
 
-const UnusedAddressesList = (state) => `
+const UnusedAddressesList = (state) => {
+  const disableGettingNewAddresses = state.unusedAddresses.length >= process.env.ADDRESS_RECOVERY_GAP_LENGTH
+
+  return `
   <div class="box address-list"> Unused addresses: <br/>
     ${state.unusedAddresses.reduce((acc, elem) => (`${acc}<span class="address">${elem}</span>`), '')}
-    <input class="box-btn" type="submit" onclick="${execute(() => generateNewUnusedAddress(state.unusedAddresses.length))}" value="Get one more" /> 
+    <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() => generateNewUnusedAddress(state.unusedAddresses.length))}" value="Get one more" /> 
   </div>  
-`
+  `
+}
 
 
 const WalletInfo = (state) => `
@@ -86,9 +90,9 @@ const Index = (state) => {
     case 'new-wallet':
         return NewMnemonic(state)
     case 'wallet-info':
-        return state.rootSecret ? WalletInfo(state) : Unlock(state)
+        return state.activeWalletId ? WalletInfo(state) : Unlock(state)
     case 'send-ada':
-        return state.rootSecret ? SendAdaScreen(state) : Unlock(state)
+        return state.activeWalletId ? SendAdaScreen(state) : Unlock(state)
     default:
         return
   } 
