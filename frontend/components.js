@@ -62,7 +62,6 @@ const Wallet = (state) => `
 `
 
 const Index = (state) => {
-  // const example = `a onclick="window.history.pushState({}, 'Sync Hello', 'hello')">Hello World!</a`
   return state.rootSecret ? Wallet(state) : Unlock(state) + NewMnemonic(state)
 }
 
