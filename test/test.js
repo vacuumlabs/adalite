@@ -208,7 +208,7 @@ describe('test wallet addresses derivation', () => {
     'DdzFFzCqrhsmzxyw7miPZpbb8BuftQfmCZF3Lmc3tAQtKp1d8CnWd6BnnrqP6EoDPaD3m63Ri6Jxuduuy8fkPNDTeA2HxfvEnt4rLufU',
   ]
 
-  const walletAddresses = wallet.deriveAddresses()
+  const walletAddresses = wallet.deriveAddresses(0, 20)
 
   it('should derive the right sequence of addresses from the root secret key', () => {
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
