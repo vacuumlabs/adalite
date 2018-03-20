@@ -2,9 +2,9 @@
 const assert = require('assert')
 const cbor = require('cbor')
 
-const transaction = require('../transaction')
-const mnemonic = require('../mnemonic')
-const address = require('../address')
+const transaction = require('../wallet/transaction')
+const mnemonic = require('../wallet/mnemonic')
+const address = require('../wallet/address')
 const {CardanoWallet, txFeeFunction} = require('../cardano-wallet')
 const {mockTransactionSubmitter, mockBlockChainExplorer, mockRandomNumberGenerator} = require('./mock')
 
