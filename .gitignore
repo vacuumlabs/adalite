@@ -1,6 +1,6 @@
 .idea/
 node_modules/
-public/js/cardano-bundle.js
+public/js/cardano.bundle.js
 test/browser/js/cardano.bundle.test.js
 .env
 yarn-error.log
