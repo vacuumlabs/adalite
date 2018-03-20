@@ -1,3 +1,5 @@
+console.log(process.env)
+
 const cbor = require('cbor')
 
 const {mnemonicToWalletSecretString, generateMnemonic} = require('./mnemonic')

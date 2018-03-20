@@ -19,6 +19,7 @@ module.exports = {
     path: __dirname + "/public/js",
   },
   mode: 'development',
+  plugins,
   node: {
     fs: 'empty',
   },
