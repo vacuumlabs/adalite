@@ -18,7 +18,7 @@ const dispatch = (updater, message, payload) => {
     const t = new Date()
     console.group(
       `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
-        'NAMELESS_ACTION'}`
+      'NAMELESS_ACTION'}`
     )
     console.log(previousState)
     console.log(nextState)

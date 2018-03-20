@@ -27,6 +27,42 @@
 
 a {
   display: block;
-  margin: 10;
+  margin: 10px;
   cursor: pointer;
+}
+
+.box {
+  padding: 30px;
+  margin: 20px;
+}
+.box
+{
+  position:relative;
+  -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.05), 0 0 40px rgba(0, 0, 0, 0.05) inset;
+  -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.05), 0 0 40px rgba(0, 0, 0, 0.05) inset;
+  box-shadow:0 1px 4px rgba(0, 0, 0, 0.05), 0 0 40px rgba(0, 0, 0, 0.05) inset;
+}
+.box:before, .box:after
+{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  -webkit-box-shadow:0 0 20px rgba(0,0,0,0.2);
+  -moz-box-shadow:0 0 20px rgba(0,0,0,0.2);
+  box-shadow:0 0 20px rgba(0,0,0,0.2);
+  top:0;
+  bottom:0;
+  left:0px;
+  right:0px;
+  -moz-border-radius:5px / 5px;
+  border-radius:5px / 5px;
+}
+.wallet-header {
+  background-color: cornflowerblue;
+}
+
+.address {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
 }

@@ -3,7 +3,7 @@ module.exports = {
   output: {
     filename: 'frontend.bundle.js',
     library: 'cardanoFrontend',
-    path: __dirname,
+    path: __dirname + "/build",
   },
   mode: 'development',
   node: {

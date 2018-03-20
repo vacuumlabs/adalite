@@ -5,6 +5,7 @@ const Cardano = require('./cardano-wallet')
 const {dispatch} = require('./simpleRedux.js')
 
 let counter = 0
+let wallet = null
 
 const executeKey = '__cardano__global_fns'
 window[executeKey] = {}
@@ -46,6 +47,7 @@ const setInputValue = () => {
 
 const submitMenmonic = (mnemonic) => {
   const rootSecret = Cardano.CardanoWallet(mnemonic).getRootSecret().getSecretKey()
+  wallet = Cardano.CardanoWallet(rootSecret)
   dispatch((state) => ({...state, rootSecret}), 'submit mnemonic')
 }
 
@@ -56,10 +58,19 @@ const generateMenmonic = () => {
 
 const logout = () => dispatch((state) => ({...state, rootSecret: null}), 'close the wallet')
 
-const reloadBalance = () => {
+
+const reloadBalance = async () => {
   dispatch((state) => ({...state, balance: 'loading...'}), 'loading balance')
-  // dispatch(async (state) => ({...state, balance: await Cardano.CardanoWallet(state.rootSecret).getBalance()}), 'balance loaded')
+  const balance = await wallet.getBalance()
+  dispatch((state) => ({...state, balance}), 'balance loaded')
 }
+
+const getRecieveAddress = async () => {
+  dispatch((state) => ({...state, address: 'loading...'}), 'loading balance')
+  const recieve = await wallet.getChangeAddress(1000)
+  dispatch((state) => ({...state, recieve}), 'balance loaded')
+}
+
 
 module.exports = {
   delayedHello,
@@ -69,6 +80,7 @@ module.exports = {
   submitMenmonic,
   generateMenmonic,
   reloadBalance,
+  getRecieveAddress,
   logout,
   execute,
 }
