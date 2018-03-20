@@ -31,7 +31,8 @@ const loadWalletFromMnemonic = async (mnemonic) => {
   const balance = await wallet.getBalance()
   const amount = 0
   const sendAddress = ''
-  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress,}), 'load wallet from mnemonic')
+  const sendSuccess = ''
+  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress, sendSuccess}), 'load wallet from mnemonic')
 }
 
 const generateMnemonic = () => {

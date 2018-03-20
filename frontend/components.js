@@ -48,15 +48,15 @@ const Logout = (state) => `
 
 const Balance = (state) => `
   <div class="box"> Balance : 
-    <span>${state.balance / 1000000} ADA</span>
+    <span>${isNaN(Number(state.balance)) ? state.balance : `${state.balance / 1000000} ADA`}</span>
     <input type="submit" onclick="${execute(reloadBalance)}" value="Reload" />  
   </div>   
 `
 
 const WalletHeader = (state) => `
-    <div class="wallet-header box"">
+    <div class="box wallet-header"">
         <div style="display: flex; flex-direction: row; justify-content:space-around; flex-wrap: wrap; align-items:baseline">
-        <div class="wallet-name">Wallet Id:  
+        <div class="wallet-name address">Wallet Id:  
             ${state.activeWalletId ? state.activeWalletId : 'error, not initialized'}
         </div>
         ${Logout(state)}
@@ -77,8 +77,8 @@ const UnusedAddressesList = (state) => {
   <div class="box address-list"> Unused addresses: <br/>
     ${state.unusedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
     <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
-    generateNewUnusedAddress(state.unusedAddresses.length)
-  )}" value="Get one more" /> 
+  generateNewUnusedAddress(state.unusedAddresses.length)
+)}" value="Get one more" /> 
   </div>  
 `
 }
@@ -120,8 +120,8 @@ const SendAda = (state) => `
     "document.getElementById('send-address').value",
     "parseInt(document.getElementById('send-amount').value)"
   )}">Send Ada</button>
-    ${state.sendSuccess &&
-      `<span id="transacton-submitted">Transaction  tatus: ${state.sendSuccess}</span>`}
+    ${state.sendSuccess !== '' ?
+    `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>` : ''}
 </div>
 ${Fee(state)}
 `
@@ -134,6 +134,7 @@ const WalletInfo = (state) => `
 `
 
 const SendAdaScreen = (state) => `
+  ${WalletHeader(state)}
   ${Balance(state)}
   ${SendAda(state)}
 `
@@ -174,7 +175,7 @@ const AboutOverlay = (state) =>
     <div class="about-overlay" onclick=${execute(toggleAboutOverlay)}>
       <div class="text">Insert text here</div>
     </div>
-  ` : ``
+  ` : ''
 
 
 const TopLevelRouter = (state, prevState) => {
