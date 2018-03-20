@@ -488,7 +488,7 @@ function mockTransactionSubmitter() {
   }
 
   fetchMock.mock({
-    matcher: config.transaction_submitter_url,
+    matcher: process.env.TRANSACTION_SUBMITTER_URL,
     response: {
       status: 200,
       body: {result: false},

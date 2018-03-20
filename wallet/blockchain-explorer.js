@@ -75,4 +75,10 @@ async function isAddressUsed(address) {
   return (await getAddressInfo(address)).caTxNum > 0
 }
 
-module.exports = {getUnspentTxOutputs, getAddressTxList, getAddressInfo, getAddressBalance, isAddressUsed}
+module.exports = {
+  getUnspentTxOutputs,
+  getAddressTxList,
+  getAddressInfo,
+  getAddressBalance,
+  isAddressUsed,
+}

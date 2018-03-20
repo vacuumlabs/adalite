@@ -2,11 +2,11 @@ const Dotenv = require('dotenv-webpack')
 const webpack = require('webpack')
 
 
-let plugins = []
+const plugins = []
 
 // detect heroku environment by checking the process.env variable
 if (process !== undefined && process.env !== undefined) {
-  plugins.push(new webpack.EnvironmentPlugin( { ...process.env } ))
+  plugins.push(new webpack.EnvironmentPlugin({...process.env}))
 } else {
   plugins.push(new Dotenv())
 }
@@ -17,7 +17,7 @@ module.exports = {
     filename: 'cardano.bundle.js',
     libraryTarget: 'var',
     library: 'Cardano',
-    path: __dirname + "/public/js",
+    path: `${__dirname}/public/js`,
   },
   node: {
     fs: 'empty',

@@ -1,11 +1,12 @@
 require('dotenv').config()
-const express = require("express");
-const app = express();
+const express = require('express')
+const app = express()
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 
 app.use(express.static('public'))
 
-app.listen(PORT, function () {
-  console.log("Cardano wallet app listening on " + PORT + "!");
-});
+app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Cardano wallet app listening on ${PORT}!`)
+})

@@ -5,7 +5,7 @@ const cbor = require('cbor')
 const transaction = require('../wallet/transaction')
 const mnemonic = require('../wallet/mnemonic')
 const address = require('../wallet/address')
-const {CardanoWallet, txFeeFunction} = require('../cardano-wallet')
+const {CardanoWallet, txFeeFunction} = require('../wallet/cardano-wallet')
 const {mockTransactionSubmitter, mockBlockChainExplorer, mockRandomNumberGenerator} = require('./mock')
 
 const secret1 = new transaction.WalletSecretString(
@@ -222,7 +222,8 @@ describe('test transaction fee function', () => {
   })
 })
 
-describe('test successful transaction fee computation', async () => {
+// eslint-disable-next-line prefer-arrow-callback
+describe('test successful transaction fee computation', function() {
   this.timeout(10000)
 
   mockBlockChainExplorer()
@@ -291,7 +292,8 @@ describe('test transaction serialization', function() {
   })
 })
 
-describe('test wallet balance computation', async () => {
+// eslint-disable-next-line prefer-arrow-callback
+describe('test wallet balance computation', function() {
   this.timeout(10000)
 
   mockBlockChainExplorer()
@@ -301,7 +303,8 @@ describe('test wallet balance computation', async () => {
   })
 })
 
-describe('test wallet history parsing', async () => {
+// eslint-disable-next-line prefer-arrow-callback
+describe('test wallet history parsing', function() {
   this.timeout(10000)
 
   mockBlockChainExplorer()

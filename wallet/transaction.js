@@ -69,6 +69,39 @@ class TxPublicString {
   }
 }
 
+class TxSignature {
+  constructor(signature) {
+    this.signature = signature
+  }
+
+  encodeCBOR(encoder) {
+    return encoder.pushAny(new Buffer(this.signature, 'hex'))
+  }
+}
+
+class TxWitness {
+  constructor(publicString, signature) {
+    this.publicString = publicString
+    this.signature = signature
+    this.type = 0 // default - PkWitness
+  }
+
+  getPublicKey() {
+    return this.publicString.getPublicKey()
+  }
+
+  getSignature() {
+    return this.signature.signature
+  }
+
+  encodeCBOR(encoder) {
+    return encoder.pushAny([
+      this.type,
+      new cbor.Tagged(24, cbor.encode([this.publicString, this.signature])),
+    ])
+  }
+}
+
 class TxInput {
   constructor(txId, outputIndex, secret, coins) {
     this.id = txId
@@ -142,39 +175,6 @@ class WalletSecretString {
 
   getChainCode() {
     return this.secretString.substr(192, 64)
-  }
-}
-
-class TxSignature {
-  constructor(signature) {
-    this.signature = signature
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny(new Buffer(this.signature, 'hex'))
-  }
-}
-
-class TxWitness {
-  constructor(publicString, signature) {
-    this.publicString = publicString
-    this.signature = signature
-    this.type = 0 // default - PkWitness
-  }
-
-  getPublicKey() {
-    return this.publicString.getPublicKey()
-  }
-
-  getSignature() {
-    return this.signature.signature
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny([
-      this.type,
-      new cbor.Tagged(24, cbor.encode([this.publicString, this.signature])),
-    ])
   }
 }
 
