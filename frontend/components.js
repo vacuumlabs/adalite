@@ -2,7 +2,7 @@
 // component functions should expect prev and next state as the only arguments
 // higher-order components should return component functions (or other HOCs)
 
-const {execute, setInputValue, submitMnemonic, generateMenmonic, reloadBalance, getRecieveAddress, logout} = require('./actions')
+const {execute, submitMnemonic, generateMenmonic, reloadBalance, getRecieveAddress, logout} = require('./actions')
 
 const Unlock = (state) => `
 <div class="box">
@@ -53,7 +53,6 @@ const RecieveAddress = (state) => `
     <input type="submit" onclick="${execute(getRecieveAddress)}" value="Check unused " />  
   </div>   
 `
-
 
 
 const Wallet = (state) => `

@@ -7,7 +7,7 @@ const {init} = require('./simpleRedux')
 init(
   {
     loading: false,
-    controlledInputValue: ''},
+  },
   [sampleMid],
   TopLevelRouter,
   document.getElementById('root')

@@ -7,7 +7,7 @@ module.exports = {
     filename: 'frontend.bundle.js',
     libraryTarget: 'var',
     library: 'CardanoFrontend',
-    path: __dirname + "/public/js",
+    path: `${__dirname}/public/js`,
   },
   mode: 'development',
   node: {

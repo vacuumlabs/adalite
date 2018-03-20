@@ -23,10 +23,6 @@ function execute(fn, ...stringArgs) {
   return `window['${executeKey}']['${name}'](${argStr})`
 }
 
-const setInputValue = () => {
-  dispatch((state) => ({...state, controlledInputValue: window.event.target.value}), 'set input value')
-}
-
 const submitMnemonic = (mnemonic) => {
   wallet = Cardano.CardanoWallet(mnemonic)
   const rootSecret = wallet.getRootSecret().getSecretKey()
@@ -57,7 +53,6 @@ const getRecieveAddress = async () => {
 
 
 module.exports = {
-  setInputValue,
   submitMnemonic,
   generateMenmonic,
   reloadBalance,

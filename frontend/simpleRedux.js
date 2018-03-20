@@ -1,6 +1,7 @@
 /* eslint no-console: 0 */
 
-let state, root = {}, middlewares
+let state, middlewares
+const root = {}
 
 // TODO(TK): make dispatch accept also 'payload' param, so it'll be updater, message, payload.
 // Updater's signature will then be (state, payload) => newState
