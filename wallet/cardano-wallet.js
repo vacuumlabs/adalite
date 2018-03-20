@@ -173,7 +173,7 @@ const CardanoWallet = (secretOrMnemonic) => {
     return fee
   }
 
-  async function getChangeAddress(usedAddressesLimit = 20) {
+  async function getChangeAddress(usedAddressesLimit = Number.MAX_SAFE_INTEGER, offset = 0) {
     const usedAddressesAndSecrets = await getUsedAddressesAndSecrets()
 
     let result
@@ -183,7 +183,7 @@ const CardanoWallet = (secretOrMnemonic) => {
         return Math.max(item.childIndex, acc)
       }, 0)
 
-      result = address.deriveAddressAndSecret(rootSecret, highestUsedChildIndex + 1).address
+      result = address.deriveAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset).address
     } else {
       result =
         usedAddressesAndSecrets[Math.floor(Math.random() * usedAddressesAndSecrets.length)].address

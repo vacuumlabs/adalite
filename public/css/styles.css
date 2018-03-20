@@ -1,6 +1,10 @@
+body {
+  margin: 0;
+  font-family: Montserrat, sans-serif;
+}
+
 /* Aling center of the div, no matter what */
 /* https://philipwalton.github.io/solved-by-flexbox/demos/vertical-centering/ */
-
 .Aligner {
   display: flex;
   align-items: center;
@@ -23,12 +27,6 @@
 .Aligner-item--fixed {
   flex: none;
   max-width: 50%;
-}
-
-a {
-  display: block;
-  margin: 10px;
-  cursor: pointer;
 }
 
 .box {
@@ -65,4 +63,68 @@ a {
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-all;
+  display:block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.navbar a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.navbar .title {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  margin-right: 10%;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.navbar a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.about-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 2;
+    cursor: pointer;
+}
+
+.about-overlay .text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 50px;
+    color: white;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+}
+
+.address-list .box-btn {
+  display: block;
 }

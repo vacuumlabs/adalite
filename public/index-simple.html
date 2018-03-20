@@ -35,8 +35,8 @@
       document.getElementById("wallet-balance").innerHTML = await wallet.getBalance();
     }
     async function getAddress() {
-      document.getElementById("recieve-address").innerHTML = "processing ..";
-      document.getElementById("recieve-address").innerHTML = await wallet.getChangeAddress();
+      document.getElementById("receive-address").innerHTML = "processing ..";
+      document.getElementById("receive-address").innerHTML = await wallet.getChangeAddress();
     }
     async function calculateFee() {
       document.getElementById("fee").innerHTML = "processing ..";
@@ -120,8 +120,8 @@
     <button onclick="updateWallet()">Refresh</button></p>
 </p>
 <p>
-    <button onclick="getAddress()">Get address to recieve Ada</button>
-    <span id="recieve-address" style="background-color: #aff520"></span>
+    <button onclick="getAddress()">Get address to receive Ada</button>
+    <span id="receive-address" style="background-color: #aff520"></span>
 </p>
 
 <p>
