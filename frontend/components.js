@@ -66,10 +66,9 @@ const WalletHeader = (state) => `
 
 const UsedAddressesList = (state) => `
   <div class="box address-list"> Already used addresses: <br/>
-    ${state.usedAddresses.reduce((acc, elem) => (`${acc}<span class="address">${elem}</span>`), '')}
+    ${state.usedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
   </div>   
 `
-
 
 const UnusedAddressesList = (state) => {
   const disableGettingNewAddresses = state.unusedAddresses.length >= process.env.ADDRESS_RECOVERY_GAP_LENGTH
@@ -103,8 +102,9 @@ const Fee = (state) => `
 const SendAda = (state) => `
 <div class="box">
     <h3>send Ada:</h3>
-    <div>To address: <input type="text" id="send-address" name="send-address" size="110" value="${state.sendAddress}" onblur="${execute(saveAddress,
-  "document.getElementById('send-address').value")}">
+    <div>To address: <input type="text" id="send-address" name="send-address" size="110" value="${
+  state.sendAddress
+}" onblur="${execute(saveAddress, "document.getElementById('send-address').value")}">
     </div>
     <div>
     amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${
@@ -156,9 +156,15 @@ const Navbar = (state) => `
     <div class="title">
       CardanoLite Wallet
     </div>
-    <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('new-wallet'))}">New Wallet</a>
-    <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('wallet-info'))}">View Wallet Info</a>
-    <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('send-ada'))}">Send Ada</a>
+    <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(() =>
+  setCurrentTab('new-wallet')
+)}">New Wallet</a>
+    <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(() =>
+  setCurrentTab('wallet-info')
+)}">View Wallet Info</a>
+    <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() =>
+  setCurrentTab('send-ada')
+)}">Send Ada</a>
     <a href="#" onclick="${execute(toggleAboutOverlay)}">About</a>
   </div>
 `

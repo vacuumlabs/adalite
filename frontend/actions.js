@@ -59,11 +59,17 @@ const reloadBalance = async () => {
 const generateNewUnusedAddress = async (offset) => {
   dispatch((state) => ({...state, address: 'loading...'}), 'generate new unused address')
   const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
-  dispatch((state) => ({...state, unusedAddresses: state.unusedAddresses.concat([newUnusedAddress])}), 'balance loaded')
+  dispatch(
+    (state) => ({...state, unusedAddresses: state.unusedAddresses.concat([newUnusedAddress])}),
+    'balance loaded'
+  )
 }
 
 const toggleAboutOverlay = () => {
-  dispatch((state) => ({...state, displayAboutOverlay: !state.displayAboutOverlay}), 'toggle about overlay')
+  dispatch(
+    (state) => ({...state, displayAboutOverlay: !state.displayAboutOverlay}),
+    'toggle about overlay'
+  )
 }
 
 const setCurrentTab = (currentTab) => {
