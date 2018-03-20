@@ -5,3 +5,5 @@ test/browser/js/cardano.bundle.test.js
 .env
 yarn-error.log
 sandbox.js
+build/
+config.js
