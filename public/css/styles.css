@@ -128,3 +128,8 @@ body {
 .address-list .box-btn {
   display: block;
 }
+
+.send-addres-input {
+  overflow:scroll;
+  height: 1em;
+}

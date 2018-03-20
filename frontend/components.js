@@ -11,14 +11,21 @@ const {
   toggleAboutOverlay,
   setCurrentTab,
   generateNewUnusedAddress,
+  calculateFee,
+  submitTransaction,
+  saveAddress,
+  saveAmount,
+  saveMnemonic,
 } = require('./actions')
 
 const Unlock = (state) => `
 <div class="box">
   <div>Load wallet</div>
   <div>
-      Mnemonic: <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="${state.currentWalletMnemonicOrSecret}">
+      Mnemonic: <input type="text" id="mnemonic-submitted" name="mnemonic-submitted" size="47" value="${state.currentWalletMnemonicOrSecret}"
+      nblur="${execute(saveMnemonic, "document.getElementById('mnemonic-submitted').value")}">
       <input type="submit" onclick="${execute(loadWalletFromMnemonic, "document.getElementById('mnemonic-submitted').value")}" value="Load" />
+      <div>You can load a wallet even by submitting its root secret.</div>
   </div>
 </div>`
 
@@ -70,8 +77,36 @@ const UnusedAddressesList = (state) => {
     ${state.unusedAddresses.reduce((acc, elem) => (`${acc}<span class="address">${elem}</span>`), '')}
     <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() => generateNewUnusedAddress(state.unusedAddresses.length))}" value="Get one more" /> 
   </div>  
-  `
+`
 }
+
+const Fee = (state) => `
+  <div style="display: flex; flex-direction: row; justify-content: flex-start">
+      <button onclick="${execute(calculateFee,
+    "document.getElementById('send-address').value",
+    "parseInt(document.getElementById('send-amount').value)")}">Calculate fee</button>
+    ${state.fee && `<div>  
+      Fee: <span id="fee" style="background-color: aquamarine">${state.fee}</span> Lovelace
+      <div style="font-size: smaller">1 Lovelace = 1/1,000,000 Ada</div>
+    </div>`}
+  </div>`
+
+
+const SendAda = (state) => `
+<div class="box">
+    <h3>send Ada:</h3>
+    <div>To address: <input type="text" id="send-address" name="send-address" size="110" value="${state.sendAddress}" onblur="${execute(saveAddress,
+  "document.getElementById('send-address').value")}">
+    </div>
+    <div>
+    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${state.amount}" onblur="${execute(saveAmount, "parseInt(document.getElementById('send-amount').value)")}"> Lovelace 
+    <div style="font-size: smaller">1 Lovelace = 1/1,000,000 Ada</div>
+    </div>
+    ${Fee(state)}
+    <button onclick="${execute(submitTransaction, "document.getElementById('send-address').value",
+  "parseInt(document.getElementById('send-amount').value)")}">Send Ada</button>
+    <span id="transacton-submitted">${state.sendSuccess}</span>
+</div>`
 
 
 const WalletInfo = (state) => `
@@ -82,7 +117,8 @@ const WalletInfo = (state) => `
 `
 
 const SendAdaScreen = (state) => `
-  TODO
+  ${Balance(state)}
+  ${SendAda(state)}
 `
 
 const Index = (state) => {
@@ -95,7 +131,7 @@ const Index = (state) => {
         return state.activeWalletId ? SendAdaScreen(state) : Unlock(state)
     default:
         return
-  } 
+  }
 }
 
 
@@ -136,7 +172,7 @@ const TopLevelRouter = (state, prevState) => {
   ${Navbar(state, prevState)}
   <div class="Aligner">
     <div
-      class="AlignerItem"
+      class="Aligner-item"
     >
     ${body}
     </div>

@@ -1,3 +1,5 @@
 public/js/cardano.bundle.js
 public/js/frontend.bundle.js
 test/browser/js/cardano.bundle.test.js
+node_modules/
+build/

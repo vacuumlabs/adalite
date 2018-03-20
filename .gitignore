@@ -7,5 +7,4 @@ test/browser/js/cardano.bundle.test.js
 yarn-error.log
 build/
 config.js
-
 sandbox.js
