@@ -1,5 +1,11 @@
 # Cardano lite wallet
 
+# Few disclaimers before we start
+CardanoLite is not created by Cardano Foundation. The official Cardano team did not review this code
+and is not responsible for any damage it may cause you. The CardanoLite project is in alpha stage
+and should be used for penny-transactions only. We appreciate feedback, especially review of the
+crypto-related code.
+
 A very simple Cardano wallet made entirely in js. The project is in alpha version. Currently, you
 should use it with penny transactions only.
 
