@@ -106,10 +106,11 @@ const Fee = (state) => `
 <div class="box">
 
       <button onclick="${execute(
-    calculateFee,
-    "document.getElementById('send-address').value",
-    "parseInt(document.getElementById('send-amount').value)"
-  )}">Calculate fee</button>
+        () => calculateFee(
+          document.getElementById('send-address').value,
+          parseInt(document.getElementById('send-amount').value)
+        )
+      )}">Calculate transaction fee</button>
      <span style="${!state.fee && 'visibility: hidden'}">  
       Fee: ${
   isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`
@@ -124,8 +125,8 @@ const SendAda = (state) => `
     <div>To address: <input type="text" id="send-address" name="send-address" size="110" value="${state.sendAddress}" >
     </div>
     <div>
-    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${state.amount}"> ADA &nbsp;&nbsp;&nbsp;
-    <span class="small"> Amount includes the fee! </span>
+    amount: <input type="number" id="send-amount" name="send-amount" size="8" value="${state.sendAmount}"> ADA &nbsp;&nbsp;&nbsp;
+    <span class="small">Transaction fees are not included in this amount!</span>
     </div>
     <button onclick="${execute(
     submitTransaction,

@@ -28,6 +28,7 @@ init(
     newWalletMnemonic: '',
     usedAddresses: [],
     unusedAddresses: [],
+    sendAmount: 0,
   },
   [sampleMid],
   TopLevelRouter,

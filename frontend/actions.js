@@ -83,7 +83,7 @@ const setCurrentTab = (currentTab) => {
 
 
 const calculateFee = async (address, amount) => {
-  dispatch((state) => ({...state, fee: 'loading...'}), 'loading fee')
+  dispatch((state) => ({...state, fee: 'loading...', sendAddress: address, sendAmount: amount}), 'loading fee')
   const fee = await wallet.getTxFee(address, amount)
   dispatch((state) => ({...state, fee}), 'fee loaded')
 }
