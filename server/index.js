@@ -2,6 +2,8 @@ let env = require('dotenv').config()
 // hotfix, since dotenv on local keeps "hiding" the env variables behind "parsed" field
 if (env.parsed !== undefined) {
   env = env.parsed
+} else {
+  env = process.env
 }
 const express = require('express')
 const app = express()
