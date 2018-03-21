@@ -34,6 +34,7 @@ app.get('/', (req, res) => {
       <head>
         <script src="js/frontend.bundle.js" defer></script>
         <link rel="stylesheet" type="text/css" href="css/styles.css">
+        <link rel="icon" type="image/ico" href="assets/favicon.ico">
       </head>
 
       <body data-config=${JSON.stringify(env)}>
