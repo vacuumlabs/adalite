@@ -152,3 +152,12 @@ button, input {
     letter-spacing: 2px;
     color: #333333;
 }
+
+.history-row {
+    /*cursor: pointer;*/
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+}

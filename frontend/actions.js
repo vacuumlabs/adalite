@@ -28,11 +28,12 @@ const loadWalletFromMnemonic = async (mnemonic) => {
   const activeWalletId = wallet.getId()
   const usedAddresses = await wallet.getUsedAddresses()
   const unusedAddresses = [await wallet.getChangeAddress()]
+  const history = await wallet.getHistory()
   const balance = await wallet.getBalance()
   const amount = 0
   const sendAddress = ''
   const sendSuccess = ''
-  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress, sendSuccess}), 'load wallet from mnemonic')
+  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress, sendSuccess, history}), 'load wallet from mnemonic')
 }
 
 const generateMnemonic = () => {
@@ -51,10 +52,13 @@ const logout = () => {
 
 const reloadBalance = async () => {
   dispatch((state) => ({...state, balance: 'loading...'}), 'loading balance')
-
-
   const balance = await wallet.getBalance()
   dispatch((state) => ({...state, balance}), 'balance loaded')
+}
+
+const reloadHistory = async () => {
+  const history = await wallet.getHistory()
+  dispatch((state) => ({...state, history}), 'history updated')
 }
 
 const generateNewUnusedAddress = async (offset) => {
@@ -101,4 +105,5 @@ module.exports = {
   execute,
   toggleAboutOverlay,
   setCurrentTab,
+  reloadHistory,
 }

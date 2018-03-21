@@ -13,6 +13,7 @@ const {
   generateNewUnusedAddress,
   calculateFee,
   submitTransaction,
+  reloadHistory,
 } = require('./actions')
 
 const Unlock = (state) => `
@@ -72,7 +73,7 @@ const UnusedAddressesList = (state) => {
 
   return `
   <div class="box address-list"> 
-    <div class="label">Receive to unused addresses: </div>
+    <div class="label">Receive to unused addresses:</div>
     ${state.unusedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
     <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
   generateNewUnusedAddress(state.unusedAddresses.length)
@@ -80,6 +81,26 @@ const UnusedAddressesList = (state) => {
   </div>  
 `
 }
+
+const History = (state) => `
+  <div class="box address-list"> 
+    <div class="label">History</div>
+    <div>
+      <div class="history-row">
+        <div>Time</div>
+        <div>Transaction</div>
+        <div>Amount</div>
+      </div>  
+      ${state.history.reduce((acc, transaction) => `${acc}
+        <div class="history-row"> 
+          <div>${new Date(transaction.ctbTimeIssued * 1000).toLocaleString()}</div>
+          <div class="address">${transaction.ctbId}</div>
+          <div>${transaction.effect} </div>
+        </div>
+      `, '')}  
+    </div>  
+  </div>
+`
 
 const Fee = (state) => `
 <div class="box">
@@ -121,6 +142,7 @@ const WalletInfo = (state) => `
   ${WalletHeader(state)}
   ${Balance(state)}
   ${UnusedAddressesList(state)}
+  ${History(state)}
   ${UsedAddressesList(state)}
 `
 
@@ -148,15 +170,12 @@ const Navbar = (state) => `
     <div class="title">
       CardanoLite Wallet
     </div>
-    <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(() =>
-  setCurrentTab('new-wallet')
-)}">New Wallet</a>
-    <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(() =>
-  setCurrentTab('wallet-info')
-)}">View Wallet Info</a>
-    <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() =>
-  setCurrentTab('send-ada')
-)}">Send Ada</a>
+    <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#"
+     onclick="${execute(() => setCurrentTab('new-wallet'))}">New Wallet</a>
+    <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#"
+     onclick="${execute(() => setCurrentTab('wallet-info'))}">View Wallet Info</a>
+    <a class="${state.currentTab === 'send-ada' && 'active'}" href="#"
+     onclick="${execute(() => setCurrentTab('send-ada'))}">Send Ada</a>
     <a href="#" onclick="${execute(toggleAboutOverlay)}">About</a>
   </div>
 `
