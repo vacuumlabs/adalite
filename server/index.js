@@ -3,7 +3,11 @@ let env = require('dotenv').config()
 if (env.parsed !== undefined) {
   env = env.parsed
 } else {
-  env = process.env
+  env = {
+    CARDANOLITE_BLOCKCHAIN_EXPLORER_URL: process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL,
+    CARDANOLITE_TRANSACTION_SUBMITTER_URL: process.env.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
+    CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH: process.env.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH,
+  }
 }
 const express = require('express')
 const app = express()
