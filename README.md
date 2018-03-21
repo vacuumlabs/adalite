@@ -43,10 +43,6 @@ To run CardanoLite locally, you need to run this locally as well. Fetch sources 
 (git+https://github.com/vacuumlabs/cardano-node-proxy.git), then
 ```
 yarn
-yarn run main
-```
-or more verbose
-```
 cardano_node_proxy_port=3001 yarn run main
 ```
 
@@ -54,8 +50,10 @@ cardano_node_proxy_port=3001 yarn run main
 
 ```
 yarn install
-yarn run build-frontend && yarn run run-frontend
+yarn run start-server
+yarn run build-frontend
 ```
+navigate to http://localhost:8080 (or wherever you've configured)
 
 ## test
 

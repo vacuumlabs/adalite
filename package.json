@@ -19,6 +19,7 @@
   "scripts": {
     "build-bundle": "webpack --config webpack.build.config.js",
     "build-frontend": "webpack --config webpack.frontend.config.js",
+    "start-server": "PORT=8080 node server/index.js",
     "run-frontend": "live-server --entry-file=./frontend.html --ignorePattern=node_modules",
     "test": "webpack --config webpack.test.config.js",
     "fix": "prettier-eslint --write \"*.js\" \"./frontend/*.js\" \"./wallet/*.js\" ",
