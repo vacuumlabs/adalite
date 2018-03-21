@@ -101,9 +101,9 @@ const calculateFee = async (address, amount) => {
 }
 
 const submitTransaction = async (address, amount) => {
-  dispatch((state) => ({...state, sendSuccess: 'processing transaction'}), 'processing transaction')
+  dispatch((state) => ({...state, sendSuccess: 'processing transaction', loading: true}), 'processing transaction')
   const sendSuccess = await wallet.sendAda(address, amount * 1000000)
-  dispatch((state) => ({...state, sendSuccess}), 'transaction acocmlishement loaded')
+  dispatch((state) => ({...state, sendSuccess, loading: false}), 'transaction acocmlishement loaded')
 }
 
 module.exports = {
