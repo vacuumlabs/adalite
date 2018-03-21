@@ -173,13 +173,20 @@ const Navbar = (state) => `
     <div class="title">
       CardanoLite Wallet
     </div>
-    <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#"
-     onclick="${execute(() => setCurrentTab('new-wallet'))}">New Wallet</a>
-    <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#"
-     onclick="${execute(() => setCurrentTab('wallet-info'))}">View Wallet Info</a>
-    <a class="${state.currentTab === 'send-ada' && 'active'}" href="#"
-     onclick="${execute(() => setCurrentTab('send-ada'))}">Send Ada</a>
-    <a href="#" onclick="${execute(toggleAboutOverlay)}">About</a>
+    <nav>
+      <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('new-wallet'))}">
+        New Wallet
+      </a>
+      <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('wallet-info'))}">
+        View Wallet Info
+      </a>
+      <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('send-ada'))}">
+        Send Ada
+      </a>
+      <a href="#" onclick="${execute(toggleAboutOverlay)}">
+        About
+      </a>
+    </nav>
   </div>
 `
 
@@ -218,13 +225,7 @@ const TopLevelRouter = (state, prevState) => {
   return `
   ${AboutOverlay(state, prevState)}
   ${Navbar(state, prevState)}
-  <div class="Aligner">
-    <div
-      class="Aligner-item"
-    >
-    ${body}
-    </div>
-  </div>
+  ${body}
   `
 }
 

@@ -1,32 +1,16 @@
+:root {
+  --brand: #9b4dca;
+  --transition: .25s;
+}
+
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  font-family: Montserrat, sans-serif;
-}
-
-/* Aling center of the div, no matter what */
-/* https://philipwalton.github.io/solved-by-flexbox/demos/vertical-centering/ */
-.Aligner {
-  display: flex;
-  align-items: center;
-  min-height: 24em;
-  justify-content: center;
-}
-
-.Aligner-item {
-  flex: 1;
-}
-
-.Aligner-item--top {
-  align-self: flex-start;
-}
-
-.Aligner-item--bottom {
-  align-self: flex-end;
-}
-
-.Aligner-item--fixed {
-  flex: none;
-  max-width: 50%;
+  font-family: sans-serif;
+  height: 100%;
 }
 
 .box {
@@ -71,37 +55,46 @@ body {
 }
 
 .navbar {
-  overflow: hidden;
-  background-color: #333;
-}
-
-.navbar a {
-  float: left;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
+  background-color:#f4f5f6;
+  border-bottom: 1px solid #d4d3d4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 3rem;
 }
 
 .navbar .title {
-  float: left;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  margin-right: 10%;
-  text-decoration: none;
-  font-size: 17px;
+  font-size: 1.25rem;
+  padding: 0 1rem;
+  font-weight: 500;
 }
 
-.navbar a:hover {
-  background-color: #ddd;
+.navbar nav {
+  padding: 0 1rem;
+}
+
+.navbar nav a {
+  color: #777;
+  text-decoration: none;
+  margin-left: 1rem;
+  transition: color var(--transition);
+}
+
+.navbar nav a:hover,
+.navbar nav a:active {
   color: black;
 }
 
-.navbar a.active {
-  background-color: #4CAF50;
-  color: white;
+.navbar nav a.active {
+  color: var(--brand);
+}
+
+.navbar a {
+  color: #333;
+}
+
+.navbar a:hover {
+
 }
 
 .about-overlay {
