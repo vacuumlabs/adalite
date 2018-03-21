@@ -24,6 +24,7 @@ function execute(fn, ...stringArgs) {
 }
 
 const loadWalletFromMnemonic = async (mnemonic) => {
+  dispatch((state) => ({...state, loading: true}), 'loading balance')
   wallet = Cardano.CardanoWallet(mnemonic)
   const activeWalletId = wallet.getId()
   const usedAddresses = await wallet.getUsedAddresses()
@@ -33,7 +34,7 @@ const loadWalletFromMnemonic = async (mnemonic) => {
   const amount = 0
   const sendAddress = ''
   const sendSuccess = ''
-  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress, sendSuccess, transactionHistory}), 'load wallet from mnemonic')
+  dispatch((state) => ({...state, activeWalletId, usedAddresses, unusedAddresses, balance, amount, sendAddress, sendSuccess, transactionHistory, loading: false}), 'load wallet from mnemonic')
 }
 
 const generateMnemonic = () => {
@@ -51,9 +52,9 @@ const logout = () => {
 }
 
 const reloadBalance = async () => {
-  dispatch((state) => ({...state, balance: 'loading...'}), 'loading balance')
+  dispatch((state) => ({...state, loading: true}), 'loading balance')
   const balance = await wallet.getBalance()
-  dispatch((state) => ({...state, balance}), 'balance loaded')
+  dispatch((state) => ({...state, balance, loading: false}), 'balance loaded')
 }
 
 const reloadTransactionHistory = async () => {
@@ -83,9 +84,9 @@ const setCurrentTab = (currentTab) => {
 
 
 const calculateFee = async (address, amount) => {
-  dispatch((state) => ({...state, fee: 'loading...', sendAddress: address, sendAmount: amount}), 'loading fee')
+  dispatch((state) => ({...state, loading: true, sendAddress: address, sendAmount: amount}), 'loading fee')
   const fee = await wallet.getTxFee(address, amount)
-  dispatch((state) => ({...state, fee}), 'fee loaded')
+  dispatch((state) => ({...state, fee, loading: false}), 'fee loaded')
 }
 
 const submitTransaction = async (address, amount) => {
