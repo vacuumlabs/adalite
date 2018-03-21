@@ -17,13 +17,17 @@ const dispatch = (updater, message, payload) => {
     root.target.innerHTML = root.component(nextState, previousState)
   } finally {
     const t = new Date()
-    console.group(
-      `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
-        'NAMELESS_ACTION'}`
-    )
-    console.log(previousState)
-    console.log(nextState)
-    console.groupEnd()
+
+    // eslint-disable-next-line no-undef
+    if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
+      console.group(
+        `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
+          'NAMELESS_ACTION'}`
+      )
+      console.log(previousState)
+      console.log(nextState)
+      console.groupEnd()
+    }
   }
 }
 
@@ -58,7 +62,11 @@ const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
   window.onpopstate = routerAction
   window.history.onpushstate = routerAction
   window.onhashchange = routerAction
-  console.log('initial state', initialState)
+
+  // eslint-disable-next-line no-undef
+  if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
+    console.log('initial state', initialState)
+  }
   root.target.innerHTML = root.component(initialState, {})
 }
 
