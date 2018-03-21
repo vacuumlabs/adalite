@@ -30,10 +30,9 @@ wallet).
 ## Run project locally
 
 #### Configuration
-TODO: get rid of configs in .js
 
-Prepare `congig.js` (in desired `forBrowser/` or `withNode/` folder
-e.g. `cp config.js.example config.js`
+Prepare `.env` file
+e.g. by `cp .env.example .env`
 
 #### Cardano node proxy
 This component is simply forwarding HTTP requests to raw TCP communication. Since this service only
@@ -49,10 +48,9 @@ cardano_node_proxy_port=3001 yarn run main
 #### Run CardanoLite
 
 ```
-cp .env.example .env
 yarn install
 yarn build
-yarn start-server
+PORT=3000 yarn start-server
 ```
 navigate to http://localhost:3000 (or wherever you've configured)
 
