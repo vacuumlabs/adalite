@@ -213,14 +213,15 @@ const Footer = (state) => `
     <p>
       Powered with 🚀 tech in
       <a href="https://vacuumlabs.com" target="_blank">
-        <img src="/assets/vacuumlabs-logo-dark.svg" class="logo" alt="Vacuumlabs Logo" />
+        <img src="/assets/vacuumlabs-logo-light.png" class="logo" alt="Vacuumlabs Logo" />
       </a>
     </p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <p>
       <small><a href="https://github.com/vacuumlabs/cardano" target="_blank">View on Github</a></small>
-      &nbsp;
+      &nbsp;/&nbsp;
       <small><a href="mailto:cardanolite@vacuumlabs.com">Contact us</a></small>
-      &nbsp;
+      &nbsp;/&nbsp;
       <small><a href="https://twitter.com/hashtag/cardanolite">#cardanolite</a></small>  
     </p>
   </footer>
