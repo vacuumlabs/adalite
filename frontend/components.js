@@ -183,17 +183,19 @@ const AboutOverlay = (state) =>
   state.displayAboutOverlay ? `
     <div class="overlay about-overlay" onclick=${execute(toggleAboutOverlay)}>
       <div class="box text">
-        <h2>CardanoWallet lite is not a bank.</h2>
+        <h2> Disclaimer: CardanoLite is not created by Cardano Foundation. </h2>
+        <p> The official Cardano team did not review this code and is not responsible for any damage
+          it may cause you. The CardanoLite project is in alpha stage and should be used for
+          penny-transactions only. We appreciate feedback, especially review of the crypto-related code.
+        </p>
+        <h2> CardanoLite is not a bank </h2>
         <p>
           It does not really store your funds permanently - each
           time you interact with it, you have to insert the mnemonic - the 12-words long root password
           to your account. If you lose it, we cannot help you restore the funds.
         </p>
         <p>
-          The project is in its alpha stage and should be used for penny-transactions only.
-        </p>
-        <p>
-          Feedback is welcome.
+          Feedback and contributions are very welcomed.
         </p>
       </div>
     </div>
