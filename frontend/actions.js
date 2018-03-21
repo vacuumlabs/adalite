@@ -56,7 +56,11 @@ const generateMnemonic = () => {
   const newWalletMnemonic = Cardano.generateMnemonic()
   const currentWalletMnemonicOrSecret = newWalletMnemonic
   dispatch(
-    (state) => Object.assign({}, state, {newWalletMnemonic, currentWalletMnemonicOrSecret, activeWalletId: null}),
+    (state) => Object.assign(
+      {},
+      state,
+      {newWalletMnemonic, currentWalletMnemonicOrSecret, activeWalletId: null}
+    ),
     'generate mnemonic'
   )
 }
@@ -81,7 +85,11 @@ const generateNewUnusedAddress = async (offset) => {
   dispatch((state) => Object.assign({}, state, {address: 'loading...'}), 'generate new unused address')
   const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
   dispatch(
-    (state) => Object.assign({}, state, {unusedAddresses: state.unusedAddresses.concat([newUnusedAddress])}),
+    (state) => Object.assign(
+      {},
+      state,
+      {unusedAddresses: state.unusedAddresses.concat([newUnusedAddress])}
+    ),
     'balance loaded'
   )
 }
