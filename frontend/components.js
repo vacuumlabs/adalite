@@ -129,10 +129,11 @@ const SendAda = (state) => `
     <span class="small">Transaction fees are not included in this amount!</span>
     </div>
     <button onclick="${execute(
-    submitTransaction,
-    "document.getElementById('send-address').value",
-    "parseInt(document.getElementById('send-amount').value)"
-  )}">Send Ada</button>
+      () => submitTransaction(
+        document.getElementById('send-address').value,
+        parseInt(document.getElementById('send-amount').value)
+      )
+    )}">Send Ada</button>
     ${state.sendSuccess !== '' ?
     `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>` : ''}
 </div>
