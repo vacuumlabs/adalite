@@ -180,6 +180,10 @@ td {
   text-decoration: none;
 }
 
+.navbar .title sup {
+  align-self: flex-start;
+}
+
 .navbar .title img {
   height: 2.5rem;
   margin-right: .25rem;
@@ -218,7 +222,7 @@ td {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(248,249,250,.75);
+  background-color: rgba(248,249,250,.85);
   z-index: 2;
   cursor: pointer;
   display: flex;
@@ -237,14 +241,17 @@ td {
   }
 }
 
-.about-overlay .text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    font-size: 50px;
-    color: #333;
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
+.about-overlay {
+  align-items: flex-start;
+}
+.about-overlay .box {
+  max-width: 1024px;
+  width: 80%;
+  margin-top: 5rem;
+}
+
+.overlay .box {
+  box-shadow: 3px 8px 10px rgba(0,0,0,.05);
 }
 
 @keyframes donut-spin {

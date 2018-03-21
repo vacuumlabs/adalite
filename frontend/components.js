@@ -160,7 +160,7 @@ const Navbar = (state) => `
   <div class="navbar">
     <div class="navbar-wrap">
       <a class="title" href="/"><img src="/assets/logo.png" />
-      CardanoLite Wallet
+      CardanoLite Wallet<sup>⍺</sup>
       </a>
       <nav>
         <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('new-wallet'))}">
@@ -182,19 +182,20 @@ const Navbar = (state) => `
 
 const AboutOverlay = (state) =>
   state.displayAboutOverlay ? `
-    <div class="about-overlay" onclick=${execute(toggleAboutOverlay)}>
-      <div class="text">
-        <div>
-          CardanoWallet lite is not a bank. It does not really store your funds permanently - each
+    <div class="overlay about-overlay" onclick=${execute(toggleAboutOverlay)}>
+      <div class="box text">
+        <h2>CardanoWallet lite is not a bank.</h2>
+        <p>
+          It does not really store your funds permanently - each
           time you interact with it, you have to insert the mnemonic - the 12-words long root password
           to your account. If you lose this, we cannot help you restore the funds.
-        </div>
-        <div>
+        </p>
+        <p>
           The project is in alpha version and should be used for penny-transactions only.
-        </div>
-        <div>
+        </p>
+        <p>
           Feedback is welcomed.
-        </div>
+        </p>
       </div>
     </div>
   ` : ''
