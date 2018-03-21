@@ -7,11 +7,22 @@ if (env.parsed !== undefined) {
     CARDANOLITE_BLOCKCHAIN_EXPLORER_URL: process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL,
     CARDANOLITE_TRANSACTION_SUBMITTER_URL: process.env.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
     CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH: process.env.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH,
+    CARDANOLITE_FORCE_HTTPS: process.env.CARDANOLITE_FORCE_HTTPS,
   }
 }
 const express = require('express')
 const app = express()
 
+if (env.CARDANOLITE_FORCE_HTTPS === 'true') {
+  app.use((req, res, next) => {
+    if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
+      res.redirect(301, `https://${req.get('host')}${req.url}`)
+    } else {
+      res.setHeader('Strict-Transport-Security', 'max-age=31536000')
+      next()
+    }
+  })
+}
 
 app.use(express.static('public'))
 
