@@ -195,7 +195,7 @@ const AboutOverlay = (state) =>
           to your account. If you lose it, we cannot help you restore the funds.
         </p>
         <p>
-          Feedback and contributions are very welcomed.
+          Feedback and contributions are very welcome.
         </p>
       </div>
     </div>
@@ -218,6 +218,10 @@ const Footer = (state) => `
     </p>
     <p>
       <small><a href="https://github.com/vacuumlabs/cardano" target="_blank">View on Github</a></small>
+      &nbsp;
+      <small><a href="mailto:cardanolite@vacuumlabs.com">Contact us</a></small>
+      &nbsp;
+      <small><a href="https://twitter.com/hashtag/cardanolite">#cardanolite</a></small>  
     </p>
   </footer>
 `
@@ -243,8 +247,8 @@ const TopLevelRouter = (state, prevState) => {
     <main class="main">
       ${body}
     </main>
-    ${Footer(state)}
   </div>
+  ${Footer()}
   `
 }
 
