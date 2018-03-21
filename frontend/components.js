@@ -187,13 +187,13 @@ const AboutOverlay = (state) =>
         <p>
           It does not really store your funds permanently - each
           time you interact with it, you have to insert the mnemonic - the 12-words long root password
-          to your account. If you lose this, we cannot help you restore the funds.
+          to your account. If you lose it, we cannot help you restore the funds.
         </p>
         <p>
-          The project is in alpha version and should be used for penny-transactions only.
+          The project is in its alpha stage and should be used for penny-transactions only.
         </p>
         <p>
-          Feedback is welcomed.
+          Feedback is welcome.
         </p>
       </div>
     </div>
