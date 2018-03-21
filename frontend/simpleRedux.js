@@ -35,26 +35,32 @@ const dispatch = (updater, message, payload) => {
 // route processed in state so we can react in middleware when it changes
 const routerAction = function(state) {
   dispatch(
-    (state) => ({
-      ...state,
-      router: {
-        // assume we're pushing just paths
-        pathname: window.location.pathname,
-        hash: window.location.hash,
-      },
-    }),
+    (state) => Object.assign(
+      {},
+      state,
+      {
+        router: {
+          // assume we're pushing just paths
+          pathname: window.location.pathname,
+          hash: window.location.hash,
+        },
+      }
+    ),
     'ROUTER ACTION'
   )
 }
 
 const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
-  state = {
-    ...initialState,
-    router: {
-      pathname: '',
-      hash: '',
-    },
-  }
+  state = Object.assign(
+    {},
+    initialState,
+    {
+      router: {
+        pathname: '',
+        hash: '',
+      },
+    }
+  )
   middlewares = middlewareArray
   root.component = rootComponent
   root.target = rootTarget
