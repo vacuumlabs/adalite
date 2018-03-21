@@ -101,7 +101,7 @@ const Fee = (state) => `
   <button onclick="${execute(
     calculateFee,
     "document.getElementById('send-address').value",
-    "parseInt(document.getElementById('send-amount').value, 10) * 1000000"
+    "parseFloat(document.getElementById('send-amount').value) * 1000000"
   )}">Calculate Fee</button>
     <div style="${!state.fee && 'display: none'}">
       <h3>Fee</h3>
@@ -116,7 +116,7 @@ const SendAda = (state) => `
   <label><span>Address</span> <input type="text" id="send-address" class="address" name="send-address" size="110" value="${state.sendAddress}" >
   </label>
   <label>
-    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" value="${state.sendAmount / 1000000}"> ADA
+    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" value="${state.sendAmount / 1000000.0}"> ADA
   </label>
   <small> The amount does not include the transaction fee! </small>
   <p>
