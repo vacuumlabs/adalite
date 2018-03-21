@@ -99,6 +99,10 @@ th {
   margin-bottom: .5rem;
 }
 
+td {
+  padding-right: 1rem;
+}
+
 .wrap {
   display: flex;
   flex-direction: column;
@@ -171,6 +175,14 @@ th {
   font-size: 1.25rem;
   padding: 0 1rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar .title img {
+  height: 2.5rem;
+  margin-right: .25rem;
 }
 
 .navbar nav {

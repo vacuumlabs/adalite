@@ -54,7 +54,7 @@ const WalletHeader = (state) => `
 
 const UsedAddressesList = (state) => `
   <div class="box">
-    <h2>Already Used Addresses:</h2>
+    <h2>Already Used Addresses</h2>
     ${state.usedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
   </div>
 `
@@ -65,7 +65,7 @@ const UnusedAddressesList = (state) => {
 
   return `
   <div class="box">
-    <h2>Receive to Unused Addresses:</h2>
+    <h2>Receive to Unused Addresses</h2>
     ${state.unusedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
     <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
   generateNewUnusedAddress(state.unusedAddresses.length)
@@ -104,14 +104,16 @@ const Fee = (state) => `
     "document.getElementById('send-address').value",
     "parseInt(document.getElementById('send-amount').value)"
   )}">Calculate Fee</button>
-     <p style="${!state.fee && 'visibility: hidden'}">
-      <h3>Fee</h3> <p>${
-  isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA</p>`
-}</span>`
+    <div style="${!state.fee && 'display: none'}">
+      <h3>Fee</h3>
+      ${isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`}
+    </div>
+</span>`
 
 const SendAda = (state) => `
 <div class="box">
-  <h2>Send Ada</h2>
+<h2>Send Ada</h2>
+  ${state.sendSuccess !== '' ? `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>` : ''}
   <label><span>Address</span> <input type="text" id="send-address" class="address" name="send-address" size="110" value="${state.sendAddress}" >
   </label>
   <label>
@@ -124,9 +126,8 @@ const SendAda = (state) => `
     "document.getElementById('send-address').value",
     "parseInt(document.getElementById('send-amount').value)"
   )}">Send Ada</button>
-  </p>
-  ${state.sendSuccess !== '' ? `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>` : ''}
   ${Fee(state)}
+  </p>
 </div>
 `
 
@@ -158,15 +159,15 @@ const Index = (state) => {
 const Navbar = (state) => `
   <div class="navbar">
     <div class="navbar-wrap">
-      <div class="title">
-        CardanoLite Wallet
-      </div>
+      <a class="title" href="/"><img src="/assets/logo.png" />
+      CardanoLite Wallet
+      </a>
       <nav>
         <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('new-wallet'))}">
           New Wallet
         </a>
         <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('wallet-info'))}">
-          View Wallet Info
+          Wallet Info
         </a>
         <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('send-ada'))}">
           Send Ada
