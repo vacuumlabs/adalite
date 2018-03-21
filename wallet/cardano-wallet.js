@@ -219,7 +219,8 @@ const CardanoWallet = (secretOrMnemonic) => {
 
   async function getUsedAddressesAndSecrets() {
     let result = []
-    const gapLength = process.env.ADDRESS_RECOVERY_GAP_LENGTH
+    // eslint-disable-next-line no-undef
+    const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
 
     for (let i = 0; ; i++) {
       const usedAddresses = await filterUsed(
@@ -239,11 +240,19 @@ const CardanoWallet = (secretOrMnemonic) => {
     return result
   }
 
-  function deriveAddresses(begin = 0, end = process.env.ADDRESS_RECOVERY_GAP_LENGTH) {
+  function deriveAddresses(
+    begin = 0,
+    // eslint-disable-next-line no-undef
+    end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+  ) {
     return deriveAddressesAndSecrets(begin, end).map((item) => item.address)
   }
 
-  function deriveAddressesAndSecrets(begin = 0, end = process.env.ADDRESS_RECOVERY_GAP_LENGTH) {
+  function deriveAddressesAndSecrets(
+    begin = 0,
+    // eslint-disable-next-line no-undef
+    end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+  ) {
     const result = []
     for (let i = begin; i < end; i++) {
       result.push(address.deriveAddressAndSecret(rootSecret, 0x80000001 + i))
@@ -268,7 +277,8 @@ const CardanoWallet = (secretOrMnemonic) => {
   async function submitTxRaw(txHash, txBody) {
     try {
       const res = await request(
-        process.env.TRANSACTION_SUBMITTER_URL,
+        // eslint-disable-next-line no-undef
+        CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
         'POST',
         JSON.stringify({
           txHash,

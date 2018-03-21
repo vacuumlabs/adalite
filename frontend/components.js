@@ -69,7 +69,7 @@ const UsedAddressesList = (state) => `
 
 const UnusedAddressesList = (state) => {
   const disableGettingNewAddresses =
-    state.unusedAddresses.length >= process.env.ADDRESS_RECOVERY_GAP_LENGTH
+    state.unusedAddresses.length >= process.env.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
 
   return `
   <div class="box address-list">

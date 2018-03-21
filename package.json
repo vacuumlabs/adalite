@@ -17,14 +17,12 @@
     "url": "https://github.com/vacuumlabs/cardano/issues"
   },
   "scripts": {
-    "build-bundle": "webpack --config webpack.build.config.js",
-    "build-frontend": "webpack --config webpack.frontend.config.js",
-    "start-server": "PORT=8080 node server/index.js",
-    "run-frontend": "live-server --entry-file=./frontend.html --ignorePattern=node_modules",
+    "start-server": "node server/index.js",
     "eslint": "eslint .",
+    "build": "webpack --config webpack.build.config.js --progress",
     "test": "webpack --config webpack.test.config.js",
     "fix": "prettier-eslint --write \"*.js\" \"./frontend/*.js\" \"./wallet/*.js\" ",
-    "heroku-postbuild": "webpack --config webpack.prod.config.js --progress"
+    "heroku-postbuild": "webpack --config webpack.build.config.js --progress"
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "dependencies": {

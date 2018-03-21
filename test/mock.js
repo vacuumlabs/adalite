@@ -455,7 +455,7 @@ function mockBlockChainExplorer() {
   }
   for (const address in addressesAndResponses) {
     fetchMock.mock({
-      matcher: `${process.env.BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`,
+      matcher: `${process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`,
       response: {
         status: 200,
         body: addressesAndResponses[address],
@@ -477,7 +477,8 @@ function mockTransactionSubmitter() {
   for (const request in requestsAndResponses) {
     fetchMock.mock({
       matcher: (url, opts) => {
-        return url === process.env.TRANSACTION_SUBMITTER_URL && opts && opts.body === request
+        return url === process.env.CARDANOLITE_TRANSACTION_SUBMITTER_URL
+          && opts && opts.body === request
       },
       response: {
         status: 200,
@@ -488,7 +489,7 @@ function mockTransactionSubmitter() {
   }
 
   fetchMock.mock({
-    matcher: process.env.TRANSACTION_SUBMITTER_URL,
+    matcher: process.env.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
     response: {
       status: 200,
       body: {result: false},

@@ -1,16 +1,13 @@
-const Dotenv = require('dotenv-webpack')
-
 module.exports = {
-  entry: './wallet/cardano-wallet.js',
+  entry: './frontend/walletApp.js',
   output: {
-    filename: 'cardano.bundle.js',
+    filename: 'frontend.bundle.js',
     libraryTarget: 'var',
-    library: 'Cardano',
+    library: 'CardanoFrontend',
     path: `${__dirname}/public/js`,
   },
-  mode: 'production',
+  mode: 'development',
   node: {
     fs: 'empty',
   },
-  plugins: [new Dotenv()],
 }

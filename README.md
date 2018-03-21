@@ -49,11 +49,12 @@ cardano_node_proxy_port=3001 yarn run main
 #### Run CardanoLite
 
 ```
+cp .env.example .env
 yarn install
-yarn run start-server
-yarn run build-frontend
+yarn build
+yarn start-server
 ```
-navigate to http://localhost:8080 (or wherever you've configured)
+navigate to http://localhost:3000 (or wherever you've configured)
 
 ## test
 

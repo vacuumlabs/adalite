@@ -8,3 +8,5 @@ yarn-error.log
 build/
 config.js
 sandbox.js
+*.sublime-project
+*.sublime-workspace

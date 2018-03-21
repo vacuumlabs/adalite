@@ -59,7 +59,8 @@ async function getAddressTxList(address) {
 }
 
 async function getAddressInfo(address) {
-  const url = `${process.env.BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`
+  // eslint-disable-next-line no-undef
+  const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`
   const result = await request(url)
 
   return result.Right
