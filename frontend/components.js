@@ -61,7 +61,8 @@ const WalletHeader = (state) => `
 `
 
 const UsedAddressesList = (state) => `
-  <div class="box address-list"> Already used addresses: <br/>
+  <div class="box address-list"> 
+  <div class="label">Already used addresses:</div>
     ${state.usedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
   </div>   
 `
@@ -70,7 +71,8 @@ const UnusedAddressesList = (state) => {
   const disableGettingNewAddresses = state.unusedAddresses.length >= process.env.ADDRESS_RECOVERY_GAP_LENGTH
 
   return `
-  <div class="box address-list"> Unused addresses: <br/>
+  <div class="box address-list"> 
+    <div class="label">Receive to unused addresses: </div>
     ${state.unusedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
     <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
   generateNewUnusedAddress(state.unusedAddresses.length)
@@ -118,8 +120,8 @@ ${Fee(state)}
 const WalletInfo = (state) => `
   ${WalletHeader(state)}
   ${Balance(state)}
-  ${UsedAddressesList(state)}
   ${UnusedAddressesList(state)}
+  ${UsedAddressesList(state)}
 `
 
 const SendAdaScreen = (state) => `
