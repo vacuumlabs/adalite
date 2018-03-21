@@ -32,6 +32,7 @@ app.get('/', (req, res) => {
     <html>
 
       <head>
+        <title>CardanoLite Wallet</title>
         <script src="js/frontend.bundle.js" defer></script>
         <link rel="stylesheet" type="text/css" href="css/styles.css">
         <link rel="icon" type="image/ico" href="assets/favicon.ico">
