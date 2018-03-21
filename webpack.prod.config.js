@@ -1,6 +1,5 @@
 const webpack = require('webpack')
 
-
 module.exports = {
   entry: './frontend/walletApp.js',
   output: {

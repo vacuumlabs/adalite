@@ -30,7 +30,7 @@ body {
 }
 
 .box {
-  padding: 30px;
+  padding: 15px;
   margin: 20px;
 }
 .box
@@ -57,6 +57,7 @@ body {
 }
 .wallet-header {
   background-color: cornflowerblue;
+  padding: 3px;
 }
 
 .address {
@@ -66,6 +67,7 @@ body {
   display:block;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .navbar {
@@ -127,4 +129,26 @@ body {
 
 .address-list .box-btn {
   display: block;
+}
+
+.send-addres-input {
+  overflow:scroll;
+  height: 1em;
+}
+
+.small {
+    font-size: small;
+}
+
+button, input {
+    padding: 5px 15px;
+    margin: 5px 10px;
+    letter-spacing: 1px;
+}
+
+.label {
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #333333;
 }

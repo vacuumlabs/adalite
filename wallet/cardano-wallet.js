@@ -187,7 +187,8 @@ const CardanoWallet = (secretOrMnemonic) => {
         return Math.max(item.childIndex, acc)
       }, 0)
 
-      result = address.deriveAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset).address
+      result = address.deriveAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset)
+        .address
     } else {
       result =
         usedAddressesAndSecrets[Math.floor(Math.random() * usedAddressesAndSecrets.length)].address
