@@ -5,7 +5,7 @@
   const pushState = history.pushState
   history.pushState = function(state) {
     // must be before our function so that url changes before we dispatch the action
-    const retValue = pushState.apply(history, arguments)
+    const retValue = pushState.apply(history, arguments) // eslint-disable-line prefer-rest-params
     if (typeof history.onpushstate === 'function') {
       history.onpushstate({state})
     }

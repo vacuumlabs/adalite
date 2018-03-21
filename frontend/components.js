@@ -68,15 +68,18 @@ const UsedAddressesList = (state) => `
 `
 
 const UnusedAddressesList = (state) => {
-  const disableGettingNewAddresses = state.unusedAddresses.length >= process.env.ADDRESS_RECOVERY_GAP_LENGTH
+  const disableGettingNewAddresses =
+    state.unusedAddresses.length >= process.env.ADDRESS_RECOVERY_GAP_LENGTH
 
   return `
   <div class="box address-list">
     <div class="label">Receive to unused addresses:</div>
     ${state.unusedAddresses.reduce((acc, elem) => `${acc}<span class="address">${elem}</span>`, '')}
-    <input class="box-btn" type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
-  generateNewUnusedAddress(state.unusedAddresses.length)
-)}" value="Get one more" />
+    <input
+      class="box-btn"
+      type="submit" ${disableGettingNewAddresses ? 'disabled="disabled"' : ''}
+      onclick="${execute(() => generateNewUnusedAddress(state.unusedAddresses.length))}"
+      value="Get one more" />
   </div>
 `
 }
@@ -94,7 +97,7 @@ const TransactionHistory = (state) => `
         <div class="history-row">
           <div>${new Date(transaction.ctbTimeIssued * 1000).toLocaleString()}</div>
           <div class="address">${transaction.ctbId}</div>
-          <div>${(transaction.effect > 0 ? "+" : "") + (transaction.effect / 1000000)} </div>
+          <div>${(transaction.effect > 0 ? '+' : '') + (transaction.effect / 1000000)} </div>
         </div>
       `, '')}
     </div>
@@ -127,11 +130,11 @@ const SendAda = (state) => `
     <span class="small">Transaction fees are not included in this amount!</span>
     </div>
     <button onclick="${execute(
-      () => submitTransaction(
-        document.getElementById('send-address').value,
-        parseInt(document.getElementById('send-amount').value)
-      )
-    )}">Send Ada</button>
+    () => submitTransaction(
+      document.getElementById('send-address').value,
+      parseInt(document.getElementById('send-amount').value, 10)
+    )
+  )}">Send Ada</button>
     ${state.sendSuccess !== '' ?
     `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>` : ''}
 </div>
