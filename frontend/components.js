@@ -13,7 +13,7 @@ const {
   generateNewUnusedAddress,
   calculateFee,
   submitTransaction,
-  reloadHistory,
+  reloadTransactionHistory,
 } = require('./actions')
 
 const Unlock = (state) => `
@@ -82,20 +82,20 @@ const UnusedAddressesList = (state) => {
 `
 }
 
-const History = (state) => `
+const TransactionHistory = (state) => `
   <div class="box address-list"> 
-    <div class="label">History</div>
+    <div class="label">Transaction History</div>
     <div>
       <div class="history-row">
         <div>Time</div>
         <div>Transaction</div>
-        <div>Amount</div>
+        <div>Movement (ADA)</div>
       </div>  
-      ${state.history.reduce((acc, transaction) => `${acc}
+      ${state.transactionHistory.reduce((acc, transaction) => `${acc}
         <div class="history-row"> 
           <div>${new Date(transaction.ctbTimeIssued * 1000).toLocaleString()}</div>
           <div class="address">${transaction.ctbId}</div>
-          <div>${transaction.effect} </div>
+          <div>${(transaction.effect > 0 ? "+" : "") + (transaction.effect / 1000000)} </div>
         </div>
       `, '')}  
     </div>  
@@ -142,8 +142,8 @@ const WalletInfo = (state) => `
   ${WalletHeader(state)}
   ${Balance(state)}
   ${UnusedAddressesList(state)}
-  ${History(state)}
   ${UsedAddressesList(state)}
+  ${TransactionHistory(state)}
 `
 
 const SendAdaScreen = (state) => `
