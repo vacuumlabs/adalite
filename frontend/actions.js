@@ -30,7 +30,7 @@ const loadWalletFromMnemonic = async (mnemonic) => {
         {},
         state,
         {loading: true},
-        {loadingMessage: `Loading wallet data...`}
+        {loadingMessage: 'Loading wallet data...'}
       ),
     'loading balance'
   )

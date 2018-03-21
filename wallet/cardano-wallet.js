@@ -276,7 +276,7 @@ const CardanoWallet = (secretOrMnemonic) => {
 
   async function submitTxRaw(txHash, txBody) {
     try {
-      const res = await request(
+      const res = await request.execute(
         // eslint-disable-next-line no-undef
         CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
         'POST',
