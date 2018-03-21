@@ -23,7 +23,6 @@ const Unlock = (state) => `
     <input type="text" id="mnemonic-submitted" readonly class="address" name="mnemonic-submitted" size="47" value="${state.currentWalletMnemonicOrSecret}">
   </label>
   <button onclick="${execute(loadWalletFromMnemonic, "document.getElementById('mnemonic-submitted').value")}">Load wallet</button>
-  <p><small>You can load a wallet even by submitting its root secret.</small></p>
 </div>`
 
 const NewMnemonic = (state) => `
@@ -65,7 +64,7 @@ const UnusedAddressesList = (state) => {
 
   return `
   <div class="box">
-    <h2>Receive to Unused Addresses</h2>
+    <h2>Unused Addresses</h2>
     ${state.unusedAddresses.reduce((acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}"/>`, '')}
     <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
   generateNewUnusedAddress(state.unusedAddresses.length)
@@ -102,7 +101,7 @@ const Fee = (state) => `
   <button onclick="${execute(
     calculateFee,
     "document.getElementById('send-address').value",
-    "parseInt(document.getElementById('send-amount').value)"
+    "parseInt(document.getElementById('send-amount').value, 10) * 1000000"
   )}">Calculate Fee</button>
     <div style="${!state.fee && 'display: none'}">
       <h3>Fee</h3>
@@ -117,9 +116,9 @@ const SendAda = (state) => `
   <label><span>Address</span> <input type="text" id="send-address" class="address" name="send-address" size="110" value="${state.sendAddress}" >
   </label>
   <label>
-    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" value="${state.amount}"> ADA
+    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" value="${state.sendAmount / 1000000}"> ADA
   </label>
-  <small> Amount includes the fee! </small>
+  <small> The amount does not include the transaction fee! </small>
   <p>
   <button onclick="${execute(
     submitTransaction,
@@ -172,7 +171,7 @@ const Navbar = (state) => `
         <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('send-ada'))}">
           Send Ada
         </a>
-        <a href="#" onclick="${execute(toggleAboutOverlay)}">
+        <a href="https://github.com/vacuumlabs/cardano" target="_blank">
           About
         </a>
       </nav>
