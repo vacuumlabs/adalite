@@ -294,3 +294,8 @@ td {
 .footer .logo {
   height: 2rem;
 }
+
+.footer .contact-link {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
