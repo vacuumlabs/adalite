@@ -213,7 +213,7 @@ const Footer = (state) => `
     <p>
       Powered with 🚀 tech in
       <a href="https://vacuumlabs.com" target="_blank">
-        <img src="/assets/vacuumlabs-logo-light.png" class="logo" alt="Vacuumlabs Logo" />
+        <img src="/assets/vacuumlabs-logo-dark.svg" class="logo" alt="Vacuumlabs Logo" />
       </a>
     </p>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
