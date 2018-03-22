@@ -23,16 +23,6 @@ body {
   height: 100%;
 }
 
-#root {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
-
-.content {
-    flex: 1 0 auto;
-}
-
 h1, h2 {
   font-weight: 300;
   margin-top: 0;
@@ -305,27 +295,7 @@ td {
   height: 2rem;
 }
 
-.footer {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: baseline;
-    padding: 20px;
-    margin-top: 20px;
-    background-color: #333;
-    color: #f2f2f2;
-}
-
-.footer a {
-    color: #f2f2f2;
-    text-decoration: none;
-}
-
-.footer a:hover {
-    color: #4CAF50;
-}
-
-.footer-item {
-    margin: 0 20px;
+.footer .contact-link {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
