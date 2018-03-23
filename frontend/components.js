@@ -81,9 +81,8 @@ const UnusedAddressesList = (state) => {
     (acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}"/>`,
     ''
   )}
-    <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
-  generateNewUnusedAddress(state.unusedAddresses.length)
-)}">Get one more</button>
+    <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} 
+    onclick="${execute(generateNewUnusedAddress, state.unusedAddresses.length)}">Get one more</button>
   </div>
 `
 }
@@ -189,19 +188,13 @@ const Navbar = (state) => `
       <label class="navcollapse-label" for="navcollapse">Menu</label>
       <input id="navcollapse" type="checkbox" />
       <nav>
-        <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(
-  () => setCurrentTab('new-wallet')
-)}">
+        <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'new-wallet\'')}">
           New Wallet
         </a>
-        <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(
-  () => setCurrentTab('wallet-info')
-)}">
+        <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'wallet-info\'')}">
           Wallet Info
         </a>
-        <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() =>
-  setCurrentTab('send-ada')
-)}">
+        <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'send-ada\'')}">
           Send Ada
         </a>
         <a href="https://github.com/vacuumlabs/cardano" target="_blank">

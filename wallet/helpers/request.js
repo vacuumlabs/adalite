@@ -11,7 +11,8 @@ async function execute(url, method = 'GET', body = null, headers = {}, enableCac
   if (res.status >= 400) {
     throw new Error(res.status)
   }
-  return res.json()
+
+  return res
 }
 
 async function cachedFetchGet(url, headers) {
