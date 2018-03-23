@@ -4,8 +4,8 @@ module.exports = async function request(url, method = 'GET', body = null, header
     headers,
   }
 
-  if (method === 'GET') {
-    requestParams = Object.assign({}, requestParams, body)
+  if (method !== 'GET') {
+    requestParams = Object.assign({}, requestParams, {body})
   }
 
   const res = await fetch(url, requestParams)
