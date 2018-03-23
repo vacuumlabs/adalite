@@ -2,11 +2,14 @@
 const assert = require('assert')
 const cbor = require('cbor')
 
+const CARDANOLITE_CONFIG = require('../wallet/helpers/configLoader')
 const transaction = require('../wallet/transaction')
 const mnemonic = require('../wallet/mnemonic')
 const address = require('../wallet/address')
 const {CardanoWallet, txFeeFunction} = require('../wallet/cardano-wallet')
-const {mockTransactionSubmitter, mockBlockChainExplorer, mockRandomNumberGenerator} = require('./mock')
+
+const mockObject = require('./mock')
+const mock = mockObject(CARDANOLITE_CONFIG)
 
 const secret1 = new transaction.WalletSecretString(
   '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c'
@@ -16,7 +19,7 @@ const secret2 = new transaction.WalletSecretString(
 )
 const wallet = CardanoWallet(
   'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3'
-)
+  , CARDANOLITE_CONFIG)
 const childIndex1 = 0x80000000
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
@@ -226,7 +229,7 @@ describe('test transaction fee function', () => {
 describe('test successful transaction fee computation', function() {
   this.timeout(10000)
 
-  mockBlockChainExplorer()
+  mock.mockBlockChainExplorer()
 
   it('should compute the right transaction fee for given transaction', async () => {
     assert.equal(await wallet.getTxFee(myAddress, 47), 178893)
@@ -241,8 +244,8 @@ describe('test successful transaction fee computation', function() {
 describe('test transaction serialization', function() {
   this.timeout(10000)
 
-  mockBlockChainExplorer()
-  mockRandomNumberGenerator(0.7)
+  mock.mockBlockChainExplorer()
+  mock.mockRandomNumberGenerator(0.7)
 
   it('should properly serialize transaction inner body', async () => {
     const tx = await wallet.prepareTx(myAddress, 47)
@@ -296,7 +299,7 @@ describe('test transaction serialization', function() {
 describe('test wallet balance computation', function() {
   this.timeout(10000)
 
-  mockBlockChainExplorer()
+  mock.mockBlockChainExplorer()
 
   it('should properly fetch wallet balance', async () => {
     assert.equal(await wallet.getBalance(), 1500000)
@@ -307,7 +310,7 @@ describe('test wallet balance computation', function() {
 describe('test wallet history parsing', function() {
   this.timeout(10000)
 
-  mockBlockChainExplorer()
+  mock.mockBlockChainExplorer()
 
   it('should properly fetch wallet history', async () => {
     assert.equal(JSON.stringify(await wallet.getHistory()), JSON.stringify(history))
@@ -318,7 +321,7 @@ describe('test wallet history parsing', function() {
 describe('test transaction submission', function() {
   this.timeout(10000)
 
-  mockTransactionSubmitter()
+  mock.mockTransactionSubmitter()
 
   it('should properly submit transaction', async () => {
     const result = await wallet.sendAda(myAddress, 47)

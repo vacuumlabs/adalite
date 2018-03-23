@@ -3,7 +3,7 @@ const cbor = require('cbor')
 const {mnemonicToWalletSecretString, generateMnemonic} = require('./mnemonic')
 const tx = require('./transaction')
 const address = require('./address')
-const blockchainExplorer = require('./blockchain-explorer')
+const blockchainExplorerObject = require('./blockchain-explorer')
 const request = require('./helpers/request')
 
 function txFeeFunction(txSizeInBytes) {
@@ -21,7 +21,9 @@ async function filterUsed(arr, callback) {
   )).filter((i) => i !== undefined)
 }
 
-const CardanoWallet = (secretOrMnemonic) => {
+const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
+  const blockchainExplorer = blockchainExplorerObject(CARDANOLITE_CONFIG)
+
   const rootSecret =
     secretOrMnemonic.search(' ') >= 0
       ? mnemonicToWalletSecretString(secretOrMnemonic)
@@ -277,7 +279,6 @@ const CardanoWallet = (secretOrMnemonic) => {
   async function submitTxRaw(txHash, txBody) {
     try {
       const res = await request.execute(
-        // eslint-disable-next-line no-undef
         CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
         'POST',
         JSON.stringify({
@@ -295,7 +296,7 @@ const CardanoWallet = (secretOrMnemonic) => {
         return res.result
       }
     } catch (err) {
-      throw Error(`txSubmiter unreachable ${err}`)
+      throw err //Error(`txSubmiter unreachable ${err}`)
     }
   }
 
