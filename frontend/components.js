@@ -213,7 +213,8 @@ const Navbar = (state) => `
 const AboutOverlay = (state) =>
   state.displayAboutOverlay
     ? `
-    <div class="overlay about-overlay" onclick=${execute(toggleAboutOverlay)}>
+    <div class="overlay">
+      <div class="overlay-close-layer" onclick=${execute(toggleAboutOverlay)}></div>
       <div class="box text">
         <h2> Disclaimer: CardanoLite is not created by Cardano Foundation. </h2>
         <p> The official Cardano team did not review this code and is not responsible for any damage
@@ -238,7 +239,7 @@ const Loading = (state) =>
   state.loading
     ? `
     <div class="overlay">
-      <div class="donut"></div>
+      <div class="loading"></div>
     </div>
   `
     : ''
