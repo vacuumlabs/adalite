@@ -123,7 +123,7 @@ td {
 /* BOX */
 .box {
   padding: 1rem;
-  margin: 20px;
+  margin: 1.5rem;
   background-color: #f8f9fa;
   border: 1px solid var(--border);
 }
@@ -149,6 +149,33 @@ td {
   font-size: 1rem;
   color: var(--text-color);
   pointer-events: none;
+}
+/* ALERT */
+.alert {
+  border: 1px solid #d44242;
+  background-color: #d4424210;
+  color: #d44242;
+  font-weight: bold;
+  margin: 1.5rem;
+  padding: .5rem 1rem;
+}
+.alert small {
+  font-weight: 400;
+}
+.alert.error {
+  border-color: #d44242;
+  background-color: #d4424210;
+  color: #d44242;
+}
+.alert.success {
+  border-color: #38a14f;
+  background-color: #38a14f10;
+  color: #38a14f;
+}
+.alert.warning {
+  border-color: #ac6e27;
+  background-color: #ac6e2710;
+  color: #ac6e27;
 }
 /* NAVIGATION */
 .navbar {

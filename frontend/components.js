@@ -247,6 +247,16 @@ const Loading = (state) =>
   `
     : ''
 
+const Alert = ({alert: {show, title, hint, type}}) =>
+  show
+    ? `
+    <div class="alert ${type}">
+      ${title ? `<p>${title}</p>` : ''}
+      ${hint ? `<p><small>${hint}</small></p>` : ''}
+    </div>
+  `
+    : ''
+
 const Footer = (state) => `
   <footer class="footer">
     <p>
@@ -285,6 +295,7 @@ const TopLevelRouter = (state, prevState) => {
     ${Loading(state)}
     ${Navbar(state, prevState)}
     <main class="main">
+      ${Alert(state)}
       ${body}
     </main>
     ${Footer()}

@@ -25,7 +25,13 @@ init(
   {
     loading: false,
     loadingMessage: 'Loading your <b>funds</b>.',
-    displayAboutOverlay: true,
+    alert: {
+      show: false,
+      type: 'success', // OPTIONS are error, warning, success
+      title: 'Wrong mnemonic',
+      hint: 'Hint: Ensure that your mnemonic is without mistake.',
+    },
+    displayAboutOverlay: false,
     currentTab: 'wallet-info',
     activeWalletId: null,
     currentWalletMnemonicOrSecret:
