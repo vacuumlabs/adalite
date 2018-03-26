@@ -24,7 +24,16 @@ function execute(fn, ...stringArgs) {
 }
 
 const loadWalletFromMnemonic = async (mnemonic) => {
-  dispatch((state) => Object.assign({}, state, {loading: true}), 'loading balance')
+  dispatch(
+    (state) =>
+      Object.assign(
+        {},
+        state,
+        {loading: true},
+        {loadingMessage: `Loading balance for ${mnemonic}.`}
+      ),
+    'loading balance'
+  )
   wallet = Cardano.CardanoWallet(mnemonic)
   const activeWalletId = wallet.getId()
   const usedAddresses = await wallet.getUsedAddresses()
@@ -34,33 +43,34 @@ const loadWalletFromMnemonic = async (mnemonic) => {
   const amount = 0
   const sendAddress = ''
   const sendSuccess = ''
-  dispatch((state) => Object.assign(
-    {},
-    state,
-    {
-      activeWalletId,
-      usedAddresses,
-      unusedAddresses,
-      balance,
-      amount,
-      sendAddress,
-      sendSuccess,
-      transactionHistory,
-      loading: false,
-      currentWalletMnemonicOrSecret: '',
-    }
-  ), 'load wallet from mnemonic')
+  dispatch(
+    (state) =>
+      Object.assign({}, state, {
+        activeWalletId,
+        usedAddresses,
+        unusedAddresses,
+        balance,
+        amount,
+        sendAddress,
+        sendSuccess,
+        transactionHistory,
+        loading: false,
+        currentWalletMnemonicOrSecret: '',
+      }),
+    'load wallet from mnemonic'
+  )
 }
 
 const generateMnemonic = () => {
   const newWalletMnemonic = Cardano.generateMnemonic()
   const currentWalletMnemonicOrSecret = newWalletMnemonic
   dispatch(
-    (state) => Object.assign(
-      {},
-      state,
-      {newWalletMnemonic, currentWalletMnemonicOrSecret, activeWalletId: null}
-    ),
+    (state) =>
+      Object.assign({}, state, {
+        newWalletMnemonic,
+        currentWalletMnemonicOrSecret,
+        activeWalletId: null,
+      }),
     'generate mnemonic'
   )
 }
@@ -82,14 +92,14 @@ const reloadTransactionHistory = async () => {
 }
 
 const generateNewUnusedAddress = async (offset) => {
-  dispatch((state) => Object.assign({}, state, {address: 'loading...'}), 'generate new unused address')
+  dispatch(
+    (state) => Object.assign({}, state, {address: 'loading...'}),
+    'generate new unused address'
+  )
   const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
   dispatch(
-    (state) => Object.assign(
-      {},
-      state,
-      {unusedAddresses: state.unusedAddresses.concat([newUnusedAddress])}
-    ),
+    (state) =>
+      Object.assign({}, state, {unusedAddresses: state.unusedAddresses.concat([newUnusedAddress])}),
     'balance loaded'
   )
 }
@@ -105,17 +115,25 @@ const setCurrentTab = (currentTab) => {
   dispatch((state) => Object.assign({}, state, {currentTab}), 'set current tab')
 }
 
-
 const calculateFee = async (address, amount) => {
-  dispatch((state) => Object.assign({}, state, {loading: true, sendAddress: address, sendAmount: amount}), 'loading fee')
+  dispatch(
+    (state) => Object.assign({}, state, {loading: true, sendAddress: address, sendAmount: amount}),
+    'loading fee'
+  )
   const fee = await wallet.getTxFee(address, amount)
   dispatch((state) => Object.assign({}, state, {fee, loading: false}), 'fee loaded')
 }
 
 const submitTransaction = async (address, amount) => {
-  dispatch((state) => Object.assign({}, state, {sendSuccess: 'processing transaction', loading: true}), 'processing transaction')
+  dispatch(
+    (state) => Object.assign({}, state, {sendSuccess: 'processing transaction', loading: true}),
+    'processing transaction'
+  )
   const sendSuccess = await wallet.sendAda(address, amount * 1000000)
-  dispatch((state) => Object.assign({}, state, {sendSuccess, loading: false}), 'transaction acocmlishement loaded')
+  dispatch(
+    (state) => Object.assign({}, state, {sendSuccess, loading: false}),
+    'transaction acocmlishement loaded'
+  )
 }
 
 module.exports = {

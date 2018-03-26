@@ -242,6 +242,7 @@ const Loading = (state) =>
     ? `
     <div class="overlay">
       <div class="loading"></div>
+      ${state.loadingMessage ? `<p>${state.loadingMessage}</p>` : ''}
     </div>
   `
     : ''

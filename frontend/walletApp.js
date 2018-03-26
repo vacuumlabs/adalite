@@ -18,17 +18,18 @@ const TopLevelRouter = require('./components')
 const sampleMid = require('./middleware')
 const {init} = require('./simpleRedux')
 
-
 // eslint-disable-next-line no-undef
 CARDANOLITE_CONFIG = JSON.parse(document.body.getAttribute('data-config'))
 
 init(
   {
     loading: false,
+    loadingMessage: 'Loading your <b>funds</b>.',
     displayAboutOverlay: true,
     currentTab: 'wallet-info',
     activeWalletId: null,
-    currentWalletMnemonicOrSecret: 'opera jacket raise like injury slogan valid deny someone dove tag weapon',
+    currentWalletMnemonicOrSecret:
+      'opera jacket raise like injury slogan valid deny someone dove tag weapon',
     newWalletMnemonic: '',
     usedAddresses: [],
     unusedAddresses: [],

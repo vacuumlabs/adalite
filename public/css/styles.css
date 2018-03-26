@@ -248,9 +248,14 @@ td {
   background-color: rgba(248,249,250,.85);
   z-index: 2;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   animation: fade-in .5s;
+}
+.overlay p {
+  margin-top: 1rem;
+  color: #777;
 }
 .overlay-close-layer {
   position: absolute;
