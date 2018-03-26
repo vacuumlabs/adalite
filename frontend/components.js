@@ -270,10 +270,10 @@ const Footer = (state) => `
 
     <p>
       <small class="contact-link"><a href="https://github.com/vacuumlabs/cardano" target="_blank">View on Github</a></small>
-      /
+      
       <small class="contact-link"><a href="mailto:cardanolite@vacuumlabs.com">Contact us</a></small>
-      /
-      <small class="contact-link"><a href="https://twitter.com/hashtag/cardanolite">#cardanolite</a></small>
+      
+      <small class="contact-link"><a href="https://twitter.com/hashtag/cardanolite" target="_blank">#cardanolite</a></small>
     </p>
   </footer>
 `
