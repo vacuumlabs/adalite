@@ -20,15 +20,22 @@ const Unlock = (state) => `
   <h2 class="label">Load Wallet</h2>
   <label>
     <span>Mnemonic</span>
-    <input type="text" id="mnemonic-submitted" class="address" name="mnemonic-submitted" size="47" value="${state.currentWalletMnemonicOrSecret}">
+    <input type="text" id="mnemonic-submitted" class="address" name="mnemonic-submitted" size="47" value="${
+  state.currentWalletMnemonicOrSecret
+}">
   </label>
-  <button onclick="${execute(loadWalletFromMnemonic, "document.getElementById('mnemonic-submitted').value")}">Load wallet</button>
+  <button onclick="${execute(
+    loadWalletFromMnemonic,
+    "document.getElementById('mnemonic-submitted').value"
+  )}">Load wallet</button>
 </div>`
 
 const NewMnemonic = (state) => `
 <div class="box">
     <h2>New Wallet Mnemonic</h2>
-    <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic"  value="${state.newWalletMnemonic}" />
+    <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic"  value="${
+  state.newWalletMnemonic
+}" />
     <button onclick="${execute(generateMnemonic)}">Generate</button>
 </div>
 `
@@ -42,7 +49,9 @@ const WalletHeader = (state) => `
   <div class="box box-info">
     <h2>Wallet</h2>
     <h3>Active Wallet ID</h3>
-    <input readonly class="address" value="${state.activeWalletId ? state.activeWalletId : 'error, not initialized'}" />
+    <input readonly class="address" value="${
+  state.activeWalletId ? state.activeWalletId : 'error, not initialized'
+}" />
     ${Balance(state)}
     <p>
       <button onclick="${execute(reloadBalance)}">Reload Balance</button>
@@ -54,7 +63,10 @@ const WalletHeader = (state) => `
 const UsedAddressesList = (state) => `
   <div class="box">
     <h2>Already Used Addresses</h2>
-    ${state.usedAddresses.reduce((acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}/>`, '')}
+    ${state.usedAddresses.reduce(
+    (acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}/>`,
+    ''
+  )}
   </div>
 `
 
@@ -65,7 +77,10 @@ const UnusedAddressesList = (state) => {
   return `
   <div class="box">
     <h2>Unused Addresses</h2>
-    ${state.unusedAddresses.reduce((acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}"/>`, '')}
+    ${state.unusedAddresses.reduce(
+    (acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}"/>`,
+    ''
+  )}
     <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} onclick="${execute(() =>
   generateNewUnusedAddress(state.unusedAddresses.length)
 )}">Get one more</button>
@@ -85,13 +100,16 @@ const TransactionHistory = (state) => `
         </tr>
       </thead>
       <tbody>
-        ${state.transactionHistory.reduce((acc, transaction) => `${acc}
+        ${state.transactionHistory.reduce(
+    (acc, transaction) => `${acc}
           <tr>
             <td>${new Date(transaction.ctbTimeIssued * 1000).toLocaleString()}</td>
             <td><input type="text" readonly class="address" value="${transaction.ctbId}"/></td>
             <td><pre>${transaction.effect > 0 ? '+' : ''}${transaction.effect / 1000000}</pre></td>
           </tr>
-        `, '')}
+        `,
+    ''
+  )}
       </tbody>
     </table>
   </div>
@@ -112,11 +130,18 @@ const Fee = (state) => `
 const SendAda = (state) => `
 <div class="box">
 <h2>Send Ada</h2>
-  ${state.sendSuccess !== '' ? `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>` : ''}
-  <label><span>Address</span> <input type="text" id="send-address" class="address" name="send-address" size="110" value="${state.sendAddress}" >
+  ${
+  state.sendSuccess !== ''
+    ? `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>`
+    : ''
+}
+  <label><span>Address</span> <input type="text" id="send-address" class="address" name="send-address" size="110" value="${
+  state.sendAddress
+}" >
   </label>
   <label>
-    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" value="${state.sendAmount / 1000000.0}"> ADA
+    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" value="${state.sendAmount /
+      1000000.0}"> ADA
   </label>
   <small> The amount does not include the transaction fee! </small>
   <p>
@@ -162,13 +187,19 @@ const Navbar = (state) => `
       CardanoLite Wallet<sup>⍺</sup>
       </a>
       <nav>
-        <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('new-wallet'))}">
+        <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(
+  () => setCurrentTab('new-wallet')
+)}">
           New Wallet
         </a>
-        <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('wallet-info'))}">
+        <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(
+  () => setCurrentTab('wallet-info')
+)}">
           Wallet Info
         </a>
-        <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() => setCurrentTab('send-ada'))}">
+        <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(() =>
+  setCurrentTab('send-ada')
+)}">
           Send Ada
         </a>
         <a href="https://github.com/vacuumlabs/cardano" target="_blank">
@@ -180,7 +211,8 @@ const Navbar = (state) => `
 `
 
 const AboutOverlay = (state) =>
-  state.displayAboutOverlay ? `
+  state.displayAboutOverlay
+    ? `
     <div class="overlay about-overlay" onclick=${execute(toggleAboutOverlay)}>
       <div class="box text">
         <h2> Disclaimer: CardanoLite is not created by Cardano Foundation. </h2>
@@ -199,14 +231,17 @@ const AboutOverlay = (state) =>
         </p>
       </div>
     </div>
-  ` : ''
+  `
+    : ''
 
 const Loading = (state) =>
-  state.loading ? `
+  state.loading
+    ? `
     <div class="overlay">
       <div class="donut"></div>
     </div>
-  ` : ''
+  `
+    : ''
 
 const Footer = (state) => `
   <footer class="footer">
@@ -222,7 +257,7 @@ const Footer = (state) => `
       /
       <small class="contact-link"><a href="mailto:cardanolite@vacuumlabs.com">Contact us</a></small>
       /
-      <small class="contact-link"><a href="https://twitter.com/hashtag/cardanolite">#cardanolite</a></small>  
+      <small class="contact-link"><a href="https://twitter.com/hashtag/cardanolite">#cardanolite</a></small>
     </p>
   </footer>
 `
@@ -248,8 +283,8 @@ const TopLevelRouter = (state, prevState) => {
     <main class="main">
       ${body}
     </main>
+    ${Footer()}
   </div>
-  ${Footer()}
   `
 }
 
