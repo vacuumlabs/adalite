@@ -32,11 +32,11 @@ const Unlock = (state) => `
 
 const NewMnemonic = (state) => `
 <div class="box">
-    <h2>New Wallet Mnemonic</h2>
-    <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic"  value="${
+  <h2>New Wallet Mnemonic</h2>
+  <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic"  value="${
   state.newWalletMnemonic
 }" />
-    <button onclick="${execute(generateMnemonic)}">Generate</button>
+  <button onclick="${execute(generateMnemonic)}">Generate</button>
 </div>
 `
 
@@ -186,6 +186,8 @@ const Navbar = (state) => `
       <a class="title" href="/"><img src="/assets/logo.png" />
       CardanoLite Wallet<sup>⍺</sup>
       </a>
+      <label class="navcollapse-label" for="navcollapse">Menu</label>
+      <input id="navcollapse" type="checkbox" />
       <nav>
         <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(
   () => setCurrentTab('new-wallet')
