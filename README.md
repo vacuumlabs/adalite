@@ -47,7 +47,17 @@ yarn install
 yarn build
 PORT=3000 yarn start-server
 ```
-navigate to http://localhost:3000 (or wherever you've configured)
+Navigate to http://localhost:3000 (or wherever you've configured)
+
+#### Development
+
+For development you can start the server with
+
+```
+yarn dev
+```
+
+It runs webpack with the `--watch` flag and the server with `PORT=3000` unless you specify otherwise
 
 ## test
 
