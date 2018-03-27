@@ -62,11 +62,18 @@ const WalletHeader = (state) => `
   </div>
 `
 
+const address = (address, isTransaction) => `
+          <div class="address-wrap">
+          <input readonly type="text" class="address" value="${address}"/>
+          <a href="https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}" target="_blank" title="examine via CardanoExplorer.com"></a>
+        </div>
+`
+
 const UsedAddressesList = (state) => `
   <div class="box">
     <h2>Already Used Addresses</h2>
     ${state.usedAddresses.reduce(
-    (acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}"/>`,
+    (acc, elem) => `${acc}${address(elem)}`,
     ''
   )}
   </div>
@@ -80,7 +87,7 @@ const UnusedAddressesList = (state) => {
   <div class="box">
     <h2>Unused Addresses</h2>
     ${state.unusedAddresses.reduce(
-    (acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}"/>`,
+    (acc, elem) => `${acc}${address(elem)}`,
     ''
   )}
     <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} 
@@ -105,7 +112,7 @@ const TransactionHistory = (state) => `
     (acc, transaction) => `${acc}
           <tr>
             <td>${new Date(transaction.ctbTimeIssued * 1000).toLocaleString()}</td>
-            <td><input type="text" readonly class="address" value="${transaction.ctbId}"/></td>
+            <td>${address(transaction.ctbId, true)}</td>
             <td><pre>${transaction.effect > 0 ? '+' : ''}${transaction.effect / 1000000}</pre></td>
           </tr>
         `,
