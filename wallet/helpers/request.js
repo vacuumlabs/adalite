@@ -24,8 +24,6 @@ async function cachedFetchGet(url, headers) {
   return requestCache[key].response
 }
 
-module.exports = {execute}
-
 async function fetchFromNetwork(url, method = 'GET', body = null, headers = {}) {
   let requestParams = {
     method,
@@ -49,3 +47,5 @@ async function fetchFromNetwork(url, method = 'GET', body = null, headers = {}) 
     throw e
   }
 }
+
+module.exports = {execute}

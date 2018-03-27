@@ -1,5 +1,7 @@
 /* eslint no-console: 0 */
 
+const {CARDANOLITE_CONFIG} = require('./loadConfig')
+
 let state, middlewares
 const root = {}
 
@@ -18,7 +20,6 @@ const dispatch = (updater, message, payload) => {
   } finally {
     const t = new Date()
 
-    // eslint-disable-next-line no-undef
     if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
       console.group(
         `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
@@ -69,7 +70,6 @@ const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
   window.history.onpushstate = routerAction
   window.onhashchange = routerAction
 
-  // eslint-disable-next-line no-undef
   if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
     console.log('initial state', initialState)
   }

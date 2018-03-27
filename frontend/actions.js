@@ -1,7 +1,7 @@
 // actions are just functions which also call update
 
+const {CARDANOLITE_CONFIG} = require('./loadConfig')
 const Cardano = require('../wallet/cardano-wallet')
-
 const {dispatch} = require('./simpleRedux.js')
 
 let counter = 0
@@ -35,7 +35,6 @@ const loadWalletFromMnemonic = async (mnemonic) => {
     'loading balance'
   )
 
-  // eslint-disable-next-line no-undef
   wallet = Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
 
   const activeWalletId = wallet.getId()
