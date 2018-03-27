@@ -3,7 +3,7 @@ const MAX_AGE = 10000
 
 
 async function execute(url, method = 'GET', body = null, headers = {}, enableCache = true) {
-  if (method === 'GET' && enableCache) {
+  if (method.toUpperCase() === 'GET' && enableCache) {
     return await cachedFetchGet(url, headers).catch((e) => {throw new Error(e)})
   }
 
@@ -29,7 +29,7 @@ async function fetchFromNetwork(url, method = 'GET', body = null, headers = {}) 
     method,
     headers,
   }
-  if (method !== 'GET') {
+  if (method.toUpperCase() !== 'GET') {
     requestParams = Object.assign({}, requestParams, {body})
   }
 

@@ -1,6 +1,6 @@
 const request = require('./helpers/request')
 
-const bloackchainExplorer = (CARDANOLITE_CONFIG) => {
+const blockchainExplorer = (CARDANOLITE_CONFIG) => {
 
   async function getUnspentTxOutputs(address) {
     if (getAddressBalance(address) === 0) {
@@ -89,4 +89,4 @@ const bloackchainExplorer = (CARDANOLITE_CONFIG) => {
   }
 }
 
-module.exports = bloackchainExplorer
+module.exports = blockchainExplorer

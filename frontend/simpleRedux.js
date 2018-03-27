@@ -1,6 +1,6 @@
 /* eslint no-console: 0 */
 
-const {CARDANOLITE_CONFIG} = require('./loadConfig')
+const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
 
 let state, middlewares
 const root = {}

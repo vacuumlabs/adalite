@@ -40,17 +40,6 @@ wallet).
 Prepare `.env` file
 e.g. by `cp .env.example .env`
 
-#### Cardano node proxy
-This component is simply forwarding HTTP requests to raw TCP communication. Since this service only
-forwards signed transactions so fundamentally it cannot do malicious stuff.
-
-To run CardanoLite locally, you need to run this locally as well. Fetch sources from
-(git+https://github.com/vacuumlabs/cardano-node-proxy.git), then
-```
-yarn
-cardano_node_proxy_port=3001 yarn run main
-```
-
 #### Run CardanoLite
 
 ```

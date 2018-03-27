@@ -1,6 +1,6 @@
 // actions are just functions which also call update
 
-const {CARDANOLITE_CONFIG} = require('./loadConfig')
+const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
 const Cardano = require('../wallet/cardano-wallet')
 const {dispatch} = require('./simpleRedux.js')
 
@@ -42,7 +42,7 @@ const loadWalletFromMnemonic = async (mnemonic) => {
   const unusedAddresses = [await wallet.getChangeAddress()]
   const transactionHistory = await wallet.getHistory()
   const balance = await wallet.getBalance()
-  const amount = 0
+  const sendAmount = 0
   const sendAddress = ''
   const sendSuccess = ''
   dispatch(
@@ -52,7 +52,7 @@ const loadWalletFromMnemonic = async (mnemonic) => {
         usedAddresses,
         unusedAddresses,
         balance,
-        amount,
+        sendAmount,
         sendAddress,
         sendSuccess,
         transactionHistory,
@@ -82,15 +82,22 @@ const logout = () => {
   wallet = null
 }
 
-const reloadBalance = async () => {
-  dispatch((state) => Object.assign({}, state, {loading: true, loadingMessage: 'Reloading balance...'}), 'loading balance')
-  const balance = await wallet.getBalance()
-  dispatch((state) => Object.assign({}, state, balance, {loading: false}), 'balance loaded')
-}
+const reloadWalletInfo = async () => {
+  dispatch((state) => Object.assign({}, state, {loading: true, loadingMessage: 'Reloading wallet info...'}), 'loading balance')
 
-const reloadTransactionHistory = async () => {
+  const balance = await wallet.getBalance()
+  const usedAddresses = await wallet.getUsedAddresses()
   const transactionHistory = await wallet.getHistory()
-  dispatch((state) => Object.assign({}, state, {transactionHistory}), 'history updated')
+
+  dispatch((state) => Object.assign({}, state, {
+    balance,
+    usedAddresses,
+    unusedAddresses: state.unusedAddresses.filter((elem) => {
+      return usedAddresses.indexOf(elem) < 0
+    }),
+    transactionHistory,
+    loading: false,
+  }), 'wallet info reloaded')
 }
 
 const generateNewUnusedAddress = async (offset) => {
@@ -131,6 +138,7 @@ const submitTransaction = async (address, amount) => {
     (state) => Object.assign({}, state, {sendSuccess: 'processing transaction', loading: true, loadingMessage: 'Submitting transaction...'}),
     'processing transaction'
   )
+
   const sendSuccess = await wallet.sendAda(address, amount * 1000000)
   dispatch(
     (state) => Object.assign({}, state, {sendSuccess, loading: false}),
@@ -141,7 +149,7 @@ const submitTransaction = async (address, amount) => {
 module.exports = {
   loadWalletFromMnemonic,
   generateMnemonic,
-  reloadBalance,
+  reloadWalletInfo,
   generateNewUnusedAddress,
   calculateFee,
   submitTransaction,
@@ -149,5 +157,4 @@ module.exports = {
   execute,
   toggleAboutOverlay,
   setCurrentTab,
-  reloadTransactionHistory,
 }

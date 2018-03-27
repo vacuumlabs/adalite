@@ -279,7 +279,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
   async function submitTxRaw(txHash, txBody) {
     try {
       const res = await request.execute(
-        CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
+        `${CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL}/api/transactions`,
         'POST',
         JSON.stringify({
           txHash,

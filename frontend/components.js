@@ -6,7 +6,7 @@ const {
   execute,
   loadWalletFromMnemonic,
   generateMnemonic,
-  reloadBalance,
+  reloadWalletInfo,
   logout,
   toggleAboutOverlay,
   setCurrentTab,
@@ -14,6 +14,8 @@ const {
   calculateFee,
   submitTransaction,
 } = require('./actions')
+
+const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
 
 const Unlock = (state) => `
 <div class="box">
@@ -54,7 +56,7 @@ const WalletHeader = (state) => `
 }" />
     ${Balance(state)}
     <p>
-      <button onclick="${execute(reloadBalance)}">Reload Balance</button>
+      <button onclick="${execute(reloadWalletInfo)}">Reload Wallet Info</button>
       <button class="danger" onclick="${execute(logout)}">Close the wallet</button>
     </p>
   </div>
@@ -64,7 +66,7 @@ const UsedAddressesList = (state) => `
   <div class="box">
     <h2>Already Used Addresses</h2>
     ${state.usedAddresses.reduce(
-    (acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}/>`,
+    (acc, elem) => `${acc}<input readonly type="text" class="address" value="${elem}"/>`,
     ''
   )}
   </div>
@@ -72,7 +74,7 @@ const UsedAddressesList = (state) => `
 
 const UnusedAddressesList = (state) => {
   const disableGettingNewAddresses =
-    state.unusedAddresses.length >= process.env.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+    state.unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
 
   return `
   <div class="box">
@@ -139,7 +141,7 @@ const SendAda = (state) => `
 }" >
   </label>
   <label>
-    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" value="${state.sendAmount /
+    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" min="0.000001" value="${state.sendAmount /
       1000000.0}"> ADA
   </label>
   <small> The amount does not include the transaction fee! </small>
@@ -147,7 +149,7 @@ const SendAda = (state) => `
   <button onclick="${execute(
     submitTransaction,
     "document.getElementById('send-address').value",
-    "parseInt(document.getElementById('send-amount').value)"
+    "parseFloat(document.getElementById('send-amount').value)"
   )}">Send Ada</button>
   ${Fee(state)}
   </p>
