@@ -30,7 +30,7 @@ const loadWalletFromMnemonic = async (mnemonic) => {
         {},
         state,
         {loading: true},
-        {loadingMessage: `Loading balance for ${mnemonic}.`}
+        {loadingMessage: `Loading wallet data...`}
       ),
     'loading balance'
   )
@@ -81,7 +81,7 @@ const logout = () => {
 }
 
 const reloadBalance = async () => {
-  dispatch((state) => Object.assign({}, state, {loading: true}), 'loading balance')
+  dispatch((state) => Object.assign({}, state, {loading: true, loadingMessage: 'Reloading balance...'}), 'loading balance')
   const balance = await wallet.getBalance()
   dispatch((state) => Object.assign({}, state, balance, {loading: false}), 'balance loaded')
 }
@@ -117,7 +117,7 @@ const setCurrentTab = (currentTab) => {
 
 const calculateFee = async (address, amount) => {
   dispatch(
-    (state) => Object.assign({}, state, {loading: true, sendAddress: address, sendAmount: amount}),
+    (state) => Object.assign({}, state, {loading: true, loadingMessage: 'Computing transaction fee...', sendAddress: address, sendAmount: amount}),
     'loading fee'
   )
   const fee = await wallet.getTxFee(address, amount)
@@ -126,7 +126,7 @@ const calculateFee = async (address, amount) => {
 
 const submitTransaction = async (address, amount) => {
   dispatch(
-    (state) => Object.assign({}, state, {sendSuccess: 'processing transaction', loading: true}),
+    (state) => Object.assign({}, state, {sendSuccess: 'processing transaction', loading: true, loadingMessage: 'Submitting transaction...'}),
     'processing transaction'
   )
   const sendSuccess = await wallet.sendAda(address, amount * 1000000)
