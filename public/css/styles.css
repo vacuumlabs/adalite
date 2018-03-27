@@ -63,6 +63,9 @@ button.danger {
 button.danger:hover {
   background-color: #9c2929;
 }
+button + button{
+  margin-left: 2em;
+}
 input + button {
   margin-top: 1rem;
 }
@@ -108,6 +111,7 @@ td {
 /* ADDRESS */
 .address {
   border: 1px solid var(--border);
+  border-right: none;
   background-color: white;
   height: 2rem;
   padding: 0 1em;
@@ -117,9 +121,30 @@ td {
   font-family: monospace;
   width: 100%;
 }
-.address + .address {
+.address-wrap + .address-wrap {
   margin-top: 1rem;
 }
+.address-wrap {
+  display: flex;
+}
+.address-wrap a[target="_blank"]::after{
+  border: 1px solid var(--border);
+  border-left: none;
+  background: white url("../assets/link.png") no-repeat center;
+  background-size: 80% 80%;;
+  height: 2rem;
+  width: 2rem;
+  content: " ";
+  display: inline-block;
+  transition: background-color var(--transition);
+}
+.address-wrap a[target="_blank"]:hover::after{
+  background-color: #eee;
+}
+.address-wrap + button {
+  margin-top: 1rem;
+}
+
 /* BOX */
 .box {
   padding: 1rem;
