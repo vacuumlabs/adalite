@@ -18,9 +18,9 @@
   },
   "scripts": {
     "start-server": "node server/index.js",
+    "dev": "PORT=${PORT:-3000} node server/index.js & webpack --watch --config webpack.build.config.js",
     "eslint": "eslint .",
     "build": "webpack --config webpack.build.config.js --progress",
-    "build-watch": "webpack --config webpack.build.config.js --progress --watch",
     "test": "webpack --config webpack.test.config.js",
     "fix": "prettier-eslint --write \"*.js\" \"./frontend/*.js\" \"./wallet/*.js\" ",
     "heroku-postbuild": "webpack --config webpack.build.config.js --progress"
