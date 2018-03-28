@@ -149,7 +149,7 @@ const SendAda = (state) => `
   </label>
   <label>
     <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" min="0.000001" value="${state.sendAmount /
-      1000000.0}"> ADA
+  1000000.0}"> ADA
   </label>
   <small> The amount does not include the transaction fee! </small>
   <p>
@@ -192,7 +192,7 @@ const Navbar = (state) => `
   <div class="navbar">
     <div class="navbar-wrap">
       <a class="title" href="/"><img src="/assets/logo.png" />
-      CardanoLite Wallet<sup>⍺</sup>
+      <span>CardanoLite Wallet</span><sup>⍺</sup>
       </a>
       <label class="navcollapse-label" for="navcollapse">Menu</label>
       <input id="navcollapse" type="checkbox" />
