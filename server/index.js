@@ -5,7 +5,6 @@ const app = express()
 
 const config = require('./helpers/backendConfigLoader')
 
-
 app.use(bodyParser.json())
 app.use(cors())
 app.use(express.static('public'))
@@ -21,7 +20,7 @@ if (config.CARDANOLITE_FORCE_HTTPS === 'true') {
   })
 }
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
   return res.status(200).send(`
     <!doctype html>
     <html>
