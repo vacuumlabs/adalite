@@ -1,161 +1,123 @@
-// actions are just functions which also call update
+import Cardano from '../wallet/cardano-wallet'
+import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
-const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
-const Cardano = require('../wallet/cardano-wallet')
-const {dispatch} = require('./simpleRedux.js')
-
-let counter = 0
 let wallet = null
 
-const executeKey = '__cardano__global_fns'
-window[executeKey] = {}
+export default ({setState, getState}) => {
+  const loadingAction = (message, optionalArgsObj) =>
+    Object.assign(
+      {},
+      {
+        loading: true,
+        loadingMessage: message,
+      },
+      optionalArgsObj
+    )
 
-const fnNames = new Map()
-// first arg is function to be called, rest of the arguments are to be passed inside fn.
-function execute(fn, ...stringArgs) {
-  if (fnNames.get(fn) == null) {
-    const name = `function_number_${counter++}`
-    fnNames.set(fn, name)
-    window[executeKey][name] = fn
+  const loadWalletFromMnemonic = async (state, mnemonic) => {
+    setState(loadingAction('Loading wallet data...'))
+
+    wallet = Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
+
+    const activeWalletId = wallet.getId()
+    const usedAddresses = await wallet.getUsedAddresses()
+    const unusedAddresses = [await wallet.getChangeAddress()]
+    const transactionHistory = await wallet.getHistory()
+    const balance = await wallet.getBalance()
+    const sendAmount = 0
+    const sendAddress = ''
+    const sendSuccess = ''
+    setState({
+      activeWalletId,
+      usedAddresses,
+      unusedAddresses,
+      balance,
+      sendAmount,
+      sendAddress,
+      sendSuccess,
+      transactionHistory,
+      loading: false,
+      currentWalletMnemonicOrSecret: '',
+    })
   }
-  const name = fnNames.get(fn)
-  const argStr = stringArgs.join(', ')
-  return `window['${executeKey}']['${name}'](${argStr})`
-}
 
-const loadWalletFromMnemonic = async (mnemonic) => {
-  dispatch(
-    (state) =>
-      Object.assign(
-        {},
-        state,
-        {loading: true},
-        {loadingMessage: 'Loading wallet data...'}
-      ),
-    'loading balance'
-  )
+  const generateMnemonic = (state) => {
+    const newWalletMnemonic = Cardano.generateMnemonic()
+    return {
+      newWalletMnemonic,
+      currentWalletMnemonicOrSecret: newWalletMnemonic,
+      activeWalletId: null,
+    }
+  }
 
-  wallet = Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
+  const logout = () => {
+    wallet = null
+    return {activeWalletId: null}
+  }
 
-  const activeWalletId = await wallet.getId()
-  const usedAddresses = await wallet.getUsedAddresses()
-  const unusedAddresses = [await wallet.getChangeAddress()]
-  const transactionHistory = await wallet.getHistory()
-  const balance = await wallet.getBalance()
-  const sendAmount = 0
-  const sendAddress = ''
-  const sendSuccess = ''
+  const reloadWalletInfo = async () => {
+    setState(loadingAction('Reloading wallet info...'))
 
-  dispatch(
-    (state) =>
-      Object.assign({}, state, {
-        activeWalletId,
-        usedAddresses,
-        unusedAddresses,
-        balance,
-        sendAmount,
-        sendAddress,
-        sendSuccess,
-        transactionHistory,
-        loading: false,
-        currentWalletMnemonicOrSecret: '',
-      }),
-    'load wallet from mnemonic'
-  )
-}
+    const balance = await wallet.getBalance()
+    const usedAddresses = await wallet.getUsedAddresses()
+    const transactionHistory = await wallet.getHistory()
+    const unusedAddresses = getState().unusedAddresses.filter(
+      (elem) => usedAddresses.indexOf(elem) < 0
+    )
 
-const generateMnemonic = () => {
-  const newWalletMnemonic = Cardano.generateMnemonic()
-  const currentWalletMnemonicOrSecret = newWalletMnemonic
-  dispatch(
-    (state) =>
-      Object.assign({}, state, {
-        newWalletMnemonic,
-        currentWalletMnemonicOrSecret,
-        activeWalletId: null,
-      }),
-    'generate mnemonic'
-  )
-}
+    setState({
+      balance,
+      usedAddresses,
+      unusedAddresses,
+      transactionHistory,
+      loading: false,
+    })
+  }
 
-const logout = () => {
-  dispatch((state) => Object.assign({}, state, {activeWalletId: null}), 'close the wallet')
-  wallet = null
-}
+  const generateNewUnusedAddress = async (state, offset) => {
+    setState({address: 'loading...'})
+    const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
+    setState({
+      unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
+    })
+  }
 
-const reloadWalletInfo = async () => {
-  dispatch((state) => Object.assign({}, state, {loading: true, loadingMessage: 'Reloading wallet info...'}), 'loading balance')
+  const toggleAboutOverlay = (state) => ({
+    displayAboutOverlay: !state.displayAboutOverlay,
+  })
 
-  const balance = await wallet.getBalance()
-  const usedAddresses = await wallet.getUsedAddresses()
-  const transactionHistory = await wallet.getHistory()
+  const calculateFee = async (address, amount) => {
+    setState(
+      loadingAction('Computing transaction fee...', {
+        sendAddress: address,
+        sendAmount: amount,
+      })
+    )
+    const fee = await wallet.getTxFee(address, amount)
+    setState({fee, loading: false})
+  }
 
-  dispatch((state) => Object.assign({}, state, {
-    balance,
-    usedAddresses,
-    unusedAddresses: state.unusedAddresses.filter((elem) => {
-      return usedAddresses.indexOf(elem) < 0
-    }),
-    transactionHistory,
-    loading: false,
-  }), 'wallet info reloaded')
-}
+  const submitTransaction = async (state, address, amount) => {
+    setState(
+      loadingAction('processing transaction', 'Submitting transaction...', {
+        sendSuccess: 'processing transaction',
+      })
+    )
 
-const generateNewUnusedAddress = async (offset) => {
-  dispatch(
-    (state) => Object.assign({}, state, {address: 'loading...'}),
-    'generate new unused address'
-  )
-  const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
-  dispatch(
-    (state) =>
-      Object.assign({}, state, {unusedAddresses: state.unusedAddresses.concat([newUnusedAddress])}),
-    'balance loaded'
-  )
-}
+    const sendSuccess = await wallet.sendAda(address, amount * 1000000)
 
-const toggleAboutOverlay = () => {
-  dispatch(
-    (state) => Object.assign({}, state, {displayAboutOverlay: !state.displayAboutOverlay}),
-    'toggle about overlay'
-  )
-}
+    setState({sendSuccess, loading: false})
+  }
 
-const setCurrentTab = (currentTab) => {
-  dispatch((state) => Object.assign({}, state, {currentTab}), 'set current tab')
-}
-
-const calculateFee = async (address, amount) => {
-  dispatch(
-    (state) => Object.assign({}, state, {loading: true, loadingMessage: 'Computing transaction fee...', sendAddress: address, sendAmount: amount}),
-    'loading fee'
-  )
-  const fee = await wallet.getTxFee(address, amount)
-  dispatch((state) => Object.assign({}, state, {fee, loading: false}), 'fee loaded')
-}
-
-const submitTransaction = async (address, amount) => {
-  dispatch(
-    (state) => Object.assign({}, state, {sendSuccess: 'processing transaction', loading: true, loadingMessage: 'Submitting transaction...'}),
-    'processing transaction'
-  )
-
-  const sendSuccess = await wallet.sendAda(address, amount * 1000000)
-  dispatch(
-    (state) => Object.assign({}, state, {sendSuccess, loading: false}),
-    'transaction acocmlishement loaded'
-  )
-}
-
-module.exports = {
-  loadWalletFromMnemonic,
-  generateMnemonic,
-  reloadWalletInfo,
-  generateNewUnusedAddress,
-  calculateFee,
-  submitTransaction,
-  logout,
-  execute,
-  toggleAboutOverlay,
-  setCurrentTab,
+  return {
+    loadingAction,
+    loadWalletFromMnemonic,
+    generateMnemonic,
+    logout,
+    reloadWalletInfo,
+    generateNewUnusedAddress,
+    toggleAboutOverlay,
+    calculateFee,
+    submitTransaction,
+  }
 }

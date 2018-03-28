@@ -1,308 +1,425 @@
-// 'react components' - just functions outputting html as interpolated strings
-// component functions should expect prev and next state as the only arguments
-// higher-order components should return component functions (or other HOCs)
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import Cardano from '../wallet/cardano-wallet'
 
-const {
-  execute,
-  loadWalletFromMnemonic,
-  generateMnemonic,
-  reloadWalletInfo,
-  logout,
-  toggleAboutOverlay,
-  setCurrentTab,
-  generateNewUnusedAddress,
-  calculateFee,
-  submitTransaction,
-} = require('./actions')
+import actions from './actions'
 
-const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
+import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
-const Unlock = (state) => `
-<div class="box">
-  <h2 class="label">Load Wallet</h2>
-  <label>
-    <span>Mnemonic</span>
-    <input type="text" id="mnemonic-submitted" class="address" name="mnemonic-submitted" autocomplete="nope" size="47" value="${
-  state.currentWalletMnemonicOrSecret
-}">
-  </label>
-  <button onclick="${execute(
-    loadWalletFromMnemonic,
-    "document.getElementById('mnemonic-submitted').value"
-  )}">Load wallet</button>
-</div>`
+import linkState from 'linkstate'
 
-const NewMnemonic = (state) => `
-<div class="box">
-  <h2>New Wallet Mnemonic</h2>
-  <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic" autocomplete="nope" value="${
-  state.newWalletMnemonic
-}" />
-  <button onclick="${execute(generateMnemonic)}">Generate</button>
-</div>
-`
+class UnlockClass extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      currentWalletMnemonicOrSecret:
+        'opera jacket raise like injury slogan valid deny someone dove tag weapon',
+    }
+    this.generateMnemonic = this.generateMnemonic.bind(this)
+    this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
+  }
 
-const Balance = (state) => `
-  <h3>Balance</h3>
-  <p>${isNaN(Number(state.balance)) ? state.balance : `${state.balance / 1000000} ADA`}</p>
-`
+  generateMnemonic() {
+    this.setState({currentWalletMnemonicOrSecret: Cardano.generateMnemonic()})
+  }
 
-const WalletHeader = (state) => `
-  <div class="box box-info">
-    <h2>Wallet</h2>
-    <h3>Active Wallet ID</h3>
-    <input readonly class="address" value="${
-  state.activeWalletId ? state.activeWalletId : 'error, not initialized'
-}" />
-    ${Balance(state)}
-    <p>
-      <button onclick="${execute(reloadWalletInfo)}">Reload Wallet Info</button>
-      <button class="danger" onclick="${execute(logout)}">Close the wallet</button>
-    </p>
-  </div>
-`
+  loadWalletFromMnemonic() {
+    this.props.loadWalletFromMnemonic(this.state.currentWalletMnemonicOrSecret)
+  }
 
-const address = (address, isTransaction) => `
-          <div class="address-wrap">
-          <input readonly type="text" class="address" value="${address}"/>
-          <a href="https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}" target="_blank" title="examine via CardanoExplorer.com"></a>
-        </div>
-`
-
-const UsedAddressesList = (state) => `
-  <div class="box">
-    <h2>Already Used Addresses</h2>
-    ${state.usedAddresses.reduce(
-    (acc, elem) => `${acc}${address(elem)}`,
-    ''
-  )}
-  </div>
-`
-
-const UnusedAddressesList = (state) => {
-  const disableGettingNewAddresses =
-    state.unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-
-  return `
-  <div class="box">
-    <h2>Unused Addresses</h2>
-    ${state.unusedAddresses.reduce(
-    (acc, elem) => `${acc}${address(elem)}`,
-    ''
-  )}
-    <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} 
-    onclick="${execute(generateNewUnusedAddress, state.unusedAddresses.length)}">Get one more</button>
-  </div>
-`
-}
-
-const TransactionHistory = (state) => `
-  <div class="box">
-    <h2>Transaction History</h2>
-    <table>
-      <thead>
-        <tr>
-        <th>Time</th>
-        <th>Transaction</th>
-        <th>Movement (ADA)</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${state.transactionHistory.reduce(
-    (acc, transaction) => `${acc}
-          <tr>
-            <td>${new Date(transaction.ctbTimeIssued * 1000).toLocaleString()}</td>
-            <td>${address(transaction.ctbId, true)}</td>
-            <td><pre>${transaction.effect > 0 ? '+' : ''}${transaction.effect / 1000000}</pre></td>
-          </tr>
-        `,
-    ''
-  )}
-      </tbody>
-    </table>
-  </div>
-`
-
-const Fee = (state) => `
-  <button onclick="${execute(
-    calculateFee,
-    "document.getElementById('send-address').value",
-    "parseFloat(document.getElementById('send-amount').value) * 1000000"
-  )}">Calculate Fee</button>
-    <div style="${!state.fee && 'display: none'}">
-      <h3>Fee</h3>
-      ${isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`}
-    </div>
-</span>`
-
-const SendAda = (state) => `
-<div class="box">
-<h2>Send Ada</h2>
-  ${
-  state.sendSuccess !== ''
-    ? `<span id="transacton-submitted">Transaction status: ${state.sendSuccess}</span>`
-    : ''
-}
-  <label><span>Address</span> <input type="text" id="send-address" class="address" name="send-address" size="110" value="${
-  state.sendAddress
-}" >
-  </label>
-  <label>
-    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" min="0.000001" value="${state.sendAmount /
-      1000000.0}"> ADA
-  </label>
-  <small> The amount does not include the transaction fee! </small>
-  <p>
-  <button onclick="${execute(
-    submitTransaction,
-    "document.getElementById('send-address').value",
-    "parseFloat(document.getElementById('send-amount').value)"
-  )}">Send Ada</button>
-  ${Fee(state)}
-  </p>
-</div>
-`
-
-const WalletInfo = (state) => `
-  ${WalletHeader(state)}
-  ${UnusedAddressesList(state)}
-  ${UsedAddressesList(state)}
-  ${TransactionHistory(state)}
-`
-
-const SendAdaScreen = (state) => `
-  ${WalletHeader(state)}
-  ${SendAda(state)}
-`
-
-const Index = (state) => {
-  switch (state.currentTab) {
-    case 'new-wallet':
-      return NewMnemonic(state)
-    case 'wallet-info':
-      return state.activeWalletId ? WalletInfo(state) : Unlock(state)
-    case 'send-ada':
-      return state.activeWalletId ? SendAdaScreen(state) : Unlock(state)
-    default:
-      return 'CardanoLite  wallet'
+  render({loadWalletFromMnemonic}, {currentWalletMnemonicOrSecret}) {
+    return h(
+      'div',
+      {class: 'box'},
+      h('h2', {class: 'label'}, 'Load Wallet'),
+      h(
+        'label',
+        undefined,
+        h('span', undefined, 'Mnemonic'),
+        h('input', {
+          type: 'text',
+          id: 'mnemonic-submitted',
+          class: 'address',
+          name: 'mnemonic-submitted',
+          size: '47',
+          value: currentWalletMnemonicOrSecret,
+          onInput: linkState(this, 'currentWalletMnemonicOrSecret'),
+        })
+      ),
+      h('button', {onClick: this.loadWalletFromMnemonic}, 'Load wallet'),
+      h('button', {onClick: this.generateMnemonic}, 'Generate')
+    )
   }
 }
 
-const Navbar = (state) => `
-  <div class="navbar">
-    <div class="navbar-wrap">
-      <a class="title" href="/"><img src="/assets/logo.png" />
-      CardanoLite Wallet<sup>⍺</sup>
-      </a>
-      <label class="navcollapse-label" for="navcollapse">Menu</label>
-      <input id="navcollapse" type="checkbox" />
-      <nav>
-        <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'new-wallet\'')}">
-          New Wallet
-        </a>
-        <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'wallet-info\'')}">
-          Wallet Info
-        </a>
-        <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'send-ada\'')}">
-          Send Ada
-        </a>
-        <a href="https://github.com/vacuumlabs/cardano" target="_blank">
-          About
-        </a>
-      </nav>
-    </div>
-  </div>
-`
+const Unlock = connect(undefined, actions)(UnlockClass)
 
-const AboutOverlay = (state) =>
-  state.displayAboutOverlay
-    ? `
-    <div class="overlay">
-      <div class="overlay-close-layer" onclick=${execute(toggleAboutOverlay)}></div>
-      <div class="box text">
-        <h2> Disclaimer: CardanoLite is not created by Cardano Foundation. </h2>
-        <p> The official Cardano team did not review this code and is not responsible for any damage
+const NewMnemonic = connect((state) => state)((state) =>
+  h(
+    'div',
+    {class: 'box'}
+    // h('h2', undefined, 'New Wallet Mnemonic'),
+    // h('input', {
+    //   type: 'text',
+    //   class: 'address',
+    //   placeholder: "Press 'Generate' to create new mnenomonic",
+    //   value: state.newWalletMnemonic,
+    // }),
+    // h('button', {onClick: generateMnemonic}, 'Generate')
+  )
+)
+
+const Balance = connect('balance')(({balance}) =>
+  h(
+    'span',
+    undefined,
+    h('h3', undefined, 'Balance'),
+    h('p', undefined, isNaN(Number(balance)) ? balance : `${balance / 1000000} ADA`)
+  )
+)
+
+const WalletHeader = connect('activeWalletId', actions)(
+  ({activeWalletId, reloadWalletInfo, logout}) =>
+    h(
+      'div',
+      {class: 'box box-info'},
+      h('h2', undefined, 'Wallet'),
+      h('h3', undefined, 'Active Wallet ID'),
+      h('input', {
+        readonly: true,
+        class: 'address',
+        value: activeWalletId || 'error, not initialized',
+      }),
+      h(Balance),
+      h(
+        'p',
+        undefined,
+        h('button', {onClick: reloadWalletInfo}, 'Reload Wallet Info'),
+        h('button', {class: 'danger', onClick: logout}, 'Close the wallet')
+      )
+    )
+)
+
+const Address = (adr, isTransaction) =>
+  h(
+    'div',
+    {class: 'address-wrap'},
+    h('input', {readonly: true, type: 'text', class: 'address', value: adr}),
+    h('a', {
+      href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${adr}`,
+      target: '_blank',
+      title: 'examine via CardanoExplorer.com',
+    })
+  )
+
+const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
+  h(
+    'div',
+    {class: 'box'},
+    h('h2', undefined, 'Already Used Addresses'),
+    ...usedAddresses.map((adr) => Address(adr))
+  )
+)
+
+const UnusedAddressesList = connect('unusedAddresses')(({unusedAddresses}) =>
+  //const disableGettingNewAddresses =
+  //state.unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+  h(
+    'div',
+    {class: 'box'},
+    h('h2', undefined, 'Unused Addresses'),
+    ...unusedAddresses.map((adr) => Address(adr))
+  )
+)
+
+const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
+  h(
+    'div',
+    {class: 'box'},
+    h('h2', undefined, 'Transaction History'),
+    h(
+      'table',
+      undefined,
+      h(
+        'thead',
+        undefined,
+        h(
+          'tr',
+          undefined,
+          h('th', undefined, 'Time'),
+          h('th', undefined, 'Transaction'),
+          h('th', undefined, 'Movement (ADA)')
+        )
+      ),
+      h(
+        'tbody',
+        undefined,
+        ...transactionHistory.map((transaction) =>
+          h(
+            'tr',
+            undefined,
+            h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
+            h('td', undefined, Address(transaction.ctbId, true)),
+            h(
+              'td',
+              undefined,
+              h(
+                'pre',
+                undefined,
+                `${transaction.effect > 0 ? '+' : ''}${transaction.effect / 1000000}`
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+// const Fee = connect(state => state)((state) =>
+//   h('button', {onClick="${executeAction(
+//     calculateFee,
+//     "document.getElementById('send-address').value",
+//     "parseFloat(document.getElementById('send-amount').value) * 1000000"
+//   )}">Calculate Fee</button>
+//     h('div', {style: "${!state.fee && 'display: none'}">
+//       h('h3', undefined, 'Fee'),
+//       ${isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`}
+//     </div>
+// </span>`
+
+const SendAda = connect(['sendSuccess', 'sendAddress', 'sendAmount'])(
+  ({sendSuccess, sendAddress, sendAmount}) =>
+    h(
+      'div',
+      {class: 'box'},
+      h('h2', undefined, 'Send Ada'),
+      sendSuccess !== ''
+        ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
+        : '',
+      h('label', undefined, h('span', undefined, 'Address')),
+      h('input', {
+        type: 'text',
+        id: 'send-address',
+        class: 'address',
+        name: 'send-address',
+        size: '110',
+        value: sendAddress,
+      }),
+      h(
+        'label',
+        undefined,
+        h('span', undefined, 'Amount'),
+        h('input', {
+          type: 'number',
+          id: 'send-amount',
+          name: 'send-amount',
+          size: '8',
+          step: '0.5',
+          min: '0.000001',
+          value: sendAmount / 1000000.0,
+        }),
+        h('span', undefined, 'ADA')
+      )
+    )
+)
+// h('p', undefined,
+// h('button', {onclick="${executeAction(
+//   submitTransaction,
+//   "document.getElementById('send-address').value",
+//   "parseFloat(document.getElementById('send-amount').value)"
+// )}">Send Ada</button>
+// ${Fee(state)}
+// </p>
+
+const WalletInfo = () =>
+  h(
+    'div',
+    undefined,
+    h(WalletHeader),
+    h(UnusedAddressesList),
+    h(UsedAddressesList),
+    h(TransactionHistory)
+  )
+
+const SendAdaScreen = () => h('div', undefined, h(WalletHeader), h(SendAda))
+
+const Index = connect((state) => ({
+  pathname: state.router.pathname,
+  activeWalletId: state.activeWalletId,
+}))(({pathname, activeWalletId}) => {
+  const currentTab = pathname.split('/')[1]
+  switch (currentTab) {
+    case 'new-wallet':
+      return h(NewMnemonic)
+    case 'wallet-info':
+      return activeWalletId ? h(WalletInfo) : h(Unlock)
+    case 'send-ada':
+      return activeWalletId ? h(SendAdaScreen) : h(Unlock)
+    default:
+      return activeWalletId ? h(WalletInfo) : h(Unlock)
+  }
+})
+
+const Navbar = connect((state) => ({
+  pathname: state.router.pathname,
+  activeWalletId: state.activeWalletId,
+}))(({pathname}) => {
+  const {history: {pushState}} = window
+  const currentTab = pathname.split('/')[1]
+  return h(
+    'div',
+    {class: 'navbar'},
+    h(
+      'div',
+      {class: 'navbar-wrap'},
+      h(
+        'a',
+        {class: 'title', href: '/'},
+        h('img', {src: '/assets/logo.png'}),
+        h('span', undefined, 'CardanoLite Wallet'),
+        h('sup', undefined, '⍺')
+      ),
+      h('label', {class: 'navcollapse-label', for: 'navcollapse'}, 'Menu'),
+      h('input', {id: 'navcollapse', type: 'checkbox'}),
+      h(
+        'nav',
+        undefined,
+        h(
+          'a',
+          {
+            class: currentTab === 'new-wallet' && 'active',
+            onClick: () => pushState({}, 'new-wallet', 'new-wallet'),
+          },
+          'New Wallet'
+        ),
+        h(
+          'a',
+          {
+            class: currentTab === 'wallet-info' && 'active',
+            onClick: () => pushState({}, 'wallet-info', 'wallet-info'),
+          },
+          'Wallet Info'
+        ),
+        h(
+          'a',
+          {
+            class: currentTab === 'send-ada' && 'active',
+            onClick: () => pushState({}, 'send-ada', 'send-ada'),
+          },
+          'Send Ada'
+        ),
+        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'About')
+      )
+    )
+  )
+})
+
+const AboutOverlay = connect('displayAboutOverlay', actions)(
+  ({displayAboutOverlay, toggleAboutOverlay}) =>
+    displayAboutOverlay
+      ? h(
+        'div',
+        {class: 'overlay'},
+        h('div', {
+          class: 'overlay-close-layer',
+          onClick: () => toggleAboutOverlay(),
+        }),
+        h(
+          'div',
+          {class: 'box text'},
+          h('h2', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
+          h(
+            'p',
+            undefined,
+            `The official Cardano team did not review this code and is not responsible for any damage
           it may cause you. The CardanoLite project is in alpha stage and should be used for
-          penny-transactions only. We appreciate feedback, especially review of the crypto-related code.
-        </p>
-        <h2> CardanoLite is not a bank </h2>
-        <p>
+          penny-transactions only. We appreciate feedback, especially review of the crypto-related code.`
+          ),
+          h('h2', undefined, ' CardanoLite is not a bank '),
+          h(
+            'p',
+            undefined,
+            `
           It does not really store your funds permanently - each
           time you interact with it, you have to insert the mnemonic - the 12-words long root password
           to your account. If you lose it, we cannot help you restore the funds.
-        </p>
-        <p>
-          Feedback and contributions are very welcome.
-        </p>
-      </div>
-    </div>
-  `
-    : ''
+        `
+          ),
+          h('p', undefined, 'Feedback and contributions are very welcome.')
+        )
+      )
+      : null
+)
 
-const Loading = (state) =>
-  state.loading
-    ? `
-    <div class="overlay">
-      <div class="loading"></div>
-      ${state.loadingMessage ? `<p>${state.loadingMessage}</p>` : ''}
-    </div>
-  `
-    : ''
+const Loading = connect(['loadingMessage', 'loading'])(
+  ({loading, loadingMessage}) =>
+    loading
+      ? h(
+        'div',
+        {class: 'overlay'},
+        h('div', {class: 'loading'}),
+        loadingMessage ? h('p', undefined, loadingMessage) : ''
+      )
+      : null
+)
 
-const Alert = ({alert: {show, title, hint, type}}) =>
-  show
-    ? `
-    <div class="alert ${type}">
-      ${title ? `<p>${title}</p>` : ''}
-      ${hint ? `<p><small>${hint}</small></p>` : ''}
-    </div>
-  `
-    : ''
+const Alert = connect('alert')(
+  ({alert: {show, type, title, hint}}) =>
+    show
+      ? h(
+        'div',
+        {class: `alert ${type}`},
+        title ? h('p', undefined, title) : '',
+        hint ? h('p', undefined, h('small', undefined, hint)) : ''
+      )
+      : null
+)
 
-const Footer = (state) => `
-  <footer class="footer">
-    <p>
-      Powered with 🚀 tech in
-      <a href="https://vacuumlabs.com" target="_blank">
-        <img src="/assets/vacuumlabs-logo-dark.svg" class="logo" alt="Vacuumlabs Logo" />
-      </a>
-    </p>
+const Footer = () =>
+  h(
+    'footer',
+    {class: 'footer'},
+    h(
+      'p',
+      undefined,
+      'Powered with 🚀 tech in',
+      h(
+        'a',
+        {href: 'https://vacuumlabs.com', target: '_blank'},
+        h('img', {src: '/assets/vacuumlabs-logo-dark.svg', class: 'logo', alt: 'Vacuumlabs Logo'})
+      )
+    ),
+    h(
+      'p',
+      undefined,
+      h(
+        'small',
+        {class: 'contact-link'},
+        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'View on Github')
+      ),
+      '/',
+      h(
+        'small',
+        {class: 'contact-link'},
+        h('a', {href: 'mailto:cardanolite@vacuumlabs.com'}, 'Contact us')
+      ),
+      '/',
+      h(
+        'small',
+        {class: 'contact-link'},
+        h('a', {href: 'https://twitter.com/hashtag/cardanolite'}, '#cardanolite')
+      )
+    )
+  )
 
-    <p>
-      <small class="contact-link"><a href="https://github.com/vacuumlabs/cardano" target="_blank">View on Github</a></small>
-      
-      <small class="contact-link"><a href="mailto:cardanolite@vacuumlabs.com">Contact us</a></small>
-      
-      <small class="contact-link"><a href="https://twitter.com/hashtag/cardanolite" target="_blank">#cardanolite</a></small>
-    </p>
-  </footer>
-`
-
-const TopLevelRouter = (state, prevState) => {
-  const {pathname} = window.location
-  const topLevelRoute = pathname.split('/')[1]
-  let body = ''
-  switch (topLevelRoute) {
-    case '':
-      body = Index(state, prevState)
-      break
-    default:
-      body = Index(state, prevState)
-    // body = '404 - not found'
-  }
-
-  return `
-  <div class="wrap">
-    ${AboutOverlay(state, prevState)}
-    ${Loading(state)}
-    ${Navbar(state, prevState)}
-    <main class="main">
-      ${Alert(state)}
-      ${body}
-    </main>
-    ${Footer()}
-  </div>
-  `
-}
-
-module.exports = TopLevelRouter
+export const TopLevelRouter = () =>
+  h(
+    'div',
+    {class: 'wrap'},
+    h(AboutOverlay),
+    h(Loading),
+    h(Navbar),
+    h('main', {class: 'main'}, h(Alert), h(Index)),
+    h(Footer)
+  )
