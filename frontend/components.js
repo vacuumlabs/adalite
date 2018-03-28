@@ -44,7 +44,7 @@ const NewMnemonic = (state) => `
 
 const Balance = (state) => `
   <h3>Balance</h3>
-  <p>${isNaN(Number(state.balance)) ? state.balance : `${state.balance / 1000000} ADA`}</p>
+  <p>${state.balance / 1000000} ADA</p>
 `
 
 const WalletHeader = (state) => `
@@ -84,7 +84,10 @@ const UnusedAddressesList = (state) => {
     ''
   )}
     <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} 
-    onclick="${execute(generateNewUnusedAddress, state.unusedAddresses.length)}">Get one more</button>
+    onclick="${execute(
+    generateNewUnusedAddress,
+    state.unusedAddresses.length
+  )}">Get one more</button>
   </div>
 `
 }
@@ -124,7 +127,7 @@ const Fee = (state) => `
   )}">Calculate Fee</button>
     <div style="${!state.fee && 'display: none'}">
       <h3>Fee</h3>
-      ${isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`}
+      <span id="fee">${state.fee / 1000000}</span> ADA
     </div>
 </span>`
 
@@ -137,19 +140,20 @@ const SendAda = (state) => `
     : ''
 }
   <label><span>Address</span> <input type="text" id="send-address" class="address" name="send-address" size="110" value="${
-  state.sendAddress
+  state.sendAddress.value
 }" >
   </label>
+  ${state.sendAddress.validation ? Alert(state.sendAddress.validation) : ''}  
   <label>
-    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" min="0.000001" value="${state.sendAmount /
-      1000000.0}"> ADA
+    <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" min="0.000001" value="${state.sendAmount.value / 1000000.0}"> ADA
   </label>
-  <small> The amount does not include the transaction fee! </small>
+  <small> The amount does include the transaction fee! </small>
+  ${state.sendAmount.validation ? Alert(state.sendAmount.validation) : ''}
   <p>
   <button onclick="${execute(
     submitTransaction,
     "document.getElementById('send-address').value",
-    "parseFloat(document.getElementById('send-amount').value)"
+    "parseFloat(document.getElementById('send-amount').value) * 1000000"
   )}">Send Ada</button>
   ${Fee(state)}
   </p>

@@ -120,6 +120,10 @@ td {
 .address + .address {
   margin-top: 1rem;
 }
+.address-plaintext {
+  word-wrap: break-word;
+  word-break: break-all;
+}
 /* BOX */
 .box {
   padding: 1rem;
