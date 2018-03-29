@@ -13,9 +13,21 @@ const {
   generateNewUnusedAddress,
   calculateFee,
   submitTransaction,
+  cancelTransaction,
+  confirmTransaction,
 } = require('./actions')
 
 const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
+
+const Alert = ({alert: {show, title, hint, type}}) =>
+  show
+    ? `
+    <div class="alert ${type}">
+      ${title ? `<p>${title}</p>` : ''}
+      ${hint ? `<p><small>${hint}</small></p>` : ''}
+    </div>
+  `
+    : ''
 
 const Unlock = (state) => `
 <div class="box">
@@ -159,6 +171,33 @@ const SendAda = (state) => `
   </p>
 </div>
 `
+const ConfirmTransaction = (state) =>
+  state.confirmTransaction
+    ? `
+    <div class="overlay">
+      <div class="box text">
+        <h2> Transaction confirmation: </h2>
+        <p>
+          From wallet <div class="address-plaintext">${state.activeWalletId}</div>
+        </p>
+        <p>
+          send <strong>${state.sendAmount.value / 1000000} ADA</strong> 
+          including ${state.fee / 1000000} ADA as a fee
+        </p>
+        <p>  
+          to the address 
+          <strong>
+            <div class="address-plaintext">${state.sendAddress.value}</div>
+          </strong> 
+        </p>
+        <p>
+        <button onclick="${execute(confirmTransaction, state.sendAddress.value, state.sendAmount.value * 1000000)}">Confirm</button>
+        <button class="danger" onclick="${execute(cancelTransaction)}">Cancel</button>
+        </p>
+      </div>
+    </div>
+  `
+    : ''
 
 const WalletInfo = (state) => `
   ${WalletHeader(state)}
@@ -170,6 +209,7 @@ const WalletInfo = (state) => `
 const SendAdaScreen = (state) => `
   ${WalletHeader(state)}
   ${SendAda(state)}
+  ${ConfirmTransaction(state)}
 `
 
 const Index = (state) => {
@@ -242,16 +282,6 @@ const Loading = (state) =>
     <div class="overlay">
       <div class="loading"></div>
       ${state.loadingMessage ? `<p>${state.loadingMessage}</p>` : ''}
-    </div>
-  `
-    : ''
-
-const Alert = ({alert: {show, title, hint, type}}) =>
-  show
-    ? `
-    <div class="alert ${type}">
-      ${title ? `<p>${title}</p>` : ''}
-      ${hint ? `<p><small>${hint}</small></p>` : ''}
     </div>
   `
     : ''

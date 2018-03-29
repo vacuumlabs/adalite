@@ -36,7 +36,7 @@ init(
     newWalletMnemonic: '',
     usedAddresses: [],
     unusedAddresses: [],
-    sendAmount: 0,
+    sendAmount: {value: 0},
   },
   [sampleMid],
   TopLevelRouter,

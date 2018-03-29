@@ -185,9 +185,12 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     let result
 
     if (usedAddressesAndSecrets.length < usedAddressesLimit) {
-      const highestUsedChildIndex = Math.max(usedAddressesAndSecrets.reduce((acc, item) => {
-        return Math.max(item.childIndex, acc)
-      }, 0), 0x80000000)
+      const highestUsedChildIndex = Math.max(
+        usedAddressesAndSecrets.reduce((acc, item) => {
+          return Math.max(item.childIndex, acc)
+        }, 0),
+        0x80000000
+      )
 
       result = address.deriveAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset)
         .address
@@ -318,4 +321,9 @@ if (typeof window !== 'undefined') {
   window.CardanoWallet = exports.CardanoWallet
 }
 
-module.exports = {CardanoWallet, generateMnemonic, txFeeFunction}
+module.exports = {
+  CardanoWallet,
+  generateMnemonic,
+  txFeeFunction,
+  isValidAddress: address.isValidAddress,
+}
