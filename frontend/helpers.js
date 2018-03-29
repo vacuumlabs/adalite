@@ -1,9 +1,12 @@
 import assert from 'assert'
 
-const _hasOwnProp = (obj, key) => {
-  assert(typeof key === 'string' || typeof key === 'number', 'bad key type')
-  assert(key !== '', 'empty key') // empty key is a terrible idea in general
+const {CARDANOLITE_CONFIG: {CARDANOLITE_ENABLE_DEBUGGING}} = require('./frontendConfigLoader')
 
+const _hasOwnProp = (obj, key) => {
+  if (CARDANOLITE_ENABLE_DEBUGGING) {
+    assert(typeof key === 'string' || typeof key === 'number', 'bad key type')
+    assert(key !== '', 'empty key') // empty key is a terrible idea in general
+  }
   // Fun fact: "ab".hasOwnProperty(1) -> true
   if (typeof obj !== 'object') return false
   // Fun fact: typeof null === 'object'
@@ -13,14 +16,12 @@ const _hasOwnProp = (obj, key) => {
   return Object.prototype.hasOwnProperty.call(obj, `${key}`)
 }
 
-export const forwardReducerTo = (reducer, path = []) => (
-  (state, payload) => {
-    const dummy = {}
-    const oldValue = getIn(state, path, {last: dummy})
-    const newValue = reducer(oldValue !== dummy ? oldValue : undefined, payload)
-    return setIn(state, path, newValue)
-  }
-)
+export const forwardReducerTo = (reducer, path = []) => (state, payload) => {
+  const dummy = {}
+  const oldValue = getIn(state, path, {last: dummy})
+  const newValue = reducer(oldValue !== dummy ? oldValue : undefined, payload)
+  return setIn(state, path, newValue)
+}
 
 export function getIn(state, path, {last, any} = {}) {
   checkValidPath(path)
@@ -68,20 +69,30 @@ function recursiveUpdate(taskName, state, resolvedState, path, index, fn, force 
         throwError(taskName, state, path.slice(0, index + 1), shallowCopy)
       }
     }
-    shallowCopy[key] = recursiveUpdate(taskName, state,
-      shallowCopy[key], path, index + 1, fn, force)
+    shallowCopy[key] = recursiveUpdate(
+      taskName,
+      state,
+      shallowCopy[key],
+      path,
+      index + 1,
+      fn,
+      force
+    )
   }
   return shallowCopy
 }
 
 function checkValidPath(path, minLength = 0) {
+  if (!CARDANOLITE_ENABLE_DEBUGGING) return
   if (!(path instanceof Array) || path.length < minLength) {
     throw new Error(`Expected path to be non-empty array, got: ${path}`)
   }
   // path may consist only of numbers and strings
   for (const e of path) {
-    if (!((typeof e === 'string') || (typeof e === 'number'))) {
-      throw new TypeError(`Path contains element that is not a number or a string. Path: ${path} Element: ${e}`)
+    if (!(typeof e === 'string' || typeof e === 'number')) {
+      throw new TypeError(
+        `Path contains element that is not a number or a string. Path: ${path} Element: ${e}`
+      )
     }
   }
 }
