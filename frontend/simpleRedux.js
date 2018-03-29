@@ -5,19 +5,29 @@ const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
 let state, middlewares
 const root = {}
 
+const createReverseArray = (nodeChildren) => {
+  const ret = []
+  for (let i = nodeChildren.length - 1; i >= 0; i--) {
+    ret.push(nodeChildren[i])
+  }
+  return ret
+}
+
 const reconcile = (existingNode, virtualNode) => {
   if (existingNode.tagName !== virtualNode.tagName) return virtualNode
 
-  const existingChildren = existingNode.children
-    ? Array.from(existingNode.children).filter((n) => n instanceof HTMLElement)
-    : []
-  const virtualChildren = virtualNode.children
-    ? Array.from(virtualNode.children).filter((n) => n instanceof HTMLElement)
-    : []
+  // arrays reversed so that we can process children from their tail using pop
+  const [existingChildren, virtualChildren] = [existingNode.children, virtualNode.children].map(
+    (children) => createReverseArray(children).filter((n) => n instanceof HTMLElement)
+  )
 
   // attributes is a NamedNodeMap, which does not support same api as an array
   for (let i = 0; i < virtualNode.attributes.length; i++) {
-    existingNode.setAttribute(virtualNode.attributes[i].name, virtualNode.attributes[i].value)
+    if (
+      existingNode.getAttribute(virtualNode.attributes[i].name) !== virtualNode.attributes[i].value
+    ) {
+      existingNode.setAttribute(virtualNode.attributes[i].name, virtualNode.attributes[i].value)
+    }
   }
   // remove attributes no longer valid
   for (let i = 0; i < existingNode.attributes.length; i++) {
@@ -31,30 +41,31 @@ const reconcile = (existingNode, virtualNode) => {
     return existingNode
   }
 
-  // recursively reconcile children
-  const existingKeyedChildren = new Map()
-  existingChildren.forEach(
-    (child) => child.dataset.key && existingKeyedChildren.set(child.dataset.key, child)
-  )
-  const virtualKeyedChildren = new Map()
-  virtualChildren.forEach(
-    (child) => child.dataset.key && virtualKeyedChildren.set(child.dataset.key, child)
+  const [existingKeyedChildren, virtualKeyedChildren] = [existingChildren, virtualChildren].map(
+    (children) =>
+      children.reduce((map, child) => {
+        child.dataset.key && map.set(child.dataset.key, child)
+        return map
+      }, new Map())
   )
 
   while (existingChildren.length && virtualChildren.length) {
-    const currentChild = existingChildren[0]
+    const currentChild = existingChildren[existingChildren.length - 1]
 
     // Keyed children that don't exist in new virtual DOM are removed. The rest are skipped until
     // encountered in the virtual DOM, unless the key matches the one on the 'nextChild' virtual
     // node - this minimizes the amount of reflows, as it allows us to keep the original node,
     // and ensures we do not lose focus on keyed inputs which did not move in the DOM.
-    if (currentChild.dataset.key && virtualChildren[0].dataset.key !== currentChild.dataset.key) {
+    if (
+      currentChild.dataset.key &&
+      virtualChildren[virtualChildren.length - 1].dataset.key !== currentChild.dataset.key
+    ) {
       !virtualKeyedChildren.has(currentChild.dataset.key) && existingNode.removeChild(currentChild)
-      existingChildren.shift()
+      existingChildren.pop()
       continue
     }
 
-    const nextChild = virtualChildren.shift()
+    const nextChild = virtualChildren.pop()
     if (nextChild.dataset.key) {
       const existingKeyedChild = existingKeyedChildren.get(nextChild.dataset.key)
       if (existingKeyedChild) {
@@ -69,7 +80,7 @@ const reconcile = (existingNode, virtualNode) => {
       // keyless are reconciled with the nearest keyless element
       const reconciled = reconcile(currentChild, nextChild)
       reconciled !== currentChild && existingNode.replaceChild(reconciled, currentChild)
-      existingChildren.shift()
+      existingChildren.pop()
     }
   }
 
@@ -78,12 +89,14 @@ const reconcile = (existingNode, virtualNode) => {
     (c) => !virtualKeyedChildren.has(c.dataset.key) && existingNode.removeChild(c)
   )
   // add what's left in virtual
-  virtualChildren.forEach((c) => {
+  let c = virtualChildren.pop()
+  while (c) {
     const existingKeyedChild = existingKeyedChildren.get(c.dataset.key)
     existingKeyedChild
       ? existingNode.appendChild(reconcile(existingKeyedChild, c))
       : existingNode.appendChild(c)
-  })
+    c = virtualChildren.pop()
+  }
 
   return existingNode
 }
@@ -107,7 +120,7 @@ const dispatch = (updater, message, payload) => {
     if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
       console.group(
         `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
-        'NAMELESS_ACTION'}`
+          'NAMELESS_ACTION'}`
       )
       console.log(previousState)
       console.log(nextState)
