@@ -30,7 +30,9 @@ const loadingAction = (type, message, optionalArgsObj) => ({
   type,
   payload: {message},
   reducer: (state, {message}) =>
-    Object.assign({}, state,
+    Object.assign(
+      {},
+      state,
       {
         loading: true,
         loadingMessage: message,
@@ -66,7 +68,6 @@ const loadWalletFromMnemonic = (mnemonic) => async () => {
       loading: false,
       currentWalletMnemonicOrSecret: '',
     },
-    reducer: (state, payload) => Object.assign({}, state, payload),
   })
 }
 
@@ -109,7 +110,6 @@ const reloadWalletInfo = () => async (getState) => {
       transactionHistory,
       loading: false,
     },
-    reducer: (state, payload) => Object.assign({}, state, payload),
   })
 }
 
@@ -122,23 +122,24 @@ const generateNewUnusedAddress = (offset) => async () => {
   const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
   dispatch({
     type: 'balance loaded',
-    reducer: (state) => Object.assign({}, state, {
-      unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
-    }),
+    reducer: (state) =>
+      Object.assign({}, state, {
+        unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
+      }),
   })
 }
 
 const toggleAboutOverlay = () => ({
   type: 'toggle about overlay',
-  reducer: (state) => Object.assign({}, state, {
-    displayAboutOverlay: !state.displayAboutOverlay,
-  }),
+  reducer: (state) =>
+    Object.assign({}, state, {
+      displayAboutOverlay: !state.displayAboutOverlay,
+    }),
 })
 
 const setCurrentTab = (currentTab) => ({
   type: 'set current tab',
   payload: {currentTab},
-  reducer: (state, payload) => Object.assign({}, state, payload),
 })
 
 const calculateFee = (address, amount) => async () => {
@@ -152,7 +153,6 @@ const calculateFee = (address, amount) => async () => {
   dispatch({
     type: 'fee loaded',
     payload: {fee, loading: false},
-    reducer: (state, payload) => Object.assign({}, state, payload),
   })
 }
 
@@ -168,7 +168,6 @@ const submitTransaction = (address, amount) => async () => {
   dispatch({
     type: 'transaction accomplishment loaded',
     payload: {sendSuccess, loading: false},
-    reducer: (state, payload) => Object.assign({}, state, payload),
   })
 }
 

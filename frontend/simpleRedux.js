@@ -91,26 +91,31 @@ const reconcile = (existingNode, virtualNode) => {
   return existingNode
 }
 
-// expects either a 'thunk' (async function / funciton returnin Promise)
-// or an object of following format, with all fields apart for the
-// 'reducer' optional (but it's a good practice to always provide type):
+// Expects either a 'thunk' (async function / funciton returnin Promise)
+// or an object of following format (shown with default values for each
+// ommited field):
 //
 // {
-//   type: 'debug message',
-//   path: ['to', 'the', 'part', 'of', 'state', 'manipulated', 'by', 'reducer'],
-//   payload: {data, passed, to, the, reducer},
-//   reducer: (state, payload) => {
-//     ...
-//     return newState
-//   },
+//   type: 'NAMELESS_ACTION',
+//   path: [],
+//   payload: undefined,
+//   reducer: (state, payload) => Object.assign({}, state, payload),
 // }
 //
+// Without reducer and path, the behaviour is similar to React's setState
 export const dispatch = (toBeDispatched) => {
   if (typeof toBeDispatched === 'function') {
     // emulate redux-thunk - inject a way to get current state, expect promise to be returned
-    return toBeDispatched(getState).catch((e) => {throw e})
+    return toBeDispatched(getState).catch((e) => {
+      throw e
+    })
   }
-  const {type, path, payload, reducer} = toBeDispatched
+  const {
+    type,
+    path,
+    payload,
+    reducer = (state, payload) => Object.assign({}, state, payload),
+  } = toBeDispatched
   const previousState = state
   let nextState = forwardReducerTo(reducer, path)(state, payload)
   try {
@@ -126,7 +131,7 @@ export const dispatch = (toBeDispatched) => {
     if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
       console.group(
         `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${type ||
-        'NAMELESS_ACTION'}`
+          'NAMELESS_ACTION'}`
       )
       console.log('Prev: ', previousState)
       console.log('Payload: ', payload)
