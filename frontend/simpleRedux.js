@@ -1,9 +1,12 @@
 /* eslint no-console: 0 */
+import {forwardReducerTo, setIn} from './helpers'
 
 const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
 
 let state, middlewares
 const root = {}
+
+const getState = () => state
 
 const reconcile = (existingNode, virtualNode) => {
   if (existingNode.tagName !== virtualNode.tagName) return virtualNode
@@ -88,12 +91,28 @@ const reconcile = (existingNode, virtualNode) => {
   return existingNode
 }
 
-// TODO(TK): make dispatch accept also 'payload' param, so it'll be updater, message, payload.
-// Updater's signature will then be (state, payload) => newState
-// message is optional, side-effects handled outside
-const dispatch = (updater, message, payload) => {
+// expects either a 'thunk' (async function / funciton returnin Promise)
+// or an object of following format, with all fields apart for the
+// 'reducer' optional (but it's a good practice to always provide type):
+//
+// {
+//   type: 'debug message',
+//   path: ['to', 'the', 'part', 'of', 'state', 'manipulated', 'by', 'reducer'],
+//   payload: {data, passed, to, the, reducer},
+//   reducer: (state, payload) => {
+//     ...
+//     return newState
+//   },
+// }
+//
+export const dispatch = (toBeDispatched) => {
+  if (typeof toBeDispatched === 'function') {
+    // emulate redux-thunk - inject a way to get current state, expect promise to be returned
+    return toBeDispatched(getState).catch((e) => {throw e})
+  }
+  const {type, path, payload, reducer} = toBeDispatched
   const previousState = state
-  let nextState = updater(state, payload)
+  let nextState = forwardReducerTo(reducer, path)(state, payload)
   try {
     middlewares.forEach((midFn) => {
       nextState = midFn(nextState, previousState)
@@ -106,38 +125,33 @@ const dispatch = (updater, message, payload) => {
 
     if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
       console.group(
-        `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${message ||
+        `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${type ||
         'NAMELESS_ACTION'}`
       )
-      console.log(previousState)
-      console.log(nextState)
+      console.log('Prev: ', previousState)
+      console.log('Payload: ', payload)
+      console.log('Next: ', nextState)
       console.groupEnd()
     }
   }
+  return undefined
 }
 
 // special action that serves as a minimal redux routing - we want the
 // route processed in state so we can react in middleware when it changes
-const routerAction = function(state) {
-  dispatch(
-    (state) =>
-      Object.assign({}, state, {
-        router: {
-          // assume we're pushing just paths
-          pathname: window.location.pathname,
-          hash: window.location.hash,
-        },
-      }),
-    'ROUTER ACTION'
-  )
-}
+const routerAction = (state) => ({
+  type: 'ROUTER ACTION',
+  path: ['router'],
+  reducer: () => ({
+    pathname: window.location.pathname,
+    hash: window.location.hash,
+  }),
+})
 
-const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
-  state = Object.assign({}, initialState, {
-    router: {
-      pathname: '',
-      hash: '',
-    },
+export const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
+  state = setIn(initialState, ['router'], {
+    pathname: '',
+    hash: '',
   })
   middlewares = middlewareArray
   Object.assign(root, {
@@ -156,9 +170,4 @@ const init = (initialState, middlewareArray, rootComponent, rootTarget) => {
     console.log('initial state', initialState)
   }
   root.target.innerHTML = root.component(initialState, {})
-}
-
-module.exports = {
-  init,
-  dispatch,
 }
