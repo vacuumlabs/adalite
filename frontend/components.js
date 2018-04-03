@@ -3,7 +3,7 @@
 // higher-order components should return component functions (or other HOCs)
 
 const {
-  execute,
+  executeAction,
   loadWalletFromMnemonic,
   generateMnemonic,
   reloadWalletInfo,
@@ -26,7 +26,7 @@ const Unlock = (state) => `
   state.currentWalletMnemonicOrSecret
 }">
   </label>
-  <button onclick="${execute(
+  <button onclick="${executeAction(
     loadWalletFromMnemonic,
     "document.getElementById('mnemonic-submitted').value"
   )}">Load wallet</button>
@@ -38,7 +38,7 @@ const NewMnemonic = (state) => `
   <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic"  value="${
   state.newWalletMnemonic
 }" />
-  <button onclick="${execute(generateMnemonic)}">Generate</button>
+  <button onclick="${executeAction(generateMnemonic)}">Generate</button>
 </div>
 `
 
@@ -56,8 +56,8 @@ const WalletHeader = (state) => `
 }" />
     ${Balance(state)}
     <p>
-      <button onclick="${execute(reloadWalletInfo)}">Reload Wallet Info</button>
-      <button class="danger" onclick="${execute(logout)}">Close the wallet</button>
+      <button onclick="${executeAction(reloadWalletInfo)}">Reload Wallet Info</button>
+      <button class="danger" onclick="${executeAction(logout)}">Close the wallet</button>
     </p>
   </div>
 `
@@ -91,7 +91,7 @@ const UnusedAddressesList = (state) => {
     ''
   )}
     <button ${disableGettingNewAddresses ? 'disabled="disabled"' : ''} 
-    onclick="${execute(generateNewUnusedAddress, state.unusedAddresses.length)}">Get one more</button>
+    onclick="${executeAction(generateNewUnusedAddress, state.unusedAddresses.length)}">Get one more</button>
   </div>
 `
 }
@@ -124,7 +124,7 @@ const TransactionHistory = (state) => `
 `
 
 const Fee = (state) => `
-  <button onclick="${execute(
+  <button onclick="${executeAction(
     calculateFee,
     "document.getElementById('send-address').value",
     "parseFloat(document.getElementById('send-amount').value) * 1000000"
@@ -149,11 +149,11 @@ const SendAda = (state) => `
   </label>
   <label>
     <span>Amount</span> <input type="number" id="send-amount" name="send-amount" size="8" step="0.5" min="0.000001" value="${state.sendAmount /
-      1000000.0}"> ADA
+  1000000.0}"> ADA
   </label>
   <small> The amount does not include the transaction fee! </small>
   <p>
-  <button onclick="${execute(
+  <button onclick="${executeAction(
     submitTransaction,
     "document.getElementById('send-address').value",
     "parseFloat(document.getElementById('send-amount').value)"
@@ -192,18 +192,18 @@ const Navbar = (state) => `
   <div class="navbar">
     <div class="navbar-wrap">
       <a class="title" href="/"><img src="/assets/logo.png" />
-      CardanoLite Wallet<sup>⍺</sup>
+      <span>CardanoLite Wallet</span><sup>⍺</sup>
       </a>
       <label class="navcollapse-label" for="navcollapse">Menu</label>
       <input id="navcollapse" type="checkbox" />
       <nav>
-        <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'new-wallet\'')}">
+        <a class="${state.currentTab === 'new-wallet' && 'active'}" href="#" onclick="${executeAction(setCurrentTab, '\'new-wallet\'')}">
           New Wallet
         </a>
-        <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'wallet-info\'')}">
+        <a class="${state.currentTab === 'wallet-info' && 'active'}" href="#" onclick="${executeAction(setCurrentTab, '\'wallet-info\'')}">
           Wallet Info
         </a>
-        <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${execute(setCurrentTab, '\'send-ada\'')}">
+        <a class="${state.currentTab === 'send-ada' && 'active'}" href="#" onclick="${executeAction(setCurrentTab, '\'send-ada\'')}">
           Send Ada
         </a>
         <a href="https://github.com/vacuumlabs/cardano" target="_blank">
@@ -218,7 +218,7 @@ const AboutOverlay = (state) =>
   state.displayAboutOverlay
     ? `
     <div class="overlay">
-      <div class="overlay-close-layer" onclick=${execute(toggleAboutOverlay)}></div>
+      <div class="overlay-close-layer" onclick=${executeAction(toggleAboutOverlay)}></div>
       <div class="box text">
         <h2> Disclaimer: CardanoLite is not created by Cardano Foundation. </h2>
         <p> The official Cardano team did not review this code and is not responsible for any damage
