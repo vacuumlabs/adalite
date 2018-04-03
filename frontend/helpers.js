@@ -1,11 +1,10 @@
-import assert from 'assert'
-
 const {CARDANOLITE_CONFIG: {CARDANOLITE_ENABLE_DEBUGGING}} = require('./frontendConfigLoader')
 
 const _hasOwnProp = (obj, key) => {
   if (CARDANOLITE_ENABLE_DEBUGGING) {
-    assert(typeof key === 'string' || typeof key === 'number', 'bad key type')
-    assert(key !== '', 'empty key') // empty key is a terrible idea in general
+    if ((typeof key === 'string' || typeof key === 'number') || (key !== '')) {
+      throw new Error('Invalid or empty key: ', key)
+    }
   }
   // Fun fact: "ab".hasOwnProperty(1) -> true
   if (typeof obj !== 'object') return false
