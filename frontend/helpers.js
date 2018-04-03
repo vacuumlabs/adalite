@@ -2,7 +2,7 @@ const {CARDANOLITE_CONFIG: {CARDANOLITE_ENABLE_DEBUGGING}} = require('./frontend
 
 const _hasOwnProp = (obj, key) => {
   if (CARDANOLITE_ENABLE_DEBUGGING) {
-    if ((typeof key === 'string' || typeof key === 'number') || (key !== '')) {
+    if ((typeof key !== 'string' && typeof key !== 'number') || (key === '')) {
       throw new Error('Invalid or empty key: ', key)
     }
   }

@@ -103,10 +103,11 @@ const reconcile = (existingNode, virtualNode) => {
 // }
 //
 // Without reducer and path, the behaviour is similar to React's setState
+// Always returns a promise - in case of sync actions resolved to undefined
 export const dispatch = (toBeDispatched) => {
   if (typeof toBeDispatched === 'function') {
-    // emulate redux-thunk - inject a way to get current state, expect promise to be returned
-    return toBeDispatched(getState).catch((e) => {
+    // emulate redux-thunk - inject a way to get current state
+    return Promise.resolve(toBeDispatched({getState})).catch((e) => {
       throw e
     })
   }
@@ -131,7 +132,7 @@ export const dispatch = (toBeDispatched) => {
     if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true') {
       console.group(
         `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}.${t.getMilliseconds()} ${type ||
-          'NAMELESS_ACTION'}`
+        'NAMELESS_ACTION'}`
       )
       console.log('Prev: ', previousState)
       console.log('Payload: ', payload)
@@ -139,7 +140,7 @@ export const dispatch = (toBeDispatched) => {
       console.groupEnd()
     }
   }
-  return undefined
+  return Promise.resolve(undefined)
 }
 
 // special action that serves as a minimal redux routing - we want the

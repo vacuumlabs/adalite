@@ -1,5 +1,3 @@
-// actions are just functions which also call update
-
 const {CARDANOLITE_CONFIG} = require('./frontendConfigLoader')
 const Cardano = require('../wallet/cardano-wallet')
 const {dispatch} = require('./simpleRedux.js')
@@ -10,21 +8,29 @@ let wallet = null
 const executeKey = '__cardano__global_fns'
 window[executeKey] = {}
 
+// mapped by functions themselves
 const fnNames = new Map()
-// first arg is function to be called, rest of the arguments are to be passed inside fn.
-function execute(fn, ...stringArgs) {
-  if (fnNames.get(fn) == null) {
-    const name = `function_number_${counter++}`
-    fnNames.set(fn, name)
+// since they're enclosed by dispatch, mapped by actionCreators
+const actionNames = new Map()
+
+// explicit key with explicit function map
+const _exec = (key, fn, map, ...stringArgs) => {
+  let name = map.get(key)
+  if (!name) {
+    name = `function_number_${counter++}`
+    map.set(key, name)
     window[executeKey][name] = fn
   }
-  const name = fnNames.get(fn)
   const argStr = stringArgs.join(', ')
   return `window['${executeKey}']['${name}'](${argStr})`
 }
 
+// first arg is function to be called, rest of the arguments are to be passed inside fn.
+const execute = (fn, ...stringArgs) => _exec(fn, fn, fnNames, ...stringArgs)
+
+// action dispatched automatically
 const executeAction = (action, ...stringArgs) =>
-  execute((...args) => dispatch(action(...args)), ...stringArgs)
+  _exec(action, (...args) => dispatch(action(...args)), actionNames, ...stringArgs)
 
 const loadingAction = (type, message, optionalArgsObj) => ({
   type,
@@ -91,7 +97,7 @@ const logout = () => ({
   },
 })
 
-const reloadWalletInfo = () => async (getState) => {
+const reloadWalletInfo = () => async ({getState}) => {
   dispatch(loadingAction('loading balance', 'Reloading wallet info...'))
 
   const balance = await wallet.getBalance()
