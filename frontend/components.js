@@ -192,7 +192,7 @@ const Navbar = (state) => `
   <div class="navbar">
     <div class="navbar-wrap">
       <a class="title" href="/"><img src="/assets/logo.png" />
-      <span>CardanoLite Wallet</span><sup>⍺</sup>
+      CardanoLite Wallet<sup>⍺</sup>
       </a>
       <label class="navcollapse-label" for="navcollapse">Menu</label>
       <input id="navcollapse" type="checkbox" />

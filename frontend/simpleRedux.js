@@ -14,11 +14,43 @@ const createReverseArray = (nodeChildren) => {
 }
 
 const reconcile = (existingNode, virtualNode) => {
+  // sanity check - we should only reconcile element and text nodes
+  if (
+    [existingNode, virtualNode].reduce(
+      (acc, n) => acc || [document.ELEMENT_NODE, document.TEXT_NODE].indexOf(n.nodeType) === -1,
+      false
+    )
+  ) {
+    console.error('Found a non-element, non-text node during reconciliation')
+    console.error('Previous node: ', existingNode)
+    console.error('New node: ', virtualNode)
+    throw new Error('Invalid node')
+  }
+
   if (existingNode.tagName !== virtualNode.tagName) return virtualNode
 
+  // handle TextNodes - at this point both nodes are of the same type
+  if (existingNode.nodeType === document.TEXT_NODE) {
+    return existingNode.nodeValue !== virtualNode.nodeValue ? virtualNode : existingNode
+  }
+
   // arrays reversed so that we can process children from their tail using pop
-  const [existingChildren, virtualChildren] = [existingNode.children, virtualNode.children].map(
-    (children) => createReverseArray(children).filter((n) => n instanceof HTMLElement)
+  const [existingChildren, virtualChildren] = [existingNode.childNodes, virtualNode.childNodes].map(
+    (children) =>
+      createReverseArray(children)
+        .filter((n) => {
+          // only deal with element and non-empty text nodes - the rest are ignored
+          if (n.nodeType === document.ELEMENT_NODE) return n
+          if (n.nodeType === document.TEXT_NODE && /\S/.test(n.nodeValue)) return n
+          return false
+        })
+        .map((n) => {
+          if (n.nodeType === document.TEXT_NODE) {
+            // fake empty dataset on text nodes, so that we don't need to check for it's existence
+            n.dataset = {}
+          }
+          return n
+        })
   )
 
   // attributes is a NamedNodeMap, which does not support same api as an array
