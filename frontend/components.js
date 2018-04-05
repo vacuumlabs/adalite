@@ -7,6 +7,9 @@ import {RefreshIcon, ExitIcon} from './svg'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
+const Tooltip = ({content, text}) =>
+  h('span', {class: 'with-tooltip'}, content, h('span', {class: 'tooltip'}, text))
+
 class UnlockClass extends Component {
   constructor(props) {
     super(props)
@@ -110,15 +113,69 @@ const Balance = connect('balance')(({balance}) =>
   )
 )
 
-const Address = (adr, isTransaction) =>
+class CopyOnClick extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {tooltip: 'Copy to clipboard'}
+    this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(this)
+    this.copyTextToClipboard = this.copyTextToClipboard.bind(this)
+  }
+
+  fallbackCopyTextToClipboard() {
+    const input = document.createElement('textarea')
+    input.value = this.props.value
+    input.style.zIndex = '-1'
+    input.style.position = 'fixed'
+    input.style.top = '0'
+    input.style.left = '0'
+    document.body.appendChild(input)
+    input.focus()
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+  }
+
+  async copyTextToClipboard() {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(this.props.value)
+      } else {
+        this.fallbackCopyTextToClipboard()
+      }
+      this.setState({tooltip: 'Copied!'})
+    } catch (err) {
+      console.error('Could not copy text: ', err)
+    }
+  }
+
+  render({value}, {tooltip}) {
+    return h(Tooltip, {
+      text: tooltip,
+      content: h(
+        'span',
+        {
+          class: 'copy',
+          onClick: this.copyTextToClipboard,
+          onMouseLeave: () => this.setState({tooltip: 'Copy to clipboard'}),
+        },
+        ''
+      ),
+    })
+  }
+}
+
+const Address = ({address, isTransaction}) =>
   h(
     'div',
     {class: 'address-wrap'},
-    h('input', {readonly: true, type: 'text', class: 'address', value: adr}),
-    h('a', {
-      href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${adr}`,
-      target: '_blank',
-      title: 'examine via CardanoExplorer.com',
+    h('input', {readonly: true, type: 'text', class: 'address', value: address}),
+    h(CopyOnClick, {value: address}),
+    h(Tooltip, {
+      content: h('a', {
+        href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
+        target: '_blank',
+      }),
+      text: 'Examine via CardanoExplorer.com',
     })
   )
 
@@ -127,7 +184,7 @@ const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
     'div',
     {class: ''},
     h('h2', undefined, 'Already Used Addresses'),
-    ...usedAddresses.map((adr) => Address(adr))
+    ...usedAddresses.map((adr) => h(Address, {address: adr})),
   )
 )
 
@@ -139,7 +196,7 @@ const UnusedAddressesList = connect('unusedAddresses', actions)(
       'div',
       {class: ''},
       h('h2', undefined, 'Unused Addresses'),
-      ...unusedAddresses.map((adr) => Address(adr)),
+      ...unusedAddresses.map((adr) => h(Address, {address: adr})),
       h(
         'button',
         {
@@ -176,18 +233,19 @@ const PrettyValue = ({effect}) => {
   )
 }
 
-const TransactionAddress = ({address}) => {
-  return h(
-    'a',
-    {
-      class: 'transaction-id',
-      href: `https://cardanoexplorer.com/tx/${address}`,
-      target: '_blank',
-      title: 'Examine via CardanoExplorer.com',
-    },
-    address
-  )
-}
+const TransactionAddress = ({address}) =>
+  h(Tooltip, {
+    content: h(
+      'a',
+      {
+        class: 'transaction-id',
+        href: `https://cardanoexplorer.com/tx/${address}`,
+        target: '_blank',
+      },
+      address
+    ),
+    text: 'Examine via CardanoExplorer.com',
+  })
 
 const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
   h(
