@@ -28,7 +28,7 @@ init(
       title: 'Wrong mnemonic',
       hint: 'Hint: Ensure that your mnemonic is without mistake.',
     },
-    displayAboutOverlay: false,
+    displayAboutOverlay: true,
     currentTab: 'wallet-info',
     activeWalletId: null,
     currentWalletMnemonicOrSecret:
