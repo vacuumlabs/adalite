@@ -22,6 +22,7 @@ async function filterUsed(arr, callback) {
 }
 
 const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
+  address.clearAddressCache()
   const blockchainExplorer = blockchainExplorerObject(CARDANOLITE_CONFIG)
 
   const rootSecret =
@@ -189,7 +190,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
         return Math.max(item.childIndex, acc)
       }, 0), 0x80000000)
 
-      result = address.deriveAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset)
+      result = address.getAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset)
         .address
     } else {
       result =
@@ -257,7 +258,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
   ) {
     const result = []
     for (let i = begin; i < end; i++) {
-      result.push(address.deriveAddressAndSecret(rootSecret, 0x80000001 + i))
+      result.push(address.getAddressAndSecret(rootSecret, 0x80000001 + i))
     }
 
     return result
@@ -318,4 +319,4 @@ if (typeof window !== 'undefined') {
   window.CardanoWallet = exports.CardanoWallet
 }
 
-module.exports = {CardanoWallet, generateMnemonic, txFeeFunction}
+module.exports = {CardanoWallet, generateMnemonic, txFeeFunction, clearCache: address.clearAddressCache}
