@@ -37,7 +37,7 @@ const loadWalletFromMnemonic = async (mnemonic) => {
 
   wallet = Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
 
-  const activeWalletId = wallet.getId()
+  const activeWalletId = await wallet.getId()
   const usedAddresses = await wallet.getUsedAddresses()
   const unusedAddresses = [await wallet.getChangeAddress()]
   const transactionHistory = await wallet.getHistory()

@@ -70,14 +70,14 @@ function multiply8(buf) {
   return new Buffer(result, 'hex')
 }
 
-function getAddressAndSecret(rootSecretString, childIndex) {
+async function getAddressAndSecret(rootSecretString, childIndex) {
   if (!addressCache[childIndex]) {
-    addressCache[childIndex] = deriveAddressAndSecret(rootSecretString, childIndex)
+    addressCache[childIndex] = await deriveAddressAndSecret(rootSecretString, childIndex)
   }
   return addressCache[childIndex]
 }
 
-function deriveAddressAndSecret(rootSecretString, childIndex) {
+async function deriveAddressAndSecret(rootSecretString, childIndex) {
   let addressPayload, addressAttributes, derivedSecretString, addressRoot
 
   if (childIndex === 0x80000000) {
@@ -88,7 +88,7 @@ function deriveAddressAndSecret(rootSecretString, childIndex) {
     addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   } else {
     // the remaining addresses
-    const hdPassphrase = deriveHDPassphrase(rootSecretString)
+    const hdPassphrase = await deriveHDPassphrase(rootSecretString)
     derivedSecretString = deriveSK(rootSecretString, childIndex)
     const derivationPath = [0x80000000, childIndex]
 
@@ -114,13 +114,13 @@ function deriveAddressAndSecret(rootSecretString, childIndex) {
   }
 }
 
-function deriveAddress(rootSecretString, childIndex) {
-  return getAddressAndSecret(rootSecretString, childIndex).address
+async function deriveAddress(rootSecretString, childIndex) {
+  return (await getAddressAndSecret(rootSecretString, childIndex)).address
 }
 
-function isAddressDerivableFromSecretString(address, rootSecretString) {
+async function isAddressDerivableFromSecretString(address, rootSecretString) {
   try {
-    deriveSecretStringFromAddress(address, rootSecretString)
+    await deriveSecretStringFromAddress(address, rootSecretString)
     return true
   } catch (e) {
     if (e.name === 'AddressDecodingException') {
@@ -131,18 +131,18 @@ function isAddressDerivableFromSecretString(address, rootSecretString) {
   }
 }
 
-function deriveSecretStringFromAddress(address, rootSecretString) {
+async function deriveSecretStringFromAddress(address, rootSecretString) {
   // we decode the address from the base58 string
   // and then we strip the 24 CBOR data taga (the "[0].value" part)
   const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
   const addressData = cbor.decode(addressAsBuffer)
   const addressAttributes = addressData[1]
   const addressPayload = cbor.decode(addressAttributes.get(1))
-  const hdPassphrase = deriveHDPassphrase(rootSecretString)
+  const hdPassphrase = await deriveHDPassphrase(rootSecretString)
   const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
   const childIndex = addressAttributes.length === 0 ? 0x80000000 : derivationPath[1]
 
-  return getAddressAndSecret(rootSecretString, childIndex).secret
+  return (await getAddressAndSecret(rootSecretString, childIndex)).secret
 }
 
 function deriveSK(rootSecretString, childIndex) {
@@ -193,14 +193,20 @@ function getCheckSum(input) {
   return crc32.buf(input) >>> 0
 }
 
-function deriveHDPassphrase(walletSecretString) {
+async function deriveHDPassphrase(walletSecretString) {
   const extendedPublicKey = new Buffer(
     walletSecretString.getPublicKey() + walletSecretString.getChainCode(),
     'hex'
   )
-
-  const derivedKey = pbkdf2.pbkdf2Sync(extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
-  return new Buffer(derivedKey.toString('hex'), 'hex')
+  function derivedKey() {
+    return new Promise((resolveFunction, rejectFunction) => {
+      pbkdf2.pbkdf2(extendedPublicKey, 'address-hashing', 500, 32, 'sha512', (error, response) => {
+        if (error) {rejectFunction(error)}
+        resolveFunction(response)
+      })
+    })
+  }
+  return new Buffer((await derivedKey()).toString('hex'), 'hex')
 }
 
 function deriveSkIteration(parentSecretString, childIndex) {

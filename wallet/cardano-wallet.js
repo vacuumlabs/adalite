@@ -43,8 +43,8 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     return rootSecret
   }
 
-  function getId() {
-    return address.deriveAddress(rootSecret, 0x80000000)
+  async function getId() {
+    return await address.deriveAddress(rootSecret, 0x80000000)
   }
 
   async function prepareTx(address, coins) {
@@ -190,7 +190,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
         return Math.max(item.childIndex, acc)
       }, 0), 0x80000000)
 
-      result = address.getAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset)
+      result = (await address.getAddressAndSecret(rootSecret, highestUsedChildIndex + 1 + offset))
         .address
     } else {
       result =
@@ -227,7 +227,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
 
     for (let i = 0; ; i++) {
       const usedAddresses = await filterUsed(
-        deriveAddressesAndSecrets(i * gapLength, (i + 1) * gapLength),
+        await deriveAddressesAndSecrets(i * gapLength, (i + 1) * gapLength),
         async (addressData) => {
           return await blockchainExplorer.isAddressUsed(addressData.address)
         }
@@ -243,22 +243,22 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     return result
   }
 
-  function deriveAddresses(
+  async function deriveAddresses(
     begin = 0,
     // eslint-disable-next-line no-undef
     end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
   ) {
-    return deriveAddressesAndSecrets(begin, end).map((item) => item.address)
+    return (await deriveAddressesAndSecrets(begin, end)).map((item) => item.address)
   }
 
-  function deriveAddressesAndSecrets(
+  async function deriveAddressesAndSecrets(
     begin = 0,
     // eslint-disable-next-line no-undef
     end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
   ) {
     const result = []
     for (let i = begin; i < end; i++) {
-      result.push(address.getAddressAndSecret(rootSecret, 0x80000001 + i))
+      result.push(await address.getAddressAndSecret(rootSecret, 0x80000001 + i))
     }
 
     return result

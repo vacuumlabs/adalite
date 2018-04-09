@@ -153,22 +153,22 @@ describe('test private key derivation', () => {
 
 describe('test address generation from secret key', () => {
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
-  it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", () => {
-    const derivedAddress1 = address.getAddressAndSecret(secret2, childIndex1).address
+  it("should properly generate root public address (the one used as 'wallet id' in Daedalus)",async () => {
+    const derivedAddress1 = (await address.getAddressAndSecret(secret2, childIndex1)).address
     assert.equal(derivedAddress1, expectedAddress1)
   })
 
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
-  it('should properly generate some address from hardened key - child index starts with 1 in binary', () => {
-    const derivedAddress2 = address.getAddressAndSecret(secret2, childIndex2).address
+  it('should properly generate some address from hardened key - child index starts with 1 in binary',async () => {
+    const derivedAddress2 = (await address.getAddressAndSecret(secret2, childIndex2)).address
     assert.equal(derivedAddress2, expectedAddress2)
   })
 
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
-  it('should properly generate some address from nonhardened key - child index starts with 0 in binary', () => {
-    const derivedAddress3 = address.getAddressAndSecret(secret2, childIndex3).address
+  it('should properly generate some address from nonhardened key - child index starts with 0 in binary',async () => {
+    const derivedAddress3 = (await address.getAddressAndSecret(secret2, childIndex3)).address
     assert.equal(derivedAddress3, expectedAddress3)
   })
 })
@@ -176,14 +176,14 @@ describe('test address generation from secret key', () => {
 describe('test address ownership verification', () => {
   const ownAddress =
     'DdzFFzCqrhsoStdHaBGfa5ZaLysiTnVuu7SHRcJvvu4yKg94gVBx3TzEV9CjphrFxLhnu1DJUKm2kdcrxYDZBGosrv4Gq3HuiFWRYVdZ'
-  it('should accept own address', () => {
-    assert.equal(address.isAddressDerivableFromSecretString(ownAddress, secret2), true)
+  it('should accept own address',async () => {
+    assert.equal(await address.isAddressDerivableFromSecretString(ownAddress, secret2), true)
   })
 
   const foreignAddress =
     'DdzFFzCqrht1Su7MEaCbFUcKpZnqQp5aUudPjrJZ2h8YADJBDvpsXZk9BducpXcSgujYJGKaTuZye9hb9z3Hff42TXDft5yrsKka6rDW'
-  it('should reject foreign address', () => {
-    assert.equal(address.isAddressDerivableFromSecretString(foreignAddress, secret2), false)
+  it('should reject foreign address',async  () => {
+    assert.equal(await address.isAddressDerivableFromSecretString(foreignAddress, secret2), false)
   })
 })
 
@@ -213,8 +213,8 @@ describe('test wallet addresses derivation', () => {
 
   const walletAddresses = wallet.deriveAddresses(0, 20)
 
-  it('should derive the right sequence of addresses from the root secret key', () => {
-    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
+  it('should derive the right sequence of addresses from the root secret key',async () => {
+    assert.equal(JSON.stringify(await walletAddresses), JSON.stringify(expectedWalletAddresses))
   })
 })
 
