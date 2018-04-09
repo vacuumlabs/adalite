@@ -73,7 +73,7 @@ function extendSecretToSecretKey(secret) {
 }
 
 function mnemonicToHashSeed(mnemonic) {
-  if (!bip39.validateMnemonic(mnemonic)) {
+  if (mnemonic === '' || !bip39.validateMnemonic(mnemonic)) {
     const e = new Error('Mnemonic with invalid checksum')
     e.name = 'InvalidArgumentException'
     throw e
