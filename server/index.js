@@ -50,6 +50,9 @@ const isBrowserSupported = (userAgent) => {
   )
 }
 
+require('./blockchainExplorerProxy')(app)
+require('./transactionSubmitter')(app)
+
 app.get('*', (req, res) => {
   if (isBrowserSupported(req.headers['user-agent'])) {
     return res.status(200).send(`
@@ -93,9 +96,6 @@ app.get('*', (req, res) => {
     `)
   }
 })
-
-require('./blockchainExplorerProxy')(app)
-require('./transactionSubmitter')(app)
 
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
