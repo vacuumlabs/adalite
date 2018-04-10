@@ -45,6 +45,7 @@ const loadWalletFromMnemonic = async (mnemonic) => {
   const sendAmount = 0
   const sendAddress = ''
   const sendSuccess = ''
+
   dispatch(
     (state) =>
       Object.assign({}, state, {
@@ -79,7 +80,6 @@ const generateMnemonic = () => {
 
 const logout = () => {
   dispatch((state) => Object.assign({}, state, {activeWalletId: null}), 'close the wallet')
-  Cardano.clearCache()
   wallet = null
 }
 

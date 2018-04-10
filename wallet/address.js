@@ -13,11 +13,7 @@ const sha3 = require('js-sha3')
 
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const tx = require('./transaction')
-let addressCache = {}
 
-function clearAddressCache() {
-  addressCache = {}
-}
 
 function addressHash(input) {
   const serializedInput = cbor.encode(input)
@@ -70,13 +66,6 @@ function multiply8(buf) {
   return new Buffer(result, 'hex')
 }
 
-async function getAddressAndSecret(rootSecretString, childIndex) {
-  if (!addressCache[childIndex]) {
-    addressCache[childIndex] = await deriveAddressAndSecret(rootSecretString, childIndex)
-  }
-  return addressCache[childIndex]
-}
-
 async function deriveAddressAndSecret(rootSecretString, childIndex) {
   let addressPayload, addressAttributes, derivedSecretString, addressRoot
 
@@ -114,10 +103,6 @@ async function deriveAddressAndSecret(rootSecretString, childIndex) {
   }
 }
 
-async function deriveAddress(rootSecretString, childIndex) {
-  return (await getAddressAndSecret(rootSecretString, childIndex)).address
-}
-
 async function isAddressDerivableFromSecretString(address, rootSecretString) {
   try {
     await deriveSecretStringFromAddress(address, rootSecretString)
@@ -142,7 +127,7 @@ async function deriveSecretStringFromAddress(address, rootSecretString) {
   const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
   const childIndex = addressAttributes.length === 0 ? 0x80000000 : derivationPath[1]
 
-  return (await getAddressAndSecret(rootSecretString, childIndex)).secret
+  return (await deriveAddressAndSecret(rootSecretString, childIndex)).secret
 }
 
 function deriveSK(rootSecretString, childIndex) {
@@ -259,11 +244,9 @@ function indexIsHardened(childIndex) {
 }
 
 module.exports = {
-  getAddressAndSecret,
-  deriveAddress,
+  deriveAddressAndSecret,
   isAddressDerivableFromSecretString,
   deriveSecretStringFromAddress,
   deriveSK,
   encryptDerivationPath,
-  clearAddressCache,
 }

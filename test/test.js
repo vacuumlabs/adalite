@@ -154,21 +154,21 @@ describe('test private key derivation', () => {
 describe('test address generation from secret key', () => {
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)",async () => {
-    const derivedAddress1 = (await address.getAddressAndSecret(secret2, childIndex1)).address
+    const derivedAddress1 = (await address.deriveAddressAndSecret(secret2, childIndex1)).address
     assert.equal(derivedAddress1, expectedAddress1)
   })
 
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
   it('should properly generate some address from hardened key - child index starts with 1 in binary',async () => {
-    const derivedAddress2 = (await address.getAddressAndSecret(secret2, childIndex2)).address
+    const derivedAddress2 = (await address.deriveAddressAndSecret(secret2, childIndex2)).address
     assert.equal(derivedAddress2, expectedAddress2)
   })
 
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
   it('should properly generate some address from nonhardened key - child index starts with 0 in binary',async () => {
-    const derivedAddress3 = (await address.getAddressAndSecret(secret2, childIndex3)).address
+    const derivedAddress3 = (await address.deriveAddressAndSecret(secret2, childIndex3)).address
     assert.equal(derivedAddress3, expectedAddress3)
   })
 })
