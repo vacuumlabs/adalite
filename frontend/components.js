@@ -22,7 +22,7 @@ const Unlock = (state) => `
   <h2 class="label">Load Wallet</h2>
   <label>
     <span>Mnemonic</span>
-    <input type="text" id="mnemonic-submitted" class="address" name="mnemonic-submitted" size="47" value="${
+    <input type="text" id="mnemonic-submitted" class="address" name="mnemonic-submitted" autocomplete="nope" size="47" value="${
   state.currentWalletMnemonicOrSecret
 }">
   </label>
@@ -35,7 +35,7 @@ const Unlock = (state) => `
 const NewMnemonic = (state) => `
 <div class="box">
   <h2>New Wallet Mnemonic</h2>
-  <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic"  value="${
+  <input type="text" class="address" placeholder="Press 'Generate' to create new mnenomonic" autocomplete="nope" value="${
   state.newWalletMnemonic
 }" />
   <button onclick="${execute(generateMnemonic)}">Generate</button>
