@@ -20,6 +20,9 @@ if (config.CARDANOLITE_FORCE_HTTPS === 'true') {
   })
 }
 
+require('./blockchainExplorerProxy')(app)
+require('./transactionSubmitter')(app)
+
 app.get('*', (req, res) => {
   return res.status(200).send(`
     <!doctype html>
@@ -40,9 +43,6 @@ app.get('*', (req, res) => {
     </html>
   `)
 })
-
-require('./blockchainExplorerProxy')(app)
-require('./transactionSubmitter')(app)
 
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
