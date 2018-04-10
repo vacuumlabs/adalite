@@ -132,6 +132,8 @@ const UnusedAddressesList = connect('unusedAddresses')(({unusedAddresses}) =>
   )
 )
 
+const Addresses = () => h('div', undefined, h(UnusedAddressesList), h(UsedAddressesList))
+
 const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
   h(
     'div',
@@ -232,39 +234,56 @@ const SendAda = connect(['sendSuccess', 'sendAddress', 'sendAmount'])(
 // ${Fee(state)}
 // </p>
 
-const WalletInfo = () =>
-  h(
-    'div',
-    undefined,
-    h(WalletHeader),
-    h(UnusedAddressesList),
-    h(UsedAddressesList),
-    h(TransactionHistory)
-  )
+const WalletInfo = () => h('div', undefined, h(WalletHeader), h(TransactionHistory))
 
 const SendAdaScreen = () => h('div', undefined, h(WalletHeader), h(SendAda))
 
-const Index = connect((state) => ({
+const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
   activeWalletId: state.activeWalletId,
 }))(({pathname, activeWalletId}) => {
+  if (!activeWalletId) return h(Unlock)
   const currentTab = pathname.split('/')[1]
   switch (currentTab) {
-    case 'new-wallet':
-      return h(NewMnemonic)
-    case 'wallet-info':
-      return activeWalletId ? h(WalletInfo) : h(Unlock)
-    case 'send-ada':
-      return activeWalletId ? h(SendAdaScreen) : h(Unlock)
+    case 'dashboard':
+      return h(WalletInfo)
+    case 'receive':
+      return h(Addresses)
+    case 'send':
+      return h(SendAdaScreen)
     default:
-      return activeWalletId ? h(WalletInfo) : h(Unlock)
+      return h(WalletInfo)
   }
 })
 
-const Navbar = connect((state) => ({
+const NavbarUnauth = () =>
+  h(
+    'div',
+    {class: 'navbar'},
+    h(
+      'div',
+      {class: 'navbar-wrap'},
+      h(
+        'a',
+        {class: 'title', href: '/'},
+        h('img', {src: '/assets/logo.png'}),
+        h('span', undefined, 'CardanoLite Wallet'),
+        h('sup', undefined, '⍺')
+      ),
+      h('label', {class: 'navcollapse-label', for: 'navcollapse'}, 'Menu'),
+      h('input', {id: 'navcollapse', type: 'checkbox'}),
+      h(
+        'nav',
+        undefined,
+        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'About')
+      )
+    )
+  )
+
+const NavbarAuth = connect((state) => ({
   pathname: state.router.pathname,
   activeWalletId: state.activeWalletId,
-}))(({pathname}) => {
+}))(({pathname, activeWalletId}) => {
   const {history: {pushState}} = window
   const currentTab = pathname.split('/')[1]
   return h(
@@ -288,32 +307,36 @@ const Navbar = connect((state) => ({
         h(
           'a',
           {
-            class: currentTab === 'new-wallet' && 'active',
-            onClick: () => pushState({}, 'new-wallet', 'new-wallet'),
+            class: currentTab === 'dashboard' && 'active',
+            onClick: () => pushState({}, 'dashboard', 'dashboard'),
           },
-          'New Wallet'
+          'Dashboard'
         ),
         h(
           'a',
           {
-            class: currentTab === 'wallet-info' && 'active',
-            onClick: () => pushState({}, 'wallet-info', 'wallet-info'),
+            class: currentTab === 'send' && 'active',
+            onClick: () => pushState({}, 'send', 'send'),
           },
-          'Wallet Info'
+          'Send'
         ),
         h(
           'a',
           {
-            class: currentTab === 'send-ada' && 'active',
-            onClick: () => pushState({}, 'send-ada', 'send-ada'),
+            class: currentTab === 'receive' && 'active',
+            onClick: () => pushState({}, 'receive', 'receive'),
           },
-          'Send Ada'
+          'Receive'
         ),
-        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'About')
+        h('span', undefined, 'Placeholder')
       )
     )
   )
 })
+
+const Navbar = connect((state) => ({
+  activeWalletId: state.activeWalletId,
+}))(({activeWalletId}) => (activeWalletId ? h(NavbarAuth) : h(NavbarUnauth)))
 
 const AboutOverlay = connect('displayAboutOverlay', actions)(
   ({displayAboutOverlay, toggleAboutOverlay}) =>
@@ -413,13 +436,13 @@ const Footer = () =>
     )
   )
 
-export const TopLevelRouter = () =>
+export const App = () =>
   h(
     'div',
     {class: 'wrap'},
     h(AboutOverlay),
     h(Loading),
     h(Navbar),
-    h('main', {class: 'main'}, h(Alert), h(Index)),
+    h('main', {class: 'main'}, h(Alert), h(TopLevelRouter)),
     h(Footer)
   )

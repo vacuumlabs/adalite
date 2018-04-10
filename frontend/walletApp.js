@@ -2,7 +2,7 @@ import {h, render} from 'preact'
 import createStore from 'unistore'
 import devtools from 'unistore/devtools'
 import {Provider} from 'unistore/preact'
-import {TopLevelRouter} from './components'
+import {App} from './components'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
@@ -44,8 +44,6 @@ const initialState = {
   },
 }
 
-console.log(devtools)
-
 const store =
   CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true'
     ? devtools(createStore(initialState))
@@ -67,6 +65,6 @@ window.onhashchange = () =>
     },
   })
 
-const App = h(Provider, {store}, h(TopLevelRouter))
+const Wrapper = h(Provider, {store}, h(App))
 
-render(App, document.getElementById('root'))
+render(Wrapper, document.getElementById('root'))
