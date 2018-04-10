@@ -53,7 +53,10 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
 
   async function getAddressAndSecret(childIndex) {
     if (addressDerivationCache[childIndex] === undefined) {
-      addressDerivationCache[childIndex] = await address.deriveAddressAndSecret(rootSecret, childIndex)
+      addressDerivationCache[childIndex] = await address.deriveAddressAndSecret(
+        rootSecret,
+        childIndex
+      )
     }
 
     return addressDerivationCache[childIndex]
