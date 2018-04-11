@@ -1,12 +1,17 @@
 :root {
-  --brand: #9b4dca;
-  --brand-dark: #7938a1;
-  --brand-light: #a68fb4;
+  --brand: #eb1a75;
+  --brand-dark: #ed005b;
+  --brand-light: #d36a98;
   --transition: 0.25s;
   --width: 1024px;
   --text-color: #333;
+  --input-text-inactive: #999;
+  --input-text-active: #333;
+  --input-background: #f4f5f6;
   --border: #dadada;
   --navbar: #f4f5f6;
+  --red: #ff0000;
+  --green: #00ff00;
 }
 /* NORMALIZE */
 * {
@@ -44,17 +49,21 @@ a {
 p {
   margin-top: 0.5em;
   margin-bottom: 0.25em;
+  cursor: pointer;
 }
 /* BUTTON */
 button {
   background-color: var(--brand);
   color: white;
   border: 0;
+  border-radius: 3px;
   padding: 0 1em;
-  height: 2rem;
+  height: 2.5rem;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color var(--transition);
+}
+button.bold {
 }
 button:hover {
   background-color: var(--brand-dark);
@@ -422,4 +431,107 @@ td {
 .footer .contact-link {
   padding-left: 0.5em;
   padding-right: 0.5em;
+}
+/*LANDING*/
+.intro-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  margin: 0 auto;
+}
+.intro-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  margin-top: -25%;
+}
+.intro-header {
+  font-size: 2.3rem;
+  font-weight: 600;
+  margin: 0 60px 30px;
+  text-align: center;
+}
+.intro-input-row {
+  display: flex;
+  justify-content: center;
+}
+.intro-button {
+  position: absolute;
+  margin: 0 20px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: 8px;
+}
+.intro-link {
+  text-align: center;
+  display: block;
+  margin: 20px;
+  cursor: pointer;
+}
+/*input stolen from https://codepen.io/anon/pen/ZxVwWQ*/
+.webflow-style-input {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.2rem;
+  background: var(--input-background);
+}
+.webflow-style-input input {
+  flex-grow: 1;
+  color: var(--input-text-active);
+  font-size: 1.1rem;
+  /*line-height: 2.4rem;*/
+  vertical-align: middle;
+  border-style: none;
+  background: transparent;
+  outline: none;
+  text-align: center;
+}
+
+.webflow-style-input input::-webkit-input-placeholder {
+  color: var(--input-text-inactive);
+}
+.webflow-style-input input::-moz-placeholder {
+  color: var(--input-text-inactive);
+}
+.webflow-style-input span {
+  color: var(--input-text-inactive);
+  font-size: 2.4rem;
+  line-height: 2.4rem;
+  vertical-align: middle;
+  transition: color 0.25s;
+}
+
+.red {
+  color: red;
+}
+.green {
+  color: green;
+}
+
+@keyframes rise-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fade-in-up {
+  animation: fade-in 1.5s, rise-up 1.5s;
+}
+.fade-in-up-delayed {
+  opacity: 0;
+  animation: fade-in 1.5s, rise-up 1.5s;
+  animation-delay: 0.2s;
+  animation-fill-mode: forwards;
 }

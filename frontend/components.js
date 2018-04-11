@@ -29,24 +29,43 @@ class UnlockClass extends Component {
   render({loadWalletFromMnemonic}, {currentWalletMnemonicOrSecret}) {
     return h(
       'div',
-      {class: 'box'},
-      h('h2', {class: 'label'}, 'Load Wallet'),
+      {class: 'intro-wrapper'},
       h(
-        'label',
-        undefined,
-        h('span', undefined, 'Mnemonic'),
-        h('input', {
-          type: 'text',
-          id: 'mnemonic-submitted',
-          class: 'address',
-          name: 'mnemonic-submitted',
-          size: '47',
-          value: currentWalletMnemonicOrSecret,
-          onInput: linkState(this, 'currentWalletMnemonicOrSecret'),
-        })
-      ),
-      h('button', {onClick: this.loadWalletFromMnemonic}, 'Load wallet'),
-      h('button', {onClick: this.generateMnemonic}, 'Generate')
+        'div',
+        {class: 'intro-content'},
+        h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
+        h(
+          'div',
+          undefined,
+          h(
+            'div',
+            {class: 'intro-input-row fade-in-up-delayed'},
+            h(
+              'div',
+              {class: 'webflow-style-input'},
+              h('input', {
+                type: 'text',
+                id: 'mnemonic-submitted',
+                name: 'mnemonic-submitted',
+                placeholder: 'Enter twelve-word mnemonic',
+                size: '47',
+                value: currentWalletMnemonicOrSecret,
+                onInput: linkState(this, 'currentWalletMnemonicOrSecret'),
+              })
+            ),
+            h(
+              'span',
+              undefined,
+              h('button', {class: 'intro-button', onClick: this.loadWalletFromMnemonic}, 'Go')
+            )
+          ),
+          h(
+            'a',
+            {class: 'intro-link fade-in-up-delayed', onClick: this.generateMnemonic},
+            '…or generate a new one'
+          )
+        )
+      )
     )
   }
 }
@@ -241,18 +260,25 @@ const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
   activeWalletId: state.activeWalletId,
 }))(({pathname, activeWalletId}) => {
+  // unlock not wrapped in main
   if (!activeWalletId) return h(Unlock)
   const currentTab = pathname.split('/')[1]
+  let content
   switch (currentTab) {
     case 'dashboard':
-      return h(WalletInfo)
+      content = h(WalletInfo)
+      break
     case 'receive':
-      return h(Addresses)
+      content = h(Addresses)
+      break
     case 'send':
-      return h(SendAdaScreen)
+      content = h(SendAdaScreen)
+      break
     default:
-      return h(WalletInfo)
+      content = h(WalletInfo)
   }
+  // TODO is Alert used anywhere? if so add here
+  return h('main', {class: 'main'}, content)
 })
 
 const LoginStatus = connect(
@@ -272,25 +298,30 @@ const LoginStatus = connect(
       h('span', {class: 'status-text'}, `Balance: ${balance} ADA`),
       h('span', {class: 'status-text'}, `ID: ${activeWalletId}`)
     ),
-    h('div', {class: 'status-button-wrapper'}, h(
-      'button',
-      {onClick: reloadWalletInfo},
+    h(
+      'div',
+      {class: 'status-button-wrapper'},
       h(
-        'span',
-        {class: 'status-icon-button'},
-        h('img', {class: 'status-icon-button-image', src: '/assets/synchronize-64.png'}),
-        h('span', {class: 'status-icon-button-content'}, 'Refresh')
-      )
-    ), h(
-      'button',
-      {onClick: logout},
+        'button',
+        {onClick: reloadWalletInfo},
+        h(
+          'span',
+          {class: 'status-icon-button'},
+          h('img', {class: 'status-icon-button-image', src: '/assets/synchronize-64.png'}),
+          h('span', {class: 'status-icon-button-content'}, 'Refresh')
+        )
+      ),
       h(
-        'span',
-        {class: 'status-icon-button'},
-        h('img', {class: 'status-icon-button-image', src: '/assets/logout-64.png'}),
-        h('span', {class: 'status-icon-button-content'}, 'Logout')
+        'button',
+        {onClick: logout},
+        h(
+          'span',
+          {class: 'status-icon-button'},
+          h('img', {class: 'status-icon-button-image', src: '/assets/logout-64.png'}),
+          h('span', {class: 'status-icon-button-content'}, 'Logout')
+        )
       )
-    ))
+    )
   )
 )
 
@@ -479,12 +510,4 @@ const Footer = () =>
   )
 
 export const App = () =>
-  h(
-    'div',
-    {class: 'wrap'},
-    h(AboutOverlay),
-    h(Loading),
-    h(Navbar),
-    h('main', {class: 'main'}, h(Alert), h(TopLevelRouter)),
-    h(Footer)
-  )
+  h('div', {class: 'wrap'}, h(AboutOverlay), h(Loading), h(Navbar), h(TopLevelRouter), h(Footer))
