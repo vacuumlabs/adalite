@@ -3,7 +3,7 @@ const blake2 = require('blakejs')
 const {Buffer} = require('buffer/')
 const crc32 = require('crc-32')
 const cbor = require('cbor')
-const pbkdf2 = require('pbkdf2')
+const {pbkdf2Async} = require('./helpers/pbkdf2')
 const chacha20 = require('@stablelib/chacha20poly1305')
 const base58 = require('bs58')
 const crypto = require('crypto')
@@ -183,15 +183,8 @@ async function deriveHDPassphrase(walletSecretString) {
     walletSecretString.getPublicKey() + walletSecretString.getChainCode(),
     'hex'
   )
-  function derivedKey() {
-    return new Promise((resolveFunction, rejectFunction) => {
-      pbkdf2.pbkdf2(extendedPublicKey, 'address-hashing', 500, 32, 'sha512', (error, response) => {
-        if (error) {rejectFunction(error)}
-        resolveFunction(response)
-      })
-    })
-  }
-  return new Buffer((await derivedKey()).toString('hex'), 'hex')
+
+  return await pbkdf2Async(extendedPublicKey, 'address-hashing', 500, 32, 'SHA-512')
 }
 
 function deriveSkIteration(parentSecretString, childIndex) {
