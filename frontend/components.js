@@ -1,12 +1,11 @@
 import {h, Component} from 'preact'
 import {connect} from 'unistore/preact'
 import Cardano from '../wallet/cardano-wallet'
-
 import actions from './actions'
+// TODO throw this out
+import linkState from 'linkstate'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
-
-import linkState from 'linkstate'
 
 class UnlockClass extends Component {
   constructor(props) {
@@ -256,6 +255,45 @@ const TopLevelRouter = connect((state) => ({
   }
 })
 
+const LoginStatus = connect(
+  (state) => ({
+    pathname: state.router.pathname,
+    activeWalletId: state.activeWalletId,
+    balance: state.balance,
+  }),
+  actions
+)(({pathname, activeWalletId, balance, reloadWalletInfo, logout}) =>
+  h(
+    'div',
+    {class: 'status'},
+    h(
+      'div',
+      {class: 'status-text-wrapper'},
+      h('span', {class: 'status-text'}, `Balance: ${balance} ADA`),
+      h('span', {class: 'status-text'}, `ID: ${activeWalletId}`)
+    ),
+    h('div', {class: 'status-button-wrapper'}, h(
+      'button',
+      {onClick: reloadWalletInfo},
+      h(
+        'span',
+        {class: 'status-icon-button'},
+        h('img', {class: 'status-icon-button-image', src: '/assets/synchronize-64.png'}),
+        h('span', {class: 'status-icon-button-content'}, 'Refresh')
+      )
+    ), h(
+      'button',
+      {onClick: logout},
+      h(
+        'span',
+        {class: 'status-icon-button'},
+        h('img', {class: 'status-icon-button-image', src: '/assets/logout-64.png'}),
+        h('span', {class: 'status-icon-button-content'}, 'Logout')
+      )
+    ))
+  )
+)
+
 const NavbarUnauth = () =>
   h(
     'div',
@@ -305,30 +343,34 @@ const NavbarAuth = connect((state) => ({
         'nav',
         undefined,
         h(
-          'a',
-          {
-            class: currentTab === 'dashboard' && 'active',
-            onClick: () => pushState({}, 'dashboard', 'dashboard'),
-          },
-          'Dashboard'
+          'div',
+          undefined,
+          h(
+            'a',
+            {
+              class: currentTab === 'dashboard' && 'active',
+              onClick: () => pushState({}, 'dashboard', 'dashboard'),
+            },
+            'Dashboard'
+          ),
+          h(
+            'a',
+            {
+              class: currentTab === 'send' && 'active',
+              onClick: () => pushState({}, 'send', 'send'),
+            },
+            'Send'
+          ),
+          h(
+            'a',
+            {
+              class: currentTab === 'receive' && 'active',
+              onClick: () => pushState({}, 'receive', 'receive'),
+            },
+            'Receive'
+          )
         ),
-        h(
-          'a',
-          {
-            class: currentTab === 'send' && 'active',
-            onClick: () => pushState({}, 'send', 'send'),
-          },
-          'Send'
-        ),
-        h(
-          'a',
-          {
-            class: currentTab === 'receive' && 'active',
-            onClick: () => pushState({}, 'receive', 'receive'),
-          },
-          'Receive'
-        ),
-        h('span', undefined, 'Placeholder')
+        h(LoginStatus)
       )
     )
   )
