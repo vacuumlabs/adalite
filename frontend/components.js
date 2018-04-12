@@ -72,50 +72,22 @@ class UnlockClass extends Component {
 
 const Unlock = connect(undefined, actions)(UnlockClass)
 
-const NewMnemonic = connect((state) => state)((state) =>
-  h(
-    'div',
-    {class: 'box'}
-    // h('h2', undefined, 'New Wallet Mnemonic'),
-    // h('input', {
-    //   type: 'text',
-    //   class: 'address',
-    //   placeholder: "Press 'Generate' to create new mnenomonic",
-    //   value: state.newWalletMnemonic,
-    // }),
-    // h('button', {onClick: generateMnemonic}, 'Generate')
-  )
-)
-
 const Balance = connect('balance')(({balance}) =>
   h(
-    'span',
-    undefined,
-    h('h3', undefined, 'Balance'),
-    h('p', undefined, isNaN(Number(balance)) ? balance : `${balance / 1000000} ADA`)
-  )
-)
-
-const WalletHeader = connect('activeWalletId', actions)(
-  ({activeWalletId, reloadWalletInfo, logout}) =>
+    'div',
+    {class: 'balance-block'},
+    h('h2', undefined, 'Balance'),
     h(
-      'div',
-      {class: 'box box-info'},
-      h('h2', undefined, 'Wallet'),
-      h('h3', undefined, 'Active Wallet ID'),
-      h('input', {
-        readonly: true,
-        class: 'address',
-        value: activeWalletId || 'error, not initialized',
-      }),
-      h(Balance),
+      'p',
+      undefined,
       h(
-        'p',
-        undefined,
-        h('button', {onClick: reloadWalletInfo}, 'Reload Wallet Info'),
-        h('button', {class: 'danger', onClick: logout}, 'Close the wallet')
-      )
+        'span',
+        {class: 'balance-value'},
+        isNaN(Number(balance)) ? balance : `${balance / 1000000}`
+      ),
+      h('img', {class: 'ada-sign', src: '/assets/ada.png'})
     )
+  )
 )
 
 const Address = (adr, isTransaction) =>
@@ -133,29 +105,70 @@ const Address = (adr, isTransaction) =>
 const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
   h(
     'div',
-    {class: 'box'},
+    {class: ''},
     h('h2', undefined, 'Already Used Addresses'),
     ...usedAddresses.map((adr) => Address(adr))
   )
 )
 
-const UnusedAddressesList = connect('unusedAddresses')(({unusedAddresses}) =>
-  //const disableGettingNewAddresses =
-  //state.unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-  h(
-    'div',
-    {class: 'box'},
-    h('h2', undefined, 'Unused Addresses'),
-    ...unusedAddresses.map((adr) => Address(adr))
-  )
+const UnusedAddressesList = connect('unusedAddresses', actions)(
+  ({unusedAddresses, generateNewUnusedAddress}) => {
+    const disableGettingNewAddresses =
+      unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+    return h(
+      'div',
+      {class: ''},
+      h('h2', undefined, 'Unused Addresses'),
+      ...unusedAddresses.map((adr) => Address(adr)),
+      h(
+        'button',
+        {
+          disabled: disableGettingNewAddresses ? 'disabled="disabled"' : '',
+          onClick: generateNewUnusedAddress,
+        },
+        'Get one more'
+      )
+    )
+  }
 )
 
-const Addresses = () => h('div', undefined, h(UnusedAddressesList), h(UsedAddressesList))
+const Addresses = () =>
+  h('div', {class: 'content-wrapper'}, h(UnusedAddressesList), h(UsedAddressesList))
+
+const PrettyDate = ({date}) => {
+  const day = `${date.getDay()}`.padStart(2)
+  const month = `${date.getMonth()}`.padStart(2)
+  const year = date.getFullYear()
+  // pad with html space character, since two regular spaces get truncated
+  const hours = `${date.getHours()}`.padStart(2, ' ')
+  const minutes = `${date.getMinutes()}`.padStart(2, '0')
+  return `${day}.${month}. ${year}  ${hours}:${minutes}`
+}
+
+const PrettyValue = ({effect}) => {
+  const value = Math.abs(effect / 1000000)
+  const prefix = effect > 0 ? '+ ' : '- '
+  const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
+  return h('pre', {class: effect > 0 ? 'green' : 'red'}, `${prefix}${number}`.padEnd(10))
+}
+
+const TransactionAddress = ({address}) => {
+  return h(
+    'a',
+    {
+      class: 'transaction-id',
+      href: `https://cardanoexplorer.com/'tx'/${address}`,
+      target: '_blank',
+      title: 'Examine via CardanoExplorer.com',
+    },
+    address
+  )
+}
 
 const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
   h(
     'div',
-    {class: 'box'},
+    {class: ''},
     h('h2', undefined, 'Transaction History'),
     h(
       'table',
@@ -178,17 +191,9 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
           h(
             'tr',
             undefined,
-            h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
-            h('td', undefined, Address(transaction.ctbId, true)),
-            h(
-              'td',
-              undefined,
-              h(
-                'pre',
-                undefined,
-                `${transaction.effect > 0 ? '+' : ''}${transaction.effect / 1000000}`
-              )
-            )
+            h('td', undefined, h(PrettyDate, {date: new Date(transaction.ctbTimeIssued * 1000)})),
+            h('td', undefined, h(TransactionAddress, {address: transaction.ctbId})),
+            h('td', undefined, h(PrettyValue, {effect: transaction.effect}))
           )
         )
       )
@@ -212,34 +217,38 @@ const SendAda = connect(['sendSuccess', 'sendAddress', 'sendAmount'])(
   ({sendSuccess, sendAddress, sendAmount}) =>
     h(
       'div',
-      {class: 'box'},
-      h('h2', undefined, 'Send Ada'),
-      sendSuccess !== ''
-        ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
-        : '',
-      h('label', undefined, h('span', undefined, 'Address')),
-      h('input', {
-        type: 'text',
-        id: 'send-address',
-        class: 'address',
-        name: 'send-address',
-        size: '110',
-        value: sendAddress,
-      }),
+      {class: 'content-wrapper'},
       h(
-        'label',
+        'div',
         undefined,
-        h('span', undefined, 'Amount'),
+        h('h2', undefined, 'Send Ada'),
+        sendSuccess !== ''
+          ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
+          : '',
+        h('label', undefined, h('span', undefined, 'Address')),
         h('input', {
-          type: 'number',
-          id: 'send-amount',
-          name: 'send-amount',
-          size: '8',
-          step: '0.5',
-          min: '0.000001',
-          value: sendAmount / 1000000.0,
+          type: 'text',
+          id: 'send-address',
+          class: 'address',
+          name: 'send-address',
+          size: '110',
+          value: sendAddress,
         }),
-        h('span', undefined, 'ADA')
+        h(
+          'label',
+          undefined,
+          h('span', undefined, 'Amount'),
+          h('input', {
+            type: 'number',
+            id: 'send-amount',
+            name: 'send-amount',
+            size: '8',
+            step: '0.5',
+            min: '0.000001',
+            value: sendAmount / 1000000.0,
+          }),
+          h('span', undefined, 'ADA')
+        )
       )
     )
 )
@@ -252,9 +261,7 @@ const SendAda = connect(['sendSuccess', 'sendAddress', 'sendAmount'])(
 // ${Fee(state)}
 // </p>
 
-const WalletInfo = () => h('div', undefined, h(WalletHeader), h(TransactionHistory))
-
-const SendAdaScreen = () => h('div', undefined, h(WalletHeader), h(SendAda))
+const WalletInfo = () => h('div', {class: 'content-wrapper'}, h(Balance), h(TransactionHistory))
 
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
@@ -272,7 +279,7 @@ const TopLevelRouter = connect((state) => ({
       content = h(Addresses)
       break
     case 'send':
-      content = h(SendAdaScreen)
+      content = h(SendAda)
       break
     default:
       content = h(WalletInfo)
@@ -295,7 +302,7 @@ const LoginStatus = connect(
     h(
       'div',
       {class: 'status-text-wrapper'},
-      h('span', {class: 'status-text'}, `Balance: ${balance} ADA`),
+      h('span', {class: 'status-text'}, `Balance: ${balance / 1000000} ADA`),
       h('span', {class: 'status-text'}, `ID: ${activeWalletId}`)
     ),
     h(
@@ -424,7 +431,7 @@ const AboutOverlay = connect('displayAboutOverlay', actions)(
         h(
           'div',
           {class: 'box text'},
-          h('h2', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
+          h('h4', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
           h(
             'p',
             undefined,
@@ -432,7 +439,7 @@ const AboutOverlay = connect('displayAboutOverlay', actions)(
           it may cause you. The CardanoLite project is in alpha stage and should be used for
           penny-transactions only. We appreciate feedback, especially review of the crypto-related code.`
           ),
-          h('h2', undefined, ' CardanoLite is not a bank '),
+          h('h4', undefined, ' CardanoLite is not a bank '),
           h(
             'p',
             undefined,

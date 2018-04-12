@@ -74,8 +74,9 @@ export default ({setState, getState}) => {
     })
   }
 
-  const generateNewUnusedAddress = async (state, offset) => {
+  const generateNewUnusedAddress = async (state) => {
     setState({address: 'loading...'})
+    const offset = state.unusedAddresses.length
     const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
     setState({
       unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
