@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
       <head>
         <title>CardanoLite Wallet</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="js/browserCompatibilityCheck.js" defer></script>
         <script src="js/frontend.bundle.js" defer></script>
         <link rel="stylesheet" type="text/css" href="css/styles.css">
         <link rel="icon" type="image/ico" href="assets/favicon.ico">
