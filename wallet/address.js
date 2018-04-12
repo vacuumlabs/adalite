@@ -14,7 +14,6 @@ const sha3 = require('js-sha3')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const tx = require('./transaction')
 
-
 function addressHash(input) {
   const serializedInput = cbor.encode(input)
 
@@ -64,6 +63,20 @@ function multiply8(buf) {
   }
 
   return new Buffer(result, 'hex')
+}
+
+function isValidAddress(address) {
+  try {
+    // we decode the address from the base58 string
+    // and then we strip the 24 CBOR data taga (the "[0].value" part)
+    const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
+    const addressData = cbor.decode(addressAsBuffer)
+    const addressAttributes = addressData[1]
+    cbor.decode(addressAttributes.get(1))
+  } catch (e) {
+    return false
+  }
+  return true
 }
 
 async function deriveAddressAndSecret(rootSecretString, childIndex) {
@@ -237,6 +250,7 @@ function indexIsHardened(childIndex) {
 }
 
 module.exports = {
+  isValidAddress,
   deriveAddressAndSecret,
   isAddressDerivableFromSecretString,
   deriveSecretStringFromAddress,

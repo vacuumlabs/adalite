@@ -36,9 +36,8 @@ const initialState = {
   usedAddresses: [],
   unusedAddresses: [],
   // todo - object (sub-state) from send-ada form
-  sendAddress: '',
-  sendAmountFieldValue: 0,
-  feeCalculatedFrom: 0,
+  sendAddress: {fieldValue: ''},
+  sendAmount: {fieldValue: 0},
   transactionFee: 0,
   router: {
     pathname: window.location.pathname,

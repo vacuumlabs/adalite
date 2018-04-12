@@ -2,6 +2,7 @@ import {h, Component} from 'preact'
 import {connect} from 'unistore/preact'
 import Cardano from '../wallet/cardano-wallet'
 import actions from './actions'
+import strings from './translations'
 import {RefreshIcon, ExitIcon} from './svg'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
@@ -19,11 +20,24 @@ class UnlockClass extends Component {
   }
 
   generateMnemonic() {
-    this.setState({currentWalletMnemonicOrSecret: Cardano.generateMnemonic()})
+    this.setState({
+      currentWalletMnemonicOrSecret: Cardano.generateMnemonic(),
+      validationMsg: undefined,
+    })
   }
 
-  loadWalletFromMnemonic() {
-    this.props.loadWalletFromMnemonic(this.state.currentWalletMnemonicOrSecret)
+  async loadWalletFromMnemonic() {
+    this.setState({validationMsg: undefined})
+    if (!Cardano.validateMnemonic(this.state.currentWalletMnemonicOrSecret)) {
+      return this.setState({
+        validationMsg: 'Invalid mnemonic, check your mnemonic for typos and try again.',
+      })
+    }
+    try {
+      return await this.props.loadWalletFromMnemonic(this.state.currentWalletMnemonicOrSecret)
+    } catch (e) {
+      return this.setState({validationMsg: `Error during wallet initialization: ${e.toString()}`})
+    }
   }
 
   updateMnemonic(e) {
@@ -38,6 +52,7 @@ class UnlockClass extends Component {
         'div',
         undefined,
         h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
+        this.state.validationMsg ? h('p', {class: 'alert error'}, this.state.validationMsg) : '',
         h(
           'div',
           {class: 'intro-input-row fade-in-up-delayed'},
@@ -49,13 +64,18 @@ class UnlockClass extends Component {
             placeholder: 'Enter twelve-word mnemonic',
             value: currentWalletMnemonicOrSecret,
             onInput: this.updateMnemonic,
+            autocomplete: 'nope',
           }),
           h(
             'span',
             undefined,
             h(
               'button',
-              {class: 'intro-button rounded-button', onClick: this.loadWalletFromMnemonic},
+              {
+                class: 'intro-button rounded-button',
+                disabled: !currentWalletMnemonicOrSecret,
+                onClick: this.loadWalletFromMnemonic,
+              },
               'Go'
             )
           )
@@ -205,41 +225,58 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
   )
 )
 
+const ConfirmTransactionDialog = connect(
+  (state) => ({
+    sendAddress: state.sendAddress.fieldValue,
+    totalAmount: (parseFloat(state.sendAmount.fieldValue) + state.transactionFee / 1000000).toFixed(
+      6
+    ),
+  }),
+  actions
+)(({sendAddress, totalAmount, submitTransaction, cancelTransaction}) =>
+  h(
+    'div',
+    {class: 'overlay'},
+    h(
+      'div',
+      {class: 'box'},
+      h('p', undefined, 'Confirm, that you really want to send'),
+      h('div', undefined,
+        h('strong', undefined, `${totalAmount} ADA `),
+        'to the address'),
+      h('div', {class: 'address-iniline'}, sendAddress),
+      h('button', {class: 'positive', onClick: submitTransaction}, 'Confirm'),
+      h('button', {class: 'danger', onClick: cancelTransaction}, 'Cancel'),
+    )
+  )
+)
+
 class SendAdaClass extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      totalAmount: (
-        parseFloat(props.sendAmountFieldValue || 0) +
-        props.transactionFee / 1000000
-      ).toFixed(6),
-    }
-  }
 
-  componentWillReceiveProps(next) {
-    // don't update to invalid value while waiting for fee
-    if (next.feeCalculatedFrom === next.sendAmountFieldValue) {
-      this.setState({
-        totalAmount: (parseFloat(next.sendAmountFieldValue || 0) + next.transactionFee).toFixed(6),
-      })
-    }
-  }
+  render({
+    sendSuccess,
+    sendAddress,
+    sendAddressValidationError,
+    sendAmount,
+    sendAmountValidationError,
+    updateAddress,
+    updateAmount,
+    transactionFee,
+    confirmTransaction,
+    calculateFee,
+    balance,
+    showConfirmTransactionDialog,
+    feeRecalculating,
+    totalAmount,
+  }) {
+    const enableSubmit = sendAmount && !sendAmountValidationError &&
+      sendAddress && !sendAddressValidationError
 
-  render(
-    {
-      sendSuccess,
-      sendAddress,
-      sendAmountFieldValue,
-      feeCalculatedFrom,
-      inputAddress,
-      inputAmount,
-      transactionFee,
-      submitTransaction,
-      calculateFee,
-    },
-    {totalAmount}
-  ) {
-    const feeRecalculating = feeCalculatedFrom !== sendAmountFieldValue
+    const displayTransactionFee =
+      sendAmount !== '' && !feeRecalculating && transactionFee > 0 &&
+      !sendAddressValidationError &&
+      (!sendAmountValidationError || sendAmountValidationError.code === 'SendAmountInsufficientFundsForFee')
+
     return h(
       'div',
       {class: 'content-wrapper'},
@@ -248,9 +285,23 @@ class SendAdaClass extends Component {
         undefined,
         h('h2', undefined, 'Send Ada'),
         sendSuccess !== ''
-          ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
+          ? h(
+            'div',
+            {
+              id: 'transacton-submitted',
+              class: `alert ${sendSuccess ? 'success' : 'error'}`,
+            },
+            `Transaction status: ${
+              sendSuccess ? 'Successfully submitted.' : 'Failure! Please try again.'
+            }`
+          )
           : '',
-        h('label', undefined, h('span', undefined, 'Receiving address')),
+        h(
+          'div',
+          {class: 'row'},
+          h('label', undefined, h('span', undefined, 'Receiving address')),
+          sendAddressValidationError && h('span', {class: 'validationMsg'}, strings[sendAddressValidationError.code]())
+        ),
         h('input', {
           type: 'text',
           id: 'send-address',
@@ -259,27 +310,43 @@ class SendAdaClass extends Component {
           placeholder: 'Address',
           size: '28',
           value: sendAddress,
-          onInput: inputAddress,
+          onInput: updateAddress,
+          autocomplete: 'nope',
         }),
         h(
           'div',
           {class: 'amount-label-row'},
-          h('label', undefined, h('span', undefined, 'Amount')),
-          h('span', {class: 'transaction-fee'}, `+ ${transactionFee} transaction fee`)
+          h(
+            'div',
+            {class: 'row'},
+            h('label', undefined, h('span', undefined, 'Amount')),
+            sendAmountValidationError && h('p', {class: 'validationMsg'}, strings[sendAmountValidationError.code](sendAmountValidationError.params))
+          ),
+          displayTransactionFee &&
+            h('span', {class: 'transaction-fee'}, `+ ${transactionFee} transaction fee`)
         ),
         h(
           'div',
           {class: 'styled-input send-input'},
           h('input', {
-            type: 'text',
+            type: 'number',
+            min: 0,
+            max: balance,
+            step: 0.000001,
             id: 'send-amount',
             name: 'send-amount',
             placeholder: 'Amount',
             size: '28',
-            value: sendAmountFieldValue,
-            onInput: inputAmount,
+            value: sendAmount,
+            onInput: updateAmount,
+            autocomplete: 'nope',
           }),
-          h('span', {style: `color: ${feeRecalculating ? 'red' : 'green'}`}, `= ${totalAmount} ADA`)
+          displayTransactionFee &&
+             h(
+               'span',
+               {style: `color: ${sendAmountValidationError ? 'red' : 'green'}`},
+               `= ${totalAmount} ADA`
+             ),
         ),
         feeRecalculating
           ? h(
@@ -288,7 +355,16 @@ class SendAdaClass extends Component {
             h('div', {class: 'loading-inside-button'}),
             'Calculating Fee'
           )
-          : h('button', {onClick: submitTransaction, class: 'loading-button'}, 'Submit')
+          : h(
+            'button',
+            {
+              disabled: !enableSubmit,
+              onClick: confirmTransaction,
+              class: 'loading-button',
+            },
+            'Submit'
+          ),
+        showConfirmTransactionDialog && h(ConfirmTransactionDialog),
       )
     )
   }
@@ -297,10 +373,17 @@ class SendAdaClass extends Component {
 const SendAda = connect(
   (state) => ({
     sendSuccess: state.sendSuccess,
-    sendAddress: state.sendAddress,
-    sendAmountFieldValue: state.sendAmountFieldValue,
-    feeCalculatedFrom: state.feeCalculatedFrom,
+    sendAddressValidationError: state.sendAddress.validationError,
+    sendAddress: state.sendAddress.fieldValue,
+    sendAmountValidationError: state.sendAmount.validationError,
+    sendAmount: state.sendAmount.fieldValue,
     transactionFee: state.transactionFee / 1000000,
+    balance: parseFloat(state.balance) / 1000000,
+    showConfirmTransactionDialog: state.showConfirmTransactionDialog,
+    feeRecalculating: state.calculatingFee,
+    totalAmount: (
+      parseFloat(state.sendAmount.fieldValue || 0) +
+      state.transactionFee / 1000000).toFixed(6),
   }),
   actions
 )(SendAdaClass)
@@ -549,7 +632,7 @@ const Loading = connect(['loadingMessage', 'loading'])(
     loading
       ? h(
         'div',
-        {class: 'overlay'},
+        {class: 'overlay ontop'},
         h('div', {class: 'loading'}),
         loadingMessage ? h('p', undefined, loadingMessage) : ''
       )
