@@ -37,7 +37,11 @@ const initialState = {
   newWalletMnemonic: '',
   usedAddresses: [],
   unusedAddresses: [],
-  sendAmount: 0,
+  // todo - object (sub-state) from send-ada form
+  sendAddress: '',
+  sendAmountFieldValue: 0,
+  sendAmountFieldDirty: false,
+  transactionFee: 0,
   router: {
     pathname: window.location.pathname,
     hash: window.location.hash,

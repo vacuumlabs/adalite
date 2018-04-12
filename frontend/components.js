@@ -1,12 +1,11 @@
 import {h, Component} from 'preact'
 import {connect} from 'unistore/preact'
 import Cardano from '../wallet/cardano-wallet'
-
 import actions from './actions'
+// TODO throw this out
+import linkState from 'linkstate'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
-
-import linkState from 'linkstate'
 
 class UnlockClass extends Component {
   constructor(props) {
@@ -30,74 +29,65 @@ class UnlockClass extends Component {
   render({loadWalletFromMnemonic}, {currentWalletMnemonicOrSecret}) {
     return h(
       'div',
-      {class: 'box'},
-      h('h2', {class: 'label'}, 'Load Wallet'),
+      {class: 'intro-wrapper'},
       h(
-        'label',
-        undefined,
-        h('span', undefined, 'Mnemonic'),
-        h('input', {
-          type: 'text',
-          id: 'mnemonic-submitted',
-          class: 'address',
-          name: 'mnemonic-submitted',
-          size: '47',
-          value: currentWalletMnemonicOrSecret,
-          onInput: linkState(this, 'currentWalletMnemonicOrSecret'),
-        })
-      ),
-      h('button', {onClick: this.loadWalletFromMnemonic}, 'Load wallet'),
-      h('button', {onClick: this.generateMnemonic}, 'Generate')
+        'div',
+        {class: 'intro-content'},
+        h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
+        h(
+          'div',
+          undefined,
+          h(
+            'div',
+            {class: 'intro-input-row fade-in-up-delayed'},
+            h(
+              'div',
+              {class: 'webflow-style-input'},
+              h('input', {
+                type: 'text',
+                id: 'mnemonic-submitted',
+                name: 'mnemonic-submitted',
+                placeholder: 'Enter twelve-word mnemonic',
+                size: '47',
+                value: currentWalletMnemonicOrSecret,
+                onInput: linkState(this, 'currentWalletMnemonicOrSecret'),
+              })
+            ),
+            h(
+              'span',
+              undefined,
+              h('button', {class: 'intro-button', onClick: this.loadWalletFromMnemonic}, 'Go')
+            )
+          ),
+          h(
+            'a',
+            {class: 'intro-link fade-in-up-delayed', onClick: this.generateMnemonic},
+            '…or generate a new one'
+          )
+        )
+      )
     )
   }
 }
 
 const Unlock = connect(undefined, actions)(UnlockClass)
 
-const NewMnemonic = connect((state) => state)((state) =>
-  h(
-    'div',
-    {class: 'box'}
-    // h('h2', undefined, 'New Wallet Mnemonic'),
-    // h('input', {
-    //   type: 'text',
-    //   class: 'address',
-    //   placeholder: "Press 'Generate' to create new mnenomonic",
-    //   value: state.newWalletMnemonic,
-    // }),
-    // h('button', {onClick: generateMnemonic}, 'Generate')
-  )
-)
-
 const Balance = connect('balance')(({balance}) =>
   h(
-    'span',
-    undefined,
-    h('h3', undefined, 'Balance'),
-    h('p', undefined, isNaN(Number(balance)) ? balance : `${balance / 1000000} ADA`)
-  )
-)
-
-const WalletHeader = connect('activeWalletId', actions)(
-  ({activeWalletId, reloadWalletInfo, logout}) =>
+    'div',
+    {class: 'balance-block'},
+    h('h2', undefined, 'Balance'),
     h(
-      'div',
-      {class: 'box box-info'},
-      h('h2', undefined, 'Wallet'),
-      h('h3', undefined, 'Active Wallet ID'),
-      h('input', {
-        readonly: true,
-        class: 'address',
-        value: activeWalletId || 'error, not initialized',
-      }),
-      h(Balance),
+      'p',
+      undefined,
       h(
-        'p',
-        undefined,
-        h('button', {onClick: reloadWalletInfo}, 'Reload Wallet Info'),
-        h('button', {class: 'danger', onClick: logout}, 'Close the wallet')
-      )
+        'span',
+        {class: 'balance-value'},
+        isNaN(Number(balance)) ? balance : `${balance / 1000000}`
+      ),
+      h('img', {class: 'ada-sign', src: '/assets/ada.png'})
     )
+  )
 )
 
 const Address = (adr, isTransaction) =>
@@ -115,29 +105,70 @@ const Address = (adr, isTransaction) =>
 const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
   h(
     'div',
-    {class: 'box'},
+    {class: ''},
     h('h2', undefined, 'Already Used Addresses'),
     ...usedAddresses.map((adr) => Address(adr))
   )
 )
 
-const UnusedAddressesList = connect('unusedAddresses')(({unusedAddresses}) =>
-  //const disableGettingNewAddresses =
-  //state.unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-  h(
-    'div',
-    {class: 'box'},
-    h('h2', undefined, 'Unused Addresses'),
-    ...unusedAddresses.map((adr) => Address(adr))
-  )
+const UnusedAddressesList = connect('unusedAddresses', actions)(
+  ({unusedAddresses, generateNewUnusedAddress}) => {
+    const disableGettingNewAddresses =
+      unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+    return h(
+      'div',
+      {class: ''},
+      h('h2', undefined, 'Unused Addresses'),
+      ...unusedAddresses.map((adr) => Address(adr)),
+      h(
+        'button',
+        {
+          disabled: disableGettingNewAddresses ? 'disabled="disabled"' : '',
+          onClick: generateNewUnusedAddress,
+        },
+        'Get one more'
+      )
+    )
+  }
 )
 
-const Addresses = () => h('div', undefined, h(UnusedAddressesList), h(UsedAddressesList))
+const Addresses = () =>
+  h('div', {class: 'content-wrapper'}, h(UnusedAddressesList), h(UsedAddressesList))
+
+const PrettyDate = ({date}) => {
+  const day = `${date.getDay()}`.padStart(2)
+  const month = `${date.getMonth()}`.padStart(2)
+  const year = date.getFullYear()
+  // pad with html space character, since two regular spaces get truncated
+  const hours = `${date.getHours()}`.padStart(2, ' ')
+  const minutes = `${date.getMinutes()}`.padStart(2, '0')
+  return `${day}.${month}. ${year}  ${hours}:${minutes}`
+}
+
+const PrettyValue = ({effect}) => {
+  const value = Math.abs(effect / 1000000)
+  const prefix = effect > 0 ? '+ ' : '- '
+  const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
+  return h('pre', {class: effect > 0 ? 'green' : 'red'}, `${prefix}${number}`.padEnd(10))
+}
+
+const TransactionAddress = ({address}) => {
+  return h(
+    'a',
+    {
+      class: 'transaction-id',
+      href: `https://cardanoexplorer.com/'tx'/${address}`,
+      target: '_blank',
+      title: 'Examine via CardanoExplorer.com',
+    },
+    address
+  )
+}
 
 const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
   h(
     'div',
-    {class: 'box'},
+    {class: ''},
     h('h2', undefined, 'Transaction History'),
     h(
       'table',
@@ -160,17 +191,9 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
           h(
             'tr',
             undefined,
-            h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
-            h('td', undefined, Address(transaction.ctbId, true)),
-            h(
-              'td',
-              undefined,
-              h(
-                'pre',
-                undefined,
-                `${transaction.effect > 0 ? '+' : ''}${transaction.effect / 1000000}`
-              )
-            )
+            h('td', undefined, h(PrettyDate, {date: new Date(transaction.ctbTimeIssued * 1000)})),
+            h('td', undefined, h(TransactionAddress, {address: transaction.ctbId})),
+            h('td', undefined, h(PrettyValue, {effect: transaction.effect}))
           )
         )
       )
@@ -178,83 +201,148 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
   )
 )
 
-// const Fee = connect(state => state)((state) =>
-//   h('button', {onClick="${executeAction(
-//     calculateFee,
-//     "document.getElementById('send-address').value",
-//     "parseFloat(document.getElementById('send-amount').value) * 1000000"
-//   )}">Calculate Fee</button>
-//     h('div', {style: "${!state.fee && 'display: none'}">
-//       h('h3', undefined, 'Fee'),
-//       ${isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`}
-//     </div>
-// </span>`
-
-const SendAda = connect(['sendSuccess', 'sendAddress', 'sendAmount'])(
-  ({sendSuccess, sendAddress, sendAmount}) =>
+// TODO unfinished page
+const SendAda = connect(
+  (state) => ({
+    sendSuccess: state.sendSuccess,
+    sendAddress: state.sendAddress,
+    sendAmountFieldValue: state.sendAmountFieldValue,
+    transactionFee: state.transactionFee / 1000000,
+    totalAmount: parseFloat(state.sendAmountFieldValue) + state.transactionFee / 1000000,
+  }),
+  actions
+)(
+  ({
+    sendSuccess,
+    sendAddress,
+    sendAmountFieldValue,
+    inputAddress,
+    inputAmount,
+    totalAmount,
+    transactionFee,
+    submitTransaction,
+    calculateFee,
+  }) =>
     h(
       'div',
-      {class: 'box'},
-      h('h2', undefined, 'Send Ada'),
-      sendSuccess !== ''
-        ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
-        : '',
-      h('label', undefined, h('span', undefined, 'Address')),
-      h('input', {
-        type: 'text',
-        id: 'send-address',
-        class: 'address',
-        name: 'send-address',
-        size: '110',
-        value: sendAddress,
-      }),
+      {class: 'content-wrapper'},
       h(
-        'label',
+        'div',
         undefined,
-        h('span', undefined, 'Amount'),
-        h('input', {
-          type: 'number',
-          id: 'send-amount',
-          name: 'send-amount',
-          size: '8',
-          step: '0.5',
-          min: '0.000001',
-          value: sendAmount / 1000000.0,
-        }),
-        h('span', undefined, 'ADA')
+        h('h2', undefined, 'Send Ada'),
+        sendSuccess !== ''
+          ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
+          : '',
+        h('label', undefined, h('span', undefined, 'Address')),
+        h(
+          'div',
+          {class: 'webflow-style-input send-input'},
+          h('input', {
+            type: 'text',
+            id: 'send-address',
+            name: 'send-address',
+            placeholder: 'Receiving address',
+            size: '28',
+            value: sendAddress,
+            onInput: inputAddress,
+          })
+        ),
+        h('label', undefined, h('span', undefined, 'Amount')),
+        h(
+          'span',
+          {style: 'text-align: right'},
+          transactionFee ? `+ ${transactionFee} ADA` : "press 'Calculate Fee'"
+        ),
+        h(
+          'div',
+          {class: 'webflow-style-input send-input'},
+          h('input', {
+            type: 'text',
+            id: 'send-amount',
+            name: 'send-amount',
+            placeholder: 'Amount',
+            size: '28',
+            value: sendAmountFieldValue,
+            onInput: inputAmount,
+          }),
+          h('span', undefined, totalAmount)
+        ),
+        h('button', {onClick: submitTransaction}, 'Submit'),
+        h('button', {onClick: calculateFee}, 'Calculate Fee')
       )
     )
 )
-// h('p', undefined,
-// h('button', {onclick="${executeAction(
-//   submitTransaction,
-//   "document.getElementById('send-address').value",
-//   "parseFloat(document.getElementById('send-amount').value)"
-// )}">Send Ada</button>
-// ${Fee(state)}
-// </p>
 
-const WalletInfo = () => h('div', undefined, h(WalletHeader), h(TransactionHistory))
-
-const SendAdaScreen = () => h('div', undefined, h(WalletHeader), h(SendAda))
+const WalletInfo = () => h('div', {class: 'content-wrapper'}, h(Balance), h(TransactionHistory))
 
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
   activeWalletId: state.activeWalletId,
 }))(({pathname, activeWalletId}) => {
+  // unlock not wrapped in main
   if (!activeWalletId) return h(Unlock)
   const currentTab = pathname.split('/')[1]
+  let content
   switch (currentTab) {
     case 'dashboard':
-      return h(WalletInfo)
+      content = h(WalletInfo)
+      break
     case 'receive':
-      return h(Addresses)
+      content = h(Addresses)
+      break
     case 'send':
-      return h(SendAdaScreen)
+      content = h(SendAda)
+      break
     default:
-      return h(WalletInfo)
+      content = h(WalletInfo)
   }
+  // TODO is Alert used anywhere? if so add here
+  return h('main', {class: 'main'}, content)
 })
+
+const LoginStatus = connect(
+  (state) => ({
+    pathname: state.router.pathname,
+    activeWalletId: state.activeWalletId,
+    balance: state.balance,
+  }),
+  actions
+)(({pathname, activeWalletId, balance, reloadWalletInfo, logout}) =>
+  h(
+    'div',
+    {class: 'status'},
+    h(
+      'div',
+      {class: 'status-text-wrapper'},
+      h('span', {class: 'status-text'}, `Balance: ${balance / 1000000} ADA`),
+      h('span', {class: 'status-text'}, `ID: ${activeWalletId}`)
+    ),
+    h(
+      'div',
+      {class: 'status-button-wrapper'},
+      h(
+        'button',
+        {onClick: reloadWalletInfo},
+        h(
+          'span',
+          {class: 'status-icon-button'},
+          h('img', {class: 'status-icon-button-image', src: '/assets/synchronize-64.png'}),
+          h('span', {class: 'status-icon-button-content'}, 'Refresh')
+        )
+      ),
+      h(
+        'button',
+        {onClick: logout},
+        h(
+          'span',
+          {class: 'status-icon-button'},
+          h('img', {class: 'status-icon-button-image', src: '/assets/logout-64.png'}),
+          h('span', {class: 'status-icon-button-content'}, 'Logout')
+        )
+      )
+    )
+  )
+)
 
 const NavbarUnauth = () =>
   h(
@@ -305,30 +393,34 @@ const NavbarAuth = connect((state) => ({
         'nav',
         undefined,
         h(
-          'a',
-          {
-            class: currentTab === 'dashboard' && 'active',
-            onClick: () => pushState({}, 'dashboard', 'dashboard'),
-          },
-          'Dashboard'
+          'div',
+          undefined,
+          h(
+            'a',
+            {
+              class: currentTab === 'dashboard' && 'active',
+              onClick: () => pushState({}, 'dashboard', 'dashboard'),
+            },
+            'Dashboard'
+          ),
+          h(
+            'a',
+            {
+              class: currentTab === 'send' && 'active',
+              onClick: () => pushState({}, 'send', 'send'),
+            },
+            'Send'
+          ),
+          h(
+            'a',
+            {
+              class: currentTab === 'receive' && 'active',
+              onClick: () => pushState({}, 'receive', 'receive'),
+            },
+            'Receive'
+          )
         ),
-        h(
-          'a',
-          {
-            class: currentTab === 'send' && 'active',
-            onClick: () => pushState({}, 'send', 'send'),
-          },
-          'Send'
-        ),
-        h(
-          'a',
-          {
-            class: currentTab === 'receive' && 'active',
-            onClick: () => pushState({}, 'receive', 'receive'),
-          },
-          'Receive'
-        ),
-        h('span', undefined, 'Placeholder')
+        h(LoginStatus)
       )
     )
   )
@@ -351,7 +443,7 @@ const AboutOverlay = connect('displayAboutOverlay', actions)(
         h(
           'div',
           {class: 'box text'},
-          h('h2', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
+          h('h4', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
           h(
             'p',
             undefined,
@@ -359,7 +451,7 @@ const AboutOverlay = connect('displayAboutOverlay', actions)(
           it may cause you. The CardanoLite project is in alpha stage and should be used for
           penny-transactions only. We appreciate feedback, especially review of the crypto-related code.`
           ),
-          h('h2', undefined, ' CardanoLite is not a bank '),
+          h('h4', undefined, ' CardanoLite is not a bank '),
           h(
             'p',
             undefined,
@@ -437,12 +529,4 @@ const Footer = () =>
   )
 
 export const App = () =>
-  h(
-    'div',
-    {class: 'wrap'},
-    h(AboutOverlay),
-    h(Loading),
-    h(Navbar),
-    h('main', {class: 'main'}, h(Alert), h(TopLevelRouter)),
-    h(Footer)
-  )
+  h('div', {class: 'wrap'}, h(AboutOverlay), h(Loading), h(Navbar), h(TopLevelRouter), h(Footer))
