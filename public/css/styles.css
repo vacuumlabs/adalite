@@ -112,6 +112,14 @@ label {
   display: block;
   margin-bottom: 1rem;
 }
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
 /* TABLE */
 table {
   width: 100%;
@@ -502,12 +510,16 @@ td {
   flex-grow: 1;
   color: var(--input-text-active);
   font-size: 1.1rem;
-  /*line-height: 2.4rem;*/
+  line-height: 2.4rem;
   vertical-align: middle;
   border-style: none;
   background: transparent;
   outline: none;
   text-align: center;
+}
+/* todo rewrite this */
+.webflow-style-input input .send-input {
+  text-align: left;
 }
 
 .webflow-style-input input::-webkit-input-placeholder {

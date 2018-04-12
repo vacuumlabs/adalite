@@ -24,7 +24,7 @@ export default ({setState, getState}) => {
     const unusedAddresses = [await wallet.getChangeAddress()]
     const transactionHistory = await wallet.getHistory()
     const balance = await wallet.getBalance()
-    const sendAmount = 0
+    const sendAmountFieldValue = 0
     const sendAddress = ''
     const sendSuccess = ''
     setState({
@@ -32,7 +32,7 @@ export default ({setState, getState}) => {
       usedAddresses,
       unusedAddresses,
       balance,
-      sendAmount,
+      sendAmountFieldValue,
       sendAddress,
       sendSuccess,
       transactionHistory,
@@ -87,18 +87,27 @@ export default ({setState, getState}) => {
     displayAboutOverlay: !state.displayAboutOverlay,
   })
 
-  const calculateFee = async (address, amount) => {
-    setState(
-      loadingAction('Computing transaction fee...', {
-        sendAddress: address,
-        sendAmount: amount,
-      })
-    )
-    const fee = await wallet.getTxFee(address, amount)
-    setState({fee, loading: false})
+  const inputAddress = (state, e) => ({
+    sendAddress: e.target.value,
+  })
+
+  const inputAmount = (state, e) =>
+    console.log(e) || {
+      sendAmountFieldValue: e.target.value,
+      sendAmountFieldValueDirty: true,
+    }
+
+  const calculateFee = async (state) => {
+    const address = state.sendAddress
+    const amount = parseFloat(state.sendAmountFieldValue)
+    setState(loadingAction('Computing transaction fee...'))
+    const transactionFee = await wallet.getTxFee(address, amount)
+    setState({transactionFee, loading: false})
   }
 
-  const submitTransaction = async (state, address, amount) => {
+  const submitTransaction = async (state) => {
+    const address = state.sendAddress
+    const amount = state.sendAmount
     setState(
       loadingAction('processing transaction', 'Submitting transaction...', {
         sendSuccess: 'processing transaction',
@@ -120,5 +129,7 @@ export default ({setState, getState}) => {
     toggleAboutOverlay,
     calculateFee,
     submitTransaction,
+    inputAddress,
+    inputAmount,
   }
 }

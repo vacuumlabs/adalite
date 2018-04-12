@@ -201,20 +201,28 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
   )
 )
 
-// const Fee = connect(state => state)((state) =>
-//   h('button', {onClick="${executeAction(
-//     calculateFee,
-//     "document.getElementById('send-address').value",
-//     "parseFloat(document.getElementById('send-amount').value) * 1000000"
-//   )}">Calculate Fee</button>
-//     h('div', {style: "${!state.fee && 'display: none'}">
-//       h('h3', undefined, 'Fee'),
-//       ${isNaN(Number(state.fee)) ? state.fee : `<span id="fee">${state.fee / 1000000}</span> ADA`}
-//     </div>
-// </span>`
-
-const SendAda = connect(['sendSuccess', 'sendAddress', 'sendAmount'])(
-  ({sendSuccess, sendAddress, sendAmount}) =>
+// TODO unfinished page
+const SendAda = connect(
+  (state) => ({
+    sendSuccess: state.sendSuccess,
+    sendAddress: state.sendAddress,
+    sendAmountFieldValue: state.sendAmountFieldValue,
+    transactionFee: state.transactionFee / 1000000,
+    totalAmount: parseFloat(state.sendAmountFieldValue) + state.transactionFee / 1000000,
+  }),
+  actions
+)(
+  ({
+    sendSuccess,
+    sendAddress,
+    sendAmountFieldValue,
+    inputAddress,
+    inputAmount,
+    totalAmount,
+    transactionFee,
+    submitTransaction,
+    calculateFee,
+  }) =>
     h(
       'div',
       {class: 'content-wrapper'},
@@ -226,40 +234,44 @@ const SendAda = connect(['sendSuccess', 'sendAddress', 'sendAmount'])(
           ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
           : '',
         h('label', undefined, h('span', undefined, 'Address')),
-        h('input', {
-          type: 'text',
-          id: 'send-address',
-          class: 'address',
-          name: 'send-address',
-          size: '110',
-          value: sendAddress,
-        }),
         h(
-          'label',
-          undefined,
-          h('span', undefined, 'Amount'),
+          'div',
+          {class: 'webflow-style-input send-input'},
           h('input', {
-            type: 'number',
+            type: 'text',
+            id: 'send-address',
+            name: 'send-address',
+            placeholder: 'Receiving address',
+            size: '28',
+            value: sendAddress,
+            onInput: inputAddress,
+          })
+        ),
+        h('label', undefined, h('span', undefined, 'Amount')),
+        h(
+          'span',
+          {style: 'text-align: right'},
+          transactionFee ? `+ ${transactionFee} ADA` : "press 'Calculate Fee'"
+        ),
+        h(
+          'div',
+          {class: 'webflow-style-input send-input'},
+          h('input', {
+            type: 'text',
             id: 'send-amount',
             name: 'send-amount',
-            size: '8',
-            step: '0.5',
-            min: '0.000001',
-            value: sendAmount / 1000000.0,
+            placeholder: 'Amount',
+            size: '28',
+            value: sendAmountFieldValue,
+            onInput: inputAmount,
           }),
-          h('span', undefined, 'ADA')
-        )
+          h('span', undefined, totalAmount)
+        ),
+        h('button', {onClick: submitTransaction}, 'Submit'),
+        h('button', {onClick: calculateFee}, 'Calculate Fee')
       )
     )
 )
-// h('p', undefined,
-// h('button', {onclick="${executeAction(
-//   submitTransaction,
-//   "document.getElementById('send-address').value",
-//   "parseFloat(document.getElementById('send-amount').value)"
-// )}">Send Ada</button>
-// ${Fee(state)}
-// </p>
 
 const WalletInfo = () => h('div', {class: 'content-wrapper'}, h(Balance), h(TransactionHistory))
 
