@@ -6,7 +6,6 @@ const bowser = require('bowser')
 
 const config = require('./helpers/backendConfigLoader')
 
-
 app.use(bodyParser.json())
 app.use(cors())
 app.use(express.static('public'))
@@ -43,7 +42,7 @@ const isBrowserSupported = (userAgent) => {
   }
 
   const isMobileDevice = bowser.mobile || bowser.tablet
-  const isDesktop = (isMobileDevice === undefined)
+  const isDesktop = isMobileDevice === undefined
 
   return (
     (isDesktop && bowser.check(minSupportedVersionsDesktop, true, userAgent)) ||
@@ -51,7 +50,10 @@ const isBrowserSupported = (userAgent) => {
   )
 }
 
-app.get('/', (req, res) => {
+require('./blockchainExplorerProxy')(app)
+require('./transactionSubmitter')(app)
+
+app.get('*', (req, res) => {
   if (isBrowserSupported(req.headers['user-agent'])) {
     return res.status(200).send(`
       <!doctype html>
@@ -94,9 +96,6 @@ app.get('/', (req, res) => {
     `)
   }
 })
-
-require('./blockchainExplorerProxy')(app)
-require('./transactionSubmitter')(app)
 
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
