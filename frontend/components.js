@@ -2,8 +2,6 @@ import {h, Component} from 'preact'
 import {connect} from 'unistore/preact'
 import Cardano from '../wallet/cardano-wallet'
 import actions from './actions'
-// TODO throw this out
-import linkState from 'linkstate'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
@@ -16,6 +14,7 @@ class UnlockClass extends Component {
     }
     this.generateMnemonic = this.generateMnemonic.bind(this)
     this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
+    this.updateMnemonic = this.updateMnemonic.bind(this)
   }
 
   generateMnemonic() {
@@ -24,6 +23,10 @@ class UnlockClass extends Component {
 
   loadWalletFromMnemonic() {
     this.props.loadWalletFromMnemonic(this.state.currentWalletMnemonicOrSecret)
+  }
+
+  updateMnemonic(e) {
+    this.setState({ currentWalletMnemonicOrSecret: e.target.value });
   }
 
   render({loadWalletFromMnemonic}, {currentWalletMnemonicOrSecret}) {
@@ -50,7 +53,7 @@ class UnlockClass extends Component {
                 placeholder: 'Enter twelve-word mnemonic',
                 size: '47',
                 value: currentWalletMnemonicOrSecret,
-                onInput: linkState(this, 'currentWalletMnemonicOrSecret'),
+                onInput: this.updateMnemonic
               })
             ),
             h(
