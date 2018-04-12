@@ -35,30 +35,21 @@ export default ({setState, getState}) => {
     const unusedAddresses = [await wallet.getChangeAddress()]
     const transactionHistory = await wallet.getHistory()
     const balance = await wallet.getBalance()
-    const sendAmountFieldValue = 0
-    const sendAddress = ''
+    const sendAmount = {fieldValue: ''}
+    const sendAddress = {fieldValue: ''}
     const sendSuccess = ''
     setState({
       activeWalletId,
       usedAddresses,
       unusedAddresses,
       balance,
-      sendAmountFieldValue,
+      sendAmount,
       sendAddress,
       sendSuccess,
       transactionHistory,
       loading: false,
       currentWalletMnemonicOrSecret: '',
     })
-  }
-
-  const generateMnemonic = (state) => {
-    const newWalletMnemonic = Cardano.generateMnemonic()
-    return {
-      newWalletMnemonic,
-      currentWalletMnemonicOrSecret: newWalletMnemonic,
-      activeWalletId: null,
-    }
   }
 
   const logout = () => {
@@ -104,58 +95,122 @@ export default ({setState, getState}) => {
     }
   }
 
-  const inputAddress = (state, e) => ({
-    sendAddress: e.target.value,
+  const validateSendAddress = (state) => setState({
+    sendAddress: Object.assign({}, state.sendAddress,
+      {validationError: !Cardano.isValidAddress(state.sendAddress.fieldValue) ? {code: 'SendAddressInvalidAddress'} : ''}),
   })
 
-  // is being called debounced, thus we need to getState
-  // TODO maybe it'd be good practice to only use getState and avoid this problem?
-  const calculateFee = async () => {
-    const state = getState()
-    const address = state.sendAddress
-    const sendValue = state.sendAmountFieldValue
-    const amount = parseFloat(state.sendAmountFieldValue || 0)
-    const transactionFee = await wallet.getTxFee(address, amount)
-    // if we reverted value in the meanwhile, do nothing, otherwise update
-    if (state.sendAmountFieldValue !== state.feeCalculatedFrom) {
-      setState({transactionFee, feeCalculatedFrom: sendValue})
+  const validateSendAmount = (state) => {
+    let validationError = ''
+    const amount = parseFloat(state.sendAmount.fieldValue)
+    if (isNaN(amount)) {
+      validationError = {code: 'SendAmountIsNan'}
+    }
+    if (parseFloat(amount.toFixed(6)) <= 0) {
+      validationError = {code: 'SenAmountIsNotPositive'}
+    }
+    if (parseFloat(amount.toFixed(6)) > state.balance / 1000000) {
+      validationError = {code: 'SendAmountInsufficientFunds', params: {balance: state.balance / 1000000}}
+    }
+    setState({sendAmount: Object.assign({}, state.sendAmount, {validationError})})
+  }
+
+  const validateSendForm = (state) => {
+    if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
+      validateSendAddress(state)
+      validateSendAmount(state)
     }
   }
 
-  const debouncedCalculateFee = debounceEvent((state) => setState(calculateFee(state)), 2000)
+  const isSendFormFilledAndValid = (state) => {
+    return (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '' &&
+  state.sendAddress.validationError === '' && state.sendAmount.validationError === '')
+  }
 
-  const inputAmount = (state, e) => {
-    debouncedCalculateFee()
-    return {
-      sendAmountFieldValue: e.target.value,
+  const validateFee = (state) => {
+    const sendAmount = parseFloat(state.sendAmount.fieldValue)
+    const transactionFee = state.transactionFee / 1000000
+    const balance = state.balance / 1000000
+    if (sendAmount + transactionFee > balance) {
+      setState({sendAmount: Object.assign({}, state.sendAmount, {validationError: {code: 'SendAmountInsufficientFundsForFee', params: {balance, transactionFee}}})})
     }
+  }
+
+  const calculateFee = async () => {
+    const state = getState()
+    if (!isSendFormFilledAndValid(state)) {
+      setState({calculatingFee: false})
+      return
+    }
+
+    const address = state.sendAddress.fieldValue
+    const amount = parseFloat(state.sendAmount.fieldValue) * 1000000
+    const transactionFee = await wallet.getTxFee(address, amount)
+
+    // if we reverted value in the meanwhile, do nothing, otherwise update
+    const newState = getState()
+    if (
+      newState.sendAmount.fieldValue === state.sendAmount.fieldValue &&
+      newState.sendAddress.fieldValue === state.sendAddress.fieldValue
+    ) {
+      setState({
+        transactionFee,
+      })
+    }
+    validateFee(getState())
+    setState({calculatingFee: false})
+  }
+
+  const confirmTransaction = () => ({showConfirmTransactionDialog: true})
+
+  const cancelTransaction = () => ({showConfirmTransactionDialog: false})
+
+  const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
+
+  const validateSendFormAndCalculateFee = () => {
+    validateSendForm(getState())
+    if (isSendFormFilledAndValid(getState())) {
+      setState({calculatingFee: true})
+      debouncedCalculateFee()
+    } else {
+      setState({calculatingFee: false})
+    }
+  }
+
+  const updateAddress = (state, e) => {
+    setState({sendAddress: Object.assign({}, state.sendAddress, {fieldValue: e.target.value})})
+    validateSendFormAndCalculateFee()
+  }
+
+  const updateAmount = (state, e) => {
+    setState({sendAmount: Object.assign({}, state.sendAmount, {fieldValue: e.target.value})})
+    validateSendFormAndCalculateFee()
   }
 
   const submitTransaction = async (state) => {
-    const address = state.sendAddress
-    const amount = state.sendAmount
-    setState(
-      loadingAction(state, 'processing transaction', 'Submitting transaction...', {
-        sendSuccess: 'processing transaction',
-      })
-    )
-
-    const sendSuccess = await wallet.sendAda(address, amount * 1000000)
-
-    setState({sendSuccess, loading: false})
+    setState(loadingAction(state, 'processing transaction', 'Submitting transaction...'))
+    try {
+      const address = state.sendAddress.fieldValue
+      const amount = parseFloat(state.sendAmount.fieldValue) * 1000000
+      const sendSuccess = await wallet.sendAda(address, amount)
+      setState({sendSuccess, loading: false, showConfirmTransactionDialog: false})
+    } catch (e) {
+      setState({sendSuccess: false, loading: false, showConfirmTransactionDialog: false})
+    }
   }
 
   return {
     loadingAction,
     loadWalletFromMnemonic,
-    generateMnemonic,
     logout,
     reloadWalletInfo,
     generateNewUnusedAddress,
     toggleAboutOverlay,
     calculateFee,
+    confirmTransaction,
+    cancelTransaction,
     submitTransaction,
-    inputAddress,
-    inputAmount,
+    updateAddress,
+    updateAmount,
   }
 }

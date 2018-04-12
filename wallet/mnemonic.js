@@ -13,6 +13,14 @@ function generateMnemonic() {
   return bip39.generateMnemonic(null, null, words)
 }
 
+function validateMnemonic(mnemonic) {
+  try {
+    return !!mnemonic && bip39.validateMnemonic(mnemonic)
+  } catch (e) {
+    return false
+  }
+}
+
 function mnemonicToWalletSecretString(mnemonic) {
   const hashSeed = mnemonicToHashSeed(mnemonic)
   let result
@@ -73,8 +81,8 @@ function extendSecretToSecretKey(secret) {
 }
 
 function mnemonicToHashSeed(mnemonic) {
-  if (mnemonic === '' || !bip39.validateMnemonic(mnemonic)) {
-    const e = new Error('Mnemonic with invalid checksum')
+  if (!validateMnemonic(mnemonic)) {
+    const e = new Error('Invalid or unsupported mnemonic format')
     e.name = 'InvalidArgumentException'
     throw e
   }
@@ -113,4 +121,4 @@ function mnemonicWordToIndex(word) {
   return result
 }
 
-module.exports = {generateMnemonic, mnemonicToWalletSecretString}
+module.exports = {generateMnemonic, mnemonicToWalletSecretString, validateMnemonic}

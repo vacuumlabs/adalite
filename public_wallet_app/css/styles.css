@@ -10,6 +10,14 @@
   --input-background: #f4f5f6;
   --border: #dadada;
   --navbar: #f4f5f6;
+  --positive: #38a14f;
+  --positive-transparent: #38a14f10;
+  --warning: #ac6e27;
+  --warning-transparent: #ac6e2710;
+  --negative: #d44242;
+  --negative-transparent: #d4424210;
+  --disabled: #ddd;
+  --navbar-text: #777;
 }
 /* NORMALIZE */
 * {
@@ -90,10 +98,13 @@ button:hover {
   transform: scale(1.08);
 }
 button.danger {
-  background-color: #d44242;
+  background-color: var(--negative);
 }
-button.danger:hover {
-  background-color: #9c2929;
+button.positive {
+  background-color: var(--positive);
+}
+button:disabled {
+  background-color: var(--disabled);
 }
 button + button {
   margin-left: 2em;
@@ -186,6 +197,13 @@ td {
   margin-top: 1rem;
 }
 
+.address-iniline {
+  word-break: break-all;
+  border: 1px solid var(--border);
+  background-color: white;
+  padding: .5em .5em;
+  margin: .5em 0;
+}
 /* BOX */
 .box {
   padding: 1rem;
@@ -205,30 +223,34 @@ td {
 }
 /* ALERT */
 .alert {
-  border: 1px solid #d44242;
-  background-color: #d4424210;
-  color: #d44242;
+  border: 1px solid var(--negative);
+  background-color: var(--negative-transparent);
+  color: var(--negative);
   font-weight: bold;
-  margin: 1.5rem;
+  margin: .5rem;
   padding: 0.5rem 1rem;
 }
 .alert small {
   font-weight: 400;
 }
 .alert.error {
-  border-color: #d44242;
-  background-color: #d4424210;
-  color: #d44242;
+  border-color: var(--negative);
+  background-color: var(--negative-transparent);
+  color: var(--negative);
 }
 .alert.success {
-  border-color: #38a14f;
-  background-color: #38a14f10;
-  color: #38a14f;
+  border-color: var(--positive);
+  background-color: var(--positive-transparent);
+  color: var(--positive);
 }
 .alert.warning {
-  border-color: #ac6e27;
-  background-color: #ac6e2710;
-  color: #ac6e27;
+  border-color: var(--warning);
+  background-color: var(--warning-transparent);
+  color: var(--warning);
+}
+.validationMsg {
+  color: var(--negative);
+  margin: 0 .8rem;
 }
 /* NAVIGATION */
 .navbar {
@@ -272,7 +294,7 @@ td {
   display: none;
 }
 .navbar nav a {
-  color: #777;
+  color: var(--navbar-text);
   text-decoration: none;
   margin-left: 1rem;
   transition: color var(--transition);
@@ -312,7 +334,12 @@ td {
   border-radius: 0;
 }
 .status button:hover {
-  color: var(--brand);
+  background-color: var(--brand-light);
+}
+.status-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.6rem;
 }
 .status-text {
   width: 12em;
@@ -417,12 +444,12 @@ td {
   animation: fade-in 0.5s;
 }
 .overlay label {
-  color: #777;
+  color: var(--navbar-text);
   cursor: pointer;
 }
 .overlay p {
   margin-top: 1rem;
-  color: #777;
+  color: var(--navbar-text);
 }
 
 .overlay-close-layer {
@@ -458,9 +485,43 @@ td {
   height: 60px;
   animation: loading-spin 1s linear infinite;
 }
-.amount-label-row {
+
+.ontop {
+  z-index: 3;
+}
+.loading-inside-button {
+  display: inline-block;
+  border: 2px solid rgba(150, 150, 150, 0.4);
+  border-left-color: white;
+  border-radius: 50%;
+  margin-top: -2px;
+  margin-right: 5px;
+  width: 20px;
+  height: 20px;
+  animation: loading-spin 1s linear infinite;
+}
+.loading-button {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  float: right;
+  margin: 15px 5px;
+  height: 2.6rem;
+  width: 200px;
+  text-align: center;
+  justify-content: center;
+}
+.loading-button-wrapper {
+  display: flex;
+  justify-content: center;
+}
+.amount-label-row {
+    display: flex;
+    justify-content: space-between;
+}
+.row {
+  display: flex;
 }
 .centered-row {
   display: flex;
@@ -616,9 +677,9 @@ td {
   display: block;
 }
 @media screen and (max-width: 768px) {
-  .transaction-id {
-    width: 10em;
-  }
+    .transaction-id {
+        width: 10em;
+    }
 }
 /*SEND-ADA*/
 .transaction-fee {

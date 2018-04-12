@@ -1,6 +1,6 @@
 const cbor = require('cbor')
 
-const {mnemonicToWalletSecretString, generateMnemonic} = require('./mnemonic')
+const {mnemonicToWalletSecretString, generateMnemonic, validateMnemonic} = require('./mnemonic')
 const tx = require('./transaction')
 const address = require('./address')
 const blockchainExplorerObject = require('./blockchain-explorer')
@@ -69,9 +69,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     }, 0)
 
     const fee = computeTxFee(txInputs, coins)
-
-    //comment this for developement
-    if (fee === -1) {
+    if (txInputsCoinsSum - coins - fee < 0) {
       return false
     }
 
@@ -186,13 +184,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     */
     const deviation = 4
 
-    const fee = txFeeFunction(txSizeInBytes + deviation)
-
-    if (txInputsCoinsSum - coins - fee < 0) {
-      return -1
-    }
-
-    return fee
+    return txFeeFunction(txSizeInBytes + deviation)
   }
 
   async function getChangeAddress(usedAddressesLimit = Number.MAX_SAFE_INTEGER, offset = 0) {
@@ -333,4 +325,10 @@ if (typeof window !== 'undefined') {
   window.CardanoWallet = exports.CardanoWallet
 }
 
-module.exports = {CardanoWallet, generateMnemonic, txFeeFunction}
+module.exports = {
+  CardanoWallet,
+  generateMnemonic,
+  validateMnemonic,
+  txFeeFunction,
+  isValidAddress: address.isValidAddress,
+}
