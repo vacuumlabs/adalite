@@ -79,6 +79,10 @@ button {
   cursor: pointer;
   transition: background-color var(--transition);
 }
+button:disabled {
+  background-color: var(--brand-light);
+  cursor: not-allowed;
+}
 button.bold {
 }
 button:hover {
@@ -110,7 +114,6 @@ label span {
 }
 label {
   display: block;
-  margin-bottom: 1rem;
 }
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
@@ -431,6 +434,37 @@ td {
   height: 60px;
   animation: loading-spin 1s linear infinite;
 }
+.loading-inside-button {
+  display: inline-block;
+  border: 2px solid rgba(150, 150, 150, 0.4);
+  border-left-color: white;
+  border-radius: 50%;
+  margin-top: -2px;
+  margin-right: 5px;
+  width: 20px;
+  height: 20px;
+  animation: loading-spin 1s linear infinite;
+}
+.loading-button {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  float: right;
+  margin: 15px 5px;
+  height: 2.6rem;
+  width: 200px;
+  text-align: center;
+  justify-content: center;
+}
+.loading-button-wrapper {
+  display: flex;
+  justify-content: center;
+}
+.amount-label-row {
+  display: flex;
+  justify-content: space-between;
+}
 /* FOOTER */
 .footer {
   max-width: var(--width);
@@ -498,11 +532,11 @@ td {
 .webflow-style-input {
   position: relative;
   display: flex;
+  align-items: center;
   flex-direction: row;
   width: 100%;
   margin: 0 auto;
   border: 1px solid var(--border);
-  border-radius: 10px;
   padding: 0.2rem;
   background: var(--input-background);
 }
@@ -510,16 +544,27 @@ td {
   flex-grow: 1;
   color: var(--input-text-active);
   font-size: 1.1rem;
-  line-height: 2.4rem;
   vertical-align: middle;
   border-style: none;
   background: transparent;
   outline: none;
+}
+.webflow-unlock-div {
+  border-radius: 10px;
+}
+.webflow-unlock-input {
   text-align: center;
 }
-/* todo rewrite this */
-.webflow-style-input input .send-input {
+.webflow-send-div {
+  margin-bottom: 15px;
+}
+.webflow-send-input {
   text-align: left;
+}
+.webflow-style-input span {
+  font-size: 1.2rem;
+  vertical-align: middle;
+  padding-right: 1rem;
 }
 
 .webflow-style-input input::-webkit-input-placeholder {
@@ -527,13 +572,6 @@ td {
 }
 .webflow-style-input input::-moz-placeholder {
   color: var(--input-text-inactive);
-}
-.webflow-style-input span {
-  color: var(--input-text-inactive);
-  font-size: 2.4rem;
-  line-height: 2.4rem;
-  vertical-align: middle;
-  transition: color 0.25s;
 }
 
 /*DASHBOARD*/
@@ -568,6 +606,12 @@ td {
 }
 .green {
   color: green;
+}
+/*SEND-ADA*/
+.transaction-fee {
+  text-align: right;
+  display: block;
+  margin: 5px;
 }
 
 @keyframes rise-up {

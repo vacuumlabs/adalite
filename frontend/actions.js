@@ -3,8 +3,19 @@ import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
 let wallet = null
 
+const debounceEvent = (callback, time) => {
+  let interval
+  return (...args) => {
+    clearTimeout(interval)
+    interval = setTimeout(() => {
+      interval = null
+      callback(...args)
+    }, time)
+  }
+}
+
 export default ({setState, getState}) => {
-  const loadingAction = (message, optionalArgsObj) =>
+  const loadingAction = (state, message, optionalArgsObj) =>
     Object.assign(
       {},
       {
@@ -15,11 +26,11 @@ export default ({setState, getState}) => {
     )
 
   const loadWalletFromMnemonic = async (state, mnemonic) => {
-    setState(loadingAction('Loading wallet data...'))
+    setState(loadingAction(state, 'Loading wallet data...'))
 
     wallet = Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
 
-    const activeWalletId = wallet.getId()
+    const activeWalletId = await wallet.getId()
     const usedAddresses = await wallet.getUsedAddresses()
     const unusedAddresses = [await wallet.getChangeAddress()]
     const transactionHistory = await wallet.getHistory()
@@ -55,8 +66,8 @@ export default ({setState, getState}) => {
     return {activeWalletId: null}
   }
 
-  const reloadWalletInfo = async () => {
-    setState(loadingAction('Reloading wallet info...'))
+  const reloadWalletInfo = async (state) => {
+    setState(loadingAction(state, 'Reloading wallet info...'))
 
     const balance = await wallet.getBalance()
     const usedAddresses = await wallet.getUsedAddresses()
@@ -91,25 +102,34 @@ export default ({setState, getState}) => {
     sendAddress: e.target.value,
   })
 
-  const inputAmount = (state, e) =>
-    console.log(e) || {
-      sendAmountFieldValue: e.target.value,
-      sendAmountFieldValueDirty: true,
-    }
-
-  const calculateFee = async (state) => {
+  // is being called debounced, thus we need to getState
+  // TODO maybe it'd be good practice to only use getState and avoid this problem?
+  const calculateFee = async () => {
+    const state = getState()
     const address = state.sendAddress
-    const amount = parseFloat(state.sendAmountFieldValue)
-    setState(loadingAction('Computing transaction fee...'))
+    const sendValue = state.sendAmountFieldValue
+    const amount = parseFloat(state.sendAmountFieldValue || 0)
     const transactionFee = await wallet.getTxFee(address, amount)
-    setState({transactionFee, loading: false})
+    // if we reverted value in the meanwhile, do nothing, otherwise update
+    if (state.sendAmountFieldValue !== state.feeCalculatedFrom) {
+      setState({transactionFee, feeCalculatedFrom: sendValue})
+    }
+  }
+
+  const debouncedCalculateFee = debounceEvent((state) => setState(calculateFee(state)), 2000)
+
+  const inputAmount = (state, e) => {
+    debouncedCalculateFee()
+    return {
+      sendAmountFieldValue: e.target.value,
+    }
   }
 
   const submitTransaction = async (state) => {
     const address = state.sendAddress
     const amount = state.sendAmount
     setState(
-      loadingAction('processing transaction', 'Submitting transaction...', {
+      loadingAction(state, 'processing transaction', 'Submitting transaction...', {
         sendSuccess: 'processing transaction',
       })
     )

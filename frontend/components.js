@@ -26,7 +26,7 @@ class UnlockClass extends Component {
   }
 
   updateMnemonic(e) {
-    this.setState({ currentWalletMnemonicOrSecret: e.target.value });
+    this.setState({currentWalletMnemonicOrSecret: e.target.value})
   }
 
   render({loadWalletFromMnemonic}, {currentWalletMnemonicOrSecret}) {
@@ -45,15 +45,16 @@ class UnlockClass extends Component {
             {class: 'intro-input-row fade-in-up-delayed'},
             h(
               'div',
-              {class: 'webflow-style-input'},
+              {class: 'webflow-style-input webflow-unlock-div'},
               h('input', {
                 type: 'text',
+                class: 'webflow-unlock-input',
                 id: 'mnemonic-submitted',
                 name: 'mnemonic-submitted',
                 placeholder: 'Enter twelve-word mnemonic',
                 size: '47',
                 value: currentWalletMnemonicOrSecret,
-                onInput: this.updateMnemonic
+                onInput: this.updateMnemonic,
               })
             ),
             h(
@@ -126,7 +127,7 @@ const UnusedAddressesList = connect('unusedAddresses', actions)(
       h(
         'button',
         {
-          disabled: disableGettingNewAddresses ? 'disabled="disabled"' : '',
+          disabled: !!disableGettingNewAddresses,
           onClick: generateNewUnusedAddress,
         },
         'Get one more'
@@ -204,29 +205,42 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
   )
 )
 
-// TODO unfinished page
-const SendAda = connect(
-  (state) => ({
-    sendSuccess: state.sendSuccess,
-    sendAddress: state.sendAddress,
-    sendAmountFieldValue: state.sendAmountFieldValue,
-    transactionFee: state.transactionFee / 1000000,
-    totalAmount: parseFloat(state.sendAmountFieldValue) + state.transactionFee / 1000000,
-  }),
-  actions
-)(
-  ({
-    sendSuccess,
-    sendAddress,
-    sendAmountFieldValue,
-    inputAddress,
-    inputAmount,
-    totalAmount,
-    transactionFee,
-    submitTransaction,
-    calculateFee,
-  }) =>
-    h(
+class SendAdaClass extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      totalAmount: (
+        parseFloat(props.sendAmountFieldValue || 0) +
+        props.transactionFee / 1000000
+      ).toFixed(6),
+    }
+  }
+
+  componentWillReceiveProps(next) {
+    // don't update to invalid value while waiting for fee
+    if (next.feeCalculatedFrom === next.sendAmountFieldValue) {
+      this.setState({
+        totalAmount: (parseFloat(next.sendAmountFieldValue || 0) + next.transactionFee).toFixed(6),
+      })
+    }
+  }
+
+  render(
+    {
+      sendSuccess,
+      sendAddress,
+      sendAmountFieldValue,
+      feeCalculatedFrom,
+      inputAddress,
+      inputAmount,
+      transactionFee,
+      submitTransaction,
+      calculateFee,
+    },
+    {totalAmount}
+  ) {
+    const feeRecalculating = feeCalculatedFrom !== sendAmountFieldValue
+    return h(
       'div',
       {class: 'content-wrapper'},
       h(
@@ -239,9 +253,10 @@ const SendAda = connect(
         h('label', undefined, h('span', undefined, 'Address')),
         h(
           'div',
-          {class: 'webflow-style-input send-input'},
+          {class: 'webflow-style-input webflow-send-div'},
           h('input', {
             type: 'text',
+            class: 'webflow-send-input',
             id: 'send-address',
             name: 'send-address',
             placeholder: 'Receiving address',
@@ -250,11 +265,11 @@ const SendAda = connect(
             onInput: inputAddress,
           })
         ),
-        h('label', undefined, h('span', undefined, 'Amount')),
         h(
-          'span',
-          {style: 'text-align: right'},
-          transactionFee ? `+ ${transactionFee} ADA` : "press 'Calculate Fee'"
+          'div',
+          {class: 'amount-label-row'},
+          h('label', undefined, h('span', undefined, 'Amount')),
+          h('span', {class: 'transaction-fee'}, `+ ${transactionFee} transaction fee`)
         ),
         h(
           'div',
@@ -268,13 +283,31 @@ const SendAda = connect(
             value: sendAmountFieldValue,
             onInput: inputAmount,
           }),
-          h('span', undefined, totalAmount)
+          h('span', {style: `color: ${feeRecalculating ? 'red' : 'green'}`}, `= ${totalAmount} ADA`)
         ),
-        h('button', {onClick: submitTransaction}, 'Submit'),
-        h('button', {onClick: calculateFee}, 'Calculate Fee')
+        feeRecalculating
+          ? h(
+            'button',
+            {disabled: true, class: 'loading-button'},
+            h('div', {class: 'loading-inside-button'}),
+            'Calculating Fee'
+          )
+          : h('button', {onClick: submitTransaction, class: 'loading-button'}, 'Submit')
       )
     )
-)
+  }
+}
+
+const SendAda = connect(
+  (state) => ({
+    sendSuccess: state.sendSuccess,
+    sendAddress: state.sendAddress,
+    sendAmountFieldValue: state.sendAmountFieldValue,
+    feeCalculatedFrom: state.feeCalculatedFrom,
+    transactionFee: state.transactionFee / 1000000,
+  }),
+  actions
+)(SendAdaClass)
 
 const WalletInfo = () => h('div', {class: 'content-wrapper'}, h(Balance), h(TransactionHistory))
 
