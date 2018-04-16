@@ -60,7 +60,11 @@ class UnlockClass extends Component {
             h(
               'span',
               undefined,
-              h('button', {class: 'intro-button', onClick: this.loadWalletFromMnemonic}, 'Go')
+              h(
+                'button',
+                {class: 'intro-button rounded-button', onClick: this.loadWalletFromMnemonic},
+                'Go'
+              )
             )
           ),
           h(
@@ -469,15 +473,32 @@ const Navbar = connect((state) => ({
   activeWalletId: state.activeWalletId,
 }))(({activeWalletId}) => (activeWalletId ? h(NavbarAuth) : h(NavbarUnauth)))
 
-const AboutOverlay = connect('displayAboutOverlay', actions)(
-  ({displayAboutOverlay, toggleAboutOverlay}) =>
-    displayAboutOverlay
+class AboutOverlayClass extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      dontShowAgainCheckbox: false,
+    }
+    this.checkboxClick = this.checkboxClick.bind(this)
+    this.toggleAboutOverlay = this.toggleAboutOverlay.bind(this)
+  }
+
+  checkboxClick() {
+    this.setState({dontShowAgainCheckbox: !this.state.dontShowAgainCheckbox})
+  }
+
+  toggleAboutOverlay() {
+    this.props.toggleAboutOverlay(this.state.dontShowAgainCheckbox)
+  }
+
+  render({displayAboutOverlay, toggleAboutOverlay}, {dontShowAgainCheckbox}) {
+    return displayAboutOverlay
       ? h(
         'div',
         {class: 'overlay'},
         h('div', {
           class: 'overlay-close-layer',
-          onClick: () => toggleAboutOverlay(),
+          onClick: toggleAboutOverlay, // does not allow remembering the checkbox
         }),
         h(
           'div',
@@ -487,24 +508,54 @@ const AboutOverlay = connect('displayAboutOverlay', actions)(
             'p',
             undefined,
             `The official Cardano team did not review this code and is not responsible for any damage
-          it may cause you. The CardanoLite project is in alpha stage and should be used for
-          penny-transactions only. We appreciate feedback, especially review of the crypto-related code.`
+        it may cause you. The CardanoLite project is in alpha stage and should be used for
+        penny-transactions only. We appreciate feedback, especially review of the crypto-related code.`
           ),
-          h('h4', undefined, ' CardanoLite is not a bank '),
+          h('h4', {class: 'header-margin'}, ' CardanoLite is not a bank '),
           h(
             'p',
             undefined,
             `
-          It does not really store your funds permanently - each
-          time you interact with it, you have to insert the mnemonic - the 12-words long root password
-          to your account. If you lose it, we cannot help you restore the funds.
-        `
+        It does not really store your funds permanently - each
+        time you interact with it, you have to insert the mnemonic - the 12-words long root password
+        to your account. If you lose it, we cannot help you restore the funds.
+      `
           ),
-          h('p', undefined, 'Feedback and contributions are very welcome.')
+          h('p', undefined, 'Feedback and contributions are very welcome.'),
+          h(
+            'span',
+            {class: 'centered-row'},
+            h('input', {
+              type: 'checkbox',
+              checked: dontShowAgainCheckbox,
+              onClick: this.checkboxClick,
+              class: 'understand-checkbox',
+            }),
+            h(
+              'span',
+              {class: 'checkbox-text', onClick: this.checkboxClick},
+              'I understand the risk and do not wish to be shown this screen again'
+            )
+          ),
+          h(
+            'span',
+            {class: 'centered-row'},
+            h(
+              'button',
+              {
+                onClick: this.toggleAboutOverlay,
+                class: 'rounded-button',
+              },
+              'Close'
+            )
+          )
         )
       )
       : null
-)
+  }
+}
+
+const AboutOverlay = connect('displayAboutOverlay', actions)(AboutOverlayClass)
 
 const Loading = connect(['loadingMessage', 'loading'])(
   ({loading, loadingMessage}) =>
