@@ -4,15 +4,13 @@ const {pbkdf2Sync} = require('pbkdf2')
 
 async function pbkdf2Async(password, salt, iterations, length, algo) {
   try {
-    const toBufferUtf8 = (str) => Buffer.from(str, 'utf-8')
-
     return await subtle.importKey(
-      'raw', toBufferUtf8(password), {name: 'PBKDF2'}, false, ['deriveBits']
+      'raw', Buffer.from(password), {name: 'PBKDF2'}, false, ['deriveBits']
     ).then(async (key) => {
       return new Buffer(
         await subtle.deriveBits({
           name: 'PBKDF2',
-          salt: toBufferUtf8(salt),
+          salt: Buffer.from(salt),
           iterations,
           hash: {
             name: algo,
