@@ -184,7 +184,7 @@ async function deriveHDPassphrase(walletSecretString) {
     'hex'
   )
 
-  return await pbkdf2Async(extendedPublicKey, 'address-hashing', 500, 32, 'SHA-512')
+  return await pbkdf2Async(extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
 }
 
 function deriveSkIteration(parentSecretString, childIndex) {
