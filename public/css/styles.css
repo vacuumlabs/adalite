@@ -67,7 +67,7 @@ button {
   background-color: var(--brand);
   color: white;
   border: 0;
-  border-radius: 3px;
+  border-radius: 8px;
   padding: 0 1em;
   height: 2.5rem;
   font-size: 1rem;
@@ -195,15 +195,6 @@ td {
   max-width: var(--width);
   width: 80%;
   position: relative;
-}
-.overlay .box::after {
-  content: '╳';
-  position: absolute;
-  top: -2rem;
-  right: -2rem;
-  font-size: 1rem;
-  color: var(--text-color);
-  pointer-events: none;
 }
 /* ALERT */
 .alert {
@@ -425,36 +416,23 @@ td {
   height: 60px;
   animation: loading-spin 1s linear infinite;
 }
-.loading-inside-button {
-  display: inline-block;
-  border: 2px solid rgba(150, 150, 150, 0.4);
-  border-left-color: white;
-  border-radius: 50%;
-  margin-top: -2px;
-  margin-right: 5px;
-  width: 20px;
-  height: 20px;
-  animation: loading-spin 1s linear infinite;
-}
-.loading-button {
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
-  font-weight: 600;
-  float: right;
-  margin: 15px 5px;
-  height: 2.6rem;
-  width: 200px;
-  text-align: center;
-  justify-content: center;
-}
-.loading-button-wrapper {
-  display: flex;
-  justify-content: center;
-}
 .amount-label-row {
   display: flex;
   justify-content: space-between;
+}
+.centered-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.understand-checkbox {
+  margin: 10px;
+}
+.checkbox-text {
+  cursor: pointer;
+}
+.header-margin {
+  margin-top: 1rem;
 }
 /* FOOTER */
 .footer {
@@ -511,7 +489,6 @@ td {
   margin: 0 20px;
   font-weight: 600;
   font-size: 1.1rem;
-  border-radius: 8px;
 }
 .intro-link {
   text-align: center;
@@ -595,7 +572,6 @@ td {
   display: block;
   margin: 5px;
 }
-
 @keyframes rise-up {
   from {
     opacity: 0;
@@ -614,4 +590,31 @@ td {
   animation: fade-in 1.5s, rise-up 1.5s;
   animation-delay: 0.2s;
   animation-fill-mode: forwards;
+}
+.loading-inside-button {
+  display: inline-block;
+  border: 2px solid rgba(150, 150, 150, 0.4);
+  border-left-color: white;
+  border-radius: 50%;
+  margin-top: -2px;
+  margin-right: 5px;
+  width: 20px;
+  height: 20px;
+  animation: loading-spin 1s linear infinite;
+}
+.loading-button {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  float: right;
+  margin: 15px 5px;
+  height: 2.6rem;
+  width: 200px;
+  text-align: center;
+  justify-content: center;
+}
+.loading-button-wrapper {
+  display: flex;
+  justify-content: center;
 }

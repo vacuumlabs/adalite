@@ -94,9 +94,15 @@ export default ({setState, getState}) => {
     })
   }
 
-  const toggleAboutOverlay = (state) => ({
-    displayAboutOverlay: !state.displayAboutOverlay,
-  })
+  const toggleAboutOverlay = (state, rememberInStorage) => {
+    // we may get an ignored click event as the second argument, check only against booleans
+    if (rememberInStorage === true) {
+      window.localStorage.setItem('dontShowDisclaimer', true)
+    }
+    return {
+      displayAboutOverlay: !state.displayAboutOverlay,
+    }
+  }
 
   const inputAddress = (state, e) => ({
     sendAddress: e.target.value,
