@@ -33,7 +33,7 @@ const initialState = {
   currentTab: 'wallet-info',
   activeWalletId: null,
   currentWalletMnemonicOrSecret:
-    'opera jacket raise like injury slogan valid deny someone dove tag weapon',
+    'plastic that delay conduct police ticket swim gospel intact harsh obtain entire',
   newWalletMnemonic: '',
   usedAddresses: [],
   unusedAddresses: [],
