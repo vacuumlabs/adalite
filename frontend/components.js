@@ -10,7 +10,7 @@ class UnlockClass extends Component {
     super(props)
     this.state = {
       currentWalletMnemonicOrSecret:
-        'opera jacket raise like injury slogan valid deny someone dove tag weapon',
+        'plastic that delay conduct police ticket swim gospel intact harsh obtain entire',
     }
     this.generateMnemonic = this.generateMnemonic.bind(this)
     this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
@@ -140,8 +140,8 @@ const Addresses = () =>
   h('div', {class: 'content-wrapper'}, h(UnusedAddressesList), h(UsedAddressesList))
 
 const PrettyDate = ({date}) => {
-  const day = `${date.getDay()}`.padStart(2)
-  const month = `${date.getMonth()}`.padStart(2)
+  const day = `${date.getDate()}`.padStart(2)
+  const month = `${date.getMonth() + 1}`.padStart(2)
   const year = date.getFullYear()
   // pad with html space character, since two regular spaces get truncated
   const hours = `${date.getHours()}`.padStart(2, ' ')
@@ -161,7 +161,7 @@ const TransactionAddress = ({address}) => {
     'a',
     {
       class: 'transaction-id',
-      href: `https://cardanoexplorer.com/'tx'/${address}`,
+      href: `https://cardanoexplorer.com/tx/${address}`,
       target: '_blank',
       title: 'Examine via CardanoExplorer.com',
     },

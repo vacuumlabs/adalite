@@ -32,8 +32,6 @@ const initialState = {
   displayAboutOverlay: true,
   currentTab: 'wallet-info',
   activeWalletId: null,
-  currentWalletMnemonicOrSecret:
-    'plastic that delay conduct police ticket swim gospel intact harsh obtain entire',
   newWalletMnemonic: '',
   usedAddresses: [],
   unusedAddresses: [],
