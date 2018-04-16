@@ -153,7 +153,11 @@ const PrettyValue = ({effect}) => {
   const value = Math.abs(effect / 1000000)
   const prefix = effect > 0 ? '+ ' : '- '
   const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
-  return h('pre', {class: effect > 0 ? 'green' : 'red'}, `${prefix}${number}`.padEnd(10))
+  return h(
+    'pre',
+    {style: `color: ${effect > 0 ? 'green' : 'red'}`},
+    `${prefix}${number}`.padEnd(10)
+  )
 }
 
 const TransactionAddress = ({address}) => {

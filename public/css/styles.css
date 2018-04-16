@@ -72,7 +72,7 @@ button {
   height: 2.5rem;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color var(--transition);
+  transition: all var(--transition);
 }
 button:disabled {
   background-color: var(--brand-light);
@@ -80,6 +80,7 @@ button:disabled {
 }
 button:hover {
   background-color: var(--brand-dark);
+  transform: scale(1.08);
 }
 button.danger {
   background-color: #d44242;
@@ -306,13 +307,10 @@ td {
   color: var(--brand);
   border: 0;
   cursor: pointer;
-  transition: background-color var(--transition);
+  transition: all var(--transition);
   margin: 5px;
   padding: 2px;
   height: 2.5rem;
-}
-.status button:hover {
-  background-color: var(--brand-light);
 }
 .status-text-wrapper {
   display: flex;
