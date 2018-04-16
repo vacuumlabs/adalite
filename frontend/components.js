@@ -256,7 +256,6 @@ class SendAdaClass extends Component {
           {class: 'webflow-style-input webflow-send-div'},
           h('input', {
             type: 'text',
-            class: 'webflow-send-input',
             id: 'send-address',
             name: 'send-address',
             placeholder: 'Receiving address',

@@ -10,8 +10,6 @@
   --input-background: #f4f5f6;
   --border: #dadada;
   --navbar: #f4f5f6;
-  --red: #ff0000;
-  --green: #00ff00;
 }
 /* NORMALIZE */
 * {
@@ -42,7 +40,6 @@ h2 {
   font-size: 2.5rem;
   margin-top: 0;
   margin-bottom: 0.5em;
-  text-align: left;
   border-bottom: 2px solid var(--border);
   padding-bottom: 0.25em;
 }
@@ -55,7 +52,6 @@ h4 {
   font-size: 1.5em;
   margin-top: 0;
   margin-bottom: 0.5em;
-  text-align: left;
   border-bottom: 1px solid var(--border);
   padding-bottom: 0.25em;
 }
@@ -65,7 +61,6 @@ a {
 p {
   margin-top: 0.5em;
   margin-bottom: 0.25em;
-  cursor: pointer;
 }
 /* BUTTON */
 button {
@@ -82,8 +77,6 @@ button {
 button:disabled {
   background-color: var(--brand-light);
   cursor: not-allowed;
-}
-button.bold {
 }
 button:hover {
   background-color: var(--brand-dark);
@@ -558,9 +551,6 @@ td {
 .webflow-send-div {
   margin-bottom: 15px;
 }
-.webflow-send-input {
-  text-align: left;
-}
 .webflow-style-input span {
   font-size: 1.2rem;
   vertical-align: middle;
@@ -600,12 +590,6 @@ td {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
-}
-.red {
-  color: red;
-}
-.green {
-  color: green;
 }
 /*SEND-ADA*/
 .transaction-fee {
