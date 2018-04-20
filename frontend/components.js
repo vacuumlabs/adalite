@@ -44,19 +44,15 @@ class UnlockClass extends Component {
           h(
             'div',
             {class: 'intro-input-row fade-in-up-delayed'},
-            h(
-              'div',
-              {class: 'webflow-style-input webflow-unlock-div'},
-              h('input', {
-                type: 'text',
-                class: 'webflow-unlock-input',
-                id: 'mnemonic-submitted',
-                name: 'mnemonic-submitted',
-                placeholder: 'Enter twelve-word mnemonic',
-                value: currentWalletMnemonicOrSecret,
-                onInput: this.updateMnemonic,
-              })
-            ),
+            h('input', {
+              type: 'text',
+              class: 'webflow-input-nodiv webflow-unlock-input',
+              id: 'mnemonic-submitted',
+              name: 'mnemonic-submitted',
+              placeholder: 'Enter twelve-word mnemonic',
+              value: currentWalletMnemonicOrSecret,
+              onInput: this.updateMnemonic,
+            }),
             h(
               'span',
               undefined,
@@ -259,19 +255,16 @@ class SendAdaClass extends Component {
           ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
           : '',
         h('label', undefined, h('span', undefined, 'Address')),
-        h(
-          'div',
-          {class: 'webflow-style-input webflow-send-div'},
-          h('input', {
-            type: 'text',
-            id: 'send-address',
-            name: 'send-address',
-            placeholder: 'Receiving address',
-            size: '28',
-            value: sendAddress,
-            onInput: inputAddress,
-          })
-        ),
+        h('input', {
+          type: 'text',
+          id: 'send-address',
+          class: 'webflow-input-nodiv webflow-send-input',
+          name: 'send-address',
+          placeholder: 'Receiving address',
+          size: '28',
+          value: sendAddress,
+          onInput: inputAddress,
+        }),
         h(
           'div',
           {class: 'amount-label-row'},
@@ -382,7 +375,15 @@ class CopyOnClick extends Component {
   }
 
   render({title, value}, {tempTitle}) {
-    return h('span', {class: 'copy-on-click', onClick: this.copyTextToClipboard, title: tempTitle || (title ? `${title} (Click to Copy)` : 'Click to copy')}, value)
+    return h(
+      'span',
+      {
+        class: 'copy-on-click',
+        onClick: this.copyTextToClipboard,
+        title: tempTitle || (title ? `${title} (Click to Copy)` : 'Click to copy'),
+      },
+      value
+    )
   }
 }
 
@@ -450,7 +451,7 @@ const NavbarUnauth = () =>
       h('input', {id: 'navcollapse', type: 'checkbox'}),
       h(
         'nav',
-        undefined,
+        {class: 'unauth'},
         h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'About')
       )
     )

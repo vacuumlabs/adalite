@@ -30,6 +30,9 @@ body {
   height: 100%;
   color: var(--text-color);
 }
+input:focus {
+  outline: none;
+}
 /* TYPOGRAPHY */
 h1 {
   font-weight: 300;
@@ -194,7 +197,7 @@ td {
   background-color: #fcf7fd;
 }
 .overlay .box {
-  box-shadow: 3px 8px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 3px 8px 0.6rem rgba(0, 0, 0, 0.05);
   max-width: var(--width);
   width: 80%;
   position: relative;
@@ -234,7 +237,6 @@ td {
 .navbar-wrap {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   max-width: var(--width);
   width: 100%;
   height: 3.5rem;
@@ -247,6 +249,7 @@ td {
   display: flex;
   align-items: center;
   text-decoration: none;
+  cursor: pointer;
 }
 .navbar .title sup {
   align-self: flex-start;
@@ -260,6 +263,9 @@ td {
   justify-content: space-between;
   flex-grow: 1;
   align-items: center;
+}
+.navbar .unauth {
+  justify-content: flex-end;
 }
 .navbar input[type='checkbox'] {
   display: none;
@@ -288,10 +294,10 @@ td {
   display: flex;
   align-items: center;
   color: var(--text-color);
-  margin-left: 20px;
+  margin-left: 1.3rem;
 }
 .status > div {
-  margin: 0 10px 0 10px;
+  margin: 0 0.6rem 0 0.6rem;
 }
 .status button {
   background-color: var(--navbar);
@@ -299,7 +305,7 @@ td {
   border: 0;
   cursor: pointer;
   transition: transform var(--transition), color var(--transition);
-  margin: 5px;
+  margin: 0.3rem;
   padding: 2px;
   height: 2.5rem;
 }
@@ -334,6 +340,10 @@ td {
   height: 0.9rem;
 }
 @media screen and (max-width: 768px) {
+  body {
+    padding-top: 3.5rem;
+  }
+
   .navcollapse-label {
     padding: 1rem 0;
     line-height: 1rem;
@@ -341,6 +351,17 @@ td {
     margin-right: 1.5rem;
     display: flex;
     align-items: center;
+  }
+
+  .navbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+  }
+
+  .navbar-wrap {
+    justify-content: space-between;
   }
 
   .navbar nav {
@@ -444,7 +465,7 @@ td {
   align-items: center;
 }
 .understand-checkbox {
-  margin: 10px;
+  margin: 0.6rem;
 }
 .checkbox-text {
   cursor: pointer;
@@ -483,7 +504,7 @@ td {
 .intro-header {
   font-size: 2.3rem;
   font-weight: 600;
-  margin: 0 60px 30px;
+  margin: 0 4rem 2rem;
   text-align: center;
 }
 .intro-input-row {
@@ -492,7 +513,7 @@ td {
 }
 .intro-button {
   position: absolute;
-  margin: 0 20px;
+  margin: 0 1.3rem;
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -509,7 +530,7 @@ td {
 .intro-link {
   text-align: center;
   display: block;
-  margin: 20px;
+  margin: 1.3rem;
   cursor: pointer;
 }
 /*input stolen from https://codepen.io/anon/pen/ZxVwWQ*/
@@ -546,12 +567,10 @@ td {
 }
 .webflow-unlock-input {
   text-align: center;
+  border-radius: 0.6rem;
 }
-.webflow-unlock-div {
-  border-radius: 10px;
-}
-.webflow-send-div {
-  margin-bottom: 15px;
+.webflow-send-input {
+  margin-bottom: 1rem;
 }
 .webflow-style-input span {
   font-size: 1.2rem;
@@ -575,7 +594,7 @@ td {
   margin-left: 1rem;
 }
 .content-wrapper > div {
-  margin: 30px 0;
+  margin: 2rem 0;
 }
 .balance-text {
   font-weight: 300;
@@ -630,8 +649,8 @@ td {
   border-radius: 50%;
   margin-top: -2px;
   margin-right: 5px;
-  width: 20px;
-  height: 20px;
+  width: 1.3rem;
+  height: 1.3rem;
   animation: loading-spin 1s linear infinite;
 }
 .loading-button {
@@ -640,7 +659,7 @@ td {
   font-size: 1.1rem;
   font-weight: 600;
   float: right;
-  margin: 15px 5px;
+  margin: 1rem 0.3rem;
   height: 2.6rem;
   width: 200px;
   text-align: center;
