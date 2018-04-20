@@ -21,6 +21,7 @@
 }
 html {
   height: 100%;
+  font-size: 15px;
 }
 body {
   margin: 0;
@@ -62,6 +63,9 @@ p {
   margin-top: 0.5em;
   margin-bottom: 0.25em;
 }
+path {
+  fill: currentColor;
+}
 /* BUTTON */
 button {
   background-color: var(--brand);
@@ -72,14 +76,13 @@ button {
   height: 2.5rem;
   font-size: 1rem;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: transform var(--transition);
 }
 button:disabled {
   background-color: var(--brand-light);
   cursor: not-allowed;
 }
 button:hover {
-  background-color: var(--brand-dark);
   transform: scale(1.08);
 }
 button.danger {
@@ -230,11 +233,11 @@ td {
 }
 .navbar-wrap {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   max-width: var(--width);
   width: 100%;
-  height: 3rem;
+  height: 3.5rem;
   margin: 0 auto;
 }
 .navbar .title {
@@ -254,8 +257,9 @@ td {
 }
 .navbar nav {
   display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
   align-items: center;
-  padding: 0 1rem;
 }
 .navbar input[type='checkbox'] {
   display: none;
@@ -283,41 +287,46 @@ td {
 .status {
   display: flex;
   align-items: center;
-  flex: 0;
-  color: var(--brand);
+  color: var(--text-color);
   margin-left: 20px;
 }
 .status > div {
   margin: 0 10px 0 10px;
 }
-.status-button-wrapper {
-  display: flex;
-}
 .status button {
   background-color: var(--navbar);
-  color: var(--brand);
+  color: var(--text-color);
   border: 0;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: transform var(--transition), color var(--transition);
   margin: 5px;
   padding: 2px;
   height: 2.5rem;
 }
-.status-text-wrapper {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.6rem;
+.status button:hover {
+  color: var(--brand);
+}
+.staus button:hover svg {
+  fill: var(--brand);
 }
 .status-text {
-  width: 110px;
+  width: 12em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 2px;
+  font-size: 0.8rem;
+}
+.status-balance {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+.copy-on-click {
+  color: var(--brand);
+  text-decoration: underline;
+  cursor: pointer;
 }
 .status-icon-button-content {
-  display: flex;
-  flex-direction: column;
   font-size: 0.8rem;
 }
 .status-icon-button-image {
@@ -338,15 +347,17 @@ td {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex-grow: 1;
     position: fixed;
     right: 0;
-    top: calc(3rem + 1px);
+    top: calc(3.5rem + 1px);
     bottom: 0;
     padding: 1rem 3rem;
     background-color: var(--navbar);
     border-left: 1px solid var(--border);
-    transform: translateX(15rem);
+    transform: translateX(18rem);
     transition: transform var(--transition);
+    z-index: 1;
   }
 
   .navbar nav a {
@@ -362,6 +373,13 @@ td {
   .status {
     margin: 0;
     flex-direction: column-reverse;
+  }
+
+  .status-text {
+    white-space: normal;
+    word-break: break-all;
+    text-align: center;
+    margin: 0.5rem 0 0.5rem;
   }
 }
 /* OVERLAY */
@@ -460,19 +478,7 @@ td {
 }
 /*LANDING*/
 .intro-wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: center;
-  margin: 0 auto;
-}
-.intro-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  margin-top: -20%;
+  margin: auto;
 }
 .intro-header {
   font-size: 2.3rem;
@@ -490,6 +496,16 @@ td {
   font-weight: 600;
   font-size: 1.1rem;
 }
+@media screen and (max-width: 768px) {
+  .intro-input-row {
+    align-items: center;
+    flex-direction: column;
+  }
+  .intro-button {
+    position: unset;
+    margin: 1rem 0 0;
+  }
+}
 .intro-link {
   text-align: center;
   display: block;
@@ -498,7 +514,6 @@ td {
 }
 /*input stolen from https://codepen.io/anon/pen/ZxVwWQ*/
 .webflow-style-input {
-  position: relative;
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -511,17 +526,29 @@ td {
 .webflow-style-input input {
   flex-grow: 1;
   color: var(--input-text-active);
+  min-width: 0;
   font-size: 1.1rem;
   vertical-align: middle;
   border-style: none;
   background: transparent;
   outline: none;
 }
-.webflow-unlock-div {
-  border-radius: 10px;
+.webflow-input-nodiv {
+  flex-grow: 1;
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+  height: 2.5rem;
+  background: var(--input-background);
+  color: var(--input-text-active);
+  min-width: 0;
+  width: 100%;
+  font-size: 1.1rem;
 }
 .webflow-unlock-input {
   text-align: center;
+}
+.webflow-unlock-div {
+  border-radius: 10px;
 }
 .webflow-send-div {
   margin-bottom: 15px;
@@ -565,6 +592,11 @@ td {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+}
+@media screen and (max-width: 768px) {
+  .transaction-id {
+    width: 10em;
+  }
 }
 /*SEND-ADA*/
 .transaction-fee {
