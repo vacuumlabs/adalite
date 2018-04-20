@@ -7,10 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/vacuumlabs/cardano.git"
   },
-  "keywords": [
-    "cardano",
-    "wallet"
-  ],
+  "keywords": ["cardano", "wallet"],
   "author": "Rafael Korbas",
   "license": "ISC",
   "bugs": {
@@ -18,7 +15,8 @@
   },
   "scripts": {
     "start-server": "node server/index.js",
-    "dev": "PORT=${PORT:-3000} node server/index.js & webpack --watch --config webpack.build.config.js",
+    "dev":
+      "PORT=${PORT:-3000} node server/index.js & webpack --watch --config webpack.build.config.js",
     "eslint": "eslint .",
     "build": "webpack --config webpack.build.config.js --progress",
     "test": "webpack --config webpack.test.config.js",
@@ -48,8 +46,8 @@
     "supercop.js": "^2.0.1",
     "unistore": "^3.0.4",
     "webpack": "^4.1.1",
-    "webpack-node-externals": "^1.6.0",
-    "webpack-cli": "^2.0.10"
+    "webpack-cli": "^2.0.10",
+    "webpack-node-externals": "^1.6.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.2",

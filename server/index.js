@@ -8,6 +8,7 @@ const config = require('./helpers/backendConfigLoader')
 app.use(bodyParser.json())
 app.use(cors())
 app.use(express.static('public'))
+app.use(express.static('static')) // static landing page
 
 if (config.CARDANOLITE_FORCE_HTTPS === 'true') {
   app.use((req, res, next) => {
@@ -25,26 +26,25 @@ require('./transactionSubmitter')(app)
 
 app.get('*', (req, res) => {
   return res.status(200).send(`
-    <!doctype html>
-    <html>
+  <!doctype html>
+  <html>
 
-      <head>
-        <title>CardanoLite Wallet</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="js/init.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/styles.css">
-        <link rel="icon" type="image/ico" href="assets/favicon.ico">
-        <noscript>Your browser does not support JavaScript or it is turned off.</noscript>
-      </head>
+    <head>
+      <title>CardanoLite Wallet</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script src="js/init.js"></script>
+      <link rel="stylesheet" type="text/css" href="css/styles.css">
+      <link rel="icon" type="image/ico" href="assets/favicon.ico">
+      <noscript>Your browser does not support JavaScript or it is turned off.</noscript>
+    </head>
 
-      <body data-config=${JSON.stringify(config)}>
-        <div id="root" style="width: 100%; height: 100%;"></div>
-      </body>
+    <body data-config=${JSON.stringify(config)}>
+      <div id="root" style="width: 100%; height: 100%;"></div>
+    </body>
 
-    </html>
-  `)
+  </html>
+`)
 })
-
 
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
