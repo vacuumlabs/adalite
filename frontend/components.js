@@ -2,6 +2,7 @@ import {h, Component} from 'preact'
 import {connect} from 'unistore/preact'
 import Cardano from '../wallet/cardano-wallet'
 import actions from './actions'
+import {RefreshIcon, ExitIcon} from './svg'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
@@ -35,7 +36,7 @@ class UnlockClass extends Component {
       {class: 'intro-wrapper'},
       h(
         'div',
-        {class: 'intro-content'},
+        undefined,
         h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
         h(
           'div',
@@ -52,7 +53,6 @@ class UnlockClass extends Component {
                 id: 'mnemonic-submitted',
                 name: 'mnemonic-submitted',
                 placeholder: 'Enter twelve-word mnemonic',
-                size: '47',
                 value: currentWalletMnemonicOrSecret,
                 onInput: this.updateMnemonic,
               })
@@ -343,6 +343,49 @@ const TopLevelRouter = connect((state) => ({
   return h('main', {class: 'main'}, content)
 })
 
+class CopyOnClick extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {tempTitle: undefined}
+    this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(this)
+    this.copyTextToClipboard = this.copyTextToClipboard.bind(this)
+  }
+
+  fallbackCopyTextToClipboard() {
+    const input = document.createElement('textarea')
+    input.value = this.props.value
+    input.style.zIndex = '-1'
+    input.style.position = 'fixed'
+    input.style.top = '0'
+    input.style.left = '0'
+    document.body.appendChild(input)
+    input.focus()
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+  }
+
+  async copyTextToClipboard() {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(this.props.value)
+      } else {
+        this.fallbackCopyTextToClipboard()
+      }
+    } catch (err) {
+      console.error('Could not copy text: ', err)
+    } finally {
+      // TODO maybe show in better way, even for mobile
+      this.setState({tempTitle: 'Copied!'})
+      setTimeout(() => this.setState({tempTitle: undefined}), 3000)
+    }
+  }
+
+  render({title, value}, {tempTitle}) {
+    return h('span', {class: 'copy-on-click', onClick: this.copyTextToClipboard, title: tempTitle || (title ? `${title} (Click to Copy)` : 'Click to copy')}, value)
+  }
+}
+
 const LoginStatus = connect(
   (state) => ({
     pathname: state.router.pathname,
@@ -357,8 +400,18 @@ const LoginStatus = connect(
     h(
       'div',
       {class: 'status-text-wrapper'},
-      h('span', {class: 'status-text'}, `Balance: ${balance / 1000000} ADA`),
-      h('span', {class: 'status-text'}, `ID: ${activeWalletId}`)
+      h(
+        'div',
+        {class: 'status-text'},
+        'Balance: ',
+        h('span', {class: 'status-balance'}, `${(balance / 1000000).toFixed(6)} ADA`)
+      ),
+      h(
+        'div',
+        {class: 'status-text', title: activeWalletId},
+        'WalletID: ',
+        h(CopyOnClick, {value: activeWalletId, title: activeWalletId})
+      )
     ),
     h(
       'div',
@@ -366,22 +419,14 @@ const LoginStatus = connect(
       h(
         'button',
         {onClick: reloadWalletInfo},
-        h(
-          'span',
-          {class: 'status-icon-button'},
-          h('img', {class: 'status-icon-button-image', src: '/assets/synchronize-64.png'}),
-          h('span', {class: 'status-icon-button-content'}, 'Refresh')
-        )
+        h(RefreshIcon),
+        h('div', {class: 'status-icon-button-content'}, 'Refresh')
       ),
       h(
         'button',
         {onClick: logout},
-        h(
-          'span',
-          {class: 'status-icon-button'},
-          h('img', {class: 'status-icon-button-image', src: '/assets/logout-64.png'}),
-          h('span', {class: 'status-icon-button-content'}, 'Logout')
-        )
+        h(ExitIcon),
+        h('div', {class: 'status-icon-button-content'}, 'Logout')
       )
     )
   )
@@ -425,7 +470,7 @@ const NavbarAuth = connect((state) => ({
       {class: 'navbar-wrap'},
       h(
         'a',
-        {class: 'title', href: '/'},
+        {class: 'title', onClick: () => window.history.pushState({}, 'dashboard', 'dashboard')},
         h('img', {src: '/assets/logo.png'}),
         h('span', undefined, 'CardanoLite Wallet'),
         h('sup', undefined, '⍺')
