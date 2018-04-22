@@ -40,34 +40,30 @@ class UnlockClass extends Component {
         h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
         h(
           'div',
-          undefined,
+          {class: 'intro-input-row fade-in-up-delayed'},
+          h('input', {
+            type: 'text',
+            class: 'styled-input-nodiv styled-unlock-input',
+            id: 'mnemonic-submitted',
+            name: 'mnemonic-submitted',
+            placeholder: 'Enter twelve-word mnemonic',
+            value: currentWalletMnemonicOrSecret,
+            onInput: this.updateMnemonic,
+          }),
           h(
-            'div',
-            {class: 'intro-input-row fade-in-up-delayed'},
-            h('input', {
-              type: 'text',
-              class: 'webflow-input-nodiv webflow-unlock-input',
-              id: 'mnemonic-submitted',
-              name: 'mnemonic-submitted',
-              placeholder: 'Enter twelve-word mnemonic',
-              value: currentWalletMnemonicOrSecret,
-              onInput: this.updateMnemonic,
-            }),
+            'span',
+            undefined,
             h(
-              'span',
-              undefined,
-              h(
-                'button',
-                {class: 'intro-button rounded-button', onClick: this.loadWalletFromMnemonic},
-                'Go'
-              )
+              'button',
+              {class: 'intro-button rounded-button', onClick: this.loadWalletFromMnemonic},
+              'Go'
             )
-          ),
-          h(
-            'a',
-            {class: 'intro-link fade-in-up-delayed', onClick: this.generateMnemonic},
-            '…or generate a new one'
           )
+        ),
+        h(
+          'a',
+          {class: 'intro-link fade-in-up-delayed', onClick: this.generateMnemonic},
+          '…or generate a new one'
         )
       )
     )
@@ -258,7 +254,7 @@ class SendAdaClass extends Component {
         h('input', {
           type: 'text',
           id: 'send-address',
-          class: 'webflow-input-nodiv webflow-send-input',
+          class: 'styled-input-nodiv styled-send-input',
           name: 'send-address',
           placeholder: 'Receiving address',
           size: '28',
@@ -273,7 +269,7 @@ class SendAdaClass extends Component {
         ),
         h(
           'div',
-          {class: 'webflow-style-input send-input'},
+          {class: 'styled-input send-input'},
           h('input', {
             type: 'text',
             id: 'send-amount',

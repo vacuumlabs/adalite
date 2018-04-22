@@ -534,7 +534,7 @@ td {
   cursor: pointer;
 }
 /*input stolen from https://codepen.io/anon/pen/ZxVwWQ*/
-.webflow-style-input {
+.styled-input {
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -544,7 +544,7 @@ td {
   padding: 0.2rem;
   background: var(--input-background);
 }
-.webflow-style-input input {
+.styled-input input {
   flex-grow: 1;
   color: var(--input-text-active);
   min-width: 0;
@@ -554,7 +554,7 @@ td {
   background: transparent;
   outline: none;
 }
-.webflow-input-nodiv {
+.styled-input-nodiv {
   flex-grow: 1;
   border: 1px solid var(--border);
   padding: 0.5rem;
@@ -565,23 +565,23 @@ td {
   width: 100%;
   font-size: 1.1rem;
 }
-.webflow-unlock-input {
+.styled-unlock-input {
   text-align: center;
   border-radius: 0.6rem;
 }
-.webflow-send-input {
+.styled-send-input {
   margin-bottom: 1rem;
 }
-.webflow-style-input span {
+.styled-input span {
   font-size: 1.2rem;
   vertical-align: middle;
   padding-right: 1rem;
 }
 
-.webflow-style-input input::-webkit-input-placeholder {
+.styled-input input::-webkit-input-placeholder {
   color: var(--input-text-inactive);
 }
-.webflow-style-input input::-moz-placeholder {
+.styled-input input::-moz-placeholder {
   color: var(--input-text-inactive);
 }
 
