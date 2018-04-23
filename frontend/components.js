@@ -575,7 +575,7 @@ const Footer = () =>
     h(
       'p',
       undefined,
-      'Powered with 🚀 tech in',
+      'Powered by 🚀 tech, made in ',
       h(
         'a',
         {href: 'https://vacuumlabs.com', target: '_blank'},
