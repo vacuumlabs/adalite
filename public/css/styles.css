@@ -46,6 +46,7 @@ h2 {
   margin-bottom: 0.5em;
   border-bottom: 2px solid var(--border);
   padding-bottom: 0.25em;
+  padding-left: 0.2rem;
 }
 h3 {
   margin-bottom: 0.25em;
@@ -308,12 +309,10 @@ td {
   margin: 0.3rem;
   padding: 2px;
   height: 2.5rem;
+  border-radius: 0;
 }
 .status button:hover {
   color: var(--brand);
-}
-.staus button:hover svg {
-  fill: var(--brand);
 }
 .status-text {
   width: 12em;
@@ -327,10 +326,9 @@ td {
   font-weight: bold;
   font-size: 0.9rem;
 }
-.copy-on-click {
+.active-wallet-id {
   color: var(--brand);
-  text-decoration: underline;
-  cursor: pointer;
+  cursor: default;
 }
 .status-icon-button-content {
   font-size: 0.8rem;
@@ -418,10 +416,15 @@ td {
   align-items: center;
   animation: fade-in 0.5s;
 }
+.overlay label {
+  color: #777;
+  cursor: pointer;
+}
 .overlay p {
   margin-top: 1rem;
   color: #777;
 }
+
 .overlay-close-layer {
   position: absolute;
   top: 0;

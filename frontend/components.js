@@ -250,13 +250,13 @@ class SendAdaClass extends Component {
         sendSuccess !== ''
           ? h('span', {id: 'transacton-submitted'}, `Transaction status: ${sendSuccess}`)
           : '',
-        h('label', undefined, h('span', undefined, 'Address')),
+        h('label', undefined, h('span', undefined, 'Receiving address')),
         h('input', {
           type: 'text',
           id: 'send-address',
           class: 'styled-input-nodiv styled-send-input',
           name: 'send-address',
-          placeholder: 'Receiving address',
+          placeholder: 'Address',
           size: '28',
           value: sendAddress,
           onInput: inputAddress,
@@ -332,57 +332,6 @@ const TopLevelRouter = connect((state) => ({
   return h('main', {class: 'main'}, content)
 })
 
-class CopyOnClick extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {tempTitle: undefined}
-    this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(this)
-    this.copyTextToClipboard = this.copyTextToClipboard.bind(this)
-  }
-
-  fallbackCopyTextToClipboard() {
-    const input = document.createElement('textarea')
-    input.value = this.props.value
-    input.style.zIndex = '-1'
-    input.style.position = 'fixed'
-    input.style.top = '0'
-    input.style.left = '0'
-    document.body.appendChild(input)
-    input.focus()
-    input.select()
-    document.execCommand('copy')
-    document.body.removeChild(input)
-  }
-
-  async copyTextToClipboard() {
-    try {
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(this.props.value)
-      } else {
-        this.fallbackCopyTextToClipboard()
-      }
-    } catch (err) {
-      console.error('Could not copy text: ', err)
-    } finally {
-      // TODO maybe show in better way, even for mobile
-      this.setState({tempTitle: 'Copied!'})
-      setTimeout(() => this.setState({tempTitle: undefined}), 3000)
-    }
-  }
-
-  render({title, value}, {tempTitle}) {
-    return h(
-      'span',
-      {
-        class: 'copy-on-click',
-        onClick: this.copyTextToClipboard,
-        title: tempTitle || (title ? `${title} (Click to Copy)` : 'Click to copy'),
-      },
-      value
-    )
-  }
-}
-
 const LoginStatus = connect(
   (state) => ({
     pathname: state.router.pathname,
@@ -407,7 +356,7 @@ const LoginStatus = connect(
         'div',
         {class: 'status-text', title: activeWalletId},
         'WalletID: ',
-        h(CopyOnClick, {value: activeWalletId, title: activeWalletId})
+        h('span', {class: 'active-wallet-id', title: activeWalletId}, activeWalletId)
       )
     ),
     h(
@@ -565,19 +514,15 @@ class AboutOverlayClass extends Component {
           ),
           h('p', undefined, 'Feedback and contributions are very welcome.'),
           h(
-            'span',
+            'label',
             {class: 'centered-row'},
             h('input', {
               type: 'checkbox',
               checked: dontShowAgainCheckbox,
-              onClick: this.checkboxClick,
+              onChange: this.checkboxClick,
               class: 'understand-checkbox',
             }),
-            h(
-              'span',
-              {class: 'checkbox-text', onClick: this.checkboxClick},
-              'I understand the risk and do not wish to be shown this screen again'
-            )
+            'I understand the risk and do not wish to be shown this screen again'
           ),
           h(
             'span',
