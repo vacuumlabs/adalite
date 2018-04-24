@@ -7,9 +7,6 @@ import {RefreshIcon, ExitIcon} from './svg'
 
 import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
 
-const Tooltip = ({content, text}) =>
-  h('span', {class: 'with-tooltip'}, content, h('span', {class: 'tooltip'}, text))
-
 class UnlockClass extends Component {
   constructor(props) {
     super(props)
@@ -149,18 +146,16 @@ class CopyOnClick extends Component {
   }
 
   render({value}, {tooltip}) {
-    return h(Tooltip, {
-      text: tooltip,
-      content: h(
-        'span',
-        {
-          class: 'copy',
-          onClick: this.copyTextToClipboard,
-          onMouseLeave: () => this.setState({tooltip: 'Copy to clipboard'}),
-        },
-        ''
-      ),
-    })
+    return h(
+      'span',
+      {
+        class: 'copy with-tooltip',
+        tooltip,
+        onClick: this.copyTextToClipboard,
+        onMouseLeave: () => this.setState({tooltip: 'Copy to clipboard'}),
+      },
+      ''
+    )
   }
 }
 
@@ -170,13 +165,12 @@ const Address = ({address, isTransaction}) =>
     {class: 'address-wrap'},
     h('input', {readonly: true, type: 'text', class: 'address', value: address}),
     h(CopyOnClick, {value: address}),
-    h(Tooltip, {
-      content: h('a', {
-        href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
-        target: '_blank',
-      }),
-      text: 'Examine via CardanoExplorer.com',
-    })
+    h('a', {
+      href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
+      target: '_blank',
+      class: 'with-tooltip address-link',
+      tooltip: 'Examine via CardanoExplorer.com',
+    }),
   )
 
 const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
@@ -234,18 +228,18 @@ const PrettyValue = ({effect}) => {
 }
 
 const TransactionAddress = ({address}) =>
-  h(Tooltip, {
-    content: h(
-      'a',
-      {
-        class: 'transaction-id',
-        href: `https://cardanoexplorer.com/tx/${address}`,
-        target: '_blank',
-      },
-      address
-    ),
-    text: 'Examine via CardanoExplorer.com',
-  })
+
+  h(
+    'a',
+    {
+      class: 'transaction-id with-tooltip',
+      tooltip: 'Examine via CardanoExplorer.com',
+      href: `https://cardanoexplorer.com/tx/${address}`,
+      target: '_blank',
+    },
+    address
+  )
+
 
 const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
   h(
