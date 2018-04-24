@@ -7,8 +7,8 @@ const config = require('./helpers/backendConfigLoader')
 
 app.use(bodyParser.json())
 app.use(cors())
-app.use(express.static('public'))
-app.use(express.static('static')) // static landing page
+app.use(express.static('public_wallet_app'))
+app.use(express.static('public_landing_page'))
 
 if (config.CARDANOLITE_FORCE_HTTPS === 'true') {
   app.use((req, res, next) => {
