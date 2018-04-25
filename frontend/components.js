@@ -182,6 +182,7 @@ class CopyOnClick extends Component {
       }
       this.setState({tooltip: 'Copied!'})
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Could not copy text: ', err)
     }
   }
@@ -729,6 +730,7 @@ const Loading = connect(['loadingMessage', 'loading'])(
       : null
 )
 
+// eslint-disable-next-line no-unused-vars
 const Alert = connect('alert')(
   ({alert: {show, type, title, hint}}) =>
     show
