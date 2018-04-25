@@ -115,7 +115,6 @@ class Tooltip extends Component {
     super(props)
     this.showTooltip = this.showTooltip.bind(this)
     this.hideTooltip = this.hideTooltip.bind(this)
-    this.resetTimeout = this.resetTimeout.bind(this)
     this.interval = null
     this.state = {active: false}
   }
@@ -129,15 +128,6 @@ class Tooltip extends Component {
     }, 2000)
   }
 
-  resetTimeout(e) {
-    clearTimeout(this.interval)
-    this.interval = setTimeout(() => {
-      this.interval = null
-      this.hideTooltip()
-    }, 1500)
-    this.setState({active: true})
-  }
-
   hideTooltip(e) {
     this.setState({active: false})
   }
@@ -147,7 +137,7 @@ class Tooltip extends Component {
       tooltip,
       onMouseEnter: this.showTooltip,
       onMouseLeave: this.hideTooltip,
-      onClick: this.resetTimeout}, children)
+      onClick: this.showTooltip}, children)
   }
 }
 
