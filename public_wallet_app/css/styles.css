@@ -252,13 +252,13 @@ td {
   transform-origin: top
 }
 
-.with-tooltip:hover:after{
+.with-tooltip.active:after{
   filter: alpha(opacity=80);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   -moz-opacity: .8;
   -khtml-opacity: .8;
   opacity: .8;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .with-tooltip:before{
@@ -284,7 +284,7 @@ td {
   transform: translate(-50%, 0);
 }
 
-.with-tooltip:hover:before{
+.with-tooltip.active:before {
   filter: alpha(opacity=80);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   -moz-opacity: .8;

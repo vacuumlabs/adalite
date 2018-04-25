@@ -110,6 +110,64 @@ const Balance = connect('balance')(({balance}) =>
   )
 )
 
+class Tooltip extends Component {
+  constructor(props) {
+    super(props)
+    this.showTooltip = this.showTooltip.bind(this)
+    this.hideTooltip = this.hideTooltip.bind(this)
+    this.resetTimeout = this.resetTimeout.bind(this)
+    this.interval = null
+    const originalClass = props.attr.class ? props.attr.class : ''
+    this.state = {attributes: Object.assign({}, props.attr,
+      {class: `${originalClass} with-tooltip`},
+      {onMouseEnter: this.showTooltip},
+      {onMouseLeave: this.hideTooltip},
+      {onClick: this.resetTimeout}),
+    active: false}
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+    const originalClass = nextProps.attr.class ? nextProps.attr.class : ''
+    this.setState({attributes: Object.assign({}, nextProps.attr, {class: `${originalClass} with-tooltip ${this.state.active ? 'active' : ''}`},
+      {onMouseEnter: this.showTooltip},
+      {onMouseLeave: this.hideTooltip},
+      {onClick: this.resetTimeout})})
+  }
+
+  showTooltip(e) {
+    this.setState({attributes: Object.assign({}, this.state.attributes,
+      {class: `${this.state.attributes.class} active`}),
+    active: true})
+    clearTimeout(this.interval)
+    this.interval = setTimeout(() => {
+      this.interval = null
+      this.hideTooltip()
+    }, 2000)
+    if (this.props.attr.onMouseEnter) this.props.attr.onMouseEnter(e)
+  }
+
+  resetTimeout(e) {
+    clearTimeout(this.interval)
+    this.interval = setTimeout(() => {
+      this.interval = null
+      this.hideTooltip()
+    }, 1500)
+    if (this.props.attr.onClick) this.props.attr.onClick(e)
+  }
+
+  hideTooltip(e) {
+    this.setState({attributes: Object.assign({}, this.state.attributes,
+      {class: this.state.attributes.class.replace(' active', '')}),
+    active: false})
+    if (this.props.attr.onMouseLeave) this.props.attr.onMouseLeave(e)
+  }
+
+  render({node, attr, content}, {attributes}) {
+    return h(node, attributes, content)
+  }
+}
+
 class CopyOnClick extends Component {
   constructor(props) {
     super(props)
@@ -146,15 +204,14 @@ class CopyOnClick extends Component {
   }
 
   render({value}, {tooltip}) {
-    return h(
-      'span',
-      {
-        class: 'copy with-tooltip',
+    return h(Tooltip, {node: 'span',
+      attr: {
+        class: 'copy',
         tooltip,
         onClick: this.copyTextToClipboard,
-        onMouseLeave: () => this.setState({tooltip: 'Copy to clipboard'}),
+        onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
       },
-      ''
+      content: ''}
     )
   }
 }
@@ -165,11 +222,12 @@ const Address = ({address, isTransaction}) =>
     {class: 'address-wrap'},
     h('input', {readonly: true, type: 'text', class: 'address', value: address}),
     h(CopyOnClick, {value: address}),
-    h('a', {
+    h(Tooltip, {node: 'a', attr: {
       href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
       target: '_blank',
-      class: 'with-tooltip address-link',
+      class: 'address-link',
       tooltip: 'Examine via CardanoExplorer.com',
+    },
     }),
   )
 
