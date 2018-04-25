@@ -52,6 +52,7 @@
     "js-sha3": "^0.7.0",
     "pbkdf2": "^3.0.14",
     "preact": "^8.2.7",
+    "redis": "^2.8.0",
     "start-server-webpack-plugin": "^2.2.5",
     "supercop.js": "^2.0.1",
     "unistore": "^3.0.4",
