@@ -1,7 +1,6 @@
 const request = require('./helpers/request')
 
 const blockchainExplorer = (CARDANOLITE_CONFIG) => {
-
   async function getUnspentTxOutputs(address) {
     if (getAddressBalance(address) === 0) {
       // if balance is zero, all outputs must be spent so we don't waste time and return []
@@ -62,7 +61,9 @@ const blockchainExplorer = (CARDANOLITE_CONFIG) => {
 
   async function getAddressInfo(address) {
     // eslint-disable-next-line no-undef
-    const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`
+    const url = `${
+      CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/addresses/summary/${address}`
     const result = await request.execute(url)
 
     return result.Right

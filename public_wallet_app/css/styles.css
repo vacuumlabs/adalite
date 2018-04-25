@@ -179,7 +179,7 @@ td {
 .address-wrap {
   display: flex;
 }
-.address-wrap a[target='_blank']::after {
+.address-link {
   border: 1px solid var(--border);
   border-left: none;
   background: white url('../assets/link.png') no-repeat center;
@@ -190,11 +190,107 @@ td {
   display: inline-block;
   transition: background-color var(--transition);
 }
-.address-wrap a[target='_blank']:hover::after {
+.address-link:hover {
   background-color: #eee;
 }
 .address-wrap + button {
   margin-top: 1rem;
+}
+.copy{
+  border: 1px solid var(--border);
+  border-left: none;
+  border-right: none;
+  background: white url("../assets/copy.png") no-repeat center;
+  background-size: 60% 60%;
+  height: 2rem;
+  width: 2.4rem;
+  content: " ";
+  display: inline-block;
+  transition: background-color var(--transition);
+  cursor: pointer;
+}
+.copy:hover{
+  background-color: #eee;
+}
+
+.with-tooltip{
+  position: relative;
+  cursor: pointer;
+}
+.with-tooltip:after {
+  filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -moz-opacity: 0;
+  -khtml-opacity: 0;
+  opacity: 0;
+
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: .25em 1em;
+
+  content: attr(tooltip);
+  pointer-events: none;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  -webkit-transition: all 0.18s ease-out 0.28s;
+  -moz-transition: all 0.18s ease-out 0.28s;
+  -ms-transition: all 0.18s ease-out 0.28s;
+  -o-transition: all 0.18s ease-out 0.28s;
+  transition: all 0.18s ease-out 0.18s;
+  -webkit-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+  -webkit-transform-origin: top;
+  -moz-transform-origin: top;
+  -ms-transform-origin: top;
+  transform-origin: top
+}
+
+.with-tooltip.active:after{
+  filter: alpha(opacity=80);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  -moz-opacity: .8;
+  -khtml-opacity: .8;
+  opacity: .8;
+  pointer-events: none;
+}
+
+.with-tooltip:before{
+  filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -moz-opacity: 0;
+  -khtml-opacity: 0;
+  opacity: 0;
+  content: "";
+  z-index: 1;
+  position: absolute;
+  left: 50%;
+  border: .5rem solid transparent;
+  border-top-color: black;
+  -webkit-transition: all 0.18s ease-out 0.28s;
+  -moz-transition: all 0.18s ease-out 0.28s;
+  -ms-transition: all 0.18s ease-out 0.28s;
+  -o-transition: all 0.18s ease-out 0.28s;
+  transition: all 0.18s ease-out 0.18s;
+  -webkit-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+
+.with-tooltip.active:before {
+  filter: alpha(opacity=80);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  -moz-opacity: .8;
+  -khtml-opacity: .8;
+  opacity: .8;
+  pointer-events: auto;
 }
 
 .address-iniline {

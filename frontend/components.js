@@ -110,16 +110,96 @@ const Balance = connect('balance')(({balance}) =>
   )
 )
 
-const Address = (adr, isTransaction) =>
+class Tooltip extends Component {
+  constructor(props) {
+    super(props)
+    this.showTooltip = this.showTooltip.bind(this)
+    this.hideTooltip = this.hideTooltip.bind(this)
+    this.interval = null
+    this.state = {active: false}
+  }
+
+  showTooltip(e) {
+    this.setState({active: true})
+    clearTimeout(this.interval)
+    this.interval = setTimeout(() => {
+      this.interval = null
+      this.hideTooltip()
+    }, 2000)
+  }
+
+  hideTooltip(e) {
+    this.setState({active: false})
+  }
+
+  render({tooltip, children}) {
+    return h('span', {class: ` with-tooltip${this.state.active ? ' active' : ''}`,
+      tooltip,
+      onMouseEnter: this.showTooltip,
+      onMouseLeave: this.hideTooltip,
+      onClick: this.showTooltip}, children)
+  }
+}
+
+class CopyOnClick extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {tooltip: 'Copy to clipboard'}
+    this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(this)
+    this.copyTextToClipboard = this.copyTextToClipboard.bind(this)
+  }
+
+  fallbackCopyTextToClipboard() {
+    const input = document.createElement('textarea')
+    input.value = this.props.value
+    input.style.zIndex = '-1'
+    input.style.position = 'fixed'
+    input.style.top = '0'
+    input.style.left = '0'
+    document.body.appendChild(input)
+    input.focus()
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+  }
+
+  async copyTextToClipboard() {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(this.props.value)
+      } else {
+        this.fallbackCopyTextToClipboard()
+      }
+      this.setState({tooltip: 'Copied!'})
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Could not copy text: ', err)
+    }
+  }
+
+  render({value}, {tooltip}) {
+    return h(Tooltip, {tooltip}, h('span',
+      {
+        class: 'copy',
+        onClick: this.copyTextToClipboard,
+        onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
+      }, ''))
+  }
+}
+
+const Address = ({address, isTransaction}) =>
   h(
     'div',
     {class: 'address-wrap'},
-    h('input', {readonly: true, type: 'text', class: 'address', value: adr}),
-    h('a', {
-      href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${adr}`,
-      target: '_blank',
-      title: 'examine via CardanoExplorer.com',
-    })
+    h('input', {readonly: true, type: 'text', class: 'address', value: address}),
+    h(CopyOnClick, {value: address}),
+    h(Tooltip, {tooltip: 'Examine via CardanoExplorer.com'},
+      h('a', {
+        href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
+        target: '_blank',
+        class: 'address-link',
+      },
+      ))
   )
 
 const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
@@ -127,7 +207,7 @@ const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
     'div',
     {class: ''},
     h('h2', undefined, 'Already Used Addresses'),
-    ...usedAddresses.map((adr) => Address(adr))
+    ...usedAddresses.map((adr) => h(Address, {address: adr})),
   )
 )
 
@@ -139,7 +219,7 @@ const UnusedAddressesList = connect('unusedAddresses', actions)(
       'div',
       {class: ''},
       h('h2', undefined, 'Unused Addresses'),
-      ...unusedAddresses.map((adr) => Address(adr)),
+      ...unusedAddresses.map((adr) => h(Address, {address: adr})),
       h(
         'button',
         {
@@ -176,18 +256,19 @@ const PrettyValue = ({effect}) => {
   )
 }
 
-const TransactionAddress = ({address}) => {
-  return h(
+const TransactionAddress = ({address}) =>
+
+  h(
     'a',
     {
-      class: 'transaction-id',
+      class: 'transaction-id with-tooltip',
+      tooltip: 'Examine via CardanoExplorer.com',
       href: `https://cardanoexplorer.com/tx/${address}`,
       target: '_blank',
-      title: 'Examine via CardanoExplorer.com',
     },
     address
   )
-}
+
 
 const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
   h(
@@ -639,6 +720,7 @@ const Loading = connect(['loadingMessage', 'loading'])(
       : null
 )
 
+// eslint-disable-next-line no-unused-vars
 const Alert = connect('alert')(
   ({alert: {show, type, title, hint}}) =>
     show
