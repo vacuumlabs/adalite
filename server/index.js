@@ -7,9 +7,8 @@ const config = require('./helpers/backendConfigLoader')
 
 app.use(bodyParser.json())
 app.use(cors())
-app.use(express.static('public_wallet_app'))
-app.use(express.static('public_landing_page'))
 
+// must be before every other route to guarantee the redirect!
 if (config.CARDANOLITE_FORCE_HTTPS === 'true') {
   app.use((req, res, next) => {
     if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
@@ -20,6 +19,9 @@ if (config.CARDANOLITE_FORCE_HTTPS === 'true') {
     }
   })
 }
+
+app.use(express.static('public_wallet_app'))
+app.use(express.static('public_landing_page'))
 
 require('./blockchainExplorerProxy')(app)
 require('./transactionSubmitter')(app)
