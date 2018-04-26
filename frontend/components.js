@@ -129,6 +129,8 @@ class Tooltip extends Component {
   }
 
   hideTooltip(e) {
+    clearTimeout(this.interval)
+    this.interval = null
     this.setState({active: false})
   }
 
