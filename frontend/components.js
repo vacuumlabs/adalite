@@ -36,7 +36,9 @@ class UnlockClass extends Component {
     try {
       return await this.props.loadWalletFromMnemonic(this.state.currentWalletMnemonicOrSecret)
     } catch (e) {
-      return this.setState({validationMsg: `Error during wallet initialization: ${e.toString()}`})
+      return this.setState({
+        validationMsg: `Error during wallet initialization: ${e.toString()}`,
+      })
     }
   }
 
@@ -82,7 +84,10 @@ class UnlockClass extends Component {
         ),
         h(
           'a',
-          {class: 'intro-link fade-in-up-delayed', onClick: this.generateMnemonic},
+          {
+            class: 'intro-link fade-in-up-delayed',
+            onClick: this.generateMnemonic,
+          },
           '…or generate a new one'
         )
       )
@@ -135,11 +140,17 @@ class Tooltip extends Component {
   }
 
   render({tooltip, children}) {
-    return h('span', {class: ` with-tooltip${this.state.active ? ' active' : ''}`,
-      tooltip,
-      onMouseEnter: this.showTooltip,
-      onMouseLeave: this.hideTooltip,
-      onClick: this.showTooltip}, children)
+    return h(
+      'span',
+      {
+        class: ` with-tooltip${this.state.active ? ' active' : ''}`,
+        tooltip,
+        onMouseEnter: this.showTooltip,
+        onMouseLeave: this.hideTooltip,
+        onClick: this.showTooltip,
+      },
+      children
+    )
   }
 }
 
@@ -180,12 +191,19 @@ class CopyOnClick extends Component {
   }
 
   render({value}, {tooltip}) {
-    return h(Tooltip, {tooltip}, h('span',
-      {
-        class: 'copy',
-        onClick: this.copyTextToClipboard,
-        onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
-      }, ''))
+    return h(
+      Tooltip,
+      {tooltip},
+      h(
+        'span',
+        {
+          class: 'copy',
+          onClick: this.copyTextToClipboard,
+          onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
+        },
+        ''
+      )
+    )
   }
 }
 
@@ -193,15 +211,22 @@ const Address = ({address, isTransaction}) =>
   h(
     'div',
     {class: 'address-wrap'},
-    h('input', {readonly: true, type: 'text', class: 'address', value: address}),
+    h('input', {
+      readonly: true,
+      type: 'text',
+      class: 'address',
+      value: address,
+    }),
     h(CopyOnClick, {value: address}),
-    h(Tooltip, {tooltip: 'Examine via CardanoExplorer.com'},
+    h(
+      Tooltip,
+      {tooltip: 'Examine via CardanoExplorer.com'},
       h('a', {
         href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
         target: '_blank',
         class: 'address-link',
-      },
-      ))
+      })
+    )
   )
 
 const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
@@ -209,7 +234,7 @@ const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
     'div',
     {class: ''},
     h('h2', undefined, 'Already Used Addresses'),
-    ...usedAddresses.map((adr) => h(Address, {address: adr})),
+    ...usedAddresses.map((adr) => h(Address, {address: adr}))
   )
 )
 
@@ -259,7 +284,6 @@ const PrettyValue = ({effect}) => {
 }
 
 const TransactionAddress = ({address}) =>
-
   h(
     'a',
     {
@@ -270,7 +294,6 @@ const TransactionAddress = ({address}) =>
     },
     address
   )
-
 
 const TransactionHistory = connect('transactionHistory')(({transactionHistory}) =>
   h(
@@ -298,7 +321,13 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
           h(
             'tr',
             undefined,
-            h('td', undefined, h(PrettyDate, {date: new Date(transaction.ctbTimeIssued * 1000)})),
+            h(
+              'td',
+              undefined,
+              h(PrettyDate, {
+                date: new Date(transaction.ctbTimeIssued * 1000),
+              })
+            ),
             h('td', undefined, h(TransactionAddress, {address: transaction.ctbId})),
             h('td', undefined, h(PrettyValue, {effect: transaction.effect}))
           )
@@ -324,18 +353,15 @@ const ConfirmTransactionDialog = connect(
       'div',
       {class: 'box'},
       h('p', undefined, 'Confirm, that you really want to send'),
-      h('div', undefined,
-        h('strong', undefined, `${totalAmount} ADA `),
-        'to the address'),
+      h('div', undefined, h('strong', undefined, `${totalAmount} ADA `), 'to the address'),
       h('div', {class: 'address-iniline'}, sendAddress),
       h('button', {class: 'positive', onClick: submitTransaction}, 'Confirm'),
-      h('button', {class: 'danger', onClick: cancelTransaction}, 'Cancel'),
+      h('button', {class: 'danger', onClick: cancelTransaction}, 'Cancel')
     )
   )
 )
 
 class SendAdaClass extends Component {
-
   render({
     sendSuccess,
     sendAddress,
@@ -352,13 +378,16 @@ class SendAdaClass extends Component {
     feeRecalculating,
     totalAmount,
   }) {
-    const enableSubmit = sendAmount && !sendAmountValidationError &&
-      sendAddress && !sendAddressValidationError
+    const enableSubmit =
+      sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
 
     const displayTransactionFee =
-      sendAmount !== '' && !feeRecalculating && transactionFee > 0 &&
+      sendAmount !== '' &&
+      !feeRecalculating &&
+      transactionFee > 0 &&
       !sendAddressValidationError &&
-      (!sendAmountValidationError || sendAmountValidationError.code === 'SendAmountInsufficientFundsForFee')
+      (!sendAmountValidationError ||
+        sendAmountValidationError.code === 'SendAmountInsufficientFundsForFee')
 
     return h(
       'div',
@@ -383,7 +412,8 @@ class SendAdaClass extends Component {
           'div',
           {class: 'row'},
           h('label', undefined, h('span', undefined, 'Receiving address')),
-          sendAddressValidationError && h('span', {class: 'validationMsg'}, strings[sendAddressValidationError.code]())
+          sendAddressValidationError &&
+            h('span', {class: 'validationMsg'}, strings[sendAddressValidationError.code]())
         ),
         h('input', {
           type: 'text',
@@ -403,7 +433,12 @@ class SendAdaClass extends Component {
             'div',
             {class: 'row'},
             h('label', undefined, h('span', undefined, 'Amount')),
-            sendAmountValidationError && h('p', {class: 'validationMsg'}, strings[sendAmountValidationError.code](sendAmountValidationError.params))
+            sendAmountValidationError &&
+              h(
+                'p',
+                {class: 'validationMsg'},
+                strings[sendAmountValidationError.code](sendAmountValidationError.params)
+              )
           ),
           displayTransactionFee &&
             h('span', {class: 'transaction-fee'}, `+ ${transactionFee} transaction fee`)
@@ -425,11 +460,11 @@ class SendAdaClass extends Component {
             autocomplete: 'nope',
           }),
           displayTransactionFee &&
-             h(
-               'span',
-               {style: `color: ${sendAmountValidationError ? 'red' : 'green'}`},
-               `= ${totalAmount} ADA`
-             ),
+            h(
+              'span',
+              {style: `color: ${sendAmountValidationError ? 'red' : 'green'}`},
+              `= ${totalAmount} ADA`
+            )
         ),
         feeRecalculating
           ? h(
@@ -447,7 +482,7 @@ class SendAdaClass extends Component {
             },
             'Submit'
           ),
-        showConfirmTransactionDialog && h(ConfirmTransactionDialog),
+        showConfirmTransactionDialog && h(ConfirmTransactionDialog)
       )
     )
   }
@@ -466,7 +501,8 @@ const SendAda = connect(
     feeRecalculating: state.calculatingFee,
     totalAmount: (
       parseFloat(state.sendAmount.fieldValue || 0) +
-      state.transactionFee / 1000000).toFixed(6),
+      state.transactionFee / 1000000
+    ).toFixed(6),
   }),
   actions
 )(SendAdaClass)
@@ -572,7 +608,9 @@ const NavbarAuth = connect((state) => ({
   pathname: state.router.pathname,
   activeWalletId: state.activeWalletId,
 }))(({pathname, activeWalletId}) => {
-  const {history: {pushState}} = window
+  const {
+    history: {pushState},
+  } = window
   const currentTab = pathname.split('/')[1]
   return h(
     'div',
@@ -582,7 +620,10 @@ const NavbarAuth = connect((state) => ({
       {class: 'navbar-wrap'},
       h(
         'a',
-        {class: 'title', onClick: () => window.history.pushState({}, 'dashboard', 'dashboard')},
+        {
+          class: 'title',
+          onClick: () => window.history.pushState({}, 'dashboard', 'dashboard'),
+        },
         h('img', {src: '/assets/logo.png'}),
         h('span', undefined, 'CardanoLite Wallet'),
         h('sup', undefined, '⍺')
@@ -742,11 +783,15 @@ const Footer = () =>
     h(
       'p',
       undefined,
-      'Powered by 🚀 tech, made in ',
+      'Developed by ',
       h(
         'a',
         {href: 'https://vacuumlabs.com', target: '_blank'},
-        h('img', {src: '/assets/vacuumlabs-logo-dark.svg', class: 'logo', alt: 'Vacuumlabs Logo'})
+        h('img', {
+          src: '/assets/vacuumlabs-logo-dark.svg',
+          class: 'logo',
+          alt: 'Vacuumlabs Logo',
+        })
       )
     ),
     h(
