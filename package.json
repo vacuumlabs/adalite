@@ -29,8 +29,7 @@
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "lint-staged": {
     "{frontend,wallet,server,test}/**/*.{js,jsx,json,css}": [
-      "prettier --single-quote --write",
-      "eslint --fix",
+      "prettier-eslint --write",
       "git add"
     ]
   },
