@@ -1,6 +1,5 @@
 const bip39 = require('bip39')
 const cbor = require('cbor')
-const bigNumber = require('bignumber.js')
 const crypto = require('crypto')
 const {eddsa: EdDsa} = require('elliptic-cardano')
 const ec = new EdDsa('ed25519')
@@ -35,7 +34,10 @@ function mnemonicToWalletSecretString(mnemonic) {
 
     try {
       const secretKey = extendSecretToSecretKey(secret)
-      const publicKey = new Buffer(ec.keyFromSecret(secret.toString('hex')).getPublic('hex'), 'hex')
+      const publicKey = new Buffer(
+        ec.keyFromSecret(secret.toString('hex')).getPublic('hex'),
+        'hex'
+      )
 
       const chainCode = new Buffer(digest.substr(64, 64), 'hex')
 
@@ -52,7 +54,9 @@ function mnemonicToWalletSecretString(mnemonic) {
   }
 
   if (result === undefined) {
-    const e = new Error('Secret key generation from mnemonic is looping forever')
+    const e = new Error(
+      'Secret key generation from mnemonic is looping forever'
+    )
     e.name = 'RuntimeException'
     throw e
   }
@@ -87,38 +91,13 @@ function mnemonicToHashSeed(mnemonic) {
     throw e
   }
 
-  let mnemonicAsHex = mnemonicToIndices(mnemonic)
-    .reduce((acc, elem) => {
-      return acc.multipliedBy('800', 16).plus(bigNumber(elem.toString(10)))
-    }, bigNumber('0'))
-    .toString(16)
-  mnemonicAsHex =
-    mnemonicAsHex.length % 2 !== 0
-      ? mnemonicAsHex.substr(0, mnemonicAsHex.length - 1)
-      : mnemonicAsHex
+  const ent = new Buffer(bip39.mnemonicToEntropy(mnemonic), 'hex')
 
-  const result = new Buffer(
-    cbor.encode(new Buffer(hashBlake2b256(new Buffer(mnemonicAsHex, 'hex')), 'hex')),
-    'hex'
-  )
-
-  return result
+  return cbor.encode(hashBlake2b256(ent))
 }
 
-function mnemonicToIndices(mnemonic) {
-  return mnemonic.split(' ').map(mnemonicWordToIndex)
+module.exports = {
+  generateMnemonic,
+  mnemonicToWalletSecretString,
+  validateMnemonic,
 }
-
-function mnemonicWordToIndex(word) {
-  const result = words.indexOf(word)
-
-  if (result === -1) {
-    const e = new Error(`Not a valid mnemonic word: ${word}`)
-    e.name = 'InvalidArgumentException'
-    throw e
-  }
-
-  return result
-}
-
-module.exports = {generateMnemonic, mnemonicToWalletSecretString, validateMnemonic}
