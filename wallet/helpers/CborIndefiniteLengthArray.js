@@ -5,19 +5,12 @@ module.exports = class CborIndefiniteLengthArray {
   }
 
   encodeCBOR(encoder) {
-    let elementsEncoded = cbor.encode(this.elements)
-
-    elementsEncoded[0] = 0x9f
-    elementsEncoded = Buffer.concat([elementsEncoded, Buffer.from('ff', 'hex')])
-
-    return encoder.push(elementsEncoded)
+    return encoder.push(
+      Buffer.concat([
+        new Buffer([0x9f]), // indefinite array prefix
+        ...this.elements.map((e) => cbor.encode(e)),
+        new Buffer([0xff]), // end of array
+      ])
+    )
   }
-}
-
-exports.filter = async function(arr, callback) {
-  return (await Promise.all(
-    arr.map(async (item) => {
-      return (await callback(item)) ? item : undefined
-    })
-  )).filter((i) => i !== undefined)
 }

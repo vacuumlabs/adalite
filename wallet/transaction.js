@@ -38,7 +38,7 @@ class TxAux {
   }
 
   getId() {
-    return hashBlake2b256(this)
+    return hashBlake2b256(this).toString('hex')
   }
 
   encodeCBOR(encoder) {
@@ -120,7 +120,9 @@ class TxInput {
 
   getWitness(txHash) {
     return new TxWitness(
-      new TxPublicString(this.secret.getPublicKey() + this.secret.getChainCode()),
+      new TxPublicString(
+        this.secret.getPublicKey() + this.secret.getChainCode()
+      ),
       /*
       * "011a2d964a095820" is a magic prefix from the cardano-sl code
         the "01" byte is a constant to denote signatures of transactions
@@ -222,4 +224,12 @@ class Transaction {
   }
 }
 
-module.exports = {verify, sign, TxInput, TxOutput, WalletAddress, WalletSecretString, Transaction}
+module.exports = {
+  verify,
+  sign,
+  TxInput,
+  TxOutput,
+  WalletAddress,
+  WalletSecretString,
+  Transaction,
+}
