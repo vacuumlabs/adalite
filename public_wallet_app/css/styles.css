@@ -4,6 +4,7 @@
   --brand-light: #d36a98;
   --transition: 0.25s;
   --width: 1024px;
+  --small-screen-padding: 50px;
   --text-color: #333;
   --input-text-inactive: #999;
   --input-text-active: #333;
@@ -94,7 +95,7 @@ button:disabled {
   background-color: var(--brand-light);
   cursor: not-allowed;
 }
-button:hover {
+button:hover:enabled {
   transform: scale(1.08);
 }
 button.danger {
@@ -159,6 +160,11 @@ td {
   width: 100%;
   margin: 0 auto;
   flex: 0 1 auto;
+}
+@media screen and (max-width: 1024px) {
+  .main {
+    padding: 0 50px;
+  }
 }
 /* ADDRESS */
 .address {
@@ -430,7 +436,7 @@ td {
   border-radius: 0;
 }
 .status button:hover {
-  background-color: var(--brand-light);
+  color: var(--brand);
 }
 .status-text-wrapper {
   display: flex;
@@ -786,21 +792,15 @@ td {
 @keyframes rise-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 20%, 0);
+    transform: translateY(20%);
   }
   to {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
   }
 }
 .fade-in-up {
   animation: fade-in 1.5s, rise-up 1.5s;
-}
-.fade-in-up-delayed {
-  opacity: 0;
-  animation: fade-in 1.5s, rise-up 1.5s;
-  animation-delay: 0.2s;
-  animation-fill-mode: forwards;
 }
 .loading-inside-button {
   display: inline-block;

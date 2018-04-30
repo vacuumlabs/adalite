@@ -57,7 +57,7 @@ class UnlockClass extends Component {
         this.state.validationMsg ? h('p', {class: 'alert error'}, this.state.validationMsg) : '',
         h(
           'div',
-          {class: 'intro-input-row fade-in-up-delayed'},
+          {class: 'intro-input-row fade-in-up'},
           h('input', {
             type: 'text',
             class: 'styled-input-nodiv styled-unlock-input',
@@ -85,7 +85,7 @@ class UnlockClass extends Component {
         h(
           'a',
           {
-            class: 'intro-link fade-in-up-delayed',
+            class: 'intro-link fade-in-up',
             onClick: this.generateMnemonic,
           },
           '…or generate a new one'
