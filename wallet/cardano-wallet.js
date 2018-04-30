@@ -155,7 +155,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     }, 0)
 
     const out1coins = coins
-    const out2coinsUpperBound = txInputsCoinsSum - coins
+    const out2coinsUpperBound = Math.max(0, txInputsCoinsSum - coins)
 
     // the +1 is there because in the actual transaction
     // the txInputs are encoded as indefinite length array
@@ -193,10 +193,9 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     let result
 
     if (usedAddressesAndSecrets.length < usedAddressesLimit) {
-      const highestUsedChildIndex =
-        usedAddressesAndSecrets.reduce((acc, item) => {
-          return Math.max(item.childIndex, acc)
-        }, 0x80000000)
+      const highestUsedChildIndex = usedAddressesAndSecrets.reduce((acc, item) => {
+        return Math.max(item.childIndex, acc)
+      }, 0x80000000)
 
       result = (await getAddressAndSecret(highestUsedChildIndex + 1 + offset)).address
     } else {

@@ -340,9 +340,7 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
 const ConfirmTransactionDialog = connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
-    totalAmount: (parseFloat(state.sendAmount.fieldValue) + state.transactionFee / 1000000).toFixed(
-      6
-    ),
+    totalAmount: (state.sendAmountForTransactionFee + state.transactionFee / 1000000).toFixed(6),
   }),
   actions
 )(({sendAddress, totalAmount, submitTransaction, cancelTransaction}) =>
@@ -381,13 +379,7 @@ class SendAdaClass extends Component {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
 
-    const displayTransactionFee =
-      sendAmount !== '' &&
-      !feeRecalculating &&
-      transactionFee > 0 &&
-      !sendAddressValidationError &&
-      (!sendAmountValidationError ||
-        sendAmountValidationError.code === 'SendAmountInsufficientFundsForFee')
+    const displayTransactionFee = sendAmount !== '' && transactionFee > 0
 
     return h(
       'div',
@@ -449,7 +441,6 @@ class SendAdaClass extends Component {
           h('input', {
             type: 'number',
             min: 0,
-            max: balance,
             step: 0.000001,
             id: 'send-amount',
             name: 'send-amount',
@@ -462,7 +453,7 @@ class SendAdaClass extends Component {
           displayTransactionFee &&
             h(
               'span',
-              {style: `color: ${sendAmountValidationError ? 'red' : 'green'}`},
+              {style: `color: ${feeRecalculating || !enableSubmit ? 'red' : 'green'}`},
               `= ${totalAmount} ADA`
             )
         ),
@@ -500,8 +491,7 @@ const SendAda = connect(
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
     totalAmount: (
-      parseFloat(state.sendAmount.fieldValue || 0) +
-      state.transactionFee / 1000000
+      (state.sendAmountForTransactionFee + state.transactionFee) / 1000000
     ).toFixed(6),
   }),
   actions

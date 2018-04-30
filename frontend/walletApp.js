@@ -39,6 +39,7 @@ const initialState = {
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0},
   transactionFee: 0,
+  sendAmountForTransactionFee: 0,
   router: {
     pathname: window.location.pathname,
     hash: window.location.hash,
