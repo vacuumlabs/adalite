@@ -340,7 +340,9 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
 const ConfirmTransactionDialog = connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
-    totalAmount: (state.sendAmountForTransactionFee + state.transactionFee / 1000000).toFixed(6),
+    totalAmount: (parseFloat(state.sendAmount.fieldValue) + state.transactionFee / 1000000).toFixed(
+      6
+    ),
   }),
   actions
 )(({sendAddress, totalAmount, submitTransaction, cancelTransaction}) =>
@@ -490,9 +492,7 @@ const SendAda = connect(
     balance: parseFloat(state.balance) / 1000000,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
-    totalAmount: (
-      (state.sendAmountForTransactionFee + state.transactionFee) / 1000000
-    ).toFixed(6),
+    totalAmount: ((state.sendAmountForTransactionFee + state.transactionFee) / 1000000).toFixed(6),
   }),
   actions
 )(SendAdaClass)
