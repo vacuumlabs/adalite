@@ -111,12 +111,10 @@ export default ({setState, getState}) => {
 
     if (isNaN(amount) || strAmount.toLowerCase().includes('e')) {
       validationError = {code: 'SendAmountIsNan'}
-    }
-    if (strAmount.split('.').length === 2 && strAmount.split('.')[1].length > 6) {
-      validationError = {code: 'SendAmountPrecisionLimit'}
-    }
-    if (amount <= 0) {
+    } else if (amount <= 0) {
       validationError = {code: 'SendAmountIsNotPositive'}
+    } else if (strAmount.split('.').length === 2 && strAmount.split('.')[1].length > 6) {
+      validationError = {code: 'SendAmountPrecisionLimit'}
     }
 
     setState({sendAmount: Object.assign({}, state.sendAmount, {validationError})})
