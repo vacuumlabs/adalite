@@ -7,10 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/vacuumlabs/cardano.git"
   },
-  "keywords": [
-    "cardano",
-    "wallet"
-  ],
+  "keywords": ["cardano", "wallet"],
   "author": "Rafael Korbas",
   "license": "ISC",
   "bugs": {
@@ -18,20 +15,18 @@
   },
   "scripts": {
     "start-server": "node server/index.js",
-    "dev": "PORT=${PORT:-3000} node server/index.js & webpack --watch --config webpack.build.config.js",
+    "dev":
+      "PORT=${PORT:-3000} node server/index.js & webpack --watch --config webpack.build.config.js",
     "eslint": "eslint .",
     "build": "webpack --config webpack.build.config.js --progress",
     "test": "webpack --config webpack.test.config.js",
-    "fix": "prettier-eslint --write \"*.js\" \"./frontend/*.js\" \"./wallet/*.js\" ",
+    "fix": "prettier-eslint --write \"{frontend,wallet,server,test}/**/*.{js,jsx,json,css}\"",
     "heroku-postbuild": "webpack --config webpack.build.config.js --progress",
     "precommit": "lint-staged"
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "lint-staged": {
-    "{frontend,wallet,server,test}/**/*.{js,jsx,json,css}": [
-      "prettier-eslint --write",
-      "git add"
-    ]
+    "{frontend,wallet,server,test}/**/*.{js,jsx,json,css}": ["prettier-eslint --write", "git add"]
   },
   "dependencies": {
     "@stablelib/chacha20poly1305": "^0.10.2",
