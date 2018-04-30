@@ -1,6 +1,5 @@
 const redis = require('redis')
-const config = require('../helpers/backendConfigLoader')
-const client = redis.createClient(config.REDIS_URL)
+const client = redis.createClient(process.env.REDIS_URL)
 
 const knownIps = new Set()
 

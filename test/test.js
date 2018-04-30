@@ -2,7 +2,7 @@
 const assert = require('assert')
 const cbor = require('cbor')
 
-const CARDANOLITE_CONFIG = require('../server/helpers/backendConfigLoader')
+const CARDANOLITE_CONFIG = require('../server/helpers/loadFrontendConfig')
 const transaction = require('../wallet/transaction')
 const mnemonic = require('../wallet/mnemonic')
 const address = require('../wallet/address')

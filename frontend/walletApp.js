@@ -4,7 +4,7 @@ import devtools from 'unistore/devtools'
 import {Provider} from 'unistore/preact'
 import {App} from './components'
 
-import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
+import {CARDANOLITE_CONFIG} from './config'
 
 // polyfill to trigger onpushstate events on history api
 // http://felix-kling.de/blog/2011/01/06/how-to-detect-history-pushstate/
