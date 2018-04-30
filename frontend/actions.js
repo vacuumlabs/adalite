@@ -95,23 +95,30 @@ export default ({setState, getState}) => {
     }
   }
 
-  const validateSendAddress = (state) => setState({
-    sendAddress: Object.assign({}, state.sendAddress,
-      {validationError: !Cardano.isValidAddress(state.sendAddress.fieldValue) ? {code: 'SendAddressInvalidAddress'} : ''}),
-  })
+  const validateSendAddress = (state) =>
+    setState({
+      sendAddress: Object.assign({}, state.sendAddress, {
+        validationError: !Cardano.isValidAddress(state.sendAddress.fieldValue)
+          ? {code: 'SendAddressInvalidAddress'}
+          : '',
+      }),
+    })
 
   const validateSendAmount = (state) => {
     let validationError = ''
+    const strAmount = state.sendAmount.fieldValue
     const amount = parseFloat(state.sendAmount.fieldValue)
+
     if (isNaN(amount)) {
       validationError = {code: 'SendAmountIsNan'}
     }
+    if (strAmount.split('.').length === 2 && strAmount.split('.')[1].length > 6) {
+      validationError = {code: 'SendAmountPrecisionLimit'}
+    }
     if (parseFloat(amount.toFixed(6)) <= 0) {
-      validationError = {code: 'SenAmountIsNotPositive'}
+      validationError = {code: 'SendAmountIsNotPositive'}
     }
-    if (parseFloat(amount.toFixed(6)) > state.balance / 1000000) {
-      validationError = {code: 'SendAmountInsufficientFunds', params: {balance: state.balance / 1000000}}
-    }
+
     setState({sendAmount: Object.assign({}, state.sendAmount, {validationError})})
   }
 
@@ -122,18 +129,27 @@ export default ({setState, getState}) => {
     }
   }
 
-  const isSendFormFilledAndValid = (state) => {
-    return (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '' &&
-  state.sendAddress.validationError === '' && state.sendAmount.validationError === '')
+  const validateFee = (state) => {
+    const sendAmountForTransactionFee = state.sendAmountForTransactionFee
+    const transactionFee = state.transactionFee
+    const balance = state.balance
+
+    if (sendAmountForTransactionFee + transactionFee > balance) {
+      setState({
+        sendAmount: Object.assign({}, state.sendAmount, {
+          validationError: {code: 'SendAmountInsufficientFunds', params: {balance: state.balance}},
+        }),
+      })
+    }
   }
 
-  const validateFee = (state) => {
-    const sendAmount = parseFloat(state.sendAmount.fieldValue)
-    const transactionFee = state.transactionFee / 1000000
-    const balance = state.balance / 1000000
-    if (sendAmount + transactionFee > balance) {
-      setState({sendAmount: Object.assign({}, state.sendAmount, {validationError: {code: 'SendAmountInsufficientFundsForFee', params: {balance, transactionFee}}})})
-    }
+  const isSendFormFilledAndValid = (state) => {
+    return (
+      state.sendAddress.fieldValue !== '' &&
+      state.sendAmount.fieldValue !== '' &&
+      state.sendAddress.validationError === '' &&
+      state.sendAmount.validationError === ''
+    )
   }
 
   const calculateFee = async () => {
@@ -155,6 +171,7 @@ export default ({setState, getState}) => {
     ) {
       setState({
         transactionFee,
+        sendAmountForTransactionFee: amount,
       })
     }
     validateFee(getState())
