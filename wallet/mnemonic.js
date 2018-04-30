@@ -34,10 +34,7 @@ function mnemonicToWalletSecretString(mnemonic) {
 
     try {
       const secretKey = extendSecretToSecretKey(secret)
-      const publicKey = new Buffer(
-        ec.keyFromSecret(secret.toString('hex')).getPublic('hex'),
-        'hex'
-      )
+      const publicKey = new Buffer(ec.keyFromSecret(secret.toString('hex')).getPublic('hex'), 'hex')
 
       const chainCode = new Buffer(digest.substr(64, 64), 'hex')
 
@@ -54,9 +51,7 @@ function mnemonicToWalletSecretString(mnemonic) {
   }
 
   if (result === undefined) {
-    const e = new Error(
-      'Secret key generation from mnemonic is looping forever'
-    )
+    const e = new Error('Secret key generation from mnemonic is looping forever')
     e.name = 'RuntimeException'
     throw e
   }

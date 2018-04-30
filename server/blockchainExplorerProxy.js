@@ -1,6 +1,5 @@
 require('isomorphic-fetch')
 
-
 module.exports = function(app, env) {
   app.get('/api/addresses/summary/:address', async (req, res) => {
     const address = req.params.address
@@ -22,4 +21,4 @@ async function request(url, method = 'get', body = null, headers = {}) {
   }
 
   return res.json()
-};
+}

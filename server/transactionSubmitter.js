@@ -1,6 +1,7 @@
 const net = require('net')
 
-const cmdtable = '0000040000000113841a2d964a0983000100b3048200d8184105058200d8184104068200d818410' +
+const cmdtable =
+  '0000040000000113841a2d964a0983000100b3048200d8184105058200d8184104068200d818410' +
   '718228200d81842185e18258200d81842185e182b8200d81842185d18318200d81842185c18378200d818421862183' +
   'd8200d81842186118438200d81842186018498200d81842185f18538200d8184100185c8200d818421831185d8200d' +
   '81842182b185e8200d818421825185f8200d81842184918608200d81842184318618200d81842183d18628200d8184' +
@@ -10,11 +11,9 @@ const cmdtable = '0000040000000113841a2d964a0983000100b3048200d8184105058200d818
 
 const prefix = '00000402'
 
-
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
   app.post('/api/transactions', (req, res) => {
-
     let txHash
     let txBody // [1, txBody] in CBOR
     try {
@@ -102,8 +101,12 @@ module.exports = function(app, env) {
             phase = 'submit transaction'
             break
           case 'submit transaction':
-            if (data.toString('hex').startsWith('0000402000000094') &&
-              data.toString('hex').endsWith(`25${encodedtxHash.substr(9)}`)) throw new Error('server error')
+            if (
+              data.toString('hex').startsWith('0000402000000094') &&
+              data.toString('hex').endsWith(`25${encodedtxHash.substr(9)}`)
+            ) {
+              throw new Error('server error')
+            }
             client.write(new Buffer(prefix + encodedTx, 'hex'))
             phase = 'result'
             break
@@ -116,10 +119,13 @@ module.exports = function(app, env) {
             client.destroy()
             res.end(JSON.stringify({result, txHash}))
         }
-        ;
       } catch (err) {
-        return res.status(500).send(`${'Submitting transaction failure!  comunication ' +
-          'with relay node broken during '}${phase} phase. Please try again later`)
+        return res
+          .status(500)
+          .send(
+            `${'Submitting transaction failure!  comunication ' +
+              'with relay node broken during '}${phase} phase. Please try again later`
+          )
       }
     })
 
