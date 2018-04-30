@@ -193,9 +193,10 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     let result
 
     if (usedAddressesAndSecrets.length < usedAddressesLimit) {
-      const highestUsedChildIndex = usedAddressesAndSecrets.reduce((acc, item) => {
-        return Math.max(item.childIndex, acc)
-      }, 0x80000000)
+      const highestUsedChildIndex = Math.max(
+        0x8000000,
+        ...usedAddressesAndSecrets.map((item) => item.childIndex)
+      )
 
       result = (await getAddressAndSecret(highestUsedChildIndex + 1 + offset)).address
     } else {
