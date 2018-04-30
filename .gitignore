@@ -5,8 +5,6 @@ public_wallet_app/js/frontend.bundle.js
 test/browser/js/cardano.bundle.test.js
 .env
 yarn-error.log
-build/
-config.js
 sandbox.js
 *.sublime-project
 *.sublime-workspace
