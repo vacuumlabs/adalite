@@ -2,7 +2,6 @@ const fetchMock = require('fetch-mock')
 const sinon = require('sinon')
 
 const mock = (CARDANOLITE_CONFIG) => {
-
   function mockBlockChainExplorer() {
     fetchMock.config.overwriteRoutes = true
 
@@ -457,7 +456,9 @@ const mock = (CARDANOLITE_CONFIG) => {
     }
     for (const address in addressesAndResponses) {
       fetchMock.mock({
-        matcher: `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`,
+        matcher: `${
+          CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
+        }/api/addresses/summary/${address}`,
         response: {
           status: 200,
           body: addressesAndResponses[address],
@@ -480,8 +481,11 @@ const mock = (CARDANOLITE_CONFIG) => {
       fetchMock.mock({
         // eslint-disable-next-line no-loop-func
         matcher: (url, opts) => {
-          return url === CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL
-            && opts && opts.body === request
+          return (
+            url === CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL &&
+            opts &&
+            opts.body === request
+          )
         },
         response: {
           status: 200,
