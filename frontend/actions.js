@@ -1,5 +1,5 @@
 import Cardano from '../wallet/cardano-wallet'
-import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
+import {CARDANOLITE_CONFIG} from './config'
 
 let wallet = null
 
@@ -79,7 +79,10 @@ export default ({setState, getState}) => {
   const generateNewUnusedAddress = async (state) => {
     setState({address: 'loading...'})
     const offset = state.unusedAddresses.length
-    const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
+    const newUnusedAddress = await wallet.getChangeAddress(
+      Number.MAX_SAFE_INTEGER,
+      offset
+    )
     setState({
       unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
     })
@@ -121,7 +124,10 @@ export default ({setState, getState}) => {
   }
 
   const validateSendForm = (state) => {
-    if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
+    if (
+      state.sendAddress.fieldValue !== '' &&
+      state.sendAmount.fieldValue !== ''
+    ) {
       validateSendAddress(state)
       validateSendAmount(state)
     }
@@ -190,24 +196,46 @@ export default ({setState, getState}) => {
   }
 
   const updateAddress = (state, e) => {
-    setState({sendAddress: Object.assign({}, state.sendAddress, {fieldValue: e.target.value})})
+    setState({
+      sendAddress: Object.assign({}, state.sendAddress, {
+        fieldValue: e.target.value,
+      }),
+    })
     validateSendFormAndCalculateFee()
   }
 
   const updateAmount = (state, e) => {
-    setState({sendAmount: Object.assign({}, state.sendAmount, {fieldValue: e.target.value})})
+    setState({
+      sendAmount: Object.assign({}, state.sendAmount, {
+        fieldValue: e.target.value,
+      }),
+    })
     validateSendFormAndCalculateFee()
   }
 
   const submitTransaction = async (state) => {
-    setState(loadingAction(state, 'processing transaction', 'Submitting transaction...'))
+    setState(
+      loadingAction(
+        state,
+        'processing transaction',
+        'Submitting transaction...'
+      )
+    )
     try {
       const address = state.sendAddress.fieldValue
       const amount = parseFloat(state.sendAmount.fieldValue) * 1000000
       const sendSuccess = await wallet.sendAda(address, amount)
-      setState({sendSuccess, loading: false, showConfirmTransactionDialog: false})
+      setState({
+        sendSuccess,
+        loading: false,
+        showConfirmTransactionDialog: false,
+      })
     } catch (e) {
-      setState({sendSuccess: false, loading: false, showConfirmTransactionDialog: false})
+      setState({
+        sendSuccess: false,
+        loading: false,
+        showConfirmTransactionDialog: false,
+      })
     }
   }
 

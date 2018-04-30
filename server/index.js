@@ -3,7 +3,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const express = require('express')
 const forceHttpsMiddleware = require('./middleware/forceHttps')
-const config = require('./helpers/backendConfigLoader')
+const frontendConfig = require('./helpers/loadFrontendConfig')
 const app = express()
 
 app.use(bodyParser.json())
@@ -38,7 +38,7 @@ app.get('*', (req, res) => {
       <noscript>Your browser does not support JavaScript or it is turned off.</noscript>
     </head>
 
-    <body data-config=${JSON.stringify(config)}>
+    <body data-config=${JSON.stringify(frontendConfig)}>
       <div id="root" style="width: 100%; height: 100%;"></div>
     </body>
 

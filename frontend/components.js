@@ -5,7 +5,7 @@ import actions from './actions'
 import strings from './translations'
 import {RefreshIcon, ExitIcon} from './svg'
 
-import {CARDANOLITE_CONFIG} from './frontendConfigLoader'
+import {CARDANOLITE_CONFIG} from './config'
 
 class UnlockClass extends Component {
   constructor(props) {
@@ -30,11 +30,14 @@ class UnlockClass extends Component {
     this.setState({validationMsg: undefined})
     if (!Cardano.validateMnemonic(this.state.currentWalletMnemonicOrSecret)) {
       return this.setState({
-        validationMsg: 'Invalid mnemonic, check your mnemonic for typos and try again.',
+        validationMsg:
+          'Invalid mnemonic, check your mnemonic for typos and try again.',
       })
     }
     try {
-      return await this.props.loadWalletFromMnemonic(this.state.currentWalletMnemonicOrSecret)
+      return await this.props.loadWalletFromMnemonic(
+        this.state.currentWalletMnemonicOrSecret
+      )
     } catch (e) {
       return this.setState({
         validationMsg: `Error during wallet initialization: ${e.toString()}`,
@@ -53,8 +56,14 @@ class UnlockClass extends Component {
       h(
         'div',
         undefined,
-        h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
-        this.state.validationMsg ? h('p', {class: 'alert error'}, this.state.validationMsg) : '',
+        h(
+          'h1',
+          {class: 'intro-header fade-in-up'},
+          'Load your existing Cardano Wallet'
+        ),
+        this.state.validationMsg
+          ? h('p', {class: 'alert error'}, this.state.validationMsg)
+          : '',
         h(
           'div',
           {class: 'intro-input-row fade-in-up-delayed'},
@@ -158,7 +167,9 @@ class CopyOnClick extends Component {
   constructor(props) {
     super(props)
     this.state = {tooltip: 'Copy to clipboard'}
-    this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(this)
+    this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(
+      this
+    )
     this.copyTextToClipboard = this.copyTextToClipboard.bind(this)
   }
 
@@ -222,7 +233,9 @@ const Address = ({address, isTransaction}) =>
       Tooltip,
       {tooltip: 'Examine via CardanoExplorer.com'},
       h('a', {
-        href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
+        href: `https://cardanoexplorer.com/${
+          isTransaction ? 'tx' : 'address'
+        }/${address}`,
         target: '_blank',
         class: 'address-link',
       })
@@ -241,7 +254,8 @@ const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
 const UnusedAddressesList = connect('unusedAddresses', actions)(
   ({unusedAddresses, generateNewUnusedAddress}) => {
     const disableGettingNewAddresses =
-      unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+      unusedAddresses.length >=
+      CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
     return h(
       'div',
       {class: ''},
@@ -260,7 +274,12 @@ const UnusedAddressesList = connect('unusedAddresses', actions)(
 )
 
 const Addresses = () =>
-  h('div', {class: 'content-wrapper'}, h(UnusedAddressesList), h(UsedAddressesList))
+  h(
+    'div',
+    {class: 'content-wrapper'},
+    h(UnusedAddressesList),
+    h(UsedAddressesList)
+  )
 
 const PrettyDate = ({date}) => {
   const day = `${date.getDate()}`.padStart(2)
@@ -301,23 +320,15 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
     {class: ''},
     h('h2', undefined, 'Transaction History'),
     h(
-      'table',
-      undefined,
+      'div',
+      {class: ''},
+      h('h2', undefined, 'Transaction History'),
       h(
-        'thead',
+        'table',
         undefined,
         h(
-          'tr',
+          'thead',
           undefined,
-          h('th', undefined, 'Time'),
-          h('th', undefined, 'Transaction'),
-          h('th', undefined, 'Movement (ADA)')
-        )
-      ),
-      h(
-        'tbody',
-        undefined,
-        ...transactionHistory.map((transaction) =>
           h(
             'tr',
             undefined,
@@ -334,15 +345,15 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
         )
       )
     )
-  )
 )
 
 const ConfirmTransactionDialog = connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
-    totalAmount: (parseFloat(state.sendAmount.fieldValue) + state.transactionFee / 1000000).toFixed(
-      6
-    ),
+    totalAmount: (
+      parseFloat(state.sendAmount.fieldValue) +
+      state.transactionFee / 1000000
+    ).toFixed(6),
   }),
   actions
 )(({sendAddress, totalAmount, submitTransaction, cancelTransaction}) =>
@@ -398,7 +409,9 @@ class SendAdaClass extends Component {
               class: `alert ${sendSuccess ? 'success' : 'error'}`,
             },
             `Transaction status: ${
-              sendSuccess ? 'Successfully submitted.' : 'Failure! Please try again.'
+              sendSuccess
+                ? 'Successfully submitted.'
+                : 'Failure! Please try again.'
             }`
           )
           : '',
@@ -435,7 +448,11 @@ class SendAdaClass extends Component {
               )
           ),
           displayTransactionFee &&
-            h('span', {class: 'transaction-fee'}, `+ ${transactionFee} transaction fee`)
+            h(
+              'span',
+              {class: 'transaction-fee'},
+              `+ ${transactionFee} transaction fee`
+            )
         ),
         h(
           'div',
@@ -497,7 +514,8 @@ const SendAda = connect(
   actions
 )(SendAdaClass)
 
-const WalletInfo = () => h('div', {class: 'content-wrapper'}, h(Balance), h(TransactionHistory))
+const WalletInfo = () =>
+  h('div', {class: 'content-wrapper'}, h(Balance), h(TransactionHistory))
 
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
@@ -542,13 +560,21 @@ const LoginStatus = connect(
         'div',
         {class: 'status-text'},
         'Balance: ',
-        h('span', {class: 'status-balance'}, `${(balance / 1000000).toFixed(6)} ADA`)
+        h(
+          'span',
+          {class: 'status-balance'},
+          `${(balance / 1000000).toFixed(6)} ADA`
+        )
       ),
       h(
         'div',
         {class: 'status-text', title: activeWalletId},
         'WalletID: ',
-        h('span', {class: 'active-wallet-id', title: activeWalletId}, activeWalletId)
+        h(
+          'span',
+          {class: 'active-wallet-id', title: activeWalletId},
+          activeWalletId
+        )
       )
     ),
     h(
@@ -589,7 +615,11 @@ const NavbarUnauth = () =>
       h(
         'nav',
         {class: 'unauth'},
-        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'About')
+        h(
+          'a',
+          {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'},
+          'About'
+        )
       )
     )
   )
@@ -691,7 +721,11 @@ class AboutOverlayClass extends Component {
         h(
           'div',
           {class: 'box text'},
-          h('h4', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
+          h(
+            'h4',
+            undefined,
+            ' Disclaimer: CardanoLite is not created by Cardano Foundation. '
+          ),
           h(
             'p',
             undefined,
@@ -790,7 +824,11 @@ const Footer = () =>
       h(
         'small',
         {class: 'contact-link'},
-        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'View on Github')
+        h(
+          'a',
+          {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'},
+          'View on Github'
+        )
       ),
       '/',
       h(
@@ -802,10 +840,22 @@ const Footer = () =>
       h(
         'small',
         {class: 'contact-link'},
-        h('a', {href: 'https://twitter.com/hashtag/cardanolite'}, '#cardanolite')
+        h(
+          'a',
+          {href: 'https://twitter.com/hashtag/cardanolite'},
+          '#cardanolite'
+        )
       )
     )
   )
 
 export const App = () =>
-  h('div', {class: 'wrap'}, h(AboutOverlay), h(Loading), h(Navbar), h(TopLevelRouter), h(Footer))
+  h(
+    'div',
+    {class: 'wrap'},
+    h(AboutOverlay),
+    h(Loading),
+    h(Navbar),
+    h(TopLevelRouter),
+    h(Footer)
+  )
