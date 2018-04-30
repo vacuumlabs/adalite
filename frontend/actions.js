@@ -100,22 +100,22 @@ export default ({setState, getState}) => {
       sendAddress: Object.assign({}, state.sendAddress, {
         validationError: !Cardano.isValidAddress(state.sendAddress.fieldValue)
           ? {code: 'SendAddressInvalidAddress'}
-          : '',
+          : null,
       }),
     })
 
   const validateSendAmount = (state) => {
-    let validationError = ''
+    let validationError = null
     const strAmount = state.sendAmount.fieldValue
-    const amount = parseFloat(state.sendAmount.fieldValue)
+    const amount = parseFloat(strAmount)
 
-    if (isNaN(amount)) {
+    if (isNaN(amount) || strAmount.toLowerCase().includes('e')) {
       validationError = {code: 'SendAmountIsNan'}
     }
     if (strAmount.split('.').length === 2 && strAmount.split('.')[1].length > 6) {
       validationError = {code: 'SendAmountPrecisionLimit'}
     }
-    if (parseFloat(amount.toFixed(6)) <= 0) {
+    if (amount <= 0) {
       validationError = {code: 'SendAmountIsNotPositive'}
     }
 
@@ -143,14 +143,11 @@ export default ({setState, getState}) => {
     }
   }
 
-  const isSendFormFilledAndValid = (state) => {
-    return (
-      state.sendAddress.fieldValue !== '' &&
-      state.sendAmount.fieldValue !== '' &&
-      state.sendAddress.validationError === '' &&
-      state.sendAmount.validationError === ''
-    )
-  }
+  const isSendFormFilledAndValid = (state) =>
+    state.sendAddress.fieldValue !== '' &&
+    state.sendAmount.fieldValue !== '' &&
+    !state.sendAddress.validationError &&
+    !state.sendAmount.validationError
 
   const calculateFee = async () => {
     const state = getState()
@@ -160,7 +157,7 @@ export default ({setState, getState}) => {
     }
 
     const address = state.sendAddress.fieldValue
-    const amount = parseFloat(state.sendAmount.fieldValue) * 1000000
+    const amount = Math.floor(parseFloat(state.sendAmount.fieldValue) * 1000000)
     const transactionFee = await wallet.getTxFee(address, amount)
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
