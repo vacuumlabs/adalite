@@ -340,12 +340,11 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
 const ConfirmTransactionDialog = connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
-    totalAmount: (parseFloat(state.sendAmount.fieldValue) + state.transactionFee / 1000000).toFixed(
-      6
-    ),
+    sendAmount: state.sendAmountForTransactionFee,
+    transactionFee: state.transactionFee,
   }),
   actions
-)(({sendAddress, totalAmount, submitTransaction, cancelTransaction}) =>
+)(({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) =>
   h(
     'div',
     {class: 'overlay'},
@@ -353,7 +352,16 @@ const ConfirmTransactionDialog = connect(
       'div',
       {class: 'box'},
       h('p', undefined, 'Confirm, that you really want to send'),
-      h('div', undefined, h('strong', undefined, `${totalAmount} ADA `), 'to the address'),
+      h(
+        'div',
+        undefined,
+        h(
+          'strong',
+          undefined,
+          `${sendAmount / 1000000} ADA (+fee ${transactionFee / 1000000} ADA)`
+        ),
+        ' to the address'
+      ),
       h('div', {class: 'address-iniline'}, sendAddress),
       h('button', {class: 'positive', onClick: submitTransaction}, 'Confirm'),
       h('button', {class: 'danger', onClick: cancelTransaction}, 'Cancel')
