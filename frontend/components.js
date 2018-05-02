@@ -449,9 +449,6 @@ class SendAdaClass extends Component {
           'div',
           {class: 'styled-input send-input'},
           h('input', {
-            type: 'number',
-            min: 0,
-            step: 0.000001,
             id: 'send-amount',
             name: 'send-amount',
             placeholder: 'Amount',
