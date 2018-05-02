@@ -22,7 +22,7 @@ function addressHash(input) {
   const context = blake2.blake2bInit(28) // blake2b-224
   blake2.blake2bUpdate(context, firstHash)
 
-  return new Buffer(blake2.blake2bFinal(context)).toString('hex')
+  return new Buffer(blake2.blake2bFinal(context))
 }
 
 function add256NoCarry(b1, b2) {
@@ -87,23 +87,22 @@ async function deriveAddressAndSecret(rootSecretString, childIndex) {
     addressPayload = new Buffer(0)
     addressAttributes = new Map()
     derivedSecretString = rootSecretString
-    addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
   } else {
     // the remaining addresses
     const hdPassphrase = await deriveHDPassphrase(rootSecretString)
-    derivedSecretString = deriveSK(rootSecretString, childIndex)
     const derivationPath = [0x80000000, childIndex]
 
-    const addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
+    addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
     addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
-    addressRoot = new Buffer(getAddressRoot(derivedSecretString, addressPayload), 'hex')
+    derivedSecretString = deriveSK(rootSecretString, childIndex)
   }
+  addressRoot = getAddressRoot(derivedSecretString, addressPayload)
 
   const addressType = 0 // Public key address
 
   const addressData = [addressRoot, addressAttributes, addressType]
 
-  const addressDataEncoded = new Buffer(cbor.encode(addressData), 'hex')
+  const addressDataEncoded = cbor.encode(addressData)
 
   const address = base58.encode(
     cbor.encode([new cbor.Tagged(24, addressDataEncoded), getCheckSum(addressDataEncoded)])

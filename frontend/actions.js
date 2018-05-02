@@ -1,5 +1,6 @@
 import Cardano from '../wallet/cardano-wallet'
 import {CARDANOLITE_CONFIG} from './config'
+import {sendAddressValidator, sendAmountValidator, feeValidator} from './validators'
 
 let wallet = null
 
@@ -79,10 +80,7 @@ export default ({setState, getState}) => {
   const generateNewUnusedAddress = async (state) => {
     setState({address: 'loading...'})
     const offset = state.unusedAddresses.length
-    const newUnusedAddress = await wallet.getChangeAddress(
-      Number.MAX_SAFE_INTEGER,
-      offset
-    )
+    const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
     setState({
       unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
     })
@@ -98,50 +96,14 @@ export default ({setState, getState}) => {
     }
   }
 
-  const validateSendAddress = (state) =>
-    setState({
-      sendAddress: Object.assign({}, state.sendAddress, {
-        validationError: !Cardano.isValidAddress(state.sendAddress.fieldValue)
-          ? {code: 'SendAddressInvalidAddress'}
-          : null,
-      }),
-    })
-
-  const validateSendAmount = (state) => {
-    let validationError = null
-    const strAmount = state.sendAmount.fieldValue
-    const amount = parseFloat(strAmount)
-
-    if (isNaN(amount) || strAmount.toLowerCase().includes('e')) {
-      validationError = {code: 'SendAmountIsNan'}
-    } else if (amount <= 0) {
-      validationError = {code: 'SendAmountIsNotPositive'}
-    } else if (strAmount.split('.').length === 2 && strAmount.split('.')[1].length > 6) {
-      validationError = {code: 'SendAmountPrecisionLimit'}
-    }
-
-    setState({sendAmount: Object.assign({}, state.sendAmount, {validationError})})
-  }
-
   const validateSendForm = (state) => {
-    if (
-      state.sendAddress.fieldValue !== '' &&
-      state.sendAmount.fieldValue !== ''
-    ) {
-      validateSendAddress(state)
-      validateSendAmount(state)
-    }
-  }
-
-  const validateFee = (state) => {
-    const sendAmountForTransactionFee = state.sendAmountForTransactionFee
-    const transactionFee = state.transactionFee
-    const balance = state.balance
-
-    if (sendAmountForTransactionFee + transactionFee > balance) {
+    if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
       setState({
+        sendAddress: Object.assign({}, state.sendAddress, {
+          validationError: sendAddressValidator(state.sendAddress.fieldValue),
+        }),
         sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: {code: 'SendAmountInsufficientFunds', params: {balance: state.balance}},
+          validationError: sendAmountValidator(state.sendAmount.fieldValue),
         }),
       })
     }
@@ -173,10 +135,15 @@ export default ({setState, getState}) => {
       setState({
         transactionFee,
         sendAmountForTransactionFee: amount,
+        sendAmount: Object.assign({}, state.sendAmount, {
+          validationError: feeValidator(amount, transactionFee, state.balance),
+        }),
       })
     }
-    validateFee(getState())
-    setState({calculatingFee: false})
+
+    setState({
+      calculatingFee: false,
+    })
   }
 
   const confirmTransaction = () => ({showConfirmTransactionDialog: true})
@@ -214,13 +181,7 @@ export default ({setState, getState}) => {
   }
 
   const submitTransaction = async (state) => {
-    setState(
-      loadingAction(
-        state,
-        'processing transaction',
-        'Submitting transaction...'
-      )
-    )
+    setState(loadingAction(state, 'processing transaction', 'Submitting transaction...'))
     try {
       const address = state.sendAddress.fieldValue
       const amount = parseFloat(state.sendAmount.fieldValue) * 1000000
