@@ -358,6 +358,7 @@ td {
 .navbar {
   background-color: var(--navbar);
   border-bottom: 1px solid var(--border);
+  z-index: 1;
 }
 .navbar-wrap {
   display: flex;
