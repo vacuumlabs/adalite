@@ -49,7 +49,7 @@ export default ({setState, getState}) => {
       sendSuccess,
       transactionHistory,
       loading: false,
-      currentWalletMnemonicOrSecret: '',
+      mnemonic: '',
     })
   }
 

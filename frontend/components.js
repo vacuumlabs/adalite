@@ -11,8 +11,7 @@ class UnlockClass extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      currentWalletMnemonicOrSecret:
-        'plastic that delay conduct police ticket swim gospel intact harsh obtain entire',
+      mnemonic: 'plastic that delay conduct police ticket swim gospel intact harsh obtain entire',
     }
     this.generateMnemonic = this.generateMnemonic.bind(this)
     this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
@@ -21,20 +20,20 @@ class UnlockClass extends Component {
 
   generateMnemonic() {
     this.setState({
-      currentWalletMnemonicOrSecret: Cardano.generateMnemonic(),
+      mnemonic: Cardano.generateMnemonic(),
       validationMsg: undefined,
     })
   }
 
   async loadWalletFromMnemonic() {
     this.setState({validationMsg: undefined})
-    if (!Cardano.validateMnemonic(this.state.currentWalletMnemonicOrSecret)) {
+    if (!Cardano.validateMnemonic(this.state.mnemonic)) {
       return this.setState({
         validationMsg: 'Invalid mnemonic, check your mnemonic for typos and try again.',
       })
     }
     try {
-      return await this.props.loadWalletFromMnemonic(this.state.currentWalletMnemonicOrSecret)
+      return await this.props.loadWalletFromMnemonic(this.state.mnemonic)
     } catch (e) {
       return this.setState({
         validationMsg: `Error during wallet initialization: ${e.toString()}`,
@@ -43,10 +42,10 @@ class UnlockClass extends Component {
   }
 
   updateMnemonic(e) {
-    this.setState({currentWalletMnemonicOrSecret: e.target.value})
+    this.setState({mnemonic: e.target.value})
   }
 
-  render({loadWalletFromMnemonic}, {currentWalletMnemonicOrSecret}) {
+  render({loadWalletFromMnemonic}, {mnemonic}) {
     return h(
       'div',
       {class: 'intro-wrapper'},
@@ -64,7 +63,7 @@ class UnlockClass extends Component {
             id: 'mnemonic-submitted',
             name: 'mnemonic-submitted',
             placeholder: 'Enter twelve-word mnemonic',
-            value: currentWalletMnemonicOrSecret,
+            value: mnemonic,
             onInput: this.updateMnemonic,
             autocomplete: 'nope',
           }),
@@ -75,7 +74,7 @@ class UnlockClass extends Component {
               'button',
               {
                 class: 'intro-button rounded-button',
-                disabled: !currentWalletMnemonicOrSecret,
+                disabled: !mnemonic,
                 onClick: this.loadWalletFromMnemonic,
               },
               'Go'

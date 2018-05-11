@@ -12,10 +12,10 @@ const CborIndefiniteLengthArray = require('../wallet/helpers/CborIndefiniteLengt
 const mockObject = require('./mock')
 const mock = mockObject(CARDANOLITE_CONFIG)
 
-const secret1 = new transaction.WalletSecretString(
+const hdNode1 = new transaction.HdNode(
   '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c'
 )
-const secret2 = new transaction.WalletSecretString(
+const hdNode2 = new transaction.HdNode(
   'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
 )
 const wallet = CardanoWallet(
@@ -90,7 +90,7 @@ describe('test generating mnemonic', () => {
 describe('test signing', () => {
   it('should produce proper signature', () => {
     // test signing
-    assert.equal(transaction.sign(message, secret1), signature)
+    assert.equal(transaction.sign(message, hdNode1), signature)
   })
 })
 
@@ -99,78 +99,78 @@ describe('test signature verification', () => {
     'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02'
 
   it('should accept signature', () => {
-    assert.equal(transaction.verify(message, secret1.getPublicKey(), signature), true)
+    assert.equal(transaction.verify(message, hdNode1.getPublicKey(), signature), true)
   })
 
   it('should reject signature', () => {
-    assert.equal(transaction.verify(message, secret1.getPublicKey(), wrongSignature), false)
+    assert.equal(transaction.verify(message, hdNode1.getPublicKey(), wrongSignature), false)
   })
 })
 
-describe('test secret key derivation from mnemonic', () => {
+describe('test HD node derivation from mnemonic', () => {
   // a test case where the hash seed has an odd number of bytes
   const mnemonicString1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
-  const generatedWalletSecret1 = mnemonic.mnemonicToWalletSecretString(mnemonicString1).secretString
-  const expectedWalletSecret1 =
+  const generatedHdNode1 = mnemonic.mnemonicToHdNode(mnemonicString1).hdNodeString
+  const expectedHdNode1 =
     'b0d4187b81b5c2fb8234378ebcf33a1c2e2293369bd2263b6dcf672a29676a5a2e73d1f6e660365eacdde77052625f0cc6e50c0710b35e45095fb1b51b9b9315f83d8464268bbb19fe416000fa846eaed7171d4390242aa966ab80c36694b7fa6eec090fd6c6498bb4a28b61f8c4c5ae19b635e20052cb0bc7e0d17404b1717e'
   it('should produce right secret key from a seed which had a leading zero in hex by stripping it', () => {
-    assert.equal(generatedWalletSecret1, expectedWalletSecret1)
+    assert.equal(generatedHdNode1, expectedHdNode1)
   })
 
   // a test case where the hash seed has an even number of bytes
   const mnemonicString2 =
     'useful normal dismiss what earn total boost project tomorrow filter pill shuffle'
-  const expectedWalletSecret2 =
+  const expectedHdNode2 =
     '30582ede015798e511207cb26d71ca460edb85a16fafe212261039eeaccd434fab1c009a83260352b8cf80241d097696d898b7a0a0296312227bb459c3784cc12770c30533d63e77ad46c26a47c1d659058ab0c3dcf0e899e40113e7def05dd73fc6f8b25d9d774caebaed348f8e1a7d503c958e0cf74337e95d1d5e4a2d4aa0'
-  const generatedWalletSecret2 = mnemonic.mnemonicToWalletSecretString(mnemonicString2).secretString
+  const generatedHdNode2 = mnemonic.mnemonicToHdNode(mnemonicString2).hdNodeString
   it('should produce right secret key from a seed without a leading zero in hex', () => {
-    assert.equal(generatedWalletSecret2, expectedWalletSecret2)
+    assert.equal(generatedHdNode2, expectedHdNode2)
   })
 })
 
-describe('test private key derivation', () => {
+describe('test secret key derivation', () => {
   // root public secret key (the one used as 'wallet id' in Daedalus)
-  const expectedSecret1 =
+  const expectedHdNodeStr1 =
     '28e375ee5af42a9641c5c31b1b2d24df7f1d2212116bc0b0fc58816f06985b072cf5960d205736cac2e8224dd6018f7223c1bdc630d2b866703670a37316f44003b5417131136bd53174f09b129ae0499bd718ca55c5d40877c33b5ee10e5ba89661f96070a9d39df75c21f6142415502e254523cbacff2b4d58aa87d9021d65'
   it("should properly derive root public secret key (the one used as 'wallet id' in Daedalus)", () => {
-    const derivedSecret1 = address.deriveSK(secret2, childIndex1).secretString
-    assert.equal(derivedSecret1, expectedSecret1)
+    const derivedHdNodeStr1 = address.deriveHdNode(hdNode2, childIndex1).hdNodeString
+    assert.equal(derivedHdNodeStr1, expectedHdNodeStr1)
   })
 
   // some hardened secret key - child index starts with 1 in binary
-  const expectedSecret2 =
+  const expectedHdNodeStr2 =
     'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
   it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
-    const derivedSecret2 = address.deriveSK(secret2, childIndex2).secretString
-    assert.equal(derivedSecret2, expectedSecret2)
+    const derivedHdNodeStr2 = address.deriveHdNode(hdNode2, childIndex2).hdNodeString
+    assert.equal(derivedHdNodeStr2, expectedHdNodeStr2)
   })
 
-  const expectedSecret3 =
+  const expectedHdNodeStr3 =
     'e0f31d972365bb76a2dd837c7ba5b4b7c065fa4ad1fbf808ddc17130bf10c40f63772cbaa1cdf7e847543f3cbcb3da7065498c71c04ca1f5cd9dccc18226461efdade44a3c35cfb6ab9c834dbc418da2cba30501139db384f194ef060847d0bd164f072124bcf55af0f01c1b5cd7759a7262b4d205717f4afb282cf98fed3026'
   it('should properly derive some nonhardened secret key - child index starts with 0 in binary', () => {
-    const derivedSecret3 = address.deriveSK(secret2, childIndex3).secretString
-    assert.equal(derivedSecret3, expectedSecret3)
+    const derivedHdNodeStr3 = address.deriveHdNode(hdNode2, childIndex3).hdNodeString
+    assert.equal(derivedHdNodeStr3, expectedHdNodeStr3)
   })
 })
 
 describe('test address generation from secret key', () => {
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
-    const derivedAddress1 = (await address.deriveAddressAndSecret(secret2, childIndex1)).address
+    const derivedAddress1 = (await address.deriveAddressWithHdNode(hdNode2, childIndex1)).address
     assert.equal(derivedAddress1, expectedAddress1)
   })
 
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
   it('should properly generate some address from hardened key - child index starts with 1 in binary', async () => {
-    const derivedAddress2 = (await address.deriveAddressAndSecret(secret2, childIndex2)).address
+    const derivedAddress2 = (await address.deriveAddressWithHdNode(hdNode2, childIndex2)).address
     assert.equal(derivedAddress2, expectedAddress2)
   })
 
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
   it('should properly generate some address from nonhardened key - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = (await address.deriveAddressAndSecret(secret2, childIndex3)).address
+    const derivedAddress3 = (await address.deriveAddressWithHdNode(hdNode2, childIndex3)).address
     assert.equal(derivedAddress3, expectedAddress3)
   })
 })
@@ -179,13 +179,13 @@ describe('test address ownership verification', () => {
   const ownAddress =
     'DdzFFzCqrhsoStdHaBGfa5ZaLysiTnVuu7SHRcJvvu4yKg94gVBx3TzEV9CjphrFxLhnu1DJUKm2kdcrxYDZBGosrv4Gq3HuiFWRYVdZ'
   it('should accept own address', async () => {
-    assert.equal(await address.isAddressDerivableFromSecretString(ownAddress, secret2), true)
+    assert.equal(await address.isAddressDerivableFromHdNode(ownAddress, hdNode2), true)
   })
 
   const foreignAddress =
     'DdzFFzCqrht1Su7MEaCbFUcKpZnqQp5aUudPjrJZ2h8YADJBDvpsXZk9BducpXcSgujYJGKaTuZye9hb9z3Hff42TXDft5yrsKka6rDW'
   it('should reject foreign address', async () => {
-    assert.equal(await address.isAddressDerivableFromSecretString(foreignAddress, secret2), false)
+    assert.equal(await address.isAddressDerivableFromHdNode(foreignAddress, hdNode2), false)
   })
 })
 

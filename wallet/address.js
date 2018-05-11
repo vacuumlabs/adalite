@@ -79,24 +79,24 @@ function isValidAddress(address) {
   return true
 }
 
-async function deriveAddressAndSecret(rootSecretString, childIndex) {
-  let addressPayload, addressAttributes, derivedSecretString, addressRoot
+async function deriveAddressWithHdNode(parentHdNode, childIndex) {
+  let addressPayload, addressAttributes, derivedHdNode, addressRoot
 
   if (childIndex === 0x80000000) {
     // root address
     addressPayload = new Buffer(0)
     addressAttributes = new Map()
-    derivedSecretString = rootSecretString
+    derivedHdNode = parentHdNode
   } else {
     // the remaining addresses
-    const hdPassphrase = await deriveHDPassphrase(rootSecretString)
+    const hdPassphrase = await deriveHdPassphrase(parentHdNode)
     const derivationPath = [0x80000000, childIndex]
 
     addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
     addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
-    derivedSecretString = deriveSK(rootSecretString, childIndex)
+    derivedHdNode = deriveHdNode(parentHdNode, childIndex)
   }
-  addressRoot = getAddressRoot(derivedSecretString, addressPayload)
+  addressRoot = getAddressRoot(derivedHdNode, addressPayload)
 
   const addressType = 0 // Public key address
 
@@ -111,13 +111,13 @@ async function deriveAddressAndSecret(rootSecretString, childIndex) {
   return {
     address,
     childIndex,
-    secret: derivedSecretString,
+    hdNode: derivedHdNode,
   }
 }
 
-async function isAddressDerivableFromSecretString(address, rootSecretString) {
+async function isAddressDerivableFromHdNode(address, hdNode) {
   try {
-    await deriveSecretStringFromAddress(address, rootSecretString)
+    await deriveHdNodeFromAddress(address, hdNode)
     return true
   } catch (e) {
     if (e.name === 'AddressDecodingException') {
@@ -128,35 +128,32 @@ async function isAddressDerivableFromSecretString(address, rootSecretString) {
   }
 }
 
-async function deriveSecretStringFromAddress(address, rootSecretString) {
+async function deriveHdNodeFromAddress(address, parentHdNode) {
   // we decode the address from the base58 string
-  // and then we strip the 24 CBOR data taga (the "[0].value" part)
+  // and then we strip the 24 CBOR data tags (the "[0].value" part)
   const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
   const addressData = cbor.decode(addressAsBuffer)
   const addressAttributes = addressData[1]
   const addressPayload = cbor.decode(addressAttributes.get(1))
-  const hdPassphrase = await deriveHDPassphrase(rootSecretString)
+  const hdPassphrase = await deriveHdPassphrase(parentHdNode)
   const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
   const childIndex = addressAttributes.length === 0 ? 0x80000000 : derivationPath[1]
 
-  return (await deriveAddressAndSecret(rootSecretString, childIndex)).secret
+  return (await deriveAddressWithHdNode(parentHdNode, childIndex)).hdNode
 }
 
-function deriveSK(rootSecretString, childIndex) {
-  const firstround = deriveSkIteration(rootSecretString, 0x80000000)
+function deriveHdNode(hdNode, childIndex) {
+  const firstRound = deriveHdNodeIteration(hdNode, 0x80000000)
 
   if (childIndex === 0x80000000) {
-    return firstround
+    return firstRound
   }
 
-  return deriveSkIteration(firstround, childIndex)
+  return deriveHdNodeIteration(firstRound, childIndex)
 }
 
-function getAddressRoot(walletSecretString, addressPayload) {
-  const extendedPublicKey = new Buffer(
-    walletSecretString.getPublicKey() + walletSecretString.getChainCode(),
-    'hex'
-  )
+function getAddressRoot(hdNode, addressPayload) {
+  const extendedPublicKey = new Buffer(hdNode.getPublicKey() + hdNode.getChainCode(), 'hex')
 
   return addressHash([
     0,
@@ -190,32 +187,29 @@ function getCheckSum(input) {
   return crc32.buf(input) >>> 0
 }
 
-async function deriveHDPassphrase(walletSecretString) {
-  const extendedPublicKey = new Buffer(
-    walletSecretString.getPublicKey() + walletSecretString.getChainCode(),
-    'hex'
-  )
+async function deriveHdPassphrase(hdNode) {
+  const extendedPublicKey = new Buffer(hdNode.getPublicKey() + hdNode.getChainCode(), 'hex')
 
   return await pbkdf2Async(extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
 }
 
-function deriveSkIteration(parentSecretString, childIndex) {
-  const chainCode = new Buffer(parentSecretString.getChainCode(), 'hex')
+function deriveHdNodeIteration(hdNode, childIndex) {
+  const chainCode = new Buffer(hdNode.getChainCode(), 'hex')
 
   const hmac1 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
     hmac1.update(new Buffer('00', 'hex')) // TAG_DERIVE_Z_HARDENED
-    hmac1.update(new Buffer(parentSecretString.getSecretKey(), 'hex'))
+    hmac1.update(new Buffer(hdNode.getSecretKey(), 'hex'))
   } else {
     hmac1.update(new Buffer('02', 'hex')) // TAG_DERIVE_Z_NORMAL
-    hmac1.update(new Buffer(parentSecretString.getPublicKey(), 'hex'))
+    hmac1.update(new Buffer(hdNode.getPublicKey(), 'hex'))
   }
   hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
   const z = new Buffer(hmac1.digest('hex'), 'hex')
 
   const zl8 = multiply8(z, new Buffer('08', 'hex')).slice(0, 32)
-  const parentKey = new Buffer(parentSecretString.getSecretKey(), 'hex')
+  const parentKey = new Buffer(hdNode.getSecretKey(), 'hex')
 
   const kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32))
   const kr = add256NoCarry(z.slice(32, 64), parentKey.slice(32, 64))
@@ -226,10 +220,10 @@ function deriveSkIteration(parentSecretString, childIndex) {
 
   if (indexIsHardened(childIndex)) {
     hmac2.update(new Buffer('01', 'hex')) // TAG_DERIVE_CC_HARDENED
-    hmac2.update(new Buffer(parentSecretString.getSecretKey(), 'hex'))
+    hmac2.update(new Buffer(hdNode.getSecretKey(), 'hex'))
   } else {
     hmac2.update(new Buffer('03', 'hex')) // TAG_DERIVE_CC_NORMAL
-    hmac2.update(new Buffer(parentSecretString.getPublicKey(), 'hex'))
+    hmac2.update(new Buffer(hdNode.getPublicKey(), 'hex'))
   }
   hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
 
@@ -239,9 +233,7 @@ function deriveSkIteration(parentSecretString, childIndex) {
     'hex'
   )
 
-  return new tx.WalletSecretString(
-    Buffer.concat([resKey, newPublicKey, newChainCode]).toString('hex')
-  )
+  return new tx.HdNode(Buffer.concat([resKey, newPublicKey, newChainCode]).toString('hex'))
 }
 
 function indexIsHardened(childIndex) {
@@ -250,9 +242,9 @@ function indexIsHardened(childIndex) {
 
 module.exports = {
   isValidAddress,
-  deriveAddressAndSecret,
-  isAddressDerivableFromSecretString,
-  deriveSecretStringFromAddress,
-  deriveSK,
+  deriveAddressWithHdNode,
+  isAddressDerivableFromHdNode,
+  deriveHdNodeFromAddress,
+  deriveHdNode,
   encryptDerivationPath,
 }

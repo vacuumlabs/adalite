@@ -1,10 +1,11 @@
 const cbor = require('cbor')
 
-const {mnemonicToWalletSecretString, generateMnemonic, validateMnemonic} = require('./mnemonic')
+const {mnemonicToHdNode, generateMnemonic, validateMnemonic} = require('./mnemonic')
 const tx = require('./transaction')
 const address = require('./address')
 const blockchainExplorerObject = require('./blockchain-explorer')
 const request = require('./helpers/request')
+const range = require('./helpers/range')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -21,14 +22,14 @@ async function filterUsed(arr, callback) {
   )).filter((i) => i !== undefined)
 }
 
-const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
+const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
   const blockchainExplorer = blockchainExplorerObject(CARDANOLITE_CONFIG)
   const addressDerivationCache = {}
 
-  const rootSecret =
-    secretOrMnemonic.search(' ') >= 0
-      ? mnemonicToWalletSecretString(secretOrMnemonic)
-      : new tx.WalletSecretString(secretOrMnemonic)
+  const hdNode =
+    mnemonicOrHdNodeString.search(' ') >= 0
+      ? mnemonicToHdNode(mnemonicOrHdNodeString)
+      : new tx.HdNode(mnemonicOrHdNodeString)
 
   async function sendAda(address, coins) {
     const transaction = await prepareTx(address, coins)
@@ -39,8 +40,8 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     return await submitTxRaw(txHash, txBody)
   }
 
-  function getRootSecret() {
-    return rootSecret
+  function getHdNode() {
+    return hdNode
   }
 
   async function getId() {
@@ -48,15 +49,12 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
   }
 
   async function getAddress(childIndex) {
-    return (await getAddressAndSecret(childIndex)).address
+    return (await getAddressWithHdNode(childIndex)).address
   }
 
-  async function getAddressAndSecret(childIndex) {
+  async function getAddressWithHdNode(childIndex) {
     if (addressDerivationCache[childIndex] === undefined) {
-      addressDerivationCache[childIndex] = await address.deriveAddressAndSecret(
-        rootSecret,
-        childIndex
-      )
+      addressDerivationCache[childIndex] = await address.deriveAddressWithHdNode(hdNode, childIndex)
     }
 
     return addressDerivationCache[childIndex]
@@ -132,12 +130,12 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
 
   async function prepareTxInputs(coins) {
     // TODO optimize tx inputs selection, now it takes all utxos
-    const utxos = await getUnspentTxOutputsWithSecrets()
+    const utxos = await getUnspentTxOutputsWithHdNodes()
 
     const txInputs = []
     for (let i = 0; i < utxos.length; i++) {
       txInputs.push(
-        new tx.TxInput(utxos[i].txHash, utxos[i].outputIndex, utxos[i].secret, utxos[i].coins)
+        new tx.TxInput(utxos[i].txHash, utxos[i].outputIndex, utxos[i].hdNode, utxos[i].coins)
       )
     }
 
@@ -188,53 +186,50 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
   }
 
   async function getChangeAddress(usedAddressesLimit = Number.MAX_SAFE_INTEGER, offset = 0) {
-    const usedAddressesAndSecrets = await getUsedAddressesAndSecrets()
-
+    const usedAddressesWithHdNodes = await getUsedAddressesWithHdNodes()
+    if (offset < 0) throw new Error(`Argument offset = ${offset} must not be negative!`)
     let result
 
-    if (usedAddressesAndSecrets.length < usedAddressesLimit) {
+    if (usedAddressesWithHdNodes.length < usedAddressesLimit) {
       const highestUsedChildIndex = Math.max(
         0x8000000,
-        ...usedAddressesAndSecrets.map((item) => item.childIndex)
+        ...usedAddressesWithHdNodes.map((item) => item.childIndex)
       )
 
-      result = (await getAddressAndSecret(highestUsedChildIndex + 1 + offset)).address
+      result = (await getAddressWithHdNode(highestUsedChildIndex + 1 + offset)).address
     } else {
       result =
-        usedAddressesAndSecrets[Math.floor(Math.random() * usedAddressesAndSecrets.length)].address
+        usedAddressesWithHdNodes[Math.floor(Math.random() * usedAddressesWithHdNodes.length)]
+          .address
     }
 
     return result
   }
 
-  async function getUnspentTxOutputsWithSecrets() {
+  async function getUnspentTxOutputsWithHdNodes() {
     let result = []
 
-    const addresses = await getUsedAddressesAndSecrets()
+    const addresses = await getUsedAddressesWithHdNodes()
 
-    for (let i = 0; i < addresses.length; i++) {
-      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(
-        addresses[i].address
-      )
-
-      addressUnspentOutputs.map((element) => {
-        element.secret = addresses[i].secret
-      })
-
+    for (const a of addresses) {
+      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(a.address)
+      for (const element of addressUnspentOutputs) {
+        element.hdNode = a.hdNode
+      }
       result = result.concat(addressUnspentOutputs)
     }
 
     return result
   }
 
-  async function getUsedAddressesAndSecrets() {
+  async function getUsedAddressesWithHdNodes() {
     let result = []
     // eslint-disable-next-line no-undef
     const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
 
     for (let i = 0; ; i++) {
       const usedAddresses = await filterUsed(
-        await deriveAddressesAndSecrets(i * gapLength, (i + 1) * gapLength),
+        await deriveAddressesWithHdNodes(i * gapLength, (i + 1) * gapLength),
         async (addressData) => {
           return await blockchainExplorer.isAddressUsed(addressData.address)
         }
@@ -255,26 +250,20 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     // eslint-disable-next-line no-undef
     end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
   ) {
-    return (await deriveAddressesAndSecrets(begin, end)).map((item) => item.address)
+    return (await deriveAddressesWithHdNodes(begin, end)).map((item) => item.address)
   }
 
-  async function deriveAddressesAndSecrets(
+  async function deriveAddressesWithHdNodes(
     begin = 0,
     // eslint-disable-next-line no-undef
     end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
   ) {
-    const result = []
-    for (let i = begin; i < end; i++) {
-      result.push(await getAddressAndSecret(0x80000001 + i))
-    }
-
-    return result
+    const childIndexRange = range(begin + 0x80000001, end + 0x80000001)
+    return await Promise.all(childIndexRange.map(async (i) => await getAddressWithHdNode(i)))
   }
 
   async function getUsedAddresses() {
-    return (await getUsedAddressesAndSecrets()).map((item) => {
-      return item.address
-    })
+    return (await getUsedAddressesWithHdNodes()).map((item) => item.address)
   }
 
   function txFeeFunction(txSizeInBytes) {
@@ -318,7 +307,7 @@ const CardanoWallet = (secretOrMnemonic, CARDANOLITE_CONFIG) => {
     prepareTx,
     deriveAddresses,
     getHistory,
-    getRootSecret,
+    getHdNode,
   }
 }
 

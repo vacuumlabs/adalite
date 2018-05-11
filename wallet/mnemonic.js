@@ -20,7 +20,7 @@ function validateMnemonic(mnemonic) {
   }
 }
 
-function mnemonicToWalletSecretString(mnemonic) {
+function mnemonicToHdNode(mnemonic) {
   const hashSeed = mnemonicToHashSeed(mnemonic)
   let result
 
@@ -38,7 +38,7 @@ function mnemonicToWalletSecretString(mnemonic) {
 
       const chainCode = new Buffer(digest.substr(64, 64), 'hex')
 
-      result = new transaction.WalletSecretString(
+      result = new transaction.HdNode(
         Buffer.concat([secretKey, publicKey, chainCode]).toString('hex')
       )
     } catch (e) {
@@ -93,6 +93,6 @@ function mnemonicToHashSeed(mnemonic) {
 
 module.exports = {
   generateMnemonic,
-  mnemonicToWalletSecretString,
+  mnemonicToHdNode,
   validateMnemonic,
 }

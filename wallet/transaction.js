@@ -103,7 +103,7 @@ class TxWitness {
 }
 
 class TxInput {
-  constructor(txId, outputIndex, secret, coins) {
+  constructor(txId, outputIndex, hdNode, coins) {
     this.id = txId
 
     // the index of the input transaction when it was the output of another
@@ -113,21 +113,21 @@ class TxInput {
     this.type = 0
 
     // so we are able to sign the input
-    this.secret = secret
+    this.hdNode = hdNode
 
     this.coins = coins
   }
 
   getWitness(txHash) {
     return new TxWitness(
-      new TxPublicString(this.secret.getPublicKey() + this.secret.getChainCode()),
+      new TxPublicString(this.hdNode.getPublicKey() + this.hdNode.getChainCode()),
       /*
       * "011a2d964a095820" is a magic prefix from the cardano-sl code
         the "01" byte is a constant to denote signatures of transactions
         the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
         the "5820" part is the CBOR prefix for a hex string
       */
-      new TxSignature(sign(`011a2d964a095820${txHash}`, this.secret))
+      new TxSignature(sign(`011a2d964a095820${txHash}`, this.hdNode))
     )
   }
 
@@ -160,21 +160,24 @@ class WalletAddress {
   }
 }
 
-class WalletSecretString {
-  constructor(secretString) {
-    this.secretString = secretString
+class HdNode {
+  constructor(hdNodeString) {
+    this.hdNodeString = hdNodeString
+    this.secretKey = this.hdNodeString.substr(0, 128)
+    this.publicKey = this.hdNodeString.substr(128, 64)
+    this.chainCode = this.hdNodeString.substr(192, 64)
   }
 
   getSecretKey() {
-    return this.secretString.substr(0, 128)
+    return this.secretKey
   }
 
   getPublicKey() {
-    return this.secretString.substr(128, 64)
+    return this.publicKey
   }
 
   getChainCode() {
-    return this.secretString.substr(192, 64)
+    return this.chainCode
   }
 }
 
@@ -228,6 +231,6 @@ module.exports = {
   TxInput,
   TxOutput,
   WalletAddress,
-  WalletSecretString,
+  HdNode,
   Transaction,
 }

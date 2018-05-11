@@ -26,9 +26,7 @@ module.exports = (req, res, next) => {
     knownIps.add(ip)
     client.incr('total')
     client.incr(`${monthNames[date.getMonth()]}-${date.getFullYear()}`)
-    client.incr(
-      `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
-    )
+    client.incr(`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`)
   }
   next()
 }
