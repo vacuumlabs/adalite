@@ -18,11 +18,7 @@ function addressHash(input) {
   const serializedInput = cbor.encode(input)
 
   const firstHash = new Buffer(sha3.sha3_256(serializedInput), 'hex')
-
-  const context = blake2.blake2bInit(28) // blake2b-224
-  blake2.blake2bUpdate(context, firstHash)
-
-  return new Buffer(blake2.blake2bFinal(context))
+  return new Buffer(blake2.blake2b(firstHash, null, 28))
 }
 
 function add256NoCarry(b1, b2) {
