@@ -199,16 +199,16 @@ function deriveHdNodeIteration(hdNode, childIndex) {
   const hmac1 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
-    hmac1.update(new Buffer('00', 'hex')) // TAG_DERIVE_Z_HARDENED
+    hmac1.update(new Buffer([0x00])) // TAG_DERIVE_Z_HARDENED
     hmac1.update(new Buffer(hdNode.getSecretKey(), 'hex'))
   } else {
-    hmac1.update(new Buffer('02', 'hex')) // TAG_DERIVE_Z_NORMAL
+    hmac1.update(new Buffer([0x02])) // TAG_DERIVE_Z_NORMAL
     hmac1.update(new Buffer(hdNode.getPublicKey(), 'hex'))
   }
   hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
   const z = new Buffer(hmac1.digest('hex'), 'hex')
 
-  const zl8 = multiply8(z, new Buffer('08', 'hex')).slice(0, 32)
+  const zl8 = multiply8(z, new Buffer([0x08])).slice(0, 32)
   const parentKey = new Buffer(hdNode.getSecretKey(), 'hex')
 
   const kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32))
@@ -219,10 +219,10 @@ function deriveHdNodeIteration(hdNode, childIndex) {
   const hmac2 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
-    hmac2.update(new Buffer('01', 'hex')) // TAG_DERIVE_CC_HARDENED
+    hmac2.update(new Buffer([0x01])) // TAG_DERIVE_CC_HARDENED
     hmac2.update(new Buffer(hdNode.getSecretKey(), 'hex'))
   } else {
-    hmac2.update(new Buffer('03', 'hex')) // TAG_DERIVE_CC_NORMAL
+    hmac2.update(new Buffer([0x03])) // TAG_DERIVE_CC_NORMAL
     hmac2.update(new Buffer(hdNode.getPublicKey(), 'hex'))
   }
   hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
