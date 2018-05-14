@@ -105,7 +105,7 @@ async function deriveAddressWithHdNode(parentHdNode, childIndex) {
   const addressDataEncoded = cbor.encode(addressData)
 
   const address = base58.encode(
-    cbor.encode([new cbor.Tagged(24, addressDataEncoded), getCheckSum(addressDataEncoded)])
+    cbor.encode([new cbor.Tagged(24, addressDataEncoded), crc32Unsigned(addressDataEncoded)])
   )
 
   return {
@@ -146,7 +146,7 @@ function deriveHdNode(hdNode, childIndex) {
   const firstRound = deriveHdNodeIteration(hdNode, 0x80000000)
 
   if (childIndex === 0x80000000) {
-    return firstRound
+    throw new Error('Do not use deriveHdNode to derive root node')
   }
 
   return deriveHdNodeIteration(firstRound, childIndex)
@@ -183,9 +183,7 @@ function decryptDerivationPath(addressPayload, hdPassphrase) {
   }
 }
 
-function getCheckSum(input) {
-  return crc32.buf(input) >>> 0
-}
+const crc32Unsigned = (input) => crc32.buf(input) >>> 0
 
 async function deriveHdPassphrase(hdNode) {
   const extendedPublicKey = new Buffer(hdNode.getPublicKey() + hdNode.getChainCode(), 'hex')

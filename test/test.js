@@ -129,27 +129,19 @@ describe('test HD node derivation from mnemonic', () => {
 })
 
 describe('test secret key derivation', () => {
-  // root public secret key (the one used as 'wallet id' in Daedalus)
+  // some hardened secret key - child index starts with 1 in binary
   const expectedHdNodeStr1 =
-    '28e375ee5af42a9641c5c31b1b2d24df7f1d2212116bc0b0fc58816f06985b072cf5960d205736cac2e8224dd6018f7223c1bdc630d2b866703670a37316f44003b5417131136bd53174f09b129ae0499bd718ca55c5d40877c33b5ee10e5ba89661f96070a9d39df75c21f6142415502e254523cbacff2b4d58aa87d9021d65'
-  it("should properly derive root public secret key (the one used as 'wallet id' in Daedalus)", () => {
-    const derivedHdNodeStr1 = address.deriveHdNode(hdNode2, childIndex1).hdNodeString
+    'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
+  it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
+    const derivedHdNodeStr1 = address.deriveHdNode(hdNode2, childIndex2).hdNodeString
     assert.equal(derivedHdNodeStr1, expectedHdNodeStr1)
   })
 
-  // some hardened secret key - child index starts with 1 in binary
   const expectedHdNodeStr2 =
-    'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
-  it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
-    const derivedHdNodeStr2 = address.deriveHdNode(hdNode2, childIndex2).hdNodeString
-    assert.equal(derivedHdNodeStr2, expectedHdNodeStr2)
-  })
-
-  const expectedHdNodeStr3 =
     'e0f31d972365bb76a2dd837c7ba5b4b7c065fa4ad1fbf808ddc17130bf10c40f63772cbaa1cdf7e847543f3cbcb3da7065498c71c04ca1f5cd9dccc18226461efdade44a3c35cfb6ab9c834dbc418da2cba30501139db384f194ef060847d0bd164f072124bcf55af0f01c1b5cd7759a7262b4d205717f4afb282cf98fed3026'
   it('should properly derive some nonhardened secret key - child index starts with 0 in binary', () => {
-    const derivedHdNodeStr3 = address.deriveHdNode(hdNode2, childIndex3).hdNodeString
-    assert.equal(derivedHdNodeStr3, expectedHdNodeStr3)
+    const derivedHdNodeStr2 = address.deriveHdNode(hdNode2, childIndex3).hdNodeString
+    assert.equal(derivedHdNodeStr2, expectedHdNodeStr2)
   })
 })
 
