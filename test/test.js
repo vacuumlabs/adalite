@@ -26,8 +26,10 @@ const childIndex1 = 0x80000000
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
 const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
-const signature =
-  'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
+const signature = new Buffer(
+  'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02',
+  'hex'
+)
 const myAddress =
   'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY'
 const history = [
@@ -90,13 +92,15 @@ describe('test generating mnemonic', () => {
 describe('test signing', () => {
   it('should produce proper signature', () => {
     // test signing
-    assert.equal(transaction.sign(message, hdNode1), signature)
+    assert.equal(Buffer.compare(transaction.sign(message, hdNode1), signature), 0)
   })
 })
 
 describe('test signature verification', () => {
-  const wrongSignature =
-    'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02'
+  const wrongSignature = new Buffer(
+    'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02',
+    'hex'
+  )
 
   it('should accept signature', () => {
     assert.equal(transaction.verify(message, hdNode1.getPublicKey(), signature), true)

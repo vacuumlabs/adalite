@@ -13,21 +13,15 @@ function hex2buf(hexString) {
   return Buffer.from(hexString, 'hex')
 }
 
-function sign(message, extendedPrivateKey) {
-  const privKey = extendedPrivateKey.getSecretKey() //extendedPrivateKey.substr(0, 128);
-  const pubKey = extendedPrivateKey.getPublicKey() //substr(128, 64);
-
+function sign(message, hdNode) {
   const messageToSign = new Buffer(message, 'hex')
-
-  return ed25519
-    .sign(messageToSign, new Buffer(pubKey, 'hex'), new Buffer(privKey, 'hex'))
-    .toString('hex')
+  return ed25519.sign(messageToSign, hdNode.getPublicKeyBuffer(), hdNode.getSecretKeyBuffer())
 }
 
 function verify(message, publicKey, signature) {
   const key = ec.keyFromPublic(publicKey, 'hex')
 
-  return key.verify(message, signature)
+  return key.verify(message, signature.toString('hex'))
 }
 
 class TxAux {
@@ -75,7 +69,7 @@ class TxSignature {
   }
 
   encodeCBOR(encoder) {
-    return encoder.pushAny(new Buffer(this.signature, 'hex'))
+    return encoder.pushAny(this.signature)
   }
 }
 
@@ -163,21 +157,31 @@ class WalletAddress {
 class HdNode {
   constructor(hdNodeString) {
     this.hdNodeString = hdNodeString
-    this.secretKey = this.hdNodeString.substr(0, 128)
+    this.secretKeyBuffer = new Buffer(this.hdNodeString.substr(0, 128), 'hex')
     this.publicKey = this.hdNodeString.substr(128, 64)
+    this.publicKeyBuffer = new Buffer(this.publicKey, 'hex')
     this.chainCode = this.hdNodeString.substr(192, 64)
+    this.chainCodeBuffer = new Buffer(this.chainCode, 'hex')
   }
 
-  getSecretKey() {
-    return this.secretKey
+  getSecretKeyBuffer() {
+    return this.secretKeyBuffer
   }
 
   getPublicKey() {
     return this.publicKey
   }
 
+  getPublicKeyBuffer() {
+    return this.publicKeyBuffer
+  }
+
   getChainCode() {
     return this.chainCode
+  }
+
+  getChainCodeBuffer() {
+    return this.chainCodeBuffer
   }
 }
 
