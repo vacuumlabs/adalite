@@ -67,3 +67,5 @@ yarn test
 ```
 
 Open `test.html` in browser
+
+Check us out at https://www.cardanolite.com
