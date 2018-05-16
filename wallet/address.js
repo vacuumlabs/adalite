@@ -149,10 +149,7 @@ function deriveHdNode(hdNode, childIndex) {
 }
 
 function getAddressRoot(hdNode, addressPayload) {
-  const extendedPublicKey = Buffer.concat([
-    hdNode.getPublicKeyBuffer(),
-    hdNode.getChainCodeBuffer(),
-  ])
+  const extendedPublicKey = hdNode.getExtendedPublicKey()
 
   return addressHash([
     0,
@@ -185,31 +182,26 @@ function decryptDerivationPath(addressPayload, hdPassphrase) {
 const crc32Unsigned = (input) => crc32.buf(input) >>> 0
 
 async function deriveHdPassphrase(hdNode) {
-  const extendedPublicKey = Buffer.concat([
-    hdNode.getPublicKeyBuffer(),
-    hdNode.getChainCodeBuffer(),
-  ])
-
-  return await pbkdf2Async(extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
+  return await pbkdf2Async(hdNode.getExtendedPublicKey(), 'address-hashing', 500, 32, 'sha512')
 }
 
 function deriveHdNodeIteration(hdNode, childIndex) {
-  const chainCode = hdNode.getChainCodeBuffer()
+  const chainCode = hdNode.getChainCode()
 
   const hmac1 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
     hmac1.update(new Buffer([0x00])) // TAG_DERIVE_Z_HARDENED
-    hmac1.update(hdNode.getSecretKeyBuffer())
+    hmac1.update(hdNode.getSecretKey())
   } else {
     hmac1.update(new Buffer([0x02])) // TAG_DERIVE_Z_NORMAL
-    hmac1.update(hdNode.getPublicKeyBuffer())
+    hmac1.update(hdNode.getPublicKey())
   }
   hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
   const z = new Buffer(hmac1.digest('hex'), 'hex')
 
   const zl8 = multiply8(z, new Buffer([0x08])).slice(0, 32)
-  const parentKey = hdNode.getSecretKeyBuffer()
+  const parentKey = hdNode.getSecretKey()
 
   const kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32))
   const kr = add256NoCarry(z.slice(32, 64), parentKey.slice(32, 64))
@@ -220,10 +212,10 @@ function deriveHdNodeIteration(hdNode, childIndex) {
 
   if (indexIsHardened(childIndex)) {
     hmac2.update(new Buffer([0x01])) // TAG_DERIVE_CC_HARDENED
-    hmac2.update(hdNode.getSecretKeyBuffer())
+    hmac2.update(hdNode.getSecretKey())
   } else {
     hmac2.update(new Buffer([0x03])) // TAG_DERIVE_CC_NORMAL
-    hmac2.update(hdNode.getPublicKeyBuffer())
+    hmac2.update(hdNode.getPublicKey())
   }
   hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
 
@@ -233,7 +225,7 @@ function deriveHdNodeIteration(hdNode, childIndex) {
     'hex'
   )
 
-  return new tx.HdNode(Buffer.concat([resKey, newPublicKey, newChainCode]).toString('hex'))
+  return new tx.HdNode({secretKey: resKey, publicKey: newPublicKey, chainCode: newChainCode})
 }
 
 function indexIsHardened(childIndex) {

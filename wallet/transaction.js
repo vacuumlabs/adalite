@@ -15,11 +15,11 @@ function hex2buf(hexString) {
 
 function sign(message, hdNode) {
   const messageToSign = new Buffer(message, 'hex')
-  return ed25519.sign(messageToSign, hdNode.getPublicKeyBuffer(), hdNode.getSecretKeyBuffer())
+  return ed25519.sign(messageToSign, hdNode.getPublicKey(), hdNode.getSecretKey())
 }
 
 function verify(message, publicKey, signature) {
-  const key = ec.keyFromPublic(publicKey, 'hex')
+  const key = ec.keyFromPublic(publicKey.toString('hex'))
 
   return key.verify(message, signature.toString('hex'))
 }
@@ -44,25 +44,6 @@ class TxAux {
   }
 }
 
-class TxPublicString {
-  // hex string representing 64 bytes
-  constructor(txPublicString) {
-    this.txPublicString = txPublicString
-  }
-
-  getPublicKey() {
-    return this.txPublicString.substr(0, 64)
-  }
-
-  getChainCode() {
-    return this.txPublicString.substr(64, 64)
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny(new Buffer(this.txPublicString, 'hex'))
-  }
-}
-
 class TxSignature {
   constructor(signature) {
     this.signature = signature
@@ -74,14 +55,10 @@ class TxSignature {
 }
 
 class TxWitness {
-  constructor(publicString, signature) {
-    this.publicString = publicString
+  constructor(extendedPublicKey, signature) {
+    this.extendedPublicKey = extendedPublicKey
     this.signature = signature
     this.type = 0 // default - PkWitness
-  }
-
-  getPublicKey() {
-    return this.publicString.getPublicKey()
   }
 
   getSignature() {
@@ -91,7 +68,7 @@ class TxWitness {
   encodeCBOR(encoder) {
     return encoder.pushAny([
       this.type,
-      new cbor.Tagged(24, cbor.encode([this.publicString, this.signature])),
+      new cbor.Tagged(24, cbor.encode([this.extendedPublicKey, this.signature])),
     ])
   }
 }
@@ -114,7 +91,7 @@ class TxInput {
 
   getWitness(txHash) {
     return new TxWitness(
-      new TxPublicString(this.hdNode.getPublicKey() + this.hdNode.getChainCode()),
+      this.hdNode.getExtendedPublicKey(),
       /*
       * "011a2d964a095820" is a magic prefix from the cardano-sl code
         the "01" byte is a constant to denote signatures of transactions
@@ -155,33 +132,41 @@ class WalletAddress {
 }
 
 class HdNode {
-  constructor(hdNodeString) {
-    this.hdNodeString = hdNodeString
-    this.secretKeyBuffer = new Buffer(this.hdNodeString.substr(0, 128), 'hex')
-    this.publicKey = this.hdNodeString.substr(128, 64)
-    this.publicKeyBuffer = new Buffer(this.publicKey, 'hex')
-    this.chainCode = this.hdNodeString.substr(192, 64)
-    this.chainCodeBuffer = new Buffer(this.chainCode, 'hex')
+  /**
+   * HD node groups secretKey, publicKey and chainCode
+   * can be initialized from Buffers or single string
+   * @param secretKey as Buffer
+   * @param publicKey as Buffer
+   * @param chainCode as Buffer
+   * @param hdNodeString as string = concat strings secretKey + publicKey + chainCode
+   */
+  constructor({secretKey, publicKey, chainCode, hdNodeString}) {
+    if (hdNodeString) {
+      this.secretKey = new Buffer(hdNodeString.substr(0, 128), 'hex')
+      this.publicKey = new Buffer(hdNodeString.substr(128, 64), 'hex')
+      this.chainCode = new Buffer(hdNodeString.substr(192, 64), 'hex')
+    } else {
+      this.secretKey = secretKey
+      this.publicKey = publicKey
+      this.chainCode = chainCode
+    }
+    this.extendedPublicKey = Buffer.concat([this.publicKey, this.chainCode])
   }
 
-  getSecretKeyBuffer() {
-    return this.secretKeyBuffer
+  getSecretKey() {
+    return this.secretKey
   }
 
   getPublicKey() {
     return this.publicKey
   }
 
-  getPublicKeyBuffer() {
-    return this.publicKeyBuffer
-  }
-
   getChainCode() {
     return this.chainCode
   }
 
-  getChainCodeBuffer() {
-    return this.chainCodeBuffer
+  getExtendedPublicKey() {
+    return this.extendedPublicKey
   }
 }
 
