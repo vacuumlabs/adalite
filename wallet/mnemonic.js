@@ -38,9 +38,7 @@ function mnemonicToHdNode(mnemonic) {
 
       const chainCode = new Buffer(digest.substr(64, 64), 'hex')
 
-      result = new transaction.HdNode(
-        Buffer.concat([secretKey, publicKey, chainCode]).toString('hex')
-      )
+      result = new transaction.HdNode({secretKey, publicKey, chainCode})
     } catch (e) {
       if (e.name === 'InvalidArgumentException') {
         continue

@@ -12,12 +12,14 @@ const CborIndefiniteLengthArray = require('../wallet/helpers/CborIndefiniteLengt
 const mockObject = require('./mock')
 const mock = mockObject(CARDANOLITE_CONFIG)
 
-const hdNode1 = new transaction.HdNode(
-  '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c'
-)
-const hdNode2 = new transaction.HdNode(
-  'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3'
-)
+const hdNode1 = new transaction.HdNode({
+  hdNodeString:
+    '50f26a6d0e454337554274d703033c21a06fecfcb0457b15214e41ea3228ac51e2b9f0ca0f6510cfdd24325ac6676cdd98a9484336ba36c876fd93aa439d8b72eddaef2fab3d1412ea1f2517b5a50439c28c27d6aefafce38f9290c17e1e7d56c532f2e7a6620550b32841a24055e89c02256dec21d1f4418004ffc9591a8e9c',
+})
+const hdNode2 = new transaction.HdNode({
+  hdNodeString:
+    'a859bcad5de4fd8df3f3bfa24793dba52785f9a98832300844f028ff2dd75a5fcd24f7e51d3a2a72ac85cc163759b1103efb1d685308dcc6cd2cce09f70c948501e949b5b7a72f1ad304f47d842733b3481f2f096ca7ddfe8e1b7c20a1acafbb66ee772671d4fef6418f670e80ad44d1747a89d75a4ad386452ab5dc1acc32b3',
+})
 const wallet = CardanoWallet(
   'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3',
   CARDANOLITE_CONFIG
@@ -26,8 +28,10 @@ const childIndex1 = 0x80000000
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
 const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
-const signature =
-  'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02'
+const signature = new Buffer(
+  'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02',
+  'hex'
+)
 const myAddress =
   'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY'
 const history = [
@@ -79,6 +83,9 @@ const history = [
   },
 ]
 
+const hdNodeToString = (hdNode) =>
+  Buffer.concat([hdNode.getSecretKey(), hdNode.getExtendedPublicKey()]).toString('hex')
+
 describe('test generating mnemonic', () => {
   const mnemonicString = mnemonic.generateMnemonic()
 
@@ -90,13 +97,15 @@ describe('test generating mnemonic', () => {
 describe('test signing', () => {
   it('should produce proper signature', () => {
     // test signing
-    assert.equal(transaction.sign(message, hdNode1), signature)
+    assert.equal(Buffer.compare(transaction.sign(message, hdNode1), signature), 0)
   })
 })
 
 describe('test signature verification', () => {
-  const wrongSignature =
-    'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02'
+  const wrongSignature = new Buffer(
+    'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02',
+    'hex'
+  )
 
   it('should accept signature', () => {
     assert.equal(transaction.verify(message, hdNode1.getPublicKey(), signature), true)
@@ -110,7 +119,7 @@ describe('test signature verification', () => {
 describe('test HD node derivation from mnemonic', () => {
   // a test case where the hash seed has an odd number of bytes
   const mnemonicString1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
-  const generatedHdNode1 = mnemonic.mnemonicToHdNode(mnemonicString1).hdNodeString
+  const generatedHdNode1 = hdNodeToString(mnemonic.mnemonicToHdNode(mnemonicString1))
   const expectedHdNode1 =
     'b0d4187b81b5c2fb8234378ebcf33a1c2e2293369bd2263b6dcf672a29676a5a2e73d1f6e660365eacdde77052625f0cc6e50c0710b35e45095fb1b51b9b9315f83d8464268bbb19fe416000fa846eaed7171d4390242aa966ab80c36694b7fa6eec090fd6c6498bb4a28b61f8c4c5ae19b635e20052cb0bc7e0d17404b1717e'
   it('should produce right secret key from a seed which had a leading zero in hex by stripping it', () => {
@@ -122,34 +131,26 @@ describe('test HD node derivation from mnemonic', () => {
     'useful normal dismiss what earn total boost project tomorrow filter pill shuffle'
   const expectedHdNode2 =
     '30582ede015798e511207cb26d71ca460edb85a16fafe212261039eeaccd434fab1c009a83260352b8cf80241d097696d898b7a0a0296312227bb459c3784cc12770c30533d63e77ad46c26a47c1d659058ab0c3dcf0e899e40113e7def05dd73fc6f8b25d9d774caebaed348f8e1a7d503c958e0cf74337e95d1d5e4a2d4aa0'
-  const generatedHdNode2 = mnemonic.mnemonicToHdNode(mnemonicString2).hdNodeString
+  const generatedHdNode2 = hdNodeToString(mnemonic.mnemonicToHdNode(mnemonicString2))
   it('should produce right secret key from a seed without a leading zero in hex', () => {
     assert.equal(generatedHdNode2, expectedHdNode2)
   })
 })
 
 describe('test secret key derivation', () => {
-  // root public secret key (the one used as 'wallet id' in Daedalus)
+  // some hardened secret key - child index starts with 1 in binary
   const expectedHdNodeStr1 =
-    '28e375ee5af42a9641c5c31b1b2d24df7f1d2212116bc0b0fc58816f06985b072cf5960d205736cac2e8224dd6018f7223c1bdc630d2b866703670a37316f44003b5417131136bd53174f09b129ae0499bd718ca55c5d40877c33b5ee10e5ba89661f96070a9d39df75c21f6142415502e254523cbacff2b4d58aa87d9021d65'
-  it("should properly derive root public secret key (the one used as 'wallet id' in Daedalus)", () => {
-    const derivedHdNodeStr1 = address.deriveHdNode(hdNode2, childIndex1).hdNodeString
+    'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
+  it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
+    const derivedHdNodeStr1 = hdNodeToString(address.deriveHdNode(hdNode2, childIndex2))
     assert.equal(derivedHdNodeStr1, expectedHdNodeStr1)
   })
 
-  // some hardened secret key - child index starts with 1 in binary
   const expectedHdNodeStr2 =
-    'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
-  it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
-    const derivedHdNodeStr2 = address.deriveHdNode(hdNode2, childIndex2).hdNodeString
-    assert.equal(derivedHdNodeStr2, expectedHdNodeStr2)
-  })
-
-  const expectedHdNodeStr3 =
     'e0f31d972365bb76a2dd837c7ba5b4b7c065fa4ad1fbf808ddc17130bf10c40f63772cbaa1cdf7e847543f3cbcb3da7065498c71c04ca1f5cd9dccc18226461efdade44a3c35cfb6ab9c834dbc418da2cba30501139db384f194ef060847d0bd164f072124bcf55af0f01c1b5cd7759a7262b4d205717f4afb282cf98fed3026'
   it('should properly derive some nonhardened secret key - child index starts with 0 in binary', () => {
-    const derivedHdNodeStr3 = address.deriveHdNode(hdNode2, childIndex3).hdNodeString
-    assert.equal(derivedHdNodeStr3, expectedHdNodeStr3)
+    const derivedHdNodeStr2 = hdNodeToString(address.deriveHdNode(hdNode2, childIndex3))
+    assert.equal(derivedHdNodeStr2, expectedHdNodeStr2)
   })
 })
 

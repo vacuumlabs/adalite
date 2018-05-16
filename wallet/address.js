@@ -18,11 +18,7 @@ function addressHash(input) {
   const serializedInput = cbor.encode(input)
 
   const firstHash = new Buffer(sha3.sha3_256(serializedInput), 'hex')
-
-  const context = blake2.blake2bInit(28) // blake2b-224
-  blake2.blake2bUpdate(context, firstHash)
-
-  return new Buffer(blake2.blake2bFinal(context))
+  return new Buffer(blake2.blake2b(firstHash, null, 28))
 }
 
 function add256NoCarry(b1, b2) {
@@ -105,7 +101,7 @@ async function deriveAddressWithHdNode(parentHdNode, childIndex) {
   const addressDataEncoded = cbor.encode(addressData)
 
   const address = base58.encode(
-    cbor.encode([new cbor.Tagged(24, addressDataEncoded), getCheckSum(addressDataEncoded)])
+    cbor.encode([new cbor.Tagged(24, addressDataEncoded), crc32Unsigned(addressDataEncoded)])
   )
 
   return {
@@ -146,14 +142,14 @@ function deriveHdNode(hdNode, childIndex) {
   const firstRound = deriveHdNodeIteration(hdNode, 0x80000000)
 
   if (childIndex === 0x80000000) {
-    return firstRound
+    throw new Error('Do not use deriveHdNode to derive root node')
   }
 
   return deriveHdNodeIteration(firstRound, childIndex)
 }
 
 function getAddressRoot(hdNode, addressPayload) {
-  const extendedPublicKey = new Buffer(hdNode.getPublicKey() + hdNode.getChainCode(), 'hex')
+  const extendedPublicKey = hdNode.getExtendedPublicKey()
 
   return addressHash([
     0,
@@ -183,33 +179,29 @@ function decryptDerivationPath(addressPayload, hdPassphrase) {
   }
 }
 
-function getCheckSum(input) {
-  return crc32.buf(input) >>> 0
-}
+const crc32Unsigned = (input) => crc32.buf(input) >>> 0
 
 async function deriveHdPassphrase(hdNode) {
-  const extendedPublicKey = new Buffer(hdNode.getPublicKey() + hdNode.getChainCode(), 'hex')
-
-  return await pbkdf2Async(extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
+  return await pbkdf2Async(hdNode.getExtendedPublicKey(), 'address-hashing', 500, 32, 'sha512')
 }
 
 function deriveHdNodeIteration(hdNode, childIndex) {
-  const chainCode = new Buffer(hdNode.getChainCode(), 'hex')
+  const chainCode = hdNode.getChainCode()
 
   const hmac1 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
-    hmac1.update(new Buffer('00', 'hex')) // TAG_DERIVE_Z_HARDENED
-    hmac1.update(new Buffer(hdNode.getSecretKey(), 'hex'))
+    hmac1.update(new Buffer([0x00])) // TAG_DERIVE_Z_HARDENED
+    hmac1.update(hdNode.getSecretKey())
   } else {
-    hmac1.update(new Buffer('02', 'hex')) // TAG_DERIVE_Z_NORMAL
-    hmac1.update(new Buffer(hdNode.getPublicKey(), 'hex'))
+    hmac1.update(new Buffer([0x02])) // TAG_DERIVE_Z_NORMAL
+    hmac1.update(hdNode.getPublicKey())
   }
   hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
   const z = new Buffer(hmac1.digest('hex'), 'hex')
 
-  const zl8 = multiply8(z, new Buffer('08', 'hex')).slice(0, 32)
-  const parentKey = new Buffer(hdNode.getSecretKey(), 'hex')
+  const zl8 = multiply8(z, new Buffer([0x08])).slice(0, 32)
+  const parentKey = hdNode.getSecretKey()
 
   const kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32))
   const kr = add256NoCarry(z.slice(32, 64), parentKey.slice(32, 64))
@@ -219,11 +211,11 @@ function deriveHdNodeIteration(hdNode, childIndex) {
   const hmac2 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
-    hmac2.update(new Buffer('01', 'hex')) // TAG_DERIVE_CC_HARDENED
-    hmac2.update(new Buffer(hdNode.getSecretKey(), 'hex'))
+    hmac2.update(new Buffer([0x01])) // TAG_DERIVE_CC_HARDENED
+    hmac2.update(hdNode.getSecretKey())
   } else {
-    hmac2.update(new Buffer('03', 'hex')) // TAG_DERIVE_CC_NORMAL
-    hmac2.update(new Buffer(hdNode.getPublicKey(), 'hex'))
+    hmac2.update(new Buffer([0x03])) // TAG_DERIVE_CC_NORMAL
+    hmac2.update(hdNode.getPublicKey())
   }
   hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
 
@@ -233,7 +225,7 @@ function deriveHdNodeIteration(hdNode, childIndex) {
     'hex'
   )
 
-  return new tx.HdNode(Buffer.concat([resKey, newPublicKey, newChainCode]).toString('hex'))
+  return new tx.HdNode({secretKey: resKey, publicKey: newPublicKey, chainCode: newChainCode})
 }
 
 function indexIsHardened(childIndex) {

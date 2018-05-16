@@ -29,7 +29,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
   const hdNode =
     mnemonicOrHdNodeString.search(' ') >= 0
       ? mnemonicToHdNode(mnemonicOrHdNodeString)
-      : new tx.HdNode(mnemonicOrHdNodeString)
+      : new tx.HdNode({hdNodeString: mnemonicOrHdNodeString})
 
   async function sendAda(address, coins) {
     const transaction = await prepareTx(address, coins)
