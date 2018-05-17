@@ -1,6 +1,5 @@
 //var Buffer = require("buffer/").Buffer;
 const cbor = require('cbor')
-const {Buffer} = require('buffer/')
 const base58 = require('bs58')
 const ed25519 = require('supercop.js')
 const EdDSA = require('elliptic-cardano').eddsaVariant
@@ -150,7 +149,7 @@ class HdNode {
       this.publicKey = publicKey
       this.chainCode = chainCode
     }
-    this.extendedPublicKey = Buffer.concat([this.publicKey, this.chainCode])
+    this.extendedPublicKey = Buffer.concat([this.publicKey, this.chainCode], 64)
   }
 
   getSecretKey() {
