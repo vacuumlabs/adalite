@@ -30,13 +30,16 @@ function mnemonicToHdNode(mnemonic) {
 
     const digest = hmac.digest('hex')
 
-    const secret = new Buffer(digest.substr(0, 64), 'hex')
+    const secret = Buffer.from(digest.substr(0, 64), 'hex')
 
     try {
       const secretKey = extendSecretToSecretKey(secret)
-      const publicKey = new Buffer(ec.keyFromSecret(secret.toString('hex')).getPublic('hex'), 'hex')
+      const publicKey = Buffer.from(
+        ec.keyFromSecret(secret.toString('hex')).getPublic('hex'),
+        'hex'
+      )
 
-      const chainCode = new Buffer(digest.substr(64, 64), 'hex')
+      const chainCode = Buffer.from(digest.substr(64, 64), 'hex')
 
       result = new transaction.HdNode({secretKey, publicKey, chainCode})
     } catch (e) {
@@ -62,7 +65,7 @@ function extendSecretToSecretKey(secret) {
 
   sha512.update(secret)
 
-  const hashResult = new Buffer(sha512.digest('hex'), 'hex')
+  const hashResult = Buffer.from(sha512.digest('hex'), 'hex')
 
   hashResult[0] &= 248
   hashResult[31] &= 127
@@ -84,7 +87,7 @@ function mnemonicToHashSeed(mnemonic) {
     throw e
   }
 
-  const ent = new Buffer(bip39.mnemonicToEntropy(mnemonic), 'hex')
+  const ent = Buffer.from(bip39.mnemonicToEntropy(mnemonic), 'hex')
 
   return cbor.encode(hashBlake2b256(ent))
 }

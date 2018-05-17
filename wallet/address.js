@@ -1,6 +1,5 @@
 const bigNumber = require('bignumber.js')
 const blake2 = require('blakejs')
-const {Buffer} = require('buffer/')
 const crc32 = require('crc-32')
 const cbor = require('cbor')
 const {pbkdf2Async} = require('./helpers/pbkdf2')
@@ -17,8 +16,8 @@ const tx = require('./transaction')
 function addressHash(input) {
   const serializedInput = cbor.encode(input)
 
-  const firstHash = new Buffer(sha3.sha3_256(serializedInput), 'hex')
-  return new Buffer(blake2.blake2b(firstHash, null, 28))
+  const firstHash = Buffer.from(sha3.sha3_256(serializedInput), 'hex')
+  return Buffer.from(blake2.blake2b(firstHash, null, 28))
 }
 
 function add256NoCarry(b1, b2) {
@@ -28,7 +27,7 @@ function add256NoCarry(b1, b2) {
     result += ((b1[i] + b2[i]) & 0xff).toString(16).padStart(2, '0')
   }
 
-  return new Buffer(result, 'hex')
+  return Buffer.from(result, 'hex')
 }
 
 function toLittleEndian(str) {
@@ -46,7 +45,7 @@ function scalarAdd256ModM(b1, b2) {
     .toString(16)
   resultAsHexString = toLittleEndian(resultAsHexString).padEnd(64, '0')
 
-  return new Buffer(resultAsHexString, 'hex')
+  return Buffer.from(resultAsHexString, 'hex')
 }
 
 function multiply8(buf) {
@@ -58,7 +57,7 @@ function multiply8(buf) {
     prevAcc = buf[i] * 32
   }
 
-  return new Buffer(result, 'hex')
+  return Buffer.from(result, 'hex')
 }
 
 function isValidAddress(address) {
@@ -80,7 +79,7 @@ async function deriveAddressWithHdNode(parentHdNode, childIndex) {
 
   if (childIndex === 0x80000000) {
     // root address
-    addressPayload = new Buffer(0)
+    addressPayload = Buffer.from([])
     addressAttributes = new Map()
     derivedHdNode = parentHdNode
   } else {
@@ -163,15 +162,15 @@ function encryptDerivationPath(derivationPath, hdPassphrase) {
 
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
 
-  return new Buffer(cipher.seal(new Buffer('serokellfore'), serializedDerivationPath))
+  return Buffer.from(cipher.seal(Buffer.from('serokellfore'), serializedDerivationPath))
 }
 
 function decryptDerivationPath(addressPayload, hdPassphrase) {
   const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
-  const decipheredDerivationPath = cipher.open(new Buffer('serokellfore'), addressPayload)
+  const decipheredDerivationPath = cipher.open(Buffer.from('serokellfore'), addressPayload)
 
   try {
-    return cbor.decode(new Buffer(decipheredDerivationPath))
+    return cbor.decode(Buffer.from(decipheredDerivationPath))
   } catch (err) {
     const e = new Error('incorrect address or passphrase')
     e.name = 'AddressDecodingException'
@@ -191,16 +190,16 @@ function deriveHdNodeIteration(hdNode, childIndex) {
   const hmac1 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
-    hmac1.update(new Buffer([0x00])) // TAG_DERIVE_Z_HARDENED
+    hmac1.update(Buffer.from([0x00])) // TAG_DERIVE_Z_HARDENED
     hmac1.update(hdNode.getSecretKey())
   } else {
-    hmac1.update(new Buffer([0x02])) // TAG_DERIVE_Z_NORMAL
+    hmac1.update(Buffer.from([0x02])) // TAG_DERIVE_Z_NORMAL
     hmac1.update(hdNode.getPublicKey())
   }
-  hmac1.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
-  const z = new Buffer(hmac1.digest('hex'), 'hex')
+  hmac1.update(Buffer.from(childIndex.toString(16).padStart(8, '0'), 'hex'))
+  const z = Buffer.from(hmac1.digest('hex'), 'hex')
 
-  const zl8 = multiply8(z, new Buffer([0x08])).slice(0, 32)
+  const zl8 = multiply8(z, Buffer.from([0x08])).slice(0, 32)
   const parentKey = hdNode.getSecretKey()
 
   const kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32))
@@ -211,16 +210,16 @@ function deriveHdNodeIteration(hdNode, childIndex) {
   const hmac2 = crypto.createHmac('sha512', chainCode)
 
   if (indexIsHardened(childIndex)) {
-    hmac2.update(new Buffer([0x01])) // TAG_DERIVE_CC_HARDENED
+    hmac2.update(Buffer.from([0x01])) // TAG_DERIVE_CC_HARDENED
     hmac2.update(hdNode.getSecretKey())
   } else {
-    hmac2.update(new Buffer([0x03])) // TAG_DERIVE_CC_NORMAL
+    hmac2.update(Buffer.from([0x03])) // TAG_DERIVE_CC_NORMAL
     hmac2.update(hdNode.getPublicKey())
   }
-  hmac2.update(new Buffer(childIndex.toString(16).padStart(8, '0'), 'hex'))
+  hmac2.update(Buffer.from(childIndex.toString(16).padStart(8, '0'), 'hex'))
 
-  const newChainCode = new Buffer(hmac2.digest('hex').slice(64, 128), 'hex')
-  const newPublicKey = new Buffer(
+  const newChainCode = Buffer.from(hmac2.digest('hex').slice(64, 128), 'hex')
+  const newPublicKey = Buffer.from(
     ec.keyFromSecret(resKey.toString('hex').slice(0, 64)).getPublic('hex'),
     'hex'
   )

@@ -1,4 +1,3 @@
-//var Buffer = require("buffer/").Buffer;
 const cbor = require('cbor')
 const base58 = require('bs58')
 const ed25519 = require('supercop.js')
@@ -13,7 +12,7 @@ function hex2buf(hexString) {
 }
 
 function sign(message, hdNode) {
-  const messageToSign = new Buffer(message, 'hex')
+  const messageToSign = Buffer.from(message, 'hex')
   return ed25519.sign(messageToSign, hdNode.getPublicKey(), hdNode.getSecretKey())
 }
 
@@ -104,7 +103,7 @@ class TxInput {
   encodeCBOR(encoder) {
     return encoder.pushAny([
       this.type,
-      new cbor.Tagged(24, cbor.encode([hex2buf(this.id), this.outputIndex])),
+      new cbor.Tagged(24, cbor.encode([Buffer.from(this.id, 'hex'), this.outputIndex])),
     ])
   }
 }
@@ -141,9 +140,9 @@ class HdNode {
    */
   constructor({secretKey, publicKey, chainCode, hdNodeString}) {
     if (hdNodeString) {
-      this.secretKey = new Buffer(hdNodeString.substr(0, 128), 'hex')
-      this.publicKey = new Buffer(hdNodeString.substr(128, 64), 'hex')
-      this.chainCode = new Buffer(hdNodeString.substr(192, 64), 'hex')
+      this.secretKey = Buffer.from(hdNodeString.substr(0, 128), 'hex')
+      this.publicKey = Buffer.from(hdNodeString.substr(128, 64), 'hex')
+      this.chainCode = Buffer.from(hdNodeString.substr(192, 64), 'hex')
     } else {
       this.secretKey = secretKey
       this.publicKey = publicKey

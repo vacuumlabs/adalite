@@ -28,7 +28,7 @@ const childIndex1 = 0x80000000
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
 const message = '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950'
-const signature = new Buffer(
+const signature = Buffer.from(
   'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dea8eb8bae46a1824f62fb80cc3b65aff02',
   'hex'
 )
@@ -102,7 +102,7 @@ describe('test signing', () => {
 })
 
 describe('test signature verification', () => {
-  const wrongSignature = new Buffer(
+  const wrongSignature = Buffer.from(
     'ca20e54f4cb12f0453de2d62b0ff041b0c90ef43e7f899c6cbc428dcd5bece2f68a9c8917e7e3881bf709b7845909dff8eb8bae46a1824f62fb80cc3b65aff02',
     'hex'
   )

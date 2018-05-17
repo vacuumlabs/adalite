@@ -40,7 +40,7 @@ module.exports = function(app, env) {
     const initHandshake = () => {
       client.setNoDelay(false)
       phase = 'initilal ping'
-      client.write(new Buffer('00000000000000080000000000000000', 'hex'))
+      client.write(Buffer.from('00000000000000080000000000000000', 'hex'))
     }
 
     try {
@@ -55,8 +55,8 @@ module.exports = function(app, env) {
         switch (phase) {
           case 'initilal ping':
             if (data.toString('hex') !== '00000000') throw new Error('server error')
-            client.write(new Buffer('0000000000000400', 'hex'))
-            client.write(new Buffer(cmdtable, 'hex'))
+            client.write(Buffer.from('0000000000000400', 'hex'))
+            client.write(Buffer.from(cmdtable, 'hex'))
             phase = 'first actual packet in stream - serial code 400'
             break
           case 'first actual packet in stream - serial code 400':
@@ -65,8 +65,8 @@ module.exports = function(app, env) {
             break
           case 'exchange of tables of message codes':
             //if (data.toString("hex") !== serverCmdTable) throw new Error("server error");
-            client.write(new Buffer('00000400000000010d', 'hex'))
-            client.write(new Buffer('0000040000000002182a', 'hex'))
+            client.write(Buffer.from('00000400000000010d', 'hex'))
+            client.write(Buffer.from('0000040000000002182a', 'hex'))
             phase = 'frame 401'
             break
           case 'frame 401':
@@ -75,8 +75,8 @@ module.exports = function(app, env) {
             break
           case 'frame 401 code':
             code = data.toString('hex')
-            client.write(new Buffer('0000000000000401', 'hex'))
-            client.write(new Buffer(code.replace('953', '941'), 'hex'))
+            client.write(Buffer.from('0000000000000401', 'hex'))
+            client.write(Buffer.from(code.replace('953', '941'), 'hex'))
             phase = 'frame 401 answer'
             break
           case 'frame 401 answer':
@@ -84,16 +84,16 @@ module.exports = function(app, env) {
             phase = 'frame 401 chunk'
             break
           case 'frame 401 chunk':
-            client.write(new Buffer('0000000100000401', 'hex'))
+            client.write(Buffer.from('0000000100000401', 'hex'))
             phase = 'submit transaction hash'
             break
           case 'submit transaction hash':
             if (data.toString('hex') !== '0000000100000401') throw new Error('server error')
-            client.write(new Buffer('0000000000000402', 'hex'))
-            client.write(new Buffer(code.replace('0401', '0402'), 'hex'))
+            client.write(Buffer.from('0000000000000402', 'hex'))
+            client.write(Buffer.from(code.replace('0401', '0402'), 'hex'))
 
-            client.write(new Buffer(`${prefix}000000021825`, 'hex'))
-            client.write(new Buffer(prefix + encodedtxHash, 'hex'))
+            client.write(Buffer.from(`${prefix}000000021825`, 'hex'))
+            client.write(Buffer.from(prefix + encodedtxHash, 'hex'))
             phase = 'hash submited'
             break
           case 'hash submited':
@@ -107,12 +107,12 @@ module.exports = function(app, env) {
             ) {
               throw new Error('server error')
             }
-            client.write(new Buffer(prefix + encodedTx, 'hex'))
+            client.write(Buffer.from(prefix + encodedTx, 'hex'))
             phase = 'result'
             break
           case 'result':
             result = data.toString('hex').endsWith('f5')
-            client.write(new Buffer('0000000100000402', 'hex'))
+            client.write(Buffer.from('0000000100000402', 'hex'))
             phase = 'done'
             break
           default:
