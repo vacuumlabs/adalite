@@ -322,7 +322,31 @@ td {
   max-width: var(--width);
   width: 80%;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
+
+.overlay .box .message {
+  overflow-y: auto;
+}
+
+.overlay .box .action {
+  border-top: 1px solid var(--border);
+  padding-top: .5rem;
+}
+
+@media screen and (max-width: 640px) {
+.overlay .box .centered-row {
+  margin-top: .5rem;
+}
+}
+
+@media screen and (max-width: 370px) {
+  .overlay .box .centered-row {
+  margin-top: 1rem;
+}
+}
+
 /* ALERT */
 .alert {
   border: 1px solid var(--negative);
