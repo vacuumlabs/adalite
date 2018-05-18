@@ -326,9 +326,17 @@ td {
   flex-direction: column;
 }
 
-.overlay .box .text {
+.overlay .box .message {
   overflow-y: auto;
-  margin-bottom: .5em
+}
+
+.overlay .box .action {
+  border-top: 1px solid var(--border);
+  padding-top: .5rem;
+}
+
+.overlay .box .centered-row {
+  margin-top: 1rem;
 }
 
 /* ALERT */

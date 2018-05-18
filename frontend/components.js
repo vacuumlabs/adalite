@@ -697,7 +697,7 @@ class AboutOverlayClass extends Component {
           {class: 'box'},
           h(
             'div',
-            {class: 'text'},
+            {class: 'message'},
             h('h4', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
             h(
               'p',
@@ -719,15 +719,19 @@ class AboutOverlayClass extends Component {
             h('p', undefined, 'Feedback and contributions are very welcome.')
           ),
           h(
-            'label',
-            {class: 'centered-row'},
-            h('input', {
-              type: 'checkbox',
-              checked: dontShowAgainCheckbox,
-              onChange: this.checkboxClick,
-              class: 'understand-checkbox',
-            }),
-            'I understand the risk and do not wish to be shown this screen again'
+            'div',
+            undefined,
+            h(
+              'label',
+              {class: 'centered-row action'},
+              h('input', {
+                type: 'checkbox',
+                checked: dontShowAgainCheckbox,
+                onChange: this.checkboxClick,
+                class: 'understand-checkbox',
+              }),
+              'I understand the risk and do not wish to be shown this screen again'
+            )
           ),
           h(
             'span',
