@@ -350,7 +350,7 @@ const ConfirmTransactionDialog = connect(
     h(
       'div',
       {class: 'box'},
-      h('p', undefined, 'Confirm, that you really want to send'),
+      h('h4', undefined, 'Confirm, that you really want to send'),
       h(
         'div',
         undefined,
@@ -362,8 +362,12 @@ const ConfirmTransactionDialog = connect(
         ' to the address'
       ),
       h('div', {class: 'address-iniline'}, sendAddress),
-      h('button', {class: 'positive', onClick: submitTransaction}, 'Confirm'),
-      h('button', {class: 'danger', onClick: cancelTransaction}, 'Cancel')
+      h(
+        'div',
+        {class: 'centered-row'},
+        h('button', {class: 'positive', onClick: submitTransaction}, 'Confirm'),
+        h('button', {class: 'danger', onClick: cancelTransaction}, 'Cancel')
+      )
     )
   )
 )
