@@ -322,7 +322,15 @@ td {
   max-width: var(--width);
   width: 80%;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
+
+.overlay .box .text {
+  overflow-y: auto;
+  margin-bottom: .5em
+}
+
 /* ALERT */
 .alert {
   border: 1px solid var(--negative);
