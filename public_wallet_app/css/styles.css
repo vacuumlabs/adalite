@@ -335,8 +335,16 @@ td {
   padding-top: .5rem;
 }
 
+@media screen and (max-width: 640px) {
 .overlay .box .centered-row {
+  margin-top: .5rem;
+}
+}
+
+@media screen and (max-width: 370px) {
+  .overlay .box .centered-row {
   margin-top: 1rem;
+}
 }
 
 /* ALERT */
