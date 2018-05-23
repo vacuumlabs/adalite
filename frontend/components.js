@@ -374,7 +374,7 @@ const ConfirmTransactionDialog = connect(
 
 class SendAdaClass extends Component {
   render({
-    sendSuccess,
+    sendResponse,
     sendAddress,
     sendAddressValidationError,
     sendAmount,
@@ -401,16 +401,17 @@ class SendAdaClass extends Component {
         'div',
         undefined,
         h('h2', undefined, 'Send Ada'),
-        sendSuccess !== ''
+        sendResponse !== ''
           ? h(
             'div',
             {
               id: 'transacton-submitted',
-              class: `alert ${sendSuccess ? 'success' : 'error'}`,
+              class: `alert ${sendResponse ? 'success' : 'error'}`,
             },
-            `Transaction status: ${
-              sendSuccess ? 'Successfully submitted.' : 'Failure! Please try again.'
-            }`
+            'Transaction ',
+            sendResponse
+              ? h('b', undefined, 'successful')
+              : h('span', undefined, h('b', undefined, 'failed'), ', please try again.')
           )
           : '',
         h(
@@ -491,7 +492,7 @@ class SendAdaClass extends Component {
 
 const SendAda = connect(
   (state) => ({
-    sendSuccess: state.sendSuccess,
+    sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddress.validationError,
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmount.validationError,
