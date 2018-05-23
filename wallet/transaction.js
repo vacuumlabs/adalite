@@ -7,10 +7,6 @@ const ec = new EdDSA('ed25519')
 const hashBlake2b256 = require('./helpers/hashBlake2b256')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
-function hex2buf(hexString) {
-  return Buffer.from(hexString, 'hex')
-}
-
 function sign(message, hdNode) {
   const messageToSign = Buffer.from(message, 'hex')
   return ed25519.sign(messageToSign, hdNode.getPublicKey(), hdNode.getSecretKey())

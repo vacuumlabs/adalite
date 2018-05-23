@@ -452,6 +452,63 @@ const mock = (CARDANOLITE_CONFIG) => {
           caTxList: [],
         },
       },
+
+      /*
+      * begin addresses for 'should properly compute change address for unused wallet'
+      */
+      'DdzFFzCqrhsef6yEYwhNtfoNQEFAjr2Uur66mBxjnBX6cZyEDLfodWjDxj4K4VDNkAqQjTQVDxrpEptvL85xYLpHP9HUEAPm31tJME3K': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsef6yEYwhNtfoNQEFAjr2Uur66mBxjnBX6cZyEDLfodWjDxj4K4VDNkAqQjTQVDxrpEptvL85xYLpHP9HUEAPm31tJME3K',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhszMbrLsiKTm2uwRCz8u5BnXD4ksurL4MzAHXWzVktqse4Pm682UEBm7FssJvyvU1Xg1PhHUmptKFb57yypg8Drd5ieKw8g': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhszMbrLsiKTm2uwRCz8u5BnXD4ksurL4MzAHXWzVktqse4Pm682UEBm7FssJvyvU1Xg1PhHUmptKFb57yypg8Drd5ieKw8g',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhtCkLJboYQLSsMLgMLqu6QbjdGW9rLUH7nSuLtw4aRDPx5BRvtYNfZUF74sWCLA3sHPy8aGHnT8HfNcENckn8HyagStttxX': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhtCkLJboYQLSsMLgMLqu6QbjdGW9rLUH7nSuLtw4aRDPx5BRvtYNfZUF74sWCLA3sHPy8aGHnT8HfNcENckn8HyagStttxX',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrht7oAQdLpE37pkxrmhz8NnTZCJJoWsNcU9yqkUVbpWBLeZJThhJrymBVvYCqT5SBowcY1YMbADTMq3Et7B8mcqTN7mWBgaW': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht7oAQdLpE37pkxrmhz8NnTZCJJoWsNcU9yqkUVbpWBLeZJThhJrymBVvYCqT5SBowcY1YMbADTMq3Et7B8mcqTN7mWBgaW',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrht1GbdjFpKLMbEb3Vo3V8Ji48WALqpLiXpp33shTrrcft9UdPCsHE555uoaFYXmrcxqEzAnbbc98c8K4x4oqkitvN6GxYVA': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht1GbdjFpKLMbEb3Vo3V8Ji48WALqpLiXpp33shTrrcft9UdPCsHE555uoaFYXmrcxqEzAnbbc98c8K4x4oqkitvN6GxYVA',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      /*
+      * end of addresses for 'should properly compute change address for unused wallet'
+      */
       '*': {},
     }
     for (const address in addressesAndResponses) {

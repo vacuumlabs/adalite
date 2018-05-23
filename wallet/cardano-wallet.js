@@ -6,6 +6,7 @@ const address = require('./address')
 const blockchainExplorerObject = require('./blockchain-explorer')
 const request = require('./helpers/request')
 const range = require('./helpers/range')
+const {HARDENED_THRESHOLD} = require('./constants')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -45,7 +46,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
   }
 
   async function getId() {
-    return await getAddress(0x80000000)
+    return await getAddress(HARDENED_THRESHOLD)
   }
 
   async function getAddress(childIndex) {
@@ -192,7 +193,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
 
     if (usedAddressesWithHdNodes.length < usedAddressesLimit) {
       const highestUsedChildIndex = Math.max(
-        0x8000000,
+        HARDENED_THRESHOLD,
         ...usedAddressesWithHdNodes.map((item) => item.childIndex)
       )
 
@@ -258,7 +259,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
     // eslint-disable-next-line no-undef
     end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
   ) {
-    const childIndexRange = range(begin + 0x80000001, end + 0x80000001)
+    const childIndexRange = range(begin + HARDENED_THRESHOLD + 1, end + HARDENED_THRESHOLD + 1)
     return await Promise.all(childIndexRange.map(async (i) => await getAddressWithHdNode(i)))
   }
 

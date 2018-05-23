@@ -24,6 +24,10 @@ const wallet = CardanoWallet(
   'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3',
   CARDANOLITE_CONFIG
 )
+const unusedWallet = CardanoWallet(
+  'rain flame hip basic extend capable chair oppose gorilla fun aunt emotion',
+  CARDANOLITE_CONFIG
+)
 const childIndex1 = 0x80000000
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
@@ -314,6 +318,27 @@ describe('test wallet balance computation', function() {
 
   it('should properly fetch wallet balance', async () => {
     assert.equal(await wallet.getBalance(), 1500000)
+  })
+})
+
+// eslint-disable-next-line prefer-arrow-callback
+describe('test wallet change address', function() {
+  this.timeout(10000)
+
+  mock.mockBlockChainExplorer()
+
+  it('should properly compute change address for unused wallet', async () => {
+    assert.equal(
+      await unusedWallet.getChangeAddress(),
+      'DdzFFzCqrhsef6yEYwhNtfoNQEFAjr2Uur66mBxjnBX6cZyEDLfodWjDxj4K4VDNkAqQjTQVDxrpEptvL85xYLpHP9HUEAPm31tJME3K'
+    )
+  })
+
+  it('should properly compute change address for used wallet', async () => {
+    assert.equal(
+      await wallet.getChangeAddress(),
+      'DdzFFzCqrhsetWr6ScRnzreftN8nde7Xhf6K3sJqUT8GQPX2bLJNeEz1YhbhyNcewSuymkwPyo21uoAcALJDe8uP44gU9MXnM3EJhVNx'
+    )
   })
 })
 

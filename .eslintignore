@@ -3,3 +3,4 @@ public_landing_page/
 test/browser/js/cardano.bundle.test.js
 node_modules/
 build/
+sandbox.js

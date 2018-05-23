@@ -9,9 +9,9 @@ const crypto = require('crypto')
 const EdDsa = require('elliptic-cardano').eddsaVariant
 const ec = new EdDsa('ed25519')
 const sha3 = require('js-sha3')
-
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const tx = require('./transaction')
+const {HARDENED_THRESHOLD} = require('./constants')
 
 function addressHash(input) {
   const serializedInput = cbor.encode(input)
@@ -74,10 +74,12 @@ function isValidAddress(address) {
   return true
 }
 
-async function deriveAddressWithHdNode(parentHdNode, childIndex) {
-  let addressPayload, addressAttributes, derivedHdNode, addressRoot
+const crc32Unsigned = (input) => crc32.buf(input) >>> 0
 
-  if (childIndex === 0x80000000) {
+async function deriveAddressWithHdNode(parentHdNode, childIndex) {
+  let addressPayload, addressAttributes, derivedHdNode
+
+  if (childIndex === HARDENED_THRESHOLD) {
     // root address
     addressPayload = Buffer.from([])
     addressAttributes = new Map()
@@ -85,13 +87,13 @@ async function deriveAddressWithHdNode(parentHdNode, childIndex) {
   } else {
     // the remaining addresses
     const hdPassphrase = await deriveHdPassphrase(parentHdNode)
-    const derivationPath = [0x80000000, childIndex]
+    const derivationPath = [HARDENED_THRESHOLD, childIndex]
 
     addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
     addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
     derivedHdNode = deriveHdNode(parentHdNode, childIndex)
   }
-  addressRoot = getAddressRoot(derivedHdNode, addressPayload)
+  const addressRoot = getAddressRoot(derivedHdNode, addressPayload)
 
   const addressType = 0 // Public key address
 
@@ -132,15 +134,15 @@ async function deriveHdNodeFromAddress(address, parentHdNode) {
   const addressPayload = cbor.decode(addressAttributes.get(1))
   const hdPassphrase = await deriveHdPassphrase(parentHdNode)
   const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
-  const childIndex = addressAttributes.length === 0 ? 0x80000000 : derivationPath[1]
+  const childIndex = addressAttributes.length === 0 ? HARDENED_THRESHOLD : derivationPath[1]
 
   return (await deriveAddressWithHdNode(parentHdNode, childIndex)).hdNode
 }
 
 function deriveHdNode(hdNode, childIndex) {
-  const firstRound = deriveHdNodeIteration(hdNode, 0x80000000)
+  const firstRound = deriveHdNodeIteration(hdNode, HARDENED_THRESHOLD)
 
-  if (childIndex === 0x80000000) {
+  if (childIndex === HARDENED_THRESHOLD) {
     throw new Error('Do not use deriveHdNode to derive root node')
   }
 
@@ -177,8 +179,6 @@ function decryptDerivationPath(addressPayload, hdPassphrase) {
     throw e
   }
 }
-
-const crc32Unsigned = (input) => crc32.buf(input) >>> 0
 
 async function deriveHdPassphrase(hdNode) {
   return await pbkdf2Async(hdNode.getExtendedPublicKey(), 'address-hashing', 500, 32, 'sha512')
