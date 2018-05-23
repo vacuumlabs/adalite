@@ -536,7 +536,6 @@ const TopLevelRouter = connect((state) => ({
 const LoginStatus = connect(
   (state) => ({
     pathname: state.router.pathname,
-    activeWalletId: state.activeWalletId,
     balance: state.balance,
   }),
   actions
@@ -546,19 +545,9 @@ const LoginStatus = connect(
     {class: 'status'},
     h(
       'div',
-      {class: 'status-text-wrapper'},
-      h(
-        'div',
-        {class: 'status-text'},
-        'Balance: ',
-        h('span', {class: 'status-balance'}, `${(balance / 1000000).toFixed(6)} ADA`)
-      ),
-      h(
-        'div',
-        {class: 'status-text', title: activeWalletId},
-        'WalletID: ',
-        h('span', {class: 'active-wallet-id', title: activeWalletId}, activeWalletId)
-      )
+      {class: 'status-text'},
+      'Balance: ',
+      h('span', {class: 'status-balance'}, `${(balance / 1000000).toFixed(6)} ADA`)
     ),
     h(
       'div',

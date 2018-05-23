@@ -473,22 +473,17 @@ td {
 .status button:hover {
   color: var(--brand);
 }
-.status-text-wrapper {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.6rem;
-}
 .status-text {
-  width: 12em;
+  width: 14rem;
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 2px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 .status-balance {
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .active-wallet-id {
   color: var(--brand);
@@ -501,7 +496,7 @@ td {
   width: 0.9rem;
   height: 0.9rem;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 840px) {
   body {
     padding-top: 3.5rem;
   }
@@ -538,7 +533,7 @@ td {
     padding: 1rem 3rem;
     background-color: var(--navbar);
     border-left: 1px solid var(--border);
-    transform: translateX(18rem);
+    transform: translateX(22rem);
     transition: transform var(--transition);
     z-index: 1;
   }
@@ -558,11 +553,14 @@ td {
     flex-direction: column-reverse;
   }
 
+  .status > div {
+    margin: 0.6rem 0.6rem 0 0.6rem;
+  }
+
   .status-text {
     white-space: normal;
     word-break: break-all;
     text-align: center;
-    margin: 0.5rem 0 0.5rem;
   }
 }
 /* OVERLAY */
@@ -718,7 +716,7 @@ td {
   font-weight: 600;
   font-size: 1.1rem;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 840px) {
   .intro-input-row {
     align-items: center;
     flex-direction: column;
@@ -813,7 +811,7 @@ td {
   text-overflow: ellipsis;
   display: block;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 840px) {
   .transaction-id {
     width: 10em;
   }
