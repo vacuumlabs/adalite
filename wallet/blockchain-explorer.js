@@ -12,9 +12,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG) => {
     const addressInfo = await getAddressInfo(address)
 
     // order transactions by time from earliest to latest
-    const txList = Object.values(addressInfo.caTxList).sort((a, b) => {
-      return parseInt(a.ctbTimeIssued, 10) - parseInt(b.ctbTimeIssued, 10)
-    })
+    const txList = addressInfo.caTxList.reverse()
 
     for (let i = 0; i < txList.length; i++) {
       const txInputs = Object.values(txList[i].ctbInputs)

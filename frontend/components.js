@@ -11,7 +11,7 @@ class UnlockClass extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      mnemonic: 'plastic that delay conduct police ticket swim gospel intact harsh obtain entire',
+      mnemonic: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
     }
     this.generateMnemonic = this.generateMnemonic.bind(this)
     this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
