@@ -38,7 +38,7 @@ export default ({setState, getState}) => {
     const balance = await wallet.getBalance()
     const sendAmount = {fieldValue: ''}
     const sendAddress = {fieldValue: ''}
-    const sendSuccess = ''
+    const sendResponse = ''
     setState({
       activeWalletId,
       usedAddresses,
@@ -46,7 +46,7 @@ export default ({setState, getState}) => {
       balance,
       sendAmount,
       sendAddress,
-      sendSuccess,
+      sendResponse,
       transactionHistory,
       loading: false,
       mnemonic: '',
@@ -165,6 +165,7 @@ export default ({setState, getState}) => {
 
   const updateAddress = (state, e) => {
     setState({
+      sendResponse: '',
       sendAddress: Object.assign({}, state.sendAddress, {
         fieldValue: e.target.value,
       }),
@@ -174,6 +175,7 @@ export default ({setState, getState}) => {
 
   const updateAmount = (state, e) => {
     setState({
+      sendResponse: '',
       sendAmount: Object.assign({}, state.sendAmount, {
         fieldValue: e.target.value,
       }),
@@ -186,15 +188,23 @@ export default ({setState, getState}) => {
     try {
       const address = state.sendAddress.fieldValue
       const amount = parseFloat(state.sendAmount.fieldValue) * 1000000
-      const sendSuccess = await wallet.sendAda(address, amount)
+      const sendResponse = await wallet.sendAda(address, amount)
+      if (sendResponse) {
+        setTimeout(() => setState({sendResponse: ''}), 4000)
+        setState({
+          sendAmount: {fieldValue: ''},
+          sendAddress: {fieldValue: ''},
+          transactionFee: 0,
+        })
+      }
       setState({
-        sendSuccess,
+        sendResponse,
         loading: false,
         showConfirmTransactionDialog: false,
       })
     } catch (e) {
       setState({
-        sendSuccess: false,
+        sendResponse: false,
         loading: false,
         showConfirmTransactionDialog: false,
       })
