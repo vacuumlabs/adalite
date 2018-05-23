@@ -68,12 +68,13 @@ export default ({setState, getState}) => {
       (elem) => usedAddresses.indexOf(elem) < 0
     )
 
+    // timeout setting loading state, so that loading shows even if everything was cashed
+    setTimeout(() => setState({loading: false}), 500)
     setState({
       balance,
       usedAddresses,
       unusedAddresses,
       transactionHistory,
-      loading: false,
     })
   }
 
