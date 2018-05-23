@@ -7,7 +7,10 @@
     "type": "git",
     "url": "git+https://github.com/vacuumlabs/cardano.git"
   },
-  "keywords": ["cardano", "wallet"],
+  "keywords": [
+    "cardano",
+    "wallet"
+  ],
   "author": "Rafael Korbas",
   "license": "ISC",
   "bugs": {
@@ -15,8 +18,7 @@
   },
   "scripts": {
     "start-server": "node server/index.js",
-    "dev":
-      "PORT=${PORT:-3000} node server/index.js & webpack --watch --config webpack.build.config.js",
+    "dev": "PORT=${PORT:-3000} node server/index.js & webpack --watch --config webpack.build.config.js",
     "eslint": "eslint .",
     "build": "webpack --config webpack.build.config.js --progress",
     "test": "webpack --config webpack.test.config.js",
@@ -26,7 +28,10 @@
   },
   "homepage": "https://github.com/vacuumlabs/cardano#readme",
   "lint-staged": {
-    "{frontend,wallet,server,test}/**/*.{js,jsx,json,css}": ["prettier-eslint --write", "git add"]
+    "{frontend,wallet,server,test}/**/*.{js,jsx,json,css}": [
+      "prettier-eslint --write",
+      "git add"
+    ]
   },
   "dependencies": {
     "@stablelib/chacha20poly1305": "^0.10.2",
@@ -41,12 +46,14 @@
     "dotenv-webpack": "^1.5.5",
     "elliptic-cardano": "6.4.0-b",
     "express": "^4.16.3",
+    "express-basic-auth": "^1.1.5",
     "husky": "^0.14.3",
     "isomorphic-fetch": "^2.2.1",
     "js-sha3": "^0.7.0",
     "pbkdf2": "^3.0.14",
     "preact": "^8.2.7",
     "redis": "^2.8.0",
+    "redisscan": "^2.0.0",
     "start-server-webpack-plugin": "^2.2.5",
     "supercop.js": "^2.0.1",
     "unistore": "^3.0.4",

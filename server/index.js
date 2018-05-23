@@ -2,7 +2,6 @@ require('dotenv').config()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const express = require('express')
-const forceHttpsMiddleware = require('./middleware/forceHttps')
 const frontendConfig = require('./helpers/loadFrontendConfig')
 const app = express()
 
@@ -11,11 +10,14 @@ app.use(cors())
 
 // must be before every other route to guarantee the redirect!
 if (process.env.CARDANOLITE_FORCE_HTTPS === 'true') {
-  app.use(forceHttpsMiddleware)
+  app.use(require('./middleware/forceHttps'))
 }
+
 // don't track in local dev => no need for local redis
 if (process.env.REDIS_URL) {
   app.use(require('./middleware/stats'))
+  app.use(require('./middleware/basicAuth')(['/usage_stats'], {admin: process.env.STATS_PWD}))
+  require('./statsPage')(app)
 }
 
 app.use(express.static('public_wallet_app'))
