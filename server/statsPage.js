@@ -38,14 +38,16 @@ const getData = async () => {
 module.exports = function(app, env) {
   app.get('/usage_stats', async (req, res) => {
     try {
-      const table = (await getData()).map(
-        (v) => `
+      const table = (await getData())
+        .map(
+          (v) => `
         <tr>
           <td>${v[0]}</td>
           <td>${v[1]}</td>
         </tr>
       `
-      )
+        )
+        .join('')
 
       return res.status(200).send(`
         <!doctype html>
