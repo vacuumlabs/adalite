@@ -12,11 +12,13 @@ const blockchainExplorer = (CARDANOLITE_CONFIG) => {
     const addressInfo = await getAddressInfo(address)
 
     // order transactions by time from earliest to latest
-    const txList = addressInfo.caTxList.reverse()
+    const txList = Object.values(addressInfo.caTxList).sort((a, b) => {
+      return parseInt(a.ctbTimeIssued, 10) - parseInt(b.ctbTimeIssued, 10)
+    })
 
     for (let i = 0; i < txList.length; i++) {
-      const txInputs = Object.values(txList[i].ctbInputs)
-      const txOutputs = Object.values(txList[i].ctbOutputs)
+      const txInputs = txList[i].ctbInputs
+      const txOutputs = txList[i].ctbOutputs
 
       // first we remove the inputs from unspent outputs
       for (let j = 0; j < txInputs.length; j++) {
@@ -30,7 +32,9 @@ const blockchainExplorer = (CARDANOLITE_CONFIG) => {
           return element.address === txInput.address && element.coins === txInput.coins
         })
 
-        unspentTxOutputs.splice(unspentTxOutputToRemoveIndex, 1)
+        if (unspentTxOutputToRemoveIndex !== -1) {
+          unspentTxOutputs.splice(unspentTxOutputToRemoveIndex, 1)
+        }
       }
 
       // then we add the outputs corresponding to our address

@@ -18,9 +18,12 @@ async function execute(url, method = 'GET', body = null, headers = {}, enableCac
 
 async function cachedFetchGet(url, headers) {
   const key = JSON.stringify({url, headers})
+
   if (!requestCache.hasOwnProperty(key) || Date.now() - requestCache[key].timestamp > MAX_AGE) {
-    requestCache[key] = {timestamp: Date.now(), response: ''}
-    requestCache[key].response = await fetchFromNetwork(url, 'GET', null, headers)
+    requestCache[key] = {
+      timestamp: Date.now(),
+      response: await fetchFromNetwork(url, 'GET', null, headers),
+    }
   }
   return requestCache[key].response
 }

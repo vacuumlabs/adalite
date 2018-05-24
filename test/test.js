@@ -8,6 +8,7 @@ const mnemonic = require('../wallet/mnemonic')
 const address = require('../wallet/address')
 const {CardanoWallet, txFeeFunction} = require('../wallet/cardano-wallet')
 const CborIndefiniteLengthArray = require('../wallet/helpers/CborIndefiniteLengthArray')
+const blockchainExplorer = require('../wallet/blockchain-explorer')(CARDANOLITE_CONFIG)
 
 const mockObject = require('./mock')
 const mock = mockObject(CARDANOLITE_CONFIG)
@@ -350,6 +351,22 @@ describe('test wallet history parsing', function() {
 
   it('should properly fetch wallet history', async () => {
     assert.equal(JSON.stringify(await wallet.getHistory()), JSON.stringify(history))
+  })
+})
+
+// eslint-disable-next-line prefer-arrow-callback
+describe('test wallet unspent outputs computation', function() {
+  this.timeout(10000)
+
+  mock.mockBlockChainExplorer()
+
+  it('should properly compute unspent transaction outputs for address', async () => {
+    const utxos = await blockchainExplorer.getUnspentTxOutputs(
+      'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn'
+    )
+    const utxoSum = utxos.reduce((acc, cur) => acc + cur.coins, 0)
+
+    assert.equal(utxoSum, 150000)
   })
 })
 
