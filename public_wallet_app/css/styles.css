@@ -3,7 +3,7 @@
   --brand-dark: #ed005b;
   --brand-light: #d36a98;
   --transition: 0.25s;
-  --width: 1024px;
+  --width: 1200px;
   --small-screen-padding: 50px;
   --text-color: #333;
   --input-text-inactive: #999;
@@ -161,7 +161,7 @@ td {
   margin: 0 auto;
   flex: 0 1 auto;
 }
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1200px) {
   .main {
     padding: 0 50px;
   }
