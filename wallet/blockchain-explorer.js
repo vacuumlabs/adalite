@@ -2,7 +2,7 @@ const request = require('./helpers/request')
 
 const blockchainExplorer = (CARDANOLITE_CONFIG) => {
   async function getUnspentTxOutputs(address) {
-    if (getAddressBalance(address) === 0) {
+    if ((await getAddressBalance(address)) === 0) {
       // if balance is zero, all outputs must be spent so we don't waste time and return []
       return []
     }
@@ -12,7 +12,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG) => {
     const addressInfo = await getAddressInfo(address)
 
     // order transactions by time from earliest to latest
-    const txList = Object.values(addressInfo.caTxList).sort((a, b) => {
+    const txList = addressInfo.caTxList.sort((a, b) => {
       return parseInt(a.ctbTimeIssued, 10) - parseInt(b.ctbTimeIssued, 10)
     })
 
