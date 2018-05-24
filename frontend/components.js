@@ -339,38 +339,60 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
 const ConfirmTransactionDialog = connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
-    sendAmount: state.sendAmountForTransactionFee,
-    transactionFee: state.transactionFee,
+    sendAmount: state.sendAmountForTransactionFee / 1000000,
+    transactionFee: state.transactionFee / 1000000,
   }),
   actions
-)(({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) =>
-  h(
+)(({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) => {
+  const total = sendAmount + transactionFee
+  return h(
     'div',
     {class: 'overlay'},
     h(
       'div',
       {class: 'box'},
-      h('h4', undefined, 'Confirm, that you really want to send'),
+      h('h4', undefined, 'Review transaction'),
       h(
         'div',
-        undefined,
+        {class: 'review-transaction-container'},
         h(
-          'strong',
-          undefined,
-          `${sendAmount / 1000000} ADA (+fee ${transactionFee / 1000000} ADA)`
+          'div',
+          {class: 'review-transaction-row'},
+          h(
+            'span',
+            undefined,
+            'Adress: ',
+            h('span', {class: 'review-transaction-adress'}, sendAddress)
+          )
         ),
-        ' to the address'
-      ),
-      h('div', {class: 'address-iniline'}, sendAddress),
-      h(
-        'div',
-        {class: 'centered-row'},
-        h('button', {class: 'positive', onClick: submitTransaction}, 'Confirm'),
-        h('button', {class: 'danger', onClick: cancelTransaction}, 'Cancel')
+        h(
+          'div',
+          {class: 'review-transaction-row'},
+          'Amout: ',
+          h('b', undefined, sendAmount.toFixed(6))
+        ),
+        h(
+          'div',
+          {class: 'review-transaction-row'},
+          'Transaction fee: ',
+          h('b', undefined, transactionFee.toFixed(6))
+        ),
+        h(
+          'div',
+          {class: 'review-transaction-total-row'},
+          h('b', {class: 'review-transaction-total-label'}, 'TOTAL'),
+          h('b', {class: 'review-transaction-total'}, total.toFixed(6))
+        ),
+        h(
+          'div',
+          {class: ''},
+          h('button', {onClick: submitTransaction}, 'Confirm'),
+          h('button', {class: 'cancel', onClick: cancelTransaction}, 'Cancel')
+        )
       )
     )
   )
-)
+})
 
 class SendAdaClass extends Component {
   render({
