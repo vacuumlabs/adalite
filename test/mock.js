@@ -743,11 +743,11 @@ const mock = (CARDANOLITE_CONFIG) => {
             opts.body === request
           )
         },
-        response: Promise.resolve({
+        response: {
           status: 200,
           body: requestsAndResponses[request],
           sendAsJson: true,
-        }),
+        },
       })
     }
 
