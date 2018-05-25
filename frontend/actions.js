@@ -33,7 +33,9 @@ export default ({setState, getState}) => {
 
     const activeWalletId = await wallet.getId()
     const usedAddresses = await wallet.getUsedAddresses()
-    const unusedAddresses = [await wallet.getChangeAddress()]
+    const unusedAddresses = !(await wallet.areUnusedAddressesExhausted())
+      ? [await wallet.getChangeAddress()]
+      : []
     const transactionHistory = await wallet.getHistory()
     const balance = await wallet.getBalance()
     const sendAmount = {fieldValue: ''}
@@ -81,7 +83,7 @@ export default ({setState, getState}) => {
   const generateNewUnusedAddress = async (state) => {
     setState({address: 'loading...'})
     const offset = state.unusedAddresses.length
-    const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
+    const newUnusedAddress = await wallet.getChangeAddress(offset)
     setState({
       unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
     })
@@ -185,6 +187,7 @@ export default ({setState, getState}) => {
       const address = state.sendAddress.fieldValue
       const amount = state.sendAmount.coins
       const sendResponse = await wallet.sendAda(address, amount)
+      const updatedBalance = await wallet.getBalance()
       if (sendResponse) {
         setTimeout(() => setState({sendResponse: ''}), 4000)
         setState({
@@ -194,6 +197,7 @@ export default ({setState, getState}) => {
         })
       }
       setState({
+        balance: updatedBalance,
         sendResponse,
         loading: false,
         showConfirmTransactionDialog: false,

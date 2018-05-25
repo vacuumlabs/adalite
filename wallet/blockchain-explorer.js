@@ -1,94 +1,151 @@
+const cbor = require('cbor')
+
 const request = require('./helpers/request')
 
-const blockchainExplorer = (CARDANOLITE_CONFIG) => {
-  async function getUnspentTxOutputs(address) {
-    if ((await getAddressBalance(address)) === 0) {
-      // if balance is zero, all outputs must be spent so we don't waste time and return []
-      return []
-    }
+const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
+  const state = Object.assign(walletState, {
+    ownUtxos: {},
+    overallTxCountSinceLastUtxoFetch: 0,
+    addressInfos: {},
+  })
 
-    const unspentTxOutputs = []
+  async function getTxHistory(addresses) {
+    const transactions = []
+    const addressInfos = await getAddressInfos(addresses)
 
-    const addressInfo = await getAddressInfo(address)
-
-    // order transactions by time from earliest to latest
-    const txList = addressInfo.caTxList.sort((a, b) => {
-      return parseInt(a.ctbTimeIssued, 10) - parseInt(b.ctbTimeIssued, 10)
+    addressInfos.forEach((addressInfo) => {
+      addressInfo.caTxList.forEach((tx) => {
+        transactions[tx.ctbId] = tx
+      })
     })
 
-    for (let i = 0; i < txList.length; i++) {
-      const txInputs = txList[i].ctbInputs
-      const txOutputs = txList[i].ctbOutputs
-
-      // first we remove the inputs from unspent outputs
-      for (let j = 0; j < txInputs.length; j++) {
-        const txInput = {
-          txHash: txList[i].ctbId,
-          address: txInputs[j][0],
-          coins: parseInt(txInputs[j][1].getCoin, 10),
-        }
-
-        const unspentTxOutputToRemoveIndex = unspentTxOutputs.findIndex((element) => {
-          return element.address === txInput.address && element.coins === txInput.coins
-        })
-
-        if (unspentTxOutputToRemoveIndex !== -1) {
-          unspentTxOutputs.splice(unspentTxOutputToRemoveIndex, 1)
+    for (const t of Object.values(transactions)) {
+      let effect = 0 //effect on wallet balance accumulated
+      for (const input of t.ctbInputs) {
+        if (addresses.includes(input[0])) {
+          effect -= +input[1].getCoin
         }
       }
-
-      // then we add the outputs corresponding to our address
-      for (let j = 0; j < txOutputs.length; j++) {
-        const txOutput = {
-          txHash: txList[i].ctbId,
-          address: txOutputs[j][0],
-          coins: parseInt(txOutputs[j][1].getCoin, 10),
-          outputIndex: j, // this should be refactored to get the actual map key from the response
-        }
-
-        if (txOutput.address === address) {
-          unspentTxOutputs.push(txOutput)
+      for (const output of t.ctbOutputs) {
+        if (addresses.includes(output[0])) {
+          effect += +output[1].getCoin
         }
       }
+      t.effect = effect
     }
-
-    return unspentTxOutputs
+    return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
-  async function getAddressTxList(address) {
+  async function getOverallTxCount(addresses) {
+    return (await getTxHistory(addresses)).length
+  }
+
+  async function getAddressInfos(addresses) {
+    return await Promise.all(addresses.slice().map(getAddressInfo))
+  }
+
+  async function isAddressUsed(address) {
     const addressInfo = await getAddressInfo(address)
 
-    return addressInfo.caTxList
+    return addressInfo.caTxNum > 0
+  }
+
+  async function selectNonemptyAddresses(addresses) {
+    const isNonempty = await Promise.all(
+      addresses.map(
+        async (address) => parseInt((await getAddressInfo(address)).caBalance.getCoin, 10) > 0
+      )
+    )
+
+    return addresses.filter((address, i) => isNonempty[i])
+  }
+
+  async function selectUnusedAddresses(addresses) {
+    const addressesUsageMask = await Promise.all(
+      addresses.map(async (elem) => await isAddressUsed(elem))
+    )
+
+    return addresses.filter((address, i) => !addressesUsageMask[i])
+  }
+
+  async function isSomeAddressUsed(addresses) {
+    return (await selectUnusedAddresses(addresses)).length !== addresses.length
   }
 
   async function getAddressInfo(address) {
+    const addressInfo = state.addressInfos[address]
+    const maxAddressInfoAge = 10000
+
+    if (!addressInfo || Date.now() - addressInfo.timestamp > maxAddressInfoAge) {
+      state.addressInfos[address] = {
+        timestamp: Date.now(),
+        data: await fetchAddressInfo(address),
+      }
+    }
+
+    return state.addressInfos[address].data
+  }
+
+  async function submitTxRaw(txHash, txBody) {
+    try {
+      const res = await request(
+        CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
+        'POST',
+        JSON.stringify({
+          txHash,
+          txBody,
+        }),
+        {
+          'Content-Type': 'application/json',
+        }
+      )
+
+      if (res.status >= 400) {
+        throw Error(`${res.status} ${JSON.stringify(res)}`)
+      } else {
+        return res.result
+      }
+    } catch (err) {
+      throw err //Error(`txSubmiter unreachable ${err}`)
+    }
+  }
+
+  async function fetchUnspentTxOutputs(addresses) {
+    const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
+    const response = (await request(url, 'POST', JSON.stringify(addresses), {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    })).Right
+
+    return response.map((elem) => {
+      return {
+        txHash: elem.cuId,
+        address: elem.cuAddress,
+        coins: parseInt(elem.cuCoins.getCoin, 10),
+        outputIndex: elem.cuOutIndex,
+      }
+    })
+  }
+
+  async function fetchAddressInfo(address) {
     // eslint-disable-next-line no-undef
     const url = `${
       CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
     }/api/addresses/summary/${address}`
-    const result = await request.execute(url)
+    const result = await request(url)
 
     return result.Right
   }
 
-  async function getAddressBalance(address) {
-    const result = await getAddressInfo(address)
-
-    return parseInt(result.caBalance.getCoin, 10)
-  }
-
-  async function isAddressUsed(address) {
-    const result = await getAddressInfo(address)
-
-    return result.caTxNum > 0
-  }
-
   return {
-    getUnspentTxOutputs,
-    getAddressTxList,
-    getAddressInfo,
-    getAddressBalance,
+    getTxHistory,
+    getOverallTxCount,
+    fetchUnspentTxOutputs,
+    selectNonemptyAddresses,
     isAddressUsed,
+    isSomeAddressUsed,
+    selectUnusedAddresses,
+    submitTxRaw,
   }
 }
 

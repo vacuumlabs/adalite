@@ -12,7 +12,7 @@ class UnlockClass extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      mnemonic: 'civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash',
+      mnemonic: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
     }
     this.generateMnemonic = this.generateMnemonic.bind(this)
     this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
@@ -238,10 +238,12 @@ const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
   )
 )
 
-const UnusedAddressesList = connect('unusedAddresses', actions)(
-  ({unusedAddresses, generateNewUnusedAddress}) => {
+const UnusedAddressesList = connect(['unusedAddresses', 'usedAddresses'], actions)(
+  ({usedAddresses, unusedAddresses, generateNewUnusedAddress}) => {
     const disableGettingNewAddresses =
-      unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
+      unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH ||
+      usedAddresses.length + unusedAddresses.length >=
+        CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
     return h(
       'div',
       {class: ''},

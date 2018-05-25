@@ -1,34 +1,4 @@
-const requestCache = {}
-const MAX_AGE = 10000
-
-async function execute(url, method = 'GET', body = null, headers = {}, enableCache = true) {
-  if (method.toUpperCase() === 'GET' && enableCache) {
-    return await cachedFetchGet(url, headers).catch((e) => {
-      throw new Error(e)
-    })
-  }
-
-  const res = await fetchFromNetwork(url, method, body, headers)
-  if (res.status >= 400) {
-    throw new Error(res.status)
-  }
-
-  return res
-}
-
-async function cachedFetchGet(url, headers) {
-  const key = JSON.stringify({url, headers})
-
-  if (!requestCache.hasOwnProperty(key) || Date.now() - requestCache[key].timestamp > MAX_AGE) {
-    requestCache[key] = {
-      timestamp: Date.now(),
-      response: await fetchFromNetwork(url, 'GET', null, headers),
-    }
-  }
-  return requestCache[key].response
-}
-
-async function fetchFromNetwork(url, method = 'GET', body = null, headers = {}) {
+module.exports = async function request(url, method = 'GET', body = null, headers = {}) {
   let requestParams = {
     method,
     headers,
@@ -39,7 +9,7 @@ async function fetchFromNetwork(url, method = 'GET', body = null, headers = {}) 
 
   try {
     const res = await fetch(url, requestParams)
-    if (res.status >= 300) {
+    if (res.status >= 400) {
       const e = Error(
         `${url} returns error: ${res.status} on payload: ${JSON.stringify(requestParams)}`
       )
@@ -55,5 +25,3 @@ async function fetchFromNetwork(url, method = 'GET', body = null, headers = {}) 
     throw e
   }
 }
-
-module.exports = {execute}

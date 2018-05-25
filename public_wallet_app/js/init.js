@@ -16,7 +16,9 @@
         // default parameters in function
         'function f2 (a = 3, b, c=false) {return a}' +
         // classes
-        'class MyClass {}' +
+        'class MyClass {};' +
+        // assign object keys from variable
+        'let objKey = "a"; let obj = {[objKey]: 3};' +
       '})()'
     )
 

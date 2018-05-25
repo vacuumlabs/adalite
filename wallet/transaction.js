@@ -1,131 +1,93 @@
 const cbor = require('cbor')
 const base58 = require('bs58')
-const ed25519 = require('supercop.js')
-const EdDSA = require('elliptic-cardano').eddsaVariant
-const ec = new EdDSA('ed25519')
 
 const hashBlake2b256 = require('./helpers/hashBlake2b256')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
-function sign(message, hdNode) {
-  const messageToSign = Buffer.from(message, 'hex')
-  return ed25519.sign(messageToSign, hdNode.getPublicKey(), hdNode.getSecretKey())
+function getTxId(txAux) {
+  return hashBlake2b256(txAux).toString('hex')
 }
 
-function verify(message, publicKey, signature) {
-  const key = ec.keyFromPublic(publicKey.toString('hex'))
-
-  return key.verify(message, signature.toString('hex'))
-}
-
-class TxAux {
-  constructor(inputs, outputs, attributes) {
-    this.inputs = inputs
-    this.outputs = outputs
-    this.attributes = attributes
-  }
-
-  getId() {
-    return hashBlake2b256(this).toString('hex')
-  }
-
-  encodeCBOR(encoder) {
+function TxAux(inputs, outputs, attributes) {
+  function encodeCBOR(encoder) {
     return encoder.pushAny([
-      new CborIndefiniteLengthArray(this.inputs),
-      new CborIndefiniteLengthArray(this.outputs),
-      this.attributes,
+      new CborIndefiniteLengthArray(inputs),
+      new CborIndefiniteLengthArray(outputs),
+      attributes,
     ])
   }
+
+  const definition = {
+    inputs,
+    outputs,
+    encodeCBOR,
+  }
+
+  return definition
 }
 
-class TxSignature {
-  constructor(signature) {
-    this.signature = signature
+function TxWitness(extendedPublicKey, signature) {
+  // default - PkWitness
+  const type = 0
+
+  function encodeCBOR(encoder) {
+    return encoder.pushAny([type, new cbor.Tagged(24, cbor.encode([extendedPublicKey, signature]))])
   }
 
-  encodeCBOR(encoder) {
-    return encoder.pushAny(this.signature)
+  return {
+    extendedPublicKey,
+    signature,
+    encodeCBOR,
   }
 }
 
-class TxWitness {
-  constructor(extendedPublicKey, signature) {
-    this.extendedPublicKey = extendedPublicKey
-    this.signature = signature
-    this.type = 0 // default - PkWitness
+function TxInput(utxo) {
+  // default input type
+  const type = 0
+
+  function getCoins() {
+    return utxo.coins
   }
 
-  getSignature() {
-    return this.signature.signature
-  }
-
-  encodeCBOR(encoder) {
+  function encodeCBOR(encoder) {
     return encoder.pushAny([
-      this.type,
-      new cbor.Tagged(24, cbor.encode([this.extendedPublicKey, this.signature])),
+      type,
+      new cbor.Tagged(24, cbor.encode([Buffer.from(utxo.txHash, 'hex'), utxo.outputIndex])),
     ])
   }
-}
 
-class TxInput {
-  constructor(txId, outputIndex, hdNode, coins) {
-    this.id = txId
-
-    // the index of the input transaction when it was the output of another
-    this.outputIndex = outputIndex
-
-    // default input type
-    this.type = 0
-
-    // so we are able to sign the input
-    this.hdNode = hdNode
-
-    this.coins = coins
-  }
-
-  getWitness(txHash) {
-    return new TxWitness(
-      this.hdNode.getExtendedPublicKey(),
-      /*
-      * "011a2d964a095820" is a magic prefix from the cardano-sl code
-        the "01" byte is a constant to denote signatures of transactions
-        the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
-        the "5820" part is the CBOR prefix for a hex string
-      */
-      new TxSignature(sign(`011a2d964a095820${txHash}`, this.hdNode))
-    )
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny([
-      this.type,
-      new cbor.Tagged(24, cbor.encode([Buffer.from(this.id, 'hex'), this.outputIndex])),
-    ])
+  return {
+    getCoins,
+    utxo,
+    encodeCBOR,
   }
 }
 
-class TxOutput {
-  constructor(walletAddress, coins) {
-    this.walletAddress = walletAddress
-    this.coins = coins
+function TxOutput(address, coins, isChange) {
+  function encodeCBOR(encoder) {
+    return encoder.pushAny([AddressCborWrapper(address), coins])
   }
 
-  encodeCBOR(encoder) {
-    return encoder.pushAny([this.walletAddress, this.coins])
-  }
-}
-
-class WalletAddress {
-  constructor(address) {
-    this.address = address
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.push(base58.decode(this.address))
+  return {
+    address,
+    coins,
+    isChange,
+    encodeCBOR,
   }
 }
 
-class HdNode {
+function AddressCborWrapper(address) {
+  function encodeCBOR(encoder) {
+    return encoder.push(base58.decode(address))
+  }
+
+  return {
+    address,
+    encodeCBOR,
+  }
+}
+
+function HdNode({secretKey, publicKey, chainCode, hdNodeString}) {
   /**
    * HD node groups secretKey, publicKey and chainCode
    * can be initialized from Buffers or single string
@@ -134,86 +96,45 @@ class HdNode {
    * @param chainCode as Buffer
    * @param hdNodeString as string = concat strings secretKey + publicKey + chainCode
    */
-  constructor({secretKey, publicKey, chainCode, hdNodeString}) {
-    if (hdNodeString) {
-      this.secretKey = Buffer.from(hdNodeString.substr(0, 128), 'hex')
-      this.publicKey = Buffer.from(hdNodeString.substr(128, 64), 'hex')
-      this.chainCode = Buffer.from(hdNodeString.substr(192, 64), 'hex')
-    } else {
-      this.secretKey = secretKey
-      this.publicKey = publicKey
-      this.chainCode = chainCode
-    }
-    this.extendedPublicKey = Buffer.concat([this.publicKey, this.chainCode], 64)
+  if (hdNodeString) {
+    secretKey = Buffer.from(hdNodeString.substr(0, 128), 'hex')
+    publicKey = Buffer.from(hdNodeString.substr(128, 64), 'hex')
+    chainCode = Buffer.from(hdNodeString.substr(192, 64), 'hex')
   }
 
-  getSecretKey() {
-    return this.secretKey
-  }
+  const extendedPublicKey = Buffer.concat([publicKey, chainCode], 64)
 
-  getPublicKey() {
-    return this.publicKey
-  }
-
-  getChainCode() {
-    return this.chainCode
-  }
-
-  getExtendedPublicKey() {
-    return this.extendedPublicKey
+  return {
+    secretKey,
+    publicKey,
+    chainCode,
+    extendedPublicKey,
   }
 }
 
-class Transaction {
-  constructor(inputs, outputs, attributes, witnesses = undefined) {
-    this.inputs = inputs
-    this.outputs = outputs
-    this.attributes = attributes
-    this.witnesses = witnesses
+function SignedTransactionStructured(txAux, witnesses) {
+  function getId() {
+    return getTxId(txAux)
   }
 
-  getId() {
-    return this.getTxAux().getId()
+  function encodeCBOR(encoder) {
+    return encoder.pushAny([txAux, witnesses])
   }
 
-  getTxAux() {
-    return new TxAux(this.inputs, this.outputs, this.attributes)
-  }
-
-  getWitnesses() {
-    const txHash = this.getId()
-    return this.inputs.map((input) => {
-      return input.getWitness(txHash)
-    })
-  }
-
-  verify() {
-    return this.getWitnesses()
-      .map((witness) => {
-        /*
-      * "011a2d964a095820" is a magic prefix from the cardano-sl code
-        the "01" byte is a constant to denote signatures of transactions
-        the "1a2d964a09" part is the CBOR representation of the blockchain-specific magic constant
-        the "5820" part is the CBOR prefix for a hex string
-      */
-        const message = `011a2d964a095820${this.getId()}`
-
-        return verify(message, witness.getPublicKey(), witness.getSignature())
-      })
-      .reduce((a, b) => a && b, true)
-  }
-
-  encodeCBOR(encoder) {
-    return encoder.pushAny([this.getTxAux(), this.getWitnesses()])
+  return {
+    getId,
+    witnesses,
+    txAux,
+    encodeCBOR,
   }
 }
 
 module.exports = {
-  verify,
-  sign,
   TxInput,
   TxOutput,
-  WalletAddress,
   HdNode,
-  Transaction,
+  SignedTransactionStructured,
+  TxAux,
+  TxWitness,
+  getTxId,
 }

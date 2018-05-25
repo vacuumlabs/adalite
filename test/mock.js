@@ -510,202 +510,795 @@ const mock = (CARDANOLITE_CONFIG) => {
       * end of addresses for 'should properly compute change address for unused wallet'
       */
       /*
-      * address to compute utxo */
-      'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn': {
+      * addresses to compute utxo (from mnemonic: logic easily waste eager injury oval sentence wine bomb embrace gossip supreme)*/
+      'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym': {
         Right: {
           caAddress:
-            'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn',
+            'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
           caType: 'CPubKeyAddress',
-          caTxNum: 5,
-          caBalance: {
-            getCoin: '150000',
-          },
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
           caTxList: [
             {
-              ctbId: 'd9c0cd27c20ec3f5f7eab57488bc762d08026ac7f0b11b196db5fea78cbefccf',
-              ctbTimeIssued: 1527078911,
+              ctbId: 'aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c',
+              ctbTimeIssued: 1528203671,
               ctbInputs: [
                 [
-                  'DdzFFzCqrhseWiQdiVH9fgu9dYXv89J3VQGVEA54sy4G6iBRctMscyGavZ5w2X2PGR7XKTQzK6pJdQwJV7EJYrbGaoUpt75DXuuY2UVQ',
-                  {
-                    getCoin: '328930',
-                  },
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC',
+                  {getCoin: '3225843'},
                 ],
               ],
               ctbOutputs: [
                 [
-                  'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn',
-                  {
-                    getCoin: '150000',
-                  },
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
                 ],
                 [
-                  'DdzFFzCqrhsud3uMWVgLMmk82VDNrqGUf3dAqoVnk5rxcaNUnofmHTABnxMVur9AYfMESMLpKuS9frEjhodusgYZyfirpGLHFVki4Bkg',
-                  {
-                    getCoin: '7860',
-                  },
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
                 ],
               ],
-              ctbInputSum: {
-                getCoin: '328930',
-              },
-              ctbOutputSum: {
-                getCoin: '157860',
-              },
+              ctbInputSum: {getCoin: '3325843'},
+              ctbOutputSum: {getCoin: '3146819'},
             },
             {
-              ctbId: '3b1b4ca760d145726ab66ba58805e1d9118e79154439ab8f800f37f382c0e9e4',
-              ctbTimeIssued: 1527078911,
+              ctbId: 'c478c4315055c937ead10230a84efa23f1320dd08e69ecd8450e89887feb2cd3',
+              ctbTimeIssued: 1528195291,
               ctbInputs: [
                 [
-                  'DdzFFzCqrht5MSf39ugHk9d5GoJsWWh5gVHrXZjDf9tqtU45FSj1uZYAzDmAhuZaRLPY7fY9uazozfP7PzaN3Hj9ao3TnoG8uZJMpLui',
-                  {
-                    getCoin: '1',
-                  },
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
                 ],
                 [
-                  'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn',
-                  {
-                    getCoin: '500000',
-                  },
-                ],
-                [
-                  'DdzFFzCqrhsgjB7fbv6c3f2dADRPVdPYgnVSFEuntJJogQ1TYWxVKYisxfi1FFFYChT5LJTq4nPQ3uSeggr3yX2zeBT21EU6bAK7FC6b',
-                  {
-                    getCoin: '27529952',
-                  },
+                  'DdzFFzCqrhsu1demnDXfzT5QEW8bcRRKQAA9KVXmjXDfzrRoogCu23EbAwMvsLqakGZSaT71YAGHYMPNB4w26vog1HTvmSeLXqJvgU7D',
+                  {getCoin: '3404867'},
                 ],
               ],
               ctbOutputs: [
                 [
-                  'DdzFFzCqrht5MSf39ugHk9d5GoJsWWh5gVHrXZjDf9tqtU45FSj1uZYAzDmAhuZaRLPY7fY9uazozfP7PzaN3Hj9ao3TnoG8uZJMpLui',
-                  {
-                    getCoin: '1',
-                  },
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
                 ],
                 [
-                  'DdzFFzCqrhskeQvWVgStmvtw82RMMA2JvU7X5JiW3ZWqBuQtXayHTkSGjwefCMuSSHHAse1eVrbjuNHEco3THFpygqoBrCSvygKcaXcq',
-                  {
-                    getCoin: '27843149',
-                  },
+                  'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC',
+                  {getCoin: '3225843'},
                 ],
               ],
-              ctbInputSum: {
-                getCoin: '28029953',
-              },
-              ctbOutputSum: {
-                getCoin: '27843150',
-              },
-            },
-            {
-              ctbId: 'abac9493d309462f043ca35da13a49d53d95315e9aba7be79f30599c8aa1bcb4',
-              ctbTimeIssued: 1527078831,
-              ctbInputs: [
-                [
-                  'DdzFFzCqrht7ETv16empfkmh6rSgZCxLEXCKqkDf88okyLuFUZhgAEEEh994K216p2A3YCUnaLzz1TPfCyN2qprAoJAefWbZWgfsifZ1',
-                  {
-                    getCoin: '1000000',
-                  },
-                ],
-              ],
-              ctbOutputs: [
-                [
-                  'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn',
-                  {
-                    getCoin: '500000',
-                  },
-                ],
-                [
-                  'DdzFFzCqrhseWiQdiVH9fgu9dYXv89J3VQGVEA54sy4G6iBRctMscyGavZ5w2X2PGR7XKTQzK6pJdQwJV7EJYrbGaoUpt75DXuuY2UVQ',
-                  {
-                    getCoin: '328930',
-                  },
-                ],
-              ],
-              ctbInputSum: {
-                getCoin: '1000000',
-              },
-              ctbOutputSum: {
-                getCoin: '828930',
-              },
-            },
-            {
-              ctbId: '7355d49b1ca7d622fd65d1c8a7578aa3ec66ac20bbe5b793c735b318ee24da31',
-              ctbTimeIssued: 1527078171,
-              ctbInputs: [
-                [
-                  'DdzFFzCqrht5MSf39ugHk9d5GoJsWWh5gVHrXZjDf9tqtU45FSj1uZYAzDmAhuZaRLPY7fY9uazozfP7PzaN3Hj9ao3TnoG8uZJMpLui',
-                  {
-                    getCoin: '1',
-                  },
-                ],
-                [
-                  'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn',
-                  {
-                    getCoin: '29313345',
-                  },
-                ],
-              ],
-              ctbOutputs: [
-                [
-                  'DdzFFzCqrht5MSf39ugHk9d5GoJsWWh5gVHrXZjDf9tqtU45FSj1uZYAzDmAhuZaRLPY7fY9uazozfP7PzaN3Hj9ao3TnoG8uZJMpLui',
-                  {
-                    getCoin: '1',
-                  },
-                ],
-                [
-                  'DdzFFzCqrhtDGaenWDFGrGFMvywXdcEVsmBVZ2jh7orRsLMC6ifThNMGY1PLRSDJKxa8x5WpLBnomPyyQ19xxVeAcqxj2tYtFZ8wGema',
-                  {
-                    getCoin: '29134496',
-                  },
-                ],
-              ],
-              ctbInputSum: {
-                getCoin: '29313346',
-              },
-              ctbOutputSum: {
-                getCoin: '29134497',
-              },
-            },
-            {
-              ctbId: 'a2c632043324c4cccb9b0db28a0c921d4258a00e9b4fc77f23bb9f98a6567798',
-              ctbTimeIssued: 1527078091,
-              ctbInputs: [
-                [
-                  'DdzFFzCqrht5MSf39ugHk9d5GoJsWWh5gVHrXZjDf9tqtU45FSj1uZYAzDmAhuZaRLPY7fY9uazozfP7PzaN3Hj9ao3TnoG8uZJMpLui',
-                  {
-                    getCoin: '1',
-                  },
-                ],
-                [
-                  'DdzFFzCqrht48vksbJHv9JYyt7Bu7UaprNz1pDTruCAbdTUQQSrp5NuQEMKtooZBkT2ph5vB5iTAUPf1y8Je444NcP1Sns8WbsnTAvYq',
-                  {
-                    getCoin: '29492194',
-                  },
-                ],
-              ],
-              ctbOutputs: [
-                [
-                  'DdzFFzCqrht5MSf39ugHk9d5GoJsWWh5gVHrXZjDf9tqtU45FSj1uZYAzDmAhuZaRLPY7fY9uazozfP7PzaN3Hj9ao3TnoG8uZJMpLui',
-                  {
-                    getCoin: '1',
-                  },
-                ],
-                [
-                  'DdzFFzCqrhshif8KjTpxWKYokS1WBuWAzbpzim9PpVnSZRDQ1KXyUNcomGDU8yYkpQeo2B7HVjFpFcQmfRzyQVRYfW8n1CZocxum6eYn',
-                  {
-                    getCoin: '29313345',
-                  },
-                ],
-              ],
-              ctbInputSum: {
-                getCoin: '29492195',
-              },
-              ctbOutputSum: {
-                getCoin: '29313346',
-              },
+              ctbInputSum: {getCoin: '3504867'},
+              ctbOutputSum: {getCoin: '3325843'},
             },
           ],
+        },
+      },
+      'DdzFFzCqrhstDDoCLtf2d6u8PsN8feD7bgY4jUKuGrtpQ3CZdjq3KVEzLTyWFmSx6xpD6z3KVNowPXQvkisHiR6aJTfvAMSFSfXZ9LL1': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhstDDoCLtf2d6u8PsN8feD7bgY4jUKuGrtpQ3CZdjq3KVEzLTyWFmSx6xpD6z3KVNowPXQvkisHiR6aJTfvAMSFSfXZ9LL1',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: 'b485aa85a1d301d7ee588e724993c23c62496167601f38a2f5d2949675242466',
+              ctbTimeIssued: 1527261931,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrhstDDoCLtf2d6u8PsN8feD7bgY4jUKuGrtpQ3CZdjq3KVEzLTyWFmSx6xpD6z3KVNowPXQvkisHiR6aJTfvAMSFSfXZ9LL1',
+                  {getCoin: '23749906'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '2000000'},
+                ],
+                [
+                  'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu',
+                  {getCoin: '22570882'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '24749906'},
+              ctbOutputSum: {getCoin: '24570882'},
+            },
+            {
+              ctbId: '51f807c6e5b8c154ced682ccc0cdac4d349813b0fba5eb52e03862940bd7ea26',
+              ctbTimeIssued: 1527237271,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ',
+                  {getCoin: '23928930'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrhstDDoCLtf2d6u8PsN8feD7bgY4jUKuGrtpQ3CZdjq3KVEzLTyWFmSx6xpD6z3KVNowPXQvkisHiR6aJTfvAMSFSfXZ9LL1',
+                  {getCoin: '23749906'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '24928930'},
+              ctbOutputSum: {getCoin: '24749906'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: '88cefdfff46eb7d1d9b7ae9a72b25755096e78cb8be847299eb5f6f1dd1c44cf',
+              ctbTimeIssued: 1527262851,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '2000000'},
+                ],
+                [
+                  'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu',
+                  {getCoin: '22570882'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '23391858'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '24570882'},
+              ctbOutputSum: {getCoin: '24391858'},
+            },
+            {
+              ctbId: 'b485aa85a1d301d7ee588e724993c23c62496167601f38a2f5d2949675242466',
+              ctbTimeIssued: 1527261931,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrhstDDoCLtf2d6u8PsN8feD7bgY4jUKuGrtpQ3CZdjq3KVEzLTyWFmSx6xpD6z3KVNowPXQvkisHiR6aJTfvAMSFSfXZ9LL1',
+                  {getCoin: '23749906'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '2000000'},
+                ],
+                [
+                  'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu',
+                  {getCoin: '22570882'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '24749906'},
+              ctbOutputSum: {getCoin: '24570882'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+              ctbTimeIssued: 1528209771,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
+                  {getCoin: '2867795'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3146819'},
+              ctbOutputSum: {getCoin: '2967795'},
+            },
+            {
+              ctbId: 'aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c',
+              ctbTimeIssued: 1528203671,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC',
+                  {getCoin: '3225843'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3325843'},
+              ctbOutputSum: {getCoin: '3146819'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: '51f807c6e5b8c154ced682ccc0cdac4d349813b0fba5eb52e03862940bd7ea26',
+              ctbTimeIssued: 1527237271,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ',
+                  {getCoin: '23928930'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrhstDDoCLtf2d6u8PsN8feD7bgY4jUKuGrtpQ3CZdjq3KVEzLTyWFmSx6xpD6z3KVNowPXQvkisHiR6aJTfvAMSFSfXZ9LL1',
+                  {getCoin: '23749906'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '24928930'},
+              ctbOutputSum: {getCoin: '24749906'},
+            },
+            {
+              ctbId: '9718fd08e6f629f30f644224bb9a815a8194580740038723fbc49fee1b73db46',
+              ctbTimeIssued: 1527188171,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '25100000'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht5WJqSszzTKSH2eLBZRomXaaNdoRvaSbnNq1UD5DesQdtt4zK2s2eJz27XpcZH5bQLvwTKdrMNz1zteB7RnsAeYzZHouMZ',
+                  {getCoin: '23928930'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '25100000'},
+              ctbOutputSum: {getCoin: '24928930'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhsf3ce3SVTJTthAPpfBurHozwfFBGg4Ni8aCP9Pt6DRjZZSbVTYkPZ2kiMeoUHUt2Lwtr9rb54xy6iJNSM35N8Axjo2TTJY': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsf3ce3SVTJTthAPpfBurHozwfFBGg4Ni8aCP9Pt6DRjZZSbVTYkPZ2kiMeoUHUt2Lwtr9rb54xy6iJNSM35N8Axjo2TTJY',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: '69d5f1bf80d34dbd9258292e0f786bd5f61f7b04593330028340e602260504df',
+              ctbTimeIssued: 1527848811,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhsf3ce3SVTJTthAPpfBurHozwfFBGg4Ni8aCP9Pt6DRjZZSbVTYkPZ2kiMeoUHUt2Lwtr9rb54xy6iJNSM35N8Axjo2TTJY',
+                  {getCoin: '4212834'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1'},
+                ],
+                [
+                  'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+                  {getCoin: '4041939'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '4212834'},
+              ctbOutputSum: {getCoin: '4041940'},
+            },
+            {
+              ctbId: 'bc12ed9d26ce3028952626ec69588dec162996777258cdcc639991712f7d1940',
+              ctbTimeIssued: 1527263111,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '23391858'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhtCVoiVcCVR8eUJHptcz2APJa7T5dVa85Wd2fdmRra52yK9EyT3yZh53KkYejiBDES8nFthXEsqZnPQPgbruhf6utzeeeQy',
+                  {getCoin: '20000000'},
+                ],
+                [
+                  'DdzFFzCqrhsf3ce3SVTJTthAPpfBurHozwfFBGg4Ni8aCP9Pt6DRjZZSbVTYkPZ2kiMeoUHUt2Lwtr9rb54xy6iJNSM35N8Axjo2TTJY',
+                  {getCoin: '4212834'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '24391858'},
+              ctbOutputSum: {getCoin: '24212834'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+          caType: 'CPubKeyAddress',
+          caTxNum: 3,
+          caBalance: {getCoin: '100000'},
+          caTxList: [
+            {
+              ctbId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+              ctbTimeIssued: 1528209771,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
+                  {getCoin: '2867795'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3146819'},
+              ctbOutputSum: {getCoin: '2967795'},
+            },
+            {
+              ctbId: 'a9437a6bcba39a352b1e8ec845fc13345b523c56727fe3c9b868f0c13097530f',
+              ctbTimeIssued: 1527856111,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+                  {getCoin: '4041939'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrht9xZUzwdRLPTsSUMSXneyBvstDpsFY6xNUhapg4ij2j1Wn5ZKCKYu15zwwMT8nHfzQvdCaywYfMMUNpjGg5MBf4P4KLhkG',
+                  {getCoin: '3770869'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '4041939'},
+              ctbOutputSum: {getCoin: '3870869'},
+            },
+            {
+              ctbId: '69d5f1bf80d34dbd9258292e0f786bd5f61f7b04593330028340e602260504df',
+              ctbTimeIssued: 1527848811,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhsf3ce3SVTJTthAPpfBurHozwfFBGg4Ni8aCP9Pt6DRjZZSbVTYkPZ2kiMeoUHUt2Lwtr9rb54xy6iJNSM35N8Axjo2TTJY',
+                  {getCoin: '4212834'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1'},
+                ],
+                [
+                  'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+                  {getCoin: '4041939'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '4212834'},
+              ctbOutputSum: {getCoin: '4041940'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrht9xZUzwdRLPTsSUMSXneyBvstDpsFY6xNUhapg4ij2j1Wn5ZKCKYu15zwwMT8nHfzQvdCaywYfMMUNpjGg5MBf4P4KLhkG': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht9xZUzwdRLPTsSUMSXneyBvstDpsFY6xNUhapg4ij2j1Wn5ZKCKYu15zwwMT8nHfzQvdCaywYfMMUNpjGg5MBf4P4KLhkG',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: '2aecbf52089b0c2425fa6b8e494003c2be165c741eb76dea72b8c13ec2172b1f',
+              ctbTimeIssued: 1527856331,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht9xZUzwdRLPTsSUMSXneyBvstDpsFY6xNUhapg4ij2j1Wn5ZKCKYu15zwwMT8nHfzQvdCaywYfMMUNpjGg5MBf4P4KLhkG',
+                  {getCoin: '3770869'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhskCAqDmHwoLuK4JpshctGLUc3cVMbCEby6RaJszR5iQczEQuQGowgmzREAccxyuW4MeEKvZ5BGSEtCgfbwv3yCLcy4dU6v',
+                  {getCoin: '3499799'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3770869'},
+              ctbOutputSum: {getCoin: '3599799'},
+            },
+            {
+              ctbId: 'a9437a6bcba39a352b1e8ec845fc13345b523c56727fe3c9b868f0c13097530f',
+              ctbTimeIssued: 1527856111,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+                  {getCoin: '4041939'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrht9xZUzwdRLPTsSUMSXneyBvstDpsFY6xNUhapg4ij2j1Wn5ZKCKYu15zwwMT8nHfzQvdCaywYfMMUNpjGg5MBf4P4KLhkG',
+                  {getCoin: '3770869'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '4041939'},
+              ctbOutputSum: {getCoin: '3870869'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhskCAqDmHwoLuK4JpshctGLUc3cVMbCEby6RaJszR5iQczEQuQGowgmzREAccxyuW4MeEKvZ5BGSEtCgfbwv3yCLcy4dU6v': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhskCAqDmHwoLuK4JpshctGLUc3cVMbCEby6RaJszR5iQczEQuQGowgmzREAccxyuW4MeEKvZ5BGSEtCgfbwv3yCLcy4dU6v',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: 'e470b43652fcfbd9d14d7347ddd9f6d14beb5892226d4248819e3e91de9b7d95',
+              ctbTimeIssued: 1528116351,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhskCAqDmHwoLuK4JpshctGLUc3cVMbCEby6RaJszR5iQczEQuQGowgmzREAccxyuW4MeEKvZ5BGSEtCgfbwv3yCLcy4dU6v',
+                  {getCoin: '3499799'},
+                ],
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1'},
+                ],
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhsu1demnDXfzT5QEW8bcRRKQAA9KVXmjXDfzrRoogCu23EbAwMvsLqakGZSaT71YAGHYMPNB4w26vog1HTvmSeLXqJvgU7D',
+                  {getCoin: '3404867'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3699800'},
+              ctbOutputSum: {getCoin: '3504867'},
+            },
+            {
+              ctbId: '2aecbf52089b0c2425fa6b8e494003c2be165c741eb76dea72b8c13ec2172b1f',
+              ctbTimeIssued: 1527856331,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht9xZUzwdRLPTsSUMSXneyBvstDpsFY6xNUhapg4ij2j1Wn5ZKCKYu15zwwMT8nHfzQvdCaywYfMMUNpjGg5MBf4P4KLhkG',
+                  {getCoin: '3770869'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhskCAqDmHwoLuK4JpshctGLUc3cVMbCEby6RaJszR5iQczEQuQGowgmzREAccxyuW4MeEKvZ5BGSEtCgfbwv3yCLcy4dU6v',
+                  {getCoin: '3499799'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3770869'},
+              ctbOutputSum: {getCoin: '3599799'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
+          caType: 'CPubKeyAddress',
+          caTxNum: 1,
+          caBalance: {getCoin: '2867795'},
+          caTxList: [
+            {
+              ctbId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+              ctbTimeIssued: 1528209771,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
+                  {getCoin: '2867795'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3146819'},
+              ctbOutputSum: {getCoin: '2967795'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhsu1demnDXfzT5QEW8bcRRKQAA9KVXmjXDfzrRoogCu23EbAwMvsLqakGZSaT71YAGHYMPNB4w26vog1HTvmSeLXqJvgU7D': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsu1demnDXfzT5QEW8bcRRKQAA9KVXmjXDfzrRoogCu23EbAwMvsLqakGZSaT71YAGHYMPNB4w26vog1HTvmSeLXqJvgU7D',
+          caType: 'CPubKeyAddress',
+          caTxNum: 1,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: 'c478c4315055c937ead10230a84efa23f1320dd08e69ecd8450e89887feb2cd3',
+              ctbTimeIssued: 1528195291,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhsu1demnDXfzT5QEW8bcRRKQAA9KVXmjXDfzrRoogCu23EbAwMvsLqakGZSaT71YAGHYMPNB4w26vog1HTvmSeLXqJvgU7D',
+                  {getCoin: '3404867'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC',
+                  {getCoin: '3225843'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3504867'},
+              ctbOutputSum: {getCoin: '3325843'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrht5CupPRNPoukz3K1FD7TvYeSXbbM3oPvmmmLTSsbGzKHHypKNqtSXqVyvpBwqUw3vpRXYhpkbaLKkHw5qUEHr2v7h7Roc7': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht5CupPRNPoukz3K1FD7TvYeSXbbM3oPvmmmLTSsbGzKHHypKNqtSXqVyvpBwqUw3vpRXYhpkbaLKkHw5qUEHr2v7h7Roc7',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhsqi5DBVpJfU4W1EQS8nyNYQk2vVUqj2XMVSuwbaiYmgTrUzjVPAs33fzHXL2zGcmGWTkFPgZ75xUu6hfUjNQGTBgi8myFz': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsqi5DBVpJfU4W1EQS8nyNYQk2vVUqj2XMVSuwbaiYmgTrUzjVPAs33fzHXL2zGcmGWTkFPgZ75xUu6hfUjNQGTBgi8myFz',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhssxjikvxsCrKsoefSJgsTC6AAcjpkajpfAaDXxYwHCCkmKEWgV1GiVD4TX6kmSJ1YSLcKhKXuKzMcjGt6Mco3XvnCFhLez': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhssxjikvxsCrKsoefSJgsTC6AAcjpkajpfAaDXxYwHCCkmKEWgV1GiVD4TX6kmSJ1YSLcKhKXuKzMcjGt6Mco3XvnCFhLez',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrht1giHAH8sdhE69QJnXzJV3kDJ2EwQ6aVn7n6evrw4Pq2b5ZnZT9A7iNQPDXjsDpFPywDAqQ9cA7Sd7bxmzuE6ETAm8C3qs': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht1giHAH8sdhE69QJnXzJV3kDJ2EwQ6aVn7n6evrw4Pq2b5ZnZT9A7iNQPDXjsDpFPywDAqQ9cA7Sd7bxmzuE6ETAm8C3qs',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: 'aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c',
+              ctbTimeIssued: 1528203671,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC',
+                  {getCoin: '3225843'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3325843'},
+              ctbOutputSum: {getCoin: '3146819'},
+            },
+            {
+              ctbId: 'c478c4315055c937ead10230a84efa23f1320dd08e69ecd8450e89887feb2cd3',
+              ctbTimeIssued: 1528195291,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhsu1demnDXfzT5QEW8bcRRKQAA9KVXmjXDfzrRoogCu23EbAwMvsLqakGZSaT71YAGHYMPNB4w26vog1HTvmSeLXqJvgU7D',
+                  {getCoin: '3404867'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrhtCSYYxQ1waRA6ZJHwzVXSNFpq1k3nJSKhRf4Jc4KvAmkJQD4x6TeRMjcNUzSYQGXk9MxStpmax43ZRCDRsgDMwj3zPqizC',
+                  {getCoin: '3225843'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3504867'},
+              ctbOutputSum: {getCoin: '3325843'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrht4APWANPv7a1RtkQgh62XuKDqzzjjtrAMwpDiSB65YX7GeY8pMPrfkXD16iSS1jD4efYRkogBWnZoH8QHWPwHjFa5HLYLX': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht4APWANPv7a1RtkQgh62XuKDqzzjjtrAMwpDiSB65YX7GeY8pMPrfkXD16iSS1jD4efYRkogBWnZoH8QHWPwHjFa5HLYLX',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrht9QRUpvJ8dpMfY8LRPuwHTtun7rwWT4x2HYzPsx9zPtXDXXBnpL44qEdyfwu3VWKN6jreVJdwSfLbGHzZVQcNNZztXfc2K': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht9QRUpvJ8dpMfY8LRPuwHTtun7rwWT4x2HYzPsx9zPtXDXXBnpL44qEdyfwu3VWKN6jreVJdwSfLbGHzZVQcNNZztXfc2K',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrht6BoesbT1vqqEZDeoQUcFBm57rZUHtNANPesbnxdYgM8Mch2vk6wPoPfsNxqavKBSxd1eoDhRtbpgx9x8pQdDxHmYVdNoc': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrht6BoesbT1vqqEZDeoQUcFBm57rZUHtNANPesbnxdYgM8Mch2vk6wPoPfsNxqavKBSxd1eoDhRtbpgx9x8pQdDxHmYVdNoc',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhsxrarXf9BFZbyc7AFFdxmH4k2hztwaZuoCcZ3wmJaXQQWqRgqoVRjSSUgkkUKGTYvveSbqJ3RBMiyGpNtQh7qUGKQYWi8p': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsxrarXf9BFZbyc7AFFdxmH4k2hztwaZuoCcZ3wmJaXQQWqRgqoVRjSSUgkkUKGTYvveSbqJ3RBMiyGpNtQh7qUGKQYWi8p',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
         },
       },
       '*': {},
@@ -728,7 +1321,7 @@ const mock = (CARDANOLITE_CONFIG) => {
     fetchMock.config.overwriteRoutes = true
 
     const requestsAndResponses = {
-      '{"txHash":"d9cbe3036b13fb877d0c30ec2d80317ec0833e52216b216b04258b5c35afea96","txBody":"82839f8200d818582482582014fab8b89cc003da76c147af4ce3619bc36f7064b69f48b7fbad63673753f351018200d81858248258201ce7a1e2606271a7f085262fb7c509c98d60912a943c9be3871ac3ace48ae6d601ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581c0878fbeaf6d490d49664c99c9284108e0a58387f31224b8b34428fc9a101581e581c2eab4601bfe5834281489b4f0a202c5a8cf558ba330004952411670a001a9c8c59d91a00142864ffa0828200d8185885825840fa5955500ecacca4939204a8f1af4639747a161cd35a35368c9c8d48df32685b0f48b0997c0e22e87e9533ba19310ba4a9bf0c6cf37bfed513c37de15761d56e584009209ef220b4588cd7b73c436366194ef5cf78091f7fbec4e3f5953a325e34740e0850f6c5efd7ed7a90e5579a431b083b7e79c244ba9b4340d3c73797f89f008200d8185885825840545448ff0dba05dcc4587f522c11b358afe8b974a588364ba074b9017f241b71eac253db1f265e409beeca1858664002572715de9533094eb757525b4f372af558405fdc18f4b49ce8bdb503ea213dea9b8ac1b880cacf08c283b7c8cacef7d1f04154532a5e12f6807608595db9398594855c792e94e34a008bb767ff6f5172060f"}': {
+      '{"txHash":"f892d1487903ae721373d6ab8e72c38ef855f61ba4daf16d40b1ace0f1d2b1de","txBody":"82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc257dee35f8401823d281d3320d31fef98fcbf904f5d5e03d94974fba101581e581c140539c64edded60a7f2d869373e87e744591935bfcdadaa8517974c001a40c66c8c1a002a8df7ffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840407b76b983b657b1dde00a9c90ca97d1f8310b088146fbe2997849747d4e3a633be8b037c56e7b7190e8be7902a01d0faea31f45d42534c3e735faa437925b088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840607573290ca775a7a953c9b63b91a66da9178751bf26caafaab7bbc2390dab260dc8049cd0f3fd24ee7db71dd82ec23e0280b3fcd35b6eee3fb9eb9c2b8c2d0f"}': {
         result: true,
       },
     }
@@ -761,14 +1354,54 @@ const mock = (CARDANOLITE_CONFIG) => {
     })
   }
 
-  function mockRandomNumberGenerator(value) {
-    sinon.stub(Math, 'random').returns(value)
+  function mockUtxoEndpoint() {
+    fetchMock.config.overwriteRoutes = true
+
+    const requestsAndResponses = {
+      '["DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5","DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz"]': {
+        Right: [
+          {
+            cuId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+            cuOutIndex: 0,
+            cuAddress:
+              'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+            cuCoins: {getCoin: '100000'},
+          },
+          {
+            cuId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+            cuOutIndex: 1,
+            cuAddress:
+              'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
+            cuCoins: {getCoin: '2867795'},
+          },
+        ],
+      },
+    }
+    // eslint-disable-next-line guard-for-in
+    for (const request in requestsAndResponses) {
+      fetchMock.mock({
+        // eslint-disable-next-line no-loop-func
+        matcher: (url, opts) => {
+          return (
+            url ===
+              `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo` &&
+            opts &&
+            opts.body === request
+          )
+        },
+        response: {
+          status: 200,
+          body: requestsAndResponses[request],
+          sendAsJson: true,
+        },
+      })
+    }
   }
 
   return {
     mockBlockChainExplorer,
-    mockRandomNumberGenerator,
     mockTransactionSubmitter,
+    mockUtxoEndpoint,
   }
 }
 
