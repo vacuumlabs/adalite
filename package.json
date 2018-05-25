@@ -55,6 +55,7 @@
     "preact": "^8.2.7",
     "redis": "^2.8.0",
     "redisscan": "^2.0.0",
+    "rust-cardanolite-crypto": "git+https://git@github.com/vacuumlabs/js-cardanolite-wasm.git",
     "start-server-webpack-plugin": "^2.2.5",
     "supercop.js": "^2.0.1",
     "unistore": "^3.0.4",

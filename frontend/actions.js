@@ -31,18 +31,16 @@ export default ({setState, getState}) => {
 
     wallet = Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
 
-    const activeWalletId = await wallet.getId()
-    const usedAddresses = await wallet.getUsedAddresses()
-    const unusedAddresses = [await wallet.getChangeAddress()]
+    const walletIsLoaded = true
+    const ownAddresses = await wallet.getOwnAddresses()
     const transactionHistory = await wallet.getHistory()
     const balance = await wallet.getBalance()
     const sendAmount = {fieldValue: ''}
     const sendAddress = {fieldValue: ''}
     const sendResponse = ''
     setState({
-      activeWalletId,
-      usedAddresses,
-      unusedAddresses,
+      walletIsLoaded,
+      ownAddresses,
       balance,
       sendAmount,
       sendAddress,
@@ -55,35 +53,22 @@ export default ({setState, getState}) => {
 
   const logout = () => {
     wallet = null
-    return {activeWalletId: null}
+    return {walletIsLoaded: false}
   }
 
   const reloadWalletInfo = async (state) => {
     setState(loadingAction(state, 'Reloading wallet info...'))
 
     const balance = await wallet.getBalance()
-    const usedAddresses = await wallet.getUsedAddresses()
+    const ownAddresses = await wallet.getOwnAddresses()
     const transactionHistory = await wallet.getHistory()
-    const unusedAddresses = getState().unusedAddresses.filter(
-      (elem) => usedAddresses.indexOf(elem) < 0
-    )
 
     // timeout setting loading state, so that loading shows even if everything was cashed
     setTimeout(() => setState({loading: false}), 500)
     setState({
       balance,
-      usedAddresses,
-      unusedAddresses,
+      ownAddresses,
       transactionHistory,
-    })
-  }
-
-  const generateNewUnusedAddress = async (state) => {
-    setState({address: 'loading...'})
-    const offset = state.unusedAddresses.length
-    const newUnusedAddress = await wallet.getChangeAddress(Number.MAX_SAFE_INTEGER, offset)
-    setState({
-      unusedAddresses: state.unusedAddresses.concat([newUnusedAddress]),
     })
   }
 
@@ -185,6 +170,7 @@ export default ({setState, getState}) => {
       const address = state.sendAddress.fieldValue
       const amount = state.sendAmount.coins
       const sendResponse = await wallet.sendAda(address, amount)
+      const updatedBalance = await wallet.getBalance()
       if (sendResponse) {
         setTimeout(() => setState({sendResponse: ''}), 4000)
         setState({
@@ -194,6 +180,7 @@ export default ({setState, getState}) => {
         })
       }
       setState({
+        balance: updatedBalance,
         sendResponse,
         loading: false,
         showConfirmTransactionDialog: false,
@@ -212,7 +199,6 @@ export default ({setState, getState}) => {
     loadWalletFromMnemonic,
     logout,
     reloadWalletInfo,
-    generateNewUnusedAddress,
     toggleAboutOverlay,
     calculateFee,
     confirmTransaction,

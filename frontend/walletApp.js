@@ -30,10 +30,10 @@ const initialState = {
     hint: 'Hint: Ensure that your mnemonic is without mistake.',
   },
   displayAboutOverlay: !window.localStorage.getItem('dontShowDisclaimer'),
-  activeWalletId: null,
+  currentTab: 'wallet-info',
+  walletIsLoaded: false,
   newWalletMnemonic: '',
-  usedAddresses: [],
-  unusedAddresses: [],
+  ownAddresses: [],
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0},
