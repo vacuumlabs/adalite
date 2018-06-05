@@ -644,31 +644,35 @@ const NavbarAuth = connect((state) => ({
         'nav',
         undefined,
         h(
-          'div',
-          undefined,
+          'label',
+          {class: 'navcollapse-label', for: 'navcollapse'},
           h(
-            'a',
-            {
-              class: currentTab === 'dashboard' && 'active',
-              onClick: () => pushState({}, 'dashboard', 'dashboard'),
-            },
-            'Dashboard'
-          ),
-          h(
-            'a',
-            {
-              class: currentTab === 'send' && 'active',
-              onClick: () => pushState({}, 'send', 'send'),
-            },
-            'Send'
-          ),
-          h(
-            'a',
-            {
-              class: currentTab === 'receive' && 'active',
-              onClick: () => pushState({}, 'receive', 'receive'),
-            },
-            'Receive'
+            'div',
+            undefined,
+            h(
+              'a',
+              {
+                class: currentTab === 'dashboard' && 'active',
+                onClick: () => pushState({}, 'dashboard', 'dashboard'),
+              },
+              'Dashboard'
+            ),
+            h(
+              'a',
+              {
+                class: currentTab === 'send' && 'active',
+                onClick: () => pushState({}, 'send', 'send'),
+              },
+              'Send'
+            ),
+            h(
+              'a',
+              {
+                class: currentTab === 'receive' && 'active',
+                onClick: () => pushState({}, 'receive', 'receive'),
+              },
+              'Receive'
+            )
           )
         ),
         h(LoginStatus)
