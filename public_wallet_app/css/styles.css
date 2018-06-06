@@ -419,6 +419,16 @@ td {
   margin: 0 0.8rem;
 }
 /* NAVIGATION */
+.menu-btn{
+  color: var(--navbar-text);
+  text-decoration: none;
+  margin-left: 1rem;
+  transition: color var(--transition);
+  cursor: pointer;
+}
+.menu-btn:hover {
+  color: black;
+}
 .navbar {
   background-color: var(--navbar);
   border-bottom: 1px solid var(--border);

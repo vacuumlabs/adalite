@@ -608,7 +608,11 @@ const NavbarUnauth = () =>
         h('span', undefined, 'CardanoLite Wallet'),
         h('sup', undefined, '⍺')
       ),
-      h('label', {class: 'navcollapse-label', for: 'navcollapse'}, 'Menu'),
+      h(
+        'label',
+        {class: 'navcollapse-label', for: 'navcollapse'},
+        h('a', {class: 'menu-btn'}, 'Menu')
+      ),
       h('input', {id: 'navcollapse', type: 'checkbox'}),
       h(
         'nav',
@@ -642,7 +646,11 @@ const NavbarAuth = connect((state) => ({
         h('span', undefined, 'CardanoLite Wallet'),
         h('sup', undefined, '⍺')
       ),
-      h('label', {class: 'navcollapse-label', for: 'navcollapse'}, 'Menu'),
+      h(
+        'label',
+        {class: 'navcollapse-label', for: 'navcollapse'},
+        h('a', {class: 'menu-btn'}, 'Menu')
+      ),
       h('input', {id: 'navcollapse', type: 'checkbox'}),
       h(
         'nav',
