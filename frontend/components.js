@@ -575,20 +575,20 @@ const LoginStatus = connect(
       'div',
       {class: 'status-button-wrapper'},
       h(
-        'button',
-        {onClick: reloadWalletInfo},
+        'label',
+        {class: 'inline', for: 'navcollapse'},
         h(
-          'label',
-          {class: 'inline', for: 'navcollapse'},
+          'div',
+          {class: 'button', onClick: reloadWalletInfo},
           h(RefreshIcon),
           h('div', {class: 'status-icon-button-content'}, 'Refresh')
+        ),
+        h(
+          'div',
+          {class: 'button', onClick: logout},
+          h(ExitIcon),
+          h('div', {class: 'status-icon-button-content'}, 'Logout')
         )
-      ),
-      h(
-        'button',
-        {onClick: logout},
-        h(ExitIcon),
-        h('div', {class: 'status-icon-button-content'}, 'Logout')
       )
     )
   )
@@ -671,7 +671,7 @@ const NavbarAuth = connect((state) => ({
                 class: currentTab === 'send' && 'active',
                 onClick: () => pushState({}, 'send', 'send'),
               },
-              h('label', {class: 'inline', for: 'navcollapse'}, 'Send')
+              'Send'
             )
           ),
           h(
@@ -683,7 +683,7 @@ const NavbarAuth = connect((state) => ({
                 class: currentTab === 'receive' && 'active',
                 onClick: () => pushState({}, 'receive', 'receive'),
               },
-              h('label', {class: 'inline', for: 'navcollapse'}, 'Receive')
+              'Receive'
             )
           )
         ),

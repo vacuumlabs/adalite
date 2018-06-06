@@ -489,7 +489,7 @@ td {
 .status > div {
   margin: 0 0.6rem 0 0.6rem;
 }
-.status button {
+.status .button {
   background-color: var(--navbar);
   color: var(--text-color);
   border: 0;
@@ -499,8 +499,11 @@ td {
   padding: 2px;
   height: 2.5rem;
   border-radius: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
 }
-.status button:hover {
+.status .button:hover {
   color: var(--brand);
 }
 .status-text {
