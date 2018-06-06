@@ -577,8 +577,12 @@ const LoginStatus = connect(
       h(
         'button',
         {onClick: reloadWalletInfo},
-        h(RefreshIcon),
-        h('div', {class: 'status-icon-button-content'}, 'Refresh')
+        h(
+          'label',
+          {class: 'inline', for: 'navcollapse'},
+          h(RefreshIcon),
+          h('div', {class: 'status-icon-button-content'}, 'Refresh')
+        )
       ),
       h(
         'button',
@@ -644,35 +648,31 @@ const NavbarAuth = connect((state) => ({
         'nav',
         undefined,
         h(
-          'label',
-          {class: 'navcollapse-label', for: 'navcollapse'},
+          'div',
+          undefined,
           h(
-            'div',
-            undefined,
-            h(
-              'a',
-              {
-                class: currentTab === 'dashboard' && 'active',
-                onClick: () => pushState({}, 'dashboard', 'dashboard'),
-              },
-              'Dashboard'
-            ),
-            h(
-              'a',
-              {
-                class: currentTab === 'send' && 'active',
-                onClick: () => pushState({}, 'send', 'send'),
-              },
-              'Send'
-            ),
-            h(
-              'a',
-              {
-                class: currentTab === 'receive' && 'active',
-                onClick: () => pushState({}, 'receive', 'receive'),
-              },
-              'Receive'
-            )
+            'a',
+            {
+              class: currentTab === 'dashboard' && 'active',
+              onClick: () => pushState({}, 'dashboard', 'dashboard'),
+            },
+            h('label', {class: 'inline', for: 'navcollapse'}, 'Dashboard')
+          ),
+          h(
+            'a',
+            {
+              class: currentTab === 'send' && 'active',
+              onClick: () => pushState({}, 'send', 'send'),
+            },
+            h('label', {class: 'inline', for: 'navcollapse'}, 'Send')
+          ),
+          h(
+            'a',
+            {
+              class: currentTab === 'receive' && 'active',
+              onClick: () => pushState({}, 'receive', 'receive'),
+            },
+            h('label', {class: 'inline', for: 'navcollapse'}, 'Receive')
           )
         ),
         h(LoginStatus)

@@ -526,6 +526,9 @@ td {
   width: 0.9rem;
   height: 0.9rem;
 }
+.inline {
+  display: inline;
+}
 @media screen and (max-width: 840px) {
   body {
     padding-top: 3.5rem;
