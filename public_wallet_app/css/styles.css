@@ -419,6 +419,16 @@ td {
   margin: 0 0.8rem;
 }
 /* NAVIGATION */
+.menu-btn{
+  color: var(--navbar-text);
+  text-decoration: none;
+  margin-left: 1rem;
+  transition: color var(--transition);
+  cursor: pointer;
+}
+.menu-btn:hover {
+  color: black;
+}
 .navbar {
   background-color: var(--navbar);
   border-bottom: 1px solid var(--border);
@@ -489,7 +499,7 @@ td {
 .status > div {
   margin: 0 0.6rem 0 0.6rem;
 }
-.status button {
+.status .button {
   background-color: var(--navbar);
   color: var(--text-color);
   border: 0;
@@ -499,8 +509,11 @@ td {
   padding: 2px;
   height: 2.5rem;
   border-radius: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
 }
-.status button:hover {
+.status .button:hover {
   color: var(--brand);
 }
 .status-text {
@@ -525,6 +538,9 @@ td {
 .status-icon-button-image {
   width: 0.9rem;
   height: 0.9rem;
+}
+.inline {
+  display: inline;
 }
 @media screen and (max-width: 840px) {
   body {

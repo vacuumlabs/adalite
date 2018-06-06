@@ -575,16 +575,20 @@ const LoginStatus = connect(
       'div',
       {class: 'status-button-wrapper'},
       h(
-        'button',
-        {onClick: reloadWalletInfo},
-        h(RefreshIcon),
-        h('div', {class: 'status-icon-button-content'}, 'Refresh')
-      ),
-      h(
-        'button',
-        {onClick: logout},
-        h(ExitIcon),
-        h('div', {class: 'status-icon-button-content'}, 'Logout')
+        'label',
+        {class: 'inline', for: 'navcollapse'},
+        h(
+          'div',
+          {class: 'button', onClick: reloadWalletInfo},
+          h(RefreshIcon),
+          h('div', {class: 'status-icon-button-content'}, 'Refresh')
+        ),
+        h(
+          'div',
+          {class: 'button', onClick: logout},
+          h(ExitIcon),
+          h('div', {class: 'status-icon-button-content'}, 'Logout')
+        )
       )
     )
   )
@@ -604,7 +608,11 @@ const NavbarUnauth = () =>
         h('span', undefined, 'CardanoLite Wallet'),
         h('sup', undefined, '⍺')
       ),
-      h('label', {class: 'navcollapse-label', for: 'navcollapse'}, 'Menu'),
+      h(
+        'label',
+        {class: 'navcollapse-label', for: 'navcollapse'},
+        h('a', {class: 'menu-btn'}, 'Menu')
+      ),
       h('input', {id: 'navcollapse', type: 'checkbox'}),
       h(
         'nav',
@@ -638,7 +646,11 @@ const NavbarAuth = connect((state) => ({
         h('span', undefined, 'CardanoLite Wallet'),
         h('sup', undefined, '⍺')
       ),
-      h('label', {class: 'navcollapse-label', for: 'navcollapse'}, 'Menu'),
+      h(
+        'label',
+        {class: 'navcollapse-label', for: 'navcollapse'},
+        h('a', {class: 'menu-btn'}, 'Menu')
+      ),
       h('input', {id: 'navcollapse', type: 'checkbox'}),
       h(
         'nav',
@@ -647,28 +659,40 @@ const NavbarAuth = connect((state) => ({
           'div',
           undefined,
           h(
-            'a',
-            {
-              class: currentTab === 'dashboard' && 'active',
-              onClick: () => pushState({}, 'dashboard', 'dashboard'),
-            },
-            'Dashboard'
+            'label',
+            {class: 'inline', for: 'navcollapse'},
+            h(
+              'a',
+              {
+                class: currentTab === 'dashboard' && 'active',
+                onClick: () => pushState({}, 'dashboard', 'dashboard'),
+              },
+              'Dashboard'
+            )
           ),
           h(
-            'a',
-            {
-              class: currentTab === 'send' && 'active',
-              onClick: () => pushState({}, 'send', 'send'),
-            },
-            'Send'
+            'label',
+            {class: 'inline', for: 'navcollapse'},
+            h(
+              'a',
+              {
+                class: currentTab === 'send' && 'active',
+                onClick: () => pushState({}, 'send', 'send'),
+              },
+              'Send'
+            )
           ),
           h(
-            'a',
-            {
-              class: currentTab === 'receive' && 'active',
-              onClick: () => pushState({}, 'receive', 'receive'),
-            },
-            'Receive'
+            'label',
+            {class: 'inline', for: 'navcollapse'},
+            h(
+              'a',
+              {
+                class: currentTab === 'receive' && 'active',
+                onClick: () => pushState({}, 'receive', 'receive'),
+              },
+              'Receive'
+            )
           )
         ),
         h(LoginStatus)
