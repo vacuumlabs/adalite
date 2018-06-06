@@ -580,7 +580,11 @@ const LoginStatus = connect(
           {class: 'button', onClick: reloadWalletInfo},
           h(RefreshIcon),
           h('div', {class: 'status-icon-button-content'}, 'Refresh')
-        ),
+        )
+      ),
+      h(
+        'label',
+        {class: 'inline', for: 'navcollapse'},
         h(
           'div',
           {class: 'button', onClick: logout},
@@ -598,7 +602,7 @@ const NavbarUnauth = () =>
     {class: 'navbar'},
     h(
       'div',
-      {class: 'navbar-wrap'},
+      {class: 'navbar-wrap-unauth'},
       h(
         'a',
         {class: 'title', href: '/'},
@@ -607,15 +611,13 @@ const NavbarUnauth = () =>
         h('sup', undefined, '⍺')
       ),
       h(
-        'label',
-        {class: 'navcollapse-label', for: 'navcollapse'},
-        h('a', {class: 'menu-btn'}, 'Menu')
-      ),
-      h('input', {id: 'navcollapse', type: 'checkbox'}),
-      h(
-        'nav',
-        {class: 'unauth'},
-        h('a', {href: 'https://github.com/vacuumlabs/cardanolite', target: '_blank'}, 'About')
+        'a',
+        {
+          class: 'unauth-menu',
+          href: 'https://github.com/vacuumlabs/cardanolite/wiki/CardanoLite-FAQ',
+          target: '_blank',
+        },
+        'Help'
       )
     )
   )
@@ -690,6 +692,18 @@ const NavbarAuth = connect((state) => ({
                 onClick: () => pushState({}, 'receive', 'receive'),
               },
               'Receive'
+            )
+          ),
+          h(
+            'label',
+            {class: 'inline', for: 'navcollapse'},
+            h(
+              'a',
+              {
+                href: 'https://github.com/vacuumlabs/cardanolite/wiki/CardanoLite-FAQ',
+                target: '_blank',
+              },
+              'Help'
             )
           )
         ),

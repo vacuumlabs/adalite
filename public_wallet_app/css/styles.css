@@ -429,12 +429,25 @@ td {
 .menu-btn:hover {
   color: black;
 }
+.unauth-menu{
+  color: var(--navbar-text);
+  text-decoration: none;
+  margin-left: 1rem;
+  transition: color var(--transition);
+  cursor: pointer;
+  padding: 0 1rem;
+}
+.unauth-menu:hover {
+  color: black;
+}
+
+
 .navbar {
   background-color: var(--navbar);
   border-bottom: 1px solid var(--border);
   z-index: 1;
 }
-.navbar-wrap {
+.navbar-wrap, .navbar-wrap-unauth {
   display: flex;
   align-items: center;
   max-width: var(--width);
@@ -442,6 +455,10 @@ td {
   height: 3.5rem;
   margin: 0 auto;
 }
+.navbar-wrap-unauth {
+  justify-content: space-between;
+}
+
 .navbar .title {
   font-size: 1.25rem;
   padding: 0 1rem;
@@ -463,9 +480,6 @@ td {
   justify-content: space-between;
   flex-grow: 1;
   align-items: center;
-}
-.navbar .unauth {
-  justify-content: flex-end;
 }
 .navbar input[type='checkbox'] {
   display: none;
@@ -498,6 +512,10 @@ td {
 }
 .status > div {
   margin: 0 0.6rem 0 0.6rem;
+}
+.status-button-wrapper {
+  display: flex;
+  align-items: center;
 }
 .status .button {
   background-color: var(--navbar);
@@ -542,7 +560,7 @@ td {
 .inline {
   display: inline;
 }
-@media screen and (max-width: 840px) {
+@media screen and (max-width: 865px) {
   body {
     padding-top: 3.5rem;
   }
