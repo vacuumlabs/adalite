@@ -1,34 +1,30 @@
 const Cardano = require('../wallet/cardano-wallet')
 
-const sendAddressValidator = (sendAddresFieldValue) =>
-  !Cardano.isValidAddress(sendAddresFieldValue)
-    ? {
-      code: 'SendAddressInvalidAddress',
-    }
-    : null
+const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
-const sendAmountValidator = (sendAmountFieldValue) => {
+const sendAddressValidator = ({fieldValue}) => ({
+  fieldValue,
+  validationError: !Cardano.isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
+})
+
+const sendAmountValidator = ({fieldValue}) => {
   let validationError = null
-
-  const amount = parseFloat(sendAmountFieldValue)
+  const coins = parseCoins(fieldValue)
 
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
 
-  if (!floatRegex.test(sendAmountFieldValue) || isNaN(amount)) {
+  if (!floatRegex.test(fieldValue) || isNaN(coins)) {
     validationError = {code: 'SendAmountIsNan'}
-  } else if (
-    sendAmountFieldValue.split('.').length === 2 &&
-    sendAmountFieldValue.split('.')[1].length > 6
-  ) {
+  } else if (fieldValue.split('.').length === 2 && fieldValue.split('.')[1].length > 6) {
     validationError = {code: 'SendAmountPrecisionLimit'}
-  } else if (parseInt(amount, 10) * 1000000 > maxAmount) {
+  } else if (coins > maxAmount) {
     validationError = {code: 'SendAmountIsTooBig'}
-  } else if (amount <= 0) {
+  } else if (coins <= 0) {
     validationError = {code: 'SendAmountIsNotPositive'}
   }
 
-  return validationError
+  return {fieldValue, coins, validationError}
 }
 
 const feeValidator = (sendAmount, transactionFee, balance) => {
