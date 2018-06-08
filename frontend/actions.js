@@ -100,12 +100,8 @@ export default ({setState, getState}) => {
   const validateSendForm = (state) => {
     if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
       setState({
-        sendAddress: Object.assign({}, state.sendAddress, {
-          validationError: sendAddressValidator(state.sendAddress.fieldValue),
-        }),
-        sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: sendAmountValidator(state.sendAmount.fieldValue),
-        }),
+        sendAddress: sendAddressValidator(state.sendAddress),
+        sendAmount: sendAmountValidator(state.sendAmount),
       })
     }
   }
@@ -124,7 +120,7 @@ export default ({setState, getState}) => {
     }
 
     const address = state.sendAddress.fieldValue
-    const amount = Math.floor(parseFloat(state.sendAmount.fieldValue) * 1000000)
+    const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount)
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
@@ -187,7 +183,7 @@ export default ({setState, getState}) => {
     setState(loadingAction(state, 'processing transaction', 'Submitting transaction...'))
     try {
       const address = state.sendAddress.fieldValue
-      const amount = parseFloat(state.sendAmount.fieldValue) * 1000000
+      const amount = state.sendAmount.coins
       const sendResponse = await wallet.sendAda(address, amount)
       if (sendResponse) {
         setTimeout(() => setState({sendResponse: ''}), 4000)
