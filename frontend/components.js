@@ -4,6 +4,7 @@ import Cardano from '../wallet/cardano-wallet'
 import actions from './actions'
 import strings from './translations'
 import {RefreshIcon, ExitIcon} from './svg'
+import printAda from './printAda'
 
 import {CARDANOLITE_CONFIG} from './config'
 
@@ -107,7 +108,7 @@ const Balance = connect('balance')(({balance}) =>
       h(
         'span',
         {class: 'balance-value'},
-        isNaN(Number(balance)) ? balance : `${balance / 1000000}`
+        isNaN(Number(balance)) ? balance : `${printAda(balance)}`
       ),
       h('img', {class: 'ada-sign', src: '/assets/ada.png'})
     )
@@ -272,7 +273,7 @@ const PrettyDate = ({date}) => {
 }
 
 const PrettyValue = ({effect}) => {
-  const value = Math.abs(effect / 1000000)
+  const value = printAda(Math.abs(effect))
   const prefix = effect > 0 ? '+ ' : '- '
   const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
   return h(
@@ -339,8 +340,8 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
 const ConfirmTransactionDialog = connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
-    sendAmount: state.sendAmountForTransactionFee / 1000000,
-    transactionFee: state.transactionFee / 1000000,
+    sendAmount: state.sendAmountForTransactionFee,
+    transactionFee: state.transactionFee,
   }),
   actions
 )(({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) => {
@@ -369,19 +370,19 @@ const ConfirmTransactionDialog = connect(
           'div',
           {class: 'review-transaction-row'},
           'Amout: ',
-          h('b', undefined, sendAmount.toFixed(6))
+          h('b', undefined, printAda(sendAmount))
         ),
         h(
           'div',
           {class: 'review-transaction-row'},
           'Transaction fee: ',
-          h('b', undefined, transactionFee.toFixed(6))
+          h('b', undefined, printAda(transactionFee))
         ),
         h(
           'div',
           {class: 'review-transaction-total-row'},
-          h('b', {class: 'review-transaction-total-label'}, 'TOTAL'),
-          h('b', {class: 'review-transaction-total'}, total.toFixed(6))
+          h('b', {class: 'review-transaction-total-label'}, 'TOTAL (ADA)'),
+          h('b', {class: 'review-transaction-total'}, printAda(total))
         ),
         h(
           'div',
@@ -405,8 +406,6 @@ class SendAdaClass extends Component {
     updateAmount,
     transactionFee,
     confirmTransaction,
-    calculateFee,
-    balance,
     showConfirmTransactionDialog,
     feeRecalculating,
     totalAmount,
@@ -469,7 +468,7 @@ class SendAdaClass extends Component {
               )
           ),
           displayTransactionFee &&
-            h('span', {class: 'transaction-fee'}, `+ ${transactionFee} transaction fee`)
+            h('span', {class: 'transaction-fee'}, `+ ${printAda(transactionFee)} transaction fee`)
         ),
         h(
           'div',
@@ -487,7 +486,7 @@ class SendAdaClass extends Component {
             h(
               'span',
               {style: `color: ${feeRecalculating || !enableSubmit ? 'red' : 'green'}`},
-              `= ${totalAmount} ADA`
+              `= ${printAda(totalAmount)} ADA`
             )
         ),
         feeRecalculating
@@ -519,11 +518,10 @@ const SendAda = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmount.validationError,
     sendAmount: state.sendAmount.fieldValue,
-    transactionFee: state.transactionFee / 1000000,
-    balance: parseFloat(state.balance) / 1000000,
+    transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
-    totalAmount: ((state.sendAmountForTransactionFee + state.transactionFee) / 1000000).toFixed(6),
+    totalAmount: state.sendAmountForTransactionFee + state.transactionFee,
   }),
   actions
 )(SendAdaClass)
@@ -569,7 +567,7 @@ const LoginStatus = connect(
       'div',
       {class: 'status-text'},
       'Balance: ',
-      h('span', {class: 'status-balance'}, `${(balance / 1000000).toFixed(6)} ADA`)
+      h('span', {class: 'status-balance'}, `${printAda(balance)} ADA`)
     ),
     h(
       'div',
