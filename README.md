@@ -14,8 +14,7 @@ should use it with penny transactions only.
 Official Cardano wallet is quite heavy-weight. It runs full node (this means: long syncing) and
 downloads >500MB JavaScript dependencies (this means: not very secure). CardanoLite solves this -
 it's really lite (< 3000 Lines of code) thus auditable. Since it doesn't run a full node it's also
-fast. No syncing with other nodes is necessary; recovery of your wallet from mnemonic takes <1
-second.
+fast. No syncing with other nodes is necessary; recovery of your wallet from mnemonic takes only a few seconds.
 
 ## Validate the source
 
