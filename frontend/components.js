@@ -617,7 +617,7 @@ const NavbarUnauth = () =>
       h(
         'nav',
         {class: 'unauth'},
-        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'About')
+        h('a', {href: 'https://github.com/vacuumlabs/cardanolite', target: '_blank'}, 'About')
       )
     )
   )
@@ -842,7 +842,11 @@ const Footer = () =>
       h(
         'small',
         {class: 'contact-link'},
-        h('a', {href: 'https://github.com/vacuumlabs/cardano', target: '_blank'}, 'View on Github')
+        h(
+          'a',
+          {href: 'https://github.com/vacuumlabs/cardanolite', target: '_blank'},
+          'View on Github'
+        )
       ),
       '/',
       h(

@@ -5,7 +5,7 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vacuumlabs/cardano.git"
+    "url": "git+https://github.com/vacuumlabs/cardanolite.git"
   },
   "keywords": [
     "cardano",
@@ -14,7 +14,7 @@
   "author": "Rafael Korbas",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vacuumlabs/cardano/issues"
+    "url": "https://github.com/vacuumlabs/cardanolite/issues"
   },
   "scripts": {
     "start-server": "node server/index.js",
@@ -26,7 +26,7 @@
     "heroku-postbuild": "webpack --config webpack.build.config.js --progress",
     "precommit": "lint-staged"
   },
-  "homepage": "https://github.com/vacuumlabs/cardano#readme",
+  "homepage": "https://github.com/vacuumlabs/cardanolite#readme",
   "lint-staged": {
     "{frontend,wallet,server,test}/**/*.{js,jsx,json,css}": [
       "prettier-eslint --write",
