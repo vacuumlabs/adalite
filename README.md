@@ -1,4 +1,4 @@
-# Cardano lite wallet
+# CardanoLite wallet
 
 # Few disclaimers before we start
 CardanoLite is not created by Cardano Foundation. The official Cardano team did not review this code
