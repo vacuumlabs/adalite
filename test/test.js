@@ -2,6 +2,9 @@ describe('CardanoLite Test Suite', () => {
   describe('Mnemonic Handling', () => {
     require('./tests/mnemonic')
   })
+  describe('HD Node', () => {
+    require('./tests/hd-node')
+  })
   describe('CBOR', () => {
     require('./tests/cbor')
   })

@@ -41,13 +41,13 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
   const cryptoProvider = CardanoMnemonicCryptoProvider(mnemonicOrHdNodeString, state)
 
   async function sendAda(address, coins) {
-    const unsignedTx = await prepareUnsignedTx(address, coins)
-    const signedTx = await cryptoProvider.signTx(unsignedTx)
+    const txAux = await prepareTxAux(address, coins)
+    const signedTx = await cryptoProvider.signTx(txAux)
 
     const result = await blockchainExplorer.submitTxRaw(signedTx.txHash, signedTx.txBody)
 
     if (result) {
-      updateUtxosFromTransaction(unsignedTx)
+      updateUtxosFromTxAux(txAux)
     }
 
     return result
@@ -58,12 +58,12 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
   }
 
   async function prepareTx(address, coins) {
-    const unsignedTx = await prepareUnsignedTx(address, coins)
+    const txAux = await prepareTxAux(address, coins)
 
-    return cryptoProvider.signTx(unsignedTx)
+    return cryptoProvider.signTx(txAux)
   }
 
-  async function prepareUnsignedTx(address, coins) {
+  async function prepareTxAux(address, coins) {
     const txInputs = await prepareTxInputs(coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.getCoins()
@@ -250,15 +250,15 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
     )
   }
 
-  function updateUtxosFromTransaction(transaction) {
-    const spentUtxos = transaction.inputs.map((elem) => elem.utxo)
+  function updateUtxosFromTxAux(txAux) {
+    const spentUtxos = txAux.inputs.map((elem) => elem.utxo)
     discardUtxos(spentUtxos)
 
-    const newUtxos = transaction.outputs.filter((elem) => elem.isChange).map((elem, i) => {
+    const newUtxos = txAux.outputs.filter((elem) => elem.isChange).map((elem, i) => {
       return {
         address: elem.address,
         coins: elem.coins,
-        txHash: tx.getTxId(transaction),
+        txHash: tx.getTxId(txAux),
         outputIndex: i,
       }
     })
@@ -289,7 +289,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
     prepareTx,
     getHistory,
     areUnusedAddressesExhausted,
-    _prepareUnsignedTx: prepareUnsignedTx,
+    _prepareTxAux: prepareTxAux,
   }
 }
 

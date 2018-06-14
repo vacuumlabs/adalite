@@ -100,37 +100,23 @@ describe('transaction serialization', function() {
   mock.mockBlockChainExplorer()
 
   it('should properly serialize transaction before signing', async () => {
-    const unsignedTx = await wallet._prepareUnsignedTx(myAddress, 47)
+    const txAux = await wallet._prepareTxAux(myAddress, 47)
 
     // transaction serialization before providing witnesses
-    const utxSerialized = cbor.encode(unsignedTx).toString('hex')
+    const txAuxSerialized = cbor.encode(txAux).toString('hex')
 
-    const expectedUtxSerialized =
+    const expectedtxAuxSerialized =
       '839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc257dee35f8401823d281d3320d31fef98fcbf904f5d5e03d94974fba101581e581c140539c64edded60a7f2d869373e87e744591935bfcdadaa8517974c001a40c66c8c1a002a8df7ffa0'
 
-    assert.equal(utxSerialized, expectedUtxSerialized)
+    assert.equal(txAuxSerialized, expectedtxAuxSerialized)
   })
 
   // transaction hash computation
   it('should properly compute transaction hash', async () => {
-    const tx = await wallet.prepareTx(myAddress, 47)
-
+    const txAux = await wallet._prepareTxAux(myAddress, 47)
     const expectedTxHash = 'f892d1487903ae721373d6ab8e72c38ef855f61ba4daf16d40b1ace0f1d2b1de'
 
-    assert.equal(tx.txHash, expectedTxHash)
-  })
-
-  // transaction witnesses computation
-  it('should properly compute transaction witnesses', async () => {
-    // TODO move test to crypto provider
-    /*const tx = await wallet._prepareUnsignedTx(myAddress, 47)
-    const witnesses = tx.witnesses
-    const witnessesSerialized = cbor.encode(witnesses).toString('hex')
-
-    const expectedWitnessesSerialized =
-      '828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840407b76b983b657b1dde00a9c90ca97d1f8310b088146fbe2997849747d4e3a633be8b037c56e7b7190e8be7902a01d0faea31f45d42534c3e735faa437925b088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840607573290ca775a7a953c9b63b91a66da9178751bf26caafaab7bbc2390dab260dc8049cd0f3fd24ee7db71dd82ec23e0280b3fcd35b6eee3fb9eb9c2b8c2d0f'
-
-    assert.equal(witnessesSerialized, expectedWitnessesSerialized)*/
+    assert.equal(txAux.getId(), expectedTxHash)
   })
 
   // whole transaction serialization

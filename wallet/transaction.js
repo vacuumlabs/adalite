@@ -9,6 +9,10 @@ function getTxId(txAux) {
 }
 
 function TxAux(inputs, outputs, attributes) {
+  function getId() {
+    return getTxId(TxAux(inputs, outputs, attributes))
+  }
+
   function encodeCBOR(encoder) {
     return encoder.pushAny([
       new CborIndefiniteLengthArray(inputs),
@@ -18,6 +22,7 @@ function TxAux(inputs, outputs, attributes) {
   }
 
   const definition = {
+    getId,
     inputs,
     outputs,
     encodeCBOR,
@@ -87,34 +92,9 @@ function AddressCborWrapper(address) {
   }
 }
 
-function HdNode({secretKey, publicKey, chainCode, hdNodeString}) {
-  /**
-   * HD node groups secretKey, publicKey and chainCode
-   * can be initialized from Buffers or single string
-   * @param secretKey as Buffer
-   * @param publicKey as Buffer
-   * @param chainCode as Buffer
-   * @param hdNodeString as string = concat strings secretKey + publicKey + chainCode
-   */
-  if (hdNodeString) {
-    secretKey = Buffer.from(hdNodeString.substr(0, 128), 'hex')
-    publicKey = Buffer.from(hdNodeString.substr(128, 64), 'hex')
-    chainCode = Buffer.from(hdNodeString.substr(192, 64), 'hex')
-  }
-
-  const extendedPublicKey = Buffer.concat([publicKey, chainCode], 64)
-
-  return {
-    secretKey,
-    publicKey,
-    chainCode,
-    extendedPublicKey,
-  }
-}
-
 function SignedTransactionStructured(txAux, witnesses) {
   function getId() {
-    return getTxId(txAux)
+    return txAux.getId()
   }
 
   function encodeCBOR(encoder) {
@@ -132,7 +112,6 @@ function SignedTransactionStructured(txAux, witnesses) {
 module.exports = {
   TxInput,
   TxOutput,
-  HdNode,
   SignedTransactionStructured,
   TxAux,
   TxWitness,

@@ -1,12 +1,15 @@
 const assert = require('assert')
+const cbor = require('cbor')
 
 const {HARDENED_THRESHOLD} = require('../../wallet/constants')
 const CardanoMnemonicCryptoProvider = require('../../wallet/cardano-mnemonic-crypto-provider')
-const {hdNodeToString} = require('./helpers')
+const tx = require('../../wallet/transaction')
 
-const mnemonic = 'cruise bike bar reopen mimic title style fence race solar million clean'
-const cryptoProvider1 = CardanoMnemonicCryptoProvider(mnemonic, {})
-const cryptoProvider2 = CardanoMnemonicCryptoProvider(
+const mnemonic1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
+const mnemonic2 = 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme'
+const cryptoProvider1 = CardanoMnemonicCryptoProvider(mnemonic1, {})
+const cryptoProvider2 = CardanoMnemonicCryptoProvider(mnemonic2, {})
+const cryptoProvider3 = CardanoMnemonicCryptoProvider(
   'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3',
   {}
 )
@@ -15,7 +18,7 @@ const childIndex1 = 0x80000000
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
 
-describe('test signing', () => {
+describe('signing', () => {
   const message = new Buffer(
     '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950',
     'hex'
@@ -37,60 +40,60 @@ describe('test signing', () => {
   })
 })
 
-describe('test secret key derivation', () => {
+describe('secret key derivation', () => {
   // some hardened secret key - child index starts with 1 in binary
   const expectedHdNodeStr1 =
     'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
   it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
-    const derivedHdNodeStr1 = hdNodeToString(cryptoProvider2._deriveHdNode(childIndex2))
+    const derivedHdNodeStr1 = cryptoProvider3._deriveHdNode(childIndex2).toString()
     assert.equal(derivedHdNodeStr1, expectedHdNodeStr1)
   })
 
   const expectedHdNodeStr2 =
     'e0f31d972365bb76a2dd837c7ba5b4b7c065fa4ad1fbf808ddc17130bf10c40f63772cbaa1cdf7e847543f3cbcb3da7065498c71c04ca1f5cd9dccc18226461efdade44a3c35cfb6ab9c834dbc418da2cba30501139db384f194ef060847d0bd164f072124bcf55af0f01c1b5cd7759a7262b4d205717f4afb282cf98fed3026'
   it('should properly derive some nonhardened secret key - child index starts with 0 in binary', () => {
-    const derivedHdNodeStr2 = hdNodeToString(cryptoProvider2._deriveHdNode(childIndex3))
+    const derivedHdNodeStr2 = cryptoProvider3._deriveHdNode(childIndex3).toString()
     assert.equal(derivedHdNodeStr2, expectedHdNodeStr2)
   })
 })
 
-describe('test address generation from secret key', () => {
+describe('address generation from secret key', () => {
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
-    const derivedAddress1 = await cryptoProvider2.deriveAddress(childIndex1)
+    const derivedAddress1 = await cryptoProvider3.deriveAddress(childIndex1)
     assert.equal(derivedAddress1, expectedAddress1)
   })
 
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
   it('should properly generate some address from hardened key - child index starts with 1 in binary', async () => {
-    const derivedAddress2 = await cryptoProvider2.deriveAddress(childIndex2)
+    const derivedAddress2 = await cryptoProvider3.deriveAddress(childIndex2)
     assert.equal(derivedAddress2, expectedAddress2)
   })
 
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
   it('should properly generate some address from nonhardened key - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await cryptoProvider2.deriveAddress(childIndex3)
+    const derivedAddress3 = await cryptoProvider3.deriveAddress(childIndex3)
     assert.equal(derivedAddress3, expectedAddress3)
   })
 })
 
-describe('test address ownership verification', () => {
+describe('address ownership verification', () => {
   const ownAddress =
     'DdzFFzCqrhsoStdHaBGfa5ZaLysiTnVuu7SHRcJvvu4yKg94gVBx3TzEV9CjphrFxLhnu1DJUKm2kdcrxYDZBGosrv4Gq3HuiFWRYVdZ'
   it('should accept own address', async () => {
-    assert.equal(await cryptoProvider2.isOwnAddress(ownAddress), true)
+    assert.equal(await cryptoProvider3.isOwnAddress(ownAddress), true)
   })
 
   const foreignAddress =
     'DdzFFzCqrht1Su7MEaCbFUcKpZnqQp5aUudPjrJZ2h8YADJBDvpsXZk9BducpXcSgujYJGKaTuZye9hb9z3Hff42TXDft5yrsKka6rDW'
   it('should reject foreign address', async () => {
-    assert.equal(await cryptoProvider2.isOwnAddress(foreignAddress), false)
+    assert.equal(await cryptoProvider3.isOwnAddress(foreignAddress), false)
   })
 })
 
-describe('test wallet addresses derivation', () => {
+describe('wallet addresses derivation', () => {
   const expectedWalletAddresses = [
     'DdzFFzCqrhsgeBwYfYqJojCSPquZVLVoqAWjoBXsxCE9gJ44881GzVXMverRYLBU5KeArqW3EPThfeucWj1UzBU49c2e87dkdVaVSZ3s',
     'DdzFFzCqrhssuRDi1EGGjCajnyTGqA3HVFownbkTA9M9638Ro3o8CGyZN5NFNQMaHAbhnZgevHqoCwghoq9aScHyoWptamKzwQK7RWFw',
@@ -115,10 +118,54 @@ describe('test wallet addresses derivation', () => {
   ]
 
   it('should derive the right sequence of addresses from the root secret key', async () => {
-    const walletAddresses = await cryptoProvider2.deriveAddresses(
+    const walletAddresses = await cryptoProvider3.deriveAddresses(
       HARDENED_THRESHOLD + 1,
       HARDENED_THRESHOLD + 21
     )
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
+  })
+})
+
+describe('transaction signing', () => {
+  it('should properly compute transaction witnesses', async () => {
+    const txInputs = [
+      tx.TxInput({
+        txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+        address:
+          'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+        coins: 100000,
+        outputIndex: 0,
+      }),
+      tx.TxInput({
+        txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+        address:
+          'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
+        coins: 2867795,
+        outputIndex: 1,
+      }),
+    ]
+
+    const txOutputs = [
+      tx.TxOutput(
+        'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
+        47,
+        false
+      ),
+      tx.TxOutput(
+        'DdzFFzCqrht5CupPRNPoukz3K1FD7TvYeSXbbM3oPvmmmLTSsbGzKHHypKNqtSXqVyvpBwqUw3vpRXYhpkbaLKkHw5qUEHr2v7h7Roc7',
+        2788855,
+        true
+      ),
+    ]
+
+    const txAux = tx.TxAux(txInputs, txOutputs, {})
+    const txSignedStructured = await cryptoProvider2._signTxGetStructured(txAux)
+
+    const witnessesSerialized = cbor.encode(txSignedStructured.witnesses).toString('hex')
+
+    const expectedWitnessesSerialized =
+      '828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840407b76b983b657b1dde00a9c90ca97d1f8310b088146fbe2997849747d4e3a633be8b037c56e7b7190e8be7902a01d0faea31f45d42534c3e735faa437925b088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840607573290ca775a7a953c9b63b91a66da9178751bf26caafaab7bbc2390dab260dc8049cd0f3fd24ee7db71dd82ec23e0280b3fcd35b6eee3fb9eb9c2b8c2d0f'
+
+    assert.equal(witnessesSerialized, expectedWitnessesSerialized)
   })
 })

@@ -490,7 +490,7 @@ const expectedHistory = [
 ]
 
 // eslint-disable-next-line prefer-arrow-callback
-describe('test wallet history parsing', function() {
+describe('wallet history parsing', function() {
   this.timeout(10000)
 
   mock.mockBlockChainExplorer()
@@ -504,7 +504,7 @@ describe('test wallet history parsing', function() {
 })
 
 // eslint-disable-next-line prefer-arrow-callback
-describe('test wallet unspent outputs fetching', function() {
+describe('wallet unspent outputs fetching', function() {
   this.timeout(10000)
 
   mock.mockBlockChainExplorer()

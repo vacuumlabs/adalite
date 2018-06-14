@@ -14,15 +14,15 @@ const {pbkdf2Async} = require('./helpers/pbkdf2')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const tx = require('./transaction')
 const {HARDENED_THRESHOLD, TX_SIGN_MESSAGE_PREFIX} = require('./constants')
-const {mnemonicToHdNode} = require('./mnemonic')
 const range = require('./helpers/range')
+const {HdNode, mnemonicToHdNode, hdNodeStringToHdNode} = require('./hd-node')
 
 const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   const state = Object.assign(walletState, {
     masterHdNode:
       mnemonicOrHdNodeString.search(' ') >= 0
         ? mnemonicToHdNode(mnemonicOrHdNodeString)
-        : new tx.HdNode({hdNodeString: mnemonicOrHdNodeString}),
+        : hdNodeStringToHdNode(mnemonicOrHdNodeString),
     derivedAddresses: {},
   })
 
@@ -242,7 +242,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
       'hex'
     )
 
-    return new tx.HdNode({secretKey: resKey, publicKey: newPublicKey, chainCode: newChainCode})
+    return HdNode({secretKey: resKey, publicKey: newPublicKey, chainCode: newChainCode})
   }
 
   function indexIsHardened(childIndex) {
@@ -256,8 +256,8 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     return ed25519.sign(messageToSign, hdNode.publicKey, hdNode.secretKey)
   }
 
-  async function signTx(unsignedTx) {
-    const signedTxStructured = await signTxGetStructured(unsignedTx)
+  async function signTx(txAux) {
+    const signedTxStructured = await signTxGetStructured(txAux)
 
     return {
       txHash: signedTxStructured.getId(),
@@ -265,11 +265,11 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     }
   }
 
-  async function signTxGetStructured(unsignedTx) {
-    const txHash = tx.getTxId(unsignedTx)
+  async function signTxGetStructured(txAux) {
+    const txHash = tx.getTxId(txAux)
 
     const witnesses = await Promise.all(
-      unsignedTx.inputs.map(async (input) => {
+      txAux.inputs.map(async (input) => {
         const childIndex = await deriveChildIndexFromAddress(input.utxo.address)
         const xpub = await deriveXpub(childIndex)
         const signature = await sign(`${TX_SIGN_MESSAGE_PREFIX}${txHash}`, childIndex)
@@ -278,13 +278,12 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
       })
     )
 
-    return tx.SignedTransactionStructured(unsignedTx, witnesses)
+    return tx.SignedTransactionStructured(txAux, witnesses)
   }
 
   return {
     deriveAddress,
     deriveAddresses,
-    deriveAddressWithHdNode,
     isOwnAddress,
     deriveXpub,
     deriveChildIndexFromAddress,
