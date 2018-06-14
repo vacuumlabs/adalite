@@ -2,7 +2,7 @@ const cbor = require('cbor')
 const base58 = require('bs58')
 
 const {generateMnemonic, validateMnemonic} = require('./mnemonic')
-const tx = require('./transaction')
+const {TxInput, TxOutput, TxAux} = require('./transaction')
 const BlockchainExplorer = require('./blockchain-explorer')
 const CardanoMnemonicCryptoProvider = require('./cardano-mnemonic-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
@@ -30,9 +30,9 @@ function isValidAddress(address) {
   return true
 }
 
-const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) => {
+const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelectionRandomSeed) => {
   const state = {
-    randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
+    utxoSelectionRandomSeed: utxoSelectionRandomSeed || Math.floor(Math.random() * MAX_INT32),
     ownUtxos: {},
     overallTxCountSinceLastUtxoFetch: 0,
   }
@@ -75,11 +75,11 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
     }
 
     const txOutputs = [
-      tx.TxOutput(address, coins, await isOwnAddress(address)),
-      tx.TxOutput(await getChangeAddress(), txInputsCoinsSum - fee - coins, true),
+      TxOutput(address, coins, false),
+      TxOutput(await getChangeAddress(), txInputsCoinsSum - fee - coins, true),
     ]
 
-    return tx.TxAux(txInputs, txOutputs, {})
+    return TxAux(txInputs, txOutputs, {})
   }
 
   async function getTxFee(address, coins) {
@@ -102,7 +102,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
 
   async function prepareTxInputs(coins) {
     // we want to do it pseudorandomly to guarantee fee computation stability
-    const randomGenerator = PseudoRandom(state.randomSeed)
+    const randomGenerator = PseudoRandom(state.utxoSelectionRandomSeed)
     const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
 
     const txInputs = []
@@ -110,7 +110,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
     let totalCoins = coins
 
     for (let i = 0; i < utxos.length && sumUtxos < totalCoins; i++) {
-      txInputs.push(tx.TxInput(utxos[i]))
+      txInputs.push(TxInput(utxos[i]))
       sumUtxos += utxos[i].coins
 
       totalCoins = coins + computeTxFee(txInputs)
@@ -254,17 +254,23 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
     const spentUtxos = txAux.inputs.map((elem) => elem.utxo)
     discardUtxos(spentUtxos)
 
-    const newUtxos = txAux.outputs.filter((elem) => elem.isChange).map((elem, i) => {
+    const newUtxos = txAux.outputs.filter((elem) => isOwnAddress(elem.address)).map((elem, i) => {
       return {
         address: elem.address,
         coins: elem.coins,
-        txHash: tx.getTxId(txAux),
+        txHash: txAux.getId(),
         outputIndex: i,
       }
     })
 
     addUtxos(newUtxos)
     state.overallTxCountSinceLastUtxoFetch++
+
+    // shift randomSeed for next unspent outputs selection
+    const randomSeedGenerator = new PseudoRandom(state.utxoSelectionRandomSeed)
+    for (let i = 0; i < spentUtxos.length; i++) {
+      state.utxoSelectionRandomSeed = randomSeedGenerator.nextInt()
+    }
   }
 
   function discardUtxos(utxos) {

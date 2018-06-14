@@ -12,7 +12,7 @@ const ed25519 = require('supercop.js')
 
 const {pbkdf2Async} = require('./helpers/pbkdf2')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
-const tx = require('./transaction')
+const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const {HARDENED_THRESHOLD, TX_SIGN_MESSAGE_PREFIX} = require('./constants')
 const range = require('./helpers/range')
 const {HdNode, mnemonicToHdNode, hdNodeStringToHdNode} = require('./hd-node')
@@ -266,7 +266,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   }
 
   async function signTxGetStructured(txAux) {
-    const txHash = tx.getTxId(txAux)
+    const txHash = txAux.getId()
 
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
@@ -274,11 +274,11 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
         const xpub = await deriveXpub(childIndex)
         const signature = await sign(`${TX_SIGN_MESSAGE_PREFIX}${txHash}`, childIndex)
 
-        return tx.TxWitness(xpub, signature)
+        return TxWitness(xpub, signature)
       })
     )
 
-    return tx.SignedTransactionStructured(txAux, witnesses)
+    return SignedTransactionStructured(txAux, witnesses)
   }
 
   return {

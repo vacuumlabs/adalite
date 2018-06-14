@@ -115,5 +115,4 @@ module.exports = {
   SignedTransactionStructured,
   TxAux,
   TxWitness,
-  getTxId,
 }
