@@ -49,20 +49,21 @@ function TxWitness(extendedPublicKey, signature) {
 function TxInput(utxo) {
   // default input type
   const type = 0
-
-  function getCoins() {
-    return utxo.coins
-  }
+  const coins = utxo.coins
+  const txHash = utxo.txHash
+  const outputIndex = utxo.outputIndex
 
   function encodeCBOR(encoder) {
     return encoder.pushAny([
       type,
-      new cbor.Tagged(24, cbor.encode([Buffer.from(utxo.txHash, 'hex'), utxo.outputIndex])),
+      new cbor.Tagged(24, cbor.encode([Buffer.from(txHash, 'hex'), outputIndex])),
     ])
   }
 
   return {
-    getCoins,
+    coins,
+    txHash,
+    outputIndex,
     utxo,
     encodeCBOR,
   }

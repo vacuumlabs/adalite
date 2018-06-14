@@ -66,7 +66,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
   async function prepareTxAux(address, coins) {
     const txInputs = await prepareTxInputs(coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
-      return acc + elem.getCoins()
+      return acc + elem.coins
     }, 0)
 
     const fee = computeTxFee(txInputs, coins)
@@ -126,7 +126,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     }
 
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
-      return acc + elem.getCoins()
+      return acc + elem.coins
     }, 0)
 
     const out1coins = coins
