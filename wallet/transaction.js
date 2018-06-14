@@ -4,13 +4,9 @@ const base58 = require('bs58')
 const hashBlake2b256 = require('./helpers/hashBlake2b256')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
-function getTxId(txAux) {
-  return hashBlake2b256(txAux).toString('hex')
-}
-
 function TxAux(inputs, outputs, attributes) {
   function getId() {
-    return getTxId(TxAux(inputs, outputs, attributes))
+    return hashBlake2b256(TxAux(inputs, outputs, attributes)).toString('hex')
   }
 
   function encodeCBOR(encoder) {
