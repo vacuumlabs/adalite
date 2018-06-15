@@ -40,6 +40,9 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
   const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
   const cryptoProvider = CardanoMnemonicCryptoProvider(mnemonicOrHdNodeString, state)
 
+  // fetch unspent outputs list asynchronously
+  getUnspentTxOutputs()
+
   async function sendAda(address, coins) {
     const txAux = await prepareTxAux(address, coins)
     const signedTx = await cryptoProvider.signTx(txAux)
@@ -89,9 +92,9 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
   }
 
   async function getBalance() {
-    const utxos = await getUnspentTxOutputs()
+    const addresses = await discoverOwnAddresses()
 
-    return utxos.reduce((acc, elem) => acc + elem.coins, 0)
+    return await blockchainExplorer.getBalance(addresses)
   }
 
   async function getHistory() {

@@ -1,5 +1,3 @@
-const cbor = require('cbor')
-
 const request = require('./helpers/request')
 
 const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
@@ -86,6 +84,12 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     return state.addressInfos[address].data
   }
 
+  async function getBalance(addresses) {
+    const addressInfos = await getAddressInfos(addresses)
+
+    return addressInfos.reduce((acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10), 0)
+  }
+
   async function submitTxRaw(txHash, txBody) {
     try {
       const res = await request(
@@ -146,6 +150,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     isSomeAddressUsed,
     selectUnusedAddresses,
     submitTxRaw,
+    getBalance,
   }
 }
 
