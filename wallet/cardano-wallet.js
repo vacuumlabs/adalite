@@ -2,7 +2,7 @@ const cbor = require('cbor')
 const base58 = require('bs58')
 
 const {generateMnemonic, validateMnemonic} = require('./mnemonic')
-const {TxInput, TxOutput, TxAux} = require('./transaction')
+const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
 const BlockchainExplorer = require('./blockchain-explorer')
 const CardanoMnemonicCryptoProvider = require('./cardano-mnemonic-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
@@ -92,6 +92,10 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
   }
 
   async function getBalance() {
+    await blockchainExplorer.fetchTxRaw(
+      '2d4c06bdd3c953329e50c75e25a2f9166c40ada22414b60f5c09821802620f75'
+    )
+
     const addresses = await discoverOwnAddresses()
 
     return await blockchainExplorer.getBalance(addresses)
@@ -113,7 +117,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     let totalCoins = coins
 
     for (let i = 0; i < utxos.length && sumUtxos < totalCoins; i++) {
-      txInputs.push(TxInput(utxos[i]))
+      txInputs.push(TxInputFromUtxo(utxos[i]))
       sumUtxos += utxos[i].coins
 
       totalCoins = coins + computeTxFee(txInputs)

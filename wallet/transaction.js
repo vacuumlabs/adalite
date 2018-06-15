@@ -42,7 +42,7 @@ function TxWitness(extendedPublicKey, signature) {
   }
 }
 
-function TxInput(utxo) {
+function TxInputFromUtxo(utxo) {
   // default input type
   const type = 0
   const coins = utxo.coins
@@ -61,6 +61,22 @@ function TxInput(utxo) {
     txHash,
     outputIndex,
     utxo,
+    encodeCBOR,
+  }
+}
+
+function TxInput(type, txHash, outputIndex) {
+  function encodeCBOR(encoder) {
+    return encoder.pushAny([
+      type,
+      new cbor.Tagged(24, cbor.encode([Buffer.from(txHash, 'hex'), outputIndex])),
+    ])
+  }
+
+  return {
+    type,
+    txHash,
+    outputIndex,
     encodeCBOR,
   }
 }
@@ -108,6 +124,7 @@ function SignedTransactionStructured(txAux, witnesses) {
 
 module.exports = {
   TxInput,
+  TxInputFromUtxo,
   TxOutput,
   SignedTransactionStructured,
   TxAux,

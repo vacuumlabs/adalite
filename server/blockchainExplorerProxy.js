@@ -11,6 +11,16 @@ module.exports = function(app, env) {
     return res.status(200).send(response)
   })
 
+  app.get('/api/txs/raw/:txId', async (req, res) => {
+    const txId = req.params.txId
+
+    const response = await request(
+      `${process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_PROXY_TARGET}/api/txs/raw/${txId}`
+    )
+
+    return res.status(200).send(response)
+  })
+
   app.post('/api/bulk/addresses/utxo', async (req, res) => {
     const addresses = req.body
     const result = {

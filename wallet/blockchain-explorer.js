@@ -1,3 +1,6 @@
+const cbor = require('cbor')
+const {parseTxAux} = require('./cbor-parsers')
+
 const request = require('./helpers/request')
 
 const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
@@ -32,6 +35,17 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
       t.effect = effect
     }
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
+  }
+
+  async function fetchTxRaw(txId) {
+    // eslint-disable-next-line no-undef
+    const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
+    const result = await request(url)
+
+    const rawObj = cbor.decode(new Buffer(JSON.parse(result.Right), 'hex'))
+    const txAux = parseTxAux(rawObj)
+
+    return txAux
   }
 
   async function getOverallTxCount(addresses) {
@@ -143,6 +157,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
 
   return {
     getTxHistory,
+    fetchTxRaw,
     getOverallTxCount,
     fetchUnspentTxOutputs,
     selectNonemptyAddresses,
