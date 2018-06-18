@@ -3,7 +3,7 @@ const base58 = require('bs58')
 
 const {TxInput, TxOutput, TxAux} = require('./transaction')
 
-const parseTxHash = (val) => new Buffer(val).toString('hex')
+const parseTxHash = (val) => Buffer.from(val).toString('hex')
 
 const parseAddress = (val) => {
   return base58.encode(cbor.encode(val))
