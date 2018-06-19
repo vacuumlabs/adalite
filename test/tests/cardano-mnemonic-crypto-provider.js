@@ -4,6 +4,7 @@ const cbor = require('cbor')
 const {HARDENED_THRESHOLD} = require('../../wallet/constants')
 const CardanoMnemonicCryptoProvider = require('../../wallet/cardano-mnemonic-crypto-provider')
 const tx = require('../../wallet/transaction')
+const range = require('../../wallet/helpers/range')
 
 const mnemonic1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
 const mnemonic2 = 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme'
@@ -14,7 +15,6 @@ const cryptoProvider3 = CardanoMnemonicCryptoProvider(
   {}
 )
 
-const childIndex1 = 0x80000000
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
 
@@ -60,21 +60,21 @@ describe('secret key derivation', () => {
 describe('address generation from secret key', () => {
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
-    const derivedAddress1 = await cryptoProvider3.deriveAddress(childIndex1)
+    const derivedAddress1 = await cryptoProvider3.deriveAddress([])
     assert.equal(derivedAddress1, expectedAddress1)
   })
 
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
   it('should properly generate some address from hardened key - child index starts with 1 in binary', async () => {
-    const derivedAddress2 = await cryptoProvider3.deriveAddress(childIndex2)
+    const derivedAddress2 = await cryptoProvider3.deriveAddress([HARDENED_THRESHOLD, childIndex2])
     assert.equal(derivedAddress2, expectedAddress2)
   })
 
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
   it('should properly generate some address from nonhardened key - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await cryptoProvider3.deriveAddress(childIndex3)
+    const derivedAddress3 = await cryptoProvider3.deriveAddress([HARDENED_THRESHOLD, childIndex3])
     assert.equal(derivedAddress3, expectedAddress3)
   })
 })
@@ -118,10 +118,11 @@ describe('wallet addresses derivation', () => {
   ]
 
   it('should derive the right sequence of addresses from the root secret key', async () => {
-    const walletAddresses = await cryptoProvider3.deriveAddresses(
-      HARDENED_THRESHOLD + 1,
-      HARDENED_THRESHOLD + 21
-    )
+    const derivationPaths = range(HARDENED_THRESHOLD + 1, HARDENED_THRESHOLD + 21).map((i) => [
+      HARDENED_THRESHOLD,
+      i,
+    ])
+    const walletAddresses = await cryptoProvider3.deriveAddresses(derivationPaths)
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
   })
 })
@@ -129,14 +130,14 @@ describe('wallet addresses derivation', () => {
 describe('transaction signing', () => {
   it('should properly compute transaction witnesses', async () => {
     const txInputs = [
-      tx.TxInput({
+      tx.TxInputFromUtxo({
         txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
         address:
           'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
         coins: 100000,
         outputIndex: 0,
       }),
-      tx.TxInput({
+      tx.TxInputFromUtxo({
         txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
         address:
           'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',

@@ -53,21 +53,21 @@ describe('wallet change address computation', function() {
   it('should properly compute change address for unused wallet', async () => {
     assert.equal(
       await unusedWallet.getChangeAddress(),
-      'DdzFFzCqrhsef6yEYwhNtfoNQEFAjr2Uur66mBxjnBX6cZyEDLfodWjDxj4K4VDNkAqQjTQVDxrpEptvL85xYLpHP9HUEAPm31tJME3K'
+      'DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ'
     )
   })
 
   it('should properly compute change address for used wallet with offset 0', async () => {
     assert.equal(
       await wallet.getChangeAddress(),
-      'DdzFFzCqrht5CupPRNPoukz3K1FD7TvYeSXbbM3oPvmmmLTSsbGzKHHypKNqtSXqVyvpBwqUw3vpRXYhpkbaLKkHw5qUEHr2v7h7Roc7'
+      'DdzFFzCqrhsnx5973UzwoEcQ7cN3THD9ZQZvbVd5srhrPoECSt1WUTrQSR8YicSnH3disaSxQPcNMUEC7XNuFxRd8jCAKVXLne3r29xs'
     )
   })
 
   it('should properly compute change address with offset greater than 0', async () => {
     assert.equal(
       await wallet.getChangeAddress(5),
-      'DdzFFzCqrht9QRUpvJ8dpMfY8LRPuwHTtun7rwWT4x2HYzPsx9zPtXDXXBnpL44qEdyfwu3VWKN6jreVJdwSfLbGHzZVQcNNZztXfc2K'
+      'DdzFFzCqrht4APWANPv7a1RtkQgh62XuKDqzzjjtrAMwpDiSB65YX7GeY8pMPrfkXD16iSS1jD4efYRkogBWnZoH8QHWPwHjFa5HLYLX'
     )
   })
 })
@@ -106,7 +106,7 @@ describe('transaction serialization', function() {
     const txAuxSerialized = cbor.encode(txAux).toString('hex')
 
     const expectedtxAuxSerialized =
-      '839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc257dee35f8401823d281d3320d31fef98fcbf904f5d5e03d94974fba101581e581c140539c64edded60a7f2d869373e87e744591935bfcdadaa8517974c001a40c66c8c1a002a8df7ffa0'
+      '839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581c4617109fadd39396b981833f3694fc8e60658cbcc2a40d831e43c00ba101581e581c140539c64edded60a7f2d46967d90757466da40a8148314d69bf00d2001a28c4ea001a002a8df7ffa0'
 
     assert.equal(txAuxSerialized, expectedtxAuxSerialized)
   })
@@ -114,7 +114,7 @@ describe('transaction serialization', function() {
   // transaction hash computation
   it('should properly compute transaction hash', async () => {
     const txAux = await wallet._prepareTxAux(myAddress, 47)
-    const expectedTxHash = 'f892d1487903ae721373d6ab8e72c38ef855f61ba4daf16d40b1ace0f1d2b1de'
+    const expectedTxHash = '229a5ec5e839100a4cd7a9d2df4aafaf3f17453f5c3a4b7072fc3c4a632f689f'
 
     assert.equal(txAux.getId(), expectedTxHash)
   })
@@ -124,7 +124,7 @@ describe('transaction serialization', function() {
     const tx = await wallet.prepareTx(myAddress, 47)
 
     const expectedTxBody =
-      '82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cc257dee35f8401823d281d3320d31fef98fcbf904f5d5e03d94974fba101581e581c140539c64edded60a7f2d869373e87e744591935bfcdadaa8517974c001a40c66c8c1a002a8df7ffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840407b76b983b657b1dde00a9c90ca97d1f8310b088146fbe2997849747d4e3a633be8b037c56e7b7190e8be7902a01d0faea31f45d42534c3e735faa437925b088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840607573290ca775a7a953c9b63b91a66da9178751bf26caafaab7bbc2390dab260dc8049cd0f3fd24ee7db71dd82ec23e0280b3fcd35b6eee3fb9eb9c2b8c2d0f'
+      '82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581c4617109fadd39396b981833f3694fc8e60658cbcc2a40d831e43c00ba101581e581c140539c64edded60a7f2d46967d90757466da40a8148314d69bf00d2001a28c4ea001a002a8df7ffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e58403fc8ec8c94cf81bf214ef7e739b06a4033038516e174be601c4ae652376488dce3d312d1da0973ef18dc493248e8cb806116f60859d0bdf0d370e4fbbe88bc088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840bbd30bdc77a6798ee5035344aa72f7bc2a13f3efdc4a0a1969f80a47edb3ef8b46a9c445c91a376bd0651edc8cbd80fa3072001707f0a9f6909cbb532eb2440c'
 
     assert.equal(tx.txBody, expectedTxBody)
   })

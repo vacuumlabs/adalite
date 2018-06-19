@@ -6,7 +6,7 @@ const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
 function TxAux(inputs, outputs, attributes) {
   function getId() {
-    return hashBlake2b256(TxAux(inputs, outputs, attributes)).toString('hex')
+    return hashBlake2b256(cbor.encode(TxAux(inputs, outputs, attributes))).toString('hex')
   }
 
   function encodeCBOR(encoder) {

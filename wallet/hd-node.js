@@ -108,7 +108,7 @@ function mnemonicToHashSeed(mnemonic) {
 
   const ent = Buffer.from(bip39.mnemonicToEntropy(mnemonic), 'hex')
 
-  return cbor.encode(hashBlake2b256(ent))
+  return cbor.encode(hashBlake2b256(cbor.encode(ent)))
 }
 
 module.exports = {
