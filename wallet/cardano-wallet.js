@@ -8,6 +8,7 @@ const CardanoMnemonicCryptoProvider = require('./cardano-mnemonic-crypto-provide
 const PseudoRandom = require('./helpers/PseudoRandom')
 const {HARDENED_THRESHOLD, MAX_INT32} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
+const range = require('./helpers/range')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -35,6 +36,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     utxoSelectionRandomSeed: utxoSelectionRandomSeed || Math.floor(Math.random() * MAX_INT32),
     ownUtxos: {},
     overallTxCountSinceLastUtxoFetch: 0,
+    accountIndex: HARDENED_THRESHOLD,
   }
 
   const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
@@ -57,7 +59,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
   }
 
   async function getId() {
-    return await cryptoProvider.deriveAddress(HARDENED_THRESHOLD)
+    return await cryptoProvider.getWalletId()
   }
 
   async function prepareTx(address, coins) {
@@ -92,10 +94,6 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
   }
 
   async function getBalance() {
-    await blockchainExplorer.fetchTxRaw(
-      '2d4c06bdd3c953329e50c75e25a2f9166c40ada22414b60f5c09821802620f75'
-    )
-
     const addresses = await discoverOwnAddresses()
 
     return await blockchainExplorer.getBalance(addresses)
@@ -147,6 +145,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     * we assume that only two outputs (destination and change address) will be present
     * encoded in an indefinite length array
     */
+    // TODO - consider case when only 1 output is present
     const txOutputsSize =
       2 * 77 + cbor.encode(out1coins).length + cbor.encode(out2coinsUpperBound).length + 2
     const txMetaSize = 1 // currently empty Map
@@ -169,16 +168,21 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     return txFeeFunction(txSizeInBytes + deviation)
   }
 
-  async function getChangeAddress(offset = 0) {
+  async function getChangeAddress(offset = 0, hardened = true) {
     const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
     const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
     let unusedAddresses = []
+    const startOffset = hardened ? HARDENED_THRESHOLD : 0
 
     for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
-      const childIndexBegin = HARDENED_THRESHOLD + 1 + i
-      const childIndexEnd = HARDENED_THRESHOLD + 1 + Math.min(i + gapLength, addressDiscoveryLimit)
+      const childIndexBegin = startOffset + i
+      const childIndexEnd = startOffset + Math.min(i + gapLength, addressDiscoveryLimit)
+      const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
+        HARDENED_THRESHOLD,
+        i,
+      ])
 
-      const addresses = await cryptoProvider.deriveAddresses(childIndexBegin, childIndexEnd)
+      const addresses = await cryptoProvider.deriveAddresses(derivationPaths)
       unusedAddresses = unusedAddresses.concat(
         await blockchainExplorer.selectUnusedAddresses(addresses)
       )
@@ -220,16 +224,21 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     return addresses.filter((address, i) => addressesUsageMask[i])
   }
 
-  async function discoverOwnAddresses() {
+  async function discoverOwnAddresses(hardened = true) {
     const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
     const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
     let result = []
+    const startOffset = hardened ? HARDENED_THRESHOLD : 0
 
     for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
-      const childIndexBegin = HARDENED_THRESHOLD + 1 + i
-      const childIndexEnd = HARDENED_THRESHOLD + 1 + Math.min(i + gapLength, addressDiscoveryLimit)
+      const childIndexBegin = startOffset + i
+      const childIndexEnd = startOffset + Math.min(i + gapLength, addressDiscoveryLimit)
+      const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
+        HARDENED_THRESHOLD,
+        i,
+      ])
 
-      const addresses = await cryptoProvider.deriveAddresses(childIndexBegin, childIndexEnd)
+      const addresses = await cryptoProvider.deriveAddresses(derivationPaths)
       if (!(await blockchainExplorer.isSomeAddressUsed(addresses))) {
         break
       }

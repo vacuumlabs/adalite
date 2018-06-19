@@ -32,7 +32,7 @@ describe('signing', () => {
     // test signing
     assert.equal(
       Buffer.compare(
-        await cryptoProvider1._sign(message, HARDENED_THRESHOLD + 1),
+        await cryptoProvider1._sign(message, [HARDENED_THRESHOLD, HARDENED_THRESHOLD + 1]),
         expectedMessageSignature
       ),
       0

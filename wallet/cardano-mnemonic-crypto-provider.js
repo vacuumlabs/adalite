@@ -14,7 +14,6 @@ const {pbkdf2Async} = require('./helpers/pbkdf2')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const {HARDENED_THRESHOLD, TX_SIGN_MESSAGE_PREFIX} = require('./constants')
-const range = require('./helpers/range')
 const {HdNode, mnemonicToHdNode, hdNodeStringToHdNode} = require('./hd-node')
 
 const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
@@ -75,43 +74,38 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
 
   const crc32Unsigned = (input) => crc32.buf(input) >>> 0
 
-  async function deriveAddresses(childIndexBegin, childIndexEnd) {
+  async function deriveAddresses(derivationPaths) {
     return await Promise.all(
-      range(childIndexBegin, childIndexEnd).map(async (i) => await deriveAddress(i))
+      derivationPaths.map(async (derivationPath) => await deriveAddress(derivationPath))
     )
   }
 
-  async function deriveAddress(childIndex) {
-    return (await deriveAddressWithHdNode(childIndex)).address
-  }
-
-  async function deriveXpub(childIndex) {
-    return (await deriveAddressWithHdNode(childIndex)).hdNode.extendedPublicKey
+  async function deriveAddress(derivationPath) {
+    return (await deriveAddressWithHdNode(derivationPath)).address
   }
 
   // works only on addresses derivable from master hdNode
-  async function deriveChildIndexFromAddress(address) {
-    return (await deriveHdNodeAndChildIndexFromAddress(address)).childIndex
+  async function getDerivationPathFromAddress(address) {
+    return (await deriveHdNodeAndDerivationPathFromAddress(address)).derivationPath
   }
 
-  async function deriveAddressWithHdNode(childIndex) {
-    if (!state.derivedAddresses[childIndex]) {
-      let addressPayload, addressAttributes, derivedHdNode
+  async function getWalletId() {
+    return (await deriveAddressWithHdNode([])).address
+  }
 
-      if (childIndex === HARDENED_THRESHOLD) {
-        // root address
-        addressPayload = Buffer.from([])
-        addressAttributes = new Map()
-        derivedHdNode = state.masterHdNode
-      } else {
-        // the remaining addresses
-        const hdPassphrase = await deriveHdPassphrase(state.masterHdNode)
-        const derivationPath = [HARDENED_THRESHOLD, childIndex]
-
+  async function deriveAddressWithHdNode(derivationPath) {
+    if (!state.derivedAddresses[JSON.stringify(derivationPath)]) {
+      let addressPayload, addressAttributes
+      if (derivationPath.length > 0) {
+        const hdPassphrase = await getHdPassphrase()
         addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
         addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
-        derivedHdNode = deriveHdNode(childIndex)
+      } else {
+        addressPayload = Buffer.from([])
+        addressAttributes = new Map()
       }
+      const derivedHdNode = deriveHdNodeFromRoot(derivationPath)
+
       const addressRoot = getAddressRoot(derivedHdNode, addressPayload)
       const addressType = 0 // Public key address
       const addressData = [addressRoot, addressAttributes, addressType]
@@ -120,19 +114,19 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
         cbor.encode([new cbor.Tagged(24, addressDataEncoded), crc32Unsigned(addressDataEncoded)])
       )
 
-      state.derivedAddresses[childIndex] = {
+      state.derivedAddresses[JSON.stringify(derivationPath)] = {
         address,
-        childIndex,
+        derivationPath,
         hdNode: derivedHdNode,
       }
     }
 
-    return state.derivedAddresses[childIndex]
+    return state.derivedAddresses[JSON.stringify(derivationPath)]
   }
 
   async function isOwnAddress(address) {
     try {
-      await deriveHdNodeAndChildIndexFromAddress(address)
+      await deriveHdNodeAndDerivationPathFromAddress(address)
       return true
     } catch (e) {
       if (e.name === 'AddressDecodingException') {
@@ -143,28 +137,21 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     }
   }
 
-  async function deriveHdNodeAndChildIndexFromAddress(address) {
+  async function deriveHdNodeAndDerivationPathFromAddress(address) {
     // we decode the address from the base58 string
     // and then we strip the 24 CBOR data tags (the "[0].value" part)
     const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
     const addressData = cbor.decode(addressAsBuffer)
     const addressAttributes = addressData[1]
     const addressPayload = cbor.decode(addressAttributes.get(1))
-    const hdPassphrase = await deriveHdPassphrase(state.masterHdNode)
+    const hdPassphrase = await getHdPassphrase()
     const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
-    const childIndex = addressAttributes.length === 0 ? HARDENED_THRESHOLD : derivationPath[1]
 
-    return await deriveAddressWithHdNode(childIndex)
-  }
-
-  function deriveHdNode(childIndex) {
-    const firstRound = deriveHdNodeIteration(state.masterHdNode, HARDENED_THRESHOLD)
-
-    if (childIndex === HARDENED_THRESHOLD) {
-      throw new Error('Do not use deriveHdNode to derive root node')
+    if (derivationPath.length > 2) {
+      throw Error('Wrong derivation path length, should be at most 2')
     }
 
-    return deriveHdNodeIteration(firstRound, childIndex)
+    return await deriveAddressWithHdNode(derivationPath)
   }
 
   function getAddressRoot(hdNode, addressPayload) {
@@ -198,11 +185,29 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     }
   }
 
-  async function deriveHdPassphrase(hdNode) {
-    return await pbkdf2Async(hdNode.extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
+  async function getHdPassphrase() {
+    return await pbkdf2Async(
+      state.masterHdNode.extendedPublicKey,
+      'address-hashing',
+      500,
+      32,
+      'sha512'
+    )
   }
 
-  function deriveHdNodeIteration(hdNode, childIndex) {
+  function deriveHdNodeFromRoot(derivationPath) {
+    if (derivationPath.length > 2) {
+      throw Error('Address derivation path should be of length at most 2')
+    }
+
+    return derivationPath.reduce(deriveChildHdNode, state.masterHdNode)
+  }
+
+  function deriveXpub(derivationPath) {
+    return deriveHdNodeFromRoot(derivationPath).extendedPublicKey
+  }
+
+  function deriveChildHdNode(hdNode, childIndex) {
     const chainCode = hdNode.chainCode
 
     const hmac1 = crypto.createHmac('sha512', chainCode)
@@ -249,8 +254,8 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     return !!(childIndex >> 31)
   }
 
-  async function sign(message, childIndex) {
-    const hdNode = (await deriveAddressWithHdNode(childIndex)).hdNode
+  async function sign(message, pkDerivationPath) {
+    const hdNode = (await deriveAddressWithHdNode(pkDerivationPath)).hdNode
     const messageToSign = Buffer.from(message, 'hex')
 
     return ed25519.sign(messageToSign, hdNode.publicKey, hdNode.secretKey)
@@ -270,9 +275,9 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
 
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
-        const childIndex = await deriveChildIndexFromAddress(input.utxo.address)
-        const xpub = await deriveXpub(childIndex)
-        const signature = await sign(`${TX_SIGN_MESSAGE_PREFIX}${txHash}`, childIndex)
+        const derivationPath = await getDerivationPathFromAddress(input.utxo.address)
+        const xpub = deriveXpub(derivationPath)
+        const signature = await sign(`${TX_SIGN_MESSAGE_PREFIX}${txHash}`, derivationPath)
 
         return TxWitness(xpub, signature)
       })
@@ -285,11 +290,11 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     deriveAddress,
     deriveAddresses,
     isOwnAddress,
-    deriveXpub,
-    deriveChildIndexFromAddress,
+    getDerivationPathFromAddress,
     signTx,
+    getWalletId,
     _sign: sign,
-    _deriveHdNode: deriveHdNode,
+    _deriveHdNode: (addressIndex) => deriveHdNodeFromRoot([HARDENED_THRESHOLD, addressIndex]),
     _signTxGetStructured: signTxGetStructured,
   }
 }
