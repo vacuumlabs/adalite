@@ -37,6 +37,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     ownUtxos: {},
     overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
+    hardenedAddressMode: true, // temporary - use it to switch between hardened and non-hardened addresses
   }
 
   const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
@@ -168,11 +169,11 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     return txFeeFunction(txSizeInBytes + deviation)
   }
 
-  async function getChangeAddress(offset = 0, hardened = true) {
+  async function getChangeAddress(offset = 0) {
     const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
     const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
     let unusedAddresses = []
-    const startOffset = hardened ? HARDENED_THRESHOLD : 0
+    const startOffset = state.hardenedAddressMode ? HARDENED_THRESHOLD : 0
 
     for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
       const childIndexBegin = startOffset + i
@@ -224,11 +225,11 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     return addresses.filter((address, i) => addressesUsageMask[i])
   }
 
-  async function discoverOwnAddresses(hardened = true) {
+  async function discoverOwnAddresses() {
     const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
     const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
     let result = []
-    const startOffset = hardened ? HARDENED_THRESHOLD : 0
+    const startOffset = state.hardenedAddressMode ? HARDENED_THRESHOLD : 0
 
     for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
       const childIndexBegin = startOffset + i

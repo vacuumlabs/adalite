@@ -15,6 +15,7 @@ const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const {HARDENED_THRESHOLD, TX_SIGN_MESSAGE_PREFIX} = require('./constants')
 const {HdNode, mnemonicToHdNode, hdNodeStringToHdNode} = require('./hd-node')
+const deriveXpubNonHardened = require('./helpers/deriveXpubNonHardened')
 
 const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   const state = Object.assign(walletState, {
@@ -247,7 +248,9 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
       'hex'
     )
 
-    return HdNode({secretKey: resKey, publicKey: newPublicKey, chainCode: newChainCode})
+    const result = HdNode({secretKey: resKey, publicKey: newPublicKey, chainCode: newChainCode})
+
+    return result
   }
 
   function indexIsHardened(childIndex) {
@@ -294,7 +297,8 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     signTx,
     getWalletId,
     _sign: sign,
-    _deriveHdNode: (addressIndex) => deriveHdNodeFromRoot([HARDENED_THRESHOLD, addressIndex]),
+    _deriveHdNodeFromRoot: deriveHdNodeFromRoot,
+    _deriveChildHdNode: deriveChildHdNode,
     _signTxGetStructured: signTxGetStructured,
   }
 }
