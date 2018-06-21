@@ -10,11 +10,12 @@ class UnlockClass extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      mnemonic: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
+      mnemonic: undefined,
     }
     this.generateMnemonic = this.generateMnemonic.bind(this)
     this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
     this.updateMnemonic = this.updateMnemonic.bind(this)
+    this.loadDemoWallet = this.loadDemoWallet.bind(this)
   }
 
   generateMnemonic() {
@@ -40,11 +41,18 @@ class UnlockClass extends Component {
     }
   }
 
+  loadDemoWallet() {
+    this.setState({
+      mnemonic: 'civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash',
+      validationMsg: undefined,
+    })
+  }
+
   updateMnemonic(e) {
     this.setState({mnemonic: e.target.value})
   }
 
-  render({loadWalletFromMnemonic}, {mnemonic}) {
+  render({loadWalletFromMnemonic, loadDemoWallet}, {mnemonic}) {
     return h(
       'div',
       {class: 'intro-wrapper'},
@@ -87,6 +95,18 @@ class UnlockClass extends Component {
             onClick: this.generateMnemonic,
           },
           '…or generate a new one'
+        )
+      ),
+      h(
+        'div',
+        {class: 'centered-row'},
+        h(
+          'button',
+          {
+            class: 'demo-button rounded-button',
+            onClick: this.loadDemoWallet,
+          },
+          'Try demo wallet'
         )
       )
     )

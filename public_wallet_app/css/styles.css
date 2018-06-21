@@ -780,6 +780,12 @@ td {
   font-weight: 600;
   font-size: 1.1rem;
 }
+
+.demo-button {
+  background: #fff;
+  border: 1px solid var(--brand);;
+  color: black;
+}
 @media screen and (max-width: 840px) {
   .intro-input-row {
     align-items: center;
