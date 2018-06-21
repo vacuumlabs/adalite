@@ -77,7 +77,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   }
 
   async function getWalletId() {
-    return await deriveAddress([])
+    return await deriveAddress([], 'hardened')
   }
 
   async function isOwnAddress(address) {

@@ -79,6 +79,9 @@ describe('address generation from secret key', () => {
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
     const derivedAddress1 = await cryptoProvider3.deriveAddress([], 'hardened')
     assert.equal(derivedAddress1, expectedAddress1)
+
+    const derivedAddress2 = await cryptoProvider3.deriveAddress([], 'nonhardened')
+    assert.equal(derivedAddress2, expectedAddress1)
   })
 
   const expectedAddress2 =
