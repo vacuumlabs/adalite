@@ -23,7 +23,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
       mnemonicOrHdNodeString.search(' ') >= 0
         ? mnemonicToHdNode(mnemonicOrHdNodeString)
         : hdNodeStringToHdNode(mnemonicOrHdNodeString),
-    derivedAddresses: {},
+    derivedHdNodes: {},
   })
 
   function addressHash(input) {
@@ -82,52 +82,35 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   }
 
   async function deriveAddress(derivationPath) {
-    return (await deriveAddressWithHdNode(derivationPath)).address
-  }
+    const hdNode = deriveHdNode(derivationPath)
 
-  // works only on addresses derivable from master hdNode
-  async function getDerivationPathFromAddress(address) {
-    return (await deriveHdNodeAndDerivationPathFromAddress(address)).derivationPath
+    let addressPayload, addressAttributes
+    if (derivationPath.length > 0) {
+      const hdPassphrase = await getHdPassphrase()
+      addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
+      addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
+    } else {
+      addressPayload = Buffer.from([])
+      addressAttributes = new Map()
+    }
+    const addressRoot = getAddressRoot(hdNode, addressPayload)
+    const addressType = 0 // Public key address
+    const addressData = [addressRoot, addressAttributes, addressType]
+    const addressDataEncoded = cbor.encode(addressData)
+    const address = base58.encode(
+      cbor.encode([new cbor.Tagged(24, addressDataEncoded), crc32Unsigned(addressDataEncoded)])
+    )
+
+    return address
   }
 
   async function getWalletId() {
-    return (await deriveAddressWithHdNode([])).address
-  }
-
-  async function deriveAddressWithHdNode(derivationPath) {
-    if (!state.derivedAddresses[JSON.stringify(derivationPath)]) {
-      let addressPayload, addressAttributes
-      if (derivationPath.length > 0) {
-        const hdPassphrase = await getHdPassphrase()
-        addressPayload = encryptDerivationPath(derivationPath, hdPassphrase)
-        addressAttributes = new Map([[1, cbor.encode(addressPayload)]])
-      } else {
-        addressPayload = Buffer.from([])
-        addressAttributes = new Map()
-      }
-      const derivedHdNode = deriveHdNodeFromRoot(derivationPath)
-
-      const addressRoot = getAddressRoot(derivedHdNode, addressPayload)
-      const addressType = 0 // Public key address
-      const addressData = [addressRoot, addressAttributes, addressType]
-      const addressDataEncoded = cbor.encode(addressData)
-      const address = base58.encode(
-        cbor.encode([new cbor.Tagged(24, addressDataEncoded), crc32Unsigned(addressDataEncoded)])
-      )
-
-      state.derivedAddresses[JSON.stringify(derivationPath)] = {
-        address,
-        derivationPath,
-        hdNode: derivedHdNode,
-      }
-    }
-
-    return state.derivedAddresses[JSON.stringify(derivationPath)]
+    return await deriveAddress([])
   }
 
   async function isOwnAddress(address) {
     try {
-      await deriveHdNodeAndDerivationPathFromAddress(address)
+      await getMetadataFromAddress(address)
       return true
     } catch (e) {
       if (e.name === 'AddressDecodingException') {
@@ -138,21 +121,23 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     }
   }
 
-  async function deriveHdNodeAndDerivationPathFromAddress(address) {
+  async function getMetadataFromAddress(address) {
     // we decode the address from the base58 string
     // and then we strip the 24 CBOR data tags (the "[0].value" part)
     const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
     const addressData = cbor.decode(addressAsBuffer)
-    const addressAttributes = addressData[1]
-    const addressPayload = cbor.decode(addressAttributes.get(1))
+    const attributes = addressData[1]
+    const payload = cbor.decode(attributes.get(1))
     const hdPassphrase = await getHdPassphrase()
-    const derivationPath = decryptDerivationPath(addressPayload, hdPassphrase)
+    const derivationPath = decryptDerivationPath(payload, hdPassphrase)
 
     if (derivationPath.length > 2) {
       throw Error('Wrong derivation path length, should be at most 2')
     }
 
-    return await deriveAddressWithHdNode(derivationPath)
+    return await {
+      derivationPath,
+    }
   }
 
   function getAddressRoot(hdNode, addressPayload) {
@@ -196,16 +181,21 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     )
   }
 
-  function deriveHdNodeFromRoot(derivationPath) {
-    if (derivationPath.length > 2) {
-      throw Error('Address derivation path should be of length at most 2')
+  function deriveHdNode(derivationPath) {
+    const memoKey = JSON.stringify(derivationPath)
+    if (!state.derivedHdNodes[memoKey]) {
+      if (derivationPath.length > 2) {
+        throw Error('Address derivation path should be of length at most 2')
+      }
+
+      state.derivedHdNodes[memoKey] = derivationPath.reduce(deriveChildHdNode, state.masterHdNode)
     }
 
-    return derivationPath.reduce(deriveChildHdNode, state.masterHdNode)
+    return state.derivedHdNodes[memoKey]
   }
 
   function deriveXpub(derivationPath) {
-    return deriveHdNodeFromRoot(derivationPath).extendedPublicKey
+    return deriveHdNode(derivationPath).extendedPublicKey
   }
 
   function deriveChildHdNode(hdNode, childIndex) {
@@ -258,7 +248,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   }
 
   async function sign(message, pkDerivationPath) {
-    const hdNode = (await deriveAddressWithHdNode(pkDerivationPath)).hdNode
+    const hdNode = await deriveHdNode(pkDerivationPath)
     const messageToSign = Buffer.from(message, 'hex')
 
     return ed25519.sign(messageToSign, hdNode.publicKey, hdNode.secretKey)
@@ -278,7 +268,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
 
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
-        const derivationPath = await getDerivationPathFromAddress(input.utxo.address)
+        const derivationPath = (await getMetadataFromAddress(input.utxo.address)).derivationPath
         const xpub = deriveXpub(derivationPath)
         const signature = await sign(`${TX_SIGN_MESSAGE_PREFIX}${txHash}`, derivationPath)
 
@@ -293,11 +283,10 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     deriveAddress,
     deriveAddresses,
     isOwnAddress,
-    getDerivationPathFromAddress,
     signTx,
     getWalletId,
     _sign: sign,
-    _deriveHdNodeFromRoot: deriveHdNodeFromRoot,
+    _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
     _signTxGetStructured: signTxGetStructured,
   }
