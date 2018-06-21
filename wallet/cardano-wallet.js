@@ -76,14 +76,16 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     }, 0)
 
     const fee = computeTxFee(txInputs, coins)
-    if (txInputsCoinsSum - coins - fee < 0) {
+    const changeAmount = txInputsCoinsSum - coins - fee
+    if (changeAmount < 0) {
       return false
     }
 
-    const txOutputs = [
-      TxOutput(address, coins, false),
-      TxOutput(await getChangeAddress(), txInputsCoinsSum - fee - coins, true),
-    ]
+    const txOutputs = [TxOutput(address, coins, false)]
+
+    if (changeAmount > 0) {
+      txOutputs.push(TxOutput(await getChangeAddress(), txInputsCoinsSum - fee - coins, true))
+    }
 
     return TxAux(txInputs, txOutputs, {})
   }
@@ -169,33 +171,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     return txFeeFunction(txSizeInBytes + deviation)
   }
 
-  async function getChangeAddress(offset = 0) {
-    const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-    const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
-    let unusedAddresses = []
-    const startOffset = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
-
-    for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
-      const childIndexBegin = startOffset + i
-      const childIndexEnd = startOffset + Math.min(i + gapLength, addressDiscoveryLimit)
-      const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
-        HARDENED_THRESHOLD,
-        i,
-      ])
-
-      const addresses = await cryptoProvider.deriveAddresses(
-        derivationPaths,
-        state.addressDerivationMode
-      )
-      unusedAddresses = unusedAddresses.concat(
-        await blockchainExplorer.selectUnusedAddresses(addresses)
-      )
-
-      if (unusedAddresses.length > offset) {
-        return unusedAddresses[offset]
-      }
-    }
-
+  async function getChangeAddress() {
     // if we used all available addresses return random address from the available ones
     const ownAddresses = await discoverOwnAddresses()
     return ownAddresses[Math.floor(Math.random() * ownAddresses.length)]
@@ -219,41 +195,15 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     return Object.values(state.ownUtxos)
   }
 
-  async function getUsedAddresses() {
-    const addresses = await discoverOwnAddresses()
-    const addressesUsageMask = await Promise.all(
-      addresses.map(async (address) => await blockchainExplorer.isAddressUsed(address))
-    )
-
-    return addresses.filter((address, i) => addressesUsageMask[i])
-  }
-
   async function discoverOwnAddresses() {
-    const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-    const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
-    let result = []
-    const startOffset = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
+    const childIndexBegin = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
+    const childIndexEnd = childIndexBegin + CARDANOLITE_CONFIG.CARDANOLITE_WALLET_ADDRESS_LIMIT
+    const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
+      HARDENED_THRESHOLD,
+      i,
+    ])
 
-    for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
-      const childIndexBegin = startOffset + i
-      const childIndexEnd = startOffset + Math.min(i + gapLength, addressDiscoveryLimit)
-      const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
-        HARDENED_THRESHOLD,
-        i,
-      ])
-
-      const addresses = await cryptoProvider.deriveAddresses(
-        derivationPaths,
-        state.addressDerivationMode
-      )
-      if (!(await blockchainExplorer.isSomeAddressUsed(addresses))) {
-        break
-      }
-
-      result = result.concat(addresses)
-    }
-
-    return result
+    return await cryptoProvider.deriveAddresses(derivationPaths, state.addressDerivationMode)
   }
 
   function txFeeFunction(txSizeInBytes) {
@@ -265,12 +215,6 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
 
   async function isOwnAddress(addr) {
     return await cryptoProvider.isOwnAddress(addr)
-  }
-
-  async function areUnusedAddressesExhausted() {
-    return (
-      (await getUsedAddresses()).length > CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
-    )
   }
 
   function updateUtxosFromTxAux(txAux) {
@@ -314,10 +258,9 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     getBalance,
     getChangeAddress,
     getTxFee,
-    getUsedAddresses,
     prepareTx,
     getHistory,
-    areUnusedAddressesExhausted,
+    getOwnAddresses: discoverOwnAddresses,
     _prepareTxAux: prepareTxAux,
   }
 }

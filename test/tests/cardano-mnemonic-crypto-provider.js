@@ -5,7 +5,7 @@ const {HARDENED_THRESHOLD} = require('../../wallet/constants')
 const CardanoMnemonicCryptoProvider = require('../../wallet/cardano-mnemonic-crypto-provider')
 const tx = require('../../wallet/transaction')
 const range = require('../../wallet/helpers/range')
-const deriveXpubNonHardened = require('../../wallet/helpers/deriveXpubNonHardened')
+const derivePublic = require('../../wallet/helpers/derivePublic')
 
 const mnemonic1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
 const mnemonic2 = 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme'
@@ -66,7 +66,7 @@ describe('extended public key derivation (non hardened)', () => {
   const accountHdNode = cryptoProvider1._deriveHdNodeFromRoot([HARDENED_THRESHOLD])
 
   it('xpub derivation from private and extended public key must coincide', () => {
-    const xpubDerivedPublic = deriveXpubNonHardened(accountHdNode.extendedPublicKey, 1)
+    const xpubDerivedPublic = derivePublic(accountHdNode.extendedPublicKey, 1)
     const xpubDerivedPrivate = cryptoProvider1._deriveChildHdNode(accountHdNode, [1])
       .extendedPublicKey
 

@@ -6,8 +6,6 @@ import strings from './translations'
 import {RefreshIcon, ExitIcon} from './svg'
 import printAda from './printAda'
 
-import {CARDANOLITE_CONFIG} from './config'
-
 class UnlockClass extends Component {
   constructor(props) {
     super(props)
@@ -229,40 +227,16 @@ const Address = ({address, isTransaction}) =>
     )
   )
 
-const UsedAddressesList = connect('usedAddresses')(({usedAddresses}) =>
+const OwnAddressesList = connect('ownAddresses')(({ownAddresses}) =>
   h(
     'div',
     {class: ''},
     h('h2', undefined, 'Already Used Addresses'),
-    ...usedAddresses.map((adr) => h(Address, {address: adr}))
+    ...ownAddresses.map((adr) => h(Address, {address: adr}))
   )
 )
 
-const UnusedAddressesList = connect(['unusedAddresses', 'usedAddresses'], actions)(
-  ({usedAddresses, unusedAddresses, generateNewUnusedAddress}) => {
-    const disableGettingNewAddresses =
-      unusedAddresses.length >= CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH ||
-      usedAddresses.length + unusedAddresses.length >=
-        CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
-    return h(
-      'div',
-      {class: ''},
-      h('h2', undefined, 'Unused Addresses'),
-      ...unusedAddresses.map((adr) => h(Address, {address: adr})),
-      h(
-        'button',
-        {
-          disabled: !!disableGettingNewAddresses,
-          onClick: generateNewUnusedAddress,
-        },
-        'Get one more'
-      )
-    )
-  }
-)
-
-const Addresses = () =>
-  h('div', {class: 'content-wrapper'}, h(UnusedAddressesList), h(UsedAddressesList))
+const Addresses = () => h('div', {class: 'content-wrapper'}, h(OwnAddressesList))
 
 const PrettyDate = ({date}) => {
   const day = `${date.getDate()}`.padStart(2)
@@ -532,10 +506,10 @@ const WalletInfo = () => h('div', {class: 'content-wrapper'}, h(Balance), h(Tran
 
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
-  activeWalletId: state.activeWalletId,
-}))(({pathname, activeWalletId}) => {
+  walletIsLoaded: state.walletIsLoaded,
+}))(({pathname, walletIsLoaded}) => {
   // unlock not wrapped in main
-  if (!activeWalletId) return h(Unlock)
+  if (!walletIsLoaded) return h(Unlock)
   const currentTab = pathname.split('/')[1]
   let content
   switch (currentTab) {
@@ -561,7 +535,7 @@ const LoginStatus = connect(
     balance: state.balance,
   }),
   actions
-)(({pathname, activeWalletId, balance, reloadWalletInfo, logout}) =>
+)(({pathname, walletIsLoaded, balance, reloadWalletInfo, logout}) =>
   h(
     'div',
     {class: 'status'},
@@ -624,8 +598,7 @@ const NavbarUnauth = () =>
 
 const NavbarAuth = connect((state) => ({
   pathname: state.router.pathname,
-  activeWalletId: state.activeWalletId,
-}))(({pathname, activeWalletId}) => {
+}))(({pathname}) => {
   const {
     history: {pushState},
   } = window
@@ -702,8 +675,8 @@ const NavbarAuth = connect((state) => ({
 })
 
 const Navbar = connect((state) => ({
-  activeWalletId: state.activeWalletId,
-}))(({activeWalletId}) => (activeWalletId ? h(NavbarAuth) : h(NavbarUnauth)))
+  walletIsLoaded: state.walletIsLoaded,
+}))(({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth)))
 
 class AboutOverlayClass extends Component {
   constructor(props) {
