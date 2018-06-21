@@ -125,6 +125,10 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     return deriveHdNode(derivationPath).extendedPublicKey
   }
 
+  /*
+  * derives first n-1 elements of derivation path the hardened way
+  * and only the n-th element is derived the nonhardened way
+  */
   function deriveXpubNonhardened(derivationPath) {
     const parentPath = derivationPath.slice(0, derivationPath.length - 1)
     const childPath = derivationPath.slice(derivationPath.length - 1, derivationPath.length)
