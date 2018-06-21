@@ -1,11 +1,17 @@
 const assert = require('assert')
 
 const BlockchainExplorer = require('../../wallet/blockchain-explorer')
-const CARDANOLITE_CONFIG = require('../../server/helpers/loadFrontendConfig')
-const mockObject = require('../mock')
-const mock = mockObject(CARDANOLITE_CONFIG)
+const mockNetwork = require('../mock')
 
-const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, {})
+const mockConfig = {
+  CARDANOLITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.cardanolite.com',
+  CARDANOLITE_TRANSACTION_SUBMITTER_URL: 'http://localhost:3000/api/transactions',
+  CARDANOLITE_BLOCKCHAIN_EXPLORER_PROXY_TARGET: 'https://explorer.cardanolite.com',
+  CARDANOLITE_WALLET_ADDRESS_LIMIT: 20,
+}
+const mockNet = mockNetwork(mockConfig)
+
+const blockchainExplorer = BlockchainExplorer(mockConfig, {})
 
 const addresses = [
   'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
@@ -493,7 +499,7 @@ const expectedHistory = [
 describe('wallet history parsing', function() {
   this.timeout(10000)
 
-  mock.mockBlockChainExplorer()
+  mockNet.mockBlockChainExplorer()
 
   it('should properly fetch wallet history', async () => {
     assert.equal(
@@ -507,7 +513,8 @@ describe('wallet history parsing', function() {
 describe('wallet unspent outputs fetching', function() {
   this.timeout(10000)
 
-  mock.mockBlockChainExplorer()
+  mockNet.mockBlockChainExplorer()
+  mockNet.mockUtxoEndpoint()
 
   it('should properly fetch unspent transaction outputs for addresses', async () => {
     const utxos = await blockchainExplorer.fetchUnspentTxOutputs([addresses[6], addresses[9]])

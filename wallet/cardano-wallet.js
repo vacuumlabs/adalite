@@ -31,9 +31,9 @@ function isValidAddress(address) {
   return true
 }
 
-const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelectionRandomSeed) => {
+const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) => {
   const state = {
-    utxoSelectionRandomSeed: utxoSelectionRandomSeed || Math.floor(Math.random() * MAX_INT32),
+    randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
     ownUtxos: {},
     overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
@@ -110,7 +110,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
 
   async function prepareTxInputs(coins) {
     // we want to do it pseudorandomly to guarantee fee computation stability
-    const randomGenerator = PseudoRandom(state.utxoSelectionRandomSeed)
+    const randomGenerator = PseudoRandom(state.randomSeed)
     const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
 
     const txInputs = []
@@ -174,7 +174,9 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
   async function getChangeAddress() {
     // if we used all available addresses return random address from the available ones
     const ownAddresses = await discoverOwnAddresses()
-    return ownAddresses[Math.floor(Math.random() * ownAddresses.length)]
+    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
+
+    return ownAddresses[randomSeedGenerator.nextInt() % ownAddresses.length]
   }
 
   async function getUnspentTxOutputs() {
@@ -234,9 +236,9 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     state.overallTxCountSinceLastUtxoFetch++
 
     // shift randomSeed for next unspent outputs selection
-    const randomSeedGenerator = new PseudoRandom(state.utxoSelectionRandomSeed)
+    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
     for (let i = 0; i < spentUtxos.length; i++) {
-      state.utxoSelectionRandomSeed = randomSeedGenerator.nextInt()
+      state.randomSeed = randomSeedGenerator.nextInt()
     }
   }
 
