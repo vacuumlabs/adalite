@@ -1,7 +1,7 @@
 const CardanoRustCrypto = require('rust-cardanolite-crypto')
 
-function deriveXpubNonHardened(xpub, childIndex) {
+function derivePublic(xpub, childIndex) {
   return new Buffer(CardanoRustCrypto.HdWallet.derivePublic(xpub, childIndex))
 }
 
-module.exports = deriveXpubNonHardened
+module.exports = deriveXpubNonhardened

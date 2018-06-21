@@ -9,7 +9,7 @@ const {pbkdf2Async} = require('./helpers/pbkdf2')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const {TX_SIGN_MESSAGE_PREFIX} = require('./constants')
 const {HdNode, mnemonicToHdNode, hdNodeStringToHdNode} = require('./hd-node')
-const deriveXpubNonHardened = require('./helpers/deriveXpubNonHardened')
+const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
 
 const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
@@ -134,7 +134,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     const childPath = derivationPath.slice(derivationPath.length - 1, derivationPath.length)
 
     // this reduce ensures that this would work even for empty derivation path
-    return childPath.reduce(deriveXpubNonHardened, deriveXpub(parentPath, 'hardened'))
+    return childPath.reduce(derivePublic, deriveXpub(parentPath, 'hardened'))
   }
 
   function deriveHdNode(derivationPath) {
