@@ -191,8 +191,8 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     return !!(childIndex >> 31)
   }
 
-  async function sign(message, pkDerivationPath) {
-    const hdNode = await deriveHdNode(pkDerivationPath)
+  async function sign(message, keyDerivationPath) {
+    const hdNode = await deriveHdNode(keyDerivationPath)
     const messageToSign = Buffer.from(message, 'hex')
 
     return ed25519.sign(messageToSign, hdNode.publicKey, hdNode.secretKey)
