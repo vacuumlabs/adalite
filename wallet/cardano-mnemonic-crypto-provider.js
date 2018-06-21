@@ -109,17 +109,13 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     const memoKey = JSON.stringify(derivationPath)
 
     if (!state.derivedXpubs[memoKey]) {
-      let result
-
       if (derivationMode === 'hardened') {
-        result = deriveXpubHardened(derivationPath)
+        state.derivedXpubs[memoKey] = deriveXpubHardened(derivationPath)
       } else if (derivationMode === 'nonhardened') {
-        result = deriveXpubNonhardened(derivationPath)
+        state.derivedXpubs[memoKey] = deriveXpubNonhardened(derivationPath)
       } else {
         throw Error(`Unknown derivation mode: ${derivationMode}`)
       }
-
-      state.derivedXpubs[memoKey] = result
     }
 
     return state.derivedXpubs[memoKey]
