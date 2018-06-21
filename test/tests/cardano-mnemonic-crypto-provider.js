@@ -77,21 +77,27 @@ describe('extended public key derivation (non hardened)', () => {
 describe('address generation from secret key', () => {
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
-    const derivedAddress1 = await cryptoProvider3.deriveAddress([])
+    const derivedAddress1 = await cryptoProvider3.deriveAddress([], 'hardened')
     assert.equal(derivedAddress1, expectedAddress1)
   })
 
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
   it('should properly generate some address from hardened key - child index starts with 1 in binary', async () => {
-    const derivedAddress2 = await cryptoProvider3.deriveAddress([HARDENED_THRESHOLD, childIndex2])
+    const derivedAddress2 = await cryptoProvider3.deriveAddress(
+      [HARDENED_THRESHOLD, childIndex2],
+      'hardened'
+    )
     assert.equal(derivedAddress2, expectedAddress2)
   })
 
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
   it('should properly generate some address from nonhardened key - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await cryptoProvider3.deriveAddress([HARDENED_THRESHOLD, childIndex3])
+    const derivedAddress3 = await cryptoProvider3.deriveAddress(
+      [HARDENED_THRESHOLD, childIndex3],
+      'hardened'
+    )
     assert.equal(derivedAddress3, expectedAddress3)
   })
 })
@@ -139,7 +145,7 @@ describe('wallet addresses derivation', () => {
       HARDENED_THRESHOLD,
       i,
     ])
-    const walletAddresses = await cryptoProvider3.deriveAddresses(derivationPaths)
+    const walletAddresses = await cryptoProvider3.deriveAddresses(derivationPaths, 'hardened')
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
   })
 })

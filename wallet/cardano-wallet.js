@@ -37,7 +37,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     ownUtxos: {},
     overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
-    hardenedAddressMode: true, // temporary - use it to switch between hardened and non-hardened addresses
+    addressDerivationMode: 'hardened', // temporary - use it to switch between hardened and non-hardened addresses
   }
 
   const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
@@ -173,7 +173,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
     const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
     let unusedAddresses = []
-    const startOffset = state.hardenedAddressMode ? HARDENED_THRESHOLD : 0
+    const startOffset = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
 
     for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
       const childIndexBegin = startOffset + i
@@ -183,7 +183,10 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
         i,
       ])
 
-      const addresses = await cryptoProvider.deriveAddresses(derivationPaths)
+      const addresses = await cryptoProvider.deriveAddresses(
+        derivationPaths,
+        state.addressDerivationMode
+      )
       unusedAddresses = unusedAddresses.concat(
         await blockchainExplorer.selectUnusedAddresses(addresses)
       )
@@ -229,7 +232,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
     const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
     const addressDiscoveryLimit = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_DISCOVERY_LIMIT
     let result = []
-    const startOffset = state.hardenedAddressMode ? HARDENED_THRESHOLD : 0
+    const startOffset = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
 
     for (let i = 0; i < addressDiscoveryLimit; i += gapLength) {
       const childIndexBegin = startOffset + i
@@ -239,7 +242,10 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, utxoSelection
         i,
       ])
 
-      const addresses = await cryptoProvider.deriveAddresses(derivationPaths)
+      const addresses = await cryptoProvider.deriveAddresses(
+        derivationPaths,
+        state.addressDerivationMode
+      )
       if (!(await blockchainExplorer.isSomeAddressUsed(addresses))) {
         break
       }
