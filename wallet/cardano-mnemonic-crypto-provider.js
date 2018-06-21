@@ -112,13 +112,9 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
       let result
 
       if (derivationMode === 'hardened') {
-        result = deriveHdNode(derivationPath).extendedPublicKey
+        result = deriveXpubHardened(derivationPath)
       } else if (derivationMode === 'nonhardened') {
-        const parentPath = derivationPath.slice(0, derivationPath.length - 1)
-        const childPath = derivationPath.slice(derivationPath.length - 1, derivationPath.length)
-
-        // this reduce ensures that this would work even for empty derivation path
-        result = childPath.reduce(deriveXpubNonHardened, deriveXpub(parentPath, 'hardened'))
+        result = deriveXpubNonhardened(derivationPath)
       } else {
         throw Error(`Unknown derivation mode: ${derivationMode}`)
       }
@@ -127,6 +123,18 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     }
 
     return state.derivedXpubs[memoKey]
+  }
+
+  function deriveXpubHardened(derivationPath) {
+    return deriveHdNode(derivationPath).extendedPublicKey
+  }
+
+  function deriveXpubNonhardened(derivationPath) {
+    const parentPath = derivationPath.slice(0, derivationPath.length - 1)
+    const childPath = derivationPath.slice(derivationPath.length - 1, derivationPath.length)
+
+    // this reduce ensures that this would work even for empty derivation path
+    return childPath.reduce(deriveXpubNonHardened, deriveXpub(parentPath, 'hardened'))
   }
 
   function deriveHdNode(derivationPath) {
