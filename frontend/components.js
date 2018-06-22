@@ -231,7 +231,7 @@ const OwnAddressesList = connect('ownAddresses')(({ownAddresses}) =>
   h(
     'div',
     {class: ''},
-    h('h2', undefined, 'Already Used Addresses'),
+    h('h2', undefined, 'My Addresses'),
     ...ownAddresses.map((adr) => h(Address, {address: adr}))
   )
 )
