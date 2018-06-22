@@ -1,12 +1,14 @@
 const cbor = require('cbor')
+const base58 = require('bs58')
 
-const {mnemonicToHdNode, generateMnemonic, validateMnemonic} = require('./mnemonic')
-const tx = require('./transaction')
-const address = require('./address')
-const blockchainExplorerObject = require('./blockchain-explorer')
-const request = require('./helpers/request')
+const {generateMnemonic, validateMnemonic} = require('./mnemonic')
+const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
+const BlockchainExplorer = require('./blockchain-explorer')
+const CardanoMnemonicCryptoProvider = require('./cardano-mnemonic-crypto-provider')
+const PseudoRandom = require('./helpers/PseudoRandom')
+const {HARDENED_THRESHOLD, MAX_INT32} = require('./constants')
+const shuffleArray = require('./helpers/shuffleArray')
 const range = require('./helpers/range')
-const {HARDENED_THRESHOLD} = require('./constants')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -15,72 +17,77 @@ function txFeeFunction(txSizeInBytes) {
   return Math.ceil(a + txSizeInBytes * b)
 }
 
-async function filterUsed(arr, callback) {
-  return (await Promise.all(
-    arr.map(async (item) => {
-      return (await callback(item)) ? item : undefined
-    })
-  )).filter((i) => i !== undefined)
+function isValidAddress(address) {
+  try {
+    // we decode the address from the base58 string
+    // and then we strip the 24 CBOR data taga (the "[0].value" part)
+    const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
+    const addressData = cbor.decode(addressAsBuffer)
+    const addressAttributes = addressData[1]
+    cbor.decode(addressAttributes.get(1))
+  } catch (e) {
+    return false
+  }
+  return true
 }
 
-const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
-  const blockchainExplorer = blockchainExplorerObject(CARDANOLITE_CONFIG)
-  const addressDerivationCache = {}
-
-  const hdNode =
-    mnemonicOrHdNodeString.search(' ') >= 0
-      ? mnemonicToHdNode(mnemonicOrHdNodeString)
-      : new tx.HdNode({hdNodeString: mnemonicOrHdNodeString})
-
-  async function sendAda(address, coins) {
-    const transaction = await prepareTx(address, coins)
-
-    const txHash = transaction.getId()
-    const txBody = cbor.encode(transaction).toString('hex')
-
-    return await submitTxRaw(txHash, txBody)
+const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) => {
+  const state = {
+    randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
+    ownUtxos: {},
+    overallTxCountSinceLastUtxoFetch: 0,
+    accountIndex: HARDENED_THRESHOLD,
+    addressDerivationMode: 'hardened', // temporary - use it to switch between hardened and non-hardened addresses
   }
 
-  function getHdNode() {
-    return hdNode
+  const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
+  const cryptoProvider = CardanoMnemonicCryptoProvider(mnemonicOrHdNodeString, state)
+
+  // fetch unspent outputs list asynchronously
+  getUnspentTxOutputs()
+
+  async function sendAda(address, coins) {
+    const txAux = await prepareTxAux(address, coins)
+    const signedTx = await cryptoProvider.signTx(txAux)
+
+    const result = await blockchainExplorer.submitTxRaw(signedTx.txHash, signedTx.txBody)
+
+    if (result) {
+      updateUtxosFromTxAux(txAux)
+    }
+
+    return result
   }
 
   async function getId() {
-    return await getAddress(HARDENED_THRESHOLD)
-  }
-
-  async function getAddress(childIndex) {
-    return (await getAddressWithHdNode(childIndex)).address
-  }
-
-  async function getAddressWithHdNode(childIndex) {
-    if (addressDerivationCache[childIndex] === undefined) {
-      addressDerivationCache[childIndex] = await address.deriveAddressWithHdNode(hdNode, childIndex)
-    }
-
-    return addressDerivationCache[childIndex]
+    return await cryptoProvider.getWalletId()
   }
 
   async function prepareTx(address, coins) {
+    const txAux = await prepareTxAux(address, coins)
+
+    return cryptoProvider.signTx(txAux)
+  }
+
+  async function prepareTxAux(address, coins) {
     const txInputs = await prepareTxInputs(coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins
     }, 0)
 
     const fee = computeTxFee(txInputs, coins)
-    if (txInputsCoinsSum - coins - fee < 0) {
+    const changeAmount = txInputsCoinsSum - coins - fee
+    if (changeAmount < 0) {
       return false
     }
 
-    const txOutputs = [
-      new tx.TxOutput(new tx.WalletAddress(address), coins),
-      new tx.TxOutput(
-        new tx.WalletAddress(await getChangeAddress()),
-        txInputsCoinsSum - fee - coins
-      ),
-    ]
+    const txOutputs = [TxOutput(address, coins, false)]
 
-    return new tx.Transaction(txInputs, txOutputs, {})
+    if (changeAmount > 0) {
+      txOutputs.push(TxOutput(await getChangeAddress(), txInputsCoinsSum - fee - coins, true))
+    }
+
+    return TxAux(txInputs, txOutputs, {})
   }
 
   async function getTxFee(address, coins) {
@@ -90,54 +97,31 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
   }
 
   async function getBalance() {
-    let result = 0
+    const addresses = await discoverOwnAddresses()
 
-    const addresses = await getUsedAddresses()
-
-    for (let i = 0; i < addresses.length; i++) {
-      result += await blockchainExplorer.getAddressBalance(addresses[i])
-    }
-
-    return result
+    return await blockchainExplorer.getBalance(addresses)
   }
 
   async function getHistory() {
-    const transactions = {}
+    const addresses = await discoverOwnAddresses()
 
-    const addresses = await getUsedAddresses()
-
-    for (const a of addresses) {
-      const myTransactions = await blockchainExplorer.getAddressTxList(a)
-      for (const t of myTransactions) {
-        transactions[t.ctbId] = t
-      }
-    }
-    for (const t of Object.values(transactions)) {
-      let effect = 0 //effect on wallet balance accumulated
-      for (const input of t.ctbInputs) {
-        if (addresses.includes(input[0])) {
-          effect -= +input[1].getCoin
-        }
-      }
-      for (const output of t.ctbOutputs) {
-        if (addresses.includes(output[0])) {
-          effect += +output[1].getCoin
-        }
-      }
-      t.effect = effect
-    }
-    return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
+    return await blockchainExplorer.getTxHistory(addresses)
   }
 
   async function prepareTxInputs(coins) {
-    // TODO optimize tx inputs selection, now it takes all utxos
-    const utxos = await getUnspentTxOutputsWithHdNodes()
+    // we want to do it pseudorandomly to guarantee fee computation stability
+    const randomGenerator = PseudoRandom(state.randomSeed)
+    const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
 
     const txInputs = []
-    for (let i = 0; i < utxos.length; i++) {
-      txInputs.push(
-        new tx.TxInput(utxos[i].txHash, utxos[i].outputIndex, utxos[i].hdNode, utxos[i].coins)
-      )
+    let sumUtxos = 0
+    let totalCoins = coins
+
+    for (let i = 0; i < utxos.length && sumUtxos < totalCoins; i++) {
+      txInputs.push(TxInputFromUtxo(utxos[i]))
+      sumUtxos += utxos[i].coins
+
+      totalCoins = coins + computeTxFee(txInputs)
     }
 
     return txInputs
@@ -164,6 +148,7 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
     * we assume that only two outputs (destination and change address) will be present
     * encoded in an indefinite length array
     */
+    // TODO - consider case when only 1 output is present
     const txOutputsSize =
       2 * 77 + cbor.encode(out1coins).length + cbor.encode(out2coinsUpperBound).length + 2
     const txMetaSize = 1 // currently empty Map
@@ -186,85 +171,41 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
     return txFeeFunction(txSizeInBytes + deviation)
   }
 
-  async function getChangeAddress(usedAddressesLimit = Number.MAX_SAFE_INTEGER, offset = 0) {
-    const usedAddressesWithHdNodes = await getUsedAddressesWithHdNodes()
-    if (offset < 0) throw new Error(`Argument offset = ${offset} must not be negative!`)
-    let result
+  async function getChangeAddress() {
+    // if we used all available addresses return random address from the available ones
+    const ownAddresses = await discoverOwnAddresses()
+    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
 
-    if (usedAddressesWithHdNodes.length < usedAddressesLimit) {
-      const highestUsedChildIndex = Math.max(
-        HARDENED_THRESHOLD,
-        ...usedAddressesWithHdNodes.map((item) => item.childIndex)
+    return ownAddresses[randomSeedGenerator.nextInt() % ownAddresses.length]
+  }
+
+  async function getUnspentTxOutputs() {
+    const addresses = await discoverOwnAddresses()
+
+    const currentOverallTxCount = await blockchainExplorer.getOverallTxCount(addresses)
+
+    if (state.overallTxCountSinceLastUtxoFetch < currentOverallTxCount) {
+      const nonemptyAddresses = await blockchainExplorer.selectNonemptyAddresses(addresses)
+      const response = await blockchainExplorer.fetchUnspentTxOutputs(nonemptyAddresses)
+      state.ownUtxos = Object.assign(
+        ...response.map((elem) => ({[`${elem.txHash}_${elem.outputIndex}`]: elem}))
       )
 
-      result = (await getAddressWithHdNode(highestUsedChildIndex + 1 + offset)).address
-    } else {
-      result =
-        usedAddressesWithHdNodes[Math.floor(Math.random() * usedAddressesWithHdNodes.length)]
-          .address
+      state.overallTxCountSinceLastUtxoFetch = currentOverallTxCount
     }
 
-    return result
+    return Object.values(state.ownUtxos)
   }
 
-  async function getUnspentTxOutputsWithHdNodes() {
-    let result = []
+  async function discoverOwnAddresses() {
+    const childIndexBegin = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
+    const childIndexEnd = childIndexBegin + CARDANOLITE_CONFIG.CARDANOLITE_WALLET_ADDRESS_LIMIT
+    const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
+      HARDENED_THRESHOLD,
+      i,
+    ])
 
-    const addresses = await getUsedAddressesWithHdNodes()
-
-    for (const a of addresses) {
-      const addressUnspentOutputs = await blockchainExplorer.getUnspentTxOutputs(a.address)
-      for (const element of addressUnspentOutputs) {
-        element.hdNode = a.hdNode
-      }
-      result = result.concat(addressUnspentOutputs)
-    }
-
-    return result
-  }
-
-  async function getUsedAddressesWithHdNodes() {
-    let result = []
-    // eslint-disable-next-line no-undef
-    const gapLength = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-
-    for (let i = 0; ; i++) {
-      const usedAddresses = await filterUsed(
-        await deriveAddressesWithHdNodes(i * gapLength, (i + 1) * gapLength),
-        async (addressData) => {
-          return await blockchainExplorer.isAddressUsed(addressData.address)
-        }
-      )
-
-      if (usedAddresses.length === 0) {
-        break
-      }
-
-      result = result.concat(usedAddresses)
-    }
-
-    return result
-  }
-
-  async function deriveAddresses(
-    begin = 0,
-    // eslint-disable-next-line no-undef
-    end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-  ) {
-    return (await deriveAddressesWithHdNodes(begin, end)).map((item) => item.address)
-  }
-
-  async function deriveAddressesWithHdNodes(
-    begin = 0,
-    // eslint-disable-next-line no-undef
-    end = CARDANOLITE_CONFIG.CARDANOLITE_ADDRESS_RECOVERY_GAP_LENGTH
-  ) {
-    const childIndexRange = range(begin + HARDENED_THRESHOLD + 1, end + HARDENED_THRESHOLD + 1)
-    return await Promise.all(childIndexRange.map(async (i) => await getAddressWithHdNode(i)))
-  }
-
-  async function getUsedAddresses() {
-    return (await getUsedAddressesWithHdNodes()).map((item) => item.address)
+    return await cryptoProvider.deriveAddresses(derivationPaths, state.addressDerivationMode)
   }
 
   function txFeeFunction(txSizeInBytes) {
@@ -274,28 +215,43 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
     return Math.ceil(a + txSizeInBytes * b)
   }
 
-  async function submitTxRaw(txHash, txBody) {
-    try {
-      const res = await request.execute(
-        CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
-        'POST',
-        JSON.stringify({
-          txHash,
-          txBody,
-        }),
-        {
-          'Content-Type': 'application/json',
-        }
-      )
+  async function isOwnAddress(addr) {
+    return await cryptoProvider.isOwnAddress(addr)
+  }
 
-      if (res.status >= 300) {
-        throw Error(`${res.status} ${JSON.stringify(res)}`)
-      } else {
-        return res.result
+  function updateUtxosFromTxAux(txAux) {
+    const spentUtxos = txAux.inputs.map((elem) => elem.utxo)
+    discardUtxos(spentUtxos)
+
+    const newUtxos = txAux.outputs.filter((elem) => isOwnAddress(elem.address)).map((elem, i) => {
+      return {
+        address: elem.address,
+        coins: elem.coins,
+        txHash: txAux.getId(),
+        outputIndex: i,
       }
-    } catch (err) {
-      throw err //Error(`txSubmiter unreachable ${err}`)
+    })
+
+    addUtxos(newUtxos)
+    state.overallTxCountSinceLastUtxoFetch++
+
+    // shift randomSeed for next unspent outputs selection
+    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
+    for (let i = 0; i < spentUtxos.length; i++) {
+      state.randomSeed = randomSeedGenerator.nextInt()
     }
+  }
+
+  function discardUtxos(utxos) {
+    utxos.map((utxo) => {
+      delete state.ownUtxos[`${utxo.txHash}_${utxo.outputIndex}`]
+    })
+  }
+
+  function addUtxos(utxos) {
+    utxos.map((utxo) => {
+      state.ownUtxos[`${utxo.txHash}_${utxo.outputIndex}`] = utxo
+    })
   }
 
   return {
@@ -304,11 +260,10 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG) => {
     getBalance,
     getChangeAddress,
     getTxFee,
-    getUsedAddresses,
     prepareTx,
-    deriveAddresses,
     getHistory,
-    getHdNode,
+    getOwnAddresses: discoverOwnAddresses,
+    _prepareTxAux: prepareTxAux,
   }
 }
 
@@ -321,5 +276,5 @@ module.exports = {
   generateMnemonic,
   validateMnemonic,
   txFeeFunction,
-  isValidAddress: address.isValidAddress,
+  isValidAddress,
 }

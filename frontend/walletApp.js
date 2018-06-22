@@ -31,10 +31,9 @@ const initialState = {
   },
   displayAboutOverlay: !window.localStorage.getItem('dontShowDisclaimer'),
   currentTab: 'wallet-info',
-  activeWalletId: null,
+  walletIsLoaded: false,
   newWalletMnemonic: '',
-  usedAddresses: [],
-  unusedAddresses: [],
+  ownAddresses: [],
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0},

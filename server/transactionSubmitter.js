@@ -24,6 +24,8 @@ module.exports = function(app, env) {
       return res.status(500).send('bad request format')
     }
 
+    // res.end(JSON.stringify({result: true, txHash}))
+
     txBody = `8201${txBody}`
 
     // INV menssage 00000024 + [0, TxHash] in CBOR  ie. 0...24 + CBOR_prefix + TxHash
