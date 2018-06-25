@@ -17,15 +17,13 @@ function TxAux(inputs, outputs, attributes) {
     ])
   }
 
-  const definition = {
+  return {
     getId,
     inputs,
     outputs,
     attributes,
     encodeCBOR,
   }
-
-  return definition
 }
 
 function TxWitness(extendedPublicKey, signature) {

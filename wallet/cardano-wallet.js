@@ -32,7 +32,9 @@ function isValidAddress(address) {
   return true
 }
 
-const CardanoWallet = async (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) => {
+const CardanoWallet = async (options) => {
+  const {mnemonicOrHdNodeString, config, randomSeed} = options
+
   const state = {
     randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
     ownUtxos: {},
@@ -41,8 +43,16 @@ const CardanoWallet = async (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomS
     addressDerivationMode: 'hardened', // temporary - use it to switch between hardened and non-hardened addresses
   }
 
-  const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
-  const cryptoProvider = CardanoTrezorCryptoProvider(CARDANOLITE_CONFIG, state)
+  const blockchainExplorer = BlockchainExplorer(config, state)
+
+  let cryptoProvider = null
+  if (options.cryptoProvider === 'trezor') {
+    cryptoProvider = CardanoTrezorCryptoProvider(config, state)
+  } else if (options.cryptoProvider === 'mnemonic') {
+    cryptoProvider = CardanoMnemonicCryptoProvider(mnemonicOrHdNodeString, state)
+  } else {
+    throw new Error(`Uknown crypto provider: ${options.cryptoProvider}`)
+  }
 
   await discoverOwnAddresses()
 
@@ -195,6 +205,8 @@ const CardanoWallet = async (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomS
         state.ownUtxos = Object.assign(
           ...response.map((elem) => ({[`${elem.txHash}_${elem.outputIndex}`]: elem}))
         )
+      } else {
+        state.ownUtxos = {}
       }
 
       state.overallTxCountSinceLastUtxoFetch = currentOverallTxCount
@@ -205,7 +217,7 @@ const CardanoWallet = async (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomS
 
   async function discoverOwnAddresses() {
     const childIndexBegin = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
-    const childIndexEnd = childIndexBegin + CARDANOLITE_CONFIG.CARDANOLITE_WALLET_ADDRESS_LIMIT
+    const childIndexEnd = childIndexBegin + config.CARDANOLITE_WALLET_ADDRESS_LIMIT
     const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
       HARDENED_THRESHOLD,
       i,
@@ -215,7 +227,8 @@ const CardanoWallet = async (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomS
   }
 
   async function isOwnAddress(addr) {
-    return await cryptoProvider.isOwnAddress(addr)
+    const addresses = await discoverOwnAddresses()
+    return addresses.find((address) => address === addr) !== undefined
   }
 
   function updateUtxosFromTxAux(txAux) {
@@ -261,6 +274,7 @@ const CardanoWallet = async (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomS
     getTxFee,
     prepareTx,
     getHistory,
+    isOwnAddress,
     getOwnAddresses: discoverOwnAddresses,
     _prepareTxAux: prepareTxAux,
   }

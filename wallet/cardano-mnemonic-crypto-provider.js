@@ -81,20 +81,6 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     return await deriveAddress([], 'hardened')
   }
 
-  async function isOwnAddress(address) {
-    try {
-      const hdPassphrase = await getHdPassphrase()
-      unpackAddress(address, hdPassphrase)
-      return true
-    } catch (e) {
-      if (e.name === 'AddressDecodingException') {
-        return false
-      }
-
-      throw e
-    }
-  }
-
   async function getHdPassphrase() {
     return await pbkdf2Async(
       state.masterHdNode.extendedPublicKey,
@@ -235,7 +221,6 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   return {
     deriveAddress,
     deriveAddresses,
-    isOwnAddress,
     signTx,
     getWalletId,
     _sign: sign,
