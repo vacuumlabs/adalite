@@ -42,10 +42,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
     const result = await request(url)
 
-    const rawObj = cbor.decode(Buffer.from(JSON.parse(result.Right), 'hex'))
-    const txAux = parseTxAux(rawObj)
-
-    return txAux
+    return JSON.parse(result.Right)
   }
 
   async function getOverallTxCount(addresses) {
