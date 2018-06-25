@@ -30,7 +30,6 @@ const initialState = {
     hint: 'Hint: Ensure that your mnemonic is without mistake.',
   },
   displayAboutOverlay: !window.localStorage.getItem('dontShowDisclaimer'),
-  currentTab: 'wallet-info',
   activeWalletId: null,
   newWalletMnemonic: '',
   usedAddresses: [],
@@ -59,6 +58,15 @@ window.history.onpushstate = () =>
       hash: window.location.hash,
     },
   })
+
+window.onpopstate = (event) =>
+  store.setState({
+    router: {
+      pathname: event.target.location.pathname,
+      hash: event.target.location.hash,
+    },
+  })
+
 window.onhashchange = () =>
   store.setState({
     router: {
