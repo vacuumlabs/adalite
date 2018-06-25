@@ -100,8 +100,8 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     })
   }
 
-  async function trezorDeriveAddress(derivationPath, displayConfirmation) {
-    return await new Promise((resolve, reject) => {
+  function trezorDeriveAddress(derivationPath, displayConfirmation) {
+    return new Promise((resolve, reject) => {
       const path = toBip44Path(derivationPath)
 
       callTrezor((shouldRejectOnError) => {
@@ -167,8 +167,8 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     return (await deriveTrezorXpub(derivationPath)).xpub
   }
 
-  async function deriveTrezorXpub(derivationPath) {
-    return await new Promise((resolve, reject) => {
+  function deriveTrezorXpub(derivationPath) {
+    return new Promise((resolve, reject) => {
       // m/44'/1815'/0'/0/childIndex
       const path = toBip44Path(derivationPath)
 
@@ -207,8 +207,8 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     throw new Error('This operation is not supported on TrezorCryptoProvider!')
   }
 
-  async function sign(message, derivationPath) {
-    return await new Promise((resolve, reject) => {
+  function sign(message, derivationPath) {
+    return new Promise((resolve, reject) => {
       const messageToSign = Buffer.from(message, 'hex').toString('utf8')
 
       // m/44'/1815'/0'/0/childIndex

@@ -20,11 +20,11 @@ const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
 
 describe('signing', () => {
-  const message = new Buffer(
+  const message = Buffer.from(
     '011a2d964a0958209585b64a94a56074504ad91121333b70b94027580b1e3bd49e18b541e8a4b950',
     'hex'
   )
-  const expectedMessageSignature = new Buffer(
+  const expectedMessageSignature = Buffer.from(
     '104aa67d10c5ad01dc958a8ff07b29640cf1005de274d68fb8eb763e7754315248d9c7b7c494acce1887f071f349ff74568fb33125df23aa05d8a3d366a43303',
     'hex'
   )
