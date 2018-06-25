@@ -105,20 +105,6 @@ describe('address generation from secret key', () => {
   })
 })
 
-describe('address ownership verification', () => {
-  const ownAddress =
-    'DdzFFzCqrhsoStdHaBGfa5ZaLysiTnVuu7SHRcJvvu4yKg94gVBx3TzEV9CjphrFxLhnu1DJUKm2kdcrxYDZBGosrv4Gq3HuiFWRYVdZ'
-  it('should accept own address', async () => {
-    assert.equal(await cryptoProvider3.isOwnAddress(ownAddress), true)
-  })
-
-  const foreignAddress =
-    'DdzFFzCqrht1Su7MEaCbFUcKpZnqQp5aUudPjrJZ2h8YADJBDvpsXZk9BducpXcSgujYJGKaTuZye9hb9z3Hff42TXDft5yrsKka6rDW'
-  it('should reject foreign address', async () => {
-    assert.equal(await cryptoProvider3.isOwnAddress(foreignAddress), false)
-  })
-})
-
 describe('wallet addresses derivation', () => {
   const expectedWalletAddresses = [
     'DdzFFzCqrhsgeBwYfYqJojCSPquZVLVoqAWjoBXsxCE9gJ44881GzVXMverRYLBU5KeArqW3EPThfeucWj1UzBU49c2e87dkdVaVSZ3s',

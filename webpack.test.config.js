@@ -11,6 +11,9 @@ module.exports = {
   node: {
     fs: 'empty',
   },
+  externals: {
+    'trezor-connect': 'TrezorConnect',
+  },
   plugins: [new Dotenv()],
   mode: 'development',
 }
