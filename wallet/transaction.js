@@ -21,6 +21,7 @@ function TxAux(inputs, outputs, attributes) {
     getId,
     inputs,
     outputs,
+    attributes,
     encodeCBOR,
   }
 

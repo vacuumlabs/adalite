@@ -6,6 +6,9 @@ module.exports = {
     library: 'CardanoFrontend',
     path: `${__dirname}/public_wallet_app/js`,
   },
+  externals: {
+    'trezor-connect': 'TrezorConnect',
+  },
   mode: 'development',
   node: {
     fs: 'empty',

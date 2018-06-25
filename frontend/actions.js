@@ -29,7 +29,7 @@ export default ({setState, getState}) => {
   const loadWalletFromMnemonic = async (state, mnemonic) => {
     setState(loadingAction(state, 'Loading wallet data...'))
 
-    wallet = Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
+    wallet = await Cardano.CardanoWallet(mnemonic, CARDANOLITE_CONFIG)
 
     const walletIsLoaded = true
     const ownAddresses = await wallet.getOwnAddresses()
