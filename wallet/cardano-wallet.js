@@ -5,6 +5,7 @@ const {generateMnemonic, validateMnemonic} = require('./mnemonic')
 const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
 const BlockchainExplorer = require('./blockchain-explorer')
 const CardanoMnemonicCryptoProvider = require('./cardano-mnemonic-crypto-provider')
+const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
 const {HARDENED_THRESHOLD, MAX_INT32} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
@@ -31,7 +32,7 @@ function isValidAddress(address) {
   return true
 }
 
-const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) => {
+const CardanoWallet = async (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) => {
   const state = {
     randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
     ownUtxos: {},
@@ -41,7 +42,9 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
   }
 
   const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
-  const cryptoProvider = CardanoMnemonicCryptoProvider(mnemonicOrHdNodeString, state)
+  const cryptoProvider = CardanoTrezorCryptoProvider(CARDANOLITE_CONFIG, state)
+
+  await discoverOwnAddresses()
 
   // fetch unspent outputs list asynchronously
   getUnspentTxOutputs()
@@ -187,9 +190,12 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
     if (state.overallTxCountSinceLastUtxoFetch < currentOverallTxCount) {
       const nonemptyAddresses = await blockchainExplorer.selectNonemptyAddresses(addresses)
       const response = await blockchainExplorer.fetchUnspentTxOutputs(nonemptyAddresses)
-      state.ownUtxos = Object.assign(
-        ...response.map((elem) => ({[`${elem.txHash}_${elem.outputIndex}`]: elem}))
-      )
+
+      if (response.length) {
+        state.ownUtxos = Object.assign(
+          ...response.map((elem) => ({[`${elem.txHash}_${elem.outputIndex}`]: elem}))
+        )
+      }
 
       state.overallTxCountSinceLastUtxoFetch = currentOverallTxCount
     }
@@ -206,13 +212,6 @@ const CardanoWallet = (mnemonicOrHdNodeString, CARDANOLITE_CONFIG, randomSeed) =
     ])
 
     return await cryptoProvider.deriveAddresses(derivationPaths, state.addressDerivationMode)
-  }
-
-  function txFeeFunction(txSizeInBytes) {
-    const a = 155381
-    const b = 43.946
-
-    return Math.ceil(a + txSizeInBytes * b)
   }
 
   async function isOwnAddress(addr) {
