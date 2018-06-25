@@ -201,13 +201,10 @@ const CardanoWallet = async (options) => {
       const nonemptyAddresses = await blockchainExplorer.selectNonemptyAddresses(addresses)
       const response = await blockchainExplorer.fetchUnspentTxOutputs(nonemptyAddresses)
 
-      if (response.length) {
-        state.ownUtxos = Object.assign(
-          ...response.map((elem) => ({[`${elem.txHash}_${elem.outputIndex}`]: elem}))
-        )
-      } else {
-        state.ownUtxos = {}
-      }
+      state.ownUtxos = Object.assign(
+        {},
+        ...response.map((elem) => ({[`${elem.txHash}_${elem.outputIndex}`]: elem}))
+      )
 
       state.overallTxCountSinceLastUtxoFetch = currentOverallTxCount
     }
