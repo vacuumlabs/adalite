@@ -43,6 +43,7 @@
     "cbor": "^4.0.0",
     "cors": "^2.8.4",
     "crc-32": "^1.2.0",
+    "device": "^0.3.9",
     "dotenv-webpack": "^1.5.5",
     "elliptic-cardano": "6.4.0-b",
     "express": "^4.16.3",
