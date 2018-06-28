@@ -1,4 +1,5 @@
 const redis = require('redis')
+const device = require('device')
 const client = redis.createClient(process.env.REDIS_URL)
 
 const knownIps = new Set()
@@ -21,7 +22,10 @@ const monthNames = [
 module.exports = (req, res, next) => {
   // 'x-forwarded-for' due to internal heroku routing
   const ip = req.headers['x-forwarded-for']
-  if (!knownIps.has(ip)) {
+
+  const mydevice = device(req.headers['user-agent'])
+
+  if (!knownIps.has(ip) && !mydevice.is('bot')) {
     const date = new Date()
     knownIps.add(ip)
     client.incr('total')
