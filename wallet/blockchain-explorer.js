@@ -1,7 +1,5 @@
-const cbor = require('cbor')
-const {parseTxAux} = require('./cbor-parsers')
-
 const request = require('./helpers/request')
+const range = require('./helpers/range')
 
 const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -126,11 +124,18 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   }
 
   async function fetchUnspentTxOutputs(addresses) {
+    const nonemptyAddresses = await selectNonemptyAddresses(addresses)
+    const chunks = range(0, Math.ceil(nonemptyAddresses.length / 10))
+
     const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
-    const response = (await request(url, 'POST', JSON.stringify(addresses), {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    })).Right
+    const response = (await Promise.all(
+      chunks.map(async (index) => {
+        return (await request(url, 'POST', JSON.stringify(nonemptyAddresses.slice(index, 10)), {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        })).Right
+      })
+    )).reduce((acc, cur) => acc.concat(cur), [])
 
     return response.map((elem) => {
       return {
@@ -157,7 +162,6 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     fetchTxRaw,
     getOverallTxCount,
     fetchUnspentTxOutputs,
-    selectNonemptyAddresses,
     isAddressUsed,
     isSomeAddressUsed,
     selectUnusedAddresses,
