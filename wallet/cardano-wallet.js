@@ -194,12 +194,10 @@ const CardanoWallet = async (options) => {
 
   async function getUnspentTxOutputs() {
     const addresses = await discoverOwnAddresses()
-
     const currentOverallTxCount = await blockchainExplorer.getOverallTxCount(addresses)
 
     if (state.overallTxCountSinceLastUtxoFetch < currentOverallTxCount) {
-      const nonemptyAddresses = await blockchainExplorer.selectNonemptyAddresses(addresses)
-      const response = await blockchainExplorer.fetchUnspentTxOutputs(nonemptyAddresses)
+      const response = await blockchainExplorer.fetchUnspentTxOutputs(addresses)
 
       state.ownUtxos = Object.assign(
         {},
