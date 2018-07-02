@@ -2,6 +2,8 @@
   --brand: #eb1a75;
   --brand-dark: #ed005b;
   --brand-light: #d36a98;
+  --brand-shadow: #eb1a75cc;
+  --brand-shadow-light: #eb1a7544;
   --transition: 0.25s;
   --width: 1200px;
   --small-screen-padding: 50px;
@@ -783,7 +785,7 @@ td {
 
 .demo-button {
   background: #fff;
-  border: 1px solid var(--brand);;
+  border: 1px solid var(--brand);
   color: black;
 }
 @media screen and (max-width: 840px) {
@@ -931,4 +933,33 @@ td {
 .loading-button-wrapper {
   display: flex;
   justify-content: center;
+}
+.pulse {
+  box-shadow: 0 0 0 var(--brand-shadow);
+  animation: pulse 2s infinite;
+}
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 var(--brand-shadow);
+  }
+  70% {
+      -webkit-box-shadow: 0 0 0 10px var(--brand-shadow-light);
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 var(--brand-shadow-light);
+  }
+}
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 var(--brand-shadow);
+    box-shadow: 0 0 0 0 var(--brand-shadow);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 10px var(--brand-shadow-light);
+      box-shadow: 0 0 0 10px var(--brand-shadow-light);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 var(--brand-shadow-light);
+      box-shadow: 0 0 0 0 var(--brand-shadow-light);
+  }
 }
