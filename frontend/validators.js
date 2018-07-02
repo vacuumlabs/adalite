@@ -40,8 +40,21 @@ const feeValidator = (sendAmount, transactionFee, balance) => {
   return validationError
 }
 
+const mnemonicValidator = (mnemonic) => {
+  let validationError = null
+
+  if (!Cardano.validateMnemonic(mnemonic)) {
+    validationError = {
+      code: 'InvalidMnemonic',
+    }
+  }
+
+  return validationError
+}
+
 module.exports = {
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,
+  mnemonicValidator,
 }

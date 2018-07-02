@@ -43,6 +43,8 @@ const initialState = {
     pathname: window.location.pathname,
     hash: window.location.hash,
   },
+  mnemonic: '',
+  validationMsg: undefined,
 }
 
 const store =
