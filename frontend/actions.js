@@ -30,7 +30,8 @@ export default ({setState, getState}) => {
     setState(loadingAction(state, 'Loading wallet data...'))
 
     wallet = await Cardano.CardanoWallet({
-      cryptoProvider: 'trezor',
+      cryptoProvider: 'mnemonic',
+      mnemonicOrHdNodeString: mnemonic,
       config: CARDANOLITE_CONFIG,
     })
 
