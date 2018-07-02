@@ -9,4 +9,6 @@ module.exports = {
   SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,
+  InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
+  WalletInitializationError: () => 'Error during wallet initialization',
 }

@@ -1,70 +1,19 @@
 import {h, Component} from 'preact'
 import {connect} from 'unistore/preact'
-import Cardano from '../wallet/cardano-wallet'
 import actions from './actions'
-import strings from './translations'
+import translations from './translations'
 import {RefreshIcon, ExitIcon} from './svg'
 import printAda from './printAda'
 
-
 class UnlockClass extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      mnemonic: undefined,
-    }
-    this.generateMnemonic = this.generateMnemonic.bind(this)
-    this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
-    this.updateMnemonic = this.updateMnemonic.bind(this)
-    this.loadDemoWallet = this.loadDemoWallet.bind(this)
-    this.checkMnemonic = this.checkMnemonic.bind(this)
-  }
-
-  generateMnemonic() {
-    this.setState({
-      mnemonic: Cardano.generateMnemonic(),
-      validationMsg: undefined,
-    })
-  }
-
-  async loadWalletFromMnemonic() {
-    this.setState({validationMsg: undefined})
-
-    try {
-      return await this.props.loadWalletFromMnemonic(this.state.mnemonic)
-    } catch (e) {
-      return this.setState({
-        validationMsg: `Error during wallet initialization: ${e.toString()}`,
-      })
-    }
-  }
-
-  loadDemoWallet() {
-    this.setState({
-      mnemonic: 'civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash',
-      validationMsg: undefined,
-    })
-  }
-
-  updateMnemonic(e) {
-    this.setState({mnemonic: e.target.value})
-    this.checkMnemonic(e.target.value)
-  }
-
-  checkMnemonic(mnemonic) {
-    if (!Cardano.validateMnemonic(mnemonic)) {
-      this.setState({
-        validationMsg: 'Invalid mnemonic, check your mnemonic for typos and try again.',
-      })
-      return
-    } else {
-      this.setState({
-        validationMsg: undefined,
-      })
-    }
-  }
-
-  render({loadWalletFromMnemonic, loadDemoWallet}, {mnemonic}) {
+  render({
+    mnemonic,
+    mnemonicValidationError,
+    loadWalletFromMnemonic,
+    loadDemoWallet,
+    updateMnemonic,
+    generateMnemonic,
+  }) {
     return h(
       'div',
       {class: 'intro-wrapper'},
@@ -72,7 +21,9 @@ class UnlockClass extends Component {
         'div',
         undefined,
         h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
-        this.state.validationMsg ? h('p', {class: 'alert error'}, this.state.validationMsg) : '',
+        mnemonicValidationError
+          ? h('p', {class: 'alert error'}, translations[mnemonicValidationError.code]())
+          : '',
         h(
           'div',
           {class: 'intro-input-row fade-in-up'},
@@ -83,7 +34,7 @@ class UnlockClass extends Component {
             name: 'mnemonic-submitted',
             placeholder: 'Enter twelve-word mnemonic',
             value: mnemonic,
-            onInput: this.updateMnemonic,
+            onInput: updateMnemonic,
             autocomplete: 'nope',
           }),
           h(
@@ -92,9 +43,11 @@ class UnlockClass extends Component {
             h(
               'button',
               {
-                class: `intro-button rounded-button ${mnemonic && !this.state.validationMsg ? 'pulse' : ''}`,
-                disabled: !mnemonic || this.state.validationMsg,
-                onClick: this.loadWalletFromMnemonic,
+                class: `intro-button rounded-button ${
+                  mnemonic && !mnemonicValidationError ? 'pulse' : ''
+                }`,
+                disabled: !mnemonic || mnemonicValidationError,
+                onClick: loadWalletFromMnemonic,
               },
               'Go'
             )
@@ -104,7 +57,7 @@ class UnlockClass extends Component {
           'a',
           {
             class: 'intro-link fade-in-up',
-            onClick: this.generateMnemonic,
+            onClick: generateMnemonic,
           },
           '…or generate a new one'
         )
@@ -116,7 +69,7 @@ class UnlockClass extends Component {
           'button',
           {
             class: 'demo-button rounded-button',
-            onClick: this.loadDemoWallet,
+            onClick: loadDemoWallet,
           },
           'Try demo wallet'
         )
@@ -125,7 +78,13 @@ class UnlockClass extends Component {
   }
 }
 
-const Unlock = connect(undefined, actions)(UnlockClass)
+const Unlock = connect(
+  (state) => ({
+    mnemonic: state.mnemonic,
+    mnemonicValidationError: state.mnemonicValidationError,
+  }),
+  actions
+)(UnlockClass)
 
 const Balance = connect('balance')(({balance}) =>
   h(
@@ -448,7 +407,7 @@ class SendAdaClass extends Component {
           {class: 'row'},
           h('label', undefined, h('span', undefined, 'Receiving address')),
           sendAddressValidationError &&
-            h('span', {class: 'validationMsg'}, strings[sendAddressValidationError.code]())
+            h('span', {class: 'validationMsg'}, translations[sendAddressValidationError.code]())
         ),
         h('input', {
           type: 'text',
@@ -472,7 +431,7 @@ class SendAdaClass extends Component {
               h(
                 'p',
                 {class: 'validationMsg'},
-                strings[sendAmountValidationError.code](sendAmountValidationError.params)
+                translations[sendAmountValidationError.code](sendAmountValidationError.params)
               )
           ),
           displayTransactionFee &&

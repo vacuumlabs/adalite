@@ -1,6 +1,11 @@
 import Cardano from '../wallet/cardano-wallet'
 import {CARDANOLITE_CONFIG} from './config'
-import {sendAddressValidator, sendAmountValidator, feeValidator} from './validators'
+import {
+  sendAddressValidator,
+  sendAmountValidator,
+  feeValidator,
+  mnemonicValidator,
+} from './validators'
 
 let wallet = null
 
@@ -26,32 +31,64 @@ export default ({setState, getState}) => {
       optionalArgsObj
     )
 
-  const loadWalletFromMnemonic = async (state, mnemonic) => {
-    setState(loadingAction(state, 'Loading wallet data...'))
+  const loadWalletFromMnemonic = async (state) => {
+    try {
+      setState(Object.assign(loadingAction(state, 'Loading wallet data...'), {mn: undefined}))
 
-    wallet = await Cardano.CardanoWallet({
-      cryptoProvider: 'mnemonic',
-      mnemonicOrHdNodeString: mnemonic,
-      config: CARDANOLITE_CONFIG,
-    })
+      wallet = await Cardano.CardanoWallet({
+        cryptoProvider: 'mnemonic',
+        mnemonicOrHdNodeString: state.mnemonic,
+        config: CARDANOLITE_CONFIG,
+      })
 
-    const walletIsLoaded = true
-    const ownAddresses = await wallet.getOwnAddresses()
-    const transactionHistory = await wallet.getHistory()
-    const balance = await wallet.getBalance()
-    const sendAmount = {fieldValue: ''}
-    const sendAddress = {fieldValue: ''}
-    const sendResponse = ''
+      const walletIsLoaded = true
+      const ownAddresses = await wallet.getOwnAddresses()
+      const transactionHistory = await wallet.getHistory()
+      const balance = await wallet.getBalance()
+      const sendAmount = {fieldValue: ''}
+      const sendAddress = {fieldValue: ''}
+      const sendResponse = ''
+      setState({
+        walletIsLoaded,
+        ownAddresses,
+        balance,
+        sendAmount,
+        sendAddress,
+        sendResponse,
+        transactionHistory,
+        loading: false,
+        mnemonic: '',
+      })
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e.toString())
+
+      setState({
+        mnemonicValidationError: {
+          code: 'WalletInitializationError',
+        },
+      })
+    }
+  }
+
+  const loadDemoWallet = (state) => {
     setState({
-      walletIsLoaded,
-      ownAddresses,
-      balance,
-      sendAmount,
-      sendAddress,
-      sendResponse,
-      transactionHistory,
-      loading: false,
-      mnemonic: '',
+      mnemonic: 'civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash',
+      mnemonicValidationError: undefined,
+    })
+  }
+
+  const generateMnemonic = (state) => {
+    setState({
+      mnemonic: Cardano.generateMnemonic(),
+      mnemonicValidationError: undefined,
+    })
+  }
+
+  const updateMnemonic = (state, e) => {
+    setState({
+      mnemonic: e.target.value,
+      mnemonicValidationError: mnemonicValidator(e.target.value),
     })
   }
 
@@ -210,5 +247,8 @@ export default ({setState, getState}) => {
     submitTransaction,
     updateAddress,
     updateAmount,
+    loadDemoWallet,
+    generateMnemonic,
+    updateMnemonic,
   }
 }
