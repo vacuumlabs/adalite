@@ -13,6 +13,8 @@ class UnlockClass extends Component {
     loadDemoWallet,
     updateMnemonic,
     generateMnemonic,
+    showMnemonicValidationError,
+    checkForMnemonicValidationError,
   }) {
     return h(
       'div',
@@ -21,7 +23,7 @@ class UnlockClass extends Component {
         'div',
         undefined,
         h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
-        mnemonicValidationError
+        mnemonicValidationError && showMnemonicValidationError
           ? h('p', {class: 'alert error'}, translations[mnemonicValidationError.code]())
           : '',
         h(
@@ -35,6 +37,7 @@ class UnlockClass extends Component {
             placeholder: 'Enter twelve-word mnemonic',
             value: mnemonic,
             onInput: updateMnemonic,
+            onBlur: checkForMnemonicValidationError,
             autocomplete: 'nope',
           }),
           h(
@@ -82,6 +85,7 @@ const Unlock = connect(
   (state) => ({
     mnemonic: state.mnemonic,
     mnemonicValidationError: state.mnemonicValidationError,
+    showMnemonicValidationError: state.showMnemonicValidationError,
   }),
   actions
 )(UnlockClass)
