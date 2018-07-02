@@ -89,6 +89,13 @@ export default ({setState, getState}) => {
     setState({
       mnemonic: e.target.value,
       mnemonicValidationError: mnemonicValidator(e.target.value),
+      showMnemonicValidationError: false,
+    })
+  }
+
+  const checkForMnemonicValidationError = (state) => {
+    setState({
+      showMnemonicValidationError: state.mnemonicValidationError && true,
     })
   }
 
@@ -250,5 +257,6 @@ export default ({setState, getState}) => {
     loadDemoWallet,
     generateMnemonic,
     updateMnemonic,
+    checkForMnemonicValidationError,
   }
 }
