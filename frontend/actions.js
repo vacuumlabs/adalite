@@ -21,19 +21,40 @@ const debounceEvent = (callback, time) => {
 }
 
 export default ({setState, getState}) => {
-  const loadingAction = (state, message, optionalArgsObj) =>
-    Object.assign(
-      {},
-      {
-        loading: true,
-        loadingMessage: message,
-      },
-      optionalArgsObj
+  const loadingAction = (state, message, optionalArgsObj) => {
+    return setState(
+      Object.assign(
+        {},
+        {
+          loading: true,
+          loadingMessage: message,
+        },
+        optionalArgsObj
+      )
     )
+  }
+
+  const stopLoadingAction = (state, optionalArgsObj) => {
+    return setState(
+      Object.assign(
+        {},
+        {
+          loading: false,
+          loadingMessage: undefined,
+        },
+        optionalArgsObj
+      )
+    )
+  }
+
+  const setAuthMethod = (state, option) => {
+    setState({
+      authMethod: option,
+    })
+  }
 
   const loadWallet = async (state, {cryptoProvider, secret}) => {
-    setState(loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined}))
-
+    loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined})
     switch (cryptoProvider) {
       case 'trezor':
         try {
@@ -202,7 +223,7 @@ export default ({setState, getState}) => {
   }
 
   const reloadWalletInfo = async (state) => {
-    setState(loadingAction(state, 'Reloading wallet info...'))
+    loadingAction(state, 'Reloading wallet info...')
 
     const balance = await wallet.getBalance()
     const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
@@ -310,7 +331,7 @@ export default ({setState, getState}) => {
   }
 
   const submitTransaction = async (state) => {
-    setState(loadingAction(state, 'processing transaction', 'Submitting transaction...'))
+    loadingAction(state, 'processing transaction', 'Submitting transaction...')
     try {
       const address = state.sendAddress.fieldValue
       const amount = state.sendAmount.coins
@@ -341,6 +362,8 @@ export default ({setState, getState}) => {
 
   return {
     loadingAction,
+    stopLoadingAction,
+    setAuthMethod,
     loadWallet,
     logout,
     reloadWalletInfo,

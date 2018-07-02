@@ -17,4 +17,7 @@ describe('CardanoLite Test Suite', () => {
   describe('Cardano Wallet', () => {
     require('./tests/cardano-wallet')
   })
+  describe('Import/Export Wallet as JSON', () => {
+    require('./tests/keypass-json')
+  })
 })

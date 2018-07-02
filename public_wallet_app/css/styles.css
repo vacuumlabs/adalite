@@ -83,7 +83,7 @@ path {
   fill: currentColor;
 }
 /* BUTTON */
-button {
+button, .button-like {
   background-color: var(--brand);
   color: white;
   border: 0;
@@ -98,7 +98,7 @@ button:disabled {
   background-color: var(--brand-light);
   cursor: not-allowed;
 }
-button:hover:enabled {
+.button-like:hover, button:hover:enabled {
   transform: scale(1.08);
 }
 button.danger {
@@ -188,12 +188,12 @@ td {
   display: flex;
   align-items: center;
 }
-.address-start{
+.address-start {
   border-left: 1px solid var(--border);
   padding-right: .5rem;
   padding-left: .5rem;
 }
-.address-end{
+.address-end {
   padding-right: 1rem;
 }
 .address-wrap {
@@ -389,6 +389,9 @@ td {
   background-color: #f8f9fa;
   border: 1px solid var(--border);
 }
+div.box.box-auto {
+  width: auto;
+}
 .box-info {
   border-color: var(--brand);
   background-color: #fcf7fd;
@@ -408,7 +411,6 @@ td {
 .box.center {
   text-align: center;
 }
-
 .overlay .box .message {
   overflow-y: auto;
 }
@@ -485,7 +487,7 @@ td {
   margin-top: 1em;
 }
 /* NAVIGATION */
-.menu-btn{
+.menu-btn {
   margin-left: 1rem;
   opacity: 0.7;
   background: url('../assets/menu.svg') no-repeat center;
@@ -501,7 +503,7 @@ td {
  background-color: var(--gray-background);
  opacity: 1;
 }
-.unauth-menu{
+.unauth-menu {
   color: var(--navbar-text);
   text-decoration: none;
   margin-left: 1rem;
@@ -886,11 +888,13 @@ td {
 /*LANDING*/
 .intro-wrapper {
   margin: auto;
+  margin-top: 1.5rem;
+  padding: 0 1em;
 }
 .intro-header {
   font-size: 2.3rem;
   font-weight: 600;
-  margin: 0 4rem 2rem;
+  margin: 0 4rem 1rem;
   text-align: center;
 }
 .intro-input-row {
@@ -908,6 +912,7 @@ td {
   background: #fff;
   border: 1px solid var(--brand);
   color: black;
+  margin-bottom: 1em;
 }
 .alt-button {
   font-weight: 600;
@@ -932,7 +937,6 @@ td {
 .trezor-text {
   font-size: 1.1rem;
   letter-spacing: .1rem;
-  color: black;
   font-weight: 800;
   padding-left: .5rem;
 }
@@ -988,6 +992,13 @@ td {
 .styled-unlock-input {
   text-align: center;
   border-radius: 0.6rem;
+}
+.styled-unlock-input[type="password"] {
+  max-width: 15rem;
+  margin: 1em;
+}
+.key-file-error {
+  margin-top: 1em;
 }
 .styled-send-input {
   margin-bottom: 1rem;
@@ -1186,4 +1197,107 @@ td {
   text-align: left;
   margin: auto;
   margin-bottom: 1em;
+}
+.load-file-row{
+  display: flex;
+  align-items: baseline;
+}
+.display-none {
+  display: none;
+}
+.drop-area {
+  border: 2px dashed var(--border);
+  background-color: var(--input-background);
+  width: 100%;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.drop-or-select-row {
+  display: flex;
+}
+.fill-width {
+  width: 100%;
+}
+.button-like {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.margin-l {
+  margin-left: 1rem;
+}
+
+/* tab-row */
+.tab-row {
+  text-align: center;
+  list-style: none;
+  margin-bottom:  2.5rem;
+  padding: 0;
+  line-height: 24px;
+  height: 26px;
+  overflow: hidden;
+  font-weight: 300;
+  position: relative;
+}
+.tab-row li {
+  border: 1px solid var(--border);
+  background: var(--navbar);
+  display: inline-block;
+  position: relative;
+  z-index: 0;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 #FFF;
+  margin: 0;
+  padding: 0 5px;
+  cursor: pointer;
+}
+.tab-row li.selected {
+  background: #FFF;
+  color: #333;
+  z-index: 1;
+  border-bottom-color: #FFF;
+}
+.tab-row:before {
+  position: absolute;
+  content: " ";
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  border-bottom: 1px solid var(--border);
+  z-index: 1;
+}
+.tab-row li:before,
+.tab-row li:after {
+  border: 1px solid var(--border);
+  position: absolute;
+  bottom: -1px;
+  width: 5px;
+  height: 5px;
+  content: " ";
+}
+.tab-row li:before {
+  left: -6px;
+  border-bottom-right-radius: 6px;
+  border-width: 0 1px 1px 0;
+}
+.tab-row li:after {
+  right: -6px;
+  border-bottom-left-radius: 6px;
+  border-width: 0 0 1px 1px;
+  box-shadow: -2px 2px 0 #D1D1D1;
+}
+.tab-row li.selected:before {
+  box-shadow: 2px 2px 0 #FFF;
+}
+.tab-row li.selected:after {
+  box-shadow: -2px 2px 0 #FFF;
+}
+
+.auth-section {
+  animation: fade-in 1.5s;
+  text-align: center;
 }
