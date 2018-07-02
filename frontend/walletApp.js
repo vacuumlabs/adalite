@@ -45,6 +45,7 @@ const initialState = {
   },
   mnemonic: '',
   validationMsg: undefined,
+  authMethod: 'mnemonic',
 }
 
 const store =

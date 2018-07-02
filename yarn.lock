@@ -5863,6 +5863,10 @@ scoped-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/scoped-regex/-/scoped-regex-1.0.0.tgz#a346bb1acd4207ae70bd7c0c7ca9e566b6baddb8"
 
+scrypt-async@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/scrypt-async/-/scrypt-async-2.0.0.tgz#419e8e9b40cef9173b44b4602acf50a3d27cf8ad"
+
 semver-compare@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
