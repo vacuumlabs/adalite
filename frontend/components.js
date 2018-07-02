@@ -80,7 +80,7 @@ class UnlockClass extends Component {
             h(
               'button',
               {
-                class: `intro-button rounded-button ${mnemonic ? 'pulse' : ''}`,
+                class: `intro-button rounded-button ${mnemonic && !this.state.validationMsg ? 'pulse' : ''}`,
                 disabled: !mnemonic,
                 onClick: this.loadWalletFromMnemonic,
               },
