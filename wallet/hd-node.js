@@ -1,11 +1,8 @@
-const bip39 = require('bip39')
-const cbor = require('cbor')
 const crypto = require('crypto')
 const {eddsa: EdDsa} = require('elliptic-cardano')
 const ec = new EdDsa('ed25519')
 
-const hashBlake2b256 = require('./helpers/hashBlake2b256')
-const {validateMnemonic} = require('./mnemonic')
+const {mnemonicToHashSeed} = require('./mnemonic')
 
 function HdNode({secretKey, publicKey, chainCode}) {
   /**
@@ -97,18 +94,6 @@ function extendSecretToSecretKey(secret) {
   }
 
   return hashResult
-}
-
-function mnemonicToHashSeed(mnemonic) {
-  if (!validateMnemonic(mnemonic)) {
-    const e = new Error('Invalid or unsupported mnemonic format')
-    e.name = 'InvalidArgumentException'
-    throw e
-  }
-
-  const ent = Buffer.from(bip39.mnemonicToEntropy(mnemonic), 'hex')
-
-  return cbor.encode(hashBlake2b256(cbor.encode(ent)))
 }
 
 module.exports = {

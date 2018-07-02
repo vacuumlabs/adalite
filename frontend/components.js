@@ -275,7 +275,7 @@ class UnlockClass extends Component {
             class: 'styled-input-nodiv styled-unlock-input',
             id: 'mnemonic-submitted',
             name: 'mnemonic-submitted',
-            placeholder: 'Enter twelve-word mnemonic',
+            placeholder: 'Enter 12-word mnemonic or paper wallet mnemonic',
             value: mnemonic,
             onInput: updateMnemonic,
             onBlur: checkForMnemonicValidationError,
