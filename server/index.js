@@ -2,11 +2,13 @@ require('dotenv').config()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const express = require('express')
+const compression = require('compression')
 const frontendConfig = require('./helpers/loadFrontendConfig')
 const app = express()
 
 app.use(bodyParser.json())
 app.use(cors())
+app.use(compression())
 
 // must be before every other route to guarantee the redirect!
 if (process.env.CARDANOLITE_FORCE_HTTPS === 'true') {
