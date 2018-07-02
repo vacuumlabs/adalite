@@ -193,6 +193,7 @@ td {
 }
 .address-wrap {
   display: flex;
+  overflow: hidden;
 }
 .address-link {
   border: 1px solid var(--border);
@@ -874,6 +875,16 @@ td {
 .balance-value {
   font-weight: 300;
   font-size: 4.5rem;
+  word-wrap: break-word;
+}
+@media screen and (max-width: 640px) {
+  .balance-value {
+    font-size: 2.25rem;
+  }
+  .ada-sign {
+    height: 1.5rem;
+    margin-left: 0.5rem;
+  }
 }
 .transaction-id {
   font-size: 0.9rem;
@@ -933,6 +944,9 @@ td {
 .loading-button-wrapper {
   display: flex;
   justify-content: center;
+}
+.transaction-history-wrapper {
+  overflow: auto;
 }
 .pulse {
   box-shadow: 0 0 0 var(--brand-shadow);

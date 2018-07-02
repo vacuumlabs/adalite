@@ -97,10 +97,10 @@ const Balance = connect('balance')(({balance}) =>
     h('h2', undefined, 'Balance'),
     h(
       'p',
-      undefined,
+      {class: 'balance-value'},
       h(
         'span',
-        {class: 'balance-value'},
+        undefined,
         isNaN(Number(balance)) ? balance : `${printAda(balance)}`
       ),
       h('img', {class: 'ada-sign', src: '/assets/ada.png'})
@@ -272,35 +272,39 @@ const TransactionHistory = connect('transactionHistory')(({transactionHistory}) 
     {class: ''},
     h('h2', undefined, 'Transaction History'),
     h(
-      'table',
-      undefined,
+      'div',
+      {class: 'transaction-history-wrapper'},
       h(
-        'thead',
-        undefined,
+        'table',
+        {undefined},
         h(
-          'tr',
+          'thead',
           undefined,
-          h('th', undefined, 'Time'),
-          h('th', undefined, 'Transaction'),
-          h('th', undefined, 'Movement (ADA)')
-        )
-      ),
-      h(
-        'tbody',
-        undefined,
-        ...transactionHistory.map((transaction) =>
           h(
             'tr',
             undefined,
+            h('th', undefined, 'Time'),
+            h('th', undefined, 'Transaction'),
+            h('th', undefined, 'Movement (ADA)')
+          )
+        ),
+        h(
+          'tbody',
+          undefined,
+          ...transactionHistory.map((transaction) =>
             h(
-              'td',
+              'tr',
               undefined,
-              h(PrettyDate, {
-                date: new Date(transaction.ctbTimeIssued * 1000),
-              })
-            ),
-            h('td', undefined, h(TransactionAddress, {address: transaction.ctbId})),
-            h('td', undefined, h(PrettyValue, {effect: transaction.effect}))
+              h(
+                'td',
+                undefined,
+                h(PrettyDate, {
+                  date: new Date(transaction.ctbTimeIssued * 1000),
+                })
+              ),
+              h('td', undefined, h(TransactionAddress, {address: transaction.ctbId})),
+              h('td', undefined, h(PrettyValue, {effect: transaction.effect}))
+            )
           )
         )
       )
