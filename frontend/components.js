@@ -6,6 +6,7 @@ import strings from './translations'
 import {RefreshIcon, ExitIcon} from './svg'
 import printAda from './printAda'
 
+
 class UnlockClass extends Component {
   constructor(props) {
     super(props)
@@ -16,6 +17,7 @@ class UnlockClass extends Component {
     this.loadWalletFromMnemonic = this.loadWalletFromMnemonic.bind(this)
     this.updateMnemonic = this.updateMnemonic.bind(this)
     this.loadDemoWallet = this.loadDemoWallet.bind(this)
+    this.checkMnemonic = this.checkMnemonic.bind(this)
   }
 
   generateMnemonic() {
@@ -27,11 +29,7 @@ class UnlockClass extends Component {
 
   async loadWalletFromMnemonic() {
     this.setState({validationMsg: undefined})
-    if (!Cardano.validateMnemonic(this.state.mnemonic)) {
-      return this.setState({
-        validationMsg: 'Invalid mnemonic, check your mnemonic for typos and try again.',
-      })
-    }
+
     try {
       return await this.props.loadWalletFromMnemonic(this.state.mnemonic)
     } catch (e) {
@@ -50,6 +48,20 @@ class UnlockClass extends Component {
 
   updateMnemonic(e) {
     this.setState({mnemonic: e.target.value})
+    this.checkMnemonic(e.target.value)
+  }
+
+  checkMnemonic(mnemonic) {
+    if (!Cardano.validateMnemonic(mnemonic)) {
+      this.setState({
+        validationMsg: 'Invalid mnemonic, check your mnemonic for typos and try again.',
+      })
+      return
+    } else {
+      this.setState({
+        validationMsg: undefined,
+      })
+    }
   }
 
   render({loadWalletFromMnemonic, loadDemoWallet}, {mnemonic}) {
@@ -81,7 +93,7 @@ class UnlockClass extends Component {
               'button',
               {
                 class: `intro-button rounded-button ${mnemonic && !this.state.validationMsg ? 'pulse' : ''}`,
-                disabled: !mnemonic,
+                disabled: !mnemonic || this.state.validationMsg,
                 onClick: this.loadWalletFromMnemonic,
               },
               'Go'
