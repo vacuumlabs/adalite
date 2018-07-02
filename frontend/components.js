@@ -9,7 +9,8 @@ class UnlockClass extends Component {
   render({
     mnemonic,
     mnemonicValidationError,
-    loadWalletFromMnemonic,
+    loadWallet,
+    walletLoadingError,
     loadDemoWallet,
     generateMnemonic,
     updateMnemonic,
@@ -25,9 +26,15 @@ class UnlockClass extends Component {
         'div',
         undefined,
         h('h1', {class: 'intro-header fade-in-up'}, 'Load your existing Cardano Wallet'),
-        mnemonicValidationError && showMnemonicValidationError
-          ? h('p', {class: 'alert error'}, translations[mnemonicValidationError.code]())
-          : '',
+        walletLoadingError &&
+          h(
+            'p',
+            {class: 'alert error'},
+            translations[walletLoadingError.code](walletLoadingError.params)
+          ),
+        mnemonicValidationError &&
+          showMnemonicValidationError &&
+          h('p', {class: 'alert error'}, translations[mnemonicValidationError.code]()),
         h(
           'div',
           {class: 'intro-input-row fade-in-up'},
@@ -52,7 +59,7 @@ class UnlockClass extends Component {
                   mnemonic && !mnemonicValidationError ? 'pulse' : ''
                 }`,
                 disabled: !mnemonic || mnemonicValidationError,
-                onClick: loadWalletFromMnemonic,
+                onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
               },
               'Go'
             )
@@ -65,21 +72,38 @@ class UnlockClass extends Component {
             onClick: openGenerateMnemonicDialog,
           },
           '…or generate a new one'
-        )
-      ),
-      h(
-        'div',
-        {class: 'centered-row'},
+        ),
+        showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
         h(
-          'button',
-          {
-            class: 'demo-button rounded-button',
-            onClick: loadDemoWallet,
-          },
-          'Try demo wallet'
+          'div',
+          {class: 'centered-row'},
+          h(
+            'button',
+            {
+              class: 'demo-button rounded-button',
+              onClick: loadDemoWallet,
+            },
+            'Try demo wallet'
+          )
+        ),
+        h(
+          'div',
+          {class: 'centered-row'},
+          h(
+            'button',
+            {
+              class: 'trezor-button fade-in-up',
+              onClick: () => loadWallet({cryptoProvider: 'trezor'}),
+            },
+            h(
+              'div',
+              undefined,
+              h('span', undefined, 'I have '),
+              h('span', {class: 'trezor-text'}, 'TREZOR')
+            )
+          )
         )
-      ),
-      showGenerateMnemonicDialog && h(GenerateMnemonicDialog)
+      )
     )
   }
 }
@@ -90,6 +114,7 @@ const Unlock = connect(
     mnemonicValidationError: state.mnemonicValidationError,
     showMnemonicValidationError: state.showMnemonicValidationError,
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
+    walletLoadingError: state.walletLoadingError,
   }),
   actions
 )(UnlockClass)
@@ -136,7 +161,7 @@ class Tooltip extends Component {
     return h(
       'span',
       {
-        class: ` with-tooltip${this.state.active ? ' active' : ''}`,
+        class: `with-tooltip ${this.state.active ? 'active' : ''}`,
         tooltip,
         onMouseEnter: this.showTooltip,
         onMouseLeave: this.hideTooltip,
@@ -169,7 +194,8 @@ class CopyOnClick extends Component {
     document.body.removeChild(input)
   }
 
-  async copyTextToClipboard() {
+  async copyTextToClipboard(e) {
+    e.preventDefault()
     try {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(this.props.value)
@@ -187,47 +213,129 @@ class CopyOnClick extends Component {
     return h(
       Tooltip,
       {tooltip},
-      h(
-        'span',
-        {
-          class: 'copy',
-          onClick: this.copyTextToClipboard,
-          onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
-        },
-        ''
-      )
+      h('a', {
+        class: 'copy margin-1rem',
+        onClick: this.copyTextToClipboard,
+        onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
+      })
     )
   }
 }
 
-const Address = ({address, isTransaction}) =>
+const Address = connect({}, actions)(({address, bip32path, openAddressDetail}) =>
   h(
     'div',
     {class: 'address-wrap'},
-    h('input', {
-      readonly: true,
-      type: 'text',
-      class: 'address',
-      value: address,
-    }),
-    h(CopyOnClick, {value: address}),
+    h('b', {class: 'address address-start no-events'}, `/${bip32path.split('/')[5]}`),
+    h(
+      'span',
+      {class: 'address shrinked no-events'},
+      h('span', {class: 'shrinklable'}, address.substr(0, address.length - 8))
+    ),
+    h('span', {class: 'address address-end no-events'}, address.substr(address.length - 10)),
     h(
       Tooltip,
-      {tooltip: 'Examine via CardanoExplorer.com'},
+      {tooltip: 'Show\u00A0full\u00A0address'},
       h('a', {
-        href: `https://cardanoexplorer.com/${isTransaction ? 'tx' : 'address'}/${address}`,
-        target: '_blank',
-        class: 'address-link',
+        class: 'show-address-detail margin-top-s',
+        onClick: () => openAddressDetail({address, bip32path}),
       })
     )
   )
+)
 
-const OwnAddressesList = connect('ownAddresses')(({ownAddresses}) =>
+const AddressDetail = connect(
+  (state) => ({
+    showDetail: state.showAddressDetail,
+    showVerification: state.showAddressVerification,
+    error: state.addressVerificationError,
+  }),
+  actions
+)(
+  ({showDetail, showVerification, error, closeAddressDetail}) =>
+    showDetail &&
+    h(
+      'div',
+      {class: 'overlay fade-in-up'},
+      !showVerification &&
+        h('div', {
+          class: 'overlay-close-layer',
+          onClick: closeAddressDetail,
+        }),
+      h(
+        'div',
+        {class: 'box'},
+        h(
+          'span',
+          {
+            class: 'overlay-close-button',
+            onClick: closeAddressDetail,
+          },
+          ''
+        ),
+        h(
+          'div',
+          undefined,
+          h('b', undefined, 'Address:'),
+          h(
+            'div',
+            {class: 'full-address-row'},
+            h(
+              'span',
+              {
+                class: `full-address ${showVerification ? 'no-select' : 'selectable'}`,
+              },
+              showDetail.address
+            )
+          ),
+          showVerification
+            ? h(
+              'div',
+              undefined,
+              h('b', undefined, 'Derivation path:'),
+              h(
+                'div',
+                {class: 'full-address-row'},
+                h('span', {class: 'full-address'}, showDetail.bip32path)
+              ),
+              h(
+                'b',
+                undefined,
+                'Verify that the address and derivation path shown on Trezor matches!'
+              )
+            )
+            : h(
+              'div',
+              undefined,
+              h(
+                'div',
+                {class: 'centered-row'},
+                h(CopyOnClick, {value: showDetail.address}),
+                h(
+                  Tooltip,
+                  {tooltip: 'Examine via CardanoExplorer.com'},
+                  h('a', {
+                    href: `https://cardanoexplorer.com/address/${showDetail.address}`,
+                    target: '_blank',
+                    class: 'address-link margin-1rem',
+                  })
+                )
+              )
+            )
+        )
+      )
+    )
+)
+
+const OwnAddressesList = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
   h(
     'div',
-    {class: ''},
+    {class: 'no-select'},
     h('h2', undefined, 'My Addresses'),
-    ...ownAddresses.map((adr) => h(Address, {address: adr}))
+    ...ownAddressesWithMeta.map((adr) =>
+      h(Address, {address: adr.address, bip32path: adr.bip32StringPath})
+    ),
+    h(AddressDetail)
   )
 )
 
@@ -331,15 +439,11 @@ const ConfirmTransactionDialog = connect(
       h(
         'div',
         {class: 'review-transaction-container'},
+        h('div', {class: 'review-transaction-row'}, h('span', undefined, 'Adress: ')),
         h(
           'div',
           {class: 'review-transaction-row'},
-          h(
-            'span',
-            undefined,
-            'Adress: ',
-            h('span', {class: 'review-transaction-adress'}, sendAddress)
-          )
+          h('span', {class: 'full-address'}, sendAddress)
         ),
         h(
           'div',
@@ -381,7 +485,7 @@ const GenerateMnemonicDialog = connect(
     {class: 'overlay'},
     h(
       'div',
-      {class: 'mnemonic-box-header box center'},
+      {class: 'mnemonic-box-header box center fade-in-up'},
       h(
         'span',
         {
@@ -396,7 +500,7 @@ const GenerateMnemonicDialog = connect(
         undefined,
         'Write these words down. Do not copy them to your clipboard, or save them anywhere online.'
       ),
-      h('div', {class: 'gray-row mnemonic-box'}, mnemonic),
+      h('div', {class: 'gray-row mnemonic-box no-events no-select'}, mnemonic),
       h('div', {class: ''}, h('button', {onClick: confirmGenerateMnemonicDialog}, 'Confirm'))
     )
   )
@@ -434,12 +538,17 @@ class SendAdaClass extends Component {
             'div',
             {
               id: 'transacton-submitted',
-              class: `alert ${sendResponse ? 'success' : 'error'}`,
+              class: `alert ${sendResponse.success ? 'success' : 'error'}`,
             },
             'Transaction ',
-            sendResponse
+            sendResponse.success
               ? h('b', undefined, 'successful')
-              : h('span', undefined, h('b', undefined, 'failed'), ', please try again.')
+              : h(
+                'span',
+                undefined,
+                h('b', undefined, 'failed'),
+                `: ${translations[sendResponse.error]()}`
+              )
           )
           : '',
         h(

@@ -116,7 +116,10 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
       if (res.status >= 400) {
         throw Error(`${res.status} ${JSON.stringify(res)}`)
       } else {
-        return res.result
+        if (res.result) {
+          return res.result
+        }
+        throw new Error(`Cardano network rejected the transaction ${JSON.stringify(res)}`)
       }
     } catch (err) {
       throw err //Error(`txSubmiter unreachable ${err}`)

@@ -2,6 +2,7 @@ const TrezorConnect = require('trezor-connect')
 const BlockchainExplorer = require('./blockchain-explorer')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
+const {toBip32Path} = require('./bip32')
 
 const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -11,19 +12,6 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
   })
 
   const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
-
-  function toBip44Path(derivationPath) {
-    // 44'/1815'
-    let resultPath = [2147483692, 2147485463]
-
-    if (derivationPath.length === 2) {
-      resultPath = resultPath.concat([derivationPath[0], 0, derivationPath[1]])
-    } else if (derivationPath.length === 1) {
-      resultPath.push(derivationPath[0])
-    }
-
-    return resultPath
-  }
 
   async function getWalletId() {
     return await deriveAddress([], 'hardened')
@@ -41,7 +29,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
 
   function trezorDeriveAddress(derivationPath, displayConfirmation) {
     return new Promise((resolve, reject) => {
-      const path = toBip44Path(derivationPath)
+      const path = toBip32Path(derivationPath)
 
       callTrezor((shouldRejectOnError) => {
         TrezorConnect.adaGetAddress(path, displayConfirmation, (response) => {
@@ -109,7 +97,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
   function deriveTrezorXpub(derivationPath) {
     return new Promise((resolve, reject) => {
       // m/44'/1815'/0'/0/childIndex
-      const path = toBip44Path(derivationPath)
+      const path = toBip32Path(derivationPath)
 
       callTrezor((shouldRejectOnError) => {
         TrezorConnect.adaGetPublicKey(path, (response) => {
@@ -151,7 +139,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
       const messageToSign = Buffer.from(message, 'hex').toString('utf8')
 
       // m/44'/1815'/0'/0/childIndex
-      const path = toBip44Path(derivationPath)
+      const path = toBip32Path(derivationPath)
 
       callTrezor((shouldRejectOnError) => {
         TrezorConnect.adaSignMessage(path, messageToSign, (response) => {
@@ -187,6 +175,11 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     }
   }
 
+  async function trezorVerifyAddress(address) {
+    const derivationPath = await getDerivationPathFromAddress(address)
+    await trezorDeriveAddress(derivationPath, true)
+  }
+
   async function prepareInput(input) {
     const data = {
       prev_hash: input.txHash,
@@ -195,7 +188,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     }
 
     const derivationPath = await getDerivationPathFromAddress(input.utxo.address)
-    data.address_n = toBip44Path(derivationPath)
+    data.address_n = toBip32Path(derivationPath)
 
     return data
   }
@@ -207,7 +200,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
 
     if (output.isChange) {
       const derivationPath = await getDerivationPathFromAddress(output.address)
-      data.address_n = toBip44Path(derivationPath)
+      data.address_n = toBip32Path(derivationPath)
     } else {
       data.address = output.address
     }
@@ -263,6 +256,8 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     deriveAddresses,
     getWalletId,
     signTx,
+    trezorVerifyAddress,
+    getDerivationPathFromAddress,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
   }

@@ -90,6 +90,21 @@
     })
   })
 
+  // eslint-disable-next-line prefer-arrow-callback
+  describe('test fetching wallet addresses', function() {
+    this.timeout(10000)
+
+    it('should properly fetch list of wallet addresses with metadata', async () => {
+      const addresses = await wallet.getOwnAddressesWithMeta()
+
+      assert.equal(
+        addresses[4].address,
+        'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu'
+      )
+      assert.equal(addresses[4].bip32StringPath, "m44'/1815'/0'/0/4'")
+    })
+  })
+
   describe('address ownership verification', () => {
     const ownAddress =
       'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E'

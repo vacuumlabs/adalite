@@ -72,7 +72,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
 
   async function deriveAddress(derivationPath, derivationMode) {
     const xpub = deriveXpub(derivationPath, derivationMode)
-    const hdPassphrase = await getHdPassphrase()
+    const hdPassphrase = await getRootHdPassphrase()
 
     return packAddress(derivationPath, xpub, hdPassphrase)
   }
@@ -81,7 +81,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     return await deriveAddress([], 'hardened')
   }
 
-  async function getHdPassphrase() {
+  async function getRootHdPassphrase() {
     return await pbkdf2Async(
       state.masterHdNode.extendedPublicKey,
       'address-hashing',
@@ -206,8 +206,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
 
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
-        const hdPassphrase = await getHdPassphrase()
-        const derivationPath = unpackAddress(input.utxo.address, hdPassphrase).derivationPath
+        const derivationPath = await getDerivationPathFromAddress(input.utxo.address)
         const xpub = deriveHdNode(derivationPath).extendedPublicKey
         const signature = await sign(`${TX_SIGN_MESSAGE_PREFIX}${txHash}`, derivationPath)
 
@@ -218,11 +217,17 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
     return SignedTransactionStructured(txAux, witnesses)
   }
 
+  async function getDerivationPathFromAddress(address) {
+    const hdPassphrase = await getRootHdPassphrase()
+    return unpackAddress(address, hdPassphrase).derivationPath
+  }
+
   return {
     deriveAddress,
     deriveAddresses,
     signTx,
     getWalletId,
+    getDerivationPathFromAddress,
     _sign: sign,
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
