@@ -37,7 +37,7 @@
     "@stablelib/chacha": "^0.7.2",
     "@stablelib/chacha20poly1305": "^0.10.2",
     "bignumber.js": "^6.0.0",
-    "bip39": "^2.5.0",
+    "bip39": "2.5.0",
     "blakejs": "^1.1.0",
     "body-parser": "^1.18.2",
     "bs58": "^4.0.1",

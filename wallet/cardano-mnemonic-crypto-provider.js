@@ -12,7 +12,11 @@ const {HdNode, mnemonicToHdNode, hdNodeStringToHdNode} = require('./hd-node')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
 
-const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
+const CardanoMnemonicCryptoProvider = (
+  mnemonicOrHdNodeString,
+  walletState,
+  disableCaching = false
+) => {
   const state = Object.assign(walletState, {
     masterHdNode:
       mnemonicOrHdNodeString.search(' ') >= 0
@@ -94,7 +98,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
   function deriveXpub(derivationPath, derivationMode) {
     const memoKey = JSON.stringify(derivationPath)
 
-    if (!state.derivedXpubs[memoKey]) {
+    if (disableCaching || !state.derivedXpubs[memoKey]) {
       if (derivationMode === 'hardened') {
         state.derivedXpubs[memoKey] = deriveXpubHardened(derivationPath)
       } else if (derivationMode === 'nonhardened') {
@@ -125,7 +129,7 @@ const CardanoMnemonicCryptoProvider = (mnemonicOrHdNodeString, walletState) => {
 
   function deriveHdNode(derivationPath) {
     const memoKey = JSON.stringify(derivationPath)
-    if (!state.derivedHdNodes[memoKey]) {
+    if (disableCaching || !state.derivedHdNodes[memoKey]) {
       if (derivationPath.length > 2) {
         throw Error('Address derivation path should be of length at most 2')
       }

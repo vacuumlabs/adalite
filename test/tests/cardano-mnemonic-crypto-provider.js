@@ -9,11 +9,12 @@ const derivePublic = require('../../wallet/helpers/derivePublic')
 
 const mnemonic1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
 const mnemonic2 = 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme'
-const cryptoProvider1 = CardanoMnemonicCryptoProvider(mnemonic1, {})
-const cryptoProvider2 = CardanoMnemonicCryptoProvider(mnemonic2, {})
+const cryptoProvider1 = CardanoMnemonicCryptoProvider(mnemonic1, {}, true)
+const cryptoProvider2 = CardanoMnemonicCryptoProvider(mnemonic2, {}, true)
 const cryptoProvider3 = CardanoMnemonicCryptoProvider(
   'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3',
-  {}
+  {},
+  true
 )
 
 const childIndex2 = 0xf9745151
@@ -96,10 +97,18 @@ describe('address generation from secret key', () => {
 
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
-  it('should properly generate some address from nonhardened key - child index starts with 0 in binary', async () => {
+  it('should properly generate some address from nonhardened key in hardened mode - child index starts with 0 in binary', async () => {
     const derivedAddress3 = await cryptoProvider3.deriveAddress(
       [HARDENED_THRESHOLD, childIndex3],
       'hardened'
+    )
+    assert.equal(derivedAddress3, expectedAddress3)
+  })
+
+  it('should properly generate some address from nonhardened key in nonhardened mode - child index starts with 0 in binary', async () => {
+    const derivedAddress3 = await cryptoProvider3.deriveAddress(
+      [HARDENED_THRESHOLD, childIndex3],
+      'nonhardened'
     )
     assert.equal(derivedAddress3, expectedAddress3)
   })
