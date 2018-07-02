@@ -31,26 +31,52 @@ export default ({setState, getState}) => {
       optionalArgsObj
     )
 
-  const loadWalletFromMnemonic = async (state) => {
+  const loadWallet = async (state, {cryptoProvider, secret}) => {
+    setState(loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined}))
+    switch (cryptoProvider) {
+      case 'trezor':
+        try {
+          wallet = await Cardano.CardanoWallet({
+            cryptoProvider: 'trezor',
+            config: CARDANOLITE_CONFIG,
+          })
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error(e.toString())
+          return setState({
+            loading: false,
+            walletLoadingError: {code: 'TrezorRejected'},
+          })
+        }
+        break
+      case 'mnemonic':
+        wallet = await Cardano.CardanoWallet({
+          cryptoProvider: 'mnemonic',
+          mnemonicOrHdNodeString: secret,
+          config: CARDANOLITE_CONFIG,
+        })
+        break
+      default:
+        return setState({
+          loading: false,
+          walletLoadingError: {
+            code: 'UnknownCryptoProvider',
+            params: {cryptoProvider},
+          },
+        })
+    }
     try {
-      setState(Object.assign(loadingAction(state, 'Loading wallet data...'), {mn: undefined}))
-
-      wallet = await Cardano.CardanoWallet({
-        cryptoProvider: 'mnemonic',
-        mnemonicOrHdNodeString: state.mnemonic,
-        config: CARDANOLITE_CONFIG,
-      })
-
       const walletIsLoaded = true
-      const ownAddresses = await wallet.getOwnAddresses()
+      const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
       const sendAmount = {fieldValue: ''}
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
+      const usingTrezor = cryptoProvider === 'trezor'
       setState({
         walletIsLoaded,
-        ownAddresses,
+        ownAddressesWithMeta,
         balance,
         sendAmount,
         sendAddress,
@@ -58,24 +84,26 @@ export default ({setState, getState}) => {
         transactionHistory,
         loading: false,
         mnemonic: '',
+        usingTrezor,
         showGenerateMnemonicDialog: false,
       })
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e.toString())
-
       setState({
-        mnemonicValidationError: {
+        walletLoadingError: {
           code: 'WalletInitializationError',
         },
       })
     }
+    return true
   }
 
   const loadDemoWallet = (state) => {
     setState({
       mnemonic: CARDANOLITE_CONFIG.CARDANOLITE_DEMO_WALLET_MNEMONIC,
       mnemonicValidationError: undefined,
+      walletLoadingError: undefined,
     })
   }
 
@@ -83,6 +111,7 @@ export default ({setState, getState}) => {
     setState({
       mnemonic: Cardano.generateMnemonic(),
       mnemonicValidationError: undefined,
+      walletLoadingError: undefined,
     })
   }
 
@@ -118,7 +147,41 @@ export default ({setState, getState}) => {
 
   const checkForMnemonicValidationError = (state) => {
     setState({
-      showMnemonicValidationError: state.mnemonicValidationError && true,
+      showMnemonicValidationError: !!state.mnemonicValidationError,
+    })
+  }
+
+  const verifyAddress = async (address) => {
+    const state = getState()
+    if (state.usingTrezor && state.showAddressDetail) {
+      try {
+        await wallet.verifyAddress(address)
+        setState({showAddressVerification: false})
+      } catch (e) {
+        console.error('User rejected the address on trezor!')
+        setState({
+          showAddressDetail: undefined,
+        })
+      }
+    }
+  }
+
+  const openAddressDetail = (state, {address, bip32path}) => {
+    const showAddressVerification = state.usingTrezor
+    setState({
+      showAddressDetail: {address, bip32path},
+      showAddressVerification,
+    })
+    if (showAddressVerification) {
+      setTimeout(() => verifyAddress(address), 1250)
+    }
+  }
+
+  const closeAddressDetail = (state) => {
+    setState({
+      showAddressDetail: undefined,
+      addressVerificationError: undefined,
+      showAddressVerification: undefined,
     })
   }
 
@@ -131,14 +194,14 @@ export default ({setState, getState}) => {
     setState(loadingAction(state, 'Reloading wallet info...'))
 
     const balance = await wallet.getBalance()
-    const ownAddresses = await wallet.getOwnAddresses()
+    const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
     const transactionHistory = await wallet.getHistory()
 
     // timeout setting loading state, so that loading shows even if everything was cashed
     setTimeout(() => setState({loading: false}), 500)
     setState({
       balance,
-      ownAddresses,
+      ownAddressesWithMeta,
       transactionHistory,
     })
   }
@@ -242,7 +305,7 @@ export default ({setState, getState}) => {
       const amount = state.sendAmount.coins
       const sendResponse = await wallet.sendAda(address, amount)
       const updatedBalance = await wallet.getBalance()
-      if (sendResponse) {
+      if (sendResponse.success) {
         setTimeout(() => setState({sendResponse: ''}), 4000)
         setState({
           sendAmount: {fieldValue: ''},
@@ -267,7 +330,7 @@ export default ({setState, getState}) => {
 
   return {
     loadingAction,
-    loadWalletFromMnemonic,
+    loadWallet,
     logout,
     reloadWalletInfo,
     toggleAboutOverlay,
@@ -281,6 +344,9 @@ export default ({setState, getState}) => {
     generateMnemonic,
     updateMnemonic,
     checkForMnemonicValidationError,
+    openAddressDetail,
+    closeAddressDetail,
+    verifyAddress,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     confirmGenerateMnemonicDialog,

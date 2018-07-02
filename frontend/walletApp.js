@@ -33,7 +33,7 @@ const initialState = {
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   newWalletMnemonic: '',
-  ownAddresses: [],
+  ownAddressesWithMeta: [],
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0},

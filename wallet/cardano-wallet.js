@@ -10,6 +10,7 @@ const PseudoRandom = require('./helpers/PseudoRandom')
 const {HARDENED_THRESHOLD, MAX_INT32} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
 const range = require('./helpers/range')
+const {toBip32StringPath} = require('./bip32')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -60,16 +61,23 @@ const CardanoWallet = async (options) => {
   getUnspentTxOutputs()
 
   async function sendAda(address, coins) {
-    const txAux = await prepareTxAux(address, coins)
-    const signedTx = await cryptoProvider.signTx(txAux)
-
-    const result = await blockchainExplorer.submitTxRaw(signedTx.txHash, signedTx.txBody)
-
-    if (result) {
+    try {
+      const txAux = await prepareTxAux(address, coins).catch((e) => {
+        throw new Error('TransactionCorrupted')
+      })
+      const signedTx = await cryptoProvider.signTx(txAux).catch((e) => {
+        throw new Error('TransactionRejectedByTrezor')
+      })
+      const result = await blockchainExplorer
+        .submitTxRaw(signedTx.txHash, signedTx.txBody)
+        .catch((e) => {
+          throw new Error('TransactionRejectedByNetwork')
+        })
       updateUtxosFromTxAux(txAux)
+      return {success: true, error: undefined}
+    } catch (e) {
+      return {success: false, error: e.message}
     }
-
-    return result
   }
 
   async function getId() {
@@ -221,6 +229,21 @@ const CardanoWallet = async (options) => {
     return await cryptoProvider.deriveAddresses(derivationPaths, state.addressDerivationMode)
   }
 
+  async function getOwnAddressesWithMeta() {
+    const addresses = await discoverOwnAddresses()
+
+    return Promise.all(
+      addresses.map(async (address) => {
+        const derivationPath = await cryptoProvider.getDerivationPathFromAddress(address)
+        const bip32StringPath = toBip32StringPath(derivationPath)
+        return {
+          address,
+          bip32StringPath,
+        }
+      })
+    )
+  }
+
   async function isOwnAddress(addr) {
     const addresses = await discoverOwnAddresses()
     return addresses.find((address) => address === addr) !== undefined
@@ -270,8 +293,9 @@ const CardanoWallet = async (options) => {
     prepareTx,
     getHistory,
     isOwnAddress,
-    getOwnAddresses: discoverOwnAddresses,
+    getOwnAddressesWithMeta,
     _prepareTxAux: prepareTxAux,
+    verifyAddress: cryptoProvider.trezorVerifyAddress,
   }
 }
 
