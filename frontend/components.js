@@ -11,8 +11,8 @@ class UnlockClass extends Component {
     mnemonicValidationError,
     loadWalletFromMnemonic,
     loadDemoWallet,
-    updateMnemonic,
     generateMnemonic,
+    updateMnemonic,
     showMnemonicValidationError,
     checkForMnemonicValidationError,
   }) {

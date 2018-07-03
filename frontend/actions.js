@@ -73,7 +73,7 @@ export default ({setState, getState}) => {
 
   const loadDemoWallet = (state) => {
     setState({
-      mnemonic: 'civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash',
+      mnemonic: CARDANOLITE_CONFIG.CARDANOLITE_DEMO_WALLET_MNEMONIC,
       mnemonicValidationError: undefined,
     })
   }

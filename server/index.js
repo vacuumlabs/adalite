@@ -43,7 +43,7 @@ app.get('*', (req, res) => {
       <noscript>Your browser does not support JavaScript or it is turned off.</noscript>
     </head>
 
-    <body data-config=${JSON.stringify(frontendConfig)}>
+    <body data-config='${JSON.stringify(frontendConfig)}'>
       <div id="root" style="width: 100%; height: 100%;"></div>
     </body>
 
