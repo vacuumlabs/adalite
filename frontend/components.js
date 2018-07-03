@@ -13,7 +13,9 @@ class UnlockClass extends Component {
     loadDemoWallet,
     generateMnemonic,
     updateMnemonic,
+    openGenerateMnemonicDialog,
     showMnemonicValidationError,
+    showGenerateMnemonicDialog,
     checkForMnemonicValidationError,
   }) {
     return h(
@@ -60,7 +62,7 @@ class UnlockClass extends Component {
           'a',
           {
             class: 'intro-link fade-in-up',
-            onClick: generateMnemonic,
+            onClick: openGenerateMnemonicDialog,
           },
           '…or generate a new one'
         )
@@ -76,7 +78,8 @@ class UnlockClass extends Component {
           },
           'Try demo wallet'
         )
-      )
+      ),
+      showGenerateMnemonicDialog && h(GenerateMnemonicDialog)
     )
   }
 }
@@ -86,6 +89,7 @@ const Unlock = connect(
     mnemonic: state.mnemonic,
     mnemonicValidationError: state.mnemonicValidationError,
     showMnemonicValidationError: state.showMnemonicValidationError,
+    showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
   }),
   actions
 )(UnlockClass)
@@ -98,11 +102,7 @@ const Balance = connect('balance')(({balance}) =>
     h(
       'p',
       {class: 'balance-value'},
-      h(
-        'span',
-        undefined,
-        isNaN(Number(balance)) ? balance : `${printAda(balance)}`
-      ),
+      h('span', undefined, isNaN(Number(balance)) ? balance : `${printAda(balance)}`),
       h('img', {class: 'ada-sign', src: '/assets/ada.png'})
     )
   )
@@ -366,6 +366,38 @@ const ConfirmTransactionDialog = connect(
           h('button', {class: 'cancel', onClick: cancelTransaction}, 'Cancel')
         )
       )
+    )
+  )
+})
+
+const GenerateMnemonicDialog = connect(
+  (state) => ({
+    mnemonic: state.mnemonic,
+  }),
+  actions
+)(({generateMnemonic, confirmGenerateMnemonicDialog, mnemonic, closeGenerateMnemonicDialog}) => {
+  return h(
+    'div',
+    {class: 'overlay'},
+    h(
+      'div',
+      {class: 'mnemonic-box-header box center'},
+      h(
+        'span',
+        {
+          class: 'overlay-close-button',
+          onClick: closeGenerateMnemonicDialog,
+        },
+        ''
+      ),
+      h('h4', undefined, 'Generate a Mnemonic Phrase'),
+      h(
+        'h7',
+        undefined,
+        'Write these words down. Do not copy them to your clipboard, or save them anywhere online.'
+      ),
+      h('div', {class: 'gray-row mnemonic-box'}, mnemonic),
+      h('div', {class: ''}, h('button', {onClick: confirmGenerateMnemonicDialog}, 'Confirm'))
     )
   )
 })

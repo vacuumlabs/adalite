@@ -58,6 +58,7 @@ export default ({setState, getState}) => {
         transactionHistory,
         loading: false,
         mnemonic: '',
+        showGenerateMnemonicDialog: false,
       })
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -82,6 +83,28 @@ export default ({setState, getState}) => {
     setState({
       mnemonic: Cardano.generateMnemonic(),
       mnemonicValidationError: undefined,
+    })
+  }
+
+  const openGenerateMnemonicDialog = (state) => {
+    setState({
+      mnemonic: Cardano.generateMnemonic(),
+      mnemonicValidationError: undefined,
+      showGenerateMnemonicDialog: true,
+    })
+  }
+
+  const closeGenerateMnemonicDialog = (state) => {
+    setState({
+      mnemonic: '',
+      mnemonicValidationError: undefined,
+      showGenerateMnemonicDialog: false,
+    })
+  }
+
+  const confirmGenerateMnemonicDialog = (state) => {
+    setState({
+      showGenerateMnemonicDialog: false,
     })
   }
 
@@ -258,5 +281,8 @@ export default ({setState, getState}) => {
     generateMnemonic,
     updateMnemonic,
     checkForMnemonicValidationError,
+    openGenerateMnemonicDialog,
+    closeGenerateMnemonicDialog,
+    confirmGenerateMnemonicDialog,
   }
 }

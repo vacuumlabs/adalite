@@ -358,6 +358,9 @@ td {
   display: flex;
   flex-direction: column;
 }
+.box.center {
+  text-align: center;
+}
 
 .overlay .box .message {
   overflow-y: auto;
@@ -947,6 +950,41 @@ td {
 }
 .transaction-history-wrapper {
   overflow: auto;
+}
+.gray-row {
+  padding: 0.5rem;
+  background-color: #eee;
+  font-family: monospace;
+  margin: auto;
+}
+.mnemonic-box {
+  margin-top: 2em;
+  margin-bottom: 2em;
+  word-wrap: break-word;
+}
+.mnemonic-box-header .overlay-close-button {
+  margin: 0.5em;
+}
+.mnemonic-box-header {
+  overflow-y: auto;
+}
+.overlay-close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  background: url('../assets/close.svg') no-repeat center;
+  background-size: 70% 70%;
+  opacity: 0.7;
+  padding: .5rem;
+  height: 2rem;
+  width: 2rem;
+  color: var(--navbar-text);;
+  transition: transform var(--transition);
+}
+.overlay-close-button:hover {
+  transition: transform var(--transition);
+  opacity: 1;
 }
 .pulse {
   box-shadow: 0 0 0 var(--brand-shadow);
