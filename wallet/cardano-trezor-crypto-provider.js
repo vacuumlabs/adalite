@@ -32,72 +32,11 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
   async function deriveAddresses(derivationPaths, derivationMode) {
     const addresses = []
 
-    derivationPaths = derivationPaths.filter((path) => {
-      const cachedAddress = state.derivedAddresses[JSON.stringify(path)]
-      if (cachedAddress) {
-        addresses.push(cachedAddress.address)
-        return false
-      }
-
-      return true
-    })
-
-    if (!derivationPaths.length) {
-      return addresses
+    for (const derivationPath of derivationPaths) {
+      addresses.push(await deriveAddress(derivationPath, derivationMode))
     }
 
-    let newAddresses = []
-    if (derivationMode === 'hardened') {
-      newAddresses = await trezorDeriveAddresses(derivationPaths, true)
-    } else {
-      for (const derivationPath of derivationPaths) {
-        newAddresses.push(await deriveAddress(derivationPath, derivationMode))
-      }
-    }
-
-    return addresses.concat(newAddresses)
-  }
-
-  function fromBip44Path(path) {
-    switch (path.length) {
-      case 5:
-        return [path[2], path[4]]
-      case 3:
-        return [path[2]]
-      case 0:
-        return []
-      default:
-        throw Error(`Unsupported derivation path: ${path}`)
-    }
-  }
-
-  function trezorDeriveAddresses(derivationPaths, displayConfirmation) {
-    return new Promise((resolve, reject) => {
-      const paths = derivationPaths.map((path) => toBip44Path(path))
-
-      callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaGetAddresses(paths, displayConfirmation, (response) => {
-          if (response.success) {
-            const addresses = response.addresses.map((item) => {
-              const path = fromBip44Path(item.address_n)
-
-              state.derivedAddresses[JSON.stringify(path)] = {
-                derivationPath: path,
-                address: item.address,
-              }
-
-              return item.address
-            })
-
-            resolve(addresses)
-          } else {
-            if (shouldRejectOnError(response.error)) {
-              reject(response.error)
-            }
-          }
-        })
-      })
-    })
+    return addresses
   }
 
   function trezorDeriveAddress(derivationPath, displayConfirmation) {
@@ -140,7 +79,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
       }
     }
 
-    return state.derivedAddresses[memoKey]
+    return state.derivedAddresses[memoKey].address
   }
 
   async function deriveXpub(derivationPath, derivationMode) {
@@ -173,10 +112,10 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
       const path = toBip44Path(derivationPath)
 
       callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaGetXpubKey(path, (response) => {
+        TrezorConnect.adaGetPublicKey(path, (response) => {
           if (response.success) {
             const xpubData = {
-              xpub: Buffer.from(response.xpub_key, 'hex'),
+              xpub: Buffer.from(response.xpub, 'hex'),
               root_hd_passphrase: Buffer.from(response.root_hd_passphrase, 'hex'),
             }
 
@@ -250,8 +189,8 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
 
   async function prepareInput(input) {
     const data = {
-      tx_hash: input.txHash,
-      output_index: input.outputIndex,
+      prev_hash: input.txHash,
+      prev_index: input.outputIndex,
       type: 0,
     }
 
@@ -284,7 +223,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
 
     const transactions = []
     for (const input of inputs) {
-      const transaction = (await blockchainExplorer.fetchTxRaw(input.tx_hash)).toString('hex')
+      const transaction = (await blockchainExplorer.fetchTxRaw(input.prev_hash)).toString('hex')
       transactions.push(transaction)
     }
 
@@ -294,11 +233,9 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
       outputs.push(data)
     }
 
-    const attributes = []
-
     return new Promise((resolve, reject) => {
       callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaSignTransaction(inputs, outputs, transactions, attributes, (response) => {
+        TrezorConnect.adaSignTransaction(inputs, outputs, transactions, (response) => {
           if (response.success) {
             resolve({txHash: response.tx_hash, txBody: response.tx_body})
           } else {
