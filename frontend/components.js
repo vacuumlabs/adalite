@@ -128,7 +128,7 @@ const Balance = connect('balance')(({balance}) =>
       'p',
       {class: 'balance-value'},
       h('span', undefined, isNaN(Number(balance)) ? balance : `${printAda(balance)}`),
-      h('img', {class: 'ada-sign', src: '/assets/ada.png'})
+      h('img', {class: 'ada-sign-big', alt: 'ADA', src: '/assets/ada.png'})
     )
   )
 )
@@ -681,9 +681,10 @@ const LoginStatus = connect(
     {class: 'status'},
     h(
       'div',
-      {class: 'status-text'},
+      {class: 'status-text on-desktop-only'},
       'Balance: ',
-      h('span', {class: 'status-balance'}, `${printAda(balance)} ADA`)
+      h('span', {class: 'status-balance'}, printAda(balance)),
+      h('img', {class: 'ada-sign', alt: 'ADA', src: '/assets/ada.png'})
     ),
     h(
       'div',
@@ -703,7 +704,7 @@ const LoginStatus = connect(
         {class: 'inline', for: 'navcollapse'},
         h(
           'div',
-          {class: 'button', onClick: logout},
+          {class: 'button', onClick: () => setTimeout(logout, 100)},
           h(ExitIcon),
           h('div', {class: 'status-icon-button-content'}, 'Logout')
         )
@@ -740,7 +741,8 @@ const NavbarUnauth = () =>
 
 const NavbarAuth = connect((state) => ({
   pathname: state.router.pathname,
-}))(({pathname}) => {
+  balance: state.balance,
+}))(({pathname, balance}) => {
   const {
     history: {pushState},
   } = window
@@ -758,13 +760,25 @@ const NavbarAuth = connect((state) => ({
           onClick: () => window.history.pushState({}, 'dashboard', 'dashboard'),
         },
         h('img', {src: '/assets/logo.png'}),
-        h('span', undefined, 'CardanoLite Wallet'),
+        h('span', undefined, 'CardanoLite'),
+
         h('sup', undefined, '⍺')
       ),
       h(
-        'label',
-        {class: 'navcollapse-label', for: 'navcollapse'},
-        h('a', {class: 'menu-btn'}, 'Menu')
+        'div',
+        {class: 'on-mobile-only'},
+        h(
+          'div',
+          {class: 'centered-row'},
+          h('span', {class: 'mobile-balance-label'}, 'Balance: '),
+          h('span', {class: 'status-balance'}, printAda(balance)),
+          h('img', {class: 'ada-sign', alt: ' ADA', src: '/assets/ada.png'}),
+          h(
+            'label',
+            {class: 'navcollapse-label', for: 'navcollapse'},
+            h('a', {class: 'menu-btn'}, ' ')
+          )
+        )
       ),
       h('input', {id: 'navcollapse', type: 'checkbox'}),
       h(
