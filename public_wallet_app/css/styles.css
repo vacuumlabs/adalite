@@ -419,6 +419,18 @@ td {
   .overlay .box .centered-row {
     margin-top: 0.5rem;
   }
+  p.send-amount-validation-error.validationMsg {
+    margin-top: 2em;
+  }
+  .send-input {
+    position: relative;
+  }
+  div.send-input > span {
+    position: absolute;
+    bottom: -1.5em;
+    right: 0;
+    padding: 0;
+  }
 }
 @media screen and (max-width: 370px) {
   .overlay .box .centered-row {
@@ -466,6 +478,10 @@ td {
 .validationMsg {
   color: var(--negative);
   margin: 0 0.8rem;
+}
+.send-amount-validation-error {
+  text-align: center;
+  margin-top: 1em;
 }
 /* NAVIGATION */
 .menu-btn{
@@ -799,6 +815,7 @@ td {
   font-weight: 600;
   float: right;
   margin: 15px 5px;
+  margin-top: 2em;
   height: 2.6rem;
   width: 200px;
   text-align: center;
@@ -1061,22 +1078,6 @@ td {
   width: 1.3rem;
   height: 1.3rem;
   animation: loading-spin 1s linear infinite;
-}
-.loading-button {
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
-  font-weight: 600;
-  float: right;
-  margin: 1rem 0.3rem;
-  height: 2.6rem;
-  width: 200px;
-  text-align: center;
-  justify-content: center;
-}
-.loading-button-wrapper {
-  display: flex;
-  justify-content: center;
 }
 .transaction-history-wrapper {
   overflow: auto;
