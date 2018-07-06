@@ -74,6 +74,7 @@ export default ({setState, getState}) => {
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
       const usingTrezor = cryptoProvider === 'trezor'
+      const isDemoWallet = secret === CARDANOLITE_CONFIG.CARDANOLITE_DEMO_WALLET_MNEMONIC
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
@@ -85,6 +86,8 @@ export default ({setState, getState}) => {
         loading: false,
         mnemonic: '',
         usingTrezor,
+        isDemoWallet,
+        showDemoWalletWarningDialog: true,
         showGenerateMnemonicDialog: false,
       })
     } catch (e) {
@@ -128,6 +131,12 @@ export default ({setState, getState}) => {
       mnemonic: '',
       mnemonicValidationError: undefined,
       showGenerateMnemonicDialog: false,
+    })
+  }
+
+  const closeDemoWalletWarningDialog = (state) => {
+    setState({
+      showDemoWalletWarningDialog: false,
     })
   }
 
@@ -349,6 +358,7 @@ export default ({setState, getState}) => {
     verifyAddress,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
+    closeDemoWalletWarningDialog,
     confirmGenerateMnemonicDialog,
   }
 }

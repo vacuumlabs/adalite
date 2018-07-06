@@ -474,6 +474,28 @@ const ConfirmTransactionDialog = connect(
   )
 })
 
+const DemoWalletWarningDialog = connect({}, actions)(({closeDemoWalletWarningDialog}) => {
+  return h(
+    'div',
+    {class: 'overlay'},
+    h(
+      'div',
+      {class: 'box center fade-in-up'},
+      h('h4', undefined, 'Warning'),
+      h(
+        'p',
+        undefined,
+        'You are logged into the demo wallet which is publicly available. Do NOT use this wallet to store funds!'
+      ),
+      h(
+        'div',
+        {class: 'box-button-wrapper'},
+        h('button', {onClick: closeDemoWalletWarningDialog}, 'I understand')
+      )
+    )
+  )
+})
+
 const GenerateMnemonicDialog = connect(
   (state) => ({
     mnemonic: state.mnemonic,
@@ -647,7 +669,8 @@ const WalletInfo = () => h('div', {class: 'content-wrapper'}, h(Balance), h(Tran
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
   walletIsLoaded: state.walletIsLoaded,
-}))(({pathname, walletIsLoaded}) => {
+  showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
+}))(({pathname, walletIsLoaded, showDemoWalletWarningDialog}) => {
   // unlock not wrapped in main
   if (!walletIsLoaded) return h(Unlock)
   const currentTab = pathname.split('/')[1]
@@ -666,7 +689,12 @@ const TopLevelRouter = connect((state) => ({
       content = h(WalletInfo)
   }
   // TODO is Alert used anywhere? if so add here
-  return h('main', {class: 'main'}, content)
+  return h(
+    'main',
+    {class: 'main'},
+    content,
+    showDemoWalletWarningDialog ? h(DemoWalletWarningDialog) : null
+  )
 })
 
 const LoginStatus = connect(
@@ -742,7 +770,8 @@ const NavbarUnauth = () =>
 const NavbarAuth = connect((state) => ({
   pathname: state.router.pathname,
   balance: state.balance,
-}))(({pathname, balance}) => {
+  isDemoWallet: state.isDemoWallet,
+}))(({pathname, balance, isDemoWallet}) => {
   const {
     history: {pushState},
   } = window
@@ -764,6 +793,7 @@ const NavbarAuth = connect((state) => ({
 
         h('sup', undefined, '⍺')
       ),
+      isDemoWallet ? h('div', {class: 'public-wallet-badge pulse'}, 'DEMO WALLET') : null,
       h(
         'div',
         {class: 'on-mobile-only'},

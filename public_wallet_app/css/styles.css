@@ -392,6 +392,9 @@ td {
   border-color: var(--brand);
   background-color: #fcf7fd;
 }
+.box-button-wrapper {
+  margin-top: 1rem;
+}
 .overlay .box {
   box-shadow: 3px 8px 0.6rem rgba(0, 0, 0, 0.05);
   max-width: var(--width);
@@ -506,6 +509,7 @@ td {
   width: 100%;
   height: 3.5rem;
   margin: 0 auto;
+  position: relative;
 }
 .navbar-wrap-unauth {
   justify-content: space-between;
@@ -1164,4 +1168,20 @@ td {
 }
 .shrinked {
   width: 30%;
+}
+.public-wallet-badge {
+  background: var(--brand);
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.6em;
+  padding: 2px 4px;
+  border-radius: 0.5em;
+  position: absolute;
+  left: 70px;
+  bottom: 0.4em;
+}
+.public-wallet-warning-list {
+  text-align: left;
+  margin: auto;
+  margin-bottom: 1em;
 }
