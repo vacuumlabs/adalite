@@ -475,7 +475,6 @@ td {
   content: ' ';
   display: inline-block;
   transition: background-color var(--transition);
-  content: '';
   cursor: pointer;
 }
 .menu-btn:hover {
