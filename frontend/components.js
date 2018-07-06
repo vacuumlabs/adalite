@@ -546,7 +546,12 @@ class SendAdaClass extends Component {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
 
-    const displayTransactionFee = sendAmount !== '' && transactionFee > 0
+    const displayTransactionFee =
+      sendAmount !== '' &&
+      transactionFee > 0 &&
+      !feeRecalculating &&
+      (!sendAmountValidationError ||
+        sendAmountValidationError.code === 'SendAmountInsufficientFunds')
 
     return h(
       'div',
@@ -594,19 +599,9 @@ class SendAdaClass extends Component {
         h(
           'div',
           {class: 'amount-label-row'},
-          h(
-            'div',
-            {class: 'row'},
-            h('label', undefined, h('span', undefined, 'Amount')),
-            sendAmountValidationError &&
-              h(
-                'p',
-                {class: 'validationMsg'},
-                translations[sendAmountValidationError.code](sendAmountValidationError.params)
-              )
-          ),
+          h('div', {class: 'row'}, h('label', undefined, h('span', undefined, 'Amount'))),
           displayTransactionFee &&
-            h('span', {class: 'transaction-fee'}, `+ ${printAda(transactionFee)} transaction fee`)
+            h('span', {class: 'transaction-fee'}, `+ ${printAda(transactionFee)} tx fee`)
         ),
         h(
           'div',
@@ -627,6 +622,12 @@ class SendAdaClass extends Component {
               `= ${printAda(totalAmount)} ADA`
             )
         ),
+        sendAmountValidationError &&
+          h(
+            'p',
+            {class: 'validationMsg send-amount-validation-error'},
+            translations[sendAmountValidationError.code](sendAmountValidationError.params)
+          ),
         feeRecalculating
           ? h(
             'button',
