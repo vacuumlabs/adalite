@@ -6,6 +6,8 @@ module.exports = {
   SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
   SendAmountInsufficientFunds: ({balance}) =>
     `Insufficient funds for the transaction. Your balance is ${printAda(balance)} ADA.`,
+  SendAmountCantSendAllFunds: () =>
+    'Sending funds is not possible because there is not enough balance for paying transaction fee',
   SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,

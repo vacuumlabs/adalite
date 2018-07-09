@@ -68,7 +68,7 @@ describe('extended public key derivation (non hardened)', () => {
 
   it('xpub derivation from private and extended public key must coincide', () => {
     const xpubDerivedPublic = derivePublic(accountHdNode.extendedPublicKey, 1)
-    const xpubDerivedPrivate = cryptoProvider1._deriveChildHdNode(accountHdNode, [1])
+    const xpubDerivedPrivate = cryptoProvider1._deriveChildHdNode(accountHdNode, 1)
       .extendedPublicKey
 
     assert.equal(xpubDerivedPublic.toString('hex'), xpubDerivedPrivate.toString('hex'))

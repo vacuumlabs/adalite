@@ -10,6 +10,7 @@ const {HARDENED_THRESHOLD, MAX_INT32} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
 const range = require('./helpers/range')
 const {toBip32StringPath} = require('./bip32')
+const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -96,7 +97,19 @@ const CardanoWallet = async (options) => {
     return TxAux(txInputs, txOutputs, {})
   }
 
-  async function getTxFee(address, coins) {
+  async function getAllFundsTxFee() {
+    const utxos = await getUnspentTxOutputs()
+    const txInputs = []
+    let coins = 0
+
+    for (let i = 0; i < utxos.length; i++) {
+      txInputs.push(TxInputFromUtxo(utxos[i]))
+      coins += utxos[i].coins
+    }
+    return computeTxFee(txInputs, coins)
+  }
+
+  async function getTxFee(coins) {
     const txInputs = await prepareTxInputs(coins)
 
     return computeTxFee(txInputs, coins)
@@ -127,13 +140,12 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(utxos[i]))
       sumUtxos += utxos[i].coins
 
-      totalCoins = coins + computeTxFee(txInputs)
+      totalCoins = coins + computeTxFee(txInputs, totalCoins)
     }
 
     return txInputs
   }
 
-  // if the fee cannot be paid it returns -1, otherwise it returns the fee
   function computeTxFee(txInputs, coins) {
     if (coins > Number.MAX_SAFE_INTEGER) {
       throw new Error(`Unsupported amount of coins: ${coins}`)
@@ -143,24 +155,42 @@ const CardanoWallet = async (options) => {
       return acc + elem.coins
     }, 0)
 
-    const out1coins = coins
-    const out2coinsUpperBound = Math.max(0, txInputsCoinsSum - coins)
-
-    // the +1 is there because in the actual transaction
-    // the txInputs are encoded as indefinite length array
-    const txInputsSize = cbor.encode(txInputs).length + 1
+    //first we try one output transaction
+    const oneOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, 1))
 
     /*
-    * we assume that only two outputs (destination and change address) will be present
+    * if (coins+oneOutputFee) is equal to (txInputsCoinsSum) it means there is no change necessary
+    * if (coins+oneOutputFee) is bigger the transaction is invalid even with higher fee
+    * so we let caller handle it
+    */
+    if (coins + oneOutputFee >= txInputsCoinsSum) {
+      return oneOutputFee
+    } else {
+      //we try to compute fee for 2 output tx
+      const twoOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, 2))
+      if (coins + twoOutputFee > txInputsCoinsSum) {
+        //means one output transaction was possible, while 2 output is not
+        //so we return fee equal to inputs - coins which is guaranteed to pass
+        return txInputsCoinsSum - coins
+      } else {
+        return twoOutputFee
+      }
+    }
+  }
+
+  function estimateTxSize(txInputs, coins, outputcount) {
+    const txInputsSize = cbor.encode(new CborIndefiniteLengthArray(txInputs)).length
+
+    /*
+    * we assume that at most two outputs (destination and change address) will be present
     * encoded in an indefinite length array
     */
-    // TODO - consider case when only 1 output is present
-    const txOutputsSize =
-      2 * 77 + cbor.encode(out1coins).length + cbor.encode(out2coinsUpperBound).length + 2
+    const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
+    const txOutputSize = (77 + maxCborCoinsLen + 1) * outputcount
     const txMetaSize = 1 // currently empty Map
 
     // the 1 is there for the CBOR "tag" for an array of 3 elements
-    const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
+    const txAuxSize = 1 + txInputsSize + txOutputSize + txMetaSize
 
     const txWitnessesSize = txInputs.length * 139 + 1
 
@@ -174,7 +204,7 @@ const CardanoWallet = async (options) => {
     */
     const deviation = 4
 
-    return txFeeFunction(txSizeInBytes + deviation)
+    return txSizeInBytes + deviation
   }
 
   async function getChangeAddress() {
@@ -274,6 +304,7 @@ const CardanoWallet = async (options) => {
     sendAda,
     getBalance,
     getChangeAddress,
+    getAllFundsTxFee,
     getTxFee,
     prepareTx,
     getHistory,

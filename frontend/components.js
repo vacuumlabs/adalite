@@ -782,6 +782,7 @@ class SendAdaClass extends Component {
     sendResponse,
     sendAddress,
     sendAddressValidationError,
+    isSendAddressValid,
     sendAmount,
     sendAmountValidationError,
     updateAddress,
@@ -790,10 +791,13 @@ class SendAdaClass extends Component {
     confirmTransaction,
     showConfirmTransactionDialog,
     feeRecalculating,
+    sendAllFunds,
     totalAmount,
   }) {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
+
+    const enableSendAllFunds = isSendAddressValid
 
     const displayTransactionFee =
       sendAmount !== '' &&
@@ -854,22 +858,42 @@ class SendAdaClass extends Component {
         ),
         h(
           'div',
-          {class: 'styled-input send-input'},
-          h('input', {
-            id: 'send-amount',
-            name: 'send-amount',
-            placeholder: 'Amount',
-            size: '28',
-            value: sendAmount,
-            onInput: updateAmount,
-            autocomplete: 'nope',
-          }),
-          displayTransactionFee &&
-            h(
-              'span',
-              {style: `color: ${feeRecalculating || !enableSubmit ? 'red' : 'green'}`},
-              `= ${printAda(totalAmount)} ADA`
-            )
+          {
+            class: 'send-amount-input-group',
+          },
+          h(
+            'div',
+            {
+              class: `send-all-funds-btn send-all-funds-btn-${
+                enableSendAllFunds ? 'enabled' : 'disabled'
+              }`,
+              onClick: sendAllFunds,
+            },
+            'Send all'
+          ),
+          h(
+            'div',
+            {class: 'styled-input send-input'},
+            h('input', {
+              id: 'send-amount',
+              name: 'send-amount',
+              placeholder: 'Amount',
+              size: '28',
+              value: sendAmount,
+              onInput: updateAmount,
+              autocomplete: 'nope',
+            }),
+            displayTransactionFee &&
+              h(
+                'span',
+                {
+                  class: `transaction-fee-text ${
+                    feeRecalculating || !enableSubmit ? 'red' : 'green'
+                  }`,
+                },
+                `= ${printAda(totalAmount)} ADA`
+              )
+          )
         ),
         sendAmountValidationError &&
           h(
@@ -877,22 +901,26 @@ class SendAdaClass extends Component {
             {class: 'validationMsg send-amount-validation-error'},
             translations[sendAmountValidationError.code](sendAmountValidationError.params)
           ),
-        feeRecalculating
-          ? h(
-            'button',
-            {disabled: true, class: 'loading-button'},
-            h('div', {class: 'loading-inside-button'}),
-            'Calculating Fee'
-          )
-          : h(
-            'button',
-            {
-              disabled: !enableSubmit,
-              onClick: confirmTransaction,
-              class: 'loading-button',
-            },
-            'Submit'
-          ),
+        h(
+          'div',
+          undefined,
+          feeRecalculating
+            ? h(
+              'button',
+              {disabled: true, class: 'loading-button'},
+              h('div', {class: 'loading-inside-button'}),
+              'Calculating Fee'
+            )
+            : h(
+              'button',
+              {
+                disabled: !enableSubmit,
+                onClick: confirmTransaction,
+                class: 'loading-button',
+              },
+              'Submit'
+            )
+        ),
         showConfirmTransactionDialog && h(ConfirmTransactionDialog)
       )
     )
@@ -904,6 +932,7 @@ const SendAda = connect(
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddress.validationError,
     sendAddress: state.sendAddress.fieldValue,
+    isSendAddressValid: state.isSendAddressValid,
     sendAmountValidationError: state.sendAmount.validationError,
     sendAmount: state.sendAmount.fieldValue,
     transactionFee: state.transactionFee,
