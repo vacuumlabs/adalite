@@ -198,6 +198,7 @@ td {
 }
 .address-wrap {
   display: flex;
+  overflow: hidden;
 }
 .address-wrap + .address-wrap {
   margin-top: .5rem;
