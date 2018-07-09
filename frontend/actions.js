@@ -33,6 +33,7 @@ export default ({setState, getState}) => {
 
   const loadWallet = async (state, {cryptoProvider, secret}) => {
     setState(loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined}))
+
     switch (cryptoProvider) {
       case 'trezor':
         try {
@@ -50,6 +51,7 @@ export default ({setState, getState}) => {
         }
         break
       case 'mnemonic':
+        secret = secret.trim()
         wallet = await Cardano.CardanoWallet({
           cryptoProvider: 'mnemonic',
           mnemonicOrHdNodeString: secret,
@@ -87,7 +89,7 @@ export default ({setState, getState}) => {
         mnemonic: '',
         usingTrezor,
         isDemoWallet,
-        showDemoWalletWarningDialog: true,
+        showDemoWalletWarningDialog: isDemoWallet,
         showGenerateMnemonicDialog: false,
       })
     } catch (e) {
