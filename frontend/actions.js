@@ -6,6 +6,7 @@ const {
   feeValidator,
   mnemonicValidator,
 } = require('./validators')
+const printAda = require('./printAda')
 
 let wallet = null
 
@@ -110,6 +111,7 @@ module.exports = ({setState, getState}) => {
         balance,
         sendAmount,
         sendAddress,
+        isSendAddressValid: false,
         sendResponse,
         transactionHistory,
         loading: false,
@@ -145,6 +147,28 @@ module.exports = ({setState, getState}) => {
       mnemonicValidationError: undefined,
       showGenerateMnemonicDialog: true,
     })
+  }
+
+  const sendAllFunds = async (state) => {
+    setState({calculatingFee: true})
+
+    const balance = await wallet.getBalance()
+    const txFee = await wallet.getAllFundsTxFee()
+    const allFundsSendable = balance > txFee
+    if (allFundsSendable) {
+      setState({
+        sendResponse: '',
+        sendAmount: sendAmountValidator(printAda(state.balance - txFee)),
+      })
+    } else {
+      setState({
+        sendAmount: Object.assign({}, state.sendAmount, {
+          validationError: {code: 'SendAmountCantSendAllFunds'},
+        }),
+      })
+    }
+
+    validateSendFormAndCalculateFee(state)
   }
 
   const closeGenerateMnemonicDialog = (state) => {
@@ -247,10 +271,14 @@ module.exports = ({setState, getState}) => {
   }
 
   const validateSendForm = (state) => {
+    setState({
+      isSendAddressValid: !sendAddressValidator(state.sendAddress.fieldValue).validationError,
+    })
+
     if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
       setState({
-        sendAddress: sendAddressValidator(state.sendAddress),
-        sendAmount: sendAmountValidator(state.sendAmount),
+        sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
+        sendAmount: sendAmountValidator(state.sendAmount.fieldValue),
       })
     }
   }
@@ -270,7 +298,7 @@ module.exports = ({setState, getState}) => {
 
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
-    const transactionFee = await wallet.getTxFee(address, amount)
+    const transactionFee = await wallet.getTxFee(amount)
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
     const newState = getState()
@@ -378,6 +406,7 @@ module.exports = ({setState, getState}) => {
     openAddressDetail,
     closeAddressDetail,
     verifyAddress,
+    sendAllFunds,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,

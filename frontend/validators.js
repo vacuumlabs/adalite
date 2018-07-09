@@ -3,12 +3,12 @@ const isValidAddress = require('../wallet/address').isValidAddress
 
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
-const sendAddressValidator = ({fieldValue}) => ({
+const sendAddressValidator = (fieldValue) => ({
   fieldValue,
   validationError: !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
 })
 
-const sendAmountValidator = ({fieldValue}) => {
+const sendAmountValidator = (fieldValue) => {
   let validationError = null
   const coins = parseCoins(fieldValue)
 

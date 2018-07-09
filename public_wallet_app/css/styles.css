@@ -418,6 +418,9 @@ div.box.box-auto {
   border-top: 1px solid var(--border);
   padding-top: 0.5rem;
 }
+.send-input {
+  min-width: 0;
+}
 @media screen and (max-width: 640px) {
   .overlay .box .centered-row {
     margin-top: 0.5rem;
@@ -1018,6 +1021,54 @@ div.box.box-auto {
 }
 .styled-input input::-moz-placeholder {
   color: var(--input-text-inactive);
+}
+.send-amount-input-group {
+  display: flex;
+  align-items: stretch;
+}
+.send-all-funds-btn {
+  align-items: center;
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  display: flex;
+  border-right: none;
+  text-align: center;
+  font-weight: bold;
+  background-color: var(--input-background);
+  padding: 0 0.5em;
+  flex: 1 1 0;
+}
+.send-all-funds-btn-enabled {
+  cursor: pointer;
+  color: #999999;
+  -webkit-box-shadow: 1px 1px 10px #d6d6d6;
+  -moz-box-shadow: 1px 1px 10px #d6d6d6;
+  box-shadow: 1px 1px 10px #d6d6d6;
+  transition: transform var(--transition);
+}
+.send-all-funds-btn-enabled:hover {
+  transform: scale(1.08);
+}
+.send-all-funds-btn-disabled {
+  color: var(--disabled);
+  pointer-events: none;
+  -webkit-box-shadow: inset 1px 1px 10px #d6d6d6;
+  -moz-box-shadow: inset 1px 1px 10px #d6d6d6;
+  box-shadow: inset 1px 1px 10px #d6d6d6;
+}
+.send-amount-input-group {
+  display: flex;
+}
+@media screen and (max-width: 350px) {
+  span.transaction-fee-text.green {
+    font-size: 1rem;
+  }
+}
+.red {
+  color: red;
+}
+.green {
+  color: green;
 }
 
 /*DASHBOARD*/
