@@ -101,7 +101,7 @@
         addresses[4].address,
         'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu'
       )
-      assert.equal(addresses[4].bip32StringPath, "m44'/1815'/0'/0/4'")
+      assert.equal(addresses[4].bip32StringPath, "m/44'/1815'/0'/0/4'")
     })
   })
 
@@ -195,7 +195,7 @@
       mockNet.mockTransactionSubmitter()
 
       const result = await wallet.sendAda(myAddress, 47)
-      assert.equal(result, true)
+      assert.deepEqual(result, {success: true, error: undefined})
     })
   })
 })()
