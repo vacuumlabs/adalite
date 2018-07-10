@@ -5,6 +5,7 @@ module.exports = {
     libraryTarget: 'var',
     library: 'CardanoFrontend',
     path: `${__dirname}/public_wallet_app/js`,
+    publicPath: '/js/',
   },
   externals: {
     'trezor-connect': 'TrezorConnect',

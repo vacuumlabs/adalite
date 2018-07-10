@@ -1,14 +1,14 @@
-import {h, render} from 'preact'
-import createStore from 'unistore'
-import devtools from 'unistore/devtools'
-import {Provider} from 'unistore/preact'
-import {App} from './components'
+const {h, render} = require('preact')
+const createStore = require('unistore').default
+const devtools = require('unistore/devtools')
+const Provider = require('unistore/preact').Provider
+const App = require('./components').App
 
-import {CARDANOLITE_CONFIG} from './config'
+const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
 
 // polyfill to trigger onpushstate events on history api
 // http://felix-kling.de/blog/2011/01/06/how-to-detect-history-pushstate/
-  ;(function(history) {
+;(function(history) {
   const pushState = history.pushState
   history.pushState = function(state) {
     // must be before our function so that url changes before we dispatch the action

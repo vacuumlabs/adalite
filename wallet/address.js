@@ -7,6 +7,20 @@ const crc32 = require('crc-32')
 
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
+function isValidAddress(address) {
+  try {
+    // we decode the address from the base58 string
+    // and then we strip the 24 CBOR data taga (the "[0].value" part)
+    const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
+    const addressData = cbor.decode(addressAsBuffer)
+    const addressAttributes = addressData[1]
+    cbor.decode(addressAttributes.get(1))
+  } catch (e) {
+    return false
+  }
+  return true
+}
+
 function getAddressHash(input) {
   const serializedInput = cbor.encode(input)
 
@@ -83,4 +97,5 @@ function unpackAddress(address, hdPassphrase) {
 module.exports = {
   packAddress,
   unpackAddress,
+  isValidAddress,
 }
