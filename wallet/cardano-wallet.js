@@ -1,5 +1,4 @@
 const cbor = require('cbor')
-const base58 = require('bs58')
 
 const {generateMnemonic, validateMnemonic} = require('./mnemonic')
 const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
@@ -17,20 +16,6 @@ function txFeeFunction(txSizeInBytes) {
   const b = 43.946
 
   return Math.ceil(a + txSizeInBytes * b)
-}
-
-function isValidAddress(address) {
-  try {
-    // we decode the address from the base58 string
-    // and then we strip the 24 CBOR data taga (the "[0].value" part)
-    const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
-    const addressData = cbor.decode(addressAsBuffer)
-    const addressAttributes = addressData[1]
-    cbor.decode(addressAttributes.get(1))
-  } catch (e) {
-    return false
-  }
-  return true
 }
 
 const CardanoWallet = async (options) => {
@@ -308,5 +293,4 @@ module.exports = {
   generateMnemonic,
   validateMnemonic,
   txFeeFunction,
-  isValidAddress,
 }

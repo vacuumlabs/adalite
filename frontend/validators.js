@@ -1,10 +1,11 @@
-const Cardano = require('../wallet/cardano-wallet')
+const validateMnemonic = require('../wallet/mnemonic').validateMnemonic
+const isValidAddress = require('../wallet/address').isValidAddress
 
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
 const sendAddressValidator = ({fieldValue}) => ({
   fieldValue,
-  validationError: !Cardano.isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
+  validationError: !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
 })
 
 const sendAmountValidator = ({fieldValue}) => {
@@ -43,7 +44,7 @@ const feeValidator = (sendAmount, transactionFee, balance) => {
 const mnemonicValidator = (mnemonic) => {
   let validationError = null
 
-  if (!Cardano.validateMnemonic(mnemonic)) {
+  if (!validateMnemonic(mnemonic)) {
     validationError = {
       code: 'InvalidMnemonic',
     }

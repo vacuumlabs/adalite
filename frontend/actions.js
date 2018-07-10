@@ -1,11 +1,11 @@
-import Cardano from '../wallet/cardano-wallet'
-import {CARDANOLITE_CONFIG} from './config'
-import {
+const generateMnemonic = require('../wallet/mnemonic').generateMnemonic
+const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
+const {
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,
   mnemonicValidator,
-} from './validators'
+} = require('./validators')
 
 let wallet = null
 
@@ -20,7 +20,7 @@ const debounceEvent = (callback, time) => {
   }
 }
 
-export default ({setState, getState}) => {
+module.exports = ({setState, getState}) => {
   const loadingAction = (state, message, optionalArgsObj) => {
     return setState(
       Object.assign(
@@ -58,10 +58,13 @@ export default ({setState, getState}) => {
     switch (cryptoProvider) {
       case 'trezor':
         try {
-          wallet = await Cardano.CardanoWallet({
-            cryptoProvider: 'trezor',
-            config: CARDANOLITE_CONFIG,
-          })
+          wallet = await import(/* webpackPrefetch: true */ '../wallet/cardano-wallet').then(
+            (Cardano) =>
+              Cardano.CardanoWallet({
+                cryptoProvider: 'trezor',
+                config: CARDANOLITE_CONFIG,
+              })
+          )
         } catch (e) {
           // eslint-disable-next-line no-console
           console.error(e.toString())
@@ -73,11 +76,14 @@ export default ({setState, getState}) => {
         break
       case 'mnemonic':
         secret = secret.trim()
-        wallet = await Cardano.CardanoWallet({
-          cryptoProvider: 'mnemonic',
-          mnemonicOrHdNodeString: secret,
-          config: CARDANOLITE_CONFIG,
-        })
+        wallet = await import(/* webpackPrefetch: true */ '../wallet/cardano-wallet').then(
+          (Cardano) =>
+            Cardano.CardanoWallet({
+              cryptoProvider: 'mnemonic',
+              mnemonicOrHdNodeString: secret,
+              config: CARDANOLITE_CONFIG,
+            })
+        )
         break
       default:
         return setState({
@@ -133,17 +139,9 @@ export default ({setState, getState}) => {
     })
   }
 
-  const generateMnemonic = (state) => {
-    setState({
-      mnemonic: Cardano.generateMnemonic(),
-      mnemonicValidationError: undefined,
-      walletLoadingError: undefined,
-    })
-  }
-
   const openGenerateMnemonicDialog = (state) => {
     setState({
-      mnemonic: Cardano.generateMnemonic(),
+      mnemonic: generateMnemonic(),
       mnemonicValidationError: undefined,
       showGenerateMnemonicDialog: true,
     })
@@ -375,7 +373,6 @@ export default ({setState, getState}) => {
     updateAddress,
     updateAmount,
     loadDemoWallet,
-    generateMnemonic,
     updateMnemonic,
     checkForMnemonicValidationError,
     openAddressDetail,

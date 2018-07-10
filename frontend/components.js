@@ -1,10 +1,10 @@
-import {h, Component} from 'preact'
-import {connect} from 'unistore/preact'
-import actions from './actions'
-import translations from './translations'
-import {RefreshIcon, ExitIcon} from './svg'
-import printAda from './printAda'
-import {importWalletSecret, isWalletExportEncrypted} from '../wallet/keypass-json'
+const {h, Component} = require('preact')
+const connect = require('unistore/preact').connect
+const actions = require('./actions')
+const translations = require('./translations')
+const {RefreshIcon, ExitIcon} = require('./svg')
+const printAda = require('./printAda')
+const {importWalletSecret, isWalletExportEncrypted} = require('../wallet/keypass-json')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -208,7 +208,7 @@ const GenerateMnemonicDialog = connect(
     mnemonic: state.mnemonic,
   }),
   actions
-)(({generateMnemonic, confirmGenerateMnemonicDialog, mnemonic, closeGenerateMnemonicDialog}) => {
+)(({confirmGenerateMnemonicDialog, mnemonic, closeGenerateMnemonicDialog}) => {
   return h(
     'div',
     {class: 'overlay'},
@@ -1279,5 +1279,9 @@ const Footer = () =>
     )
   )
 
-export const App = () =>
+const App = () =>
   h('div', {class: 'wrap'}, h(AboutOverlay), h(Loading), h(Navbar), h(TopLevelRouter), h(Footer))
+
+module.exports = {
+  App,
+}
