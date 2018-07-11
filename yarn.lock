@@ -1222,9 +1222,13 @@ big.js@^3.1.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-3.2.0.tgz#a5fc298b81b9e0dca2e458824784b65c52ba588e"
 
-bignumber.js@^6.0, bignumber.js@^6.0.0:
+bignumber.js@^6.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-6.0.0.tgz#bbfa047644609a5af093e9cbd83b0461fa3f6002"
+
+bignumber.js@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
 
 binary-extensions@^1.0.0:
   version "1.11.0"
@@ -1234,7 +1238,7 @@ binaryextensions@2:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/binaryextensions/-/binaryextensions-2.1.1.tgz#3209a51ca4a4ad541a3b8d3d6a6d5b83a2485935"
 
-bip39@2.5.0:
+bip39@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/bip39/-/bip39-2.5.0.tgz#51cbd5179460504a63ea3c000db3f787ca051235"
   dependencies:
@@ -1243,6 +1247,12 @@ bip39@2.5.0:
     randombytes "^2.0.1"
     safe-buffer "^5.0.1"
     unorm "^1.3.3"
+
+blake2@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/blake2/-/blake2-2.0.1.tgz#a690366f6318893a3438a06a19a2faece5a7c96f"
+  dependencies:
+    nan "^2.0.0"
 
 blakejs@^1.1.0:
   version "1.1.0"
@@ -1510,6 +1520,15 @@ camelcase@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
 
+cardano-crypto.js@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-1.0.0.tgz#1dd7f83b850e5883b2a4a1085c05cc47ebc3714c"
+  dependencies:
+    bip39 "^2.5.0"
+    blake2 "^2.0.1"
+    cbor "^4.1.0"
+    crypto "^1.0.1"
+
 caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
@@ -1520,6 +1539,15 @@ cbor@^4.0.0:
   dependencies:
     bignumber.js "^6.0"
     commander "^2.14.1"
+    json-text-sequence "^0.1"
+    nofilter "^0.0.3"
+
+cbor@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/cbor/-/cbor-4.1.0.tgz#12535080a382defad294329c958b1cfe12541449"
+  dependencies:
+    bignumber.js "^7.2.1"
+    commander "^2.15.1"
     json-text-sequence "^0.1"
     nofilter "^0.0.3"
 
@@ -1756,6 +1784,10 @@ commander@^2.14.1, commander@^2.9.0:
   version "2.15.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
+commander@^2.15.1:
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.16.0.tgz#f16390593996ceb4f3eeb020b31d78528f7f8a50"
+
 commander@~2.13.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
@@ -1969,6 +2001,10 @@ crypto-browserify@^3.11.0:
     public-encrypt "^4.0.0"
     randombytes "^2.0.0"
     randomfill "^1.0.3"
+
+crypto@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
 
 cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   version "0.3.2"
@@ -2239,18 +2275,6 @@ ejs@^2.5.9:
 elegant-spinner@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/elegant-spinner/-/elegant-spinner-1.0.1.tgz#db043521c95d7e303fd8f345bedc3349cfb0729e"
-
-elliptic-cardano@6.4.0-b:
-  version "6.4.0-b"
-  resolved "https://registry.yarnpkg.com/elliptic-cardano/-/elliptic-cardano-6.4.0-b.tgz#a8404d611a149168d6bd94a1a69219b852abf5ef"
-  dependencies:
-    bn.js "^4.4.0"
-    brorand "^1.0.1"
-    hash.js "^1.0.0"
-    hmac-drbg "^1.0.0"
-    inherits "^2.0.1"
-    minimalistic-assert "^1.0.0"
-    minimalistic-crypto-utils "^1.0.0"
 
 elliptic@^6.0.0:
   version "6.4.0"
@@ -4640,7 +4664,7 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@^2.9.2:
+nan@^2.0.0, nan@^2.9.2:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
 
@@ -5807,13 +5831,6 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-"rust-cardanolite-crypto@git+https://git@github.com/vacuumlabs/js-cardanolite-wasm.git":
-  version "0.1.2"
-  resolved "git+https://git@github.com/vacuumlabs/js-cardanolite-wasm.git#9b1d4cf3637d9cd66954b0969d31ba873d6c4d00"
-  dependencies:
-    iconv-lite "0.4.19"
-    safe-buffer "5.1.1"
-
 rx-lite-aggregates@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/rx-lite-aggregates/-/rx-lite-aggregates-4.0.8.tgz#753b87a89a11c95467c4ac1626c4efc4e05c67be"
@@ -6319,10 +6336,6 @@ strip-indent@^2.0.0:
 strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
-
-supercop.js@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/supercop.js/-/supercop.js-2.0.1.tgz#1fcfe9fc5ff6e42aef4e3683636c8cb891594b18"
 
 supports-color@4.4.0:
   version "4.4.0"

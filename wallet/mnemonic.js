@@ -1,9 +1,6 @@
 const bip39 = require('bip39')
-const cbor = require('cbor')
 
-const hashBlake2b256 = require('./helpers/hashBlake2b256')
 const {pbkdf2Sync} = require('./helpers/pbkdf2')
-
 const {words} = require('./valid-words.en')
 
 function generateMnemonic() {
@@ -24,22 +21,6 @@ function isPaperWalletMnemonic(mnemonic) {
 
 function mnemonicToList(mnemonic) {
   return mnemonic.split(' ')
-}
-
-function mnemonicToHashSeed(mnemonic) {
-  if (!validateMnemonic(mnemonic)) {
-    const e = new Error('Invalid or unsupported mnemonic format')
-    e.name = 'InvalidArgumentException'
-    throw e
-  }
-
-  if (isPaperWalletMnemonic(mnemonic)) {
-    mnemonic = decodePaperWalletMnemonic(mnemonic)
-  }
-
-  const ent = Buffer.from(bip39.mnemonicToEntropy(mnemonic), 'hex')
-
-  return cbor.encode(hashBlake2b256(cbor.encode(ent)))
 }
 
 function mnemonicToPaperWalletPassphrase(mnemonic, password) {
@@ -91,6 +72,7 @@ function unscrambleStrings(passphrase, mnemonic) {
 module.exports = {
   generateMnemonic,
   validateMnemonic,
-  mnemonicToHashSeed,
+  isPaperWalletMnemonic,
+  decodePaperWalletMnemonic,
   _decodePaperWalletMnemonic: decodePaperWalletMnemonic,
 }
