@@ -855,6 +855,9 @@ div.box.box-auto {
 .margin-top {
   margin-top: 1rem;
 }
+.margin-bottom {
+  margin-bottom: 1rem;
+}
 .margin-r {
   margin-right: .5rem;
 }
