@@ -4,8 +4,8 @@ const connect = require('unistore/preact').connect
 const TopLevelRouter = require('./router').TopLevelRouter
 const Footer = require('./common/footer')
 const LoadingOverlay = require('./common/loadingOverlay')
-const NavbarAuth = require('./common/navbarAuth')
-const NavbarUnauth = require('./common/navbarUnauth')
+const NavbarAuth = require('./common/navbar/navbarAuth')
+const NavbarUnauth = require('./common/navbar/navbarUnauth')
 
 const Navbar = connect((state) => ({
   walletIsLoaded: state.walletIsLoaded,

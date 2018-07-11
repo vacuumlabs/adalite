@@ -66,6 +66,10 @@ const CardanoMnemonicCryptoProvider = (
     return Buffer.from(result, 'hex')
   }
 
+  function getWalletSecret() {
+    return Buffer.from(state.masterHdNode.toString(), 'hex')
+  }
+
   async function deriveAddresses(derivationPaths, derivationMode) {
     return await Promise.all(
       derivationPaths.map(
@@ -231,6 +235,7 @@ const CardanoMnemonicCryptoProvider = (
     deriveAddresses,
     signTx,
     getWalletId,
+    getWalletSecret,
     getDerivationPathFromAddress,
     _sign: sign,
     _deriveHdNodeFromRoot: deriveHdNode,

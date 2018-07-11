@@ -46,7 +46,25 @@ const RefreshIcon = () =>
     })
   )
 
+const DownloadIcon = () =>
+  h(
+    'svg',
+    {
+      'version': '1.1',
+      'xmlns': 'http://www.w3.org/2000/svg',
+      'xmlns:xlink': 'http://www.w3.org/1999/xlink',
+      'width': '20',
+      'height': '20',
+      'viewBox': '0 0 502 502',
+    },
+    h('path', {
+      fill: '#000000',
+      d: 'M395.25,153h-102V0h-153v153h-102l178.5,178.5L395.25,153z M38.25,382.5v51h357v-51H38.25z',
+    })
+  )
+
 module.exports = {
   ExitIcon,
   RefreshIcon,
+  DownloadIcon,
 }

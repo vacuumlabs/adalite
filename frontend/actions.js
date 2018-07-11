@@ -1,5 +1,7 @@
 const generateMnemonic = require('../wallet/mnemonic').generateMnemonic
 const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
+const exportWalletSecret = require('../wallet/keypass-json').exportWalletSecret
+const FileSaver = require('file-saver')
 const {
   sendAddressValidator,
   sendAmountValidator,
@@ -386,12 +388,39 @@ module.exports = ({setState, getState}) => {
     }
   }
 
+  const openExportJsonWalletDialog = (state) => {
+    setState({
+      showExportJsonWalletDialog: true,
+    })
+  }
+
+  const closeExportJsonWalletDialog = (state) => {
+    setState({
+      showExportJsonWalletDialog: false,
+    })
+  }
+
+  const exportJsonWallet = async (state, password, walletName) => {
+    const walletExport = JSON.stringify(
+      await exportWalletSecret(wallet.getSecret(), password, walletName)
+    )
+    const blob = new Blob([walletExport], {type: 'application/json;charset=utf-8'})
+    FileSaver.saveAs(blob, `${walletName}.json`)
+
+    setState({
+      showExportJsonWalletDialog: false,
+    })
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
     setAuthMethod,
     loadWallet,
     logout,
+    exportJsonWallet,
+    openExportJsonWalletDialog,
+    closeExportJsonWalletDialog,
     reloadWalletInfo,
     toggleAboutOverlay,
     calculateFee,

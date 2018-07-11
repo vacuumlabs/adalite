@@ -251,7 +251,12 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     })
   }
 
+  function getWalletSecret() {
+    throw new Error('Unsupported operation!')
+  }
+
   return {
+    getWalletSecret,
     deriveAddress,
     deriveAddresses,
     getWalletId,
