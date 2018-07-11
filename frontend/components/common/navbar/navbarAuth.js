@@ -1,16 +1,18 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
-const actions = require('../../actions')
-const {RefreshIcon, ExitIcon} = require('../../svg')
-const printAda = require('../../printAda')
+const actions = require('../../../actions')
+const {DownloadIcon, RefreshIcon, ExitIcon} = require('../../../svg')
+const printAda = require('../../../printAda')
+const ExportWalletDialog = require('./exportWalletDialog')
 
 const LoginStatus = connect(
   (state) => ({
     pathname: state.router.pathname,
     balance: state.balance,
+    usingTrezor: state.usingTrezor,
   }),
   actions
-)(({balance, reloadWalletInfo, logout}) =>
+)(({balance, reloadWalletInfo, logout, usingTrezor, openExportJsonWalletDialog}) =>
   h(
     'div',
     {class: 'status'},
@@ -34,6 +36,17 @@ const LoginStatus = connect(
           h('div', {class: 'status-icon-button-content'}, 'Refresh')
         )
       ),
+      !usingTrezor &&
+        h(
+          'label',
+          {class: 'inline', for: 'navcollapse'},
+          h(
+            'div',
+            {class: 'button', onClick: openExportJsonWalletDialog},
+            h(DownloadIcon),
+            h('div', {class: 'status-icon-button-content'}, 'Export')
+          )
+        ),
       h(
         'label',
         {class: 'inline', for: 'navcollapse'},
@@ -52,7 +65,8 @@ const NavbarAuth = connect((state) => ({
   pathname: state.router.pathname,
   balance: state.balance,
   isDemoWallet: state.isDemoWallet,
-}))(({pathname, balance, isDemoWallet}) => {
+  showExportJsonWalletDialog: state.showExportJsonWalletDialog,
+}))(({pathname, balance, isDemoWallet, showExportJsonWalletDialog}) => {
   const {
     history: {pushState},
   } = window
@@ -60,6 +74,7 @@ const NavbarAuth = connect((state) => ({
   return h(
     'div',
     {class: 'navbar'},
+    showExportJsonWalletDialog && h(ExportWalletDialog),
     h(
       'div',
       {class: 'navbar-wrap'},

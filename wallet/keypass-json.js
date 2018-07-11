@@ -141,7 +141,7 @@ async function importWalletSecret(walletExportObj, password) {
   return await decryptWalletSecret(walletSecret, password)
 }
 
-async function exportWalletSecret(walletSecret, password) {
+async function exportWalletSecret(walletSecret, password, walletName) {
   const encryptedWalletSecret = await encryptWalletSecret(walletSecret, password)
   const packedPasswordHash = await hashPasswordAndPack(password, getRandomSaltForPasswordHash())
 
@@ -155,7 +155,7 @@ async function exportWalletSecret(walletSecret, password) {
       ],
       walletSecretKey: cbor.encode(encryptedWalletSecret).toString('base64'),
       walletMeta: {
-        name: 'cardanolite wallet',
+        name: walletName,
         assurance: 'normal',
         unit: 'ADA',
       },

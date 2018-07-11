@@ -855,6 +855,9 @@ div.box.box-auto {
 .margin-1rem {
   margin: 1rem;
 }
+.margin-2rem {
+  margin: 2rem;
+}
 .margin-top {
   margin-top: 1rem;
 }
@@ -1360,4 +1363,17 @@ div.box.box-auto {
 .auth-section {
   animation: fade-in 1.5s;
   text-align: center;
+}
+.export-wallet-button {
+  margin: auto;
+  margin-top: 1em;
+  text-decoration: none;
+  width: 6rem;
+  justify-content: center;
+}
+.export-wallet-dialog label {
+  margin-bottom: 0.3em;
+}
+.hidden {
+  visibility: hidden;
 }
