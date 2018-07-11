@@ -913,6 +913,7 @@ div.box.box-auto {
   border: 1px solid var(--brand);
   color: black;
   margin-bottom: 1em;
+  transition: none;
 }
 .alt-button {
   font-weight: 600;
