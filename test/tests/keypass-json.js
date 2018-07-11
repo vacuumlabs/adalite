@@ -55,14 +55,22 @@ describe('Wallet import', () => {
 
 describe('Wallet export', () => {
   it('should properly export wallet encrypted with nonempty password', async () => {
-    const walletSecretObj = await exportWalletSecret(walletSecretUnencrypted1, walletPassword1)
+    const walletSecretObj = await exportWalletSecret(
+      walletSecretUnencrypted1,
+      walletPassword1,
+      'json1'
+    )
     const walletSecret = await importWalletSecret(walletSecretObj, walletPassword1)
 
     assert(walletSecret.equals(walletSecretUnencrypted1))
   }).timeout(5000)
 
   it('should properly export wallet encrypted with nonempty password', async () => {
-    const walletSecretObj = await exportWalletSecret(walletSecretUnencrypted2, walletPassword2)
+    const walletSecretObj = await exportWalletSecret(
+      walletSecretUnencrypted2,
+      walletPassword2,
+      'json2'
+    )
     const walletSecret = await importWalletSecret(walletSecretObj, walletPassword2)
 
     assert(walletSecret.equals(walletSecretUnencrypted2))

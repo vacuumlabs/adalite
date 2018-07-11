@@ -66,6 +66,10 @@ const CardanoWallet = async (options) => {
     }
   }
 
+  function getSecret() {
+    return cryptoProvider.getWalletSecret()
+  }
+
   async function getId() {
     return await cryptoProvider.getWalletId()
   }
@@ -301,6 +305,7 @@ const CardanoWallet = async (options) => {
 
   return {
     getId,
+    getSecret,
     sendAda,
     getBalance,
     getChangeAddress,
