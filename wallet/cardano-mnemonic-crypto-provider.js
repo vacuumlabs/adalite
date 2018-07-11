@@ -1,16 +1,13 @@
-const bigNumber = require('bignumber.js')
 const cbor = require('cbor')
-const crypto = require('crypto')
-const EdDsa = require('elliptic-cardano').eddsaVariant
-const ec = new EdDsa('ed25519')
-const ed25519 = require('supercop.js')
+const CardanoCrypto = require('cardano-crypto.js')
 
 const {pbkdf2Async} = require('./helpers/pbkdf2')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
-const {TX_SIGN_MESSAGE_PREFIX} = require('./constants')
-const {HdNode, mnemonicToHdNode, hdNodeStringToHdNode} = require('./hd-node')
+const {TX_SIGN_MESSAGE_PREFIX, CARDANO_KEY_DERIVATION_MODE} = require('./constants')
+const HdNode = require('./hd-node')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
+const {isPaperWalletMnemonic, decodePaperWalletMnemonic} = require('./mnemonic')
 
 const CardanoMnemonicCryptoProvider = (
   mnemonicOrHdNodeString,
@@ -18,56 +15,27 @@ const CardanoMnemonicCryptoProvider = (
   disableCaching = false
 ) => {
   const state = Object.assign(walletState, {
-    masterHdNode:
-      mnemonicOrHdNodeString.search(' ') >= 0
-        ? mnemonicToHdNode(mnemonicOrHdNodeString)
-        : hdNodeStringToHdNode(mnemonicOrHdNodeString),
+    masterHdNode: HdNode({
+      secret: parseMnemonicOrHdNodeString(mnemonicOrHdNodeString),
+    }),
     derivedHdNodes: {},
     derivedXpubs: {},
   })
 
-  function add256NoCarry(b1, b2) {
-    let result = ''
+  function parseMnemonicOrHdNodeString(mnemonicOrHdNodeString) {
+    const isMnemonic = mnemonicOrHdNodeString.search(' ') >= 0
 
-    for (let i = 0; i < 32; i++) {
-      result += ((b1[i] + b2[i]) & 0xff).toString(16).padStart(2, '0')
+    if (isMnemonic) {
+      let mnemonic
+      if (isPaperWalletMnemonic(mnemonicOrHdNodeString)) {
+        mnemonic = decodePaperWalletMnemonic(mnemonicOrHdNodeString)
+      } else {
+        mnemonic = mnemonicOrHdNodeString
+      }
+      return CardanoCrypto.walletSecretFromMnemonic(mnemonic)
+    } else {
+      return Buffer.from(mnemonicOrHdNodeString, 'hex')
     }
-
-    return Buffer.from(result, 'hex')
-  }
-
-  function toLittleEndian(str) {
-    // from https://stackoverflow.com/questions/7946094/swap-endianness-javascript
-    const s = str.replace(/^(.(..)*)$/, '0$1') // add a leading zero if needed
-    const a = s.match(/../g) // split number in groups of two
-    a.reverse() // reverse the goups
-    return a.join('') // join the groups back together
-  }
-
-  function scalarAdd256ModM(b1, b2) {
-    let resultAsHexString = bigNumber(toLittleEndian(b1.toString('hex')), 16)
-      .plus(bigNumber(toLittleEndian(b2.toString('hex')), 16))
-      .mod(bigNumber('1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed', 16))
-      .toString(16)
-    resultAsHexString = toLittleEndian(resultAsHexString).padEnd(64, '0')
-
-    return Buffer.from(resultAsHexString, 'hex')
-  }
-
-  function multiply8(buf) {
-    let result = ''
-    let prevAcc = 0
-
-    for (let i = 0; i < buf.length; i++) {
-      result += ((((buf[i] * 8) & 0xff) + (prevAcc & 0x8)) & 0xff).toString(16).padStart(2, '0')
-      prevAcc = buf[i] * 32
-    }
-
-    return Buffer.from(result, 'hex')
-  }
-
-  function getWalletSecret() {
-    return Buffer.from(state.masterHdNode.toString(), 'hex')
   }
 
   async function deriveAddresses(derivationPaths, derivationMode) {
@@ -87,6 +55,10 @@ const CardanoMnemonicCryptoProvider = (
 
   async function getWalletId() {
     return await deriveAddress([], 'hardened')
+  }
+
+  function getWalletSecret() {
+    return state.masterHdNode.toBuffer()
   }
 
   async function getRootHdPassphrase() {
@@ -145,48 +117,17 @@ const CardanoMnemonicCryptoProvider = (
   }
 
   function deriveChildHdNode(hdNode, childIndex) {
-    const chainCode = hdNode.chainCode
-
-    const hmac1 = crypto.createHmac('sha512', chainCode)
-
-    if (indexIsHardened(childIndex)) {
-      hmac1.update(Buffer.from([0x00])) // TAG_DERIVE_Z_HARDENED
-      hmac1.update(hdNode.secretKey)
-    } else {
-      hmac1.update(Buffer.from([0x02])) // TAG_DERIVE_Z_NORMAL
-      hmac1.update(hdNode.publicKey)
-    }
-    hmac1.update(Buffer.from(childIndex.toString(16).padStart(8, '0'), 'hex'))
-    const z = Buffer.from(hmac1.digest('hex'), 'hex')
-
-    const zl8 = multiply8(z, Buffer.from([0x08])).slice(0, 32)
-    const parentKey = hdNode.secretKey
-
-    const kl = scalarAdd256ModM(zl8, parentKey.slice(0, 32))
-    const kr = add256NoCarry(z.slice(32, 64), parentKey.slice(32, 64))
-
-    const resKey = Buffer.concat([kl, kr])
-
-    const hmac2 = crypto.createHmac('sha512', chainCode)
-
-    if (indexIsHardened(childIndex)) {
-      hmac2.update(Buffer.from([0x01])) // TAG_DERIVE_CC_HARDENED
-      hmac2.update(hdNode.secretKey)
-    } else {
-      hmac2.update(Buffer.from([0x03])) // TAG_DERIVE_CC_NORMAL
-      hmac2.update(hdNode.publicKey)
-    }
-    hmac2.update(Buffer.from(childIndex.toString(16).padStart(8, '0'), 'hex'))
-
-    const newChainCode = Buffer.from(hmac2.digest('hex').slice(64, 128), 'hex')
-    const newPublicKey = Buffer.from(
-      ec.keyFromSecret(resKey.toString('hex').slice(0, 64)).getPublic('hex'),
-      'hex'
+    const result = CardanoCrypto.derivePrivate(
+      hdNode.toBuffer(),
+      childIndex,
+      CARDANO_KEY_DERIVATION_MODE
     )
 
-    const result = HdNode({secretKey: resKey, publicKey: newPublicKey, chainCode: newChainCode})
-
-    return result
+    return HdNode({
+      secretKey: result.slice(0, 64),
+      publicKey: result.slice(64, 96),
+      chainCode: result.slice(96, 128),
+    })
   }
 
   function indexIsHardened(childIndex) {
@@ -197,7 +138,7 @@ const CardanoMnemonicCryptoProvider = (
     const hdNode = await deriveHdNode(keyDerivationPath)
     const messageToSign = Buffer.from(message, 'hex')
 
-    return ed25519.sign(messageToSign, hdNode.publicKey, hdNode.secretKey)
+    return CardanoCrypto.sign(messageToSign, hdNode.toBuffer())
   }
 
   async function signTx(txAux) {

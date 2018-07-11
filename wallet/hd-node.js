@@ -1,10 +1,4 @@
-const crypto = require('crypto')
-const {eddsa: EdDsa} = require('elliptic-cardano')
-const ec = new EdDsa('ed25519')
-
-const {mnemonicToHashSeed} = require('./mnemonic')
-
-function HdNode({secretKey, publicKey, chainCode}) {
+function HdNode({secret, secretKey, publicKey, chainCode}) {
   /**
    * HD node groups secretKey, publicKey and chainCode
    * can be initialized from Buffers or single string
@@ -13,10 +7,22 @@ function HdNode({secretKey, publicKey, chainCode}) {
    * @param chainCode as Buffer
    */
 
+  if (secret) {
+    secretKey = secret.slice(0, 64)
+    publicKey = secret.slice(64, 96)
+    chainCode = secret.slice(96, 128)
+  } else {
+    secret = Buffer.concat([secretKey, publicKey, chainCode])
+  }
+
   const extendedPublicKey = Buffer.concat([publicKey, chainCode], 64)
 
+  function toBuffer() {
+    return Buffer.concat([secretKey, extendedPublicKey])
+  }
+
   function toString() {
-    return Buffer.concat([secretKey, extendedPublicKey]).toString('hex')
+    return toBuffer().toString('hex')
   }
 
   return {
@@ -24,80 +30,9 @@ function HdNode({secretKey, publicKey, chainCode}) {
     publicKey,
     chainCode,
     extendedPublicKey,
+    toBuffer,
     toString,
   }
 }
 
-function mnemonicToHdNode(mnemonic) {
-  const hashSeed = mnemonicToHashSeed(mnemonic)
-  let result
-
-  for (let i = 1; result === undefined && i <= 1000; i++) {
-    const hmac = crypto.createHmac('sha512', hashSeed)
-    hmac.update(`Root Seed Chain ${i}`)
-
-    const digest = hmac.digest('hex')
-
-    const secret = Buffer.from(digest.substr(0, 64), 'hex')
-
-    try {
-      const secretKey = extendSecretToSecretKey(secret)
-      const publicKey = Buffer.from(
-        ec.keyFromSecret(secret.toString('hex')).getPublic('hex'),
-        'hex'
-      )
-
-      const chainCode = Buffer.from(digest.substr(64, 64), 'hex')
-
-      result = HdNode({secretKey, publicKey, chainCode})
-    } catch (e) {
-      if (e.name === 'InvalidArgumentException') {
-        continue
-      }
-
-      throw e
-    }
-  }
-
-  if (result === undefined) {
-    const e = new Error('Secret key generation from mnemonic is looping forever')
-    e.name = 'RuntimeException'
-    throw e
-  }
-
-  return result
-}
-
-function hdNodeStringToHdNode(hdNodeString) {
-  return HdNode({
-    secretKey: Buffer.from(hdNodeString.substr(0, 128), 'hex'),
-    publicKey: Buffer.from(hdNodeString.substr(128, 64), 'hex'),
-    chainCode: Buffer.from(hdNodeString.substr(192, 64), 'hex'),
-  })
-}
-
-function extendSecretToSecretKey(secret) {
-  const sha512 = crypto.createHash('sha512')
-
-  sha512.update(secret)
-
-  const hashResult = Buffer.from(sha512.digest('hex'), 'hex')
-
-  hashResult[0] &= 248
-  hashResult[31] &= 127
-  hashResult[31] |= 64
-
-  if (hashResult[31] & 0x20) {
-    const e = new Error('Invalid secret')
-    e.name = 'InvalidArgumentException'
-    throw e
-  }
-
-  return hashResult
-}
-
-module.exports = {
-  HdNode,
-  mnemonicToHdNode,
-  hdNodeStringToHdNode,
-}
+module.exports = HdNode

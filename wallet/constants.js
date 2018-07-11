@@ -9,4 +9,7 @@ module.exports = {
   * the "5820" part is the CBOR prefix for a hex string
   */
   TX_SIGN_MESSAGE_PREFIX: '011a2d964a095820',
+
+  // There are currently derivation modes 1 and 2. Daedalus uses derivation mode 1, so do we
+  CARDANO_KEY_DERIVATION_MODE: 1,
 }

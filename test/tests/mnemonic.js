@@ -24,13 +24,3 @@ describe('paper wallet decoding', () => {
     assert.equal(await _decodePaperWalletMnemonic(paperWalletMnemonic), standardMnemonic)
   })
 })
-
-describe('mnemonic to hash seed conversion', () => {
-  it('should properly convert 12 word mnemonic to hash seed', async () => {
-    assert.equal((await mnemonicToHashSeed(standardMnemonic)).toString('hex'), expectedHashSeed)
-  })
-
-  it('should properly convert 27 word paper wallet mnemonic to hash seed', async () => {
-    assert.equal((await mnemonicToHashSeed(paperWalletMnemonic)).toString('hex'), expectedHashSeed)
-  })
-})
