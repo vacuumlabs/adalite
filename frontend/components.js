@@ -264,6 +264,11 @@ class UnlockClass extends Component {
       h(
         'div',
         {class: 'auth-section'},
+        h(
+          'div',
+          {class: 'centered-row margin-bottom'},
+          'Enter the 12-word wallet mnemonic or 27-word Daedalus paper wallet mnemonic'
+        ),
         mnemonicValidationError &&
           showMnemonicValidationError &&
           h('p', {class: 'alert error'}, translations[mnemonicValidationError.code]()),
@@ -275,7 +280,7 @@ class UnlockClass extends Component {
             class: 'styled-input-nodiv styled-unlock-input',
             id: 'mnemonic-submitted',
             name: 'mnemonic-submitted',
-            placeholder: 'Enter 12-word mnemonic or paper wallet mnemonic',
+            placeholder: 'Enter wallet mnemonic',
             value: mnemonic,
             onInput: updateMnemonic,
             onBlur: checkForMnemonicValidationError,
