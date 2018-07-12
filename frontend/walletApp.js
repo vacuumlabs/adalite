@@ -2,7 +2,7 @@ const {h, render} = require('preact')
 const createStore = require('unistore').default
 const devtools = require('unistore/devtools')
 const Provider = require('unistore/preact').Provider
-const App = require('./components').App
+const App = require('./components/app')
 
 const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
 
