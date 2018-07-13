@@ -18,7 +18,7 @@ const LoginStatus = connect(
     {class: 'status'},
     h(
       'div',
-      {class: 'status-text on-desktop-only'},
+      {class: 'status-text'},
       'Balance: ',
       h('span', {class: 'status-balance'}, printAda(balance)),
       h('img', {class: 'ada-sign', alt: 'ADA', src: '/assets/ada.png'})
@@ -96,9 +96,6 @@ const NavbarAuth = connect((state) => ({
         h(
           'div',
           {class: 'centered-row'},
-          h('span', {class: 'mobile-balance-label'}, 'Balance: '),
-          h('span', {class: 'status-balance'}, printAda(balance)),
-          h('img', {class: 'ada-sign', alt: ' ADA', src: '/assets/ada.png'}),
           h(
             'label',
             {class: 'navcollapse-label', for: 'navcollapse'},

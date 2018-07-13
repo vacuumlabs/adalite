@@ -42,8 +42,8 @@ const TransactionHistory = ({transactionHistory}) =>
             'tr',
             undefined,
             h('th', undefined, 'Time'),
-            h('th', undefined, 'Transaction'),
-            h('th', undefined, 'Movement (ADA)')
+            h('th', undefined, 'Movement (ADA)'),
+            h('th', undefined, 'Transaction')
           )
         ),
         h(
@@ -54,8 +54,8 @@ const TransactionHistory = ({transactionHistory}) =>
               'tr',
               undefined,
               h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
-              h('td', undefined, h(TransactionAddress, {address: transaction.ctbId})),
-              h('td', undefined, h(PrettyValue, {effect: transaction.effect}))
+              h('td', undefined, h(PrettyValue, {effect: transaction.effect})),
+              h('td', undefined, h(TransactionAddress, {address: transaction.ctbId}))
             )
           )
         )
