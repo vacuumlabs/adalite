@@ -1,4 +1,5 @@
 const cbor = require('cbor')
+const base58 = require('bs58')
 
 const {generateMnemonic, validateMnemonic} = require('./mnemonic')
 const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
@@ -86,7 +87,7 @@ const CardanoWallet = async (options) => {
       return acc + elem.coins
     }, 0)
 
-    const fee = computeTxFee(txInputs, coins)
+    const fee = computeTxFee(txInputs, coins, address)
     const changeAmount = txInputsCoinsSum - coins - fee
     if (changeAmount < 0) {
       return false
@@ -101,7 +102,7 @@ const CardanoWallet = async (options) => {
     return TxAux(txInputs, txOutputs, {})
   }
 
-  async function getAllFundsTxFee() {
+  async function getAllFundsTxFee(address) {
     const utxos = await getUnspentTxOutputs()
     const txInputs = []
     let coins = 0
@@ -110,13 +111,13 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(utxos[i]))
       coins += utxos[i].coins
     }
-    return computeTxFee(txInputs, coins)
+    return computeTxFee(txInputs, coins, address)
   }
 
-  async function getTxFee(coins) {
+  async function getTxFee(coins, address) {
     const txInputs = await prepareTxInputs(coins)
 
-    return computeTxFee(txInputs, coins)
+    return computeTxFee(txInputs, coins, address)
   }
 
   async function getBalance() {
@@ -144,13 +145,13 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(utxos[i]))
       sumUtxos += utxos[i].coins
 
-      totalCoins = coins + computeTxFee(txInputs, totalCoins)
+      totalCoins = coins + computeTxFee(txInputs, totalCoins, utxos[i].address)
     }
 
     return txInputs
   }
 
-  function computeTxFee(txInputs, coins) {
+  function computeTxFee(txInputs, coins, address) {
     if (coins > Number.MAX_SAFE_INTEGER) {
       throw new Error(`Unsupported amount of coins: ${coins}`)
     }
@@ -160,7 +161,7 @@ const CardanoWallet = async (options) => {
     }, 0)
 
     //first we try one output transaction
-    const oneOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, 1))
+    const oneOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, address, false))
 
     /*
     * if (coins+oneOutputFee) is equal to (txInputsCoinsSum) it means there is no change necessary
@@ -171,7 +172,7 @@ const CardanoWallet = async (options) => {
       return oneOutputFee
     } else {
       //we try to compute fee for 2 output tx
-      const twoOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, 2))
+      const twoOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, address, true))
       if (coins + twoOutputFee > txInputsCoinsSum) {
         //means one output transaction was possible, while 2 output is not
         //so we return fee equal to inputs - coins which is guaranteed to pass
@@ -182,19 +183,26 @@ const CardanoWallet = async (options) => {
     }
   }
 
-  function estimateTxSize(txInputs, coins, outputcount) {
+  function estimateTxSize(txInputs, coins, outAddress, hasChange) {
     const txInputsSize = cbor.encode(new CborIndefiniteLengthArray(txInputs)).length
+    const outAddressSize = base58.decode(outAddress).length
+
+    //size of addresses used by cardanolite
+    const ownAddressSize = 76
 
     /*
     * we assume that at most two outputs (destination and change address) will be present
     * encoded in an indefinite length array
     */
     const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
-    const txOutputSize = (77 + maxCborCoinsLen + 1) * outputcount
+    const txOutputsSize = hasChange
+      ? outAddressSize + ownAddressSize + maxCborCoinsLen * 2 + 2
+      : outAddressSize + maxCborCoinsLen + 2
+
     const txMetaSize = 1 // currently empty Map
 
     // the 1 is there for the CBOR "tag" for an array of 3 elements
-    const txAuxSize = 1 + txInputsSize + txOutputSize + txMetaSize
+    const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
 
     const txWitnessesSize = txInputs.length * 139 + 1
 
