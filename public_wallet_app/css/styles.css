@@ -613,7 +613,6 @@ div.box.box-auto {
   color: var(--brand);
 }
 .status-text {
-  width: 12rem;
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
@@ -1105,6 +1104,9 @@ div.box.box-auto {
   .ada-sign {
     margin-left: 0.5rem;
   }
+  .ada-sign-big {
+    height: 1.5rem;
+  }
 }
 .transaction-id {
   font-size: 0.9rem;
@@ -1250,6 +1252,12 @@ div.box.box-auto {
   position: absolute;
   left: 70px;
   bottom: 0.4em;
+}
+@media screen and (max-width: 789px) {
+  .public-wallet-badge {
+    left: 12rem;
+    bottom: 1.4rem;
+  }
 }
 .public-wallet-warning-list {
   text-align: left;
