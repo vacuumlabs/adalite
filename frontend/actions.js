@@ -153,7 +153,7 @@ module.exports = ({setState, getState}) => {
     setState({calculatingFee: true})
 
     const balance = await wallet.getBalance()
-    const txFee = await wallet.getAllFundsTxFee()
+    const txFee = await wallet.getAllFundsTxFee(state.sendAddress.fieldValue)
     const allFundsSendable = balance > txFee
     if (allFundsSendable) {
       setState({
@@ -298,7 +298,7 @@ module.exports = ({setState, getState}) => {
 
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
-    const transactionFee = await wallet.getTxFee(amount)
+    const transactionFee = await wallet.getTxFee(amount, address)
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
     const newState = getState()
