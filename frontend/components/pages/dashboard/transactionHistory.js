@@ -1,16 +1,6 @@
 const {h} = require('preact')
 const printAda = require('../../../printAda')
 
-const PrettyDate = ({date}) => {
-  const day = `${date.getDate()}`.padStart(2)
-  const month = `${date.getMonth() + 1}`.padStart(2)
-  const year = date.getFullYear()
-  // pad with html space character, since two regular spaces get truncated
-  const hours = `${date.getHours()}`.padStart(2, ' ')
-  const minutes = `${date.getMinutes()}`.padStart(2, '0')
-  return `${day}.${month}. ${year}  ${hours}:${minutes}`
-}
-
 const PrettyValue = ({effect}) => {
   const value = printAda(Math.abs(effect))
   const prefix = effect > 0 ? '+ ' : '- '
@@ -63,13 +53,7 @@ const TransactionHistory = ({transactionHistory}) =>
             h(
               'tr',
               undefined,
-              h(
-                'td',
-                undefined,
-                h(PrettyDate, {
-                  date: new Date(transaction.ctbTimeIssued * 1000),
-                })
-              ),
+              h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
               h('td', undefined, h(TransactionAddress, {address: transaction.ctbId})),
               h('td', undefined, h(PrettyValue, {effect: transaction.effect}))
             )
