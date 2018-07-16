@@ -1,48 +1,36 @@
 const cbor = require('cbor')
-const blake2 = require('blakejs')
-const sha3 = require('js-sha3')
-const chacha20 = require('@stablelib/chacha20poly1305')
-const base58 = require('bs58')
-const crc32 = require('crc-32')
+const {
+  chacha20poly1305Encrypt,
+  chacha20poly1305Decrypt,
+  blake2b,
+  sha3_256,
+  crc32,
+  base58,
+} = require('cardano-crypto.js')
 
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
-function isValidAddress(address) {
-  try {
-    // we decode the address from the base58 string
-    // and then we strip the 24 CBOR data taga (the "[0].value" part)
-    const addressAsBuffer = cbor.decode(base58.decode(address))[0].value
-    const addressData = cbor.decode(addressAsBuffer)
-    const addressAttributes = addressData[1]
-    cbor.decode(addressAttributes.get(1))
-  } catch (e) {
-    return false
-  }
-  return true
-}
-
 function getAddressHash(input) {
-  const serializedInput = cbor.encode(input)
-
-  const firstHash = Buffer.from(sha3.sha3_256(serializedInput), 'hex')
-  return Buffer.from(blake2.blake2b(firstHash, null, 28))
-}
-
-function crc32Unsigned(input) {
-  return crc32.buf(input) >>> 0
+  const firstHash = sha3_256(cbor.encode(input))
+  return blake2b(firstHash, 28)
 }
 
 function encryptDerivationPath(derivationPath, hdPassphrase) {
   const serializedDerivationPath = cbor.encode(new CborIndefiniteLengthArray(derivationPath))
 
-  const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
-
-  return Buffer.from(cipher.seal(Buffer.from('serokellfore'), serializedDerivationPath))
+  return chacha20poly1305Encrypt(
+    serializedDerivationPath,
+    hdPassphrase,
+    Buffer.from('serokellfore')
+  )
 }
 
 function decryptDerivationPath(addressPayload, hdPassphrase) {
-  const cipher = new chacha20.ChaCha20Poly1305(hdPassphrase)
-  const decipheredDerivationPath = cipher.open(Buffer.from('serokellfore'), addressPayload)
+  const decipheredDerivationPath = chacha20poly1305Decrypt(
+    addressPayload,
+    hdPassphrase,
+    Buffer.from('serokellfore')
+  )
 
   try {
     return cbor.decode(Buffer.from(decipheredDerivationPath))
@@ -72,7 +60,7 @@ function packAddress(derivationPath, xpub, hdPassphrase) {
   const addressDataEncoded = cbor.encode(addressData)
 
   return base58.encode(
-    cbor.encode([new cbor.Tagged(24, addressDataEncoded), crc32Unsigned(addressDataEncoded)])
+    cbor.encode([new cbor.Tagged(24, addressDataEncoded), crc32(addressDataEncoded)])
   )
 }
 
@@ -97,5 +85,4 @@ function unpackAddress(address, hdPassphrase) {
 module.exports = {
   packAddress,
   unpackAddress,
-  isValidAddress,
 }

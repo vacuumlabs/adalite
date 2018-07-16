@@ -1,4 +1,4 @@
-module.exports = async function request(url, method = 'GET', body = null, headers = {}) {
+const request = async function request(url, method = 'GET', body = null, headers = {}) {
   let requestParams = {
     method,
     headers,
@@ -25,3 +25,5 @@ module.exports = async function request(url, method = 'GET', body = null, header
     throw e
   }
 }
+
+module.exports = request

@@ -6,16 +6,24 @@ const CardanoMnemonicCryptoProvider = require('../../wallet/cardano-mnemonic-cry
 const tx = require('../../wallet/transaction')
 const range = require('../../wallet/helpers/range')
 const derivePublic = require('../../wallet/helpers/derivePublic')
+const parseMnemonicOrHdNodeString = require('../../wallet/helpers/parseMnemonicOrHdNodeString')
 
-const mnemonic1 = 'cruise bike bar reopen mimic title style fence race solar million clean'
-const mnemonic2 = 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme'
-const cryptoProvider1 = CardanoMnemonicCryptoProvider(mnemonic1, {}, true)
-const cryptoProvider2 = CardanoMnemonicCryptoProvider(mnemonic2, {}, true)
-const cryptoProvider3 = CardanoMnemonicCryptoProvider(
+const secrets = [
+  'cruise bike bar reopen mimic title style fence race solar million clean',
+  'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
   'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3',
-  {},
-  true
-)
+]
+const cryptoProviders = []
+
+const initCryptoProvider = async (secret, i) => {
+  cryptoProviders[i] = CardanoMnemonicCryptoProvider(
+    await parseMnemonicOrHdNodeString(secret),
+    {},
+    true
+  )
+}
+
+before(async () => Promise.all(secrets.map(initCryptoProvider)))
 
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
@@ -34,7 +42,7 @@ describe('signing', () => {
     // test signing
     assert.equal(
       Buffer.compare(
-        await cryptoProvider1._sign(message, [HARDENED_THRESHOLD, HARDENED_THRESHOLD + 1]),
+        await cryptoProviders[0]._sign(message, [HARDENED_THRESHOLD, HARDENED_THRESHOLD + 1]),
         expectedMessageSignature
       ),
       0
@@ -46,8 +54,8 @@ describe('secret key derivation', () => {
   // some hardened secret key - child index starts with 1 in binary
   const expectedHdNodeStr1 =
     'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
-  it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
-    const derivedHdNodeStr1 = cryptoProvider3
+  it('should properly derive some hardened secret key - child index starts with 1 in binary', async () => {
+    const derivedHdNodeStr1 = cryptoProviders[2]
       ._deriveHdNodeFromRoot([HARDENED_THRESHOLD, childIndex2])
       .toString()
     assert.equal(derivedHdNodeStr1, expectedHdNodeStr1)
@@ -55,8 +63,8 @@ describe('secret key derivation', () => {
 
   const expectedHdNodeStr2 =
     'e0f31d972365bb76a2dd837c7ba5b4b7c065fa4ad1fbf808ddc17130bf10c40f63772cbaa1cdf7e847543f3cbcb3da7065498c71c04ca1f5cd9dccc18226461efdade44a3c35cfb6ab9c834dbc418da2cba30501139db384f194ef060847d0bd164f072124bcf55af0f01c1b5cd7759a7262b4d205717f4afb282cf98fed3026'
-  it('should properly derive some nonhardened secret key - child index starts with 0 in binary', () => {
-    const derivedHdNodeStr2 = cryptoProvider3
+  it('should properly derive some nonhardened secret key - child index starts with 0 in binary', async () => {
+    const derivedHdNodeStr2 = cryptoProviders[2]
       ._deriveHdNodeFromRoot([HARDENED_THRESHOLD, childIndex3])
       .toString()
     assert.equal(derivedHdNodeStr2, expectedHdNodeStr2)
@@ -64,11 +72,11 @@ describe('secret key derivation', () => {
 })
 
 describe('extended public key derivation (non hardened)', () => {
-  const accountHdNode = cryptoProvider1._deriveHdNodeFromRoot([HARDENED_THRESHOLD])
+  it('xpub derivation from private and extended public key must coincide', async () => {
+    const accountHdNode = cryptoProviders[0]._deriveHdNodeFromRoot([HARDENED_THRESHOLD])
 
-  it('xpub derivation from private and extended public key must coincide', () => {
     const xpubDerivedPublic = derivePublic(accountHdNode.extendedPublicKey, 1)
-    const xpubDerivedPrivate = cryptoProvider1._deriveChildHdNode(accountHdNode, 1)
+    const xpubDerivedPrivate = cryptoProviders[0]._deriveChildHdNode(accountHdNode, 1)
       .extendedPublicKey
 
     assert.equal(xpubDerivedPublic.toString('hex'), xpubDerivedPrivate.toString('hex'))
@@ -78,17 +86,17 @@ describe('extended public key derivation (non hardened)', () => {
 describe('address generation from secret key', () => {
   const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
   it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
-    const derivedAddress1 = await cryptoProvider3.deriveAddress([], 'hardened')
+    const derivedAddress1 = await cryptoProviders[2].deriveAddress([], 'hardened')
     assert.equal(derivedAddress1, expectedAddress1)
 
-    const derivedAddress2 = await cryptoProvider3.deriveAddress([], 'nonhardened')
+    const derivedAddress2 = await cryptoProviders[2].deriveAddress([], 'nonhardened')
     assert.equal(derivedAddress2, expectedAddress1)
   })
 
   const expectedAddress2 =
     'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
   it('should properly generate some address from hardened key - child index starts with 1 in binary', async () => {
-    const derivedAddress2 = await cryptoProvider3.deriveAddress(
+    const derivedAddress2 = await cryptoProviders[2].deriveAddress(
       [HARDENED_THRESHOLD, childIndex2],
       'hardened'
     )
@@ -98,7 +106,7 @@ describe('address generation from secret key', () => {
   const expectedAddress3 =
     'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
   it('should properly generate some address from nonhardened key in hardened mode - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await cryptoProvider3.deriveAddress(
+    const derivedAddress3 = await cryptoProviders[2].deriveAddress(
       [HARDENED_THRESHOLD, childIndex3],
       'hardened'
     )
@@ -106,7 +114,7 @@ describe('address generation from secret key', () => {
   })
 
   it('should properly generate some address from nonhardened key in nonhardened mode - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await cryptoProvider3.deriveAddress(
+    const derivedAddress3 = await cryptoProviders[2].deriveAddress(
       [HARDENED_THRESHOLD, childIndex3],
       'nonhardened'
     )
@@ -143,7 +151,7 @@ describe('wallet addresses derivation', () => {
       HARDENED_THRESHOLD,
       i,
     ])
-    const walletAddresses = await cryptoProvider3.deriveAddresses(derivationPaths, 'hardened')
+    const walletAddresses = await cryptoProviders[2].deriveAddresses(derivationPaths, 'hardened')
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
   })
 })
@@ -181,7 +189,7 @@ describe('transaction signing', () => {
     ]
 
     const txAux = tx.TxAux(txInputs, txOutputs, {})
-    const txSignedStructured = await cryptoProvider2._signTxGetStructured(txAux)
+    const txSignedStructured = await cryptoProviders[1]._signTxGetStructured(txAux)
 
     const witnessesSerialized = cbor.encode(txSignedStructured.witnesses).toString('hex')
 
