@@ -9,13 +9,22 @@ function generateMnemonic() {
 
 function validateMnemonic(mnemonic) {
   try {
-    return !!mnemonic && (bip39.validateMnemonic(mnemonic) || isPaperWalletMnemonic(mnemonic))
+    return (
+      !!mnemonic && (bip39.validateMnemonic(mnemonic) || isMnemonicInPaperWalletFormat(mnemonic))
+    )
   } catch (e) {
     return false
   }
 }
 
-function isPaperWalletMnemonic(mnemonic) {
+function validatePaperWalletMnemonic(mnemonic) {
+  if (!!mnemonic && isMnemonicInPaperWalletFormat(mnemonic)) {
+    return !!decodePaperWalletMnemonic(mnemonic)
+  }
+  return true
+}
+
+function isMnemonicInPaperWalletFormat(mnemonic) {
   return mnemonicToList(mnemonic).length === 27
 }
 
@@ -31,21 +40,25 @@ function mnemonicToPaperWalletPassphrase(mnemonic, password) {
 }
 
 function decodePaperWalletMnemonic(paperWalletMnemonic) {
-  const paperWalletMnemonicAsList = mnemonicToList(paperWalletMnemonic)
+  try {
+    const paperWalletMnemonicAsList = mnemonicToList(paperWalletMnemonic)
 
-  if (paperWalletMnemonicAsList.length !== 27) {
-    throw Error(
-      `Paper Wallet Mnemonic must be 27 words, got ${paperWalletMnemonicAsList.length} instead`
-    )
+    if (paperWalletMnemonicAsList.length !== 27) {
+      throw Error(
+        `Paper Wallet Mnemonic must be 27 words, got ${paperWalletMnemonicAsList.length} instead`
+      )
+    }
+
+    const mnemonicScrambledPart = paperWalletMnemonicAsList.slice(0, 18).join(' ')
+    const mnemonicPassphrasePart = paperWalletMnemonicAsList.slice(18, 27).join(' ')
+
+    const passphrase = mnemonicToPaperWalletPassphrase(mnemonicPassphrasePart)
+    const unscrambledMnemonic = unscrambleStrings(passphrase, mnemonicScrambledPart)
+
+    return unscrambledMnemonic
+  } catch (e) {
+    return undefined
   }
-
-  const mnemonicScrambledPart = paperWalletMnemonicAsList.slice(0, 18).join(' ')
-  const mnemonicPassphrasePart = paperWalletMnemonicAsList.slice(18, 27).join(' ')
-
-  const passphrase = mnemonicToPaperWalletPassphrase(mnemonicPassphrasePart)
-  const unscrambledMnemonic = unscrambleStrings(passphrase, mnemonicScrambledPart)
-
-  return unscrambledMnemonic
 }
 
 // eslint-disable-next-line max-len
@@ -72,7 +85,7 @@ function unscrambleStrings(passphrase, mnemonic) {
 module.exports = {
   generateMnemonic,
   validateMnemonic,
-  isPaperWalletMnemonic,
+  validatePaperWalletMnemonic,
+  isMnemonicInPaperWalletFormat,
   decodePaperWalletMnemonic,
-  _decodePaperWalletMnemonic: decodePaperWalletMnemonic,
 }

@@ -2,7 +2,7 @@ const assert = require('assert')
 
 const {
   generateMnemonic,
-  _decodePaperWalletMnemonic,
+  decodePaperWalletMnemonic,
   mnemonicToHashSeed,
 } = require('../../wallet/mnemonic')
 
@@ -19,8 +19,10 @@ describe('mnemonic generation', () => {
   })
 })
 
-describe('paper wallet decoding', () => {
+// eslint-disable-next-line prefer-arrow-callback
+describe('paper wallet decoding', function() {
+  this.timeout(10000)
   it('should properly decode paper wallet mnemonic', async () => {
-    assert.equal(await _decodePaperWalletMnemonic(paperWalletMnemonic), standardMnemonic)
+    assert.equal(await decodePaperWalletMnemonic(paperWalletMnemonic), standardMnemonic)
   })
 })
