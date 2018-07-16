@@ -9,6 +9,8 @@ module.exports = {
   },
   externals: {
     'trezor-connect': 'TrezorConnect',
+    // to avoid including webpack's 'crypto' if window.crypto is available - reduces bundle size
+    'crypto': 'crypto',
   },
   mode: 'development',
   node: {

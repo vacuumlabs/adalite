@@ -1,42 +1,19 @@
 const cbor = require('cbor')
 const CardanoCrypto = require('cardano-crypto.js')
 
-const {pbkdf2Async} = require('./helpers/pbkdf2')
+const pbkdf2 = require('./helpers/pbkdf2')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const {TX_SIGN_MESSAGE_PREFIX, CARDANO_KEY_DERIVATION_MODE} = require('./constants')
 const HdNode = require('./hd-node')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
-const {isMnemonicInPaperWalletFormat, decodePaperWalletMnemonic} = require('./mnemonic')
 
-const CardanoMnemonicCryptoProvider = (
-  mnemonicOrHdNodeString,
-  walletState,
-  disableCaching = false
-) => {
+const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching = false) => {
   const state = Object.assign(walletState, {
-    masterHdNode: HdNode({
-      secret: parseMnemonicOrHdNodeString(mnemonicOrHdNodeString),
-    }),
+    masterHdNode: HdNode({secret: walletSecret}),
     derivedHdNodes: {},
     derivedXpubs: {},
   })
-
-  function parseMnemonicOrHdNodeString(mnemonicOrHdNodeString) {
-    const isMnemonic = mnemonicOrHdNodeString.search(' ') >= 0
-
-    if (isMnemonic) {
-      let mnemonic
-      if (isMnemonicInPaperWalletFormat(mnemonicOrHdNodeString)) {
-        mnemonic = decodePaperWalletMnemonic(mnemonicOrHdNodeString)
-      } else {
-        mnemonic = mnemonicOrHdNodeString
-      }
-      return CardanoCrypto.walletSecretFromMnemonic(mnemonic)
-    } else {
-      return Buffer.from(mnemonicOrHdNodeString, 'hex')
-    }
-  }
 
   async function deriveAddresses(derivationPaths, derivationMode) {
     return await Promise.all(
@@ -62,13 +39,7 @@ const CardanoMnemonicCryptoProvider = (
   }
 
   async function getRootHdPassphrase() {
-    return await pbkdf2Async(
-      state.masterHdNode.extendedPublicKey,
-      'address-hashing',
-      500,
-      32,
-      'sha512'
-    )
+    return await pbkdf2(state.masterHdNode.extendedPublicKey, 'address-hashing', 500, 32, 'sha512')
   }
 
   function deriveXpub(derivationPath, derivationMode) {

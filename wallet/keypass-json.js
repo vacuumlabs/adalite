@@ -1,15 +1,12 @@
 /* based on https://github.com/input-output-hk/cardano-crypto/blob/master/cbits/encrypted_sign.c */
 
-const scrypt = require('scrypt-async')
 const cbor = require('cbor')
-const chacha20 = require('@stablelib/chacha')
+const {cardanoMemoryCombine, blake2b, scrypt} = require('cardano-crypto.js')
 
-const {pbkdf2Async} = require('./helpers/pbkdf2')
-const hashBlake2b256 = require('./helpers/hashBlake2b256')
 const {HARDENED_THRESHOLD} = require('./constants')
 
 function transformPassword(password) {
-  return password ? hashBlake2b256(password, null, 32) : Buffer.from([])
+  return password ? blake2b(Buffer.from(password), 32) : Buffer.from([])
 }
 
 async function verifyPassword(passwordToVerify, passwordHash) {
@@ -76,30 +73,8 @@ const [encryptWalletSecret, decryptWalletSecret] = Array(2).fill(async (walletSe
   const secretKey = walletSecret.slice(0, 64)
   const extendedPublicKey = walletSecret.slice(64, 128)
 
-  return Buffer.concat([await memoryCombine(secretKey, password), extendedPublicKey])
+  return Buffer.concat([cardanoMemoryCombine(secretKey, password), extendedPublicKey])
 })
-
-async function memoryCombine(input, password) {
-  if (!password) {
-    return input
-  }
-
-  const stretched = await pbkdf2Async(
-    transformPassword(password),
-    Buffer.concat([Buffer.from('encrypted wallet salt', 'ascii'), Buffer.from([0])]),
-    15000,
-    40,
-    'sha512'
-  )
-
-  const chacha20Key = stretched.slice(0, 32)
-  const chacha20Nonce = stretched.slice(32, 40)
-
-  const output = Buffer.alloc(input.length)
-  chacha20.streamXOR(chacha20Key, chacha20Nonce, input, output)
-
-  return output
-}
 
 function parseWalletExportObj(walletExportObj) {
   if (walletExportObj.fileType !== 'WALLETS_EXPORT') {

@@ -1,6 +1,5 @@
 const generateMnemonic = require('../wallet/mnemonic').generateMnemonic
 const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
-const exportWalletSecret = require('../wallet/keypass-json').exportWalletSecret
 const FileSaver = require('file-saver')
 const {
   sendAddressValidator,
@@ -193,10 +192,10 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const updateMnemonic = (state, e) => {
+  const updateMnemonic = async (state, e) => {
     setState({
       mnemonic: e.target.value,
-      mnemonicValidationError: mnemonicValidator(e.target.value),
+      mnemonicValidationError: await mnemonicValidator(e.target.value),
       showMnemonicValidationError: false,
     })
   }
@@ -272,14 +271,15 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const validateSendForm = (state) => {
+  const validateSendForm = async (state) => {
     setState({
-      isSendAddressValid: !sendAddressValidator(state.sendAddress.fieldValue).validationError,
+      isSendAddressValid: !(await sendAddressValidator(state.sendAddress.fieldValue))
+        .validationError,
     })
 
     if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
       setState({
-        sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
+        sendAddress: await sendAddressValidator(state.sendAddress.fieldValue),
         sendAmount: sendAmountValidator(state.sendAmount.fieldValue),
       })
     }
@@ -328,8 +328,8 @@ module.exports = ({setState, getState}) => {
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
-  const validateSendFormAndCalculateFee = () => {
-    validateSendForm(getState())
+  const validateSendFormAndCalculateFee = async () => {
+    await validateSendForm(getState())
     if (isSendFormFilledAndValid(getState())) {
       setState({calculatingFee: true})
       debouncedCalculateFee()
@@ -338,24 +338,24 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const updateAddress = (state, e) => {
+  const updateAddress = async (state, e) => {
     setState({
       sendResponse: '',
       sendAddress: Object.assign({}, state.sendAddress, {
         fieldValue: e.target.value,
       }),
     })
-    validateSendFormAndCalculateFee()
+    await validateSendFormAndCalculateFee()
   }
 
-  const updateAmount = (state, e) => {
+  const updateAmount = async (state, e) => {
     setState({
       sendResponse: '',
       sendAmount: Object.assign({}, state.sendAmount, {
         fieldValue: e.target.value,
       }),
     })
-    validateSendFormAndCalculateFee()
+    await validateSendFormAndCalculateFee()
   }
 
   const submitTransaction = async (state) => {
@@ -401,9 +401,13 @@ module.exports = ({setState, getState}) => {
   }
 
   const exportJsonWallet = async (state, password, walletName) => {
-    const walletExport = JSON.stringify(
-      await exportWalletSecret(wallet.getSecret(), password, walletName)
+    const walletExport = await import(/* webpackPrefetch: true */ '../wallet/keypass-json').then(
+      async (KeypassJson) =>
+        JSON.stringify(
+          await KeypassJson.exportWalletSecret(wallet.getSecret(), password, walletName)
+        )
     )
+
     const blob = new Blob([walletExport], {type: 'application/json;charset=utf-8'})
     FileSaver.saveAs(blob, `${walletName}.json`)
 

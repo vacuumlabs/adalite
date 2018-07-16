@@ -1,5 +1,5 @@
 const cbor = require('cbor')
-const base58 = require('bs58')
+const base58 = require('cardano-crypto.js').base58
 
 const {TxInput, TxOutput, TxAux} = require('./transaction')
 

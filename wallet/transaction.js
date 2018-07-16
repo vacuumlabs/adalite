@@ -1,12 +1,11 @@
 const cbor = require('cbor')
-const base58 = require('bs58')
+const {blake2b, base58} = require('cardano-crypto.js')
 
-const hashBlake2b256 = require('./helpers/hashBlake2b256')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
 function TxAux(inputs, outputs, attributes) {
   function getId() {
-    return hashBlake2b256(cbor.encode(TxAux(inputs, outputs, attributes))).toString('hex')
+    return blake2b(cbor.encode(TxAux(inputs, outputs, attributes)), 32).toString('hex')
   }
 
   function encodeCBOR(encoder) {

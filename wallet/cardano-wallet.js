@@ -1,6 +1,6 @@
 const cbor = require('cbor')
-const base58 = require('bs58')
 
+const base58 = require('cardano-crypto.js').base58
 const {generateMnemonic, validateMnemonic} = require('./mnemonic')
 const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
 const BlockchainExplorer = require('./blockchain-explorer')
@@ -12,6 +12,7 @@ const shuffleArray = require('./helpers/shuffleArray')
 const range = require('./helpers/range')
 const {toBip32StringPath} = require('./bip32')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
+const parseMnemonicOrHdNodeString = require('./helpers/parseMnemonicOrHdNodeString')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -37,7 +38,10 @@ const CardanoWallet = async (options) => {
   if (options.cryptoProvider === 'trezor') {
     cryptoProvider = CardanoTrezorCryptoProvider(config, state)
   } else if (options.cryptoProvider === 'mnemonic') {
-    cryptoProvider = CardanoMnemonicCryptoProvider(mnemonicOrHdNodeString, state)
+    cryptoProvider = CardanoMnemonicCryptoProvider(
+      await parseMnemonicOrHdNodeString(mnemonicOrHdNodeString),
+      state
+    )
   } else {
     throw new Error(`Uknown crypto provider: ${options.cryptoProvider}`)
   }

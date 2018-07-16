@@ -1,12 +1,17 @@
 const {validateMnemonic, validatePaperWalletMnemonic} = require('../wallet/mnemonic')
-const isValidAddress = require('../wallet/address').isValidAddress
 
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
-const sendAddressValidator = (fieldValue) => ({
-  fieldValue,
-  validationError: !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
-})
+const sendAddressValidator = async (fieldValue) => {
+  const {
+    default: isValidAddress,
+  } = await import(/* webpackPrefetch: true */ '../wallet/helpers/isValidAddress')
+
+  return {
+    fieldValue,
+    validationError: !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
+  }
+}
 
 const sendAmountValidator = (fieldValue) => {
   let validationError = null
@@ -41,10 +46,10 @@ const feeValidator = (sendAmount, transactionFee, balance) => {
   return validationError
 }
 
-const mnemonicValidator = (mnemonic) => {
+const mnemonicValidator = async (mnemonic) => {
   let validationError = null
 
-  if (!validateMnemonic(mnemonic) || !validatePaperWalletMnemonic(mnemonic)) {
+  if (!validateMnemonic(mnemonic) || !(await validatePaperWalletMnemonic(mnemonic))) {
     validationError = {
       code: 'InvalidMnemonic',
     }

@@ -1,7 +1,6 @@
 const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const {importWalletSecret, isWalletExportEncrypted} = require('../../../../wallet/keypass-json')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -31,9 +30,13 @@ class LoadKeyFileClass extends Component {
     this.props.loadingAction('Unlocking key file')
 
     try {
-      const secret = (await importWalletSecret(this.state.keyFile, this.state.password)).toString(
-        'hex'
+      const secret = await import(/* webpackPrefetch: true */ '../../../../wallet/keypass-json').then(
+        async (KeypassJson) =>
+          (await KeypassJson.importWalletSecret(this.state.keyFile, this.state.password)).toString(
+            'hex'
+          )
       )
+
       this.setState({error: undefined})
       this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
     } catch (e) {
@@ -77,7 +80,11 @@ class LoadKeyFileClass extends Component {
       return async (e) => {
         try {
           const walletExport = await JSON.parse(e.target.result)
-          if (await isWalletExportEncrypted(walletExport)) {
+          const isWalletExportEncrypted = await import(/* webpackPrefetch: true */ '../../../../wallet/keypass-json').then(
+            async (KeypassJson) => await KeypassJson.isWalletExportEncrypted(walletExport)
+          )
+
+          if (isWalletExportEncrypted) {
             this.setState({
               keyFile: walletExport,
             })
