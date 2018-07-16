@@ -7,7 +7,7 @@ const {TX_SIGN_MESSAGE_PREFIX, CARDANO_KEY_DERIVATION_MODE} = require('./constan
 const HdNode = require('./hd-node')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
-const {isPaperWalletMnemonic, decodePaperWalletMnemonic} = require('./mnemonic')
+const {isMnemonicInPaperWalletFormat, decodePaperWalletMnemonic} = require('./mnemonic')
 
 const CardanoMnemonicCryptoProvider = (
   mnemonicOrHdNodeString,
@@ -27,7 +27,7 @@ const CardanoMnemonicCryptoProvider = (
 
     if (isMnemonic) {
       let mnemonic
-      if (isPaperWalletMnemonic(mnemonicOrHdNodeString)) {
+      if (isMnemonicInPaperWalletFormat(mnemonicOrHdNodeString)) {
         mnemonic = decodePaperWalletMnemonic(mnemonicOrHdNodeString)
       } else {
         mnemonic = mnemonicOrHdNodeString

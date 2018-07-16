@@ -1,4 +1,4 @@
-const validateMnemonic = require('../wallet/mnemonic').validateMnemonic
+const {validateMnemonic, validatePaperWalletMnemonic} = require('../wallet/mnemonic')
 const isValidAddress = require('../wallet/address').isValidAddress
 
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
@@ -44,7 +44,7 @@ const feeValidator = (sendAmount, transactionFee, balance) => {
 const mnemonicValidator = (mnemonic) => {
   let validationError = null
 
-  if (!validateMnemonic(mnemonic)) {
+  if (!validateMnemonic(mnemonic) || !validatePaperWalletMnemonic(mnemonic)) {
     validationError = {
       code: 'InvalidMnemonic',
     }
