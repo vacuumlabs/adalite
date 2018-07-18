@@ -12,18 +12,19 @@ app.use(compression())
 
 // must be before every other route to guarantee the redirect!
 if (process.env.CARDANOLITE_FORCE_HTTPS === 'true') {
-  app.use(require('./middleware/forceHttps'))
+  app.use(require('./middlewares/forceHttps'))
 }
 
 // don't track in local dev => no need for local redis
 if (process.env.REDIS_URL) {
-  app.use(require('./middleware/stats'))
-  app.use(require('./middleware/basicAuth')(['/usage_stats'], {admin: process.env.STATS_PWD}))
+  app.use(require('./middlewares/stats'))
+  app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: process.env.STATS_PWD}))
   require('./statsPage')(app)
 }
 
-app.use(express.static('public_wallet_app'))
-app.use(express.static('public_landing_page'))
+app.use(express.static('app/public'))
+app.use(express.static('app/dist'))
+app.use(express.static('landing_page'))
 
 require('./blockchainExplorerProxy')(app)
 require('./transactionSubmitter')(app)

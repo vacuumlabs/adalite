@@ -1,0 +1,43 @@
+{
+  "name": "cardanolite-app",
+  "version": "1.0.0",
+  "description": "Frontend code for Cardanolite wallet",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vacuumlabs/cardanolite.git"
+  },
+  "keywords": [
+    "cardano",
+    "wallet"
+  ],
+  "author": "Vacuumlabs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vacuumlabs/cardanolite/issues"
+  },
+  "homepage": "https://github.com/vacuumlabs/cardanolite#readme",
+  "scripts": {
+    "build": "webpack --progress --config webpack.build.config.js",
+    "dev": "webpack --watch --config webpack.build.config.js",
+    "test": "webpack --config webpack.test.config.js"
+  },
+  "dependencies": {
+    "bip39-light": "^1.0.6",
+    "cardano-crypto.js": "^3.1.9",
+    "cbor": "^4.1.1",
+    "cors": "^2.8.4",
+    "file-saver": "^1.3.8",
+    "isomorphic-fetch": "^2.2.1",
+    "preact": "^8.2.7",
+    "unistore": "^3.0.4",
+    "webpack": "^4.1.1",
+    "webpack-node-externals": "^1.6.0"
+  },
+  "devDependencies": {
+    "fetch-mock": "^6.5.1",
+    "mocha": "^5.0.1",
+    "sinon": "^4.4.2",
+    "webpack-cli": "^2.0.10"
+  }
+}
