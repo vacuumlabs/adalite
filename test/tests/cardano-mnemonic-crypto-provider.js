@@ -23,7 +23,7 @@ const initCryptoProvider = async (secret, i) => {
   )
 }
 
-before(async () => Promise.all(secrets.map(initCryptoProvider)))
+before(async () => await Promise.all(secrets.map(initCryptoProvider)))
 
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
@@ -54,7 +54,7 @@ describe('secret key derivation', () => {
   // some hardened secret key - child index starts with 1 in binary
   const expectedHdNodeStr1 =
     'ffd89a6ecc943cd58766294e7575d20f775eba62a93361412d61718026781c00d3d86147df3aa92147ea48f786b2cd2bd7d756d37add3055caa8ba4f1d543198b79060c204436cfb0a660a25a43d3b80bd10a167dacb70e0a9d1ca424c8259e7f0bd12bacfb4f58697cd088f6531130584933aed7dfe53163b7f24f10e6c25da'
-  it('should properly derive some hardened secret key - child index starts with 1 in binary', async () => {
+  it('should properly derive some hardened secret key - child index starts with 1 in binary', () => {
     const derivedHdNodeStr1 = cryptoProviders[2]
       ._deriveHdNodeFromRoot([HARDENED_THRESHOLD, childIndex2])
       .toString()
@@ -63,7 +63,7 @@ describe('secret key derivation', () => {
 
   const expectedHdNodeStr2 =
     'e0f31d972365bb76a2dd837c7ba5b4b7c065fa4ad1fbf808ddc17130bf10c40f63772cbaa1cdf7e847543f3cbcb3da7065498c71c04ca1f5cd9dccc18226461efdade44a3c35cfb6ab9c834dbc418da2cba30501139db384f194ef060847d0bd164f072124bcf55af0f01c1b5cd7759a7262b4d205717f4afb282cf98fed3026'
-  it('should properly derive some nonhardened secret key - child index starts with 0 in binary', async () => {
+  it('should properly derive some nonhardened secret key - child index starts with 0 in binary', () => {
     const derivedHdNodeStr2 = cryptoProviders[2]
       ._deriveHdNodeFromRoot([HARDENED_THRESHOLD, childIndex3])
       .toString()
@@ -72,7 +72,7 @@ describe('secret key derivation', () => {
 })
 
 describe('extended public key derivation (non hardened)', () => {
-  it('xpub derivation from private and extended public key must coincide', async () => {
+  it('xpub derivation from private and extended public key must coincide', () => {
     const accountHdNode = cryptoProviders[0]._deriveHdNodeFromRoot([HARDENED_THRESHOLD])
 
     const xpubDerivedPublic = derivePublic(accountHdNode.extendedPublicKey, 1)

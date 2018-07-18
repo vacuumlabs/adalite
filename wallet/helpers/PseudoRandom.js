@@ -1,5 +1,5 @@
 /*
-* Source: https://stackoverflow.com/questions/424292/seedable-javascript-random-number-generator?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+* Source: https://stackoverflow.com/questions/424292/seedable-javascript-random-number-generator
 */
 
 function PseudoRandom(seed) {

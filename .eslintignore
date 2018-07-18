@@ -1,4 +1,4 @@
-public_wallet_app/js/frontend.bundle.js
+public_wallet_app/js/*frontend.bundle.js
 public_landing_page/
 test/browser/js/cardano.bundle.test.js
 node_modules/

@@ -1,4 +1,6 @@
+// eslint-disable-next-line import/no-unresolved
 const TrezorConnect = require('trezor-connect')
+
 const BlockchainExplorer = require('./blockchain-explorer')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
