@@ -1,6 +1,7 @@
 const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const debugLog = require('../../../debugLog')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -95,12 +96,16 @@ class LoadKeyFileClass extends Component {
             })
           } else {
             this.props.loadingAction('Reading key file')
-            const secret = (await importWalletSecret(walletExport, '')).toString('hex')
+            const secret = await import(/* webpackPrefetch: true */ '../../../../wallet/keypass-json').then(
+              async (KeypassJson) =>
+                (await KeypassJson.importWalletSecret(walletExport, '')).toString('hex')
+            )
+
             this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
             this.setState({error: undefined})
           }
         } catch (err) {
-          console.error(`Key file parsing failure: ${err}`)
+          debugLog(`Key file parsing failure: ${err}`)
           this.props.stopLoadingAction()
           this.setState({
             error: 'Key File parsing failure!',

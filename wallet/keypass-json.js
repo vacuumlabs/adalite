@@ -69,7 +69,7 @@ async function hashPasswordAndPack(password, salt) {
 }
 
 // wallet secret encryption/decryption is self-inverse
-const [encryptWalletSecret, decryptWalletSecret] = Array(2).fill(async (walletSecret, password) => {
+const [encryptWalletSecret, decryptWalletSecret] = Array(2).fill((walletSecret, password) => {
   const secretKey = walletSecret.slice(0, 64)
   const extendedPublicKey = walletSecret.slice(64, 128)
 
@@ -113,11 +113,11 @@ async function importWalletSecret(walletExportObj, password) {
     return walletSecret
   }
 
-  return await decryptWalletSecret(walletSecret, password)
+  return decryptWalletSecret(walletSecret, password)
 }
 
 async function exportWalletSecret(walletSecret, password, walletName) {
-  const encryptedWalletSecret = await encryptWalletSecret(walletSecret, password)
+  const encryptedWalletSecret = encryptWalletSecret(walletSecret, password)
   const packedPasswordHash = await hashPasswordAndPack(password, getRandomSaltForPasswordHash())
 
   return {

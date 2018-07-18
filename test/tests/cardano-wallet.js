@@ -42,7 +42,7 @@ const initWallet = async (id, config) => {
   wallets[id] = await CardanoWallet(config)
 }
 
-before(async () =>
+before(() =>
   Promise.all([initWallet('unused', unusedWalletConfig), initWallet('used', usedWalletConfig)])
 )
 

@@ -150,28 +150,6 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const sendAllFunds = async (state) => {
-    setState({calculatingFee: true})
-
-    const balance = await wallet.getBalance()
-    const txFee = await wallet.getAllFundsTxFee(state.sendAddress.fieldValue)
-    const allFundsSendable = balance > txFee
-    if (allFundsSendable) {
-      setState({
-        sendResponse: '',
-        sendAmount: sendAmountValidator(printAda(state.balance - txFee)),
-      })
-    } else {
-      setState({
-        sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: {code: 'SendAmountCantSendAllFunds'},
-        }),
-      })
-    }
-
-    validateSendFormAndCalculateFee(state)
-  }
-
   const closeGenerateMnemonicDialog = (state) => {
     setState({
       mnemonic: '',
@@ -213,7 +191,6 @@ module.exports = ({setState, getState}) => {
         await wallet.verifyAddress(address)
         setState({showAddressVerification: false})
       } catch (e) {
-        console.error('User rejected the address on trezor!')
         setState({
           showAddressDetail: undefined,
         })
@@ -356,6 +333,28 @@ module.exports = ({setState, getState}) => {
       }),
     })
     await validateSendFormAndCalculateFee()
+  }
+
+  const sendAllFunds = async (state) => {
+    setState({calculatingFee: true})
+
+    const balance = await wallet.getBalance()
+    const txFee = await wallet.getAllFundsTxFee(state.sendAddress.fieldValue)
+    const allFundsSendable = balance > txFee
+    if (allFundsSendable) {
+      setState({
+        sendResponse: '',
+        sendAmount: sendAmountValidator(printAda(state.balance - txFee)),
+      })
+    } else {
+      setState({
+        sendAmount: Object.assign({}, state.sendAmount, {
+          validationError: {code: 'SendAmountCantSendAllFunds'},
+        }),
+      })
+    }
+
+    validateSendFormAndCalculateFee(state)
   }
 
   const submitTransaction = async (state) => {

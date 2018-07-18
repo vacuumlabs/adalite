@@ -3,7 +3,7 @@ const {
   chacha20poly1305Encrypt,
   chacha20poly1305Decrypt,
   blake2b,
-  sha3_256,
+  sha3_256, // eslint-disable-line camelcase
   crc32,
   base58,
 } = require('cardano-crypto.js')
@@ -11,6 +11,7 @@ const {
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 
 function getAddressHash(input) {
+  // eslint-disable-next-line camelcase
   const firstHash = sha3_256(cbor.encode(input))
   return blake2b(firstHash, 28)
 }

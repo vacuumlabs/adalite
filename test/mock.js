@@ -508,8 +508,12 @@ const mock = (CARDANOLITE_CONFIG) => {
       /*
       * end of addresses for 'should properly compute change address for unused wallet'
       */
+
       /*
-      * addresses to compute utxo (from mnemonic: logic easily waste eager injury oval sentence wine bomb embrace gossip supreme)*/
+      * addresses to compute utxo
+      * from mnemonic:
+      *  logic easily waste eager injury oval sentence wine bomb embrace gossip supreme
+      */
       'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym': {
         Right: {
           caAddress:

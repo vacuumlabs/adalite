@@ -1,15 +1,10 @@
 const assert = require('assert')
 
-const {
-  generateMnemonic,
-  decodePaperWalletMnemonic,
-  mnemonicToHashSeed,
-} = require('../../wallet/mnemonic')
+const {generateMnemonic, decodePaperWalletMnemonic} = require('../../wallet/mnemonic')
 
 const paperWalletMnemonic =
   'force usage medal chapter start myself odor ripple concert aspect wink melt afford lounge smart bulk way hazard burden type broken defense city announce reward same tumble'
 const standardMnemonic = 'swim average antenna there trap nice good stereo lion safe next brief'
-const expectedHashSeed = '5820f56bcbc3cea284f348db4e4e5ce4019fb991d909fee5ca35313229258c7735db'
 
 describe('mnemonic generation', () => {
   const mnemonicString = generateMnemonic()

@@ -101,10 +101,6 @@ const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching
     })
   }
 
-  function indexIsHardened(childIndex) {
-    return !!(childIndex >> 31)
-  }
-
   async function sign(message, keyDerivationPath) {
     const hdNode = await deriveHdNode(keyDerivationPath)
     const messageToSign = Buffer.from(message, 'hex')
