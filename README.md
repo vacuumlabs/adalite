@@ -28,9 +28,9 @@ sure the webpage really runs the correct code, you can verify its integrity:
 ## Compatibility with Daedalus
 
 If you generate your wallet with CardanoLite, you can see it's content in Daedalus. The catch is -
-if you generate new addresses in Daedalus, CardanoLite won't recognize them. You'll still be able to
-use your wallet, but in Daedalus only, there is no way back (but to transfer your funds to the new
-wallet).
+if you generate new addresses in Daedalus and use it, CardanoLite won't recognize them. If you want
+to continue using your wallet in CardanoLite, you should move the funds to an address recognized by
+CardanoLite.
 
 ## Run project locally
 
@@ -61,10 +61,9 @@ It runs webpack with the `--watch` flag and the server with `PORT=3000` unless y
 ## test
 
 ```
-yarn install
 yarn test
 ```
 
-Open `test.html` in browser
+Open `app/tests/index.html` in browser
 
 Check us out at https://www.cardanolite.com
