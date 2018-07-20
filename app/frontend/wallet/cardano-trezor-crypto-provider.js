@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
-const TrezorConnect = require('trezor-connect')
-
 const BlockchainExplorer = require('./blockchain-explorer')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
@@ -12,6 +9,12 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     rootHdPassphrase: null,
     derivedAddresses: {},
   })
+
+  let TrezorConnect
+  if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_TREZOR) {
+    // eslint-disable-next-line import/no-unresolved
+    TrezorConnect = require('trezor-connect')
+  }
 
   const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
 

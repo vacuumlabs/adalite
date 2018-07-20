@@ -1385,3 +1385,6 @@ div.box.box-auto {
 .hidden {
   visibility: hidden;
 }
+.strong {
+  font-weight: bold;
+}
