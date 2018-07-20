@@ -24,6 +24,7 @@ class LoginPage extends Component {
     checkForMnemonicValidationError,
     setAuthMethod,
     showDemoWalletWarningDialog,
+    enableTrezor,
   }) {
     const authOption = (name, text) =>
       h(
@@ -66,7 +67,7 @@ class LoginPage extends Component {
             loadDemoWallet,
             showMnemonicValidationError,
           }),
-        authMethod === 'trezor' && HardwareAuth({loadWallet}),
+        authMethod === 'trezor' && HardwareAuth({enableTrezor, loadWallet}),
         authMethod === 'file' && h(KeyFileAuth)
       ),
       h(AboutOverlay),
@@ -84,6 +85,7 @@ module.exports = connect(
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
     walletLoadingError: state.walletLoadingError,
     authMethod: state.authMethod,
+    enableTrezor: state.enableTrezor,
   }),
   actions
 )(LoginPage)

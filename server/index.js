@@ -40,7 +40,11 @@ app.get('*', (req, res) => {
       <script src="js/init.js"></script>
       <link rel="stylesheet" type="text/css" href="css/styles.css">
       <link rel="icon" type="image/ico" href="assets/favicon.ico">
-      <script src="${process.env.TREZOR_CONNECT_URL}"></script>
+      ${
+  process.env.TREZOR_CONNECT_URL
+    ? `<script src="${process.env.TREZOR_CONNECT_URL}"></script>`
+    : ''
+}
       <noscript>Your browser does not support JavaScript or it is turned off.</noscript>
     </head>
 

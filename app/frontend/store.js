@@ -29,6 +29,7 @@ const initialState = {
   mnemonic: '',
   validationMsg: undefined,
   authMethod: 'mnemonic',
+  enableTrezor: CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_TREZOR,
 }
 
 const createStore = () =>
