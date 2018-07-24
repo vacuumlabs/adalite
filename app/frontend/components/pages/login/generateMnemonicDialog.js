@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const CloseIcon = require('../../common/svg').CloseIcon
 
 module.exports = connect(
   (state) => ({
@@ -20,7 +21,7 @@ module.exports = connect(
           class: 'overlay-close-button',
           onClick: closeGenerateMnemonicDialog,
         },
-        ''
+        h(CloseIcon)
       ),
       h('h4', undefined, 'Generate a Mnemonic Phrase'),
       h(

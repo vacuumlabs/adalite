@@ -1,4 +1,5 @@
 const {h} = require('preact')
+const {CardanoLiteLogo} = require('../svg')
 
 const NavbarUnauth = () =>
   h(
@@ -10,7 +11,7 @@ const NavbarUnauth = () =>
       h(
         'a',
         {class: 'title', href: '/'},
-        h('img', {src: '/assets/logo.png'}),
+        h(CardanoLiteLogo),
         h('span', undefined, 'CardanoLite Wallet'),
         h('sup', undefined, '⍺')
       ),

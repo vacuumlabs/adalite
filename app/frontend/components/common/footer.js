@@ -1,4 +1,5 @@
 const {h} = require('preact')
+const {VacuumlabsLogo} = require('./svg')
 
 const Footer = () =>
   h(
@@ -8,15 +9,7 @@ const Footer = () =>
       'p',
       undefined,
       'Developed by ',
-      h(
-        'a',
-        {href: 'https://vacuumlabs.com', target: '_blank'},
-        h('img', {
-          src: '/assets/vacuumlabs-logo-dark.svg',
-          class: 'logo',
-          alt: 'Vacuumlabs Logo',
-        })
-      )
+      h('a', {href: 'https://vacuumlabs.com', target: '_blank'}, h(VacuumlabsLogo))
     ),
     h(
       'p',

@@ -1,7 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const {DownloadIcon, RefreshIcon, ExitIcon} = require('../svg')
+const {DownloadIcon, RefreshIcon, ExitIcon, CardanoLiteLogo, MenuIcon, AdaIcon} = require('../svg')
 const printAda = require('../../../helpers/printAda')
 const ExportWalletDialog = require('../exportWalletDialog')
 
@@ -21,7 +21,7 @@ const LoginStatus = connect(
       {class: 'status-text'},
       'Balance: ',
       h('span', {class: 'status-balance'}, printAda(balance)),
-      h('img', {class: 'ada-sign', alt: 'ADA', src: '/assets/ada.png'})
+      h('span', {class: 'ada-sign'}, h(AdaIcon, {height: '.8rem', width: '.65rem'}))
     ),
     h(
       'div',
@@ -84,7 +84,7 @@ const NavbarAuth = connect((state) => ({
           class: 'title',
           onClick: () => window.history.pushState({}, 'dashboard', 'dashboard'),
         },
-        h('img', {src: '/assets/logo.png'}),
+        h(CardanoLiteLogo),
         h('span', undefined, 'CardanoLite'),
 
         h('sup', undefined, '⍺')
@@ -99,7 +99,7 @@ const NavbarAuth = connect((state) => ({
           h(
             'label',
             {class: 'navcollapse-label', for: 'navcollapse'},
-            h('a', {class: 'menu-btn'}, ' ')
+            h('a', {class: 'menu-btn'}, h(MenuIcon))
           )
         )
       ),

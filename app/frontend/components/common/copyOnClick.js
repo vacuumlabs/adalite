@@ -2,6 +2,7 @@ const {h, Component} = require('preact')
 
 const debugLog = require('../../helpers/debugLog')
 const Tooltip = require('./tooltip')
+const CopyIcon = require('../common/svg').CopyIcon
 
 class CopyOnClick extends Component {
   constructor(props) {
@@ -44,11 +45,15 @@ class CopyOnClick extends Component {
     return h(
       Tooltip,
       {tooltip},
-      h('a', {
-        class: 'copy margin-1rem',
-        onClick: this.copyTextToClipboard,
-        onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
-      })
+      h(
+        'a',
+        {
+          class: 'copy margin-1rem centered-row',
+          onClick: this.copyTextToClipboard,
+          onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
+        },
+        h(CopyIcon)
+      )
     )
   }
 }

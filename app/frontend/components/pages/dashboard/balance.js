@@ -1,5 +1,6 @@
 const {h} = require('preact')
 const printAda = require('../../../helpers/printAda')
+const AdaIcon = require('../../common/svg').AdaIcon
 
 const Balance = ({balance}) =>
   h(
@@ -10,7 +11,7 @@ const Balance = ({balance}) =>
       'p',
       {class: 'balance-value'},
       h('span', undefined, isNaN(Number(balance)) ? balance : `${printAda(balance)}`),
-      h('img', {class: 'ada-sign-big', alt: 'ADA', src: '/assets/ada.png'})
+      h('span', {class: 'ada-sign-big'}, h(AdaIcon, {height: '3rem', width: '2.75rem'}))
     )
   )
 

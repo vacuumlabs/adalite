@@ -2,6 +2,7 @@ const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 
 const actions = require('../../actions')
+const CloseIcon = require('./svg').CloseIcon
 
 class ExportWalletDialog extends Component {
   constructor(props) {
@@ -109,7 +110,7 @@ class ExportWalletDialog extends Component {
             class: 'overlay-close-button',
             onClick: this.closeExportJsonWalletDialog,
           },
-          ''
+          h(CloseIcon)
         ),
         h(
           'div',

@@ -205,9 +205,10 @@ td {
 }
 
 .address-link {
+  color:  var(--text-color);
+  opacity: .8;
   border: 1px solid var(--border);
-  background: #eee url('../assets/link.png') no-repeat center;
-  background-size: 60% 76%;
+  background: #eee;
   height: 3rem;
   width: 4rem;
   content: ' ';
@@ -222,11 +223,11 @@ td {
 }
 .copy {
   border: 1px solid var(--border);
-  background: #eee url('../assets/copy.png') no-repeat center;
-  background-size: 50% 60%;
+  background: #eee;
   height: 3rem;
   width: 4rem;
-  content: ' ';
+  color:  var(--text-color);
+  opacity: .8;
   display: inline-block;
   transition: background-color var(--transition);
 }
@@ -234,11 +235,11 @@ td {
   transform: scale(1.08);
 }
 .show-address-detail {
+  color: var(--text-color);
   border: 1px solid var(--border);
-  background: var(--gray-background) url('../assets/eye.svg') no-repeat center;
-  background-size: 60% 60%;
   height: 2rem;
   width: 2.4rem;
+  padding: .3rem .4rem;
   content: ' ';
   display: inline-block;
   transition: background-color var(--transition);
@@ -493,10 +494,9 @@ div.box.box-auto {
 .menu-btn {
   margin-left: 1rem;
   opacity: 0.7;
-  background: url('../assets/menu.svg') no-repeat center;
-  background-size: 75% 75%;
   height: 2rem;
   width: 2rem;
+  padding: .25rem;
   content: ' ';
   display: inline-block;
   transition: background-color var(--transition);
@@ -760,8 +760,6 @@ div.box.box-auto {
   top: 0;
   right: 0;
   cursor: pointer;
-  background: url('../assets/close.svg') no-repeat center;
-  background-size: 70% 70%;
   opacity: 0.7;
   padding: .5rem;
   height: 2rem;
@@ -1078,11 +1076,9 @@ div.box.box-auto {
   font-size: 0.8rem;
 }
 .ada-sign-big {
-  height: 3rem;
   margin-left: 1rem;
 }
 .ada-sign {
-  height: .75rem;
   margin-left: .3rem;
 }
 .content-wrapper > div {
@@ -1170,24 +1166,6 @@ div.box.box-auto {
 }
 .mnemonic-box-header {
   overflow-y: auto;
-}
-.overlay-close-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  cursor: pointer;
-  background: url('../assets/close.svg') no-repeat center;
-  background-size: 70% 70%;
-  opacity: 0.7;
-  padding: .5rem;
-  height: 2rem;
-  width: 2rem;
-  color: var(--navbar-text);;
-  transition: transform var(--transition);
-}
-.overlay-close-button:hover {
-  transition: transform var(--transition);
-  opacity: 1;
 }
 .pulse {
   box-shadow: 0 0 0 var(--brand-shadow);

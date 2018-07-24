@@ -4,6 +4,7 @@ const actions = require('../../../actions')
 
 const Tooltip = require('../../common/tooltip')
 const CopyOnClick = require('../../common/copyOnClick')
+const {CloseIcon, LinkIcon} = require('../../common/svg')
 
 const AddressDetailDialog = connect(
   (state) => ({
@@ -32,7 +33,7 @@ const AddressDetailDialog = connect(
             class: 'overlay-close-button',
             onClick: closeAddressDetail,
           },
-          ''
+          h(CloseIcon)
         ),
         h(
           'div',
@@ -75,11 +76,15 @@ const AddressDetailDialog = connect(
                 h(
                   Tooltip,
                   {tooltip: 'Examine via CardanoExplorer.com'},
-                  h('a', {
-                    href: `https://cardanoexplorer.com/address/${showDetail.address}`,
-                    target: '_blank',
-                    class: 'address-link margin-1rem',
-                  })
+                  h(
+                    'a',
+                    {
+                      href: `https://cardanoexplorer.com/address/${showDetail.address}`,
+                      target: '_blank',
+                      class: 'address-link margin-1rem centered-row',
+                    },
+                    h(LinkIcon)
+                  )
                 )
               )
             )

@@ -2,6 +2,7 @@ const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
+const CloseIcon = require('../../common/svg').CloseIcon
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -176,7 +177,7 @@ class LoadKeyFileClass extends Component {
                   class: 'overlay-close-button',
                   onClick: this.closePasswordModal,
                 },
-                ''
+                h(CloseIcon)
               ),
               h(
                 'div',
