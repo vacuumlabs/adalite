@@ -900,13 +900,12 @@ div.box.box-auto {
 /*LANDING*/
 .intro-wrapper {
   margin: auto;
-  margin-top: 1.5rem;
   padding: 0 1em;
 }
 .intro-header {
   font-size: 2.3rem;
   font-weight: 600;
-  margin: 0 4rem 1rem;
+  margin: 1.5rem 4rem 1rem;
   text-align: center;
 }
 .intro-input-row {
@@ -1362,6 +1361,7 @@ div.box.box-auto {
 }
 
 .auth-section {
+  min-height: 17rem;
   animation: fade-in 1.5s;
   text-align: center;
 }
