@@ -27,9 +27,10 @@ module.exports = connect(
       h(
         'h7',
         undefined,
-        'Write these words down. Do not copy them to your clipboard or save them anywhere online.'
+        'Write these words down. ',
+        h('b', undefined, 'Do not copy them to your clipboard or save them anywhere online!')
       ),
-      h('div', {class: 'gray-row mnemonic-box no-events no-select'}, mnemonic),
+      h('div', {class: 'gray-row mnemonic-box'}, mnemonic),
       h('div', {class: ''}, h('button', {onClick: confirmGenerateMnemonicDialog}, 'Confirm'))
     )
   )

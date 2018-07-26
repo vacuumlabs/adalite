@@ -13,8 +13,13 @@ const LoadByMenmonicSection = ({
   showGenerateMnemonicDialog,
   loadDemoWallet,
   showMnemonicValidationError,
-}) =>
-  h(
+}) => {
+  const isLeftClick = (e, action) => {
+    if (e.button === 0) {
+      action()
+    }
+  }
+  return h(
     'div',
     {class: 'auth-section'},
     h(
@@ -59,7 +64,12 @@ const LoadByMenmonicSection = ({
       'a',
       {
         class: 'intro-link fade-in-up',
-        onClick: openGenerateMnemonicDialog,
+        /*
+        * onMouseDown instead of onClick is there to prevent mnemonic field onBlur happen before onClick
+        * (validator will show err, which moves layout, so click might end outside the button)
+        * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
+        */
+        onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
       },
       '…or generate a new one'
     ),
@@ -71,11 +81,17 @@ const LoadByMenmonicSection = ({
         'button',
         {
           class: 'demo-button rounded-button',
-          onClick: loadDemoWallet,
+          /*
+          * onMouseDown instead of onClick is there to prevent mnemonic field onBlur happen before onClick
+          * (validator will show err, which moves layout, so click might end outside the button)
+          * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
+          */
+          onMouseDown: (e) => isLeftClick(e, loadDemoWallet),
         },
         'Try demo wallet'
       )
     )
   )
+}
 
 module.exports = LoadByMenmonicSection
