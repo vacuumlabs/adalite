@@ -36,6 +36,15 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
+  async function fetchTxInfo(txHash) {
+    const url = `${
+      CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/txs/summary/${txHash}`
+    const result = await request(url)
+
+    return result.Right
+  }
+
   async function fetchTxRaw(txId) {
     // eslint-disable-next-line no-undef
     const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
@@ -101,30 +110,17 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   }
 
   async function submitTxRaw(txHash, txBody) {
-    try {
-      const res = await request(
-        CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
-        'POST',
-        JSON.stringify({
-          txHash,
-          txBody,
-        }),
-        {
-          'Content-Type': 'application/json',
-        }
-      )
-
-      if (res.status >= 400) {
-        throw Error(`${res.status} ${JSON.stringify(res)}`)
-      } else {
-        if (res.result) {
-          return res.result
-        }
-        throw new Error(`Cardano network rejected the transaction ${JSON.stringify(res)}`)
+    return await request(
+      CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
+      'POST',
+      JSON.stringify({
+        txHash,
+        txBody,
+      }),
+      {
+        'Content-Type': 'application/json',
       }
-    } catch (err) {
-      throw err //Error(`txSubmiter unreachable ${err}`)
-    }
+    )
   }
 
   async function fetchUnspentTxOutputs(addresses) {
@@ -152,7 +148,6 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   }
 
   async function fetchAddressInfo(address) {
-    // eslint-disable-next-line no-undef
     const url = `${
       CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
     }/api/addresses/summary/${address}`
@@ -171,6 +166,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     selectUnusedAddresses,
     submitTxRaw,
     getBalance,
+    fetchTxInfo,
   }
 }
 

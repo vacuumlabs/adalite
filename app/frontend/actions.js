@@ -9,6 +9,7 @@ const {
 } = require('./helpers/validators')
 const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
+const sleep = require('./helpers/sleep')
 
 let wallet = null
 
@@ -228,7 +229,7 @@ module.exports = ({setState, getState}) => {
     const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
     const transactionHistory = await wallet.getHistory()
 
-    // timeout setting loading state, so that loading shows even if everything was cashed
+    // timeout setting loading state, so that loading shows even if everything was cached
     setTimeout(() => setState({loading: false}), 500)
     setState({
       balance,
@@ -356,32 +357,68 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee(state)
   }
 
+  const resetSendForm = (state) => {
+    setState({
+      sendAmount: {fieldValue: ''},
+      sendAddress: {fieldValue: ''},
+      sendResponse: '',
+      transactionFee: 0,
+      loading: false,
+      showConfirmTransactionDialog: false,
+    })
+  }
+
+  const waitForTxToAppearOnBlockchain = async (state, txHash, pollingInterval, maxRetries) => {
+    loadingAction(state, 'Transaction submitted - syncing wallet...')
+
+    for (let pollingCounter = 0; pollingCounter < maxRetries; pollingCounter++) {
+      if ((await wallet.fetchTxInfo(txHash)) !== undefined) {
+        /*
+        * theoretically we should clear the request cache of the wallet
+        * to be sure that we fetch the current wallet state
+        * but submitting the transaction and syncing of the explorer
+        * should take enough time to invalidate the request cache anyway
+        */
+        await reloadWalletInfo(state)
+        return {
+          success: true,
+          txHash,
+          error: undefined,
+        }
+      } else if (pollingCounter < maxRetries - 1) {
+        await sleep(pollingInterval)
+      }
+    }
+
+    return {
+      success: false,
+      txHash,
+      error: 'TransactionNotFoundInBlockchainAfterSubmission',
+    }
+  }
+
   const submitTransaction = async (state) => {
-    loadingAction(state, 'processing transaction', 'Submitting transaction...')
+    loadingAction(state, 'Submitting transaction...')
+    let sendResponse
+
     try {
       const address = state.sendAddress.fieldValue
       const amount = state.sendAmount.coins
-      const sendResponse = await wallet.sendAda(address, amount)
-      const updatedBalance = await wallet.getBalance()
-      if (sendResponse.success) {
-        setTimeout(() => setState({sendResponse: ''}), 4000)
-        setState({
-          sendAmount: {fieldValue: ''},
-          sendAddress: {fieldValue: ''},
-          transactionFee: 0,
-        })
-      }
-      setState({
-        balance: updatedBalance,
-        sendResponse,
-        loading: false,
-        showConfirmTransactionDialog: false,
-      })
+      const txSubmitResult = await wallet.sendAda(address, amount)
+
+      sendResponse = txSubmitResult.success
+        ? await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
+        : txSubmitResult
     } catch (e) {
+      debugLog(e)
+      sendResponse = {
+        success: false,
+        error: e.name,
+      }
+    } finally {
+      resetSendForm(state)
       setState({
-        sendResponse: false,
-        loading: false,
-        showConfirmTransactionDialog: false,
+        sendResponse,
       })
     }
   }

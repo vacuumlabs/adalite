@@ -1,5 +1,5 @@
 const {h} = require('preact')
-const translations = require('../../../translations')
+const {getTranslation} = require('../../../translations')
 
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 
@@ -29,7 +29,7 @@ const LoadByMenmonicSection = ({
     ),
     mnemonicValidationError &&
       showMnemonicValidationError &&
-      h('p', {class: 'alert error'}, translations[mnemonicValidationError.code]()),
+      h('p', {class: 'alert error'}, getTranslation(mnemonicValidationError.code)),
     h(
       'div',
       {class: 'intro-input-row'},
@@ -65,8 +65,7 @@ const LoadByMenmonicSection = ({
       {
         class: 'intro-link fade-in-up',
         /*
-        * onMouseDown instead of onClick is there to prevent mnemonic field onBlur happen before onClick
-        * (validator will show err, which moves layout, so click might end outside the button)
+        * onMouseDown to prevent onBlur before handling the click event
         * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
         */
         onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
@@ -82,8 +81,7 @@ const LoadByMenmonicSection = ({
         {
           class: 'demo-button rounded-button',
           /*
-          * onMouseDown instead of onClick is there to prevent mnemonic field onBlur happen before onClick
-          * (validator will show err, which moves layout, so click might end outside the button)
+          * onMouseDown to prevent onBlur before handling the click event
           * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
           */
           onMouseDown: (e) => isLeftClick(e, loadDemoWallet),

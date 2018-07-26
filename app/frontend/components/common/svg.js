@@ -21,7 +21,7 @@ const VacuumlabsLogo = () =>
     {
       xmlns: 'http://www.w3.org/2000/svg',
       viewBox: '0 0 192.8 39.7',
-      style: 'enable-background:new 0 0 192.8 39.7; ' + 'width: 9.64rem; height: 2rem;',
+      style: 'enable-background:new 0 0 192.8 39.7; width: 9.64rem; height: 2rem;',
     },
     h('style', undefined, '.st1{fill:#242f3c}'),
     h(

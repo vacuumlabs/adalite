@@ -1,6 +1,7 @@
 const printAda = require('./helpers/printAda')
+const debugLog = require('./helpers/debugLog')
 
-module.exports = {
+const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
   SendAmountIsNan: () => 'Invalid format: Amount has to be a number',
   SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
@@ -18,5 +19,23 @@ module.exports = {
   TransactionRejectedByTrezor: () => 'Transaction rejected by the Trezor hardware wallet.',
   TrezorRejected: () => 'Operation rejected by the Trezor hardware wallet.',
   TransactionCorrupted: () => 'Transaction assembling failure.',
+  TransactionNotFoundInBlockchainAfterSubmission: ({sendResponse}) =>
+    `Transaction ${
+      sendResponse.txHash
+    } not found in blockchain after being submitted, check it later please.`,
   UnknownCryptoProvider: ({cryptoProvider}) => `Uknown crypto provider: ${cryptoProvider}`,
+  NetworkError: () => 'Network connection failed. Please check your network connection.',
+  Error: () => 'Unknown error, please contact support at cardanolite@vacuumlabs.com',
+}
+
+function getTranslation(code, params) {
+  if (!translations[code]) {
+    debugLog(`Translation for ${code} not found!`)
+  }
+
+  return translations[code] ? translations[code](params) : code
+}
+
+module.exports = {
+  getTranslation,
 }

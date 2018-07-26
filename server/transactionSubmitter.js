@@ -24,7 +24,7 @@ module.exports = function(app, env) {
       return res.status(500).send('bad request format')
     }
 
-    // res.end(JSON.stringify({result: true, txHash}))
+    // return res.end(JSON.stringify({success: true, txHash}))
 
     txBody = `8201${txBody}`
 
@@ -34,7 +34,7 @@ module.exports = function(app, env) {
     const encodedTx = (txBody.length / 2).toString(16).padStart(8, '0') + txBody
     let code = ''
     let phase = 'not connected'
-    let result = false
+    let success = false
 
     const client = new net.Socket()
     client.connect({host: 'relays.cardano-mainnet.iohk.io', port: 3000})
@@ -113,13 +113,13 @@ module.exports = function(app, env) {
             phase = 'result'
             break
           case 'result':
-            result = data.toString('hex').endsWith('f5')
+            success = data.toString('hex').endsWith('f5')
             client.write(Buffer.from('0000000100000402', 'hex'))
             phase = 'done'
             break
           default:
             client.destroy()
-            res.end(JSON.stringify({result, txHash}))
+            res.end(JSON.stringify({success, txHash}))
         }
       } catch (err) {
         return res

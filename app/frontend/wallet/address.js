@@ -9,6 +9,8 @@ const {
 } = require('cardano-crypto.js')
 
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
+const NamedError = require('../helpers/NamedError')
+const debugLog = require('../helpers/debugLog')
 
 function getAddressHash(input) {
   // eslint-disable-next-line camelcase
@@ -36,9 +38,8 @@ function decryptDerivationPath(addressPayload, hdPassphrase) {
   try {
     return cbor.decode(Buffer.from(decipheredDerivationPath))
   } catch (err) {
-    const e = new Error('incorrect address or passphrase')
-    e.name = 'AddressDecodingException'
-    throw e
+    debugLog(err)
+    throw NamedError('AddressDecodingException', 'incorrect address or passphrase')
   }
 }
 

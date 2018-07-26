@@ -2,7 +2,7 @@ const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 
-const translations = require('../../../translations')
+const {getTranslation} = require('../../../translations')
 const printAda = require('../../../helpers/printAda')
 
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
@@ -57,7 +57,7 @@ class SendAdaPage extends Component {
                 'span',
                 undefined,
                 h('b', undefined, 'failed'),
-                `: ${translations[sendResponse.error]()}`
+                `: ${getTranslation(sendResponse.error, {sendResponse})}`
               )
           )
           : '',
@@ -66,7 +66,7 @@ class SendAdaPage extends Component {
           {class: 'row'},
           h('label', undefined, h('span', undefined, 'Receiving address')),
           sendAddressValidationError &&
-            h('span', {class: 'validationMsg'}, translations[sendAddressValidationError.code]())
+            h('span', {class: 'validationMsg'}, getTranslation(sendAddressValidationError.code))
         ),
         h('input', {
           type: 'text',
@@ -129,7 +129,7 @@ class SendAdaPage extends Component {
           h(
             'p',
             {class: 'validationMsg send-amount-validation-error'},
-            translations[sendAmountValidationError.code](sendAmountValidationError.params)
+            getTranslation(sendAmountValidationError.code, sendAmountValidationError.params)
           ),
         h(
           'div',

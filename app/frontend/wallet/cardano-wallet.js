@@ -14,6 +14,7 @@ const range = require('./helpers/range')
 const {toBip32StringPath} = require('./helpers/bip32')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const parseMnemonicOrHdNodeString = require('./helpers/parseMnemonicOrHdNodeString')
+const NamedError = require('../helpers/NamedError')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -53,22 +54,23 @@ const CardanoWallet = async (options) => {
   getUnspentTxOutputs()
 
   async function sendAda(address, coins) {
-    try {
-      const txAux = await prepareTxAux(address, coins).catch((e) => {
-        throw new Error('TransactionCorrupted')
-      })
-      const signedTx = await cryptoProvider.signTx(txAux).catch((e) => {
-        throw new Error('TransactionRejectedByTrezor')
-      })
-      await blockchainExplorer.submitTxRaw(signedTx.txHash, signedTx.txBody).catch((e) => {
-        throw new Error('TransactionRejectedByNetwork')
-      })
-      updateUtxosFromTxAux(txAux)
-      return {success: true, error: undefined}
-    } catch (e) {
+    const txAux = await prepareTxAux(address, coins).catch((e) => {
       debugLog(e)
-      return {success: false, error: e.message}
-    }
+      throw NamedError('TransactionCorrupted')
+    })
+    const signedTx = await cryptoProvider.signTx(txAux).catch((e) => {
+      debugLog(e)
+      throw NamedError('TransactionRejectedByTrezor')
+    })
+    const response = await blockchainExplorer
+      .submitTxRaw(signedTx.txHash, signedTx.txBody)
+      .catch((e) => {
+        debugLog(e)
+        throw NamedError('TransactionRejectedByNetwork')
+      })
+    updateUtxosFromTxAux(txAux)
+
+    return response
   }
 
   function getSecret() {
@@ -134,6 +136,10 @@ const CardanoWallet = async (options) => {
     const addresses = await discoverOwnAddresses()
 
     return await blockchainExplorer.getTxHistory(addresses)
+  }
+
+  async function fetchTxInfo(txHash) {
+    return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
   async function prepareTxInputs(coins) {
@@ -329,6 +335,7 @@ const CardanoWallet = async (options) => {
     getOwnAddressesWithMeta,
     _prepareTxAux: prepareTxAux,
     verifyAddress: cryptoProvider.trezorVerifyAddress,
+    fetchTxInfo,
   }
 }
 

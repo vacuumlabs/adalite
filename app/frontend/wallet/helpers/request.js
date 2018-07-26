@@ -1,3 +1,6 @@
+const NamedError = require('../../helpers/NamedError')
+const debugLog = require('../../helpers/debugLog')
+
 const request = async function request(url, method = 'GET', body = null, headers = {}) {
   let requestParams = {
     method,
@@ -8,21 +11,18 @@ const request = async function request(url, method = 'GET', body = null, headers
   }
 
   try {
-    const res = await fetch(url, requestParams)
-    if (res.status >= 400) {
-      const e = Error(
-        `${url} returns error: ${res.status} on payload: ${JSON.stringify(requestParams)}`
+    const response = await fetch(url, requestParams)
+    if (response.status >= 400) {
+      throw NamedError(
+        'NetworkError',
+        `${url} returns error: ${response.status} on payload: ${JSON.stringify(requestParams)}`
       )
-      e.name = 'Network error'
-      throw e
     }
-    return res.json()
-  } catch (err) {
-    const e = Error(
-      `${url} returns ${err.name}:  ${err.message} on payload: ${JSON.stringify(requestParams)}`
-    )
-    e.name = 'Network error'
-    throw e
+
+    return response.json()
+  } catch (e) {
+    debugLog(e)
+    throw NamedError('NetworkError', `${method} ${url} returns error: ${e}`)
   }
 }
 

@@ -1,7 +1,7 @@
 const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const translations = require('../../../translations')
+const {getTranslation} = require('../../../translations')
 
 const AboutOverlay = require('./aboutOverlay')
 const KeyFileAuth = require('./keyFileAuth')
@@ -53,7 +53,7 @@ class LoginPage extends Component {
           h(
             'p',
             {class: 'alert error'},
-            translations[walletLoadingError.code](walletLoadingError.params)
+            getTranslation(walletLoadingError.code, walletLoadingError.params)
           ),
         authMethod === 'mnemonic' &&
           MnemonicAuth({
