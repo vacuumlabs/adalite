@@ -49,7 +49,7 @@ const feeValidator = (sendAmount, transactionFee, balance) => {
 const mnemonicValidator = async (mnemonic) => {
   let validationError = null
 
-  if (!validateMnemonic(mnemonic) || !(await validatePaperWalletMnemonic(mnemonic))) {
+  if (!validateMnemonic(mnemonic) && !(await validatePaperWalletMnemonic(mnemonic))) {
     validationError = {
       code: 'InvalidMnemonic',
     }
