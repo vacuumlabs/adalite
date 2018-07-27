@@ -31,6 +31,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
         }
       }
       t.effect = effect
+      t.fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin
     }
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }

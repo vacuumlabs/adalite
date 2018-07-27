@@ -1,5 +1,6 @@
 const {h} = require('preact')
 const printAda = require('../../../helpers/printAda')
+const AdaIcon = require('../../common/svg').AdaIcon
 
 const PrettyValue = ({effect}) => {
   const value = printAda(Math.abs(effect))
@@ -42,7 +43,8 @@ const TransactionHistory = ({transactionHistory}) =>
             'tr',
             undefined,
             h('th', undefined, 'Time'),
-            h('th', undefined, 'Movement (ADA)'),
+            h('th', undefined, 'Movement (', h(AdaIcon, {className: 'ada-sign-inline'}), ')'),
+            h('th', undefined, 'Fee (', h(AdaIcon, {className: 'ada-sign-inline'}), ')'),
             h('th', undefined, 'Transaction')
           )
         ),
@@ -54,7 +56,12 @@ const TransactionHistory = ({transactionHistory}) =>
               'tr',
               undefined,
               h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
-              h('td', undefined, h(PrettyValue, {effect: transaction.effect})),
+              h('td', {class: 'align-right'}, h(PrettyValue, {effect: transaction.effect})),
+              h(
+                'td',
+                {class: 'align-right'},
+                transaction.effect < 0 ? h('pre', undefined, printAda(transaction.fee)) : ''
+              ),
               h('td', undefined, h(TransactionAddress, {address: transaction.ctbId}))
             )
           )

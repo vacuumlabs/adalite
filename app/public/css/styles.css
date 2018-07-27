@@ -6,7 +6,7 @@
   --brand-shadow-light: #eb1a7544;
   --transition: 0.25s;
   --width: 1200px;
-  --small-screen-padding: 50px;
+  --small-screen-padding: 25px;
   --text-color: #333;
   --input-text-inactive: #999;
   --input-text-active: #333;
@@ -147,12 +147,12 @@ input[type='number'] {
 }
 /* TABLE */
 table {
-  width: 100%;
+  border-spacing: 0;
 }
 th {
-  text-align: left;
+  text-align: center;
   padding-bottom: 1rem;
-  padding-left: 2px;
+  padding-right: 1rem;
   font-size: 0.9rem;
 }
 td {
@@ -172,8 +172,11 @@ td {
 }
 @media screen and (max-width: 1200px) {
   .main {
-    padding: 0 50px;
+    padding: 0 var(--small-screen-padding);
   }
+}
+.align-right {
+  text-align: right;
 }
 /* ADDRESS */
 .address {
@@ -1077,9 +1080,17 @@ div.box.box-auto {
 }
 .ada-sign-big {
   margin-left: 1rem;
+  height: 3rem;
+  width: 2.75rem;
+}
+.ada-sign-inline {
+  height: .66rem;
+  width: .6rem;
 }
 .ada-sign {
   margin-left: .3rem;
+  height: .8rem;
+  width: .65rem;
 }
 .content-wrapper > div {
   margin: 2rem 0;
@@ -1102,6 +1113,7 @@ div.box.box-auto {
   }
   .ada-sign-big {
     height: 1.5rem;
+    width: 1.36rem;
   }
 }
 .transaction-id {

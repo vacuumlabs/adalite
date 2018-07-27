@@ -11,7 +11,7 @@ const Balance = ({balance}) =>
       'p',
       {class: 'balance-value'},
       h('span', undefined, isNaN(Number(balance)) ? balance : `${printAda(balance)}`),
-      h('span', {class: 'ada-sign-big'}, h(AdaIcon, {height: '3rem', width: '2.75rem'}))
+      h(AdaIcon, {className: 'ada-sign-big'})
     )
   )
 
