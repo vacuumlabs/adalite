@@ -162,13 +162,13 @@ const CopyIcon = () =>
     })
   )
 
-const AdaIcon = ({width, height}) =>
+const AdaIcon = ({className}) =>
   h(
     'svg',
     {
       xmlns: 'http://www.w3.org/2000/svg',
       viewBox: '0 0 36.993 44',
-      style: `width: ${width}; height: ${height};`,
+      class: className,
     },
     h('path', {
       d:

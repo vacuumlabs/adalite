@@ -21,7 +21,7 @@ const LoginStatus = connect(
       {class: 'status-text'},
       'Balance: ',
       h('span', {class: 'status-balance'}, printAda(balance)),
-      h('span', {class: 'ada-sign'}, h(AdaIcon, {height: '.8rem', width: '.65rem'}))
+      h(AdaIcon, {className: 'ada-sign'})
     ),
     h(
       'div',
