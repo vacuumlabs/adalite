@@ -884,6 +884,7 @@ div.box.box-auto {
 .footer p {
   margin-top: 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
 }
@@ -894,6 +895,8 @@ div.box.box-auto {
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
+
+
 /*LANDING*/
 .intro-wrapper {
   margin: auto;

@@ -10,6 +10,7 @@ const {
 const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
 const sleep = require('./helpers/sleep')
+const {ADA_DONATION_ADDRESS} = require('./wallet/constants')
 
 let wallet = null
 
@@ -409,6 +410,9 @@ module.exports = ({setState, getState}) => {
       sendResponse = txSubmitResult.success
         ? await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
         : txSubmitResult
+      if (txSubmitResult.success && address === ADA_DONATION_ADDRESS) {
+        setState({showThanksForDonation: true})
+      }
     } catch (e) {
       debugLog(e)
       sendResponse = {
@@ -421,6 +425,12 @@ module.exports = ({setState, getState}) => {
         sendResponse,
       })
     }
+  }
+
+  const closeThanksForDonationModal = (state) => {
+    setState({
+      showThanksForDonation: false,
+    })
   }
 
   const openExportJsonWalletDialog = (state) => {
@@ -479,5 +489,6 @@ module.exports = ({setState, getState}) => {
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,
     confirmGenerateMnemonicDialog,
+    closeThanksForDonationModal,
   }
 }

@@ -6,6 +6,7 @@ const {getTranslation} = require('../../../translations')
 const printAda = require('../../../helpers/printAda')
 
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
+const {CloseIcon} = require('../../common/svg')
 
 class SendAdaPage extends Component {
   render({
@@ -23,6 +24,8 @@ class SendAdaPage extends Component {
     feeRecalculating,
     sendAllFunds,
     totalAmount,
+    showThanksForDonation,
+    closeThanksForDonationModal,
   }) {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
@@ -35,6 +38,37 @@ class SendAdaPage extends Component {
       !feeRecalculating &&
       (!sendAmountValidationError ||
         sendAmountValidationError.code === 'SendAmountInsufficientFunds')
+    const ThanksForDonationModal = () =>
+      h(
+        'div',
+        {class: 'overlay fade-in-up'},
+        h('div', {
+          class: 'overlay-close-layer',
+          onClick: closeThanksForDonationModal,
+        }),
+        h(
+          'div',
+          {class: 'box'},
+          h(
+            'span',
+            {
+              class: 'overlay-close-button',
+              onClick: closeThanksForDonationModal,
+            },
+            h(CloseIcon)
+          ),
+          h(
+            'div',
+            {class: 'centered-row'},
+            h('h3', undefined, 'Thank you for supporting CardanoLite developers!')
+          ),
+          h(
+            'div',
+            {class: 'centered-row margin-top'},
+            h('button', {onClick: closeThanksForDonationModal}, 'OK')
+          )
+        )
+      )
 
     return h(
       'div',
@@ -151,7 +185,8 @@ class SendAdaPage extends Component {
               'Submit'
             )
         ),
-        showConfirmTransactionDialog && h(ConfirmTransactionDialog)
+        showConfirmTransactionDialog && h(ConfirmTransactionDialog),
+        showThanksForDonation && h(ThanksForDonationModal)
       )
     )
   }
@@ -169,6 +204,7 @@ module.exports = connect(
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
     totalAmount: state.sendAmountForTransactionFee + state.transactionFee,
+    showThanksForDonation: state.showThanksForDonation,
   }),
   actions
 )(SendAdaPage)
