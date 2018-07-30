@@ -2,7 +2,7 @@ const {h} = require('preact')
 
 const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
   const TrezorAffiliateLink = (title) =>
-    h('a', {href: 'https://shop.trezor.io?a=cardanolite.com*', target: 'blank'}, title)
+    h('a', {href: 'https://shop.trezor.io?a=cardanolite.com', target: 'blank'}, title)
 
   const TrezorComingSoon = () =>
     h(
