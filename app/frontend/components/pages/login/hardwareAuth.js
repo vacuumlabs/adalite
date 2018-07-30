@@ -1,13 +1,21 @@
 const {h} = require('preact')
 
 const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
+  const TrezorAffiliateLink = (title) =>
+    h('a', {href: 'https://shop.trezor.io?a=cardanolite.com*', target: 'blank'}, title)
+
   const TrezorComingSoon = () =>
     h(
       'div',
-      {class: 'strong margin-top'},
-      'Support for ',
-      h('a', {href: 'https://trezor.io/', target: 'blank'}, 'Trezor model T'),
-      ' coming soon!'
+      undefined,
+      h('div', {class: 'strong margin-top'}, 'Support for Trezor model T coming soon!'),
+      h(
+        'div',
+        {class: 'margin-top'},
+        'You can support us by purchasing Trezor using our affiliate ',
+        TrezorAffiliateLink('link'),
+        '.'
+      )
     )
 
   return h(
@@ -20,28 +28,34 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
     ),
     !enableTrezor
       ? h(TrezorComingSoon)
-      : (h(
+      : h(
         'div',
         undefined,
-        'CardanoLite supports ',
-        h('a', {href: 'https://trezor.io/', target: 'blank'}, 'Trezor model T.')
-      ),
-      h(
-        'div',
-        {class: 'centered-row margin-top'},
+        h('div', {class: 'margin-top'}, 'CardanoLite supports Trezor model T.'),
         h(
-          'button',
-          {
-            onClick: () => loadWallet({cryptoProvider: 'trezor'}),
-          },
+          'div',
+          {class: 'centered-row margin-top'},
           h(
-            'div',
-            undefined,
-            h('span', undefined, 'use '),
-            h('span', {class: 'trezor-text'}, 'TREZOR')
+            'button',
+            {
+              onClick: () => loadWallet({cryptoProvider: 'trezor'}),
+            },
+            h(
+              'div',
+              undefined,
+              h('span', undefined, 'use '),
+              h('span', {class: 'trezor-text'}, 'TREZOR')
+            )
           )
+        ),
+        h(
+          'div',
+          {class: 'margin-top'},
+          'You can support us by purchasing Trezor using our affiliate ',
+          TrezorAffiliateLink('link'),
+          '.'
         )
-      ))
+      )
   )
 }
 
