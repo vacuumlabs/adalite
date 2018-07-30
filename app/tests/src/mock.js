@@ -1,7 +1,7 @@
 const fetchMock = require('fetch-mock')
 
 const mock = (CARDANOLITE_CONFIG) => {
-  function mockBlockChainExplorer() {
+  function mockAddressSummaryEndpoint() {
     fetchMock.config.overwriteRoutes = true
 
     const addressesAndResponses = {
@@ -1340,6 +1340,27 @@ const mock = (CARDANOLITE_CONFIG) => {
     }
   }
 
+  function mockRawTxEndpoint() {
+    fetchMock.config.overwriteRoutes = true
+
+    const requestsAndResponses = {
+      '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765': {
+        Right:
+          '839f8200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c008200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c01ff9f8282d818584283581c2cdf2a4727c91392bcd1dc1df64e4b5a3a3ddb5645226616b651b90aa101581e581c140539c64edded60a7f2d3693300e8b2463207803127d23562295bf3001a5562e2a21a000186a08282d818584283581cfcca7f1da7a330be2cb4ff273e3b8e2bd77c3cdcd3e8d8381e0d9e49a101581e581c140539c64edded60a7f2de696f5546c042bbc8749c95e836b09b7884001aead6cd071a002bc253ffa0',
+      },
+    }
+    for (const request in requestsAndResponses) {
+      fetchMock.mock({
+        matcher: `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${request}`,
+        response: {
+          status: 200,
+          body: requestsAndResponses[request],
+          sendAsJson: true,
+        },
+      })
+    }
+  }
+
   function mockTransactionSubmitter() {
     fetchMock.config.overwriteRoutes = true
 
@@ -1424,9 +1445,10 @@ const mock = (CARDANOLITE_CONFIG) => {
   }
 
   return {
-    mockBlockChainExplorer,
+    mockAddressSummaryEndpoint,
     mockTransactionSubmitter,
     mockUtxoEndpoint,
+    mockRawTxEndpoint,
   }
 }
 

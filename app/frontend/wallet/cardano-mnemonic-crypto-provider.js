@@ -6,6 +6,8 @@ const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const {TX_SIGN_MESSAGE_PREFIX, CARDANO_KEY_DERIVATION_MODE} = require('./constants')
 const HdNode = require('./hd-node')
 const derivePublic = require('./helpers/derivePublic')
+const {parseTxAux} = require('./helpers/cbor-parsers')
+const NamedError = require('../helpers/NamedError')
 const {packAddress, unpackAddress} = require('./address')
 
 const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching = false) => {
@@ -108,7 +110,22 @@ const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching
     return CardanoCrypto.sign(messageToSign, hdNode.toBuffer())
   }
 
-  async function signTx(txAux) {
+  function checkTxInputsIntegrity(txInputs, rawInputTxs) {
+    const inputTxs = {}
+    for (const rawTx of rawInputTxs) {
+      const txHash = CardanoCrypto.blake2b(rawTx, 32).toString('hex')
+      inputTxs[txHash] = parseTxAux(rawTx)
+    }
+
+    return txInputs
+      .map(
+        ({txHash, coins, outputIndex}) =>
+          inputTxs[txHash] !== undefined && coins === inputTxs[txHash].outputs[outputIndex].coins
+      )
+      .every((result) => result === true)
+  }
+
+  async function signTx(txAux, rawInputTxs) {
     const signedTxStructured = await signTxGetStructured(txAux)
 
     return {
@@ -117,8 +134,12 @@ const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching
     }
   }
 
-  async function signTxGetStructured(txAux) {
+  async function signTxGetStructured(txAux, rawInputTxs) {
     const txHash = txAux.getId()
+
+    if (!checkTxInputsIntegrity(txAux.inputs, rawInputTxs)) {
+      throw NamedError('TransactionRejected')
+    }
 
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
@@ -146,6 +167,7 @@ const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching
     getWalletSecret,
     getDerivationPathFromAddress,
     _sign: sign,
+    _checkTxInputsIntegrity: checkTxInputsIntegrity,
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
     _signTxGetStructured: signTxGetStructured,

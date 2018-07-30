@@ -156,6 +156,62 @@ describe('wallet addresses derivation', () => {
   })
 })
 
+describe('checking input integrity', () => {
+  const rawTxBody = Buffer.from(
+    '839f8200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c008200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c01ff9f8282d818584283581c2cdf2a4727c91392bcd1dc1df64e4b5a3a3ddb5645226616b651b90aa101581e581c140539c64edded60a7f2d3693300e8b2463207803127d23562295bf3001a5562e2a21a000186a08282d818584283581cfcca7f1da7a330be2cb4ff273e3b8e2bd77c3cdcd3e8d8381e0d9e49a101581e581c140539c64edded60a7f2de696f5546c042bbc8749c95e836b09b7884001aead6cd071a002bc253ffa0',
+    'hex'
+  )
+  const input1correct = tx.TxInputFromUtxo({
+    txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+    address:
+      'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+    coins: 100000,
+    outputIndex: 0,
+  })
+
+  const input2correct = tx.TxInputFromUtxo({
+    txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+    address:
+      'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
+    coins: 2867795,
+    outputIndex: 1,
+  })
+
+  const input1wrongHash = tx.TxInputFromUtxo({
+    txHash: 'aaaafde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2745',
+    address:
+      'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+    coins: 100000,
+    outputIndex: 0,
+  })
+
+  const input1wrongCoins = tx.TxInputFromUtxo({
+    txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+    address:
+      'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
+    coins: 110000,
+    outputIndex: 0,
+  })
+
+  it('should properly check unspent output coin amount with raw input transaction data', () => {
+    const txInputs = [input1correct, input2correct]
+
+    assert.equal(cryptoProviders[2]._checkTxInputsIntegrity(txInputs, [rawTxBody]), true)
+  })
+
+  it('should reject input integrity based on wrong txHash provided', () => {
+    const txInputs = [input1wrongHash, input2correct]
+
+    assert.equal(cryptoProviders[2]._checkTxInputsIntegrity(txInputs, [rawTxBody]), false)
+  })
+
+  it('should reject input integrity based on wrong coin amount provided', () => {
+    const txInputs = [input1wrongCoins, input2correct]
+
+    assert.equal(cryptoProviders[2]._checkTxInputsIntegrity(txInputs, [rawTxBody]), false)
+  })
+})
+
 describe('transaction signing', () => {
   it('should properly compute transaction witnesses', async () => {
     const txInputs = [

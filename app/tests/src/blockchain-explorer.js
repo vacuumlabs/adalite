@@ -510,7 +510,7 @@ const expectedTxHistory = [
 describe('wallet history parsing', function() {
   this.timeout(10000)
 
-  mockNet.mockBlockChainExplorer()
+  mockNet.mockAddressSummaryEndpoint()
 
   it('should properly fetch wallet history', async () => {
     const txHistory = await blockchainExplorer.getTxHistory(addresses)
@@ -523,7 +523,7 @@ describe('wallet history parsing', function() {
 describe('wallet unspent outputs fetching', function() {
   this.timeout(10000)
 
-  mockNet.mockBlockChainExplorer()
+  mockNet.mockAddressSummaryEndpoint()
   mockNet.mockUtxoEndpoint()
 
   it('should properly fetch unspent transaction outputs for addresses', async () => {

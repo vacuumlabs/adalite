@@ -1,4 +1,3 @@
-const BlockchainExplorer = require('./blockchain-explorer')
 const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
 const {toBip32Path} = require('./helpers/bip32')
@@ -15,8 +14,6 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     // eslint-disable-next-line import/no-unresolved
     TrezorConnect = require('trezor-connect')
   }
-
-  const blockchainExplorer = BlockchainExplorer(CARDANOLITE_CONFIG, state)
 
   async function getWalletId() {
     return await deriveAddress([], 'hardened')
@@ -213,16 +210,10 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
     return data
   }
 
-  async function signTx(unsignedTx) {
+  async function signTx(unsignedTx, rawInputTxs) {
     const inputs = []
     for (const input of unsignedTx.inputs) {
       inputs.push(await prepareInput(input))
-    }
-
-    const transactions = []
-    for (const input of inputs) {
-      const transaction = (await blockchainExplorer.fetchTxRaw(input.prev_hash)).toString('hex')
-      transactions.push(transaction)
     }
 
     const outputs = []
@@ -231,9 +222,11 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
       outputs.push(data)
     }
 
+    const rawInputTxsAsStrings = rawInputTxs.map((tx) => tx.toString('hex'))
+
     return new Promise((resolve, reject) => {
       callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaSignTransaction(inputs, outputs, transactions, (response) => {
+        TrezorConnect.adaSignTransaction(inputs, outputs, rawInputTxsAsStrings, (response) => {
           if (response.success) {
             resolve({txHash: response.tx_hash, txBody: response.tx_body})
           } else {
