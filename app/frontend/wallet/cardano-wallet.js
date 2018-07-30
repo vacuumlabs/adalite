@@ -12,6 +12,7 @@ const {HARDENED_THRESHOLD, MAX_INT32} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
 const range = require('./helpers/range')
 const {toBip32StringPath} = require('./helpers/bip32')
+const {parseTx} = require('./helpers/cbor-parsers')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const parseMnemonicOrHdNodeString = require('./helpers/parseMnemonicOrHdNodeString')
 const NamedError = require('../helpers/NamedError')
@@ -54,14 +55,7 @@ const CardanoWallet = async (options) => {
   getUnspentTxOutputs()
 
   async function sendAda(address, coins) {
-    const txAux = await prepareTxAux(address, coins).catch((e) => {
-      debugLog(e)
-      throw NamedError('TransactionCorrupted')
-    })
-    const signedTx = await cryptoProvider.signTx(txAux).catch((e) => {
-      debugLog(e)
-      throw NamedError('TransactionRejectedByTrezor')
-    })
+    const signedTx = await prepareSignedTx(address, coins)
 
     const response = await blockchainExplorer
       .submitTxRaw(signedTx.txHash, signedTx.txBody)
@@ -70,6 +64,8 @@ const CardanoWallet = async (options) => {
         throw NamedError('TransactionRejectedByNetwork')
       })
 
+    //TODO: refactor signing process so we dont need to reparse signed transaction for this
+    const {txAux} = parseTx(Buffer.from(signedTx.txBody, 'hex'))
     updateUtxosFromTxAux(txAux)
 
     return response
@@ -83,10 +79,22 @@ const CardanoWallet = async (options) => {
     return await cryptoProvider.getWalletId()
   }
 
-  async function prepareTx(address, coins) {
-    const txAux = await prepareTxAux(address, coins)
+  async function prepareSignedTx(address, coins) {
+    const txAux = await prepareTxAux(address, coins).catch((e) => {
+      debugLog(e)
+      throw NamedError('TransactionCorrupted')
+    })
 
-    return cryptoProvider.signTx(txAux)
+    const rawInputTxs = await Promise.all(
+      txAux.inputs.map(({txHash}) => blockchainExplorer.fetchTxRaw(txHash))
+    )
+
+    const signedTx = await cryptoProvider.signTx(txAux, rawInputTxs).catch((e) => {
+      debugLog(e)
+      throw NamedError('TransactionRejected')
+    })
+
+    return signedTx
   }
 
   async function prepareTxAux(address, coins) {
@@ -331,7 +339,7 @@ const CardanoWallet = async (options) => {
     getChangeAddress,
     getAllFundsTxFee,
     getTxFee,
-    prepareTx,
+    _prepareSignedTx: prepareSignedTx,
     getHistory,
     isOwnAddress,
     getOwnAddressesWithMeta,
