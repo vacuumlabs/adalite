@@ -13,7 +13,7 @@ const prefix = '00000402'
 
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
-  app.post('/api/transactions', (req, res) => {
+  app.post('/api/txs/submit', (req, res) => {
     let txHash
     let txBody // [1, txBody] in CBOR
     try {
@@ -21,7 +21,11 @@ module.exports = function(app, env) {
       txBody = req.body.txBody // [1, txBody] in CBOR
       if (!txHash || !txBody) throw new Error('bad format')
     } catch (err) {
-      return res.status(500).send('bad request format')
+      return res.send(
+        JSON.stringify({
+          Left: 'Bad request body',
+        })
+      )
     }
 
     txBody = `8201${txBody}`
@@ -46,7 +50,11 @@ module.exports = function(app, env) {
     try {
       client.on('connect', initHandshake)
     } catch (err) {
-      res.status(503).send('relay node unreachable')
+      res.status(200).send(
+        JSON.stringify({
+          Left: 'Connection to transaction submission node failed',
+        })
+      )
     }
 
     // eslint-disable-next-line consistent-return
@@ -117,26 +125,36 @@ module.exports = function(app, env) {
             break
           default:
             client.destroy()
-            res.end(
+            if (!success) {
+              return res.end(
+                JSON.stringify({
+                  Left: 'Transaction rejected by network',
+                })
+              )
+            }
+            return res.end(
               JSON.stringify({
-                success,
-                txHash,
-                error: success ? 'TransactionRejectedByNetwork' : undefined,
+                Right: {
+                  txHash,
+                },
               })
             )
         }
       } catch (err) {
-        return res
-          .status(500)
-          .send(
-            `${'Submitting transaction failure!  comunication ' +
-              'with relay node broken during '}${phase} phase. Please try again later`
-          )
+        return res.status(200).send(
+          JSON.stringify({
+            Left: 'Transaction submission unexpectedly failed',
+          })
+        )
       }
     })
 
     client.on('error', (err) => {
-      return res.status(500).send(`error: ${err}`)
+      return res.status(200).send(
+        JSON.stringify({
+          Left: `Unexpected error on submission node: ${err}`,
+        })
+      )
     })
   })
 }

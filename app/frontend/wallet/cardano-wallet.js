@@ -122,8 +122,19 @@ const CardanoWallet = async (options) => {
     const utxos = await getUnspentTxOutputs()
     const txInputs = []
     let coins = 0
+    const witnessSize = 139
+    let addedCost = 0
+    let inputSize = 0
 
     for (let i = 0; i < utxos.length; i++) {
+      inputSize = cbor.encode(TxInputFromUtxo(utxos[i])).length
+      //txFeeFunction(0) returns just the static part of fee that needs to be paid anyway
+      addedCost = txFeeFunction(inputSize + witnessSize) - txFeeFunction(0)
+      if (utxos[i].coins < addedCost) {
+        //if a given unspent output has less coins than what we would spend on fees to add
+        //that unspent output, its better we skip it
+        continue
+      }
       txInputs.push(TxInputFromUtxo(utxos[i]))
       coins += utxos[i].coins
     }
@@ -160,8 +171,19 @@ const CardanoWallet = async (options) => {
     const txInputs = []
     let sumUtxos = 0
     let totalCoins = coins
+    const witnessSize = 139
+    let addedCost = 0
+    let inputSize = 0
 
     for (let i = 0; i < utxos.length && sumUtxos < totalCoins; i++) {
+      inputSize = cbor.encode(TxInputFromUtxo(utxos[i])).length
+      //txFeeFunction(0) returns just the static part of fee that needs to be paid anyway
+      addedCost = txFeeFunction(inputSize + witnessSize) - txFeeFunction(0)
+      if (utxos[i].coins < addedCost) {
+        //if a given unspent output has less coins than what we would spend on fees to add
+        //that unspent output, its better we skip it
+        continue
+      }
       txInputs.push(TxInputFromUtxo(utxos[i]))
       sumUtxos += utxos[i].coins
 
@@ -210,6 +232,9 @@ const CardanoWallet = async (options) => {
     //size of addresses used by cardanolite
     const ownAddressSize = 76
 
+    //size of one witness in Cardano transaction an array with Xpub and Singature
+    const witnessSize = 139
+
     /*
     * we assume that at most two outputs (destination and change address) will be present
     * encoded in an indefinite length array
@@ -224,7 +249,7 @@ const CardanoWallet = async (options) => {
     // the 1 is there for the CBOR "tag" for an array of 3 elements
     const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
 
-    const txWitnessesSize = txInputs.length * 139 + 1
+    const txWitnessesSize = txInputs.length * witnessSize + 1
 
     // the 1 is there for the CBOR "tag" for an array of 2 elements
     const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
