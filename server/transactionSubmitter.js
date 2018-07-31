@@ -13,7 +13,7 @@ const prefix = '00000402'
 
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
-  app.post('/api/transactions', async (req, res) => {
+  app.post('/api/transactions', (req, res) => {
     let txHash
     let txBody // [1, txBody] in CBOR
     try {

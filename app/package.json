@@ -36,6 +36,7 @@
   "devDependencies": {
     "fetch-mock": "^6.5.1",
     "mocha": "^5.0.1",
+    "mocha-headless-chrome": "^2.0.1",
     "sinon": "^4.4.2"
   }
 }
