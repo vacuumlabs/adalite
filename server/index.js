@@ -26,8 +26,12 @@ app.use(express.static('app/public'))
 app.use(express.static('app/dist'))
 app.use(express.static('landing_page'))
 
-require('./blockchainExplorerProxy')(app)
-require('./transactionSubmitter')(app)
+if (process.env.CARDANOLITE_ENABLE_MOCK_SERVER === 'true') {
+  require('./blockchainExplorerMock')(app)
+  require('./transactionSubmitterMock')(app)
+} else {
+  require('./transactionSubmitter')(app)
+}
 
 app.get('*', (req, res) => {
   return res.status(200).send(`

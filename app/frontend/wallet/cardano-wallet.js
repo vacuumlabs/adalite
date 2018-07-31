@@ -62,12 +62,14 @@ const CardanoWallet = async (options) => {
       debugLog(e)
       throw NamedError('TransactionRejectedByTrezor')
     })
+
     const response = await blockchainExplorer
       .submitTxRaw(signedTx.txHash, signedTx.txBody)
       .catch((e) => {
         debugLog(e)
         throw NamedError('TransactionRejectedByNetwork')
       })
+
     updateUtxosFromTxAux(txAux)
 
     return response

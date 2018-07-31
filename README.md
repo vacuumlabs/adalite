@@ -58,6 +58,20 @@ yarn dev
 
 It runs webpack with the `--watch` flag and the server with `PORT=3000` unless you specify otherwise
 
+##### Mocking transaction submission
+in .env set the following values (your local settings may differ but by default this should work):
+```
+CARDANOLITE_ENABLE_MOCK_SERVER = true
+CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS = false
+CARDANOLITE_MOCK_TX_SUMMARY_SUCCESS = false
+```
+
+The `CARDANOLITE_ENABLE_MOCK_SERVER` flag tells the server to launch the mock server and replace the reference to the blockchain explorer on frontend, so it queries the mock server instead of the real blockchain explorer/transaction submission node.
+
+`CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS` tells the mock server whether it has to return a success response for tx submission or not.  
+
+`CARDANOLITE_MOCK_TX_SUMMARY_SUCCESS` tells the mock explorer whether to return that the transaction summary exists or not - this is useful for polling for transaction status after submission.
+
 ## test
 
 ```

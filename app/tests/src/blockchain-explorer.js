@@ -6,7 +6,6 @@ const mockNetwork = require('./mock')
 const mockConfig = {
   CARDANOLITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.cardanolite.com',
   CARDANOLITE_TRANSACTION_SUBMITTER_URL: 'http://localhost:3000/api/transactions',
-  CARDANOLITE_BLOCKCHAIN_EXPLORER_PROXY_TARGET: 'https://explorer.cardanolite.com',
   CARDANOLITE_WALLET_ADDRESS_LIMIT: 20,
 }
 const mockNet = mockNetwork(mockConfig)
@@ -36,7 +35,7 @@ const addresses = [
   'DdzFFzCqrhsxrarXf9BFZbyc7AFFdxmH4k2hztwaZuoCcZ3wmJaXQQWqRgqoVRjSSUgkkUKGTYvveSbqJ3RBMiyGpNtQh7qUGKQYWi8p',
 ]
 
-const expectedHistory = [
+const expectedTxHistory = [
   {
     ctbId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
     ctbTimeIssued: 1528209771,
@@ -75,6 +74,7 @@ const expectedHistory = [
       getCoin: '2967795',
     },
     effect: 1967795,
+    fee: 179024,
   },
   {
     ctbId: 'aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c',
@@ -114,6 +114,7 @@ const expectedHistory = [
       getCoin: '3146819',
     },
     effect: -2325843,
+    fee: 179024,
   },
   {
     ctbId: 'c478c4315055c937ead10230a84efa23f1320dd08e69ecd8450e89887feb2cd3',
@@ -153,6 +154,7 @@ const expectedHistory = [
       getCoin: '3325843',
     },
     effect: -179024,
+    fee: 179024,
   },
   {
     ctbId: 'e470b43652fcfbd9d14d7347ddd9f6d14beb5892226d4248819e3e91de9b7d95',
@@ -204,6 +206,7 @@ const expectedHistory = [
       getCoin: '3504867',
     },
     effect: -194933,
+    fee: 194933,
   },
   {
     ctbId: '2aecbf52089b0c2425fa6b8e494003c2be165c741eb76dea72b8c13ec2172b1f',
@@ -237,6 +240,7 @@ const expectedHistory = [
       getCoin: '3599799',
     },
     effect: -171070,
+    fee: 171070,
   },
   {
     ctbId: 'a9437a6bcba39a352b1e8ec845fc13345b523c56727fe3c9b868f0c13097530f',
@@ -270,6 +274,7 @@ const expectedHistory = [
       getCoin: '3870869',
     },
     effect: -171070,
+    fee: 171070,
   },
   {
     ctbId: '69d5f1bf80d34dbd9258292e0f786bd5f61f7b04593330028340e602260504df',
@@ -303,6 +308,7 @@ const expectedHistory = [
       getCoin: '4041940',
     },
     effect: -170894,
+    fee: 170894,
   },
   {
     ctbId: 'bc12ed9d26ce3028952626ec69588dec162996777258cdcc639991712f7d1940',
@@ -342,6 +348,7 @@ const expectedHistory = [
       getCoin: '24212834',
     },
     effect: -20179024,
+    fee: 179024,
   },
   {
     ctbId: '88cefdfff46eb7d1d9b7ae9a72b25755096e78cb8be847299eb5f6f1dd1c44cf',
@@ -381,6 +388,7 @@ const expectedHistory = [
       getCoin: '24391858',
     },
     effect: -179024,
+    fee: 179024,
   },
   {
     ctbId: 'b485aa85a1d301d7ee588e724993c23c62496167601f38a2f5d2949675242466',
@@ -420,6 +428,7 @@ const expectedHistory = [
       getCoin: '24570882',
     },
     effect: -179024,
+    fee: 179024,
   },
   {
     ctbId: '51f807c6e5b8c154ced682ccc0cdac4d349813b0fba5eb52e03862940bd7ea26',
@@ -459,6 +468,7 @@ const expectedHistory = [
       getCoin: '24749906',
     },
     effect: -179024,
+    fee: 179024,
   },
   {
     ctbId: '9718fd08e6f629f30f644224bb9a815a8194580740038723fbc49fee1b73db46',
@@ -492,6 +502,7 @@ const expectedHistory = [
       getCoin: '24928930',
     },
     effect: -171070,
+    fee: 171070,
   },
 ]
 
@@ -502,10 +513,9 @@ describe('wallet history parsing', function() {
   mockNet.mockBlockChainExplorer()
 
   it('should properly fetch wallet history', async () => {
-    assert.equal(
-      JSON.stringify(await blockchainExplorer.getTxHistory(addresses)),
-      JSON.stringify(expectedHistory)
-    )
+    const txHistory = await blockchainExplorer.getTxHistory(addresses)
+
+    assert.equal(JSON.stringify(txHistory), JSON.stringify(expectedTxHistory))
   })
 })
 

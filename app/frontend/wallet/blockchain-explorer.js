@@ -1,5 +1,6 @@
 const request = require('./helpers/request')
 const range = require('./helpers/range')
+const debugLog = require('../helpers/debugLog')
 
 const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {

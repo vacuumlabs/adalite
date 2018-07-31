@@ -14,8 +14,7 @@ const translations = {
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
   WalletInitializationError: () => 'Error during wallet initialization',
-  TransactionRejectedByNetwork: () =>
-    'Submitting the transaction into a Cardano network failed. Check your network connection.',
+  TransactionRejectedByNetwork: () => 'Submitting the transaction into Cardano network failed.',
   TransactionRejectedByTrezor: () => 'Transaction rejected by the Trezor hardware wallet.',
   TrezorRejected: () => 'Operation rejected by the Trezor hardware wallet.',
   TransactionCorrupted: () => 'Transaction assembling failure.',

@@ -13,7 +13,7 @@ const prefix = '00000402'
 
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
-  app.post('/api/transactions', (req, res) => {
+  app.post('/api/transactions', async (req, res) => {
     let txHash
     let txBody // [1, txBody] in CBOR
     try {
@@ -23,8 +23,6 @@ module.exports = function(app, env) {
     } catch (err) {
       return res.status(500).send('bad request format')
     }
-
-    // return res.end(JSON.stringify({success: true, txHash}))
 
     txBody = `8201${txBody}`
 
@@ -119,7 +117,13 @@ module.exports = function(app, env) {
             break
           default:
             client.destroy()
-            res.end(JSON.stringify({success, txHash}))
+            res.end(
+              JSON.stringify({
+                success,
+                txHash,
+                error: success ? 'TransactionRejectedByNetwork' : undefined,
+              })
+            )
         }
       } catch (err) {
         return res
