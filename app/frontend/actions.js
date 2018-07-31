@@ -11,6 +11,7 @@ const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
 const sleep = require('./helpers/sleep')
 const {ADA_DONATION_ADDRESS} = require('./wallet/constants')
+const NamedError = require('./helpers/NamedError')
 
 let wallet = null
 
@@ -366,6 +367,7 @@ module.exports = ({setState, getState}) => {
       transactionFee: 0,
       loading: false,
       showConfirmTransactionDialog: false,
+      enableSendAllFunds: false,
     })
   }
 
@@ -407,10 +409,14 @@ module.exports = ({setState, getState}) => {
       const amount = state.sendAmount.coins
       const txSubmitResult = await wallet.sendAda(address, amount)
 
-      sendResponse = txSubmitResult.success
-        ? await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
-        : txSubmitResult
-      if (txSubmitResult.success && address === ADA_DONATION_ADDRESS) {
+      if (!txSubmitResult) {
+        debugLog(txSubmitResult)
+        throw NamedError('TransactionRejectedByNetwork')
+      }
+
+      sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
+
+      if (address === ADA_DONATION_ADDRESS) {
         setState({showThanksForDonation: true})
       }
     } catch (e) {

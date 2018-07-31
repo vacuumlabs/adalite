@@ -36,7 +36,6 @@ class CopyOnClick extends Component {
       }
       this.setState({tooltip: 'Copied!'})
     } catch (err) {
-      // eslint-disable-next-line no-console
       debugLog('Could not copy text: ', err)
     }
   }

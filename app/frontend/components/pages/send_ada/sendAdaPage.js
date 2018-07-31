@@ -133,7 +133,7 @@ class SendAdaPage extends Component {
               }`,
               onClick: sendAllFunds,
             },
-            'Send all'
+            'MAX'
           ),
           h(
             'div',

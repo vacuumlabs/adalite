@@ -8,13 +8,13 @@ const testSeed = 39
 
 const mockConfig1 = {
   CARDANOLITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.cardanolite.com',
-  CARDANOLITE_TRANSACTION_SUBMITTER_URL: 'http://localhost:3000/api/transactions',
+  CARDANOLITE_SERVER_URL: 'http://localhost:3000',
   CARDANOLITE_WALLET_ADDRESS_LIMIT: 5,
 }
 
 const mockConfig2 = {
   CARDANOLITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.cardanolite.com',
-  CARDANOLITE_TRANSACTION_SUBMITTER_URL: 'http://localhost:3000/api/transactions',
+  CARDANOLITE_SERVER_URL: 'http://localhost:3000',
   CARDANOLITE_WALLET_ADDRESS_LIMIT: 15,
 }
 
@@ -215,7 +215,6 @@ describe('test transaction submission', function() {
 
     const result = await wallets.used.sendAda(myAddress, 47)
     assert.deepEqual(result, {
-      success: true,
       txHash: '73131c773879e7e634022f8e0175399b7e7814c42684377cf6f8c7a1adb23112',
     })
   })

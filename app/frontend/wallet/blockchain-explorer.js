@@ -1,5 +1,7 @@
 const request = require('./helpers/request')
 const range = require('./helpers/range')
+const NamedError = require('../helpers/NamedError')
+const debugLog = require('../helpers/debugLog')
 
 const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -40,9 +42,9 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     const url = `${
       CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
     }/api/txs/summary/${txHash}`
-    const result = await request(url)
+    const response = await request(url)
 
-    return result.Right
+    return response.Right
   }
 
   async function fetchTxRaw(txId) {
@@ -109,8 +111,8 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   }
 
   async function submitTxRaw(txHash, txBody) {
-    return await request(
-      CARDANOLITE_CONFIG.CARDANOLITE_TRANSACTION_SUBMITTER_URL,
+    const response = await request(
+      `${CARDANOLITE_CONFIG.CARDANOLITE_SERVER_URL}/api/txs/submit`,
       'POST',
       JSON.stringify({
         txHash,
@@ -120,6 +122,13 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
         'Content-Type': 'application/json',
       }
     )
+
+    if (!response.Right) {
+      debugLog(`Unexpected tx submission response: ${response}`)
+      throw NamedError('TransactionRejectedByNetwork')
+    }
+
+    return response.Right
   }
 
   async function fetchUnspentTxOutputs(addresses) {

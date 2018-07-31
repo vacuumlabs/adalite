@@ -5,7 +5,7 @@ const mockNetwork = require('./mock')
 
 const mockConfig = {
   CARDANOLITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.cardanolite.com',
-  CARDANOLITE_TRANSACTION_SUBMITTER_URL: 'http://localhost:3000/api/transactions',
+  CARDANOLITE_SERVER_URL: 'http://localhost:3000',
   CARDANOLITE_WALLET_ADDRESS_LIMIT: 20,
 }
 const mockNet = mockNetwork(mockConfig)
