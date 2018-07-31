@@ -68,12 +68,17 @@ CARDANOLITE_MOCK_TX_SUMMARY_SUCCESS = false
 
 The `CARDANOLITE_ENABLE_MOCK_SERVER` flag tells the server to launch the mock server and replace the reference to the blockchain explorer on frontend, so it queries the mock server instead of the real blockchain explorer/transaction submission node.
 
-`CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS` tells the mock server whether it has to return a success response for tx submission or not.  
+`CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS` tells the mock server whether it has to return a success response for tx submission or not.
 
 `CARDANOLITE_MOCK_TX_SUMMARY_SUCCESS` tells the mock explorer whether to return that the transaction summary exists or not - this is useful for polling for transaction status after submission.
 
 ## test
+#### lint tests
+```
+yarn eslint
+```
 
+#### unit tests
 ```
 yarn test
 ```

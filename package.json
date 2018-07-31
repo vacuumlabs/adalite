@@ -21,7 +21,8 @@
     "build": "cd app && yarn install && yarn build",
     "dev": "PORT=${PORT:-3000} node server/index.js & (cd app && yarn install && yarn dev)",
     "test": "cd app && yarn install && yarn test",
-    "eslint": "eslint .",
+    "mocha": "cd app && mocha-chrome --help",
+    "eslint": "eslint . --max-warnings=0",
     "fix": "prettier-eslint --write \"{app/frontend,app/tests/src,server}/**/*.{js,jsx,json,css}\"",
     "heroku-postbuild": "cd app && yarn install && yarn build",
     "precommit": "lint-staged"
