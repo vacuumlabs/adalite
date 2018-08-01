@@ -98,21 +98,20 @@ const CardanoWallet = async (options) => {
   }
 
   async function prepareTxAux(address, coins) {
-    const txInputs = await prepareTxInputs(coins)
-    const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
-      return acc + elem.coins
-    }, 0)
-
+    const txInputs = await prepareTxInputs(coins, address)
+    const txInputsCoinsSum = txInputs.reduce((acc, elem) => acc + elem.coins, 0)
     const fee = computeTxFee(txInputs, coins, address)
     const changeAmount = txInputsCoinsSum - coins - fee
+
     if (changeAmount < 0) {
-      return false
+      throw Error(`
+        Transaction inputs (sum ${txInputsCoinsSum}) don't cover coins (${coins}) + fee (${fee})`)
     }
 
     const txOutputs = [TxOutput(address, coins, false)]
 
     if (changeAmount > 0) {
-      txOutputs.push(TxOutput(await getChangeAddress(), txInputsCoinsSum - fee - coins, true))
+      txOutputs.push(TxOutput(await getChangeAddress(), changeAmount, true))
     }
 
     return TxAux(txInputs, txOutputs, {})
@@ -142,7 +141,7 @@ const CardanoWallet = async (options) => {
   }
 
   async function getTxFee(coins, address) {
-    const txInputs = await prepareTxInputs(coins)
+    const txInputs = await prepareTxInputs(coins, address)
 
     return computeTxFee(txInputs, coins, address)
   }
@@ -163,8 +162,8 @@ const CardanoWallet = async (options) => {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  async function prepareTxInputs(coins) {
-    // we want to do it pseudorandomly to guarantee fee computation stability
+  async function prepareTxInputs(coins, address) {
+    // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(state.randomSeed)
     const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
 
@@ -187,7 +186,7 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(utxos[i]))
       sumUtxos += utxos[i].coins
 
-      totalCoins = coins + computeTxFee(txInputs, totalCoins, utxos[i].address)
+      totalCoins = coins + computeTxFee(txInputs, totalCoins, address)
     }
 
     return txInputs
