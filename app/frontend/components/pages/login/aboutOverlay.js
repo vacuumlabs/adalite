@@ -77,7 +77,7 @@ class AboutOverlayClass extends Component {
               'button',
               {
                 onClick: this.toggleAboutOverlay,
-                class: 'rounded-button',
+                class: 'btn rounded-button',
               },
               'Close'
             )

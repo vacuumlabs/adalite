@@ -18,7 +18,7 @@ module.exports = connect(
       h(
         'span',
         {
-          class: 'overlay-close-button',
+          class: 'btn overlay-close-button',
           onClick: closeGenerateMnemonicDialog,
         },
         h(CloseIcon)
@@ -31,7 +31,11 @@ module.exports = connect(
         h('b', undefined, 'Do not copy them to your clipboard or save them anywhere online!')
       ),
       h('div', {class: 'gray-row mnemonic-box'}, mnemonic),
-      h('div', {class: ''}, h('button', {onClick: confirmGenerateMnemonicDialog}, 'Confirm'))
+      h(
+        'div',
+        {class: ''},
+        h('button', {class: 'btn', onClick: confirmGenerateMnemonicDialog}, 'Confirm')
+      )
     )
   )
 })

@@ -171,7 +171,7 @@ class SendAdaPage extends Component {
           feeRecalculating
             ? h(
               'button',
-              {disabled: true, class: 'loading-button'},
+              {disabled: true, class: 'btn loading-button'},
               h('div', {class: 'loading-inside-button'}),
               'Calculating Fee'
             )
@@ -180,7 +180,7 @@ class SendAdaPage extends Component {
               {
                 disabled: !enableSubmit,
                 onClick: confirmTransaction,
-                class: 'loading-button',
+                class: 'btn loading-button',
               },
               'Submit'
             )

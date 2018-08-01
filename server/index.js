@@ -53,7 +53,7 @@ app.get('*', (req, res) => {
     </head>
 
     <body data-config='${JSON.stringify(frontendConfig)}'>
-      <div id="root" style="width: 100%; height: 100%;"></div>
+      <div id="root"></div>
     </body>
 
   </html>

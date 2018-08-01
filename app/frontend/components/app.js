@@ -12,6 +12,6 @@ const Navbar = connect((state) => ({
 }))(({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth)))
 
 const App = () =>
-  h('div', {class: 'wrap'}, h(LoadingOverlay), h(Navbar), h(TopLevelRouter), h(Footer))
+  h('div', {class: 'page-wrap'}, h(LoadingOverlay), h(Navbar), h(TopLevelRouter), h(Footer))
 
 module.exports = App

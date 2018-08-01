@@ -150,11 +150,7 @@ class LoadKeyFileClass extends Component {
                   multiple: false,
                   onChange: this.selectFile,
                 }),
-                h(
-                  'label',
-                  {class: 'button-like', for: 'loadFile'},
-                  h('div', undefined, 'Select key File')
-                )
+                h('label', {class: 'btn', for: 'loadFile'}, h('div', undefined, 'Select key File'))
               )
             )
           )
@@ -174,7 +170,7 @@ class LoadKeyFileClass extends Component {
               h(
                 'span',
                 {
-                  class: 'overlay-close-button',
+                  class: 'btn overlay-close-button',
                   onClick: this.closePasswordModal,
                 },
                 h(CloseIcon)
@@ -199,6 +195,7 @@ class LoadKeyFileClass extends Component {
                   h(
                     'button',
                     {
+                      class: 'btn',
                       disabled: !password,
                       onClick: this.unlockKeyfile,
                     },

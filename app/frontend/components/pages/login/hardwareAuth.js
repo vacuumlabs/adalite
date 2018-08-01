@@ -38,6 +38,7 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
           h(
             'button',
             {
+              class: 'btn',
               onClick: () => loadWallet({cryptoProvider: 'trezor'}),
             },
             h(

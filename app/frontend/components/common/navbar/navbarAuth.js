@@ -31,7 +31,7 @@ const LoginStatus = connect(
         {class: 'inline', for: 'navcollapse'},
         h(
           'div',
-          {class: 'button', onClick: reloadWalletInfo},
+          {class: 'btn', onClick: reloadWalletInfo},
           h(RefreshIcon),
           h('div', {class: 'status-icon-button-content'}, 'Refresh')
         )
@@ -42,7 +42,7 @@ const LoginStatus = connect(
           {class: 'inline', for: 'navcollapse'},
           h(
             'div',
-            {class: 'button', onClick: openExportJsonWalletDialog},
+            {class: 'btn', onClick: openExportJsonWalletDialog},
             h(DownloadIcon),
             h('div', {class: 'status-icon-button-content'}, 'Export')
           )
@@ -52,7 +52,7 @@ const LoginStatus = connect(
         {class: 'inline', for: 'navcollapse'},
         h(
           'div',
-          {class: 'button', onClick: () => setTimeout(logout, 100)},
+          {class: 'btn', onClick: () => setTimeout(logout, 100)},
           h(ExitIcon),
           h('div', {class: 'status-icon-button-content'}, 'Logout')
         )

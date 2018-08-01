@@ -49,8 +49,8 @@ const ConfirmTransactionDialog = connect(
         h(
           'div',
           {class: ''},
-          h('button', {onClick: submitTransaction}, 'Confirm'),
-          h('button', {class: 'cancel', onClick: cancelTransaction}, 'Cancel')
+          h('button', {class: 'btn', onClick: submitTransaction}, 'Confirm'),
+          h('button', {class: 'btn cancel', onClick: cancelTransaction}, 'Cancel')
         )
       )
     )

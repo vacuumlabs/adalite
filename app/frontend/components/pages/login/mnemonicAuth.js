@@ -50,7 +50,7 @@ const LoadByMenmonicSection = ({
         h(
           'button',
           {
-            class: `intro-button rounded-button ${
+            class: `btn intro-button rounded-button ${
               mnemonic && !mnemonicValidationError ? 'pulse' : ''
             }`,
             disabled: !mnemonic || mnemonicValidationError,
@@ -79,7 +79,7 @@ const LoadByMenmonicSection = ({
       h(
         'button',
         {
-          class: 'demo-button rounded-button',
+          class: 'btn demo-button rounded-button',
           /*
           * onMouseDown to prevent onBlur before handling the click event
           * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue

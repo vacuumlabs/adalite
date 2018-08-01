@@ -1,19 +1,17 @@
 :root {
+  --text-color: #333;
   --brand: #eb1a75;
   --brand-dark: #ed005b;
   --brand-light: #d36a98;
   --brand-shadow: #eb1a75cc;
   --brand-shadow-light: #eb1a7544;
-  --transition: 0.25s;
-  --width: 1200px;
-  --small-screen-padding: 25px;
-  --text-color: #333;
-  --input-text-inactive: #999;
   --input-text-active: #333;
+  --input-text-inactive: #999;
   --input-background: #f4f5f6;
   --gray-background: #e4e5e6;
   --border: #dadada;
   --navbar: #f4f5f6;
+  --navbar-text: #777;
   --positive: #38a14f;
   --positive-transparent: #38a14f10;
   --warning: #ac6e27;
@@ -21,10 +19,17 @@
   --negative: #d44242;
   --negative-transparent: #d4424210;
   --disabled: #ddd;
-  --navbar-text: #777;
+--transition: 0.25s;
+  --width: 1200px;
+  --small-screen-padding: 25px;
+  /* default settings */
+  font-family: sans-serif;
+  color: var(--text-color);
+  font-size: 15px;
 }
-/* NORMALIZE */
+/*NORMALIZE*/
 * {
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 *::before,
@@ -32,30 +37,60 @@
   box-sizing: inherit;
 }
 html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
   height: 100%;
-  font-size: 15px;
 }
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
   height: 100%;
-  color: var(--text-color);
+}
+button,
+input,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+}
+button {
+  text-transform: none;
 }
 input:focus {
   outline: none;
 }
+
+/*  PAGE-CONTAINER */
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+.page-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.main {
+  max-width: var(--width);
+  width: 100%;
+  margin: 0 auto;
+}
+@media screen and (max-width: 1200px) {
+  .main {
+    padding: 0 50px;
+  }
+}
+
 /* TYPOGRAPHY */
-h1 {
+h1, h2, h4 {
   font-weight: 300;
   margin-top: 0;
   margin-bottom: 0.5em;
 }
 h2 {
-  font-weight: 300;
   font-size: 2.5rem;
-  margin-top: 0;
-  margin-bottom: 0.5em;
   border-bottom: 2px solid var(--border);
   padding-bottom: 0.25em;
   padding-left: 0.2rem;
@@ -65,13 +100,11 @@ h3 {
   font-weight: 300;
 }
 h4 {
-  font-weight: 300;
   font-size: 1.5em;
-  margin-top: 0;
-  margin-bottom: 0.5em;
   border-bottom: 1px solid var(--border);
   padding-bottom: 0.25em;
 }
+
 a {
   color: var(--brand);
 }
@@ -82,8 +115,10 @@ p {
 path {
   fill: currentColor;
 }
+
+
 /* BUTTON */
-button, .button-like {
+btn {
   background-color: var(--brand);
   color: white;
   border: 0;

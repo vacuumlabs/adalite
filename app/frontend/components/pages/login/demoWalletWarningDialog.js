@@ -21,7 +21,7 @@ const DemoWalletWarningDialog = connect(
       h(
         'div',
         {class: 'box-button-wrapper'},
-        h('button', {onClick: closeDemoWalletWarningDialog}, 'I understand')
+        h('button', {class: 'btn', onClick: closeDemoWalletWarningDialog}, 'I understand')
       )
     )
   )

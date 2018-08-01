@@ -107,7 +107,7 @@ class ExportWalletDialog extends Component {
         h(
           'span',
           {
-            class: 'overlay-close-button',
+            class: 'btn overlay-close-button',
             onClick: this.closeExportJsonWalletDialog,
           },
           h(CloseIcon)
@@ -183,7 +183,7 @@ class ExportWalletDialog extends Component {
             {
               disabled: !this.isPasswordValid(password, confirmation) || !isWalletNameValid,
               onClick: this.exportJsonWallet,
-              class: 'export-wallet-button button-like',
+              class: 'btn export-wallet-button ',
             },
             'Export'
           )
