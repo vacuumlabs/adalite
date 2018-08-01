@@ -71,7 +71,7 @@ module.exports = ({setState, getState}) => {
               })
           )
         } catch (e) {
-          debugLog(e.toString())
+          debugLog(e)
           return setState({
             loading: false,
             walletLoadingError: {code: 'TrezorRejected'},

@@ -126,7 +126,11 @@ const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching
   }
 
   async function signTx(txAux, rawInputTxs) {
-    const signedTxStructured = await signTxGetStructured(txAux)
+    if (!checkTxInputsIntegrity(txAux.inputs, rawInputTxs)) {
+      throw NamedError('TransactionRejected')
+    }
+
+    const signedTxStructured = await signTxGetStructured(txAux, rawInputTxs)
 
     return {
       txHash: signedTxStructured.getId(),
@@ -134,12 +138,8 @@ const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching
     }
   }
 
-  async function signTxGetStructured(txAux, rawInputTxs) {
+  async function signTxGetStructured(txAux) {
     const txHash = txAux.getId()
-
-    if (!checkTxInputsIntegrity(txAux.inputs, rawInputTxs)) {
-      throw NamedError('TransactionRejected')
-    }
 
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
