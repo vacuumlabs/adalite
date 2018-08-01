@@ -130,7 +130,7 @@ const CardanoMnemonicCryptoProvider = (walletSecret, walletState, disableCaching
       throw NamedError('TransactionRejected')
     }
 
-    const signedTxStructured = await signTxGetStructured(txAux, rawInputTxs)
+    const signedTxStructured = await signTxGetStructured(txAux)
 
     return {
       txHash: signedTxStructured.getId(),
