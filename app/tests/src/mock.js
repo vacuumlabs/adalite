@@ -1324,6 +1324,181 @@ const mock = (CARDANOLITE_CONFIG) => {
           caTxList: [],
         },
       },
+      /*
+      * addresses to compute utxos for wallet with lot of small utxos and few big
+      * from mnemonic:
+      *  blame matrix water coil diet seat nerve street movie turkey jump bundle
+      */
+      'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ',
+          caType: 'CPubKeyAddress',
+          caTxNum: 3,
+          caBalance: {getCoin: '500000'},
+          caTxList: [
+            {
+              ctbId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+              ctbTimeIssued: 1528209771,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ',
+                  {getCoin: '500000'},
+                ],
+                [
+                  'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+                  {getCoin: '2467795'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3146819'},
+              ctbOutputSum: {getCoin: '2967795'},
+            },
+            {
+              ctbId: 'a9437a6bcba39a352b1e8ec845fc13345b523c56727fe3c9b868f0c13097530f',
+              ctbTimeIssued: 1527856111,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ',
+                  {getCoin: '4041939'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'DdzFFzCqrht9xZUzwdRLPTsSUMSXneyBvstDpsFY6xNUhapg4ij2j1Wn5ZKCKYu15zwwMT8nHfzQvdCaywYfMMUNpjGg5MBf4P4KLhkG',
+                  {getCoin: '3770869'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '4041939'},
+              ctbOutputSum: {getCoin: '3870869'},
+            },
+            {
+              ctbId: '69d5f1bf80d34dbd9258292e0f786bd5f61f7b04593330028340e602260504df',
+              ctbTimeIssued: 1527848811,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhsf3ce3SVTJTthAPpfBurHozwfFBGg4Ni8aCP9Pt6DRjZZSbVTYkPZ2kiMeoUHUt2Lwtr9rb54xy6iJNSM35N8Axjo2TTJY',
+                  {getCoin: '4212834'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1'},
+                ],
+                [
+                  'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ',
+                  {getCoin: '4041939'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '4212834'},
+              ctbOutputSum: {getCoin: '4041940'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '1000000'},
+          caTxList: [
+            {
+              ctbId: '69d5f1bf80d34dbd9258292e0f786bd5f61f7b04593330028340e602260504df',
+              ctbTimeIssued: 1528239771,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+                  {getCoin: '2467795'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
+                  {getCoin: '1299745'},
+                ],
+                [
+                  'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+                  {getCoin: '1000000'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '2467795'},
+              ctbOutputSum: {getCoin: '2299745'},
+            },
+            {
+              ctbId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+              ctbTimeIssued: 1528209771,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E',
+                  {getCoin: '1000000'},
+                ],
+                [
+                  'DdzFFzCqrht12BRkRZurqmx2g5MA6fyYzabh6dUNg8b4x3ue3ATNzkWix3rf8HgN6KanUX9z6aZkDZjSSe5aGahELSapkFPrPnoTrJmT',
+                  {getCoin: '2146819'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ',
+                  {getCoin: '500000'},
+                ],
+                [
+                  'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+                  {getCoin: '2467795'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '3146819'},
+              ctbOutputSum: {getCoin: '2967795'},
+            },
+          ],
+        },
+      },
+      'DdzFFzCqrhsp3YjWh3BHaGTmpi3yCVrcaSoJhiEAkBcT4FsA3rXNC31jDfw8oT1mZ9g3n6nJb4hPzKgCHgT53QpqfGwQHy94gLb7GKsY': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsp3YjWh3BHaGTmpi3yCVrcaSoJhiEAkBcT4FsA3rXNC31jDfw8oT1mZ9g3n6nJb4hPzKgCHgT53QpqfGwQHy94gLb7GKsY',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhsrndfZ3UoB2eYXwjxFUePiR27BiYfqgPbqzMUiz25sjhxfLjzVhDqT4bsmiypfYKwH66UfFDGsaEffA1HYFw46upt6G7J5': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsrndfZ3UoB2eYXwjxFUePiR27BiYfqgPbqzMUiz25sjhxfLjzVhDqT4bsmiypfYKwH66UfFDGsaEffA1HYFw46upt6G7J5',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'DdzFFzCqrhsr5ysDEKPH1QGFGnUBbSufGWtCfRZ9zLpSU5c7FacKfyJgmNaDHiPZLfjTbwzcvW53ySj89CECGp6FKHCiSnLF6ZJc7Zag': {
+        Right: {
+          caAddress:
+            'DdzFFzCqrhsr5ysDEKPH1QGFGnUBbSufGWtCfRZ9zLpSU5c7FacKfyJgmNaDHiPZLfjTbwzcvW53ySj89CECGp6FKHCiSnLF6ZJc7Zag',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
       '*': {},
     }
     for (const address in addressesAndResponses) {
@@ -1424,11 +1599,53 @@ const mock = (CARDANOLITE_CONFIG) => {
           },
         ],
       },
+      '["DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ","DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC"]': {
+        Right: [
+          {
+            cuId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+            cuOutIndex: 0,
+            cuAddress:
+              'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ',
+            cuCoins: {getCoin: '500000'},
+          },
+          {
+            cuId: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
+            cuOutIndex: 1,
+            cuAddress:
+              'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+            cuCoins: {getCoin: '1000000'},
+          },
+          {
+            cuId: 'aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c',
+            cuOutIndex: 0,
+            cuAddress:
+              'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+            cuCoins: {getCoin: '6000'},
+          },
+          {
+            cuId: '73131c773879e7e634022f8e0175399b7e7814c42684377cf6f8c7a1adb23112',
+            cuOutIndex: 1,
+            cuAddress:
+              'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+            cuCoins: {getCoin: '125'},
+          },
+          {
+            cuId: '1ce7a1e2606271a7f085262fb7c509c98d60912a943c9be3871ac3ace48ae6d6',
+            cuOutIndex: 1,
+            cuAddress:
+              'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+            cuCoins: {getCoin: '5000'},
+          },
+        ],
+      },
     }
+
     // eslint-disable-next-line guard-for-in
     for (const request in requestsAndResponses) {
-      fetchMock.mock({
-        // eslint-disable-next-line no-loop-func
+      fetchMock.post({
+        name: `${
+          CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
+        }/api/bulk/addresses/utxo${request}`,
         matcher: (url, opts) => {
           return (
             url ===

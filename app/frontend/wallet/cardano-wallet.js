@@ -8,7 +8,7 @@ const BlockchainExplorer = require('./blockchain-explorer')
 const CardanoMnemonicCryptoProvider = require('./cardano-mnemonic-crypto-provider')
 const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
-const {HARDENED_THRESHOLD, MAX_INT32} = require('./constants')
+const {HARDENED_THRESHOLD, MAX_INT32, txWitnessByteSize} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
 const range = require('./helpers/range')
 const {toBip32StringPath} = require('./helpers/bip32')
@@ -117,27 +117,21 @@ const CardanoWallet = async (options) => {
     return TxAux(txInputs, txOutputs, {})
   }
 
-  async function getAllFundsTxFee(address) {
+  async function getMaxSendableAmount(address) {
     const utxos = await getUnspentTxOutputs()
     const txInputs = []
     let coins = 0
-    const witnessSize = 139
-    let addedCost = 0
-    let inputSize = 0
+    const profitableUtxos = utxos.filter(isUtxoProfitable)
 
-    for (let i = 0; i < utxos.length; i++) {
-      inputSize = cbor.encode(TxInputFromUtxo(utxos[i])).length
-      //txFeeFunction(0) returns just the static part of fee that needs to be paid anyway
-      addedCost = txFeeFunction(inputSize + witnessSize) - txFeeFunction(0)
-      if (utxos[i].coins < addedCost) {
-        //if a given unspent output has less coins than what we would spend on fees to add
-        //that unspent output, its better we skip it
-        continue
-      }
-      txInputs.push(TxInputFromUtxo(utxos[i]))
-      coins += utxos[i].coins
+    for (let i = 0; i < profitableUtxos.length; i++) {
+      txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
+      coins += profitableUtxos[i].coins
     }
-    return computeTxFee(txInputs, coins, address)
+    const txFee = computeTxFee(txInputs, coins, address)
+    if (txFee > coins) {
+      throw NamedError('SendAmountCantSendMaxFunds')
+    }
+    return coins - txFee
   }
 
   async function getTxFee(coins, address) {
@@ -162,29 +156,26 @@ const CardanoWallet = async (options) => {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
+  function isUtxoProfitable(utxo) {
+    const inputSize = cbor.encode(TxInputFromUtxo(utxo)).length
+    const addedCost = txFeeFunction(inputSize + txWitnessByteSize) - txFeeFunction(0)
+
+    return utxo.coins > addedCost
+  }
+
   async function prepareTxInputs(coins, address) {
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(state.randomSeed)
     const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
+    const profitableUtxos = utxos.filter(isUtxoProfitable)
 
     const txInputs = []
     let sumUtxos = 0
     let totalCoins = coins
-    const witnessSize = 139
-    let addedCost = 0
-    let inputSize = 0
 
-    for (let i = 0; i < utxos.length && sumUtxos < totalCoins; i++) {
-      inputSize = cbor.encode(TxInputFromUtxo(utxos[i])).length
-      //txFeeFunction(0) returns just the static part of fee that needs to be paid anyway
-      addedCost = txFeeFunction(inputSize + witnessSize) - txFeeFunction(0)
-      if (utxos[i].coins < addedCost) {
-        //if a given unspent output has less coins than what we would spend on fees to add
-        //that unspent output, its better we skip it
-        continue
-      }
-      txInputs.push(TxInputFromUtxo(utxos[i]))
-      sumUtxos += utxos[i].coins
+    for (let i = 0; i < profitableUtxos.length && sumUtxos < totalCoins; i++) {
+      txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
+      sumUtxos += profitableUtxos[i].coins
 
       totalCoins = coins + computeTxFee(txInputs, totalCoins, address)
     }
@@ -231,9 +222,6 @@ const CardanoWallet = async (options) => {
     //size of addresses used by cardanolite
     const ownAddressSize = 76
 
-    //size of one witness in Cardano transaction an array with Xpub and Singature
-    const witnessSize = 139
-
     /*
     * we assume that at most two outputs (destination and change address) will be present
     * encoded in an indefinite length array
@@ -248,7 +236,7 @@ const CardanoWallet = async (options) => {
     // the 1 is there for the CBOR "tag" for an array of 3 elements
     const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
 
-    const txWitnessesSize = txInputs.length * witnessSize + 1
+    const txWitnessesSize = txInputs.length * txWitnessByteSize + 1
 
     // the 1 is there for the CBOR "tag" for an array of 2 elements
     const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
@@ -361,7 +349,7 @@ const CardanoWallet = async (options) => {
     sendAda,
     getBalance,
     getChangeAddress,
-    getAllFundsTxFee,
+    getMaxSendableAmount,
     getTxFee,
     _prepareSignedTx: prepareSignedTx,
     getHistory,

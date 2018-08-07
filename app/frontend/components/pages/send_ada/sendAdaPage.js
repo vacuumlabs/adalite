@@ -22,15 +22,13 @@ class SendAdaPage extends Component {
     confirmTransaction,
     showConfirmTransactionDialog,
     feeRecalculating,
-    sendAllFunds,
+    sendMaxFunds,
     totalAmount,
     showThanksForDonation,
     closeThanksForDonationModal,
   }) {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
-
-    const enableSendAllFunds = isSendAddressValid
 
     const displayTransactionFee =
       sendAmount !== '' &&
@@ -128,10 +126,10 @@ class SendAdaPage extends Component {
           h(
             'div',
             {
-              class: `send-all-funds-btn send-all-funds-btn-${
-                enableSendAllFunds ? 'enabled' : 'disabled'
+              class: `send-max-funds-btn send-max-funds-btn-${
+                isSendAddressValid ? 'enabled' : 'disabled'
               }`,
-              onClick: sendAllFunds,
+              onClick: sendMaxFunds,
             },
             'MAX'
           ),

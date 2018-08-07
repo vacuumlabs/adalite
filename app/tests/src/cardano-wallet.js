@@ -34,6 +34,13 @@ const usedWalletConfig = {
   randomSeed: testSeed,
 }
 
+const smallUtxosWalletConfig = {
+  cryptoProvider: 'mnemonic',
+  mnemonicOrHdNodeString: 'blame matrix water coil diet seat nerve street movie turkey jump bundle',
+  config: mockConfig1,
+  randomSeed: testSeed,
+}
+
 const wallets = {}
 
 const initWallet = async (id, config) => {
@@ -41,7 +48,11 @@ const initWallet = async (id, config) => {
 }
 
 before(() =>
-  Promise.all([initWallet('unused', unusedWalletConfig), initWallet('used', usedWalletConfig)])
+  Promise.all([
+    initWallet('unused', unusedWalletConfig),
+    initWallet('used', usedWalletConfig),
+    initWallet('smallUtxos', smallUtxosWalletConfig),
+  ])
 )
 
 const myAddress =
@@ -56,10 +67,7 @@ describe('transaction fee function', () => {
   })
 })
 
-// eslint-disable-next-line prefer-arrow-callback
-describe('wallet balance computation', function() {
-  this.timeout(10000)
-
+describe('wallet balance computation', () => {
   it('should properly fetch empty wallet balance', async () => {
     const mockNet = mockNetwork(mockConfig1)
     mockNet.mockAddressSummaryEndpoint()
@@ -75,10 +83,7 @@ describe('wallet balance computation', function() {
   })
 })
 
-// eslint-disable-next-line prefer-arrow-callback
-describe('wallet change address computation', function() {
-  this.timeout(10000)
-
+describe('wallet change address computation', () => {
   it('should properly compute change address for unused wallet', async () => {
     const mockNet = mockNetwork(mockConfig1)
     mockNet.mockAddressSummaryEndpoint()
@@ -100,10 +105,7 @@ describe('wallet change address computation', function() {
   })
 })
 
-// eslint-disable-next-line prefer-arrow-callback
-describe('test fetching wallet addresses', function() {
-  this.timeout(10000)
-
+describe('test fetching wallet addresses', () => {
   it('should properly fetch list of wallet addresses with metadata', async () => {
     const addresses = await wallets.used.getOwnAddressesWithMeta()
 
@@ -136,10 +138,7 @@ describe('address ownership verification', () => {
   })
 })
 
-// eslint-disable-next-line prefer-arrow-callback
-describe('successful transaction fee computation', function() {
-  this.timeout(10000)
-
+describe('successful transaction fee computation', () => {
   it('should compute the right transaction fee for given transaction', async () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockAddressSummaryEndpoint()
@@ -157,8 +156,19 @@ describe('successful transaction fee computation', function() {
   })
 })
 
-// eslint-disable-next-line prefer-arrow-callback
-describe('transaction serialization', function() {
+describe('max sendable amount computation', () => {
+  it('should properly compute max sendable amount', async () => {
+    const mockNet = mockNetwork(mockConfig1)
+    mockNet.mockAddressSummaryEndpoint()
+    mockNet.mockUtxoEndpoint()
+
+    const maxSendableAmount = await wallets.smallUtxos.getMaxSendableAmount(myAddress)
+
+    assert.equal(maxSendableAmount, 1324447)
+  })
+})
+
+describe('transaction serialization', () => {
   it('should properly serialize transaction before signing', async () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockAddressSummaryEndpoint()
@@ -175,7 +185,16 @@ describe('transaction serialization', function() {
     assert.equal(txAuxSerialized, expectedtxAuxSerialized)
   })
 
-  // transaction hash computation
+  it('should properly discard utxos that cause an increase of fee higher than their value', async () => {
+    const mockNet = mockNetwork(mockConfig1)
+    mockNet.mockAddressSummaryEndpoint()
+    mockNet.mockUtxoEndpoint()
+
+    const txAux = await wallets.smallUtxos._prepareTxAux(myAddress, 1000000)
+
+    assert.equal(txAux.inputs.length, 2)
+  })
+
   it('should properly compute transaction hash', async () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockAddressSummaryEndpoint()
@@ -187,7 +206,6 @@ describe('transaction serialization', function() {
     assert.equal(txAux.getId(), expectedTxHash)
   })
 
-  // whole transaction serialization
   it('should properly serialize the whole transaction', async () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockAddressSummaryEndpoint()
@@ -203,10 +221,7 @@ describe('transaction serialization', function() {
   })
 })
 
-// eslint-disable-next-line prefer-arrow-callback
-describe('test transaction submission', function() {
-  this.timeout(10000)
-
+describe('test transaction submission', () => {
   it('should properly submit transaction', async () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockAddressSummaryEndpoint()

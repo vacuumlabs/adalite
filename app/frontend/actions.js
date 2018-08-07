@@ -337,21 +337,20 @@ module.exports = ({setState, getState}) => {
     await validateSendFormAndCalculateFee()
   }
 
-  const sendAllFunds = async (state) => {
+  const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
 
-    const balance = await wallet.getBalance()
-    const txFee = await wallet.getAllFundsTxFee(state.sendAddress.fieldValue)
-    const allFundsSendable = balance > txFee
-    if (allFundsSendable) {
+    const maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
+
+    if (maxAmount > 0) {
       setState({
         sendResponse: '',
-        sendAmount: sendAmountValidator(printAda(state.balance - txFee)),
+        sendAmount: sendAmountValidator(printAda(maxAmount)),
       })
     } else {
       setState({
         sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: {code: 'SendAmountCantSendAllFunds'},
+          validationError: {code: 'SendAmountCantSendMaxFunds'},
         }),
       })
     }
@@ -367,7 +366,7 @@ module.exports = ({setState, getState}) => {
       transactionFee: 0,
       loading: false,
       showConfirmTransactionDialog: false,
-      enableSendAllFunds: false,
+      isSendAddressValid: false,
     })
   }
 
@@ -490,7 +489,7 @@ module.exports = ({setState, getState}) => {
     openAddressDetail,
     closeAddressDetail,
     verifyAddress,
-    sendAllFunds,
+    sendMaxFunds,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,
