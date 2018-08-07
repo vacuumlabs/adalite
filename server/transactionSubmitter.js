@@ -21,11 +21,9 @@ module.exports = function(app, env) {
       txBody = req.body.txBody // [1, txBody] in CBOR
       if (!txHash || !txBody) throw new Error('bad format')
     } catch (err) {
-      return res.send(
-        JSON.stringify({
-          Left: 'Bad request body',
-        })
-      )
+      return res.json({
+        Left: 'Bad request body',
+      })
     }
 
     txBody = `8201${txBody}`
@@ -50,11 +48,9 @@ module.exports = function(app, env) {
     try {
       client.on('connect', initHandshake)
     } catch (err) {
-      res.status(200).send(
-        JSON.stringify({
-          Left: 'Connection to transaction submission node failed',
-        })
-      )
+      res.json({
+        Left: 'Connection to transaction submission node failed',
+      })
     }
 
     // eslint-disable-next-line consistent-return
@@ -126,35 +122,25 @@ module.exports = function(app, env) {
           default:
             client.destroy()
             if (!success) {
-              return res.end(
-                JSON.stringify({
-                  Left: 'Transaction rejected by network',
-                })
-              )
-            }
-            return res.end(
-              JSON.stringify({
-                Right: {
-                  txHash,
-                },
+              return res.json({
+                Left: 'Transaction rejected by network',
               })
-            )
+            }
+            return res.json({
+              Right: {txHash},
+            })
         }
       } catch (err) {
-        return res.status(200).send(
-          JSON.stringify({
-            Left: 'Transaction submission unexpectedly failed',
-          })
-        )
+        return res.json({
+          Left: 'Transaction submission unexpectedly failed',
+        })
       }
     })
 
     client.on('error', (err) => {
-      return res.status(200).send(
-        JSON.stringify({
-          Left: `Unexpected error on submission node: ${err}`,
-        })
-      )
+      return res.json({
+        Left: `Unexpected error on submission node: ${err}`,
+      })
     })
   })
 }

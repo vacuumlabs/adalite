@@ -17,7 +17,8 @@ if (process.env.CARDANOLITE_FORCE_HTTPS === 'true') {
 
 // don't track in local dev => no need for local redis
 if (process.env.REDIS_URL) {
-  app.use(require('./middlewares/stats'))
+  app.use(require('./middlewares/stats').trackVisits)
+  app.use(require('./middlewares/stats').trackTxSubmissionCount)
   app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: process.env.STATS_PWD}))
   require('./statsPage')(app)
 }
@@ -39,6 +40,7 @@ app.get('*', (req, res) => {
 
     <head>
       <title>CardanoLite Wallet</title>
+      <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <script src="js/init.js"></script>
       <link rel="stylesheet" type="text/css" href="css/styles.css">

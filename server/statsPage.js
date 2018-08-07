@@ -16,22 +16,42 @@ const getData = async () => {
       },
     })
   })
-  return result.sort((a, b) => {
-    if (a[0] === 'total') return -1
-    if (b[0] === 'total') return 1
-    if (Math.sign(a[0].indexOf('-')) !== Math.sign(b[0].indexOf('-'))) {
-      if (a[0].indexOf('-') !== -1) return -1
-      if (b[0].indexOf('-') !== -1) return 1
-    }
-    // parse accepts the month.day.year format
-    const parseTime = (t) => {
-      if (t.indexOf('.') !== -1) {
-        const tArr = t.split('.')
-        return Date.parse(`${tArr[1]}.${tArr[0]}.${tArr[2]}`)
+
+  const getPrecedence = (val, precedenceFn) => {
+    const subKeys = val.split(':')
+
+    for (const subKey of subKeys) {
+      const result = precedenceFn(subKey)
+      if (result !== -1) {
+        return result
       }
-      return Date.parse(t)
     }
-    return parseTime(a[0]) - parseTime(b[0])
+
+    return -1
+  }
+
+  const cmpBySubKey = (a, b, precedenceFn) => {
+    return getPrecedence(a, precedenceFn) - getPrecedence(b, precedenceFn)
+  }
+
+  return result.sort((a, b) => {
+    // the "total" results will be the uppermost, followed by monthly and daily stats respectively
+    const topLevelCmpResult = cmpBySubKey(a[0], b[0], (x) =>
+      ['total', 'monthly', 'daily'].indexOf(x)
+    )
+
+    if (topLevelCmpResult !== 0) {
+      return topLevelCmpResult
+    }
+
+    // the monthly and daily stats will be sorted from latest to soonest
+    const dateCmpResult = cmpBySubKey(a[0], b[0], (x) => Date.parse(x) || -1)
+    if (dateCmpResult !== 0) {
+      return dateCmpResult
+    }
+
+    // finally records within the same group and with the same date will be sorted alphabetically
+    return a[0].localeCompare(b[0])
   })
 }
 
@@ -53,12 +73,13 @@ module.exports = function(app, env) {
         <!doctype html>
         <html>
           <head>
+            <meta charset="utf-8"/>
             <title>CardanoLite Wallet Stats</title>
             <link rel="icon" type="image/ico" href="assets/favicon.ico">
           </head>
       
           <body>
-            Estimated number of unique IPs per day, aggregate for day/month/year
+            Stats of transaction submissions and estimates of unique IPs visits per day, month and in total.
             <table>
               ${table}
             </table>

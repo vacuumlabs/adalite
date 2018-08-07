@@ -14,11 +14,9 @@ module.exports = function(app, env) {
       txBody = req.body.txBody // [1, txBody] in CBOR
       if (!txHash || !txBody) throw new Error('bad format')
     } catch (err) {
-      return res.send(
-        JSON.stringify({
-          Left: 'Bad request body',
-        })
-      )
+      return res.json({
+        Left: 'Bad request body',
+      })
     }
 
     await sleep(5000)
@@ -26,16 +24,12 @@ module.exports = function(app, env) {
     const success = process.env.CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS === 'true'
 
     return success
-      ? res.end(
-        JSON.stringify({
-          Right: {txHash},
-        })
-      )
-      : res.end(
-        JSON.stringify({
-          Left: 'Transaction rejected by network',
-        })
-      )
+      ? res.json({
+        Right: {txHash},
+      })
+      : res.json({
+        Left: 'Transaction rejected by network',
+      })
   })
 
   app.get('/api/txs/summary/:txHash', async (req, res) => {
@@ -55,18 +49,18 @@ module.exports = function(app, env) {
 
     await sleep(1000)
 
-    return res.send(JSON.stringify(response))
+    return res.json(response)
   })
 
   // the remaining requests are redirected to the actual blockchain explorer
   app.get('/api/*', async (req, res) => {
-    return res.send(
+    return res.json(
       await request(`${process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`)
     )
   })
 
   app.post('/api/*', async (req, res) => {
-    return res.send(
+    return res.json(
       await request(
         `${process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`,
         'POST',

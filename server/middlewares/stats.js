@@ -1,36 +1,47 @@
 const redis = require('redis')
 const device = require('device')
 const client = redis.createClient(process.env.REDIS_URL)
+const mung = require('express-mung')
 
 const knownIps = new Set()
 
-const monthNames = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-]
+function getSlicedDate() {
+  return new Date()
+    .toISOString()
+    .split('T')[0]
+    .split('-')
+}
 
-module.exports = (req, res, next) => {
+const trackVisits = (req, res, next) => {
   // 'x-forwarded-for' due to internal heroku routing
-  const ip = req.headers['x-forwarded-for']
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 
   const mydevice = device(req.headers['user-agent'])
 
   if (!knownIps.has(ip) && !mydevice.is('bot')) {
-    const date = new Date()
+    const [year, month, day] = getSlicedDate()
+
     knownIps.add(ip)
-    client.incr('total')
-    client.incr(`${monthNames[date.getMonth()]}-${date.getFullYear()}`)
-    client.incr(`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`)
+    client.incr('visits:total')
+    client.incr(`visits:monthly:${year}-${month}`)
+    client.incr(`visits:daily:${year}-${month}-${day}`)
   }
+
   next()
+}
+
+const trackTxSubmissionCount = mung.json((body, req, res) => {
+  if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
+    const [year, month, day] = getSlicedDate()
+    const key = `txSubmissions:${body.Right ? 'successful' : 'unsuccessful'}`
+
+    client.incr(`${key}:total`)
+    client.incr(`${key}:monthly:${year}-${month}`)
+    client.incr(`${key}:daily:${year}-${month}-${day}`)
+  }
+})
+
+module.exports = {
+  trackVisits,
+  trackTxSubmissionCount,
 }
