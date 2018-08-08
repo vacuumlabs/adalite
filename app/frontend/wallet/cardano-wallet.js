@@ -128,10 +128,8 @@ const CardanoWallet = async (options) => {
       coins += profitableUtxos[i].coins
     }
     const txFee = computeTxFee(txInputs, coins, address)
-    if (txFee > coins) {
-      throw NamedError('SendAmountCantSendMaxFunds')
-    }
-    return coins - txFee
+
+    return Math.max(coins - txFee, 0)
   }
 
   async function getTxFee(coins, address) {

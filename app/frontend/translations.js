@@ -8,7 +8,7 @@ const translations = {
   SendAmountInsufficientFunds: ({balance}) =>
     `Insufficient funds for the transaction. Your balance is ${printAda(balance)} ADA.`,
   SendAmountCantSendMaxFunds: () =>
-    'Sending funds is not possible because there is not enough balance for paying transaction fee',
+    'Sending funds is not possible since there is not enough balance to pay the transaction fee',
   SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,
