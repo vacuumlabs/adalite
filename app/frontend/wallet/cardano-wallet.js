@@ -8,7 +8,12 @@ const BlockchainExplorer = require('./blockchain-explorer')
 const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypto-provider')
 const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
-const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES} = require('./constants')
+const {
+  HARDENED_THRESHOLD,
+  MAX_INT32,
+  TX_WITNESS_SIZE_BYTES,
+  DERIVATION_SCHEMES,
+} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
 const range = require('./helpers/range')
 const {toBip32StringPath} = require('./helpers/bip32')
@@ -33,6 +38,7 @@ const CardanoWallet = async (options) => {
     overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
     network,
+    derivationScheme: options.derivationScheme || DERIVATION_SCHEMES.v2,
   }
 
   const blockchainExplorer = BlockchainExplorer(config, state)
@@ -291,7 +297,7 @@ const CardanoWallet = async (options) => {
     const childIndexBegin = state.derivationScheme.startAddressIndex
     const childIndexEnd = childIndexBegin + config.ADALITE_WALLET_ADDRESS_LIMIT
     const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
-      HARDENED_THRESHOLD,
+      state.accountIndex,
       0,
       i,
     ])

@@ -95,3 +95,7 @@ BTC: [3Qk3BDbw4yym6PM6vWA4bAsFkY76EWwtnp](https://www.blockchain.com/btc/address
 ETH: [0xe1575549f79742d21E56426a1F9AD26997F5B9fb](https://etherscan.io/address/0xe1575549f79742d21E56426a1F9AD26997F5B9fb)
 
 ADA: [DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5](https://cardanoexplorer.com/address/DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5)
+
+## Trezor integration
+
+Some notes on how to implement new coin into Trezor can be found here: https://github.com/vacuumlabs/trezor-core/wiki/Trezor-Development
