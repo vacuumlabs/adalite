@@ -71,7 +71,7 @@ module.exports = ({setState, getState}) => {
                 cryptoProvider: 'trezor',
                 config: ADALITE_CONFIG,
                 network: 'mainnet',
-                derivationScheme: DERIVATION_SCHEMES.v1,
+                derivationScheme: DERIVATION_SCHEMES.v2,
               })
           )
         } catch (e) {
@@ -195,7 +195,7 @@ module.exports = ({setState, getState}) => {
     const state = getState()
     if (state.usingTrezor && state.showAddressDetail) {
       try {
-        await wallet.verifyAddress(address)
+        await wallet.verifyAddress(state.showAddressDetail.address)
         setState({showAddressVerification: false})
       } catch (e) {
         setState({
@@ -212,9 +212,6 @@ module.exports = ({setState, getState}) => {
       showAddressDetail: {address, bip32path},
       showAddressVerification,
     })
-    if (showAddressVerification) {
-      setTimeout(() => verifyAddress(address), 1250)
-    }
   }
 
   const closeAddressDetail = (state) => {

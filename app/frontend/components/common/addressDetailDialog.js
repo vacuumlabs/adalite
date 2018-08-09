@@ -13,7 +13,7 @@ class AddressDetailDialogClass extends Component {
     // known bug: Trezor emulator steals the focus
   }
 
-  render({showDetail, showVerification, error, closeAddressDetail}) {
+  render({showDetail, showVerification, error, verifyAddress, closeAddressDetail}) {
     return (
       showDetail &&
       h(
@@ -64,9 +64,9 @@ class AddressDetailDialogClass extends Component {
                   h('span', {class: 'full-address'}, showDetail.bip32path)
                 ),
                 h(
-                  'b',
-                  undefined,
-                  'Verify that the address and derivation path shown on Trezor matches!'
+                  'div',
+                  {class: 'text-center'},
+                  h('button', {onClick: verifyAddress}, 'Verify on Trezor')
                 )
               )
               : h(

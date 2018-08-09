@@ -1,5 +1,7 @@
-const {packAddress, unpackAddress, derivePublic} = require('cardano-crypto.js')
-const {toBip32Path} = require('./helpers/bip32')
+const {packAddress, derivePublic} = require('cardano-crypto.js')
+const {toBip32Path, fromBip32Path} = require('./helpers/bip32')
+// eslint-disable-next-line import/no-unresolved
+const TrezorConnect = require('trezor-connect').default
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -8,47 +10,73 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     derivedAddresses: {},
   })
 
-  let TrezorConnect
-  if (ADALITE_CONFIG.ADALITE_ENABLE_TREZOR) {
-    // eslint-disable-next-line import/no-unresolved
-    TrezorConnect = require('trezor-connect')
-  }
-
   async function getWalletId() {
     return await deriveAddress([], 'hardened')
   }
 
   async function deriveAddresses(derivationPaths, derivationMode) {
-    const addresses = []
+    let addresses = derivationPaths
+      .filter((path) => state.derivedAddresses[JSON.stringify(path)])
+      .map((path) => state.derivedAddresses[JSON.stringify(path)].address)
 
-    for (const derivationPath of derivationPaths) {
-      addresses.push(await deriveAddress(derivationPath, derivationMode))
+    const pathsToDerive = derivationPaths.filter(
+      (path) => !state.derivedAddresses[JSON.stringify(path)]
+    )
+
+    if (!pathsToDerive.length) {
+      return addresses
+    }
+
+    if (derivationMode === 'hardened') {
+      addresses = addresses.concat(await trezorDeriveAddresses(pathsToDerive, false))
+    } else {
+      for (const derivationPath of pathsToDerive) {
+        addresses.push(await deriveAddress(derivationPath, derivationMode))
+      }
     }
 
     return addresses
   }
 
-  function trezorDeriveAddress(derivationPath, displayConfirmation) {
-    return new Promise((resolve, reject) => {
-      const path = toBip32Path(derivationPath)
+  async function trezorDeriveAddresses(derivationPaths, displayConfirmation) {
+    const bundle = derivationPaths.map((derivationPath) => ({
+      path: toBip32Path(derivationPath),
+      showOnTrezor: displayConfirmation,
+    }))
 
-      callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaGetAddress(path, displayConfirmation, (response) => {
-          if (response.success) {
-            state.derivedAddresses[JSON.stringify(derivationPath)] = {
-              derivationPath,
-              address: response.address,
-            }
+    const response = await TrezorConnect.cardanoGetAddress({bundle})
 
-            resolve(response.address)
-          } else {
-            if (shouldRejectOnError(response.error)) {
-              reject(response.error)
-            }
-          }
-        })
+    if (response.success) {
+      return response.payload.map((responseAddress) => {
+        const path = fromBip32Path(responseAddress.path)
+        state.derivedAddresses[JSON.stringify(path)] = {
+          derivationPath: path,
+          address: responseAddress.address,
+        }
+
+        return responseAddress.address
       })
+    }
+
+    throw new Error('Trezor operation failed!')
+  }
+
+  async function trezorDeriveAddress(derivationPath, displayConfirmation) {
+    const path = toBip32Path(derivationPath)
+    const response = await TrezorConnect.cardanoGetAddress({
+      path,
+      showOnTrezor: displayConfirmation,
     })
+
+    if (response.success) {
+      state.derivedAddresses[JSON.stringify(derivationPath)] = {
+        derivationPath,
+        address: response.payload.address,
+      }
+      return response.payload.address
+    }
+
+    throw new Error('Trezor operation failed!')
   }
 
   async function deriveAddress(derivationPath, derivationMode) {
@@ -58,9 +86,8 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
         await trezorDeriveAddress(derivationPath, true)
       } else {
         const xpub = await deriveXpub(derivationPath, derivationMode)
-        const hdPassphrase = Buffer.from(await getRootHdPassphrase(), 'hex')
 
-        const address = packAddress(derivationPath, xpub, hdPassphrase, 1)
+        const address = packAddress(derivationPath, xpub, null, state.derivationScheme.number)
         state.derivedAddresses[JSON.stringify(derivationPath)] = {
           derivationPath,
           address,
@@ -95,41 +122,39 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     return (await deriveTrezorXpub(derivationPath)).xpub
   }
 
-  function deriveTrezorXpub(derivationPath) {
-    return new Promise((resolve, reject) => {
-      // m/44'/1815'/0'/0/childIndex
-      const path = toBip32Path(derivationPath)
+  async function deriveTrezorXpub(derivationPath) {
+    // m/44'/1815'/0'/0/childIndex
+    const path = toBip32Path(derivationPath)
 
-      callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaGetPublicKey(path, (response) => {
-          if (response.success) {
-            const xpubData = {
-              xpub: Buffer.from(response.xpub, 'hex'),
-              root_hd_passphrase: Buffer.from(response.root_hd_passphrase, 'hex'),
-            }
-
-            if (!state.rootHdPassphrase) {
-              state.rootHdPassphrase = xpubData.root_hd_passphrase
-            }
-
-            resolve(xpubData)
-          } else {
-            if (shouldRejectOnError(response.error)) {
-              reject(response.error)
-            }
-          }
-        })
-      })
+    const response = await TrezorConnect.cardanoGetPublicKey({
+      path,
+      showOnTrezor: true,
     })
+
+    if (response.error) {
+      throw new Error(response.error)
+    }
+
+    const xpubData = {
+      xpub: Buffer.from(response.payload.publicKey, 'hex'),
+      root_hd_passphrase: null,
+    }
+
+    return xpubData
   }
 
   async function deriveXpubNonHardened(derivationPath) {
-    const parentPath = derivationPath.slice(0, derivationPath.length - 1)
-    const childPath = derivationPath.slice(derivationPath.length - 1, derivationPath.length)
+    if (derivationPath.length < 1) {
+      throw new Error('Derivation path must contain at least one indice')
+    }
+
+    const parentPath = derivationPath.slice(0, 1)
+    const childPath = derivationPath.slice(1, derivationPath.length)
 
     // this reduce ensures that this would work even for empty derivation path
     return childPath.reduce(
-      (parentXpub, childIndex) => derivePublic(parentXpub, childIndex, 1),
+      (parentXpub, childIndex) =>
+        derivePublic(parentXpub, childIndex, state.derivationScheme.number),
       await deriveXpub(parentPath, 'hardened')
     )
   }
@@ -139,35 +164,10 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   }
 
   function sign(message, derivationPath) {
-    return new Promise((resolve, reject) => {
-      const messageToSign = Buffer.from(message, 'hex').toString('utf8')
-
-      // m/44'/1815'/0'/0/childIndex
-      const path = toBip32Path(derivationPath)
-
-      callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaSignMessage(path, messageToSign, (response) => {
-          if (response.success) {
-            resolve(Buffer.from(response.signature, 'hex'))
-          } else {
-            if (shouldRejectOnError(response.error)) {
-              reject(response.error)
-            }
-          }
-        })
-      })
-    })
+    throw new Error('Not supported')
   }
 
-  async function getRootHdPassphrase() {
-    if (!state.rootHdPassphrase) {
-      state.rootHdPassphrase = (await deriveTrezorXpub([])).root_hd_passphrase
-    }
-
-    return state.rootHdPassphrase
-  }
-
-  async function getDerivationPathFromAddress(address) {
+  function getDerivationPathFromAddress(address) {
     const cachedAddress = Object.values(state.derivedAddresses).find(
       (record) => record.address === address
     )
@@ -175,41 +175,55 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     if (cachedAddress) {
       return cachedAddress.derivationPath
     } else {
-      return unpackAddress(address, await getRootHdPassphrase()).derivationPath
+      throw new Error('Cannot find derivation path')
     }
   }
 
   async function trezorVerifyAddress(address) {
-    const derivationPath = await getDerivationPathFromAddress(address)
+    const derivationPath = getDerivationPathFromAddress(address)
     await trezorDeriveAddress(derivationPath, true)
   }
 
-  async function prepareInput(input) {
+  function prepareInput(input) {
     const data = {
       prev_hash: input.txHash,
       prev_index: input.outputIndex,
       type: 0,
     }
 
-    const derivationPath = await getDerivationPathFromAddress(input.utxo.address)
-    data.address_n = toBip32Path(derivationPath)
+    const derivationPath = getDerivationPathFromAddress(input.utxo.address)
+    data.path = toBip32Path(derivationPath)
 
     return data
   }
 
-  async function prepareOutput(output) {
+  function prepareOutput(output) {
     const data = {
-      amount: output.coins,
+      amount: `${output.coins}`,
     }
 
     if (output.isChange) {
-      const derivationPath = await getDerivationPathFromAddress(output.address)
-      data.address_n = toBip32Path(derivationPath)
+      const derivationPath = getDerivationPathFromAddress(output.address)
+      data.path = toBip32Path(derivationPath)
     } else {
       data.address = output.address
     }
 
     return data
+  }
+
+  function getNetworkInt(network) {
+    switch (network) {
+      case 'mainnet': {
+        return 2
+      }
+      case 'testnet': {
+        return 1
+      }
+      default: {
+        throw new Error(`Unknown network: ${network}`)
+      }
+    }
   }
 
   async function signTx(unsignedTx, rawInputTxs) {
@@ -224,31 +238,23 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       outputs.push(data)
     }
 
-    const rawInputTxsAsStrings = rawInputTxs.map((tx) => tx.toString('hex'))
+    const transactions = rawInputTxs.map((tx) => tx.toString('hex'))
 
-    return new Promise((resolve, reject) => {
-      callTrezor((shouldRejectOnError) => {
-        TrezorConnect.adaSignTransaction(inputs, outputs, rawInputTxsAsStrings, (response) => {
-          if (response.success) {
-            resolve({txHash: response.tx_hash, txBody: response.tx_body})
-          } else {
-            if (shouldRejectOnError(response.error)) {
-              reject(response.error)
-            }
-          }
-        })
-      })
+    const response = await TrezorConnect.cardanoSignTransaction({
+      inputs,
+      outputs,
+      transactions,
+      network: getNetworkInt(state.network),
     })
-  }
 
-  function callTrezor(callback) {
-    callback((error) => {
-      if (error === 'Window closed') {
-        setTimeout(() => callTrezor(callback), 200)
-        return false
+    if (response.success) {
+      return {
+        txHash: response.payload.hash,
+        txBody: response.payload.body,
       }
-      return true
-    })
+    } else {
+      throw new Error(response.payload.error)
+    }
   }
 
   function getWalletSecret() {
