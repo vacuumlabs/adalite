@@ -2,13 +2,25 @@ const redis = require('redis')
 const redisScan = require('redisscan')
 const client = redis.createClient(process.env.REDIS_URL)
 
-const getData = async () => {
-  const result = []
+const getStats = async () => {
+  const stats = {
+    visits: {total: [], monthly: [], daily: []},
+    txSubmissions: {
+      'successful:total': [],
+      'successful:monthly': [],
+      'successful:daily': [],
+      'unsuccessful:total': [],
+      'unsuccessful:monthly': [],
+      'unsuccessful:daily': [],
+    },
+  }
+
+  const response = []
   await new Promise((resolve, reject) => {
     redisScan({
       redis: client,
       each_callback(type, key, subkey, length, value, next) {
-        result.push([key, value])
+        response.push([key, value])
         next()
       },
       done_callback(err) {
@@ -17,57 +29,55 @@ const getData = async () => {
     })
   })
 
-  const getPrecedence = (val, precedenceFn) => {
-    const subKeys = val.split(':')
+  response.sort((a, b) => b[0].localeCompare(a[0]))
 
-    for (const subKey of subKeys) {
-      const result = precedenceFn(subKey)
-      if (result !== -1) {
-        return result
-      }
+  response.forEach((item) => {
+    const nameTokens = item[0].split(':')
+    const subject = nameTokens[0]
+
+    let period = nameTokens[1]
+    if (subject !== 'visits') {
+      period = `${period}:${nameTokens[2]}`
     }
 
-    return -1
-  }
-
-  const cmpBySubKey = (a, b, precedenceFn) => {
-    return getPrecedence(a, precedenceFn) - getPrecedence(b, precedenceFn)
-  }
-
-  return result.sort((a, b) => {
-    // the "total" results will be the uppermost, followed by monthly and daily stats respectively
-    const topLevelCmpResult = cmpBySubKey(a[0], b[0], (x) =>
-      ['total', 'monthly', 'daily'].indexOf(x)
-    )
-
-    if (topLevelCmpResult !== 0) {
-      return topLevelCmpResult
-    }
-
-    // the monthly and daily stats will be sorted from latest to soonest
-    const dateCmpResult = cmpBySubKey(a[0], b[0], (x) => Date.parse(x) || -1)
-    if (dateCmpResult !== 0) {
-      return dateCmpResult
-    }
-
-    // finally records within the same group and with the same date will be sorted alphabetically
-    return a[0].localeCompare(b[0])
+    stats[subject][period].push([nameTokens[nameTokens.length - 1], item[1]])
   })
+
+  return stats
 }
 
 module.exports = function(app, env) {
   app.get('/usage_stats', async (req, res) => {
     try {
-      const table = (await getData())
+      const stats = await getStats()
+
+      const statsHtml = Object.keys(stats)
         .map(
-          (v) => `
-        <tr>
-          <td>${v[0]}</td>
-          <td>${v[1]}</td>
-        </tr>
-      `
+          (subject) => `
+            <b>${subject}:</b>
+            ${Object.keys(stats[subject])
+    .map(
+      (period) => `
+              <ul>
+                <li>${period}</li>
+                <ul>
+                  ${stats[subject][period]
+    .map(
+      (item) => `
+                    <li>
+                      ${item[0]}:   <b>${item[1]}</b>
+                    </li>
+                  `
+    )
+    .join('')}
+              </ul>
+            </ul>
+          `
+    )
+    .join('')}
+        `
         )
-        .join('')
+        .join(' ')
 
       return res.status(200).send(`
         <!doctype html>
@@ -80,9 +90,8 @@ module.exports = function(app, env) {
       
           <body>
             Stats of transaction submissions and estimates of unique IPs visits per day, month and in total.
-            <table>
-              ${table}
-            </table>
+
+            <div>${statsHtml}</div>
           </body>
       
         </html>
