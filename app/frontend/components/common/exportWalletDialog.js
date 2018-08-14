@@ -26,6 +26,10 @@ class ExportWalletDialog extends Component {
     this.touchPasswordField = this.touchPasswordField.bind(this)
   }
 
+  componentDidMount() {
+    this.walletNameField.focus()
+  }
+
   closeExportJsonWalletDialog() {
     this.setState({
       walletName: 'cardano_lite_wallet',
@@ -96,7 +100,10 @@ class ExportWalletDialog extends Component {
   ) {
     return h(
       'div',
-      {class: 'overlay fade-in-up export-wallet-dialog'},
+      {
+        class: 'overlay fade-in-up export-wallet-dialog',
+        onKeyDown: (e) => e.key === 'Escape' && this.closeExportJsonWalletDialog(),
+      },
       h('div', {
         class: 'overlay-close-layer',
         onClick: this.closeExportJsonWalletDialog,
@@ -130,6 +137,9 @@ class ExportWalletDialog extends Component {
               onInput: this.updateWalletName,
               onBlur: this.touchPasswordField,
               autocomplete: 'off',
+              ref: (element) => {
+                this.walletNameField = element
+              },
             })
           ),
           h(
@@ -183,6 +193,12 @@ class ExportWalletDialog extends Component {
             {
               disabled: !this.isPasswordValid(password, confirmation) || !isWalletNameValid,
               onClick: this.exportJsonWallet,
+              onKeyDown: (e) => {
+                if (e.key === 'Tab') {
+                  this.walletNameField.focus()
+                  e.preventDefault()
+                }
+              },
               class: 'export-wallet-button button-like',
             },
             'Export'

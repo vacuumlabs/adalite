@@ -20,6 +20,10 @@ class LoadKeyFileClass extends Component {
     this.closePasswordModal = this.closePasswordModal.bind(this)
   }
 
+  componentDidUpdate() {
+    this.state.encrypted && this.filePasswordField.focus()
+  }
+
   closePasswordModal() {
     this.setState({encrypted: undefined, error: undefined})
   }
@@ -162,12 +166,16 @@ class LoadKeyFileClass extends Component {
         encrypted &&
           h(
             'div',
-            {class: 'overlay fade-in-up'},
-            !this.state.showVerification &&
-              h('div', {
-                class: 'overlay-close-layer',
-                onClick: this.closePasswordModal,
-              }),
+            {
+              class: 'overlay fade-in-up',
+              onKeyDown: (e) => {
+                e.key === 'Escape' && this.closePasswordModal()
+              },
+            },
+            h('div', {
+              class: 'overlay-close-layer',
+              onClick: this.closePasswordModal,
+            }),
             h(
               'div',
               {class: 'box box-auto'},
@@ -194,6 +202,10 @@ class LoadKeyFileClass extends Component {
                     placeholder: 'Enter key file password',
                     value: password,
                     onInput: this.updatePassword,
+                    ref: (element) => {
+                      this.filePasswordField = element
+                    },
+                    onKeyDown: (e) => e.key === 'Enter' && this.unlockKeyfile(),
                     autocomplete: 'nope',
                   }),
                   h(
@@ -201,6 +213,13 @@ class LoadKeyFileClass extends Component {
                     {
                       disabled: !password,
                       onClick: this.unlockKeyfile,
+                      onKeyDown: (e) => {
+                        e.key === 'Enter' && e.target.click()
+                        if (e.key === 'Tab') {
+                          this.filePasswordField.focus(e)
+                          e.preventDefault()
+                        }
+                      },
                     },
                     'Unlock'
                   )

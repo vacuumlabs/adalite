@@ -1,7 +1,6 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../actions')
-const AddressDetailDialog = require('../pages/receive_ada/addressDetailDialog')
 const {
   BTC_BLOCKCHAIN_EXPLORER,
   BTC_DONATION_ADDRESS,
@@ -98,8 +97,7 @@ const Footer = connect(
               title: 'show address detail',
             },
             'ADA'
-          ),
-          h(AddressDetailDialog)
+          )
         )
       )
     )

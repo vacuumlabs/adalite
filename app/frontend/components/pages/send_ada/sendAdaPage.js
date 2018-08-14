@@ -8,7 +8,65 @@ const printAda = require('../../../helpers/printAda')
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
 const {CloseIcon} = require('../../common/svg')
 
+class ThanksForDonationModal extends Component {
+  componentDidMount() {
+    this.thanksForDonationBtn.focus()
+  }
+
+  render({closeThanksForDonationModal}) {
+    return h(
+      'div',
+      {
+        class: 'overlay fade-in-up',
+        onKeyDown: (e) => e.key === 'Escape' && closeThanksForDonationModal(),
+      },
+      h('div', {
+        class: 'overlay-close-layer',
+        onClick: closeThanksForDonationModal,
+      }),
+      h(
+        'div',
+        {class: 'box'},
+        h(
+          'span',
+          {
+            class: 'overlay-close-button',
+            onClick: closeThanksForDonationModal,
+          },
+          h(CloseIcon)
+        ),
+        h(
+          'div',
+          {
+            class: 'centered-row',
+          },
+          h('h3', undefined, 'Thank you for supporting CardanoLite developers!')
+        ),
+        h(
+          'div',
+          {class: 'centered-row margin-top'},
+          h(
+            'button',
+            {
+              ref: (element) => {
+                this.thanksForDonationBtn = element
+              },
+              onClick: closeThanksForDonationModal,
+              onKeyDown: (e) => e.key === 'Enter' && e.target.click(),
+            },
+            'OK'
+          )
+        )
+      )
+    )
+  }
+}
+
 class SendAdaPage extends Component {
+  componentDidMount() {
+    this.addressField.focus()
+  }
+
   render({
     sendResponse,
     sendAddress,
@@ -36,37 +94,6 @@ class SendAdaPage extends Component {
       !feeRecalculating &&
       (!sendAmountValidationError ||
         sendAmountValidationError.code === 'SendAmountInsufficientFunds')
-    const ThanksForDonationModal = () =>
-      h(
-        'div',
-        {class: 'overlay fade-in-up'},
-        h('div', {
-          class: 'overlay-close-layer',
-          onClick: closeThanksForDonationModal,
-        }),
-        h(
-          'div',
-          {class: 'box'},
-          h(
-            'span',
-            {
-              class: 'overlay-close-button',
-              onClick: closeThanksForDonationModal,
-            },
-            h(CloseIcon)
-          ),
-          h(
-            'div',
-            {class: 'centered-row'},
-            h('h3', undefined, 'Thank you for supporting CardanoLite developers!')
-          ),
-          h(
-            'div',
-            {class: 'centered-row margin-top'},
-            h('button', {onClick: closeThanksForDonationModal}, 'OK')
-          )
-        )
-      )
 
     return h(
       'div',
@@ -110,6 +137,10 @@ class SendAdaPage extends Component {
           value: sendAddress,
           onInput: updateAddress,
           autocomplete: 'nope',
+          ref: (element) => {
+            this.addressField = element
+          },
+          onKeyDown: (e) => e.key === 'Enter' && this.amountField.focus(),
         }),
         h(
           'div',
@@ -144,6 +175,21 @@ class SendAdaPage extends Component {
               value: sendAmount,
               onInput: updateAmount,
               autocomplete: 'nope',
+              ref: (element) => {
+                this.amountField = element
+              },
+              onKeyDown: (e) => {
+                if (e.key === 'Tab') {
+                  enableSubmit && this.submitTxBtn
+                    ? this.submitTxBtn.focus()
+                    : this.addressField.focus()
+                  e.preventDefault()
+                }
+                if (e.key === 'Enter' && this.submitTxBtn) {
+                  this.submitTxBtn.click()
+                  e.preventDefault()
+                }
+              },
             }),
             displayTransactionFee &&
               h(
@@ -176,15 +222,24 @@ class SendAdaPage extends Component {
             : h(
               'button',
               {
+                class: 'loading-button',
                 disabled: !enableSubmit,
                 onClick: confirmTransaction,
-                class: 'loading-button',
+                onKeyDown: (e) => {
+                  if (e.key === 'Tab') {
+                    this.addressField.focus()
+                    e.preventDefault()
+                  }
+                },
+                ref: (element) => {
+                  this.submitTxBtn = element
+                },
               },
               'Submit'
             )
         ),
         showConfirmTransactionDialog && h(ConfirmTransactionDialog),
-        showThanksForDonation && h(ThanksForDonationModal)
+        showThanksForDonation && h(ThanksForDonationModal, {closeThanksForDonationModal})
       )
     )
   }

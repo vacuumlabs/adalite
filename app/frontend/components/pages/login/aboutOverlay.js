@@ -24,7 +24,12 @@ class AboutOverlayClass extends Component {
     return displayAboutOverlay
       ? h(
         'div',
-        {class: 'overlay'},
+        {
+          class: 'overlay',
+          onKeyDown: (e) => {
+            e.key === 'Escape' && this.toggleAboutOverlay()
+          },
+        },
         h('div', {
           class: 'overlay-close-layer',
           onClick: toggleAboutOverlay, // does not allow remembering the checkbox
@@ -78,6 +83,11 @@ class AboutOverlayClass extends Component {
               {
                 onClick: this.toggleAboutOverlay,
                 class: 'rounded-button',
+                autofocus: true,
+                onKeyDown: (e) => {
+                  e.key === 'Enter' && e.target.click()
+                  e.key === 'Tab' && e.preventDefault()
+                },
               },
               'Close'
             )

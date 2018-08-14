@@ -11,20 +11,12 @@ const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
 
 class LoginPage extends Component {
   render({
-    mnemonic,
-    mnemonicValidationError,
     loadWallet,
     walletLoadingError,
-    loadDemoWallet,
-    updateMnemonic,
     authMethod,
-    openGenerateMnemonicDialog,
-    showMnemonicValidationError,
-    showGenerateMnemonicDialog,
-    checkForMnemonicValidationError,
     setAuthMethod,
-    showDemoWalletWarningDialog,
     enableTrezor,
+    showDemoWalletWarningDialog,
   }) {
     const authOption = (name, text) =>
       h(
@@ -55,19 +47,8 @@ class LoginPage extends Component {
             {class: 'alert error'},
             getTranslation(walletLoadingError.code, walletLoadingError.params)
           ),
-        authMethod === 'mnemonic' &&
-          MnemonicAuth({
-            mnemonic,
-            mnemonicValidationError,
-            updateMnemonic,
-            checkForMnemonicValidationError,
-            loadWallet,
-            openGenerateMnemonicDialog,
-            showGenerateMnemonicDialog,
-            loadDemoWallet,
-            showMnemonicValidationError,
-          }),
-        authMethod === 'trezor' && HardwareAuth({enableTrezor, loadWallet}),
+        authMethod === 'mnemonic' && h(MnemonicAuth),
+        authMethod === 'trezor' && h(HardwareAuth, {enableTrezor, loadWallet}),
         authMethod === 'file' && h(KeyFileAuth)
       ),
       h(AboutOverlay),
@@ -78,14 +59,10 @@ class LoginPage extends Component {
 
 module.exports = connect(
   (state) => ({
-    mnemonic: state.mnemonic,
-    mnemonicValidationError: state.mnemonicValidationError,
-    showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
-    showMnemonicValidationError: state.showMnemonicValidationError,
-    showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
-    walletLoadingError: state.walletLoadingError,
     authMethod: state.authMethod,
     enableTrezor: state.enableTrezor,
+    showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
+    walletLoadingError: state.walletLoadingError,
   }),
   actions
 )(LoginPage)

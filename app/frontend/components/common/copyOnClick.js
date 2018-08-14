@@ -40,7 +40,7 @@ class CopyOnClick extends Component {
     }
   }
 
-  render({value}, {tooltip}) {
+  render({value, tabIndex, copyBtnRef}, {tooltip}) {
     return h(
       Tooltip,
       {tooltip},
@@ -50,6 +50,9 @@ class CopyOnClick extends Component {
           class: 'copy margin-1rem centered-row',
           onClick: this.copyTextToClipboard,
           onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
+          onKeyDown: (e) => ['Enter', ' '].includes(e.key) && e.target.click(),
+          tabIndex,
+          ref: copyBtnRef,
         },
         h(CopyIcon)
       )
