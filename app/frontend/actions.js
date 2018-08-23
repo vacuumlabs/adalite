@@ -1,5 +1,6 @@
 const generateMnemonic = require('./wallet/mnemonic').generateMnemonic
 const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
+const {DERIVATION_SCHEMES} = require('./wallet/constants')
 const FileSaver = require('file-saver')
 const {
   sendAddressValidator,
@@ -69,6 +70,8 @@ module.exports = ({setState, getState}) => {
               Cardano.CardanoWallet({
                 cryptoProvider: 'trezor',
                 config: CARDANOLITE_CONFIG,
+                network: 'mainnet',
+                derivationScheme: DERIVATION_SCHEMES.v1,
               })
           )
         } catch (e) {
@@ -87,6 +90,8 @@ module.exports = ({setState, getState}) => {
               cryptoProvider: 'mnemonic',
               mnemonicOrHdNodeString: secret,
               config: CARDANOLITE_CONFIG,
+              network: 'mainnet',
+              // derivationScheme: DERIVATION_SCHEMES.v2,
             })
         )
         break
@@ -251,15 +256,14 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const validateSendForm = async (state) => {
+  const validateSendForm = (state) => {
     setState({
-      isSendAddressValid: !(await sendAddressValidator(state.sendAddress.fieldValue))
-        .validationError,
+      isSendAddressValid: !sendAddressValidator(state.sendAddress.fieldValue).validationError,
     })
 
     if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
       setState({
-        sendAddress: await sendAddressValidator(state.sendAddress.fieldValue),
+        sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
         sendAmount: sendAmountValidator(state.sendAmount.fieldValue),
       })
     }
@@ -308,8 +312,8 @@ module.exports = ({setState, getState}) => {
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
-  const validateSendFormAndCalculateFee = async () => {
-    await validateSendForm(getState())
+  const validateSendFormAndCalculateFee = () => {
+    validateSendForm(getState())
     if (isSendFormFilledAndValid(getState())) {
       setState({calculatingFee: true})
       debouncedCalculateFee()
@@ -318,24 +322,24 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const updateAddress = async (state, e) => {
+  const updateAddress = (state, e) => {
     setState({
       sendResponse: '',
       sendAddress: Object.assign({}, state.sendAddress, {
         fieldValue: e.target.value,
       }),
     })
-    await validateSendFormAndCalculateFee()
+    validateSendFormAndCalculateFee()
   }
 
-  const updateAmount = async (state, e) => {
+  const updateAmount = (state, e) => {
     setState({
       sendResponse: '',
       sendAmount: Object.assign({}, state.sendAmount, {
         fieldValue: e.target.value,
       }),
     })
-    await validateSendFormAndCalculateFee()
+    validateSendFormAndCalculateFee()
   }
 
   const sendMaxFunds = async (state) => {
