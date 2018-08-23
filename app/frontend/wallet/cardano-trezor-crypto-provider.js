@@ -1,5 +1,4 @@
-const derivePublic = require('./helpers/derivePublic')
-const {packAddress, unpackAddress} = require('./address')
+const {packAddress, unpackAddress, derivePublic} = require('cardano-crypto.js')
 const {toBip32Path} = require('./helpers/bip32')
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
@@ -61,7 +60,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
         const xpub = await deriveXpub(derivationPath, derivationMode)
         const hdPassphrase = Buffer.from(await getRootHdPassphrase(), 'hex')
 
-        const address = packAddress(derivationPath, xpub, hdPassphrase)
+        const address = packAddress(derivationPath, xpub, hdPassphrase, 1)
         state.derivedAddresses[JSON.stringify(derivationPath)] = {
           derivationPath,
           address,
@@ -129,7 +128,10 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     const childPath = derivationPath.slice(derivationPath.length - 1, derivationPath.length)
 
     // this reduce ensures that this would work even for empty derivation path
-    return childPath.reduce(derivePublic, await deriveXpub(parentPath, 'hardened'))
+    return childPath.reduce(
+      (parentXpub, childIndex) => derivePublic(parentXpub, childIndex, 1),
+      await deriveXpub(parentPath, 'hardened')
+    )
   }
 
   function deriveHdNode(childIndex) {
