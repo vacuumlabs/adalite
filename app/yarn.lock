@@ -1169,11 +1169,12 @@ camelcase@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
 
-cardano-crypto.js@^3.1.10:
-  version "3.1.10"
-  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-3.1.10.tgz#41052ae35f7080fb5ae97cfd3c94430a66f6bf1b"
+cardano-crypto.js@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-4.2.1.tgz#ceddd9614dab17845b76e75751f537664854320d"
   dependencies:
     bip39-light "^1.0.7"
+    cbor "^4.1.1"
 
 cbor@^4.1.1:
   version "4.1.1"
