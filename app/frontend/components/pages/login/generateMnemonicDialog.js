@@ -35,7 +35,7 @@ class GenerateMnemonicDialogClass extends Component {
           'Write these words down. ',
           h('b', undefined, 'Do not copy them to your clipboard or save them anywhere online!')
         ),
-        h('div', {class: 'gray-row mnemonic-box'}, mnemonic),
+        h('div', {class: 'gray-row mnemonic-box force-select-all'}, mnemonic),
         h(
           'div',
           {class: ''},

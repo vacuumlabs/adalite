@@ -1182,6 +1182,12 @@ div.box.box-auto {
 .mnemonic-box-header {
   overflow-y: auto;
 }
+.force-select-all {
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
 .pulse {
   box-shadow: 0 0 0 var(--brand-shadow);
   animation: pulse 2s infinite;
