@@ -5,6 +5,7 @@ const actions = require('../../../actions')
 const {getTranslation} = require('../../../translations')
 const printAda = require('../../../helpers/printAda')
 
+const Balance = require('../../common/balance')
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
 const {CloseIcon} = require('../../common/svg')
 
@@ -68,6 +69,8 @@ class SendAdaPage extends Component {
   }
 
   render({
+    balance,
+    reloadWalletInfo,
     sendResponse,
     sendAddress,
     sendAddressValidationError,
@@ -98,6 +101,7 @@ class SendAdaPage extends Component {
     return h(
       'div',
       {class: 'content-wrapper'},
+      h(Balance, {balance, reloadWalletInfo}),
       h(
         'div',
         undefined,
@@ -247,6 +251,7 @@ class SendAdaPage extends Component {
 
 module.exports = connect(
   (state) => ({
+    balance: state.balance,
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddress.validationError,
     sendAddress: state.sendAddress.fieldValue,

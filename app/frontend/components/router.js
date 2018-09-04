@@ -1,7 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 
-const DashboardPage = require('./pages/dashboard/dashboardPage')
+const TxHistoryPage = require('./pages/txHistory/txHistoryPage')
 const ReceivePage = require('./pages/receive_ada/receiveAdaPage')
 const SendPage = require('./pages/send_ada/sendAdaPage')
 const LoginPage = require('./pages/login/loginPage')
@@ -16,8 +16,8 @@ const TopLevelRouter = connect((state) => ({
   const currentTab = pathname.split('/')[1]
   let content
   switch (currentTab) {
-    case 'dashboard':
-      content = h(DashboardPage)
+    case 'txHistory':
+      content = h(TxHistoryPage)
       break
     case 'receive':
       content = h(ReceivePage)
@@ -26,7 +26,7 @@ const TopLevelRouter = connect((state) => ({
       content = h(SendPage)
       break
     default:
-      content = h(DashboardPage)
+      content = h(TxHistoryPage)
   }
   // TODO is Alert used anywhere? if so add here
   return h('main', {class: 'main'}, content)

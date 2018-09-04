@@ -1,41 +1,22 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const {DownloadIcon, RefreshIcon, ExitIcon, CardanoLiteLogo, MenuIcon, AdaIcon} = require('../svg')
-const printAda = require('../../../helpers/printAda')
+const {DownloadIcon, ExitIcon, CardanoLiteLogo, MenuIcon} = require('../svg')
 const ExportWalletDialog = require('../exportWalletDialog')
 
 const LoginStatus = connect(
   (state) => ({
     pathname: state.router.pathname,
-    balance: state.balance,
     usingTrezor: state.usingTrezor,
   }),
   actions
-)(({balance, reloadWalletInfo, logout, usingTrezor, openExportJsonWalletDialog}) =>
+)(({logout, usingTrezor, openExportJsonWalletDialog}) =>
   h(
     'div',
     {class: 'status'},
     h(
       'div',
-      {class: 'status-text'},
-      'Balance: ',
-      h('span', {class: 'status-balance'}, printAda(balance)),
-      h(AdaIcon, {className: 'ada-sign'})
-    ),
-    h(
-      'div',
       {class: 'status-button-wrapper'},
-      h(
-        'label',
-        {class: 'inline', for: 'navcollapse'},
-        h(
-          'div',
-          {class: 'button', onClick: reloadWalletInfo},
-          h(RefreshIcon),
-          h('div', {class: 'status-icon-button-content'}, 'Refresh')
-        )
-      ),
       !usingTrezor &&
         h(
           'label',
@@ -49,7 +30,7 @@ const LoginStatus = connect(
         ),
       h(
         'label',
-        {class: 'inline', for: 'navcollapse'},
+        {class: 'inline on-desktop-only', for: 'navcollapse'},
         h(
           'div',
           {class: 'button', onClick: () => setTimeout(logout, 100)},
@@ -61,12 +42,14 @@ const LoginStatus = connect(
   )
 )
 
-const NavbarAuth = connect((state) => ({
-  pathname: state.router.pathname,
-  balance: state.balance,
-  isDemoWallet: state.isDemoWallet,
-  showExportJsonWalletDialog: state.showExportJsonWalletDialog,
-}))(({pathname, balance, isDemoWallet, showExportJsonWalletDialog}) => {
+const NavbarAuth = connect(
+  (state) => ({
+    pathname: state.router.pathname,
+    isDemoWallet: state.isDemoWallet,
+    showExportJsonWalletDialog: state.showExportJsonWalletDialog,
+  }),
+  actions
+)(({pathname, isDemoWallet, showExportJsonWalletDialog, logout}) => {
   const {
     history: {pushState},
   } = window
@@ -82,7 +65,7 @@ const NavbarAuth = connect((state) => ({
         'a',
         {
           class: 'title',
-          onClick: () => window.history.pushState({}, 'dashboard', 'dashboard'),
+          onClick: () => window.history.pushState({}, 'txHistory', 'txHistory'),
         },
         h(CardanoLiteLogo),
         h('span', undefined, 'CardanoLite'),
@@ -96,6 +79,16 @@ const NavbarAuth = connect((state) => ({
         h(
           'div',
           {class: 'centered-row'},
+          h(
+            'span',
+            {class: 'status'},
+            h(
+              'div',
+              {class: 'button', onClick: () => setTimeout(logout, 100)},
+              h(ExitIcon),
+              h('div', {class: 'status-icon-button-content'}, 'Logout')
+            )
+          ),
           h(
             'label',
             {class: 'navcollapse-label', for: 'navcollapse'},
@@ -116,10 +109,10 @@ const NavbarAuth = connect((state) => ({
             h(
               'a',
               {
-                class: currentTab === 'dashboard' && 'active',
-                onClick: () => pushState({}, 'dashboard', 'dashboard'),
+                class: currentTab === 'txHistory' && 'active',
+                onClick: () => pushState({}, 'txHistory', 'txHistory'),
               },
-              'Dashboard'
+              'History'
             )
           ),
           h(

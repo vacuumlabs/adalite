@@ -66,7 +66,8 @@ const TransactionHistory = ({transactionHistory}) =>
             )
           )
         )
-      )
+      ),
+      transactionHistory.length === 0 && h('div', undefined, 'No records')
     )
   )
 

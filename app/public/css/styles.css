@@ -98,7 +98,7 @@ button:disabled {
   background-color: var(--brand-light);
   cursor: not-allowed;
 }
-.button-like:hover, button:hover:enabled {
+.button-like:hover, button:enabled:hover:active {
   transform: scale(1.08);
 }
 button.danger {
@@ -211,6 +211,7 @@ td {
   color:  var(--text-color);
   opacity: .8;
   border: 1px solid var(--border);
+  border-radius: 8px;
   background: #eee;
   height: 3rem;
   width: 4rem;
@@ -226,6 +227,7 @@ td {
 }
 .copy {
   border: 1px solid var(--border);
+  border-radius: 8px;
   background: #eee;
   height: 3rem;
   width: 4rem;
@@ -424,6 +426,16 @@ div.box.box-auto {
 }
 .send-input {
   min-width: 0;
+}
+
+.button--refresh {
+  border: 1px solid var(--border);
+  background: #eee;
+  color:  var(--text-color);
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 1.5rem;
+  margin-bottom: .5rem;
 }
 @media screen and (max-width: 640px) {
   .overlay .box .centered-row {
@@ -667,7 +679,7 @@ div.box.box-auto {
     padding: 1rem 0;
     line-height: 1rem;
     margin-bottom: 0;
-    margin-right: 1.5rem;
+    margin-right: 1rem;
     display: flex;
     align-items: center;
   }
@@ -1077,7 +1089,7 @@ div.box.box-auto {
   color: green;
 }
 
-/*DASHBOARD*/
+/*TxHistoryPage*/
 .text-small {
   font-size: 0.8rem;
 }
@@ -1118,7 +1130,42 @@ div.box.box-auto {
     height: 1.5rem;
     width: 1.36rem;
   }
+  .button--refresh {
+    transform: scale(.65);
+    margin-left: 0.1rem;
+  }
+
+  .narrow-screen-only {
+    display: inline;
+  }
 }
+
+.narrow-screen-only {
+  display: none;
+}
+
+@media screen and (max-width: 374px) {
+  .balance-value {
+    font-size: 2rem;
+  }
+  .ada-sign {
+    margin-left: 0.3rem;
+  }
+  .ada-sign-big {
+    height: 1.3rem;
+    width: 1rem;
+  }
+  .button--refresh {
+    transform: scale(.55);
+  }
+  .not-narrow-screen {
+    display: none;
+  }
+  .narrow-screen-only {
+    display: inline;
+  }
+}
+
 .transaction-id {
   font-size: 0.9rem;
   width: 20em;
@@ -1251,12 +1298,6 @@ div.box.box-auto {
   position: absolute;
   left: 70px;
   bottom: 0.4em;
-}
-@media screen and (max-width: 789px) {
-  .public-wallet-badge {
-    left: 12rem;
-    bottom: 1.4rem;
-  }
 }
 .public-wallet-warning-list {
   text-align: left;
