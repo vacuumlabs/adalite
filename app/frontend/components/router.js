@@ -5,6 +5,7 @@ const TxHistoryPage = require('./pages/txHistory/txHistoryPage')
 const ReceivePage = require('./pages/receive_ada/receiveAdaPage')
 const SendPage = require('./pages/send_ada/sendAdaPage')
 const LoginPage = require('./pages/login/loginPage')
+const ExportWalletPage = require('./pages/exportWallet/exportWalletPage')
 
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
@@ -24,6 +25,9 @@ const TopLevelRouter = connect((state) => ({
       break
     case 'send':
       content = h(SendPage)
+      break
+    case 'exportWallet':
+      content = h(ExportWalletPage)
       break
     default:
       content = h(TxHistoryPage)

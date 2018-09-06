@@ -439,18 +439,6 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const openExportJsonWalletDialog = (state) => {
-    setState({
-      showExportJsonWalletDialog: true,
-    })
-  }
-
-  const closeExportJsonWalletDialog = (state) => {
-    setState({
-      showExportJsonWalletDialog: false,
-    })
-  }
-
   const exportJsonWallet = async (state, password, walletName) => {
     const walletExport = await import(/* webpackPrefetch: true */ './wallet/keypass-json').then(
       async (KeypassJson) =>
@@ -461,10 +449,6 @@ module.exports = ({setState, getState}) => {
 
     const blob = new Blob([walletExport], {type: 'application/json;charset=utf-8'})
     FileSaver.saveAs(blob, `${walletName}.json`)
-
-    setState({
-      showExportJsonWalletDialog: false,
-    })
   }
 
   return {
@@ -474,8 +458,6 @@ module.exports = ({setState, getState}) => {
     loadWallet,
     logout,
     exportJsonWallet,
-    openExportJsonWalletDialog,
-    closeExportJsonWalletDialog,
     reloadWalletInfo,
     toggleAboutOverlay,
     calculateFee,
