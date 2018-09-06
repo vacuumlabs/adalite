@@ -1,4 +1,5 @@
 const {h, Component} = require('preact')
+const QRious = require('../../libs/qrious')
 const connect = require('unistore/preact').connect
 const actions = require('../../actions')
 
@@ -71,6 +72,17 @@ class AddressDetailDialogClass extends Component {
               : h(
                 'div',
                 undefined,
+                h(
+                  'div',
+                  {class: 'centered-row'},
+                  h('img', {
+                    src: new QRious({
+                      value: showDetail.address,
+                      level: 'M',
+                      size: 200,
+                    }).toDataURL(),
+                  })
+                ),
                 h(
                   'div',
                   {class: 'centered-row'},
