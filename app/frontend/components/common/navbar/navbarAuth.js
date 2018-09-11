@@ -1,42 +1,25 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const {DownloadIcon, ExitIcon, CardanoLiteLogo, MenuIcon} = require('../svg')
-const ExportWalletDialog = require('../exportWalletDialog')
+const {ExitIcon, CardanoLiteLogo, MenuIcon} = require('../svg')
 
 const LoginStatus = connect(
   (state) => ({
     pathname: state.router.pathname,
-    usingTrezor: state.usingTrezor,
   }),
   actions
-)(({logout, usingTrezor, openExportJsonWalletDialog}) =>
+)(({logout}) =>
   h(
     'div',
     {class: 'status'},
     h(
-      'div',
-      {class: 'status-button-wrapper'},
-      !usingTrezor &&
-        h(
-          'label',
-          {class: 'inline', for: 'navcollapse'},
-          h(
-            'div',
-            {class: 'button', onClick: openExportJsonWalletDialog},
-            h(DownloadIcon),
-            h('div', {class: 'status-icon-button-content'}, 'Export')
-          )
-        ),
+      'label',
+      {class: 'inline on-desktop-only', for: 'navcollapse'},
       h(
-        'label',
-        {class: 'inline on-desktop-only', for: 'navcollapse'},
-        h(
-          'div',
-          {class: 'button', onClick: () => setTimeout(logout, 100)},
-          h(ExitIcon),
-          h('div', {class: 'status-icon-button-content'}, 'Logout')
-        )
+        'div',
+        {class: 'button', onClick: () => setTimeout(logout, 100)},
+        h(ExitIcon),
+        h('div', {class: 'status-icon-button-content'}, 'Logout')
       )
     )
   )
@@ -47,9 +30,10 @@ const NavbarAuth = connect(
     pathname: state.router.pathname,
     isDemoWallet: state.isDemoWallet,
     showExportJsonWalletDialog: state.showExportJsonWalletDialog,
+    usingTrezor: state.usingTrezor,
   }),
   actions
-)(({pathname, isDemoWallet, showExportJsonWalletDialog, logout}) => {
+)(({pathname, isDemoWallet, usingTrezor, logout}) => {
   const {
     history: {pushState},
   } = window
@@ -57,7 +41,6 @@ const NavbarAuth = connect(
   return h(
     'div',
     {class: 'navbar'},
-    showExportJsonWalletDialog && h(ExportWalletDialog),
     h(
       'div',
       {class: 'navbar-wrap'},
@@ -139,6 +122,19 @@ const NavbarAuth = connect(
               'Receive'
             )
           ),
+          !usingTrezor &&
+            h(
+              'label',
+              {class: 'inline', for: 'navcollapse'},
+              h(
+                'a',
+                {
+                  class: currentTab === 'exportWallet' && 'active',
+                  onClick: () => pushState({}, 'exportWallet', 'exportWallet'),
+                },
+                'Export'
+              )
+            ),
           h(
             'label',
             {class: 'inline', for: 'navcollapse'},

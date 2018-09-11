@@ -1,12 +1,10 @@
+const {isValidAddress} = require('cardano-crypto.js')
+
 const {validateMnemonic, validatePaperWalletMnemonic} = require('../wallet/mnemonic')
 
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
-const sendAddressValidator = async (fieldValue) => {
-  const {
-    default: isValidAddress,
-  } = await import(/* webpackPrefetch: true */ '../wallet/helpers/isValidAddress')
-
+const sendAddressValidator = (fieldValue) => {
   return {
     fieldValue,
     validationError: !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
