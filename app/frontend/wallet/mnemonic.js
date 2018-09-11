@@ -1,7 +1,13 @@
 const bip39 = require('bip39-light')
 
-function generateMnemonic() {
-  return bip39.generateMnemonic(null, null)
+function generateMnemonic(wordCount) {
+  wordCount = wordCount || 12
+
+  if (wordCount % 3 !== 0) {
+    throw Error(`Invalid mnemonic word count supplied: ${wordCount}`)
+  }
+
+  return bip39.generateMnemonic((32 * wordCount) / 3)
 }
 
 function validateMnemonic(mnemonic) {

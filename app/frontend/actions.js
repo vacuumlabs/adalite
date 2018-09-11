@@ -151,7 +151,7 @@ module.exports = ({setState, getState}) => {
 
   const openGenerateMnemonicDialog = (state) => {
     setState({
-      mnemonic: generateMnemonic(),
+      mnemonic: generateMnemonic(15),
       mnemonicValidationError: undefined,
       showGenerateMnemonicDialog: true,
     })
