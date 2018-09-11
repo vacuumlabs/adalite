@@ -1,5 +1,5 @@
-const generateMnemonic = require('./wallet/mnemonic').generateMnemonic
-const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
+const {generateMnemonic} = require('./wallet/mnemonic')
+const {CARDANOLITE_CONFIG} = require('./config')
 const {DERIVATION_SCHEMES} = require('./wallet/constants')
 const FileSaver = require('file-saver')
 const {
@@ -151,7 +151,7 @@ module.exports = ({setState, getState}) => {
 
   const openGenerateMnemonicDialog = (state) => {
     setState({
-      mnemonic: generateMnemonic(),
+      mnemonic: generateMnemonic(15),
       mnemonicValidationError: undefined,
       showGenerateMnemonicDialog: true,
     })
