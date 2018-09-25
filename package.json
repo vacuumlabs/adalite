@@ -5,7 +5,7 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vacuumlabs/cardanolite.git"
+    "url": "git+https://github.com/vacuumlabs/adalite.git"
   },
   "keywords": [
     "cardano",
@@ -14,7 +14,7 @@
   "author": "Vacuumlabs",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vacuumlabs/cardanolite/issues"
+    "url": "https://github.com/vacuumlabs/adalite/issues"
   },
   "scripts": {
     "start-server": "node server/index.js",
@@ -28,7 +28,7 @@
     "heroku-postbuild": "cd app && yarn install && yarn build",
     "precommit": "lint-staged"
   },
-  "homepage": "https://github.com/vacuumlabs/cardanolite#readme",
+  "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "lint-staged": {
     "{app/frontend,app/tests,server}/**/*.{js,jsx,json,css}": [
       "prettier-eslint --write",

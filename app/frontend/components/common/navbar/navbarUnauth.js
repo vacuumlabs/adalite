@@ -1,5 +1,5 @@
 const {h} = require('preact')
-const {CardanoLiteLogo} = require('../svg')
+const {AdaLiteLogo} = require('../svg')
 
 const NavbarUnauth = () =>
   h(
@@ -11,15 +11,15 @@ const NavbarUnauth = () =>
       h(
         'a',
         {class: 'title', href: '/'},
-        h(CardanoLiteLogo),
-        h('span', undefined, 'CardanoLite Wallet'),
+        h(AdaLiteLogo),
+        h('span', undefined, 'AdaLite Wallet'),
         h('sup', undefined, '⍺')
       ),
       h(
         'a',
         {
           class: 'unauth-menu',
-          href: 'https://github.com/vacuumlabs/cardanolite/wiki/CardanoLite-FAQ',
+          href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
           target: '_blank',
         },
         'Help'

@@ -1,7 +1,7 @@
 const createDefaultStore = require('unistore').default
 const devtools = require('unistore/devtools')
 
-const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
+const ADALITE_CONFIG = require('./config').ADALITE_CONFIG
 
 const initialState = {
   loading: false,
@@ -29,11 +29,11 @@ const initialState = {
   mnemonic: '',
   validationMsg: undefined,
   authMethod: 'mnemonic',
-  enableTrezor: CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_TREZOR,
+  enableTrezor: ADALITE_CONFIG.ADALITE_ENABLE_TREZOR,
 }
 
 const createStore = () =>
-  CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING === 'true'
+  ADALITE_CONFIG.ADALITE_ENABLE_DEBUGGING === 'true'
     ? devtools(createDefaultStore(initialState))
     : createDefaultStore(initialState)
 

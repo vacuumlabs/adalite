@@ -1,9 +1,9 @@
-const CARDANOLITE_CONFIG = require('../config').CARDANOLITE_CONFIG
+const ADALITE_CONFIG = require('../config').ADALITE_CONFIG
 
 function debugLog(message) {
-  // patched to work with tests, added `CARDANOLITE_CONFIG &&`,
+  // patched to work with tests, added `ADALITE_CONFIG &&`,
   // because config is loaded from html body, which is not present in tests
-  if (CARDANOLITE_CONFIG && CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_DEBUGGING) {
+  if (ADALITE_CONFIG && ADALITE_CONFIG.ADALITE_ENABLE_DEBUGGING) {
     // eslint-disable-next-line no-console
     console.error(message)
   }

@@ -1,7 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const {ExitIcon, CardanoLiteLogo, MenuIcon} = require('../svg')
+const {ExitIcon, AdaLiteLogo, MenuIcon} = require('../svg')
 
 const LoginStatus = connect(
   (state) => ({
@@ -50,8 +50,8 @@ const NavbarAuth = connect(
           class: 'title',
           onClick: () => window.history.pushState({}, 'txHistory', 'txHistory'),
         },
-        h(CardanoLiteLogo),
-        h('span', undefined, 'CardanoLite'),
+        h(AdaLiteLogo),
+        h('span', undefined, 'AdaLite'),
 
         h('sup', undefined, '⍺')
       ),
@@ -141,7 +141,7 @@ const NavbarAuth = connect(
             h(
               'a',
               {
-                href: 'https://github.com/vacuumlabs/cardanolite/wiki/CardanoLite-FAQ',
+                href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
                 target: '_blank',
               },
               'Help'

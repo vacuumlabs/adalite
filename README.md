@@ -1,8 +1,8 @@
-# CardanoLite wallet
+# AdaLite wallet
 
 # Few disclaimers before we start
-CardanoLite is not created by Cardano Foundation. The official Cardano team did not review this code
-and is not responsible for any damage it may cause you. The CardanoLite project is in alpha stage
+AdaLite is not created by Cardano Foundation. The official Cardano team did not review this code
+and is not responsible for any damage it may cause you. The AdaLite project is in alpha stage
 and should be used for penny-transactions only. We appreciate feedback, especially review of the
 crypto-related code.
 
@@ -12,7 +12,7 @@ should use it with penny transactions only.
 ## Why this
 
 Official Cardano wallet is quite heavy-weight. It runs full node (this means: long syncing) and
-downloads >500MB JavaScript dependencies (this means: not very secure). CardanoLite solves this -
+downloads >500MB JavaScript dependencies (this means: not very secure). AdaLite solves this -
 it's really lite (< 3000 Lines of code) thus auditable. Since it doesn't run a full node it's also
 fast. No syncing with other nodes is necessary; recovery of your wallet from mnemonic takes only a few seconds.
 
@@ -27,10 +27,10 @@ sure the webpage really runs the correct code, you can verify its integrity:
 
 ## Compatibility with Daedalus
 
-If you generate your wallet with CardanoLite, you can see it's content in Daedalus. The catch is -
-if you generate new addresses in Daedalus and use it, CardanoLite won't recognize them. If you want
-to continue using your wallet in CardanoLite, you should move the funds to an address recognized by
-CardanoLite.
+If you generate your wallet with AdaLite, you can see it's content in Daedalus. The catch is -
+if you generate new addresses in Daedalus and use it, AdaLite won't recognize them. If you want
+to continue using your wallet in AdaLite, you should move the funds to an address recognized by
+AdaLite.
 
 ## Run project locally
 
@@ -39,7 +39,7 @@ CardanoLite.
 Prepare `.env` file
 e.g. by `cp .env.example .env`
 
-#### Run CardanoLite
+#### Run AdaLite
 
 ```
 yarn install
@@ -61,16 +61,16 @@ It runs webpack with the `--watch` flag and the server with `PORT=3000` unless y
 ##### Mocking transaction submission
 in .env set the following values (your local settings may differ but by default this should work):
 ```
-CARDANOLITE_ENABLE_SERVER_MOCKING_MODE = true
-CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS = true
-CARDANOLITE_MOCK_TX_SUMMARY_SUCCESS = false
+ADALITE_ENABLE_SERVER_MOCKING_MODE = true
+ADALITE_MOCK_TX_SUBMISSION_SUCCESS = true
+ADALITE_MOCK_TX_SUMMARY_SUCCESS = false
 ```
 
-The `CARDANOLITE_ENABLE_SERVER_MOCKING_MODE` flag tells the server to start in mocking mode to avoid submitting transactions to the actual blockchain. Moreover, it mocks certain blockchain explorer endpoints to fake the transaction submission.
+The `ADALITE_ENABLE_SERVER_MOCKING_MODE` flag tells the server to start in mocking mode to avoid submitting transactions to the actual blockchain. Moreover, it mocks certain blockchain explorer endpoints to fake the transaction submission.
 
-`CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS` tells the mock server whether it has to return a success response for tx submission or not.  
+`ADALITE_MOCK_TX_SUBMISSION_SUCCESS` tells the mock server whether it has to return a success response for tx submission or not.
 
-`CARDANOLITE_MOCK_TX_SUMMARY_SUCCESS` tells the mock server whether to return that the transaction exists in the blockchain or not - this is useful for polling for transaction status after submission.
+`ADALITE_MOCK_TX_SUMMARY_SUCCESS` tells the mock server whether to return that the transaction exists in the blockchain or not - this is useful for polling for transaction status after submission.
 
 ## test
 #### lint tests
@@ -85,7 +85,7 @@ yarn test
 
 Open `app/tests/index.html` in browser
 
-Check us out at https://www.cardanolite.com
+Check us out at https://www.adalite.io
 
 ---
 Donations are really appreciated!

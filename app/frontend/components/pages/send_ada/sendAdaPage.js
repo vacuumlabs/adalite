@@ -41,7 +41,7 @@ class ThanksForDonationModal extends Component {
           {
             class: 'centered-row',
           },
-          h('h3', undefined, 'Thank you for supporting CardanoLite developers!')
+          h('h3', undefined, 'Thank you for supporting AdaLite developers!')
         ),
         h(
           'div',

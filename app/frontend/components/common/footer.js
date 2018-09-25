@@ -29,23 +29,19 @@ const Footer = connect(
       h(
         'small',
         {class: 'contact-link'},
-        h(
-          'a',
-          {href: 'https://github.com/vacuumlabs/cardanolite', target: '_blank'},
-          'View on Github'
-        )
+        h('a', {href: 'https://github.com/vacuumlabs/adalite', target: '_blank'}, 'View on Github')
       ),
       '/',
       h(
         'small',
         {class: 'contact-link'},
-        h('a', {href: 'mailto:cardanolite@vacuumlabs.com', target: '_blank'}, 'Contact us')
+        h('a', {href: 'mailto:adalite@vacuumlabs.com', target: '_blank'}, 'Contact us')
       ),
       '/',
       h(
         'small',
         {class: 'contact-link'},
-        h('a', {href: 'https://twitter.com/hashtag/cardanolite', target: '_blank'}, '#cardanolite')
+        h('a', {href: 'https://twitter.com/hashtag/AdaLite', target: '_blank'}, '#AdaLite')
       )
     ),
     h(

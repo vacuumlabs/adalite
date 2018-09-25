@@ -1,6 +1,6 @@
 const fetchMock = require('fetch-mock')
 
-const mock = (CARDANOLITE_CONFIG) => {
+const mock = (ADALITE_CONFIG) => {
   function mockAddressSummaryEndpoint() {
     fetchMock.config.overwriteRoutes = true
 
@@ -1504,7 +1504,7 @@ const mock = (CARDANOLITE_CONFIG) => {
     for (const address in addressesAndResponses) {
       fetchMock.mock({
         matcher: `${
-          CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
+          ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
         }/api/addresses/summary/${address}`,
         response: {
           status: 200,
@@ -1526,7 +1526,7 @@ const mock = (CARDANOLITE_CONFIG) => {
     }
     for (const request in requestsAndResponses) {
       fetchMock.mock({
-        matcher: `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${request}`,
+        matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${request}`,
         response: {
           status: 200,
           body: requestsAndResponses[request],
@@ -1552,7 +1552,7 @@ const mock = (CARDANOLITE_CONFIG) => {
         // eslint-disable-next-line no-loop-func
         matcher: (url, opts) => {
           return (
-            url === `${CARDANOLITE_CONFIG.CARDANOLITE_SERVER_URL}/api/txs/submit` &&
+            url === `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/txs/submit` &&
             opts &&
             opts.body === request
           )
@@ -1566,7 +1566,7 @@ const mock = (CARDANOLITE_CONFIG) => {
     }
 
     fetchMock.mock({
-      matcher: `${CARDANOLITE_CONFIG.CARDANOLITE_SERVER_URL}/api/txs/submit`,
+      matcher: `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/txs/submit`,
       response: {
         status: 200,
         body: {
@@ -1643,13 +1643,10 @@ const mock = (CARDANOLITE_CONFIG) => {
     // eslint-disable-next-line guard-for-in
     for (const request in requestsAndResponses) {
       fetchMock.post({
-        name: `${
-          CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
-        }/api/bulk/addresses/utxo${request}`,
+        name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo${request}`,
         matcher: (url, opts) => {
           return (
-            url ===
-              `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo` &&
+            url === `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo` &&
             opts &&
             opts.body === request
           )

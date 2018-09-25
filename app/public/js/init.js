@@ -34,7 +34,7 @@
       '<!doctype html>' +
       '<html>' +
         '<head>' +
-          '<title>CardanoLite Wallet</title>' +
+          '<title>AdaLite Wallet</title>' +
           '<link rel="icon" type="image/ico" href="assets/favicon.ico">' +
         '</head>' +
         '<body>' +

@@ -21,7 +21,7 @@ module.exports = function(app, env) {
 
     await sleep(5000)
 
-    const success = process.env.CARDANOLITE_MOCK_TX_SUBMISSION_SUCCESS === 'true'
+    const success = process.env.ADALITE_MOCK_TX_SUBMISSION_SUCCESS === 'true'
 
     return success
       ? res.json({
@@ -35,7 +35,7 @@ module.exports = function(app, env) {
   app.get('/api/txs/summary/:txHash', async (req, res) => {
     let response
 
-    if (process.env.CARDANOLITE_MOCK_TX_SUMMARY_SUCCESS === 'true') {
+    if (process.env.ADALITE_MOCK_TX_SUMMARY_SUCCESS === 'true') {
       response = {
         Right: {
           ctsId: req.params.txHash,
@@ -55,14 +55,14 @@ module.exports = function(app, env) {
   // the remaining requests are redirected to the actual blockchain explorer
   app.get('/api/*', async (req, res) => {
     return res.json(
-      await request(`${process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`)
+      await request(`${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`)
     )
   })
 
   app.post('/api/*', async (req, res) => {
     return res.json(
       await request(
-        `${process.env.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`,
+        `${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`,
         'POST',
         JSON.stringify(req.body),
         {

@@ -1,6 +1,6 @@
 const h = require('preact').h
 
-const CardanoLiteLogo = () =>
+const AdaLiteLogo = () =>
   h(
     'svg',
     {
@@ -236,7 +236,7 @@ const DownloadIcon = () =>
   )
 
 module.exports = {
-  CardanoLiteLogo,
+  AdaLiteLogo,
   VacuumlabsLogo,
   MenuIcon,
   AdaIcon,

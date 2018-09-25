@@ -217,7 +217,7 @@ const CardanoWallet = async (options) => {
     const txInputsSize = cbor.encode(new CborIndefiniteLengthArray(txInputs)).length
     const outAddressSize = base58.decode(outAddress).length
 
-    //size of addresses used by cardanolite
+    //size of addresses used by AdaLite
     const ownAddressSize = 76
 
     /*
@@ -277,7 +277,7 @@ const CardanoWallet = async (options) => {
 
   async function discoverOwnAddresses() {
     const childIndexBegin = state.addressDerivationMode === 'hardened' ? HARDENED_THRESHOLD : 0
-    const childIndexEnd = childIndexBegin + config.CARDANOLITE_WALLET_ADDRESS_LIMIT
+    const childIndexEnd = childIndexBegin + config.ADALITE_WALLET_ADDRESS_LIMIT
     const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
       HARDENED_THRESHOLD,
       i,

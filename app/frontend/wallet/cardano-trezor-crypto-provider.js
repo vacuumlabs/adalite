@@ -2,7 +2,7 @@ const derivePublic = require('./helpers/derivePublic')
 const {packAddress, unpackAddress} = require('./address')
 const {toBip32Path} = require('./helpers/bip32')
 
-const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
+const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
     derivedXpubs: {},
     rootHdPassphrase: null,
@@ -10,7 +10,7 @@ const CardanoTrezorCryptoProvider = (CARDANOLITE_CONFIG, walletState) => {
   })
 
   let TrezorConnect
-  if (CARDANOLITE_CONFIG.CARDANOLITE_ENABLE_TREZOR) {
+  if (ADALITE_CONFIG.ADALITE_ENABLE_TREZOR) {
     // eslint-disable-next-line import/no-unresolved
     TrezorConnect = require('trezor-connect')
   }

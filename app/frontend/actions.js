@@ -1,5 +1,6 @@
-const generateMnemonic = require('./wallet/mnemonic').generateMnemonic
-const CARDANOLITE_CONFIG = require('./config').CARDANOLITE_CONFIG
+
+const {generateMnemonic} = require('./wallet/mnemonic')
+const {ADALITE_CONFIG} = require('./config')
 const FileSaver = require('file-saver')
 const {
   sendAddressValidator,
@@ -68,7 +69,7 @@ module.exports = ({setState, getState}) => {
             (Cardano) =>
               Cardano.CardanoWallet({
                 cryptoProvider: 'trezor',
-                config: CARDANOLITE_CONFIG,
+                config: ADALITE_CONFIG,
               })
           )
         } catch (e) {
@@ -86,7 +87,7 @@ module.exports = ({setState, getState}) => {
             Cardano.CardanoWallet({
               cryptoProvider: 'mnemonic',
               mnemonicOrHdNodeString: secret,
-              config: CARDANOLITE_CONFIG,
+              config: ADALITE_CONFIG,
             })
         )
         break
@@ -108,7 +109,7 @@ module.exports = ({setState, getState}) => {
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
       const usingTrezor = cryptoProvider === 'trezor'
-      const isDemoWallet = secret === CARDANOLITE_CONFIG.CARDANOLITE_DEMO_WALLET_MNEMONIC
+      const isDemoWallet = secret === ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
@@ -138,7 +139,7 @@ module.exports = ({setState, getState}) => {
 
   const loadDemoWallet = (state) => {
     setState({
-      mnemonic: CARDANOLITE_CONFIG.CARDANOLITE_DEMO_WALLET_MNEMONIC,
+      mnemonic: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
       mnemonicValidationError: undefined,
       walletLoadingError: undefined,
     })

@@ -84,7 +84,7 @@ module.exports = function(app, env) {
         <html>
           <head>
             <meta charset="utf-8"/>
-            <title>CardanoLite Wallet Stats</title>
+            <title>AdaLite Wallet Stats</title>
             <link rel="icon" type="image/ico" href="assets/favicon.ico">
           </head>
       

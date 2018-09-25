@@ -3,7 +3,7 @@ const range = require('./helpers/range')
 const NamedError = require('../helpers/NamedError')
 const debugLog = require('../helpers/debugLog')
 
-const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
+const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
     ownUtxos: {},
     overallTxCountSinceLastUtxoFetch: 0,
@@ -39,9 +39,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   }
 
   async function fetchTxInfo(txHash) {
-    const url = `${
-      CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/txs/summary/${txHash}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/summary/${txHash}`
     const response = await request(url)
 
     return response.Right
@@ -49,7 +47,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
 
   async function fetchTxRaw(txId) {
     // eslint-disable-next-line no-undef
-    const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
     const result = await request(url)
     return Buffer.from(result.Right, 'hex')
   }
@@ -112,7 +110,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
 
   async function submitTxRaw(txHash, txBody) {
     const response = await request(
-      `${CARDANOLITE_CONFIG.CARDANOLITE_SERVER_URL}/api/txs/submit`,
+      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/txs/submit`,
       'POST',
       JSON.stringify({
         txHash,
@@ -135,7 +133,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
     const nonemptyAddresses = await selectNonemptyAddresses(addresses)
     const chunks = range(0, Math.ceil(nonemptyAddresses.length / 10))
 
-    const url = `${CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
     const response = (await Promise.all(
       chunks.map(async (index) => {
         return (await request(url, 'POST', JSON.stringify(nonemptyAddresses.slice(index, 10)), {
@@ -156,9 +154,7 @@ const blockchainExplorer = (CARDANOLITE_CONFIG, walletState) => {
   }
 
   async function fetchAddressInfo(address) {
-    const url = `${
-      CARDANOLITE_CONFIG.CARDANOLITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/addresses/summary/${address}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/addresses/summary/${address}`
     const result = await request(url)
 
     return result.Right

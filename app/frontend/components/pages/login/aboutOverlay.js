@@ -40,15 +40,15 @@ class AboutOverlayClass extends Component {
           h(
             'div',
             {class: 'message'},
-            h('h4', undefined, ' Disclaimer: CardanoLite is not created by Cardano Foundation. '),
+            h('h4', undefined, ' Disclaimer: AdaLite is not created by Cardano Foundation. '),
             h(
               'p',
               undefined,
               `The official Cardano team did not review this code and is not responsible for any damage
-        it may cause you. The CardanoLite project is in alpha stage and should be used for
+        it may cause you. The AdaLite project is in alpha stage and should be used for
         penny-transactions only. We appreciate feedback, especially review of the crypto-related code.`
             ),
-            h('h4', {class: 'header-margin'}, ' CardanoLite is not a bank '),
+            h('h4', {class: 'header-margin'}, ' AdaLite is not a bank '),
             h(
               'p',
               undefined,

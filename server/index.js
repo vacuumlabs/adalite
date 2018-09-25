@@ -11,7 +11,7 @@ app.use(cors())
 app.use(compression())
 
 // must be before every other route to guarantee the redirect!
-if (process.env.CARDANOLITE_FORCE_HTTPS === 'true') {
+if (process.env.ADALITE_FORCE_HTTPS === 'true') {
   app.use(require('./middlewares/forceHttps'))
 }
 
@@ -27,7 +27,7 @@ app.use(express.static('app/public'))
 app.use(express.static('app/dist'))
 app.use(express.static('landing_page'))
 
-if (process.env.CARDANOLITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
+if (process.env.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./mocking')(app)
 } else {
   require('./transactionSubmitter')(app)
@@ -39,7 +39,7 @@ app.get('*', (req, res) => {
   <html>
 
     <head>
-      <title>CardanoLite Wallet</title>
+      <title>AdaLite Wallet</title>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <script src="js/init.js"></script>

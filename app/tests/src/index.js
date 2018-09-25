@@ -1,4 +1,4 @@
-describe('CardanoLite Test Suite', () => {
+describe('AdaLite Test Suite', () => {
   describe('Mnemonic Handling', () => {
     require('./mnemonic')
   })

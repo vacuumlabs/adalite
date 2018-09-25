@@ -1,11 +1,11 @@
 {
-  "name": "cardanolite-app",
+  "name": "adalite-app",
   "version": "1.0.0",
-  "description": "Frontend code for Cardanolite wallet",
+  "description": "Frontend code for AdaLite wallet",
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vacuumlabs/cardanolite.git"
+    "url": "git+https://github.com/vacuumlabs/adalite.git"
   },
   "keywords": [
     "cardano",
@@ -14,9 +14,9 @@
   "author": "Vacuumlabs",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vacuumlabs/cardanolite/issues"
+    "url": "https://github.com/vacuumlabs/adalite/issues"
   },
-  "homepage": "https://github.com/vacuumlabs/cardanolite#readme",
+  "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "scripts": {
     "build": "webpack --progress --config webpack.build.config.js",
     "dev": "webpack --watch --config webpack.build.config.js",
