@@ -91,7 +91,7 @@ module.exports = ({setState, getState}) => {
               mnemonicOrHdNodeString: secret,
               config: ADALITE_CONFIG,
               network: 'mainnet',
-              // derivationScheme: DERIVATION_SCHEMES.v2,
+              derivationScheme: DERIVATION_SCHEMES.v1,
             })
         )
         break
@@ -151,7 +151,7 @@ module.exports = ({setState, getState}) => {
 
   const openGenerateMnemonicDialog = (state) => {
     setState({
-      mnemonic: generateMnemonic(15),
+      mnemonic: generateMnemonic(),
       mnemonicValidationError: undefined,
       showGenerateMnemonicDialog: true,
     })
