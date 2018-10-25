@@ -63,6 +63,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
 
   async function trezorDeriveAddress(derivationPath, displayConfirmation) {
     const path = toBip32Path(derivationPath)
+
     const response = await TrezorConnect.cardanoGetAddress({
       path,
       showOnTrezor: displayConfirmation,
@@ -131,8 +132,9 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       showOnTrezor: true,
     })
 
-    if (response.error) {
-      throw new Error(response.error)
+    if (response.error || !response.success) {
+      console.log(response)
+      throw new Error(response.error || 'operation failed')
     }
 
     const xpubData = {

@@ -21,6 +21,7 @@ const {parseTx} = require('./helpers/cbor-parsers')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
 const mnemonicOrHdNodeStringToWalletSecret = require('./helpers/mnemonicOrHdNodeStringToWalletSecret')
+const alertIfUnsupportedTrezorFwVersion = require('./helpers/alertIfUnsupportedTrezorFwVersion')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -45,6 +46,7 @@ const CardanoWallet = async (options) => {
 
   let cryptoProvider = null
   if (options.cryptoProvider === 'trezor') {
+    await alertIfUnsupportedTrezorFwVersion()
     cryptoProvider = CardanoTrezorCryptoProvider(config, state)
   } else if (options.cryptoProvider === 'mnemonic') {
     const {walletSecret, derivationScheme} = await mnemonicOrHdNodeStringToWalletSecret(
