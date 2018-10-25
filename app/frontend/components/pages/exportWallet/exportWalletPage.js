@@ -8,7 +8,7 @@ class ExportWalletDialog extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      walletName: 'Cardano_lite',
+      walletName: 'Ada_lite',
       isWalletNameValid: true,
       password: '',
       confirmation: '',
@@ -109,7 +109,7 @@ class ExportWalletDialog extends Component {
           class: 'styled-input-nodiv',
           id: 'keyfile-name',
           name: 'keyfile-name',
-          placeholder: 'cardano_lite_wallet',
+          placeholder: 'adalite_wallet',
           value: walletName,
           onInput: this.updateWalletName,
           onBlur: this.touchPasswordField,
