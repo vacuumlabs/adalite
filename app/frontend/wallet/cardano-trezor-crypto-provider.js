@@ -133,7 +133,6 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     })
 
     if (response.error || !response.success) {
-      console.log(response)
       throw new Error(response.error || 'operation failed')
     }
 

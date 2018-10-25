@@ -86,7 +86,7 @@ const CardanoWallet = async (options) => {
 
     //TODO: refactor signing process so we dont need to reparse signed transaction for this
     const {txAux} = parseTx(Buffer.from(signedTx.txBody, 'hex'))
-    updateUtxosFromTxAux(txAux)
+    await updateUtxosFromTxAux(txAux)
 
     return response
   }
@@ -327,20 +327,28 @@ const CardanoWallet = async (options) => {
     return addresses.find((address) => address === addr) !== undefined
   }
 
-  function updateUtxosFromTxAux(txAux) {
+  async function getNewUtxosFromTxAux(txAux) {
+    const result = []
+    for (let i = 0; i < txAux.outputs.length; i++) {
+      if (await isOwnAddress(txAux.outputs[i].address)) {
+        result.push({
+          address: txAux.outputs[i].address,
+          coins: txAux.outputs[i].coins,
+          txHash: txAux.getId(),
+          outputIndex: i,
+        })
+      }
+    }
+
+    return result
+  }
+
+  async function updateUtxosFromTxAux(txAux) {
     const spentUtxos = txAux.inputs.map((elem) => elem.utxo)
     discardUtxos(spentUtxos)
 
-    const newUtxos = txAux.outputs.filter((elem) => isOwnAddress(elem.address)).map((elem, i) => {
-      return {
-        address: elem.address,
-        coins: elem.coins,
-        txHash: txAux.getId(),
-        outputIndex: i,
-      }
-    })
+    addUtxos(await getNewUtxosFromTxAux(txAux))
 
-    addUtxos(newUtxos)
     state.overallTxCountSinceLastUtxoFetch++
 
     // shift randomSeed for next unspent outputs selection
@@ -377,6 +385,7 @@ const CardanoWallet = async (options) => {
     _prepareTxAux: prepareTxAux,
     verifyAddress: cryptoProvider.trezorVerifyAddress,
     fetchTxInfo,
+    _getNewUtxosFromTxAux: getNewUtxosFromTxAux,
   }
 }
 
