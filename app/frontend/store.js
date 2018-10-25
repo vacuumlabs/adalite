@@ -28,7 +28,7 @@ const initialState = {
   },
   mnemonic: '',
   validationMsg: undefined,
-  authMethod: 'mnemonic',
+  authMethod: window.location.hash === '#trezor' ? 'trezor' : 'mnemonic',
   enableTrezor: ADALITE_CONFIG.ADALITE_ENABLE_TREZOR,
 }
 

@@ -2,8 +2,8 @@ const {h} = require('preact')
 const connect = require('unistore/preact').connect
 
 const TxHistoryPage = require('./pages/txHistory/txHistoryPage')
-const ReceivePage = require('./pages/receive_ada/receiveAdaPage')
-const SendPage = require('./pages/send_ada/sendAdaPage')
+const ReceivePage = require('./pages/receiveAda/receiveAdaPage')
+const SendPage = require('./pages/sendAda/sendAdaPage')
 const LoginPage = require('./pages/login/loginPage')
 const ExportWalletPage = require('./pages/exportWallet/exportWalletPage')
 

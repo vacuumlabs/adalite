@@ -45,8 +45,7 @@ class AboutOverlayClass extends Component {
               'p',
               undefined,
               `The official Cardano team did not review this code and is not responsible for any damage
-        it may cause you. The AdaLite project is in alpha stage and should be used for
-        penny-transactions only. We appreciate feedback, especially review of the crypto-related code.`
+        it may cause you. We appreciate feedback, especially review of the crypto-related code.`
             ),
             h('h4', {class: 'header-margin'}, ' AdaLite is not a bank '),
             h(

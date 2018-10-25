@@ -48,7 +48,7 @@ class AddressDetailDialogClass extends Component {
               h(
                 'span',
                 {
-                  class: `full-address ${showVerification ? 'no-select' : 'selectable'}`,
+                  class: 'full-address selectable',
                 },
                 showDetail.address
               )
