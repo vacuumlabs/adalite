@@ -1,25 +1,19 @@
 # AdaLite wallet
+A very simple Cardano wallet written entirely in JS.
 
-# Few disclaimers before we start
-AdaLite is not created by Cardano Foundation. The official Cardano team did not review this code
-and is not responsible for any damage it may cause you. The AdaLite project is in alpha stage
-and should be used for penny-transactions only. We appreciate feedback, especially review of the
+# Some disclaimers before we start
+AdaLite is not created by Cardano Foundation, Emurgo, or IOHK. The official Cardano team has not reviewed this code
+and is not responsible for any damage it may cause you. The AdaLite project is at an alpha stage of development
+and should only be used for penny-transactions. We appreciate feedback, especially review of the
 crypto-related code.
 
-A very simple Cardano wallet made entirely in js. The project is in alpha version. Currently, you
-should use it with penny transactions only.
+## Why we are building this
 
-## Why this
-
-Official Cardano wallet is quite heavy-weight. It runs full node (this means: long syncing) and
-downloads >500MB JavaScript dependencies (this means: not very secure). AdaLite solves this -
-it's really lite (< 3000 Lines of code) thus auditable. Since it doesn't run a full node it's also
-fast. No syncing with other nodes is necessary; recovery of your wallet from mnemonic takes only a few seconds.
+The [official Cardano wallet](https://github.com/input-output-hk/daedalus) from IOHK runs a full node and takes a long time to sync the blockchain. It's also very big and downloads >500MB of JavaScript dependencies (which can create a large attack surface and requires a lot of auditing). AdaLite is much smaller (< 3000 Lines of code) and is thus much easier to audit. Since it doesn't run a full node or require to sync the entire blockchain it's also very fast. Recovering your wallet from the mnemonic only takes a few seconds. 
 
 ## Validate the source
 
-Currently, there is no hardware wallet integration (though we plan doing this). If you want to be
-sure the webpage really runs the correct code, you can verify its integrity:
+There's no hardware wallet integration yet, but we're currently working on it. If you want, you can verify the integrity of the code running in your browser, you can:
 
 - checkout the latest version (currently 1.0.0)
 - build the project
