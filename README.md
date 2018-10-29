@@ -13,7 +13,7 @@ The [official Cardano wallet](https://github.com/input-output-hk/daedalus) from 
 
 ## Validate the source
 
-There's no hardware wallet integration yet, but we're currently working on it. If you want, you can verify the integrity of the code running in your browser, you can:
+If you want, you can verify the integrity of the code running in your browser, you can:
 
 - checkout the latest version (currently 1.0.0)
 - build the project
