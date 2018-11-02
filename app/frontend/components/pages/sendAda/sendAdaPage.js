@@ -74,7 +74,6 @@ class SendAdaPage extends Component {
     sendResponse,
     sendAddress,
     sendAddressValidationError,
-    isSendAddressValid,
     sendAmount,
     sendAmountValidationError,
     updateAddress,
@@ -91,7 +90,10 @@ class SendAdaPage extends Component {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
 
+    const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
+
     const displayTransactionFee =
+      isSendAddressValid &&
       sendAmount !== '' &&
       transactionFee > 0 &&
       !feeRecalculating &&
@@ -129,6 +131,7 @@ class SendAdaPage extends Component {
           {class: 'row'},
           h('label', undefined, h('span', undefined, 'Receiving address')),
           sendAddressValidationError &&
+            sendAddress !== '' &&
             h('span', {class: 'validationMsg'}, getTranslation(sendAddressValidationError.code))
         ),
         h('input', {
@@ -208,6 +211,7 @@ class SendAdaPage extends Component {
           )
         ),
         sendAmountValidationError &&
+          (sendAmount !== '' || sendAmountValidationError.code === 'SendAmountCantSendMaxFunds') &&
           h(
             'p',
             {class: 'validationMsg send-amount-validation-error'},
@@ -255,7 +259,6 @@ module.exports = connect(
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddress.validationError,
     sendAddress: state.sendAddress.fieldValue,
-    isSendAddressValid: state.isSendAddressValid,
     sendAmountValidationError: state.sendAmount.validationError,
     sendAmount: state.sendAmount.fieldValue,
     transactionFee: state.transactionFee,

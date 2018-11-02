@@ -120,7 +120,6 @@ module.exports = ({setState, getState}) => {
         balance,
         sendAmount,
         sendAddress,
-        isSendAddressValid: false,
         sendResponse,
         transactionHistory,
         loading: false,
@@ -255,15 +254,9 @@ module.exports = ({setState, getState}) => {
 
   const validateSendForm = (state) => {
     setState({
-      isSendAddressValid: !sendAddressValidator(state.sendAddress.fieldValue).validationError,
+      sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
+      sendAmount: sendAmountValidator(state.sendAmount.fieldValue),
     })
-
-    if (state.sendAddress.fieldValue !== '' && state.sendAmount.fieldValue !== '') {
-      setState({
-        sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
-        sendAmount: sendAmountValidator(state.sendAmount.fieldValue),
-      })
-    }
   }
 
   const isSendFormFilledAndValid = (state) =>
@@ -349,15 +342,15 @@ module.exports = ({setState, getState}) => {
         sendResponse: '',
         sendAmount: sendAmountValidator(printAda(maxAmount)),
       })
+      validateSendFormAndCalculateFee()
     } else {
       setState({
         sendAmount: Object.assign({}, state.sendAmount, {
           validationError: {code: 'SendAmountCantSendMaxFunds'},
         }),
+        calculatingFee: false,
       })
     }
-
-    validateSendFormAndCalculateFee(state)
   }
 
   const resetSendForm = (state) => {
@@ -368,7 +361,6 @@ module.exports = ({setState, getState}) => {
       transactionFee: 0,
       loading: false,
       showConfirmTransactionDialog: false,
-      isSendAddressValid: false,
     })
   }
 
