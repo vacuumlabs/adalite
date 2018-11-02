@@ -96,6 +96,20 @@ const Footer = connect(
           )
         )
       )
+    ),
+    h(
+      'p',
+      undefined,
+      h('div', undefined, 'Conversion rates from '),
+      h(
+        'a',
+        {
+          class: 'contact-link',
+          href: 'https://www.cryptocompare.com/api/',
+          target: '_blank',
+        },
+        'CryptoCompare'
+      )
     )
   )
 )

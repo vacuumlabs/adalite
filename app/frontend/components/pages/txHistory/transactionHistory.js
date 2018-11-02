@@ -1,6 +1,8 @@
 const {h} = require('preact')
 const printAda = require('../../../helpers/printAda')
+const printConversionRates = require('../../../helpers/printConversionRates')
 const AdaIcon = require('../../common/svg').AdaIcon
+const Tooltip = require('../../common/tooltip')
 
 const PrettyValue = ({effect}) => {
   const value = printAda(Math.abs(effect))
@@ -25,7 +27,7 @@ const TransactionAddress = ({address}) =>
     address
   )
 
-const TransactionHistory = ({transactionHistory}) =>
+const TransactionHistory = ({transactionHistory, conversionRates}) =>
   h(
     'div',
     {class: ''},
@@ -56,11 +58,29 @@ const TransactionHistory = ({transactionHistory}) =>
               'tr',
               undefined,
               h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
-              h('td', {class: 'align-right'}, h(PrettyValue, {effect: transaction.effect})),
               h(
                 'td',
                 {class: 'align-right'},
-                transaction.effect < 0 ? h('pre', undefined, printAda(transaction.fee)) : ''
+                conversionRates
+                  ? h(
+                    Tooltip,
+                    {tooltip: `${printConversionRates(transaction.effect, conversionRates)}`},
+                    h(PrettyValue, {effect: transaction.effect})
+                  )
+                  : h(PrettyValue, {effect: transaction.effect})
+              ),
+              h(
+                'td',
+                {class: 'align-right'},
+                transaction.effect < 0
+                  ? conversionRates
+                    ? h(
+                      Tooltip,
+                      {tooltip: `${printConversionRates(transaction.fee, conversionRates)}`},
+                      h('pre', undefined, printAda(transaction.fee))
+                    )
+                    : h('pre', undefined, printAda(transaction.fee))
+                  : ''
               ),
               h('td', undefined, h(TransactionAddress, {address: transaction.ctbId}))
             )

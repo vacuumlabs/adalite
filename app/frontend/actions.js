@@ -10,6 +10,7 @@ const {
 } = require('./helpers/validators')
 const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
+const getConversionRates = require('./helpers/getConversionRates')
 const sleep = require('./helpers/sleep')
 const {ADA_DONATION_ADDRESS} = require('./wallet/constants')
 const NamedError = require('./helpers/NamedError')
@@ -109,6 +110,7 @@ module.exports = ({setState, getState}) => {
       const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
+      const conversionRates = getConversionRates(state)
       const sendAmount = {fieldValue: ''}
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
@@ -129,6 +131,16 @@ module.exports = ({setState, getState}) => {
         showDemoWalletWarningDialog: isDemoWallet,
         showGenerateMnemonicDialog: false,
       })
+      try {
+        setState({
+          conversionRates: await conversionRates,
+        })
+      } catch (e) {
+        debugLog('Could not fetch conversion rates.')
+        setState({
+          conversionRates: null,
+        })
+      }
     } catch (e) {
       debugLog(e.toString())
       setState({
@@ -232,6 +244,7 @@ module.exports = ({setState, getState}) => {
     const balance = await wallet.getBalance()
     const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
     const transactionHistory = await wallet.getHistory()
+    const conversionRates = getConversionRates(state)
 
     // timeout setting loading state, so that loading shows even if everything was cached
     setTimeout(() => setState({loading: false}), 500)
@@ -240,6 +253,16 @@ module.exports = ({setState, getState}) => {
       ownAddressesWithMeta,
       transactionHistory,
     })
+    try {
+      setState({
+        conversionRates: await conversionRates,
+      })
+    } catch (e) {
+      debugLog('Could not fetch conversion rates.')
+      setState({
+        conversionRates: null,
+      })
+    }
   }
 
   const toggleAboutOverlay = (state, rememberInStorage) => {

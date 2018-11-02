@@ -4,6 +4,7 @@ const actions = require('../../../actions')
 
 const {getTranslation} = require('../../../translations')
 const printAda = require('../../../helpers/printAda')
+const printConversionRates = require('../../../helpers/printConversionRates')
 
 const Balance = require('../../common/balance')
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
@@ -86,6 +87,7 @@ class SendAdaPage extends Component {
     totalAmount,
     showThanksForDonation,
     closeThanksForDonationModal,
+    conversionRates,
   }) {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
@@ -103,7 +105,7 @@ class SendAdaPage extends Component {
     return h(
       'div',
       {class: 'content-wrapper'},
-      h(Balance, {balance, reloadWalletInfo}),
+      h(Balance, {balance, reloadWalletInfo, conversionRates}),
       h(
         'div',
         undefined,
@@ -210,6 +212,15 @@ class SendAdaPage extends Component {
               )
           )
         ),
+        displayTransactionFee &&
+          conversionRates &&
+          h(
+            'span',
+            {
+              class: 'total-other-currencies',
+            },
+            `(${printConversionRates(totalAmount, conversionRates)})`
+          ),
         sendAmountValidationError &&
           (sendAmount !== '' || sendAmountValidationError.code === 'SendAmountCantSendMaxFunds') &&
           h(
@@ -266,6 +277,7 @@ module.exports = connect(
     feeRecalculating: state.calculatingFee,
     totalAmount: state.sendAmountForTransactionFee + state.transactionFee,
     showThanksForDonation: state.showThanksForDonation,
+    conversionRates: state.conversionRates && state.conversionRates.data,
   }),
   actions
 )(SendAdaPage)

@@ -446,9 +446,6 @@ div.box.box-auto {
   .overlay .box .centered-row {
     margin-top: 0.5rem;
   }
-  p.send-amount-validation-error.validationMsg {
-    margin-top: 2em;
-  }
   .send-input {
     position: relative;
   }
@@ -1123,6 +1120,16 @@ div.box.box-auto {
   font-size: 4.5rem;
   word-wrap: break-word;
 }
+.other-currencies-balance {
+  font-size: 1.5rem;
+  color: #ddd;
+  word-wrap: break-word;
+}
+@media screen and (max-width: 789px) and (min-width: 411px) {
+  .other-currencies-balance.on-mobile-only.not-narrow-screen {
+    display: block;
+  }
+}
 @media screen and (max-width: 640px) {
   .balance-value {
     font-size: 2.25rem;
@@ -1215,6 +1222,7 @@ div.box.box-auto {
 }
 .transaction-history-wrapper {
   overflow: auto;
+  padding-top: 1.5em;
 }
 .gray-row {
   padding: 0.5rem;
@@ -1338,6 +1346,17 @@ div.box.box-auto {
 }
 .margin-l {
   margin-left: 1rem;
+}
+.total-other-currencies {
+  color: grey;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+@media screen and (max-width: 640px) {
+  .total-other-currencies {
+    margin-top: 2rem;
+  }
 }
 
 /* tab-row */

@@ -1,5 +1,6 @@
 const {h} = require('preact')
 const printAda = require('../../helpers/printAda')
+const printConversionRates = require('../../helpers/printConversionRates')
 const {AdaIcon, RefreshIcon} = require('./svg')
 
 const truncatePrintAda = (amount, maxDigits) => {
@@ -13,7 +14,7 @@ const truncatePrintAda = (amount, maxDigits) => {
   return `${Math.trunc(amountString / 1000)}K`
 }
 
-const Balance = ({balance, reloadWalletInfo}) =>
+const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
   h(
     'div',
     {class: 'balance-block'},
@@ -38,7 +39,25 @@ const Balance = ({balance, reloadWalletInfo}) =>
       ),
       h(AdaIcon, {className: 'ada-sign-big'}),
       h('button', {class: 'button button--refresh', onClick: reloadWalletInfo}, h(RefreshIcon))
-    )
+    ),
+    conversionRates &&
+      h(
+        'div',
+        {className: 'other-currencies-balance on-desktop-only'},
+        `(${printConversionRates(balance, conversionRates)})`
+      ),
+    conversionRates &&
+      h(
+        'div',
+        {className: 'other-currencies-balance on-mobile-only not-narrow-screen'},
+        `(${printConversionRates(balance, conversionRates, 12)})`
+      ),
+    conversionRates &&
+      h(
+        'div',
+        {className: 'other-currencies-balance narrow-screen-only'},
+        `(${printConversionRates(balance, conversionRates, 10)})`
+      )
   )
 
 module.exports = Balance
