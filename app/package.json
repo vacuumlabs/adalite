@@ -1,6 +1,5 @@
 {
   "name": "adalite-app",
-  "version": "1.0.0",
   "description": "Frontend code for AdaLite wallet",
   "main": "app.js",
   "repository": {

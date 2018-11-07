@@ -2,6 +2,7 @@ const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const {ExitIcon, AdaLiteLogo, MenuIcon} = require('../svg')
+const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
 
 const LoginStatus = connect(
   (state) => ({
@@ -51,11 +52,10 @@ const NavbarAuth = connect(
           onClick: () => window.history.pushState({}, 'txHistory', 'txHistory'),
         },
         h(AdaLiteLogo),
-        h('span', undefined, 'AdaLite'),
-
-        h('sup', undefined, '⍺')
+        h('span', undefined, 'AdaLite')
       ),
       isDemoWallet ? h('div', {class: 'public-wallet-badge pulse'}, 'DEMO WALLET') : null,
+      h('div', {class: 'logo-version-number'}, APP_VERSION),
       h(
         'div',
         {class: 'on-mobile-only'},

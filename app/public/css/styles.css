@@ -739,6 +739,12 @@ div.box.box-auto {
     text-align: center;
   }
 }
+.logo-version-number {
+  position: absolute;
+  left: 53px;
+  top: 35px;
+  font-size: 12px;
+}
 /* OVERLAY */
 .overlay {
   position: fixed;
@@ -1308,7 +1314,7 @@ div.box.box-auto {
   padding: 2px 4px;
   border-radius: 0.5em;
   position: absolute;
-  left: 70px;
+  left: 90px;
   bottom: 0.4em;
 }
 .public-wallet-warning-list {
