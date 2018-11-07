@@ -1476,6 +1476,11 @@ div.box.box-auto {
 .export-wallet-dialog label {
   margin-bottom: 0.3em;
 }
+
+.export-walet-dialog {
+  max-width: 360px;
+}
+
 .hidden {
   visibility: hidden;
 }

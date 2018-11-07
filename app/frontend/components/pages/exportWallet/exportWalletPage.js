@@ -98,90 +98,94 @@ class ExportWalletDialog extends Component {
         'div',
         {class: 'margin-2rem'},
         h('h2', undefined, 'Export wallet to JSON file:'),
-        showError && h('div', {class: 'alert error'}, 'Wallet export failed'),
         h(
           'div',
-          {class: 'row'},
-          h('label', {for: 'keyfile-name'}, h('span', undefined, 'Choose wallet name:'))
-        ),
-        h('input', {
-          type: 'text',
-          class: 'styled-input-nodiv',
-          id: 'keyfile-name',
-          name: 'keyfile-name',
-          placeholder: 'adalite_wallet',
-          value: walletName,
-          onInput: this.updateWalletName,
-          onBlur: this.touchPasswordField,
-          autocomplete: 'off',
-          ref: (element) => {
-            this.walletNameField = element
-          },
-        }),
-        h(
-          'div',
-          {class: 'row margin-top'},
-          h('label', {for: 'keyfile-password'}, h('span', undefined, 'Password:'))
-        ),
-        h('input', {
-          type: 'password',
-          class: 'styled-input-nodiv',
-          id: 'keyfile-password',
-          name: 'keyfile-password',
-          placeholder: 'Enter password',
-          value: password,
-          onInput: this.updatePassword,
-          onBlur: this.touchPasswordField,
-          autocomplete: 'new-password',
-        }),
-        h(
-          'div',
-          {class: 'row margin-top'},
+          {class: 'export-walet-dialog'},
+          showError && h('div', {class: 'alert error'}, 'Wallet export failed'),
           h(
-            'label',
-            {for: 'keyfile-password-confirmation'},
-            h('span', undefined, 'Password confirmation:')
-          )
-        ),
-        h('input', {
-          type: 'password',
-          class: 'styled-input-nodiv',
-          id: 'keyfile-password-confirmation',
-          name: 'keyfile-password-confirmation',
-          placeholder: 'Enter password confirmation',
-          value: confirmation,
-          onInput: this.updatePasswordConfirmation,
-          onBlur: this.touchPasswordConfirmationField,
-          autocomplete: 'new-password',
-        }),
-        h(
-          'p',
-          {
-            class: `validationMsg margin-top center ${
-              (!isPasswordValid && isPasswordDirty && isPasswordConfirmationDirty) ||
-              !isWalletNameValid
-                ? ''
-                : 'hidden'
-            }`,
-          },
-          !isWalletNameValid
-            ? 'Allowed characters for wallet name are only a-z, A-Z, 0-9, -, _'
-            : 'Password must match and cannot be empty'
-        ),
-        h(
-          'button',
-          {
-            disabled: !this.isPasswordValid(password, confirmation) || !isWalletNameValid,
-            onClick: this.exportJsonWallet,
-            onKeyDown: (e) => {
-              if (e.key === 'Tab') {
-                this.walletNameField.focus()
-                e.preventDefault()
-              }
+            'div',
+            {class: 'row'},
+            h('label', {for: 'keyfile-name'}, h('span', undefined, 'Choose wallet name:'))
+          ),
+          h('input', {
+            type: 'text',
+            class: 'styled-input-nodiv',
+            id: 'keyfile-name',
+            name: 'keyfile-name',
+            placeholder: 'adalite_wallet',
+            value: walletName,
+            onInput: this.updateWalletName,
+            onBlur: this.touchPasswordField,
+            autocomplete: 'off',
+            ref: (element) => {
+              this.walletNameField = element
             },
-            class: 'button-like submit-button',
-          },
-          'Export'
+          }),
+          h(
+            'div',
+            {class: 'row margin-top'},
+            h('label', {for: 'keyfile-password'}, h('span', undefined, 'Password:'))
+          ),
+          h('input', {
+            type: 'password',
+            class: 'styled-input-nodiv',
+            id: 'keyfile-password',
+            name: 'keyfile-password',
+            placeholder: 'Enter password',
+            value: password,
+            onInput: this.updatePassword,
+            onBlur: this.touchPasswordField,
+            autocomplete: 'new-password',
+          }),
+          h(
+            'div',
+            {class: 'row margin-top'},
+            h(
+              'label',
+              {for: 'keyfile-password-confirmation'},
+              h('span', undefined, 'Password confirmation:')
+            )
+          ),
+          h('input', {
+            type: 'password',
+            class: 'styled-input-nodiv',
+            id: 'keyfile-password-confirmation',
+            name: 'keyfile-password-confirmation',
+            placeholder: 'Enter password confirmation',
+            value: confirmation,
+            onInput: this.updatePasswordConfirmation,
+            onBlur: this.touchPasswordConfirmationField,
+            autocomplete: 'new-password',
+          }),
+          h(
+            'p',
+            {
+              class: `validationMsg margin-top center ${
+                (!isPasswordValid && isPasswordDirty && isPasswordConfirmationDirty) ||
+                !isWalletNameValid
+                  ? ''
+                  : 'hidden'
+              }`,
+            },
+            !isWalletNameValid
+              ? 'Allowed characters for wallet name are only a-z, A-Z, 0-9, -, _'
+              : 'Password must match and cannot be empty'
+          ),
+          h(
+            'button',
+            {
+              disabled: !this.isPasswordValid(password, confirmation) || !isWalletNameValid,
+              onClick: this.exportJsonWallet,
+              onKeyDown: (e) => {
+                if (e.key === 'Tab') {
+                  this.walletNameField.focus()
+                  e.preventDefault()
+                }
+              },
+              class: 'button-like submit-button',
+            },
+            'Export'
+          )
         )
       )
     )
