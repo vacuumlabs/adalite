@@ -2,10 +2,7 @@
 A very simple Cardano wallet written entirely in JS.
 
 # Some disclaimers before we start
-AdaLite is not created by Cardano Foundation, Emurgo, or IOHK. The official Cardano team has not reviewed this code
-and is not responsible for any damage it may cause you. The AdaLite project is at an alpha stage of development
-and should only be used for penny-transactions. We appreciate feedback, especially review of the
-crypto-related code.
+AdaLite is not created by Cardano Foundation, Emurgo, or IOHK. The official Cardano team has not reviewed this code and is not responsible for any damage it may cause you. The AdaLite does not store your private keys and you are responsible for storing them safely. Please be aware that if your computer is compromised, your mnemonic may be leaked when used as the access method on Adalite. We encourage you to use AdaLite with a hardware wallet for maximum safety. We appreciate feedback, especially a review of the crypto-related code.
 
 ## Why we are building this
 
