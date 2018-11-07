@@ -40,7 +40,8 @@ class AboutOverlayClass extends Component {
           h(
             'div',
             {class: 'message'},
-            h('h4', undefined, ' Disclaimer: AdaLite is not created by Cardano Foundation. '),
+            h('h4', {class: 'text-center strong'}, ' Disclaimer '),
+            h('h4', undefined, ' AdaLite is not created by Cardano Foundation. '),
             h(
               'p',
               undefined,
