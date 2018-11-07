@@ -2,6 +2,9 @@
 // keys in process .env must be referencesd explicitly
 // so dotenv-webpack is able to include them in the test bundle for Mocha tests
 
+// process.env.npm_package_version is undefined on Heroku
+const appVersion = require('../../package.json').version
+
 module.exports = {
   ADALITE_SERVER_URL: process.env.ADALITE_SERVER_URL,
   /*
@@ -16,5 +19,5 @@ module.exports = {
   ADALITE_DEMO_WALLET_MNEMONIC: process.env.ADALITE_DEMO_WALLET_MNEMONIC,
   ADALITE_ENABLE_DEBUGGING: process.env.ADALITE_ENABLE_DEBUGGING === 'true',
   ADALITE_ENABLE_TREZOR: !!process.env.ADALITE_ENABLE_TREZOR,
-  ADALITE_APP_VERSION: process.env.npm_package_version,
+  ADALITE_APP_VERSION: appVersion,
 }
