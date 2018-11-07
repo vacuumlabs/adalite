@@ -167,7 +167,7 @@ class LoadKeyFileClass extends Component {
           h(
             'div',
             {
-              class: 'overlay fade-in-up',
+              class: 'overlay',
               onKeyDown: (e) => {
                 e.key === 'Escape' && this.closePasswordModal()
               },

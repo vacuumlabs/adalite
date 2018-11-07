@@ -19,7 +19,7 @@ class ThanksForDonationModal extends Component {
     return h(
       'div',
       {
-        class: 'overlay fade-in-up',
+        class: 'overlay',
         onKeyDown: (e) => e.key === 'Escape' && closeThanksForDonationModal(),
       },
       h('div', {

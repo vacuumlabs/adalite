@@ -19,7 +19,7 @@ class GenerateMnemonicDialogClass extends Component {
       },
       h(
         'div',
-        {class: 'mnemonic-box-header box center fade-in-up'},
+        {class: 'mnemonic-box-header box center'},
         h(
           'span',
           {

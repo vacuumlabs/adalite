@@ -13,7 +13,7 @@ class DemoWalletWarningDialogClass {
       {class: 'overlay'},
       h(
         'div',
-        {class: 'box center fade-in-up'},
+        {class: 'box center'},
         h('h4', undefined, 'Warning'),
         h(
           'p',
