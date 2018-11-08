@@ -21,8 +21,8 @@ const TransactionAddress = ({address}) =>
     'a',
     {
       class: 'transaction-id with-tooltip',
-      tooltip: 'Examine via CardanoExplorer.com',
-      href: `https://cardanoexplorer.com/tx/${address}`,
+      tooltip: 'Examine via AdaScan.net',
+      href: `https://adascan.net/transaction/${address}`,
       target: '_blank',
     },
     address

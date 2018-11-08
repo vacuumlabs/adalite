@@ -95,11 +95,11 @@ class AddressDetailDialogClass extends Component {
                   }),
                   h(
                     Tooltip,
-                    {tooltip: 'Examine via CardanoExplorer.com'},
+                    {tooltip: 'Examine via AdaScan.net'},
                     h(
                       'a',
                       {
-                        href: `https://cardanoexplorer.com/address/${showDetail.address}`,
+                        href: `https://adascan.net/address/${showDetail.address}`,
                         target: '_blank',
                         class: 'address-link margin-1rem centered-row',
                         tabIndex: 0,
