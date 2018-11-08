@@ -534,7 +534,6 @@ div.box.box-auto {
   color: black;
 }
 
-
 .navbar {
   background-color: var(--navbar);
   border-bottom: 1px solid var(--border);
@@ -588,9 +587,13 @@ div.box.box-auto {
 .navbar nav a:hover,
 .navbar nav a:active {
   color: black;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--brand);
 }
 .navbar nav a.active {
   color: var(--brand);
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--brand);
 }
 .navbar a {
   color: var(--text-color);
@@ -650,19 +653,37 @@ div.box.box-auto {
   width: 0.9rem;
   height: 0.9rem;
 }
+.logo-version-number {
+  position: absolute;
+  left: 53px;
+  top: 35px;
+  font-size: 12px;
+}
 .inline {
   display: inline;
 }
 .on-mobile-only {
   display: none;
 }
-
-@media screen and (max-width: 460px) {
-  .mobile-balance-label {
-    display: none;
+.navbar nav,
+.navbar .unauth-menu {
+  font-size: 18px;
+}
+@media screen and (max-width: 1023px) {
+  .navbar nav,
+  .navbar .unauth-menu {
+    font-size: 15px;
+  }
+  .navbar nav a:hover,
+  .navbar nav a:active {
+    padding-bottom: 17px;
+    border-bottom: 2px solid var(--brand);
+  }
+  .navbar nav a.active {
+    padding-bottom: 17px;
+    border-bottom: 2px solid var(--brand);
   }
 }
-
 @media screen and (max-width: 789px) {
   body {
     padding-top: 3.5rem;
@@ -719,6 +740,12 @@ div.box.box-auto {
     display: block;
     text-align: center;
   }
+  .navbar nav a:active,
+  .navbar nav a.active,
+  .navbar nav a:hover {
+    padding-bottom: 0;
+    border: none;
+  }
   .navbar input[type='checkbox']:checked + nav {
     transform: translateX(0);
   }
@@ -738,11 +765,10 @@ div.box.box-auto {
     text-align: center;
   }
 }
-.logo-version-number {
-  position: absolute;
-  left: 53px;
-  top: 35px;
-  font-size: 12px;
+@media screen and (max-width: 460px) {
+  .mobile-balance-label {
+    display: none;
+  }
 }
 /* OVERLAY */
 .overlay {
@@ -1314,7 +1340,7 @@ div.box.box-auto {
   border-radius: 0.5em;
   position: absolute;
   left: 90px;
-  bottom: 0.4em;
+  bottom: 0.15em;
 }
 .public-wallet-warning-list {
   text-align: left;
