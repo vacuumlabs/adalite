@@ -12,13 +12,26 @@ const NavbarUnauth = () =>
       h('a', {class: 'title', href: '/'}, h(AdaLiteLogo), h('div', undefined, 'AdaLite')),
       h('div', {class: 'logo-version-number'}, APP_VERSION),
       h(
-        'a',
-        {
-          class: 'unauth-menu',
-          href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
-          target: '_blank',
-        },
-        'Help'
+        'span',
+        undefined,
+        h(
+          'a',
+          {
+            class: 'unauth-menu',
+            href: 'about',
+            target: '_blank',
+          },
+          'About'
+        ),
+        h(
+          'a',
+          {
+            class: 'unauth-menu',
+            href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
+            target: '_blank',
+          },
+          'Help'
+        )
       )
     )
   )

@@ -526,7 +526,6 @@ div.box.box-auto {
 .unauth-menu {
   color: var(--navbar-text);
   text-decoration: none;
-  margin-left: 1rem;
   transition: color var(--transition);
   cursor: pointer;
   padding: 0 1rem;
