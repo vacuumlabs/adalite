@@ -293,7 +293,7 @@ td {
   pointer-events: none;
   /* Position the tooltip */
   position: absolute;
-  z-index: 1;
+  z-index: 10;
   bottom: 100%;
   left: 50%;
   -webkit-transition: all 0.18s ease-out 0.28s;
@@ -327,7 +327,7 @@ td {
   -khtml-opacity: 0;
   opacity: 0;
   content: '';
-  z-index: 1;
+  z-index: 10;
   position: absolute;
   left: 50%;
   border: 0.5rem solid transparent;
@@ -538,7 +538,7 @@ div.box.box-auto {
 .navbar {
   background-color: var(--navbar);
   border-bottom: 1px solid var(--border);
-  z-index: 1;
+  z-index: 15;
   padding-left: calc(100vw - 100%)
 }
 .navbar-wrap, .navbar-wrap-unauth {
@@ -733,7 +733,7 @@ div.box.box-auto {
     border-left: 1px solid var(--border);
     transform: translateX(22rem);
     transition: transform var(--transition);
-    z-index: 1;
+    z-index: 15;
   }
 
   .navbar nav a {
@@ -780,7 +780,7 @@ div.box.box-auto {
   right: 0;
   bottom: 0;
   background-color: rgba(248, 249, 250, 0.60);
-  z-index: 2;
+  z-index: 20;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -848,7 +848,7 @@ div.box.box-auto {
 }
 
 .ontop {
-  z-index: 3;
+  z-index: 30;
 }
 .loading-inside-button {
   display: inline-block;
@@ -1417,7 +1417,7 @@ div.box.box-auto {
 .tab-row li.selected {
   background: #FFF;
   color: #333;
-  z-index: 1;
+  z-index: 10;
   border-bottom-color: #FFF;
 }
 .tab-row:before {
@@ -1427,7 +1427,7 @@ div.box.box-auto {
   bottom: 0;
   left: 0;
   border-bottom: 1px solid var(--border);
-  z-index: 1;
+  z-index: 10;
 }
 .tab-row li:before,
 .tab-row li:after {
