@@ -30,6 +30,8 @@ const initialState = {
   validationMsg: undefined,
   authMethod: window.location.hash === '#trezor' ? 'trezor' : 'mnemonic',
   enableTrezor: ADALITE_CONFIG.ADALITE_ENABLE_TREZOR,
+  showDemoWalletWarningDialog: false,
+  logoutNotificationOpen: false,
 }
 
 const createStore = () =>

@@ -8,6 +8,7 @@ const KeyFileAuth = require('./keyFileAuth')
 const MnemonicAuth = require('./mnemonicAuth')
 const HardwareAuth = require('./hardwareAuth')
 const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
+const LogoutNotification = require('./logoutNotification')
 
 class LoginPage extends Component {
   render({
@@ -17,6 +18,7 @@ class LoginPage extends Component {
     setAuthMethod,
     enableTrezor,
     showDemoWalletWarningDialog,
+    logoutNotificationOpen,
   }) {
     const authOption = (name, text) =>
       h(
@@ -52,7 +54,8 @@ class LoginPage extends Component {
         authMethod === 'file' && h(KeyFileAuth)
       ),
       h(AboutOverlay),
-      showDemoWalletWarningDialog && h(DemoWalletWarningDialog)
+      showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
+      logoutNotificationOpen && h(LogoutNotification)
     )
   }
 }
@@ -62,6 +65,7 @@ module.exports = connect(
     authMethod: state.authMethod,
     enableTrezor: state.enableTrezor,
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
+    logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,
   }),
   actions

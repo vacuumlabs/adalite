@@ -467,6 +467,12 @@ module.exports = ({setState, getState}) => {
     FileSaver.saveAs(blob, `${walletName}.json`)
   }
 
+  const setLogoutNotificationOpen = (state, open) => {
+    setState({
+      logoutNotificationOpen: open,
+    })
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -494,5 +500,6 @@ module.exports = ({setState, getState}) => {
     closeDemoWalletWarningDialog,
     confirmGenerateMnemonicDialog,
     closeThanksForDonationModal,
+    setLogoutNotificationOpen,
   }
 }
