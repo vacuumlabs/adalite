@@ -94,7 +94,7 @@ class LoadByMenmonicSectionClass extends Component {
       h(
         'a',
         {
-          class: 'intro-link fade-in-up',
+          class: 'intro-link',
           /*
           * onMouseDown to prevent onBlur before handling the click event
           * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue

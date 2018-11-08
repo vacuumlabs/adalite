@@ -1234,19 +1234,6 @@ div.box.box-auto {
   display: block;
   margin: 5px;
 }
-@keyframes rise-up {
-  from {
-    opacity: 0;
-    transform: translateY(20%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.fade-in-up {
-  animation: fade-in 1.5s, rise-up 1.5s;
-}
 .loading-inside-button {
   display: inline-block;
   border: 2px solid rgba(150, 150, 150, 0.4);
