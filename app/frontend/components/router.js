@@ -30,6 +30,7 @@ const TopLevelRouter = connect((state) => ({
       content = h(ExportWalletPage)
       break
     default:
+      window.history.pushState({}, 'txHistory', 'txHistory')
       content = h(TxHistoryPage)
   }
   // TODO is Alert used anywhere? if so add here
