@@ -927,10 +927,14 @@ div.box.box-auto {
 }
 .footer p {
   margin-top: 0;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+}
+.footer p:first-child, .footer p:last-child {
+  margin-bottom: 0;
 }
 .footer .logo {
   height: 2rem;
