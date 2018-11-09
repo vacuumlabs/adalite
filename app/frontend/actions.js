@@ -14,6 +14,8 @@ const getConversionRates = require('./helpers/getConversionRates')
 const sleep = require('./helpers/sleep')
 const {ADA_DONATION_ADDRESS} = require('./wallet/constants')
 const NamedError = require('./helpers/NamedError')
+const Cardano = require('./wallet/cardano-wallet')
+const KeypassJson = require('./wallet/keypass-json')
 
 let wallet = null
 
@@ -66,15 +68,12 @@ module.exports = ({setState, getState}) => {
     switch (cryptoProvider) {
       case 'trezor':
         try {
-          wallet = await import(/* webpackPrefetch: true */ './wallet/cardano-wallet').then(
-            (Cardano) =>
-              Cardano.CardanoWallet({
-                cryptoProvider: 'trezor',
-                config: ADALITE_CONFIG,
-                network: 'mainnet',
-                derivationScheme: DERIVATION_SCHEMES.v2,
-              })
-          )
+          wallet = await Cardano.CardanoWallet({
+            cryptoProvider: 'trezor',
+            config: ADALITE_CONFIG,
+            network: 'mainnet',
+            derivationScheme: DERIVATION_SCHEMES.v2,
+          })
         } catch (e) {
           debugLog(e)
           return setState({
@@ -85,16 +84,13 @@ module.exports = ({setState, getState}) => {
         break
       case 'mnemonic':
         secret = secret.trim()
-        wallet = await import(/* webpackPrefetch: true */ './wallet/cardano-wallet').then(
-          (Cardano) =>
-            Cardano.CardanoWallet({
-              cryptoProvider: 'mnemonic',
-              mnemonicOrHdNodeString: secret,
-              config: ADALITE_CONFIG,
-              network: 'mainnet',
-              derivationScheme: DERIVATION_SCHEMES.v1,
-            })
-        )
+        wallet = await Cardano.CardanoWallet({
+          cryptoProvider: 'mnemonic',
+          mnemonicOrHdNodeString: secret,
+          config: ADALITE_CONFIG,
+          network: 'mainnet',
+          derivationScheme: DERIVATION_SCHEMES.v1,
+        })
         break
       default:
         return setState({
@@ -456,11 +452,8 @@ module.exports = ({setState, getState}) => {
   }
 
   const exportJsonWallet = async (state, password, walletName) => {
-    const walletExport = await import(/* webpackPrefetch: true */ './wallet/keypass-json').then(
-      async (KeypassJson) =>
-        JSON.stringify(
-          await KeypassJson.exportWalletSecret(wallet.getSecret(), password, walletName)
-        )
+    const walletExport = JSON.stringify(
+      await KeypassJson.exportWalletSecret(wallet.getSecret(), password, walletName)
     )
 
     const blob = new Blob([walletExport], {type: 'application/json;charset=utf-8'})
