@@ -25,7 +25,7 @@ if (process.env.REDIS_URL) {
 
 app.use(express.static('app/public'))
 app.use(express.static('app/dist'))
-app.use('/about', express.static('landing_page'))
+app.use('/about', express.static('about'))
 
 if (process.env.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./mocking')(app)
