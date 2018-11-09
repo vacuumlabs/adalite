@@ -3,6 +3,7 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
 const CloseIcon = require('../../common/svg').CloseIcon
+const KeypassJson = require('../../../wallet/keypass-json')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -36,12 +37,10 @@ class LoadKeyFileClass extends Component {
     this.props.loadingAction('Unlocking key file')
 
     try {
-      const secret = await import(/* webpackPrefetch: true */ '../../../wallet/keypass-json').then(
-        async (KeypassJson) =>
-          (await KeypassJson.importWalletSecret(this.state.keyFile, this.state.password)).toString(
-            'hex'
-          )
-      )
+      const secret = (await KeypassJson.importWalletSecret(
+        this.state.keyFile,
+        this.state.password
+      )).toString('hex')
 
       this.setState({error: undefined})
       this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
@@ -86,10 +85,7 @@ class LoadKeyFileClass extends Component {
       return async (e) => {
         try {
           const walletExport = await JSON.parse(e.target.result)
-          const isWalletExportEncrypted = await import(/* webpackPrefetch: true */ '../../../wallet/keypass-json').then(
-            async (KeypassJson) => await KeypassJson.isWalletExportEncrypted(walletExport)
-          )
-
+          const isWalletExportEncrypted = await KeypassJson.isWalletExportEncrypted(walletExport)
           if (isWalletExportEncrypted) {
             this.setState({
               keyFile: walletExport,
@@ -101,10 +97,7 @@ class LoadKeyFileClass extends Component {
             })
           } else {
             this.props.loadingAction('Reading key file')
-            const secret = await import(/* webpackPrefetch: true */ '../../../wallet/keypass-json').then(
-              async (KeypassJson) =>
-                (await KeypassJson.importWalletSecret(walletExport, '')).toString('hex')
-            )
+            const secret = (await KeypassJson.importWalletSecret(walletExport, '')).toString('hex')
 
             this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
             this.setState({error: undefined})
