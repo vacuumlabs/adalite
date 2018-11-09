@@ -1,34 +1,58 @@
-(function() {
-  try {
-    // test for JS features needed to load the main script
-    eval( // eslint-disable-line no-eval
-      '(function() {' +
-        // destructuring binding
-        '({a, b} = {a: 10, b: 20, c: 30, d: 40});' +
-        // const, let
-        'const c1 = 5; let var1 = 5;' +
-        // async functions
-        'async function f1 (){return 9};' +
-        // arrow functions
-        '() => {return 4 + 5};' +
-        // template literal syntax
-        '`${"aaa"}`;' + // eslint-disable-line no-template-curly-in-string
-        // default parameters in function
-        'function f2 (a = 3, b, c=false) {return a}' +
-        // classes
-        'class MyClass {};' +
-        // assign object keys from variable
-        'let objKey = "a"; let obj = {[objKey]: 3};' +
-      '})()'
-    )
+// source: https://gist.github.com/DaBs/89ccc2ffd1d435efdacff05248514f38#gistcomment-1976435
+function playsNice(cb) {
+  const testScript =
+    '(function() {' +
+      // destructuring binding
+      '({a, b} = {a: 10, b: 20, c: 30, d: 40});' +
+      // const, let
+      'const c1 = 5; let var1 = 5;' +
+      // async functions
+      'async function f1 (){return 9};' +
+      // arrow functions
+      '() => {return 4 + 5};' +
+      // template literal syntax
+      '`${"aaa"}`;' + // eslint-disable-line no-template-curly-in-string
+      // default parameters in function
+      'function f2 (a = 3, b, c=false) {return a}' +
+      // classes
+      'class MyClass {};' +
+      // assign object keys from variable
+      'let objKey = "a"; let obj = {[objKey]: 3};' +
+    '})()'
 
+  if (!window.addEventListener) {
+    cb(false)
+  }
+  const n = document.createElement('script')
+  n.ondone = function(event, s) {
+    // eslint-disable-next-line consistent-this
+    s = this
+    if (s.done) {
+      window.removeEventListener('error', s.ondone, true)
+      if (s.parentNode) {
+        s.parentNode.removeChild(s)
+      }
+      return
+    }
+    this.done = 1
+    cb(!(event && (event.error || event.type === 'error' || event.lineno)))
+  }
+
+  window.addEventListener('error', n.ondone, true)
+  n.appendChild(document.createTextNode(testScript))
+  document.head.appendChild(n)
+  setTimeout(n.ondone, 50)
+}
+
+function loadScript(success) {
+  if (success) {
     // if everything goes well, load the main script
     const mainScriptTag = document.createElement('script')
     mainScriptTag.type = 'text/javascript'
     mainScriptTag.src = 'js/frontend.bundle.js'
     mainScriptTag.setAttribute('defer', '')
     document.getElementsByTagName('head')[0].appendChild(mainScriptTag)
-  } catch (err) {
+  } else {
     // display fallback HTML for browsers that fail the check
     document.write(
       '<!doctype html>' +
@@ -47,4 +71,6 @@
       '</html>'
     )
   }
-})()
+}
+
+playsNice(loadScript)
