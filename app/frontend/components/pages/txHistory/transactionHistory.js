@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const printAda = require('../../../helpers/printAda')
 const printConversionRates = require('../../../helpers/printConversionRates')
+const formatDate = require('../../../helpers/formatDate')
 const AdaIcon = require('../../common/svg').AdaIcon
 const Tooltip = require('../../common/tooltip')
 
@@ -57,7 +58,7 @@ const TransactionHistory = ({transactionHistory, conversionRates}) =>
             h(
               'tr',
               undefined,
-              h('td', undefined, new Date(transaction.ctbTimeIssued * 1000).toLocaleString()),
+              h('td', undefined, formatDate(transaction.ctbTimeIssued)),
               h(
                 'td',
                 {class: 'align-right'},
