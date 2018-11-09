@@ -20,7 +20,7 @@ const Footer = connect(
     h(
       'p',
       undefined,
-      'Developed by ',
+      h('span', {class: 'footer-text-before-logo'}, 'Developed by '),
       h('a', {href: 'https://vacuumlabs.com', target: '_blank'}, h(VacuumlabsLogo))
     ),
     h(

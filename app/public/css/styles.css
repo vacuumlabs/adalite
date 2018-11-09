@@ -924,7 +924,7 @@ div.box.box-auto {
   font-size: 1rem;
   color: var(--text-color);
   border-top: 1px solid var(--border);
-  padding: 1.5rem 0;
+  padding: 1rem 0;
   margin-left: calc(100vw - 100%);
   align-self: center;
 }
@@ -945,6 +945,10 @@ div.box.box-auto {
 .footer .contact-link {
   padding-left: 0.5em;
   padding-right: 0.5em;
+}
+.footer-text-before-logo {
+  position: relative;
+  top: 2.5px;
 }
 
 
