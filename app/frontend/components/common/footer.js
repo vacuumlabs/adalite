@@ -41,6 +41,12 @@ const Footer = connect(
       h(
         'small',
         {class: 'contact-link'},
+        h('a', {href: 'https://t.me/AdaLite', target: '_blank'}, 'Telegram')
+      ),
+      '/',
+      h(
+        'small',
+        {class: 'contact-link'},
         h('a', {href: 'https://twitter.com/AdaLiteWallet', target: '_blank'}, '#AdaLite')
       )
     ),
