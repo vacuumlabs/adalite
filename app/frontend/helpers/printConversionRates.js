@@ -1,25 +1,20 @@
-const addCommas = (amount) => parseFloat(amount).toLocaleString('en-US')
+const addThousandsCommas = (amount, fractionDigits) =>
+  parseFloat(amount).toLocaleString('en-US', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })
 
 const formatFiat = (amount, maxDigits) => {
-  const newAmount = (amount * 0.000001).toFixed(2)
-  const amountString = newAmount.toString()
-  if (amountString.length <= maxDigits) {
-    return addCommas(newAmount)
+  if (!maxDigits || amount.toFixed(2).length <= maxDigits) {
+    return addThousandsCommas(amount, 2)
   }
-  if (amountString.indexOf('.') <= maxDigits + 1) {
-    return addCommas(amountString.substr(0, maxDigits + 1))
-  }
-  return `${addCommas(Math.trunc(amountString / 1000))}K`
+  return `${addThousandsCommas(Math.trunc(amount / 1000), 0)}k`
 }
 
 const printConversionRates = (amount, conversionRates, maxDigits) =>
   isNaN(Number(amount))
     ? ''
-    : maxDigits
-      ? `$\u00A0${formatFiat(conversionRates.USD * amount, maxDigits)},
-        €\u00A0${formatFiat(conversionRates.EUR * amount, maxDigits)}`
-      : `$\u00A0${addCommas(
-        (conversionRates.USD * amount * 0.000001).toFixed(2)
-      )}, €\u00A0${addCommas((conversionRates.EUR * amount * 0.000001).toFixed(2))}`
+    : `$\u00A0${formatFiat(conversionRates.USD * amount * 0.000001, maxDigits)},
+       €\u00A0${formatFiat(conversionRates.EUR * amount * 0.000001, maxDigits)}`
 
 module.exports = printConversionRates
