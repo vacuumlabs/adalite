@@ -129,7 +129,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
 
     const response = await TrezorConnect.cardanoGetPublicKey({
       path,
-      showOnTrezor: true,
+      showOnTrezor: false,
     })
 
     if (response.error || !response.success) {
