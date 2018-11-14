@@ -794,6 +794,7 @@ div.box.box-auto {
 .overlay p {
   margin-top: 1rem;
   color: var(--navbar-text);
+  font-size: 16px;
 }
 
 .overlay-close-layer {
