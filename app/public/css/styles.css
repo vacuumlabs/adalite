@@ -932,6 +932,7 @@ div.box.box-auto {
   border-top: 1px solid var(--border);
   padding: 1rem 0;
   margin-left: calc(100vw - 100%);
+  margin-top: auto;
   align-self: center;
 }
 .footer p {
@@ -951,6 +952,9 @@ div.box.box-auto {
 .footer .contact-link {
   padding-left: 0.5em;
   padding-right: 0.5em;
+}
+.footer .rates {
+  font-size: 0.85em;
 }
 .footer-text-before-logo {
   position: relative;

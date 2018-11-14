@@ -10,10 +10,14 @@ const {
 } = require('../../wallet/constants')
 const {VacuumlabsLogo} = require('./svg')
 
+const showRatesOn = ['/txHistory', '/send']
+
 const Footer = connect(
-  {},
+  (state) => ({
+    showConversionRates: showRatesOn.indexOf(state.router.pathname) !== -1 && state.walletIsLoaded,
+  }),
   actions
-)(({openAddressDetail}) =>
+)(({openAddressDetail, showConversionRates}) =>
   h(
     'footer',
     {class: 'footer'},
@@ -27,27 +31,27 @@ const Footer = connect(
       'p',
       undefined,
       h(
-        'small',
+        'span',
         {class: 'contact-link'},
         h('a', {href: 'https://github.com/vacuumlabs/adalite', target: '_blank'}, 'View on Github')
       ),
       '/',
       h(
-        'small',
+        'span',
         {class: 'contact-link'},
         h('a', {href: 'mailto:adalite@vacuumlabs.com', target: '_blank'}, 'Contact us')
       ),
       '/',
       h(
-        'small',
+        'span',
         {class: 'contact-link'},
         h('a', {href: 'https://t.me/AdaLite', target: '_blank'}, 'Telegram')
       ),
       '/',
       h(
-        'small',
+        'span',
         {class: 'contact-link'},
-        h('a', {href: 'https://twitter.com/AdaLiteWallet', target: '_blank'}, '#AdaLite')
+        h('a', {href: 'https://twitter.com/AdaLiteWallet', target: '_blank'}, 'Twitter')
       )
     ),
     h(
@@ -103,20 +107,21 @@ const Footer = connect(
         )
       )
     ),
-    h(
-      'p',
-      undefined,
-      h('div', undefined, 'Conversion rates from '),
+    showConversionRates &&
       h(
-        'a',
-        {
-          class: 'contact-link',
-          href: 'https://www.cryptocompare.com/api/',
-          target: '_blank',
-        },
-        'CryptoCompare'
+        'p',
+        {class: 'rates'},
+        h('div', undefined, 'Conversion rates from '),
+        h(
+          'a',
+          {
+            class: 'contact-link',
+            href: 'https://www.cryptocompare.com/api/',
+            target: '_blank',
+          },
+          'CryptoCompare'
+        )
       )
-    )
   )
 )
 
