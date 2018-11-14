@@ -585,6 +585,7 @@ div.box.box-auto {
   margin-left: 1rem;
   transition: color var(--transition);
   cursor: pointer;
+  padding-bottom: 17px;
 }
 .navbar nav a:hover,
 .navbar nav a:active {
@@ -676,6 +677,9 @@ div.box.box-auto {
   .navbar .unauth-menu {
     font-size: 15px;
   }
+  .navbar nav a {
+    padding-bottom: 19px;
+  }
   .navbar nav a:hover,
   .navbar nav a:active {
     padding-bottom: 17px;
@@ -741,6 +745,7 @@ div.box.box-auto {
     margin-bottom: 1rem;
     display: block;
     text-align: center;
+    padding-bottom: 0;
   }
   .navbar nav a:active,
   .navbar nav a.active,
