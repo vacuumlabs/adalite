@@ -58,6 +58,7 @@
     "husky": "^0.14.3",
     "lint-staged": "^7.0.4",
     "prettier": "^1.12.1",
-    "prettier-eslint-cli": "^4.7.1"
+    "prettier-eslint-cli": "^4.7.1",
+    "release-it": "8.0.0"
   }
 }

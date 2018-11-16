@@ -1,0 +1,25 @@
+{
+  "src": {
+    "commitArgs": "-S",
+    "tagArgs": "-S"
+  },
+  "npm": {
+    "publish": false,
+    "publishPath": ".",
+    "tag": "latest",
+    "private": false,
+    "access": null,
+    "otp": null
+  },
+  "github": {
+    "release": true,
+    "releaseName": "%s",
+    "preRelease": false,
+    "draft": false,
+    "tokenRef": "GITHUB_TOKEN",
+    "assets": null,
+    "host": null,
+    "timeout": 0,
+    "proxy": false
+  }
+}
