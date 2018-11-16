@@ -2,6 +2,7 @@ const redis = require('redis')
 const device = require('device')
 const client = redis.createClient(process.env.REDIS_URL)
 const mung = require('express-mung')
+const normalizeUrl = require('normalize-url')
 
 const knownIps = new Set()
 
@@ -10,6 +11,13 @@ function getSlicedDate() {
     .toISOString()
     .split('T')[0]
     .split('-')
+}
+
+const isSameOrigin = (urlString1, urlString2) => {
+  return (
+    normalizeUrl(urlString1, {stripProtocol: true}) ===
+    normalizeUrl(urlString2, {stripProtocol: true})
+  )
 }
 
 const trackVisits = (req, res, next) => {
@@ -33,7 +41,11 @@ const trackVisits = (req, res, next) => {
 const trackTxSubmissionCount = mung.json((body, req, res) => {
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
     const [year, month, day] = getSlicedDate()
-    const key = `txSubmissions:${body.Right ? 'successful' : 'unsuccessful'}`
+    const key = `${
+      isSameOrigin(req.get('origin'), process.env.ADALITE_SERVER_URL)
+        ? 'txSubmissions'
+        : 'otherTxSubmissions'
+    }:${body.Right ? 'successful' : 'unsuccessful'}`
 
     client.incr(`${key}:total`)
     client.incr(`${key}:monthly:${year}-${month}`)

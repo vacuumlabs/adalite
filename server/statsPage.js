@@ -13,6 +13,14 @@ const getStats = async () => {
       'unsuccessful:monthly': [],
       'unsuccessful:daily': [],
     },
+    otherTxSubmissions: {
+      'successful:total': [],
+      'successful:monthly': [],
+      'successful:daily': [],
+      'unsuccessful:total': [],
+      'unsuccessful:monthly': [],
+      'unsuccessful:daily': [],
+    },
   }
 
   const response = []

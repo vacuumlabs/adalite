@@ -45,6 +45,7 @@
     "express-basic-auth": "^1.1.5",
     "express-mung": "^0.5.1",
     "isomorphic-fetch": "^2.2.1",
+    "normalize-url": "^4.0.0",
     "redis": "^2.8.0",
     "redisscan": "^2.0.0"
   },
