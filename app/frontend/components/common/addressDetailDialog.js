@@ -4,8 +4,9 @@ const connect = require('unistore/preact').connect
 const actions = require('../../actions')
 
 const Tooltip = require('./tooltip')
+const Modal = require('./modal')
 const CopyOnClick = require('./copyOnClick')
-const {CloseIcon, LinkIcon} = require('./svg')
+const {LinkIcon} = require('./svg')
 
 class AddressDetailDialogClass extends Component {
   componentDidUpdate() {
@@ -17,107 +18,85 @@ class AddressDetailDialogClass extends Component {
     return (
       showDetail &&
       h(
-        'div',
+        Modal,
         {
-          class: 'overlay',
-          onKeyDown: (e) => e.key === 'Escape' && closeAddressDetail(),
+          closeHandler: closeAddressDetail,
         },
-        !showVerification &&
-          h('div', {
-            class: 'overlay-close-layer',
-            onClick: closeAddressDetail,
-          }),
+        h('b', undefined, 'Address:'),
         h(
           'div',
-          {class: 'box'},
+          {class: 'full-address-row'},
           h(
             'span',
             {
-              class: 'overlay-close-button',
-              onClick: closeAddressDetail,
+              class: 'full-address selectable',
             },
-            h(CloseIcon)
-          ),
-          h(
+            showDetail.address
+          )
+        ),
+        showVerification
+          ? h(
             'div',
             undefined,
-            h('b', undefined, 'Address:'),
+            h('b', undefined, 'Derivation path:'),
             h(
               'div',
               {class: 'full-address-row'},
-              h(
-                'span',
-                {
-                  class: 'full-address selectable',
-                },
-                showDetail.address
-              )
+              h('span', {class: 'full-address'}, showDetail.bip32path)
             ),
-            showVerification
-              ? h(
-                'div',
-                undefined,
-                h('b', undefined, 'Derivation path:'),
-                h(
-                  'div',
-                  {class: 'full-address-row'},
-                  h('span', {class: 'full-address'}, showDetail.bip32path)
-                ),
-                h(
-                  'div',
-                  {class: 'text-center'},
-                  h('button', {onClick: verifyAddress}, 'Verify on Trezor')
-                )
-              )
-              : h(
-                'div',
-                undefined,
-                h(
-                  'div',
-                  {class: 'centered-row'},
-                  h('img', {
-                    src: new QRious({
-                      value: showDetail.address,
-                      level: 'M',
-                      size: 200,
-                    }).toDataURL(),
-                  })
-                ),
-                h(
-                  'div',
-                  {class: 'centered-row'},
-                  h(CopyOnClick, {
-                    value: showDetail.address,
-                    tabIndex: 0,
-                    copyBtnRef: (element) => {
-                      this.copyBtn = element
-                    },
-                  }),
-                  h(
-                    Tooltip,
-                    {tooltip: 'Examine via AdaScan.net'},
-                    h(
-                      'a',
-                      {
-                        href: `https://adascan.net/address/${showDetail.address}`,
-                        target: '_blank',
-                        class: 'address-link margin-1rem centered-row',
-                        tabIndex: 0,
-                        onKeyDown: (e) => {
-                          e.key === 'Enter' && e.target.click()
-                          if (e.key === 'Tab') {
-                            this.copyBtn.focus()
-                            e.preventDefault()
-                          }
-                        },
-                      },
-                      h(LinkIcon)
-                    )
-                  )
-                )
-              )
+            h(
+              'div',
+              {class: 'text-center'},
+              h('button', {onClick: verifyAddress}, 'Verify on Trezor')
+            )
           )
-        )
+          : h(
+            'div',
+            undefined,
+            h(
+              'div',
+              {class: 'centered-row'},
+              h('img', {
+                src: new QRious({
+                  value: showDetail.address,
+                  level: 'M',
+                  size: 200,
+                }).toDataURL(),
+              })
+            ),
+            h(
+              'div',
+              {class: 'centered-row'},
+              h(CopyOnClick, {
+                value: showDetail.address,
+                tabIndex: 0,
+                copyBtnRef: (element) => {
+                  this.copyBtn = element
+                },
+              }),
+              h(
+                Tooltip,
+                {tooltip: 'Examine via AdaScan.net'},
+                h(
+                  'a',
+                  {
+                    href: `https://adascan.net/address/${showDetail.address}`,
+                    target: '_blank',
+                    class: 'address-link margin-1rem centered-row',
+                    tabIndex: 0,
+                    onKeyDown: (e) => {
+                      e.key === 'Enter' && e.target.click()
+                      if (e.key === 'Tab') {
+                        this.copyBtn.focus()
+                        e.preventDefault()
+                      }
+                    },
+                  },
+                  h(LinkIcon)
+                )
+              )
+            )
+          )
       )
     )
   }

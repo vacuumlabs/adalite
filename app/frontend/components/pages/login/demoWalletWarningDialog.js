@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const Modal = require('../../common/modal')
 
 class DemoWalletWarningDialogClass {
   componentDidMount() {
@@ -9,11 +10,11 @@ class DemoWalletWarningDialogClass {
 
   render({closeDemoWalletWarningDialog}) {
     return h(
-      'div',
-      {class: 'overlay'},
+      Modal,
+      {closeHandler: closeDemoWalletWarningDialog},
       h(
         'div',
-        {class: 'box center'},
+        {class: 'center'},
         h('h4', undefined, 'Warning'),
         h(
           'p',

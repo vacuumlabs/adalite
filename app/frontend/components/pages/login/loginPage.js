@@ -19,6 +19,7 @@ class LoginPage extends Component {
     enableTrezor,
     showDemoWalletWarningDialog,
     logoutNotificationOpen,
+    displayAboutOverlay,
   }) {
     const authOption = (name, text) =>
       h(
@@ -53,7 +54,7 @@ class LoginPage extends Component {
         authMethod === 'trezor' && h(HardwareAuth, {enableTrezor, loadWallet}),
         authMethod === 'file' && h(KeyFileAuth)
       ),
-      h(AboutOverlay),
+      displayAboutOverlay && h(AboutOverlay),
       showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
       logoutNotificationOpen && h(LogoutNotification)
     )
@@ -67,6 +68,7 @@ module.exports = connect(
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
     logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,
+    displayAboutOverlay: state.displayAboutOverlay,
   }),
   actions
 )(LoginPage)

@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const Modal = require('../../common/modal')
 
 class LogoutNotification {
   componentDidMount() {
@@ -9,11 +10,13 @@ class LogoutNotification {
 
   render({setLogoutNotificationOpen}) {
     return h(
-      'div',
-      {class: 'overlay'},
+      Modal,
+      {
+        closeHandler: () => setLogoutNotificationOpen(false),
+      },
       h(
         'div',
-        {class: 'box center'},
+        {class: 'center'},
         h('h4', undefined, 'Notification'),
         h('p', undefined, 'You were logged out due to inactivity.'),
         h(

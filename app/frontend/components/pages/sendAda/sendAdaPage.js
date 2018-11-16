@@ -7,8 +7,8 @@ const printAda = require('../../../helpers/printAda')
 const printConversionRates = require('../../../helpers/printConversionRates')
 
 const Balance = require('../../common/balance')
+const Modal = require('../../common/modal')
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
-const {CloseIcon} = require('../../common/svg')
 
 class ThanksForDonationModal extends Component {
   componentDidMount() {
@@ -17,47 +17,30 @@ class ThanksForDonationModal extends Component {
 
   render({closeThanksForDonationModal}) {
     return h(
-      'div',
+      Modal,
       {
-        class: 'overlay',
-        onKeyDown: (e) => e.key === 'Escape' && closeThanksForDonationModal(),
+        closeHanlder: closeThanksForDonationModal,
       },
-      h('div', {
-        class: 'overlay-close-layer',
-        onClick: closeThanksForDonationModal,
-      }),
       h(
         'div',
-        {class: 'box'},
+        {
+          class: 'centered-row',
+        },
+        h('h3', undefined, 'Thank you for supporting AdaLite developers!')
+      ),
+      h(
+        'div',
+        {class: 'centered-row margin-top'},
         h(
-          'span',
+          'button',
           {
-            class: 'overlay-close-button',
-            onClick: closeThanksForDonationModal,
-          },
-          h(CloseIcon)
-        ),
-        h(
-          'div',
-          {
-            class: 'centered-row',
-          },
-          h('h3', undefined, 'Thank you for supporting AdaLite developers!')
-        ),
-        h(
-          'div',
-          {class: 'centered-row margin-top'},
-          h(
-            'button',
-            {
-              ref: (element) => {
-                this.thanksForDonationBtn = element
-              },
-              onClick: closeThanksForDonationModal,
-              onKeyDown: (e) => e.key === 'Enter' && e.target.click(),
+            ref: (element) => {
+              this.thanksForDonationBtn = element
             },
-            'OK'
-          )
+            onClick: closeThanksForDonationModal,
+            onKeyDown: (e) => e.key === 'Enter' && e.target.click(),
+          },
+          'OK'
         )
       )
     )

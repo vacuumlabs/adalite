@@ -1,7 +1,7 @@
 const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const CloseIcon = require('../../common/svg').CloseIcon
+const Modal = require('../../common/modal')
 
 class GenerateMnemonicDialogClass extends Component {
   componentDidMount() {
@@ -10,24 +10,13 @@ class GenerateMnemonicDialogClass extends Component {
 
   render({confirmGenerateMnemonicDialog, mnemonic, closeGenerateMnemonicDialog}) {
     return h(
-      'div',
+      Modal,
       {
-        class: 'overlay',
-        onKeyDown: (e) => {
-          e.key === 'Escape' && closeGenerateMnemonicDialog()
-        },
+        closeHandler: closeGenerateMnemonicDialog,
       },
       h(
         'div',
-        {class: 'mnemonic-box-header box center'},
-        h(
-          'span',
-          {
-            class: 'overlay-close-button',
-            onClick: closeGenerateMnemonicDialog,
-          },
-          h(CloseIcon)
-        ),
+        {class: 'margin-top-sm center'},
         h('h4', undefined, 'Generate a Mnemonic Phrase'),
         h(
           'h7',

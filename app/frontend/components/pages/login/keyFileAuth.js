@@ -2,8 +2,8 @@ const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
-const CloseIcon = require('../../common/svg').CloseIcon
 const KeypassJson = require('../../../wallet/keypass-json')
+const Modal = require('../../common/modal')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -19,6 +19,16 @@ class LoadKeyFileClass extends Component {
     this.unlockKeyfile = this.unlockKeyfile.bind(this)
     this.updatePassword = this.updatePassword.bind(this)
     this.closePasswordModal = this.closePasswordModal.bind(this)
+    this.escClosePasswordModal = this.escClosePasswordModal.bind(this)
+  }
+  escClosePasswordModal(e) {
+    e.key === 'Escape' && this.closePasswordModal()
+  }
+  componentDidMount() {
+    document.addEventListener('keydown', this.escClosePasswordModal, false)
+  }
+  componentWillUnmount() {
+    document.addEventListener('keydown', this.escClosePasswordModal, false)
   }
 
   componentDidUpdate() {
@@ -158,67 +168,49 @@ class LoadKeyFileClass extends Component {
         ),
         encrypted &&
           h(
-            'div',
+            Modal,
             {
-              class: 'overlay',
-              onKeyDown: (e) => {
-                e.key === 'Escape' && this.closePasswordModal()
-              },
+              closeHandler: this.closePasswordModal,
+              bodyClass: 'width-auto',
             },
-            h('div', {
-              class: 'overlay-close-layer',
-              onClick: this.closePasswordModal,
-            }),
             h(
               'div',
-              {class: 'box box-auto'},
-              h(
-                'span',
-                {
-                  class: 'overlay-close-button',
-                  onClick: this.closePasswordModal,
-                },
-                h(CloseIcon)
-              ),
+              {class: 'margin-1rem'},
+              h('h4', undefined, 'Enter password:'),
               h(
                 'div',
-                {class: 'margin-1rem'},
-                h('h4', undefined, 'Enter password:'),
+                {class: 'intro-input-row margin-top'},
+                h('input', {
+                  type: 'password',
+                  class: 'styled-input-nodiv styled-unlock-input',
+                  id: 'keyfile-password',
+                  name: 'keyfile-password',
+                  placeholder: 'Enter key file password',
+                  value: password,
+                  onInput: this.updatePassword,
+                  ref: (element) => {
+                    this.filePasswordField = element
+                  },
+                  onKeyDown: (e) => e.key === 'Enter' && this.unlockKeyfile(),
+                  autocomplete: 'nope',
+                }),
                 h(
-                  'div',
-                  {class: 'intro-input-row margin-top'},
-                  h('input', {
-                    type: 'password',
-                    class: 'styled-input-nodiv styled-unlock-input',
-                    id: 'keyfile-password',
-                    name: 'keyfile-password',
-                    placeholder: 'Enter key file password',
-                    value: password,
-                    onInput: this.updatePassword,
-                    ref: (element) => {
-                      this.filePasswordField = element
+                  'button',
+                  {
+                    disabled: !password,
+                    onClick: this.unlockKeyfile,
+                    onKeyDown: (e) => {
+                      e.key === 'Enter' && e.target.click()
+                      if (e.key === 'Tab') {
+                        this.filePasswordField.focus(e)
+                        e.preventDefault()
+                      }
                     },
-                    onKeyDown: (e) => e.key === 'Enter' && this.unlockKeyfile(),
-                    autocomplete: 'nope',
-                  }),
-                  h(
-                    'button',
-                    {
-                      disabled: !password,
-                      onClick: this.unlockKeyfile,
-                      onKeyDown: (e) => {
-                        e.key === 'Enter' && e.target.click()
-                        if (e.key === 'Tab') {
-                          this.filePasswordField.focus(e)
-                          e.preventDefault()
-                        }
-                      },
-                    },
-                    'Unlock'
-                  )
-                ),
-                error && h('div', {class: 'alert error key-file-error'}, error)
-              )
+                  },
+                  'Unlock'
+                )
+              ),
+              error && h('div', {class: 'alert error key-file-error'}, error)
             )
           ),
         error && h('div', {class: 'alert error key-file-error'}, error)

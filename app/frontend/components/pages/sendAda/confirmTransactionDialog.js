@@ -2,6 +2,7 @@ const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const printAda = require('../../../helpers/printAda')
+const Modal = require('../../common/modal')
 
 class ConfirmTransactionDialogClass {
   componentDidMount() {
@@ -11,14 +12,14 @@ class ConfirmTransactionDialogClass {
   render({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) {
     const total = sendAmount + transactionFee
     return h(
-      'div',
+      Modal,
       {
-        class: 'overlay',
-        onKeyDown: (e) => e.key === 'Escape' && cancelTransaction(),
+        closeHandler: cancelTransaction,
+        bodyClass: 'width-auto',
       },
       h(
         'div',
-        {class: 'box'},
+        {class: 'width-auto'},
         h('h4', undefined, 'Review transaction'),
         h(
           'div',
