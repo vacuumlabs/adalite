@@ -2,7 +2,7 @@ const directives = {
   'default-src': ["'self'"],
   'frame-src': ["'self'", 'https://connect.trezor.io/*', 'https://connect.trezor.io/'],
   'connect-src': ['*'],
-  'img-src': ["'self'"],
+  'img-src': ["'self'", 'data:'],
   'script-src': ["'self'", "'unsafe-inline'"],
   'style-src': ["'self'", "'unsafe-inline'"],
   'object-src': ["'none'"],
