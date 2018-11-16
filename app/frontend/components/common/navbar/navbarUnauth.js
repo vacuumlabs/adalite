@@ -9,7 +9,7 @@ const NavbarUnauth = () =>
     h(
       'div',
       {class: 'navbar-wrap-unauth'},
-      h('a', {class: 'title', href: '/'}, h(AdaLiteLogo), h('div', undefined, 'AdaLite')),
+      h('a', {class: 'title', href: '/'}, h(AdaLiteLogo)),
       h('div', {class: 'logo-version-number'}, APP_VERSION),
       h(
         'span',

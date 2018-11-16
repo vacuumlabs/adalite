@@ -566,9 +566,9 @@ div.box.box-auto {
 .navbar .title sup {
   align-self: flex-start;
 }
-.navbar .title img {
+.navbar .title svg {
   height: 2.5rem;
-  margin-right: 0.25rem;
+  margin-right: 1rem;
 }
 .navbar nav {
   display: flex;
@@ -658,8 +658,8 @@ div.box.box-auto {
 }
 .logo-version-number {
   position: absolute;
-  left: 53px;
-  top: 35px;
+  left: 160px;
+  top: 33.5px;
   font-size: 12px;
 }
 .inline {
@@ -1348,7 +1348,7 @@ div.box.box-auto {
   border-radius: 0.5em;
   position: absolute;
   left: 90px;
-  bottom: 0.15em;
+  bottom: -1em;
 }
 .public-wallet-warning-list {
   text-align: left;

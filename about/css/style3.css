@@ -304,6 +304,9 @@ h1, h2, h3, h4, h5, h6 {
   padding-left: 0;
   color: #fff;
 }
+#fh5co-header .navbar-brand.brand-dark {
+  display: none;
+}
 #fh5co-header.navbar-fixed-top {
   position: fixed !important;
   background: #fff;
@@ -316,6 +319,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 #fh5co-header.navbar-fixed-top .navbar-brand {
   color: #c24d67;
+}
+#fh5co-header.navbar-fixed-top .navbar-brand.brand-light {
+  display: none;
+}
+#fh5co-header.navbar-fixed-top .navbar-brand.brand-dark {
+  display: block;
+}
+@media screen and (max-width: 768px) {
+  #fh5co-header .navbar-brand.brand-light {
+    display: none;
+  }
+  #fh5co-header .navbar-brand.brand-dark {
+    display: block;
+  }
 }
 #fh5co-header.navbar-fixed-top #navbar li a {
   color: rgba(0, 0, 0, 0.5);

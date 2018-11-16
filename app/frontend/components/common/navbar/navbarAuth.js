@@ -51,8 +51,7 @@ const NavbarAuth = connect(
           class: 'title',
           onClick: () => window.history.pushState({}, 'txHistory', 'txHistory'),
         },
-        h(AdaLiteLogo),
-        h('span', undefined, 'AdaLite')
+        h(AdaLiteLogo)
       ),
       isDemoWallet ? h('div', {class: 'public-wallet-badge pulse'}, 'DEMO WALLET') : null,
       h('div', {class: 'logo-version-number'}, APP_VERSION),
