@@ -9,7 +9,15 @@ class ConfirmTransactionDialogClass {
     this.cancelTx.focus()
   }
 
-  render({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) {
+  render({
+    sendAddress,
+    sendAmount,
+    transactionFee,
+    submitTransaction,
+    cancelTransaction,
+    waitingForTrezor,
+    usingTrezor,
+  }) {
     const total = sendAmount + transactionFee
     return h(
       Modal,
@@ -50,10 +58,11 @@ class ConfirmTransactionDialogClass {
           ),
           h(
             'div',
-            {class: ''},
+            {class: 'flex-align'},
             h(
               'button',
               {
+                class: `${usingTrezor && waitingForTrezor ? 'waiting-for-trezor-button' : ''}`,
                 onClick: submitTransaction,
                 ref: (element) => {
                   this.confirmTx = element
@@ -66,7 +75,10 @@ class ConfirmTransactionDialogClass {
                   }
                 },
               },
-              'Confirm'
+              h('div', {
+                class: `${usingTrezor && waitingForTrezor ? 'loading-inside-button' : ''}`,
+              }),
+              usingTrezor && waitingForTrezor ? 'Waiting' : 'Confirm'
             ),
             h(
               'button',
@@ -88,7 +100,10 @@ class ConfirmTransactionDialogClass {
             )
           )
         )
-      )
+      ),
+      usingTrezor &&
+        waitingForTrezor &&
+        h('div', {class: 'transparent-overlay', onClick: (e) => e.stopPropagation()})
     )
   }
 }
@@ -98,6 +113,8 @@ module.exports = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmount: state.sendAmountForTransactionFee,
     transactionFee: state.transactionFee,
+    waitingForTrezor: state.waitingForTrezor,
+    usingTrezor: state.usingTrezor,
   }),
   actions
 )(ConfirmTransactionDialogClass)

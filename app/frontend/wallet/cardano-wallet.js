@@ -74,18 +74,15 @@ const CardanoWallet = async (options) => {
   // fetch unspent outputs list asynchronously
   getUnspentTxOutputs()
 
-  async function sendAda(address, coins) {
-    const signedTx = await prepareSignedTx(address, coins)
-
-    const response = await blockchainExplorer
-      .submitTxRaw(signedTx.txHash, signedTx.txBody)
-      .catch((e) => {
-        debugLog(e)
-        throw NamedError('TransactionRejectedByNetwork')
-      })
+  async function submitTx(signedTx) {
+    const {txBody, txHash} = signedTx
+    const response = await blockchainExplorer.submitTxRaw(txHash, txBody).catch((e) => {
+      debugLog(e)
+      throw NamedError('TransactionRejectedByNetwork')
+    })
 
     //TODO: refactor signing process so we dont need to reparse signed transaction for this
-    const {txAux} = parseTx(Buffer.from(signedTx.txBody, 'hex'))
+    const {txAux} = parseTx(Buffer.from(txBody, 'hex'))
     await updateUtxosFromTxAux(txAux)
 
     return response
@@ -373,12 +370,12 @@ const CardanoWallet = async (options) => {
   return {
     getId,
     getSecret,
-    sendAda,
+    submitTx,
+    prepareSignedTx,
     getBalance,
     getChangeAddress,
     getMaxSendableAmount,
     getTxFee,
-    _prepareSignedTx: prepareSignedTx,
     getHistory,
     isOwnAddress,
     getOwnAddressesWithMeta,

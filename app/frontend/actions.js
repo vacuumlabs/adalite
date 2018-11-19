@@ -413,13 +413,23 @@ module.exports = ({setState, getState}) => {
   }
 
   const submitTransaction = async (state) => {
-    loadingAction(state, 'Submitting transaction...')
+    if (state.usingTrezor) {
+      setState({waitingForTrezor: true})
+    } else {
+      loadingAction(state, 'Submitting transaction...')
+    }
+
     let sendResponse
 
     try {
       const address = state.sendAddress.fieldValue
       const amount = state.sendAmount.coins
-      const txSubmitResult = await wallet.sendAda(address, amount)
+      const signedTx = await wallet.prepareSignedTx(address, amount)
+      if (state.usingTrezor) {
+        setState({waitingForTrezor: false})
+        loadingAction(state, 'Submitting transaction...')
+      }
+      const txSubmitResult = await wallet.submitTx(signedTx)
 
       if (!txSubmitResult) {
         debugLog(txSubmitResult)
@@ -440,6 +450,7 @@ module.exports = ({setState, getState}) => {
     } finally {
       resetSendForm(state)
       setState({
+        waitingForTrezor: false,
         sendResponse,
       })
     }

@@ -6,7 +6,6 @@ const debugLog = require('../helpers/debugLog')
 const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
     ownUtxos: {},
-    overallTxCountSinceLastUtxoFetch: 0,
     addressInfos: {},
   })
 
@@ -88,14 +87,14 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     return (await selectUnusedAddresses(addresses)).length !== addresses.length
   }
 
-  async function getAddressInfo(address) {
+  function getAddressInfo(address) {
     const addressInfo = state.addressInfos[address]
     const maxAddressInfoAge = 10000
 
     if (!addressInfo || Date.now() - addressInfo.timestamp > maxAddressInfoAge) {
       state.addressInfos[address] = {
         timestamp: Date.now(),
-        data: await fetchAddressInfo(address),
+        data: fetchAddressInfo(address),
       }
     }
 
