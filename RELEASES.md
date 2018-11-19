@@ -1,18 +1,35 @@
 # Releases
 
-In this file we will go over some steps necessary for seting up and using our preffered tool for creating releases release-it. This tool assumes that SSH keys and Git remotes are configured correctly. Since this addtion was done to allow for signed releases this tutorial will cover setting up a GPG key and setting up signing of all comits.
+In this file we will go over some steps necessary for setting up and using [release-it](https://webpro.github.io/release-it/) -- our preferred tool for creating releases. This tool assumes that SSH keys and Git remotes are configured correctly. Below you will find information about how to setup an OpenPGP key and use it automatically when signing commits and releases.  This will help secure AdaLite against impostors and allow our users to verify the authenticity of our releases.
 
 ### GPG key
 
-You should follow [Github tutorial](https://help.github.com/articles/managing-commit-signature-verification/) to perform steps necessary to add a GPG key to your account if you have not added it yet. If genreating on Linux based systems GPG generating progam should be pre installed and kept up to date by the system. For other operational systems use the recommended tools. After you have added GPG key to your account you can setup commit signng.
+If you do not have a key yet, then you will need to take a moment to create one.
 
-### Commit Signing
+Install "Gnu Privacy Guard" (`gpg`) if needed:
+
+* Linux: `gpg` should be pre-installed already, if not use your package manager to install.
+* macOS: [GPG Suite](https://gpgtools.org/)
+* Windows: [gpg4win](http://gpg4win.org/)
+* For other operating systems, use the recommended installation process for your platform.
+
+Once you have `gpg` installed, you can follow [this simple tutorial](https://help.github.com/articles/generating-a-new-gpg-key/) on how to generate a key.
+
+**Note:** the OpenPGP protocol is very powerful and offers many advanced options for securing your digital identity.  We recommend reading more about how it works and [best practices](https://riseup.net/en/gpg-best-practices) before jumping in blindly.  A properly generated / secured key may be used for 10+ years.
+
+### Adding your key to GitHub
+
+Follow this [GitHub tutorial](https://help.github.com/articles/managing-commit-signature-verification/) to add your public key to your GitHub account.  This will allow the platform to verify each commit and present a green icon letting users know it was properly signed.
+
+### Signing your commits
+
+After you have generated a key, and uploaded the public key to your GitHub account, you can setup commit signing in `git`.
 
 #### Terminal
 
-When using terminal to commit and you wish to sign your commits you have couple of options:
+When using terminal you have a couple options when signing commits:
 
-1.  Configure Git to sign every commit either for repository by running in the folder `git config commit.gpgsign true` or for your accoutn by using `git config --global commit.gpgsign true`
+1.  Configure Git to sign every commit either for repository by running in the folder `git config commit.gpgsign true` or for your account by using `git config --global commit.gpgsign true` (recommended)
 2.  Sign specific commits by adding argument `-S` when signing your commit or `-s` when singing off on others commits
 
 #### VS Code
@@ -21,22 +38,35 @@ If you are using VS Code to commit, you will need to do do the first option for 
 
 #### Release-it
 
-Current release-it configuration is setup to sign commits created by this tool.
+The current `release-it` configuration is setup to sign commits by default.
 
 ### Tag signing
 
-Since for creating tags and releases whe should use the tool release-it which is in dev-dependecies of this project, there little to no reason to describe tag signing.
-
-Release-it has been configured to do tag signing by default
+When creating tags and releases, we should use the tool `release-it` (found is in dev-dependecies of this project). Release-it has been configured to do tag signing by default.
 
 ### Release-it installation and usage
 
-Since we have this tool in dev dependencies, it will be installed when running `yarn install`. This tool needs repository to include `package.json` file which needs to contain a valid JSON, that can be even empty first time.
+Since we have this tool in dev dependencies, it will be installed when running `yarn install`. This tool needs the repository to include a file named `package.json`.  The file must be valid JSON or an empty file the first time it is run.
 
-For using this tool use `yarn release-it` with correct arguments. Basically most straightforward usage would be to use this calls:
+Use `yarn release-it` with correct arguments. Here are some examples:
 
 1.  `yarn release-it patch` to release a patch version
 2.  `yarn release-it minor` to release a minor version
 3.  `yarn release-it major` to release a major version
 
-Other calls can be used and can be found on [release-it website](https://webpro.github.io/release-it/).
+Other calls can be used and can be found on the [release-it website](https://webpro.github.io/release-it/).
+
+
+## Further considerations
+
+Because anyone can create an OpenPGP key using whatever name / email address they choose, we need a way to establish the authenticity of keys.  This is normally done by publishing a fingerprint of the key onto various platforms (Twitter, GitHub profile, [keybase.io](keybase.io), etc) so that nobody can impersonate you.  Meeting and verifying someone's key fingerprint in-person is the only way to be 100% sure it is real (see below).
+
+### Getting your key fingerprint
+
+`gpg -K --fingerprint YOUR_EMAIL_ADDRESS`
+
+Look for the line saying: `Key fingerprint = `
+
+### Web Of Trust
+
+Developers should also consider meeting each other in person and verifying key fingerprints.  They can then **[sign each other's keys](https://www.phildev.net/pgp/gpgsigning.html)** creating a secure, decentralized web of verified keys.  In projects like Bitcoin Core, this is standard practice amongst developers.
