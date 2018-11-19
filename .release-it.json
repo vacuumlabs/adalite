@@ -1,7 +1,9 @@
 {
   "src": {
     "commitArgs": "-S",
-    "tagArgs": "-S"
+    "tagArgs": "-S",
+    "commitMessage": "%s",
+    "tagName": "v%s"
   },
   "npm": {
     "publish": false,
@@ -13,7 +15,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "%s",
+    "releaseName": "v%s",
     "preRelease": false,
     "draft": false,
     "tokenRef": "GITHUB_TOKEN",
