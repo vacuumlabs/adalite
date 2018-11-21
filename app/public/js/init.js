@@ -58,7 +58,7 @@ function loadScript(success) {
       '<!doctype html>' +
       '<html>' +
         '<head>' +
-          '<title>AdaLite Wallet</title>' +
+          '<title>AdaLite - Web Wallet for Cardano</title>' +
           '<link rel="icon" type="image/ico" href="assets/favicon.ico">' +
         '</head>' +
         '<body>' +

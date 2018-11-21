@@ -40,13 +40,18 @@ app.get('*', (req, res) => {
   <html>
 
     <head>
-      <title>AdaLite Wallet</title>
+      <title>AdaLite - Web Wallet for Cardano</title>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="robots" content="index,follow">
+
       <script src="js/init.js"></script>
       <link rel="stylesheet" type="text/css" href="css/styles.css">
       <link rel="icon" type="image/ico" href="assets/favicon.ico">
-      <noscript>Your browser does not support JavaScript or it is turned off.</noscript>
+      <noscript>
+        Your browser does not support JavaScript or it is turned off.<br/>
+        <a href="/about">Link to about page</a>
+      </noscript>
     </head>
 
     <body data-config='${JSON.stringify(frontendConfig)}'>
