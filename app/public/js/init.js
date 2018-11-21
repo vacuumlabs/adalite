@@ -67,6 +67,7 @@ function loadScript(success) {
             '<li><a href="https://www.google.com/chrome">Google Chrome</a></li>' +
             '<li><a href="https://www.mozilla.org/en-US/firefox">Firefox</a></li>' +
           '</ul>' +
+          '<a href="/about">Link to about page</a>' +
         '</body>' +
       '</html>'
     )
