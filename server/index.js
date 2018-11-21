@@ -40,7 +40,7 @@ app.get('*', (req, res) => {
   <html>
 
     <head>
-      <title>AdaLite - Web Wallet for Cardano</title>
+      <title>AdaLite - Cardano Wallet</title>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="robots" content="index,follow">
