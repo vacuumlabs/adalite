@@ -2,31 +2,12 @@ const assert = require('assert')
 const cbor = require('cbor')
 
 const {HARDENED_THRESHOLD} = require('../../frontend/wallet/constants')
+const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
 const CardanoWalletSecretCryptoProvider = require('../../frontend/wallet/cardano-wallet-secret-crypto-provider')
 const tx = require('../../frontend/wallet/transaction')
-const range = require('../../frontend/wallet/helpers/range')
 const mnemonicOrHdNodeStringToWalletSecret = require('../../frontend/wallet/helpers/mnemonicOrHdNodeStringToWalletSecret')
+const cryptoProviderSettings = require('./common/crypto-provider-settings')
 
-const cryptoProviderSettings = [
-  {
-    secret: 'cruise bike bar reopen mimic title style fence race solar million clean',
-    network: 'mainnet',
-  },
-  {
-    secret: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
-    network: 'mainnet',
-  },
-  {
-    secret:
-      'A859BCAD5DE4FD8DF3F3BFA24793DBA52785F9A98832300844F028FF2DD75A5FCD24F7E51D3A2A72AC85CC163759B1103EFB1D685308DCC6CD2CCE09F70C948501E949B5B7A72F1AD304F47D842733B3481F2F096CA7DDFE8E1B7C20A1ACAFBB66EE772671D4FEF6418F670E80AD44D1747A89D75A4AD386452AB5DC1ACC32B3',
-    network: 'mainnet',
-  },
-  {
-    secret:
-      'cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh',
-    network: 'mainnet',
-  },
-]
 const cryptoProviders = []
 
 const initCryptoProvider = async (settings, i) => {
@@ -90,100 +71,6 @@ describe('secret key derivation', () => {
   })
 })
 
-describe('address generation from secret key', () => {
-  const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
-  it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
-    const derivedAddress1 = await cryptoProviders[2].deriveAddress([], 'hardened')
-    assert.equal(derivedAddress1, expectedAddress1)
-
-    const derivedAddress2 = await cryptoProviders[2].deriveAddress([], 'nonhardened')
-    assert.equal(derivedAddress2, expectedAddress1)
-  })
-
-  const expectedAddress2 =
-    'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
-  it('should properly generate some address from hardened key - child index starts with 1 in binary', async () => {
-    const derivedAddress2 = await cryptoProviders[2].deriveAddress(
-      [HARDENED_THRESHOLD, childIndex2],
-      'hardened'
-    )
-    assert.equal(derivedAddress2, expectedAddress2)
-  })
-
-  const expectedAddress3 =
-    'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
-  it('should properly generate some address from nonhardened key in hardened mode - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await cryptoProviders[2].deriveAddress(
-      [HARDENED_THRESHOLD, childIndex3],
-      'hardened'
-    )
-    assert.equal(derivedAddress3, expectedAddress3)
-  })
-
-  it('should properly generate some address from nonhardened key in nonhardened mode - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await cryptoProviders[2].deriveAddress(
-      [HARDENED_THRESHOLD, childIndex3],
-      'nonhardened'
-    )
-    assert.equal(derivedAddress3, expectedAddress3)
-  })
-})
-
-describe('wallet addresses derivation scheme V1', () => {
-  const expectedWalletAddresses = [
-    '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',
-  ]
-
-  it('should derive the right sequence of addresses from the root secret key', async () => {
-    const derivationPaths = range(HARDENED_THRESHOLD + 1, HARDENED_THRESHOLD + 21).map((i) => [
-      HARDENED_THRESHOLD,
-      i,
-    ])
-    const walletAddresses = await cryptoProviders[2].deriveAddresses(derivationPaths, 'hardened')
-    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
-  })
-})
-
-describe('wallet addresses derivation scheme V2', () => {
-  const expectedWalletAddresses = [
-    'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
-    'Ae2tdPwUPEZ7dnds6ZyhQdmgkrDFFPSDh8jG9RAhswcXt1bRauNw5jczjpV',
-    'Ae2tdPwUPEZ8LAVy21zj4BF97iWxKCmPv12W6a18zLX3V7rZDFFVgqUBkKw',
-    'Ae2tdPwUPEZ7Ed1V5G9oBoRoK3sbgFU8b9iZY2kegf4s6228EwVLRSq9NzP',
-    'Ae2tdPwUPEYyLw6UJRKnbbudG8PJR7KfPhioRW8m1BohkFAqR44pPg6BYVZ',
-    'Ae2tdPwUPEYw9wMWUnyutGYXdpVqNStf4g3TAxiAYMyACQAWXNFvs3fZ8do',
-    'Ae2tdPwUPEZ9wMYpKKXJLAEa5JV2CKBoiFvKfuqdtDLMARkaZG9P4K7ZRjX',
-    'Ae2tdPwUPEZHAZxwzS7MrSS8nc6DXt4Nj8FvrYHXCVDkzVEjrAfVxxZEL4H',
-    'Ae2tdPwUPEYz8hGBRWCNJFm2bDuSHBbphMT32wPxALXTVPWrRCtZhSPbRen',
-    'Ae2tdPwUPEZHxx6ug6oyXREcwQ1tjBY4D2B6M7rYL9LhbAXfRPfMtm3nV4J',
-  ]
-
-  it('should derive the right sequence of addresses from the root secret key', async () => {
-    const derivationPaths = range(0, 10).map((i) => [HARDENED_THRESHOLD, 0, i])
-    const walletAddresses = await cryptoProviders[3].deriveAddresses(derivationPaths, 'hardened')
-    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
-  })
-})
-
 describe('checking input integrity', () => {
   const rawTxBody = Buffer.from(
     '839f8200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c008200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c01ff9f8282d818584283581c2cdf2a4727c91392bcd1dc1df64e4b5a3a3ddb5645226616b651b90aa101581e581c140539c64edded60a7f2d3693300e8b2463207803127d23562295bf3001a5562e2a21a000186a08282d818584283581cfcca7f1da7a330be2cb4ff273e3b8e2bd77c3cdcd3e8d8381e0d9e49a101581e581c140539c64edded60a7f2de696f5546c042bbc8749c95e836b09b7884001aead6cd071a002bc253ffa0',
@@ -242,6 +129,21 @@ describe('checking input integrity', () => {
 
 describe('transaction signing', () => {
   it('should properly compute transaction witnesses', async () => {
+    const addressToAbsPathMapper = (addr) => {
+      const mapping = {
+        // eslint-disable-next-line max-len
+        DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5: derivationSchemes.v1.toAbsoluteDerivationPath(
+          [2147483648, 0, 2147483655]
+        ),
+        // eslint-disable-next-line max-len
+        DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz: derivationSchemes.v1.toAbsoluteDerivationPath(
+          [2147483648, 0, 2147483658]
+        ),
+      }
+
+      return mapping[addr]
+    }
+
     const txInputs = [
       tx.TxInputFromUtxo({
         txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
@@ -273,7 +175,10 @@ describe('transaction signing', () => {
     ]
 
     const txAux = tx.TxAux(txInputs, txOutputs, {})
-    const txSignedStructured = await cryptoProviders[1]._signTxGetStructured(txAux)
+    const txSignedStructured = await cryptoProviders[1]._signTxGetStructured(
+      txAux,
+      addressToAbsPathMapper
+    )
 
     const witnessesSerialized = cbor.encode(txSignedStructured.witnesses).toString('hex')
 

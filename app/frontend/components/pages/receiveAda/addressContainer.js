@@ -12,7 +12,7 @@ const AddressContainer = connect(
   h(
     'div',
     {class: 'address-wrap'},
-    h('b', {class: 'address address-start no-events'}, `/${bip32path.split('/')[5]}`),
+    h('b', {class: 'address address-start no-events'}, `/${bip32path.split('/').pop()}`),
     h(
       'span',
       {class: 'address shrinked no-events'},

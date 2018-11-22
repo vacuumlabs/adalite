@@ -1,6 +1,6 @@
 const {generateMnemonic} = require('./wallet/mnemonic')
 const {ADALITE_CONFIG} = require('./config')
-const {DERIVATION_SCHEMES} = require('./wallet/constants')
+const derivationSchemes = require('./wallet/derivation-schemes')
 const FileSaver = require('file-saver')
 const {
   sendAddressValidator,
@@ -67,20 +67,12 @@ module.exports = ({setState, getState}) => {
     loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined})
     switch (cryptoProvider) {
       case 'trezor':
-        try {
-          wallet = await Cardano.CardanoWallet({
-            cryptoProvider: 'trezor',
-            config: ADALITE_CONFIG,
-            network: 'mainnet',
-            derivationScheme: DERIVATION_SCHEMES.v2,
-          })
-        } catch (e) {
-          debugLog(e)
-          return setState({
-            loading: false,
-            walletLoadingError: {code: 'TrezorRejected'},
-          })
-        }
+        wallet = await Cardano.CardanoWallet({
+          cryptoProvider: 'trezor',
+          config: ADALITE_CONFIG,
+          network: 'mainnet',
+          derivationScheme: derivationSchemes.v2,
+        })
         break
       case 'mnemonic':
         secret = secret.trim()
@@ -89,7 +81,7 @@ module.exports = ({setState, getState}) => {
           mnemonicOrHdNodeString: secret,
           config: ADALITE_CONFIG,
           network: 'mainnet',
-          derivationScheme: DERIVATION_SCHEMES.v1,
+          derivationScheme: derivationSchemes.v1,
         })
         break
       default:
@@ -103,7 +95,7 @@ module.exports = ({setState, getState}) => {
     }
     try {
       const walletIsLoaded = true
-      const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
+      const ownAddressesWithMeta = await wallet.getVisibleAddressesWithMeta()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
       const conversionRates = getConversionRates(state)
@@ -138,11 +130,12 @@ module.exports = ({setState, getState}) => {
         })
       }
     } catch (e) {
-      debugLog(e.toString())
+      debugLog(e)
       setState({
         walletLoadingError: {
           code: 'WalletInitializationError',
         },
+        loading: false,
       })
     }
     return true
@@ -238,7 +231,7 @@ module.exports = ({setState, getState}) => {
     loadingAction(state, 'Reloading wallet info...')
 
     const balance = await wallet.getBalance()
-    const ownAddressesWithMeta = await wallet.getOwnAddressesWithMeta()
+    const ownAddressesWithMeta = await wallet.getVisibleAddressesWithMeta()
     const transactionHistory = await wallet.getHistory()
     const conversionRates = getConversionRates(state)
 
@@ -254,9 +247,10 @@ module.exports = ({setState, getState}) => {
         conversionRates: await conversionRates,
       })
     } catch (e) {
-      debugLog('Could not fetch conversion rates.')
+      debugLog(`Could not fetch conversion rates: ${e}`)
       setState({
         conversionRates: null,
+        loading: false,
       })
     }
   }

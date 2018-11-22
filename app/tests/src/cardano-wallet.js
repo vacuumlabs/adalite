@@ -2,8 +2,8 @@ const assert = require('assert')
 const cbor = require('cbor')
 
 const {CardanoWallet, txFeeFunction} = require('../../frontend/wallet/cardano-wallet')
-const {DERIVATION_SCHEMES} = require('../../frontend/wallet/constants')
-const mockNetwork = require('./mock')
+const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
+const mockNetwork = require('./common/mock')
 const {TxAux} = require('../../frontend/wallet/transaction')
 
 const testSeed = 39
@@ -27,7 +27,7 @@ const unusedWalletConfig = {
   config: mockConfig1,
   randomSeed: testSeed,
   network: 'mainnet',
-  derivationScheme: DERIVATION_SCHEMES.v1,
+  derivationScheme: derivationSchemes.v1,
 }
 
 const usedWalletConfig = {
@@ -37,7 +37,7 @@ const usedWalletConfig = {
   config: mockConfig2,
   randomSeed: testSeed,
   network: 'mainnet',
-  derivationScheme: DERIVATION_SCHEMES.v1,
+  derivationScheme: derivationSchemes.v1,
 }
 
 const smallUtxosWalletConfig = {
@@ -46,7 +46,7 @@ const smallUtxosWalletConfig = {
   config: mockConfig1,
   randomSeed: testSeed,
   network: 'mainnet',
-  derivationScheme: DERIVATION_SCHEMES.v1,
+  derivationScheme: derivationSchemes.v1,
 }
 
 const wallets = {}
@@ -115,13 +115,13 @@ describe('wallet change address computation', () => {
 
 describe('test fetching wallet addresses', () => {
   it('should properly fetch list of wallet addresses with metadata', async () => {
-    const addresses = await wallets.used.getOwnAddressesWithMeta()
+    const addresses = await wallets.used.getVisibleAddressesWithMeta()
 
     assert.equal(
       addresses[4].address,
       'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu'
     )
-    assert.equal(addresses[4].bip32StringPath, "m/44'/1815'/0'/0/4'")
+    assert.equal(addresses[4].bip32StringPath, "m/0'/4'")
   })
 })
 

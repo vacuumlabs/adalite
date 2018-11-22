@@ -89,7 +89,7 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
 
   function getAddressInfo(address) {
     const addressInfo = state.addressInfos[address]
-    const maxAddressInfoAge = 10000
+    const maxAddressInfoAge = 15000
 
     if (!addressInfo || Date.now() - addressInfo.timestamp > maxAddressInfoAge) {
       state.addressInfos[address] = {
