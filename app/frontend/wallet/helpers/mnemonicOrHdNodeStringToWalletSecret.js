@@ -2,10 +2,10 @@ const {decodePaperWalletMnemonic, walletSecretFromMnemonic} = require('cardano-c
 
 const {isMnemonicInPaperWalletFormat} = require('../mnemonic')
 const {validateMnemonic} = require('../mnemonic')
-const {DERIVATION_SCHEMES} = require('../constants')
+const derivationSchemes = require('../derivation-schemes')
 
 const guessDerivationSchemeFromMnemonic = (mnemonic) => {
-  return mnemonic.split(' ').length === 12 ? DERIVATION_SCHEMES.v1 : DERIVATION_SCHEMES.v2
+  return mnemonic.split(' ').length === 12 ? derivationSchemes.v1 : derivationSchemes.v2
 }
 
 const mnemonicToWalletSecret = async (mnemonic, derivationScheme) => {
@@ -29,7 +29,7 @@ const mnemonicOrHdNodeStringToWalletSecret = async (
     walletSecret = await mnemonicToWalletSecret(mnemonic, derivationScheme)
   } else {
     walletSecret = Buffer.from(mnemonicOrHdNodeString, 'hex')
-    derivationScheme = preferredDerivationScheme || DERIVATION_SCHEMES.v1
+    derivationScheme = preferredDerivationScheme || derivationSchemes.v1
   }
 
   return {

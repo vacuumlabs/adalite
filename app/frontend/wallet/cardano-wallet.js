@@ -4,19 +4,14 @@ const {base58} = require('cardano-crypto.js')
 const debugLog = require('../helpers/debugLog')
 const {generateMnemonic, validateMnemonic} = require('./mnemonic')
 const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
+const AddressManager = require('./address-manager')
 const BlockchainExplorer = require('./blockchain-explorer')
 const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypto-provider')
 const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
-const {
-  HARDENED_THRESHOLD,
-  MAX_INT32,
-  TX_WITNESS_SIZE_BYTES,
-  DERIVATION_SCHEMES,
-} = require('./constants')
+const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES} = require('./constants')
+const derivationSchemes = require('./derivation-schemes.js')
 const shuffleArray = require('./helpers/shuffleArray')
-const range = require('./helpers/range')
-const {toBip32StringPath} = require('./helpers/bip32')
 const {parseTx} = require('./helpers/cbor-parsers')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
@@ -39,7 +34,7 @@ const CardanoWallet = async (options) => {
     overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
     network,
-    derivationScheme: options.derivationScheme || DERIVATION_SCHEMES.v2,
+    derivationScheme: options.derivationScheme || derivationSchemes.v2,
   }
 
   const blockchainExplorer = BlockchainExplorer(config, state)
@@ -66,10 +61,21 @@ const CardanoWallet = async (options) => {
     throw new Error(`Uknown crypto provider: ${options.cryptoProvider}`)
   }
 
-  state.addressDerivationMode =
-    options.addressDerivationMode || state.derivationScheme.defaultDerivationMode
+  const visibleAddressManager = AddressManager({
+    accountIndex: state.accountIndex,
+    addressLimit: config.ADALITE_WALLET_ADDRESS_LIMIT,
+    cryptoProvider,
+    derivationScheme: state.derivationScheme,
+    isChange: false,
+  })
 
-  await discoverOwnAddresses()
+  const changeAddressManager = AddressManager({
+    accountIndex: state.accountIndex,
+    addressLimit: config.ADALITE_WALLET_ADDRESS_LIMIT,
+    cryptoProvider,
+    derivationScheme: state.derivationScheme,
+    isChange: true,
+  })
 
   // fetch unspent outputs list asynchronously
   getUnspentTxOutputs()
@@ -92,10 +98,6 @@ const CardanoWallet = async (options) => {
     return cryptoProvider.getWalletSecret()
   }
 
-  async function getId() {
-    return await cryptoProvider.getWalletId()
-  }
-
   async function prepareSignedTx(address, coins) {
     const txAux = await prepareTxAux(address, coins).catch((e) => {
       debugLog(e)
@@ -106,12 +108,23 @@ const CardanoWallet = async (options) => {
       txAux.inputs.map(({txHash}) => blockchainExplorer.fetchTxRaw(txHash))
     )
 
-    const signedTx = await cryptoProvider.signTx(txAux, rawInputTxs).catch((e) => {
-      debugLog(e)
-      throw NamedError('TransactionRejected')
-    })
+    const signedTx = await cryptoProvider
+      .signTx(txAux, rawInputTxs, getAddressToAbsPathMapper())
+      .catch((e) => {
+        debugLog(e)
+        throw NamedError('TransactionRejected')
+      })
 
     return signedTx
+  }
+
+  function getAddressToAbsPathMapper() {
+    const mapping = Object.assign(
+      visibleAddressManager.getAddressToAbsPathMapping(),
+      changeAddressManager.getAddressToAbsPathMapping()
+    )
+
+    return (address) => mapping[address]
   }
 
   async function prepareTxAux(address, coins) {
@@ -156,19 +169,19 @@ const CardanoWallet = async (options) => {
   }
 
   async function getBalance() {
-    const addresses = await discoverOwnAddresses()
+    const addresses = await discoverAllAddresses()
 
-    return await blockchainExplorer.getBalance(addresses)
+    return blockchainExplorer.getBalance(addresses)
   }
 
   async function getHistory() {
-    const addresses = await discoverOwnAddresses()
+    const addresses = await discoverAllAddresses()
 
-    return await blockchainExplorer.getTxHistory(addresses)
+    return blockchainExplorer.getTxHistory(addresses)
   }
 
-  async function fetchTxInfo(txHash) {
-    return await blockchainExplorer.fetchTxInfo(txHash)
+  function fetchTxInfo(txHash) {
+    return blockchainExplorer.fetchTxInfo(txHash)
   }
 
   function isUtxoProfitable(utxo) {
@@ -268,14 +281,14 @@ const CardanoWallet = async (options) => {
 
   async function getChangeAddress() {
     // if we used all available addresses return random address from the available ones
-    const ownAddresses = await discoverOwnAddresses()
+    const addresses = await changeAddressManager.discoverAddresses()
     const randomSeedGenerator = new PseudoRandom(state.randomSeed)
 
-    return ownAddresses[randomSeedGenerator.nextInt() % ownAddresses.length]
+    return addresses[randomSeedGenerator.nextInt() % addresses.length]
   }
 
   async function getUnspentTxOutputs() {
-    const addresses = await discoverOwnAddresses()
+    const addresses = await discoverAllAddresses()
     const currentOverallTxCount = await blockchainExplorer.getOverallTxCount(addresses)
 
     if (state.overallTxCountSinceLastUtxoFetch < currentOverallTxCount) {
@@ -292,36 +305,30 @@ const CardanoWallet = async (options) => {
     return Object.values(state.ownUtxos)
   }
 
-  async function discoverOwnAddresses() {
-    const childIndexBegin = state.derivationScheme.startAddressIndex
-    const childIndexEnd = childIndexBegin + config.ADALITE_WALLET_ADDRESS_LIMIT
-    const derivationPaths = range(childIndexBegin, childIndexEnd).map((i) => [
-      state.accountIndex,
-      0,
-      i,
-    ])
+  async function discoverAllAddresses() {
+    const visibleAddresses = await visibleAddressManager.discoverAddresses()
+    const changeAddresses = await changeAddressManager.discoverAddresses()
 
-    return await cryptoProvider.deriveAddresses(derivationPaths, state.addressDerivationMode)
+    return visibleAddresses[0] === changeAddresses[0]
+      ? visibleAddresses
+      : visibleAddresses.concat(changeAddresses)
   }
 
-  async function getOwnAddressesWithMeta() {
-    const addresses = await discoverOwnAddresses()
-
-    return Promise.all(
-      addresses.map(async (address) => {
-        const derivationPath = await cryptoProvider.getDerivationPathFromAddress(address)
-        const bip32StringPath = toBip32StringPath(derivationPath)
-        return {
-          address,
-          bip32StringPath,
-        }
-      })
-    )
+  function getVisibleAddressesWithMeta() {
+    return visibleAddressManager.discoverAddressesWithMeta()
   }
 
   async function isOwnAddress(addr) {
-    const addresses = await discoverOwnAddresses()
+    const addresses = await discoverAllAddresses()
     return addresses.find((address) => address === addr) !== undefined
+  }
+
+  function verifyAddress(addr) {
+    if (!cryptoProvider.trezorVerifyAddress) {
+      throw Error('unsupported operation: verifyAddress')
+    }
+
+    return cryptoProvider.trezorVerifyAddress(addr, getAddressToAbsPathMapper())
   }
 
   async function getNewUtxosFromTxAux(txAux) {
@@ -368,7 +375,6 @@ const CardanoWallet = async (options) => {
   }
 
   return {
-    getId,
     getSecret,
     submitTx,
     prepareSignedTx,
@@ -378,9 +384,9 @@ const CardanoWallet = async (options) => {
     getTxFee,
     getHistory,
     isOwnAddress,
-    getOwnAddressesWithMeta,
+    getVisibleAddressesWithMeta,
     _prepareTxAux: prepareTxAux,
-    verifyAddress: cryptoProvider.trezorVerifyAddress,
+    verifyAddress,
     fetchTxInfo,
     _getNewUtxosFromTxAux: getNewUtxosFromTxAux,
   }

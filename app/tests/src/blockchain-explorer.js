@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 const BlockchainExplorer = require('../../frontend/wallet/blockchain-explorer')
-const mockNetwork = require('./mock')
+const mockNetwork = require('./common/mock')
 
 const mockConfig = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',

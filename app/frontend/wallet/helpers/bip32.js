@@ -21,9 +21,7 @@ function fromBip32Path(bip32Path) {
 }
 
 function toBip32StringPath(derivationPath) {
-  const bip32Path = toBip32Path(derivationPath)
-
-  return `m/${bip32Path
+  return `m/${derivationPath
     .map((item) => (item % HARDENED_THRESHOLD) + (item >= HARDENED_THRESHOLD ? "'" : ''))
     .join('/')}`
 }

@@ -4,6 +4,8 @@ function playsNice(cb) {
     '(function() {' +
       // destructuring binding
       '({a, b} = {a: 10, b: 20, c: 30, d: 40});' +
+      // destructuring assignment in function params
+      'function f0({a, b}) {return a + b}' +
       // const, let
       'const c1 = 5; let var1 = 5;' +
       // async functions
