@@ -132,22 +132,29 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     const nonemptyAddresses = await selectNonemptyAddresses(addresses)
     const chunks = range(0, Math.ceil(nonemptyAddresses.length / 10))
 
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
+    const url = 'https://iohk-mainnet.yoroiwallet.com/api/txs/utxoForAddresses'
     const response = (await Promise.all(
       chunks.map(async (index) => {
-        return (await request(url, 'POST', JSON.stringify(nonemptyAddresses.slice(index, 10)), {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        })).Right
+        return await request(
+          url,
+          'POST',
+          JSON.stringify({
+            addresses: nonemptyAddresses.slice(index, 10),
+          }),
+          {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          }
+        )
       })
     )).reduce((acc, cur) => acc.concat(cur), [])
 
     return response.map((elem) => {
       return {
-        txHash: elem.cuId,
-        address: elem.cuAddress,
-        coins: parseInt(elem.cuCoins.getCoin, 10),
-        outputIndex: elem.cuOutIndex,
+        txHash: elem.tx_hash,
+        address: elem.receiver,
+        coins: parseInt(elem.amount, 10),
+        outputIndex: elem.tx_index,
       }
     })
   }
