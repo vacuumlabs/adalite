@@ -32,6 +32,8 @@ const initialState = {
   enableTrezor: ADALITE_CONFIG.ADALITE_ENABLE_TREZOR,
   showDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
+  rawTransactionOpen: false,
+  rawTransaction: '',
 }
 
 const createStore = () =>

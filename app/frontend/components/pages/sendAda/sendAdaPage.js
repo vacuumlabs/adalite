@@ -9,6 +9,7 @@ const printConversionRates = require('../../../helpers/printConversionRates')
 const Balance = require('../../common/balance')
 const Modal = require('../../common/modal')
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
+const RawTransactionModal = require('./rawTransactionModal')
 
 class ThanksForDonationModal extends Component {
   componentDidMount() {
@@ -59,6 +60,7 @@ class SendAdaPage extends Component {
     sendAddress,
     sendAddressValidationError,
     sendAmount,
+    coinsAmount,
     sendAmountValidationError,
     updateAddress,
     updateAmount,
@@ -71,6 +73,10 @@ class SendAdaPage extends Component {
     showThanksForDonation,
     closeThanksForDonationModal,
     conversionRates,
+    getRawTransaction,
+    rawTransactionOpen,
+    setRawTransactionOpen,
+    rawTransaction,
   }) {
     const enableSubmit =
       sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
@@ -213,7 +219,20 @@ class SendAdaPage extends Component {
           ),
         h(
           'div',
-          undefined,
+          {class: 'submit-row'},
+          h(
+            'span',
+            {
+              onClick: async () => {
+                await getRawTransaction(sendAddress, coinsAmount)
+                setRawTransactionOpen(true)
+              },
+              class: `link raw-transaction-link${
+                !enableSubmit || feeRecalculating ? '-disabled' : ''
+              }`,
+            },
+            'Raw unsigned transaction'
+          ),
           feeRecalculating
             ? h(
               'button',
@@ -240,6 +259,7 @@ class SendAdaPage extends Component {
               'Submit'
             )
         ),
+        rawTransactionOpen && h(RawTransactionModal),
         showConfirmTransactionDialog && h(ConfirmTransactionDialog),
         showThanksForDonation && h(ThanksForDonationModal, {closeThanksForDonationModal})
       )
@@ -255,12 +275,15 @@ module.exports = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmount.validationError,
     sendAmount: state.sendAmount.fieldValue,
+    coinsAmount: state.sendAmount.coins,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
     totalAmount: state.sendAmountForTransactionFee + state.transactionFee,
     showThanksForDonation: state.showThanksForDonation,
     conversionRates: state.conversionRates && state.conversionRates.data,
+    rawTransaction: state.rawTransaction,
+    rawTransactionOpen: state.rawTransactionOpen,
   }),
   actions
 )(SendAdaPage)

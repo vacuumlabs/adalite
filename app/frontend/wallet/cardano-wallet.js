@@ -132,9 +132,9 @@ const CardanoWallet = async (options) => {
   }
 
   async function prepareTxAux(address, coins) {
-    const txInputs = await prepareTxInputs(coins, address)
+    const txInputs = await prepareTxInputs(address, coins)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => acc + elem.coins, 0)
-    const fee = computeTxFee(txInputs, coins, address)
+    const fee = computeTxFee(txInputs, address, coins)
     const changeAmount = txInputsCoinsSum - coins - fee
 
     if (changeAmount < 0) {
@@ -161,15 +161,15 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
       coins += profitableUtxos[i].coins
     }
-    const txFee = computeTxFee(txInputs, coins, address)
+    const txFee = computeTxFee(txInputs, address, coins)
 
     return Math.max(coins - txFee, 0)
   }
 
-  async function getTxFee(coins, address) {
-    const txInputs = await prepareTxInputs(coins, address)
+  async function getTxFee(address, coins) {
+    const txInputs = await prepareTxInputs(address, coins)
 
-    return computeTxFee(txInputs, coins, address)
+    return computeTxFee(txInputs, address, coins)
   }
 
   async function getBalance() {
@@ -195,7 +195,7 @@ const CardanoWallet = async (options) => {
     return utxo.coins > addedCost
   }
 
-  async function prepareTxInputs(coins, address) {
+  async function prepareTxInputs(address, coins) {
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(state.randomSeed)
     const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
@@ -209,13 +209,13 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
       sumUtxos += profitableUtxos[i].coins
 
-      totalCoins = coins + computeTxFee(txInputs, totalCoins, address)
+      totalCoins = coins + computeTxFee(txInputs, address, totalCoins)
     }
 
     return txInputs
   }
 
-  function computeTxFee(txInputs, coins, address) {
+  function computeTxFee(txInputs, address, coins) {
     if (coins > Number.MAX_SAFE_INTEGER) {
       throw new Error(`Unsupported amount of coins: ${coins}`)
     }
@@ -225,7 +225,7 @@ const CardanoWallet = async (options) => {
     }, 0)
 
     //first we try one output transaction
-    const oneOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, address, false))
+    const oneOutputFee = txFeeFunction(estimateTxSize(txInputs, address, coins, false))
 
     /*
     * if (coins+oneOutputFee) is equal to (txInputsCoinsSum) it means there is no change necessary
@@ -236,7 +236,7 @@ const CardanoWallet = async (options) => {
       return oneOutputFee
     } else {
       //we try to compute fee for 2 output tx
-      const twoOutputFee = txFeeFunction(estimateTxSize(txInputs, coins, address, true))
+      const twoOutputFee = txFeeFunction(estimateTxSize(txInputs, address, coins, true))
       if (coins + twoOutputFee > txInputsCoinsSum) {
         //means one output transaction was possible, while 2 output is not
         //so we return fee equal to inputs - coins which is guaranteed to pass
@@ -247,7 +247,7 @@ const CardanoWallet = async (options) => {
     }
   }
 
-  function estimateTxSize(txInputs, coins, outAddress, hasChange) {
+  function estimateTxSize(txInputs, outAddress, coins, hasChange) {
     const txInputsSize = cbor.encode(new CborIndefiniteLengthArray(txInputs)).length
     const outAddressSize = base58.decode(outAddress).length
 
@@ -389,7 +389,7 @@ const CardanoWallet = async (options) => {
     getHistory,
     isOwnAddress,
     getVisibleAddressesWithMeta,
-    _prepareTxAux: prepareTxAux,
+    prepareTxAux,
     verifyAddress,
     fetchTxInfo,
     _getNewUtxosFromTxAux: getNewUtxosFromTxAux,

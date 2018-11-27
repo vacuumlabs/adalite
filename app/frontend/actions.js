@@ -2,6 +2,7 @@ const {generateMnemonic} = require('./wallet/mnemonic')
 const {ADALITE_CONFIG} = require('./config')
 const derivationSchemes = require('./wallet/derivation-schemes')
 const FileSaver = require('file-saver')
+const cbor = require('cbor')
 const {
   sendAddressValidator,
   sendAmountValidator,
@@ -287,7 +288,7 @@ module.exports = ({setState, getState}) => {
 
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
-    const transactionFee = await wallet.getTxFee(amount, address)
+    const transactionFee = await wallet.getTxFee(address, amount)
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
     const newState = getState()
@@ -471,6 +472,24 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const setRawTransactionOpen = (state, open) => {
+    setState({
+      rawTransactionOpen: open,
+    })
+  }
+
+  const getRawTransaction = async (state, address, coins) => {
+    const txAux = await wallet.prepareTxAux(address, coins).catch((e) => {
+      debugLog(e)
+      throw NamedError('TransactionCorrupted')
+    })
+
+    setState({
+      rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
+      rawTransactionOpen: true,
+    })
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -499,5 +518,7 @@ module.exports = ({setState, getState}) => {
     confirmGenerateMnemonicDialog,
     closeThanksForDonationModal,
     setLogoutNotificationOpen,
+    setRawTransactionOpen,
+    getRawTransaction,
   }
 }

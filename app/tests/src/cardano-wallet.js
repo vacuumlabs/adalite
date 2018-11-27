@@ -152,7 +152,7 @@ describe('successful transaction fee computation', () => {
     mockNet.mockAddressSummaryEndpoint()
     mockNet.mockUtxoEndpoint()
 
-    assert.equal(await wallets.used.getTxFee(47, myAddress), 179288)
+    assert.equal(await wallets.used.getTxFee(myAddress, 47), 179288)
   })
 
   it('should compute the right transaction fee for shorter outgoing address', async () => {
@@ -160,7 +160,7 @@ describe('successful transaction fee computation', () => {
     mockNet.mockAddressSummaryEndpoint()
     mockNet.mockUtxoEndpoint()
 
-    assert.equal(await wallets.used.getTxFee(47, shortAddress), 177838)
+    assert.equal(await wallets.used.getTxFee(shortAddress, 47), 177838)
   })
 })
 
@@ -182,7 +182,7 @@ describe('transaction serialization', () => {
     mockNet.mockAddressSummaryEndpoint()
     mockNet.mockUtxoEndpoint()
 
-    const txAux = await wallets.used._prepareTxAux(myAddress, 47)
+    const txAux = await wallets.used.prepareTxAux(myAddress, 47)
 
     // transaction serialization before providing witnesses
     const txAuxSerialized = cbor.encode(txAux).toString('hex')
@@ -198,7 +198,7 @@ describe('transaction serialization', () => {
     mockNet.mockAddressSummaryEndpoint()
     mockNet.mockUtxoEndpoint()
 
-    const txAux = await wallets.smallUtxos._prepareTxAux(myAddress, 1000000)
+    const txAux = await wallets.smallUtxos.prepareTxAux(myAddress, 1000000)
 
     assert.equal(txAux.inputs.length, 2)
   })
@@ -208,7 +208,7 @@ describe('transaction serialization', () => {
     mockNet.mockAddressSummaryEndpoint()
     mockNet.mockUtxoEndpoint()
 
-    const txAux = await wallets.used._prepareTxAux(myAddress, 47)
+    const txAux = await wallets.used.prepareTxAux(myAddress, 47)
     const expectedTxHash = '73131c773879e7e634022f8e0175399b7e7814c42684377cf6f8c7a1adb23112'
 
     assert.equal(txAux.getId(), expectedTxHash)

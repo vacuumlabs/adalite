@@ -87,6 +87,11 @@ p {
 path {
   fill: currentColor;
 }
+.link {
+  text-decoration: underline;
+  color: var(--brand);
+  cursor: pointer;
+}
 /* BUTTON */
 button,
 .button-like {
@@ -818,12 +823,19 @@ td {
   align-items: center;
   font-size: 1.1rem;
   font-weight: 600;
-  float: right;
-  margin: 15px 5px;
+  margin: 0 5px;
   height: 2.6rem;
   width: 200px;
   text-align: center;
   justify-content: center;
+}
+.raw-transaction-link {
+  margin: 0 auto auto 0;
+}
+.raw-transaction-link-disabled {
+  margin: 0 auto auto 0;
+  color: var(--disabled);
+  pointer-events: none;
 }
 .loading-button-wrapper {
   display: flex;
@@ -1413,6 +1425,20 @@ td {
   .total-other-currencies {
     margin-top: 2rem;
   }
+}
+.raw-unsigned-transaction {
+  display: flex;
+  padding: 0.3rem;
+  margin-bottom: 0.5rem;
+  word-break: break-all;
+  background-color: #eee;
+}
+.submit-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 15px 0;
 }
 
 /* tab-row */

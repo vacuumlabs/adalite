@@ -28,7 +28,7 @@ class AddressDetailDialogClass extends Component {
           h(
             'span',
             {
-              class: 'full-address selectable',
+              class: 'full-address force-select-all',
             },
             showDetail.address
           )
