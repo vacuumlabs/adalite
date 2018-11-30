@@ -18,4 +18,5 @@ module.exports = {
       protocolMagic: 1097911063,
     },
   },
+  ADALITE_SUPPORT_EMAIL: 'adalite@vacuumlabs.com',
 }

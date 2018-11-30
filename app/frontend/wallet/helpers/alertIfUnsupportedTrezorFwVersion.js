@@ -1,12 +1,12 @@
 const TrezorConnect = require('trezor-connect').default
 
 /*
-* this is a temporary fix untill trezor.io will (hopefully) properly notify about
-* wrong firmware version as soon as firmware 2.0.8 is actually released
+* this is a temporary fix until trezor.io will (hopefully) properly notify about
+* wrong firmware version
 */
 async function alertIfUnsupportedTrezorFwVersion() {
   try {
-    const minSupportedFwVersion = '2.0.8'
+    const minSupportedFwVersion = '2.1.0'
     const {model, fwVersion} = await getTrezorInfo()
 
     if (model === 'T' && versionCompare(fwVersion, minSupportedFwVersion) < 0) {
