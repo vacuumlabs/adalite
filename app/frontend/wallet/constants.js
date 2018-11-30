@@ -19,4 +19,5 @@ module.exports = {
     },
   },
   DELAY_AFTER_TOO_MANY_REQUESTS: 2000,
+  ADALITE_SUPPORT_EMAIL: 'adalite@vacuumlabs.com',
 }

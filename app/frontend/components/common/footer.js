@@ -7,6 +7,7 @@ const {
   ETH_BLOCKCHAIN_EXPLORER,
   ETH_DONATION_ADDRESS,
   ADA_DONATION_ADDRESS,
+  ADALITE_SUPPORT_EMAIL,
 } = require('../../wallet/constants')
 
 const showRatesOn = ['/txHistory', '/send']
@@ -42,7 +43,7 @@ const Footer = connect(
       h(
         'span',
         {class: 'contact-link'},
-        h('a', {href: 'mailto:adalite@vacuumlabs.com', target: '_blank'}, 'Contact us')
+        h('a', {href: `mailto:${ADALITE_SUPPORT_EMAIL}`, target: '_blank'}, 'Contact us')
       ),
       '/',
       h(

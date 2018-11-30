@@ -24,7 +24,11 @@ if (process.env.REDIS_URL) {
 app.use(express.static('app/public'))
 app.use(express.static('app/dist'))
 app.use('/about', express.static('about'))
-app.use(require('./middlewares/csp'))
+
+// disable csp when developing trezor firmware to be able to load it
+if (!process.env.TREZOR_CONNECT_URL) {
+  app.use(require('./middlewares/csp'))
+}
 
 if (process.env.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./mocking')(app)
@@ -55,6 +59,11 @@ app.get('*', (req, res) => {
           <script src="js/init.js"></script>
           <link rel="stylesheet" type="text/css" href="css/styles.css">
           <link rel="icon" type="image/ico" href="assets/favicon.ico">
+          ${
+  process.env.TREZOR_CONNECT_URL
+    ? `<script src="${process.env.TREZOR_CONNECT_URL}"></script>`
+    : ''
+}
           <noscript>
             Your browser does not support JavaScript or it is turned off.<br/>
             <a href="/about">Link to about page</a>

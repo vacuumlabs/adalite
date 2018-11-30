@@ -1,5 +1,6 @@
 const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
+const {ADALITE_SUPPORT_EMAIL} = require('./wallet/constants')
 
 const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
@@ -25,7 +26,7 @@ const translations = {
     } not found in blockchain after being submitted, check it later please.`,
   UnknownCryptoProvider: ({cryptoProvider}) => `Uknown crypto provider: ${cryptoProvider}`,
   NetworkError: () => 'Network connection failed. Please check your network connection.',
-  Error: () => 'Unknown error, please contact support at adalite@vacuumlabs.com',
+  Error: () => `Unknown error, please contact support at ${ADALITE_SUPPORT_EMAIL}.`,
 }
 
 function getTranslation(code, params) {

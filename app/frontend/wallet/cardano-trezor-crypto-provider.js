@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
-const {default: TrezorConnect} = require('trezor-connect')
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
+const {NETWORKS, ADALITE_SUPPORT_EMAIL} = require('./constants')
+const {ADALITE_SERVER_URL} = require('../config').ADALITE_CONFIG
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -11,6 +12,15 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   if (state.derivationScheme.type !== 'v2') {
     throw new Error(`Unsupported derivation scheme: ${state.derivationScheme.type}`)
   }
+
+  const TrezorConnect = ADALITE_CONFIG.TREZOR_CONNECT_URL
+    ? window.TrezorConnect
+    : require('trezor-connect').default
+
+  TrezorConnect.manifest({
+    email: ADALITE_SUPPORT_EMAIL,
+    appUrl: ADALITE_SERVER_URL,
+  })
 
   const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
     const response = await TrezorConnect.cardanoGetPublicKey({
@@ -73,18 +83,11 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     return data
   }
 
-  function getNetworkInt(network) {
-    switch (network) {
-      case 'mainnet': {
-        return 2
-      }
-      case 'testnet': {
-        return 1
-      }
-      default: {
-        throw new Error(`Unknown network: ${network}`)
-      }
+  function getProtocolMagic(network) {
+    if (!NETWORKS[network]) {
+      throw new Error(`Unknown network: ${network}`)
     }
+    return NETWORKS[network].protocolMagic
   }
 
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
@@ -105,7 +108,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       inputs,
       outputs,
       transactions,
-      network: getNetworkInt(state.network),
+      protocol_magic: getProtocolMagic(state.network),
     })
 
     if (response.success) {

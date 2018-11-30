@@ -3,6 +3,12 @@ const Provider = require('unistore/preact').Provider
 const App = require('./components/app')
 
 const {createStore} = require('./store')
+const {ADALITE_CONFIG} = require('./config')
+
+if (ADALITE_CONFIG.TREZOR_CONNECT_URL) {
+  const url = new URL(ADALITE_CONFIG.TREZOR_CONNECT_URL)
+  window.__TREZOR_CONNECT_SRC = `${url.origin}/`
+}
 
 // polyfill to trigger onpushstate events on history api
 // http://felix-kling.de/blog/2011/01/06/how-to-detect-history-pushstate/

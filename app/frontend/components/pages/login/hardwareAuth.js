@@ -34,7 +34,7 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
         h(
           'div',
           {class: 'margin-top'},
-          'AdaLite supports Trezor model T (firmware version >= 2.0.8).'
+          'AdaLite supports Trezor model T (firmware version >= 2.1.0).'
         ),
         h(
           'div',
