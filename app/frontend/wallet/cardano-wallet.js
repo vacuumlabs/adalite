@@ -74,7 +74,11 @@ const CardanoWallet = async (options) => {
     addressLimit: config.ADALITE_WALLET_ADDRESS_LIMIT,
     cryptoProvider,
     derivationScheme: state.derivationScheme,
-    isChange: true,
+    /*
+    * we disable discovering actual change addresses for now
+    * when we decide to include them, we just need to set isChange to true
+    */
+    isChange: false,
   })
 
   // fetch unspent outputs list asynchronously
