@@ -2,7 +2,6 @@ const {h} = require('preact')
 const printAda = require('../../../helpers/printAda')
 const printConversionRates = require('../../../helpers/printConversionRates')
 const formatDate = require('../../../helpers/formatDate')
-const AdaIcon = require('../../common/svg').AdaIcon
 const Tooltip = require('../../common/tooltip')
 
 const PrettyValue = ({effect}) => {
@@ -46,8 +45,20 @@ const TransactionHistory = ({transactionHistory, conversionRates}) =>
             'tr',
             undefined,
             h('th', undefined, 'Time'),
-            h('th', undefined, 'Movement (', h(AdaIcon, {className: 'ada-sign-inline'}), ')'),
-            h('th', undefined, 'Fee (', h(AdaIcon, {className: 'ada-sign-inline'}), ')'),
+            h(
+              'th',
+              undefined,
+              'Movement (',
+              h('img', {src: 'assets/ada-icon.svg', className: 'ada-sign-inline'}),
+              ')'
+            ),
+            h(
+              'th',
+              undefined,
+              'Fee (',
+              h('img', {src: 'assets/ada-icon.svg', className: 'ada-sign-inline'}),
+              ')'
+            ),
             h('th', undefined, 'Transaction')
           )
         ),

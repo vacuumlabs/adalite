@@ -36,7 +36,7 @@ class LoginPage extends Component {
       h(
         'div',
         undefined,
-        h('h1', {class: 'intro-header'}, 'Access Cardano Wallet via'),
+        h('h2', {class: 'intro-header'}, 'Access Cardano Wallet via'),
         h(
           'ul',
           {class: 'tab-row'},

@@ -1,7 +1,6 @@
 const {h} = require('preact')
 const printAda = require('../../helpers/printAda')
 const printConversionRates = require('../../helpers/printConversionRates')
-const {AdaIcon, RefreshIcon} = require('./svg')
 
 const truncatePrintAda = (amount, maxDigits) => {
   const amountString = amount.toString()
@@ -37,8 +36,12 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
         {class: 'narrow-screen-only'},
         isNaN(Number(balance)) ? balance : `${truncatePrintAda(printAda(balance), 10)}`
       ),
-      h(AdaIcon, {className: 'ada-sign-big'}),
-      h('button', {class: 'button button--refresh', onClick: reloadWalletInfo}, h(RefreshIcon))
+      h('img', {src: 'assets/ada-icon.svg', className: 'ada-sign-big'}),
+      h(
+        'button',
+        {class: 'button button--refresh', onClick: reloadWalletInfo},
+        h('img', {src: 'assets/refresh-icon.svg'})
+      )
     ),
     conversionRates &&
       h(

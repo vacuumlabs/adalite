@@ -1,5 +1,4 @@
 const {h} = require('preact')
-const {AdaLiteLogo} = require('../svg')
 const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
 
 const NavbarUnauth = () =>
@@ -9,7 +8,11 @@ const NavbarUnauth = () =>
     h(
       'div',
       {class: 'navbar-wrap-unauth'},
-      h('a', {class: 'title', href: '/'}, h(AdaLiteLogo)),
+      h(
+        'a',
+        {class: 'title', href: '/'},
+        h('img', {src: 'assets/adalite-logo.svg', alt: 'AdaLite - Cardano Wallet'})
+      ),
       h('div', {class: 'logo-version-number'}, APP_VERSION),
       h(
         'span',

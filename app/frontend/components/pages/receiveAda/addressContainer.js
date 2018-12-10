@@ -1,7 +1,6 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const DetailIcon = require('../../common/svg').DetailIcon
 
 const Tooltip = require('../../common/tooltip')
 
@@ -28,7 +27,7 @@ const AddressContainer = connect(
           class: 'show-address-detail margin-top-s',
           onClick: () => openAddressDetail({address, bip32path}),
         },
-        h(DetailIcon)
+        h('img', {src: 'assets/detail-icon.svg'})
       )
     )
   )

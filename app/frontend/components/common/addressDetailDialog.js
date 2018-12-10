@@ -6,7 +6,6 @@ const actions = require('../../actions')
 const Tooltip = require('./tooltip')
 const Modal = require('./modal')
 const CopyOnClick = require('./copyOnClick')
-const {LinkIcon} = require('./svg')
 
 class AddressDetailDialogClass extends Component {
   componentDidUpdate() {
@@ -92,7 +91,7 @@ class AddressDetailDialogClass extends Component {
                       }
                     },
                   },
-                  h(LinkIcon)
+                  h('img', {src: 'assets/link-icon.svg'})
                 )
               )
             )

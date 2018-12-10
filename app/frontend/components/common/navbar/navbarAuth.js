@@ -1,7 +1,6 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const {ExitIcon, AdaLiteLogo, MenuIcon} = require('../svg')
 const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
 
 const LoginStatus = connect(
@@ -19,7 +18,7 @@ const LoginStatus = connect(
       h(
         'div',
         {class: 'button', onClick: () => setTimeout(logout, 100)},
-        h(ExitIcon),
+        h('img', {src: 'assets/exit-icon.svg'}),
         h('div', {class: 'status-icon-button-content'}, 'Logout')
       )
     )
@@ -51,7 +50,7 @@ const NavbarAuth = connect(
           class: 'title',
           onClick: () => window.history.pushState({}, 'txHistory', 'txHistory'),
         },
-        h(AdaLiteLogo)
+        h('img', {src: 'assets/adalite-logo.svg', alt: 'AdaLite - Cardano Wallet'})
       ),
       isDemoWallet ? h('div', {class: 'public-wallet-badge pulse'}, 'DEMO WALLET') : null,
       h('div', {class: 'logo-version-number'}, APP_VERSION),
@@ -67,14 +66,14 @@ const NavbarAuth = connect(
             h(
               'div',
               {class: 'button', onClick: () => setTimeout(logout, 100)},
-              h(ExitIcon),
+              h('img', {src: 'assets/exit-icon.svg'}),
               h('div', {class: 'status-icon-button-content'}, 'Logout')
             )
           ),
           h(
             'label',
             {class: 'navcollapse-label', for: 'navcollapse'},
-            h('a', {class: 'menu-btn'}, h(MenuIcon))
+            h('a', {class: 'menu-btn'}, h('img', {src: 'assets/menu-icon.svg'}))
           )
         )
       ),

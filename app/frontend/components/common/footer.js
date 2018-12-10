@@ -8,7 +8,6 @@ const {
   ETH_DONATION_ADDRESS,
   ADA_DONATION_ADDRESS,
 } = require('../../wallet/constants')
-const {VacuumlabsLogo} = require('./svg')
 
 const showRatesOn = ['/txHistory', '/send']
 
@@ -25,7 +24,11 @@ const Footer = connect(
       'p',
       undefined,
       h('span', {class: 'footer-text-before-logo'}, 'Developed by '),
-      h('a', {href: 'https://vacuumlabs.com', target: '_blank'}, h(VacuumlabsLogo))
+      h(
+        'a',
+        {href: 'https://vacuumlabs.com', target: '_blank'},
+        h('img', {src: 'assets/vacuumlabs-logo.svg'})
+      )
     ),
     h(
       'p',

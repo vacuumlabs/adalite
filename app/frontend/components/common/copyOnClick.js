@@ -2,7 +2,6 @@ const {h, Component} = require('preact')
 
 const debugLog = require('../../helpers/debugLog')
 const Tooltip = require('./tooltip')
-const CopyIcon = require('../common/svg').CopyIcon
 
 class CopyOnClick extends Component {
   constructor(props) {
@@ -54,7 +53,7 @@ class CopyOnClick extends Component {
           tabIndex,
           ref: copyBtnRef,
         },
-        h(CopyIcon)
+        h('img', {src: 'assets/copy-icon.svg'})
       )
     )
   }
