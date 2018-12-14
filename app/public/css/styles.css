@@ -14,6 +14,35 @@
   font-style: normal;
 }
 
+:root {
+  --brand: #e72076;
+  --brand-dark: #da1c6f;
+  --brand-light: #f5a6c8;
+  --brand-shadow: #eb1a75cc;
+  --brand-shadow-light: #eb1a7544;
+  --transition-easing: ease-in-out;
+  --transition-time: 0.25s;
+  --width: 1200px;
+  --modal-width: 952px;
+  --small-screen-padding: 25px;
+  --text-color: #20323f;
+  --text-color-gray: #606a71;
+  --input-text-inactive: #999;
+  --input-text-active: #333;
+  --input-background: #f4f5f6;
+  --gray-background: #e4e5e6;
+  --border: #dadada;
+  --navbar: #f4f5f6;
+  --positive: #78d088;
+  --positive-transparent: #38a14f10;
+  --warning: #f4b253;
+  --warning-transparent: #ac6e2710;
+  --negative: #cf4040;
+  --negative-transparent: #d4424210;
+  --disabled: #ddd;
+  --navbar-text: #777;
+}
+
 /* TABLE */
 table {
   border-spacing: 0;

@@ -7,9 +7,9 @@ const WelcomeRecommendation = ({children, title, containerClass, iconPath}) =>
   h(
     'div',
     containerClass ? {class: containerClass} : undefined,
-    h('img', {src: iconPath}),
-    h('h5', undefined, title),
-    h('p', undefined, children)
+    h('img', {class: 'welcomeModal__section__image', src: iconPath}),
+    h('h5', {class: 'welcomeModal__section__title'}, title),
+    h('p', {class: 'welcomeModal__section__text'}, children)
   )
 
 class AboutOverlayClass extends Component {
@@ -37,26 +37,30 @@ class AboutOverlayClass extends Component {
       h(
         'div',
         {class: 'message'},
-        h('h4', {class: 'text-center strong'}, 'Welcome to AdaLite'),
-        h(
-          'p',
-          {class: 'text-center'},
-          'We are an open-source client-side interface for direct interaction with the Cardano blockchain.'
-        ),
-
         h(
           'div',
-          {class: 'alert warning'},
+          {class: 'modal__head welcomeModal__head'},
+          h('h3', {class: 'modal__heading'}, 'Welcome to AdaLite'),
           h(
-            'p',
-            undefined,
-            'To be safe from losing access to your funds, please read the following advice carefully.'
+            'h4',
+            {class: 'modal__subHeading'},
+            'We are an open-source client-side interface for direct interaction with the Cardano blockchain.'
+          ),
+
+          h(
+            'div',
+            {class: 'alert alert--warning'},
+            h('img', {class: 'alert__image', src: ''}),
+            h(
+              'p',
+              undefined,
+              'To be safe from losing access to your funds, please read the following advice carefully.'
+            )
           )
         ),
-
         h(
           'div',
-          undefined,
+          {class: 'welcomeModal__content'},
           h(
             WelcomeRecommendation,
             {
@@ -79,11 +83,7 @@ class AboutOverlayClass extends Component {
             your computer. However, if a virus or a hacker compromises your
             computer, the attacker can steal the mnemonic you entered on
             the AdaLite website and access the funds.`
-          )
-        ),
-        h(
-          'div',
-          undefined,
+          ),
           h(
             WelcomeRecommendation,
             {
@@ -110,11 +110,11 @@ class AboutOverlayClass extends Component {
 
         h(
           'div',
-          undefined,
-          h('img', {src: 'assets/vacuumlabs-logo.svg'}),
+          {class: 'welcomeModal__credits'},
+          h('img', {class: 'welcomeModal__credits__image', src: 'assets/vacuumlabs-logo.svg'}),
           h(
             'p',
-            undefined,
+            {class: 'welcomeModal__credits__text'},
             `AdaLite was not created by Cardano Foundation, Emurgo, or IOHK.
             This project was created with passion by Vacuumlabs. We appreciate
             any feedback, donation or contribution to the codebase.`
@@ -123,7 +123,7 @@ class AboutOverlayClass extends Component {
 
         h(
           'div',
-          undefined,
+          {class: 'welcomeModal__footer'},
           h(
             'div',
             undefined,
@@ -140,21 +140,17 @@ class AboutOverlayClass extends Component {
             )
           ),
           h(
-            'span',
-            {class: 'centered-row'},
-            h(
-              'button',
-              {
-                onClick: this.toggleAboutOverlay,
-                class: 'rounded-button',
-                autofocus: true,
-                onKeyDown: (e) => {
-                  e.key === 'Enter' && e.target.click()
-                  e.key === 'Tab' && e.preventDefault()
-                },
+            'button',
+            {
+              onClick: this.toggleAboutOverlay,
+              class: 'welcomeModal__footer__submit button button--primary button--wide',
+              autofocus: true,
+              onKeyDown: (e) => {
+                e.key === 'Enter' && e.target.click()
+                e.key === 'Tab' && e.preventDefault()
               },
-              'I understand, continue to the AdaLite'
-            )
+            },
+            'I understand, continue to the AdaLite'
           )
         )
       )
