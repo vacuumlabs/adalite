@@ -1,7 +1,14 @@
 const {h} = require('preact')
 const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
+const connect = require('unistore/preact').connect
+const actions = require('../../../actions')
 
-const NavbarUnauth = () =>
+const isLeftClick = require('../../../helpers/isLeftClick')
+
+const NavbarUnauth = connect(
+  null,
+  actions
+)(({openGenerateMnemonicDialog}) =>
   h(
     'div',
     {class: 'navbar'},
@@ -34,9 +41,22 @@ const NavbarUnauth = () =>
             target: '_blank',
           },
           'Help'
+        ),
+        h(
+          'button',
+          {
+            class: 'demo-button rounded-button',
+            /*
+            * onMouseDown to prevent onBlur before handling the click event
+            * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
+            */
+            onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
+          },
+          'Create new wallet'
         )
       )
     )
   )
+)
 
 module.exports = NavbarUnauth

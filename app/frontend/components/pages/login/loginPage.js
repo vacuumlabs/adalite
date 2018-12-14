@@ -8,6 +8,7 @@ const KeyFileAuth = require('./keyFileAuth')
 const MnemonicAuth = require('./mnemonicAuth')
 const HardwareAuth = require('./hardwareAuth')
 const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
+const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
 
 class LoginPage extends Component {
@@ -20,6 +21,7 @@ class LoginPage extends Component {
     showDemoWalletWarningDialog,
     logoutNotificationOpen,
     displayAboutOverlay,
+    showGenerateMnemonicDialog,
   }) {
     const authOption = (name, text) =>
       h(
@@ -56,6 +58,7 @@ class LoginPage extends Component {
       ),
       displayAboutOverlay && h(AboutOverlay),
       showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
+      showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
       logoutNotificationOpen && h(LogoutNotification)
     )
   }
@@ -69,6 +72,7 @@ module.exports = connect(
     logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,
     displayAboutOverlay: state.displayAboutOverlay,
+    showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
   }),
   actions
 )(LoginPage)
