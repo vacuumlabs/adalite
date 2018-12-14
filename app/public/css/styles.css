@@ -483,6 +483,32 @@ td {
   font-weight: bold;
   margin-bottom: 10px;
 }
+.footer__donations__text {
+  color: white;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+.footer__donations__list {
+  display: flex;
+  align-items: center;
+}
+.footer__donations__item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 24px;
+  color: white;
+  text-decoration: underline;
+  font-weight: bold;
+}
+.footer__donations__item:not(:last-child) {
+  margin-right: 32px;
+}
+.footer__donations__item img {
+  margin-right: 16px;
+}
 .footer p {
   margin-top: 0;
   margin-bottom: 0.5rem;

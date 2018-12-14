@@ -38,7 +38,7 @@ const Footer = connect(
           )
         ),
         h(
-          'nodiv',
+          'div',
           {class: 'footer__social'},
           h(
             'span',
@@ -73,55 +73,44 @@ const Footer = connect(
         'div',
         undefined,
         h(
-          'p',
-          undefined,
-          h('div', undefined, 'Donations are really appreciated! '),
+          'div',
+          {class: 'footer__donations'},
+          h('div', {class: 'footer__donations__text'}, 'Donations are really appreciated'),
           h(
             'div',
-            undefined,
+            {class: 'footer__donations__list'},
             h(
-              'span',
-              undefined,
-              h(
-                'a',
-                {
-                  class: 'contact-link',
-                  href: BTC_BLOCKCHAIN_EXPLORER + BTC_DONATION_ADDRESS,
-                  target: '_blank',
-                  title: 'link to blockchain explorer',
-                },
-                'BTC'
-              ),
-              '/'
+              'a',
+              {
+                class: 'footer__donations__item',
+                href: BTC_BLOCKCHAIN_EXPLORER + BTC_DONATION_ADDRESS,
+                target: '_blank',
+                title: 'link to blockchain explorer',
+              },
+              h('img', {src: 'assets/bitcoin_icon.svg'}),
+              h('span', undefined, 'BTC')
             ),
             h(
-              'span',
-              undefined,
-              h(
-                'a',
-                {
-                  class: 'contact-link',
-                  href: ETH_BLOCKCHAIN_EXPLORER + ETH_DONATION_ADDRESS,
-                  target: '_blank',
-                  title: 'link to blockchain explorer',
-                },
-                'ETH'
-              ),
-              '/'
+              'a',
+              {
+                class: 'footer__donations__item',
+                href: ETH_BLOCKCHAIN_EXPLORER + ETH_DONATION_ADDRESS,
+                target: '_blank',
+                title: 'link to blockchain explorer',
+              },
+              h('img', {src: 'assets/ether_icon.svg'}),
+              h('span', undefined, 'ETH')
             ),
             h(
-              'span',
-              undefined,
-              h(
-                'a',
-                {
-                  class: 'contact-link',
-                  href: '#',
-                  onClick: () => openAddressDetail({address: ADA_DONATION_ADDRESS}),
-                  title: 'show address detail',
-                },
-                'ADA'
-              )
+              'a',
+              {
+                class: 'footer__donations__item',
+                href: '#',
+                onClick: () => openAddressDetail({address: ADA_DONATION_ADDRESS}),
+                title: 'show address detail',
+              },
+              h('img', {src: 'assets/ada_icon.svg'}),
+              h('span', undefined, 'ADA')
             )
           )
         ),
