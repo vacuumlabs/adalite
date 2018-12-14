@@ -7,13 +7,13 @@ const Modal = ({children, closeHandler, bodyClass = ''}) =>
       class: 'modal',
     },
     h('div', {
-      class: 'modal-overlay',
+      class: 'modal__overlay',
       onClick: closeHandler,
     }),
     h(
       'div',
       {
-        class: `modal-body ${bodyClass}`,
+        class: `modal__body ${bodyClass}`,
         onKeyDown: (e) => {
           e.key === 'Escape' && closeHandler()
         },
