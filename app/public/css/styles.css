@@ -22,7 +22,7 @@
   --brand-shadow-light: #eb1a7544;
   --transition-easing: ease-in-out;
   --transition-time: 0.25s;
-  --width: 1200px;
+  --width: 1288px;
   --small-screen-padding: 25px;
   --text-color: #333;
   --input-text-inactive: #999;
@@ -452,15 +452,36 @@ td {
 
 /* FOOTER */
 .footer {
+  width: 100%;
+  background-image: url('../assets/footer_bg.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.footer__wrapper {
   max-width: var(--width);
   width: 100%;
   font-size: 1rem;
   color: var(--text-color);
-  border-top: 1px solid var(--border);
-  padding: 1rem 0;
-  margin-left: calc(100vw - 100%);
-  margin-top: auto;
-  align-self: center;
+  padding: 56px 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-template-rows: 1fr;
+}
+.footer__logo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.footer__logo__text {
+  color: #8f989f;
+  text-transform: uppercase;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.6px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 .footer p {
   margin-top: 0;
@@ -483,10 +504,6 @@ td {
 }
 .footer .rates {
   font-size: 0.85em;
-}
-.footer-text-before-logo {
-  position: relative;
-  top: 2.5px;
 }
 
 /*LANDING*/
