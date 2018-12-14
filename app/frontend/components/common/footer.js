@@ -38,125 +38,110 @@ const Footer = connect(
         {class: 'footer__content'},
         h(
           'div',
-          undefined,
+          {class: 'footer__social'},
+          h(
+            'a',
+            {
+              class: 'footer__social__link',
+              href: 'mailto:adalite@vacuumlabs.com',
+              target: '_blank',
+              title: 'adalite email address',
+            },
+            h('img', {src: 'assets/social_icon_email.svg'}),
+            h('span', undefined, 'adalite@vacuumlabs.com')
+          ),
+          h(
+            'a',
+            {
+              class: 'footer__social__link',
+              href: 'https://github.com/vacuumlabs/adalite',
+              target: '_blank',
+              title: 'link to github repository',
+            },
+            h('img', {src: 'assets/social_icon_github.svg'}),
+            h('span', undefined, 'View on GitHub')
+          ),
+          h(
+            'a',
+            {
+              class: 'footer__social__link',
+              href: 'https://t.me/AdaLite',
+              target: '_blank',
+              title: 'link to Telegram',
+            },
+            h('img', {src: 'assets/social_icon_telegram.svg'}),
+            h('span', undefined, 'Telegram')
+          ),
+          h(
+            'a',
+            {
+              class: 'footer__social__link',
+              href: 'https://t.me/AdaLite',
+              target: '_blank',
+              title: 'link to Twitter',
+            },
+            h('img', {src: 'assets/social_icon_twitter.svg'}),
+            h('span', undefined, 'Twitter')
+          )
+        ),
+        h('div', undefined),
+        h(
+          'div',
+          {class: 'footer__donations'},
+          h('div', {class: 'footer__donations__text'}, 'Donations are really appreciated'),
           h(
             'div',
-            {class: 'footer__social'},
+            {class: 'footer__donations__list'},
             h(
-              'div',
-              undefined,
-              h(
-                'a',
-                {
-                  class: 'footer__social__link',
-                  href: 'mailto:adalite@vacuumlabs.com',
-                  target: '_blank',
-                  title: 'adalite email address',
-                },
-                h('img', {src: 'assets/social_icon_email.svg'}),
-                h('span', undefined, 'adalite@vacuumlabs.com')
-              ),
-              h(
-                'a',
-                {
-                  class: 'footer__social__link',
-                  href: 'https://github.com/vacuumlabs/adalite',
-                  target: '_blank',
-                  title: 'link to github repository',
-                },
-                h('img', {src: 'assets/social_icon_github.svg'}),
-                h('span', undefined, 'View on GitHub')
-              )
+              'a',
+              {
+                class: 'footer__donations__item',
+                href: BTC_BLOCKCHAIN_EXPLORER + BTC_DONATION_ADDRESS,
+                target: '_blank',
+                title: 'link to blockchain explorer',
+              },
+              h('img', {src: 'assets/bitcoin_icon.svg'}),
+              h('span', undefined, 'BTC')
             ),
             h(
-              'div',
-              undefined,
-              h(
-                'a',
-                {
-                  class: 'footer__social__link',
-                  href: 'https://t.me/AdaLite',
-                  target: '_blank',
-                  title: 'link to Telegram',
-                },
-                h('img', {src: 'assets/social_icon_telegram.svg'}),
-                h('span', undefined, 'Telegram')
-              ),
-              h(
-                'a',
-                {
-                  class: 'footer__social__link',
-                  href: 'https://t.me/AdaLite',
-                  target: '_blank',
-                  title: 'link to Twitter',
-                },
-                h('img', {src: 'assets/social_icon_twitter.svg'}),
-                h('span', undefined, 'Twitter')
-              )
+              'a',
+              {
+                class: 'footer__donations__item',
+                href: ETH_BLOCKCHAIN_EXPLORER + ETH_DONATION_ADDRESS,
+                target: '_blank',
+                title: 'link to blockchain explorer',
+              },
+              h('img', {src: 'assets/ether_icon.svg'}),
+              h('span', undefined, 'ETH')
+            ),
+            h(
+              'a',
+              {
+                class: 'footer__donations__item',
+                href: '#',
+                onClick: () => openAddressDetail({address: ADA_DONATION_ADDRESS}),
+                title: 'show address detail',
+              },
+              h('img', {src: 'assets/ada_icon.svg'}),
+              h('span', undefined, 'ADA')
             )
           )
         ),
-        h(
-          'div',
-          undefined,
+        showConversionRates &&
           h(
-            'div',
-            {class: 'footer__donations'},
-            h('div', {class: 'footer__donations__text'}, 'Donations are really appreciated'),
+            'p',
+            {class: 'rates'},
+            h('div', undefined, 'Conversion rates from '),
             h(
-              'div',
-              {class: 'footer__donations__list'},
-              h(
-                'a',
-                {
-                  class: 'footer__donations__item',
-                  href: BTC_BLOCKCHAIN_EXPLORER + BTC_DONATION_ADDRESS,
-                  target: '_blank',
-                  title: 'link to blockchain explorer',
-                },
-                h('img', {src: 'assets/bitcoin_icon.svg'}),
-                h('span', undefined, 'BTC')
-              ),
-              h(
-                'a',
-                {
-                  class: 'footer__donations__item',
-                  href: ETH_BLOCKCHAIN_EXPLORER + ETH_DONATION_ADDRESS,
-                  target: '_blank',
-                  title: 'link to blockchain explorer',
-                },
-                h('img', {src: 'assets/ether_icon.svg'}),
-                h('span', undefined, 'ETH')
-              ),
-              h(
-                'a',
-                {
-                  class: 'footer__donations__item',
-                  href: '#',
-                  onClick: () => openAddressDetail({address: ADA_DONATION_ADDRESS}),
-                  title: 'show address detail',
-                },
-                h('img', {src: 'assets/ada_icon.svg'}),
-                h('span', undefined, 'ADA')
-              )
+              'a',
+              {
+                class: 'contact-link',
+                href: 'https://www.cryptocompare.com/api/',
+                target: '_blank',
+              },
+              'CryptoCompare'
             )
-          ),
-          showConversionRates &&
-            h(
-              'p',
-              {class: 'rates'},
-              h('div', undefined, 'Conversion rates from '),
-              h(
-                'a',
-                {
-                  class: 'contact-link',
-                  href: 'https://www.cryptocompare.com/api/',
-                  target: '_blank',
-                },
-                'CryptoCompare'
-              )
-            )
-        )
+          )
       )
     )
   )
