@@ -475,6 +475,7 @@ td {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-bottom: 48px;
 }
 .footer__logo__text {
   color: #8f989f;
@@ -511,24 +512,30 @@ td {
 .footer__donations__item img {
   margin-right: 16px;
 }
-.footer p {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
+.footer__social {
   display: flex;
-  flex-wrap: wrap;
+}
+.footer__social div {
+  display: flex;
+  flex-direction: column;
+}
+.footer__social div:first-child {
+  margin-right: 112px;
+}
+.footer__social__link {
+  display: flex;
   align-items: center;
-  justify-content: center;
+  font-size: 14px;
+  line-height: 24px;
+  color: white;
+  text-decoration: underline;
+  font-weight: bold;
 }
-.footer p:first-child,
-.footer p:last-child {
-  margin-bottom: 0;
+.footer__social__link:not(:last-child) {
+  margin-bottom: 24px;
 }
-.footer .logo {
-  height: 2rem;
-}
-.footer .contact-link {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+.footer__social__link img {
+  margin-right: 16px;
 }
 .footer .rates {
   font-size: 0.85em;

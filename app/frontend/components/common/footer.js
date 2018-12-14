@@ -43,31 +43,56 @@ const Footer = connect(
             'div',
             {class: 'footer__social'},
             h(
-              'span',
-              {class: 'footer__social__link'},
+              'div',
+              undefined,
               h(
                 'a',
-                {href: 'https://github.com/vacuumlabs/adalite', target: '_blank'},
-                'View on Github'
+                {
+                  class: 'footer__social__link',
+                  href: 'mailto:adalite@vacuumlabs.com',
+                  target: '_blank',
+                  title: 'adalite email address',
+                },
+                h('img', {src: 'assets/social_icon_email.svg'}),
+                h('span', undefined, 'adalite@vacuumlabs.com')
+              ),
+              h(
+                'a',
+                {
+                  class: 'footer__social__link',
+                  href: 'https://github.com/vacuumlabs/adalite',
+                  target: '_blank',
+                  title: 'link to github repository',
+                },
+                h('img', {src: 'assets/social_icon_github.svg'}),
+                h('span', undefined, 'View on GitHub')
               )
             ),
-            '/',
             h(
-              'span',
-              {class: 'footer__social__link'},
-              h('a', {href: 'mailto:adalite@vacuumlabs.com', target: '_blank'}, 'Contact us')
-            ),
-            '/',
-            h(
-              'span',
-              {class: 'footer__social__link'},
-              h('a', {href: 'https://t.me/AdaLite', target: '_blank'}, 'Telegram')
-            ),
-            '/',
-            h(
-              'span',
-              {class: 'footer__social__link'},
-              h('a', {href: 'https://twitter.com/AdaLiteWallet', target: '_blank'}, 'Twitter')
+              'div',
+              undefined,
+              h(
+                'a',
+                {
+                  class: 'footer__social__link',
+                  href: 'https://t.me/AdaLite',
+                  target: '_blank',
+                  title: 'link to Telegram',
+                },
+                h('img', {src: 'assets/social_icon_telegram.svg'}),
+                h('span', undefined, 'Telegram')
+              ),
+              h(
+                'a',
+                {
+                  class: 'footer__social__link',
+                  href: 'https://t.me/AdaLite',
+                  target: '_blank',
+                  title: 'link to Twitter',
+                },
+                h('img', {src: 'assets/social_icon_twitter.svg'}),
+                h('span', undefined, 'Twitter')
+              )
             )
           )
         ),
