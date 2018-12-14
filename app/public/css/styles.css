@@ -468,7 +468,7 @@ td {
 }
 .footer__content {
   display: grid;
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
   grid-template-rows: 1fr;
 }
 .footer__logo {
@@ -485,6 +485,9 @@ td {
   letter-spacing: 0.6px;
   font-weight: bold;
   margin-bottom: 10px;
+}
+.footer__donations {
+  align-self: end;
 }
 .footer__donations__text {
   color: white;
@@ -513,7 +516,9 @@ td {
   margin-right: 16px;
 }
 .footer__social {
-  display: flex;
+  display: grid;
+  grid-template: 1fr 1fr / 1fr 1fr;
+  grid-row-gap: 16px;
 }
 .footer__social div {
   display: flex;
@@ -530,9 +535,6 @@ td {
   color: white;
   text-decoration: underline;
   font-weight: bold;
-}
-.footer__social__link:not(:last-child) {
-  margin-bottom: 24px;
 }
 .footer__social__link img {
   margin-right: 16px;
