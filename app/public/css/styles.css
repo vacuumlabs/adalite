@@ -465,6 +465,8 @@ td {
   padding: 56px 0;
   margin-left: auto;
   margin-right: auto;
+}
+.footer__content {
   display: grid;
   grid-template-columns: 3fr 1fr;
   grid-template-rows: 1fr;
