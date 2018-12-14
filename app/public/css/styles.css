@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'JTMarnie';
+  src: url('../fonts/jtmarnie-bold-webfont.woff2') format('woff2'),
+    url('../fonts/jtmarnie-bold-webfont.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JTMarnie';
+  src: url('../fonts/jtmarnie-medium-webfont.woff2') format('woff2'),
+    url('../fonts/jtmarnie-medium-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   --brand: #eb1a75;
   --brand-dark: #ed005b;
@@ -38,7 +54,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'JTMarnie', sans-serif, arial;
   height: 100%;
   color: var(--text-color);
 }
