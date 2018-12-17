@@ -22,7 +22,7 @@ class DemoWalletWarningDialogClass {
         'p',
         {class: 'modal-paragraph'},
         'You are about to access publicly available wallet intended to show public how AdaLite looks and works. ',
-        h('b', undefined, 'Your funds will not be safe here.')
+        h('strong', undefined, 'Your funds will not be safe here.')
       ),
       h('div', undefined, 'Alert will be here'),
       h(
