@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.4 (67378) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 13</title>
+    <desc>Created with Sketch.</desc>
+    <g id="design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01-06-create-wallet" transform="translate(-404.000000, -495.000000)">
+            <g id="Group-15" transform="translate(324.000000, 239.000000)">
+                <g id="Group-14" transform="translate(56.000000, 232.000000)">
+                    <g id="Group-13" transform="translate(24.000000, 24.000000)">
+                        <circle id="Oval" fill="#E6E6E6" cx="12" cy="12" r="12"></circle>
+                        <path d="M13.38,8.22 L15.78,10.62 L8.4,18 L6,18 L6,15.6 L13.38,8.22 Z M14.22,7.38 L15.6,6 L18,8.4 L16.62,9.78 L14.22,7.38 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
