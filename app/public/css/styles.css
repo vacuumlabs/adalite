@@ -1602,7 +1602,8 @@ body {
   color: var(--darkGrey);
 }
 
-input:focus {
+input:focus,
+button:focus {
   outline: none;
 >>>>>>> Re-defined colors & normalize moved to bottom of file
 }
