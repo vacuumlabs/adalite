@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="19px" viewBox="0 0 22 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.4 (67378) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 12</title>
+    <desc>Created with Sketch.</desc>
+    <g id="design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01-06-create-wallet" transform="translate(-1034.000000, -311.000000)">
+            <g id="Group-15" transform="translate(324.000000, 239.000000)">
+                <g id="Group-11" transform="translate(711.000000, 72.000000)">
+                    <g id="Path-8">
+                        <g id="Group-12">
+                            <path d="M0.812045829,19 L19.188054,19 C19.7403387,19 20.188054,18.5522847 20.188054,18 C20.188054,17.8329235 20.1461921,17.6685097 20.0662923,17.5217767 L10.8782882,0.648367189 C10.6141728,0.163329571 10.0068643,-0.0157632581 9.52182664,0.24835216 C9.35276627,0.340409864 9.21386931,0.479306821 9.12181161,0.648367189 L-0.0661924683,17.5217767 C-0.330307886,18.0068144 -0.151215057,18.6141229 0.333822561,18.8782383 C0.480555546,18.9581382 0.644969324,19 0.812045829,19 Z" id="Path-7" fill="#F4B253"></path>
+                            <rect id="Rectangle" fill="#FFFFFF" x="9" y="5.27777778" width="2" height="6.33333333" rx="1"></rect>
+                            <rect id="Rectangle" fill="#FFFFFF" x="9" y="13.7222222" width="2" height="2.11111111" rx="1"></rect>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
