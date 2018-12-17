@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.4 (67378) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 13</title>
+    <desc>Created with Sketch.</desc>
+    <g id="design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01-05-demo-access" transform="translate(-404.000000, -439.000000)">
+            <g id="Group-14" transform="translate(380.000000, 415.000000)">
+                <g id="Group-13" transform="translate(24.000000, 24.000000)">
+                    <circle id="Oval" fill="#CF4040" cx="12" cy="12" r="12"></circle>
+                    <path d="M7,7 L17,17" id="Path-3" stroke="#FFFFFF" stroke-width="2"></path>
+                    <path d="M17,7 L7,17" id="Path-3" stroke="#FFFFFF" stroke-width="2"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
