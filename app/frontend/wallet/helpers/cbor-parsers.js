@@ -1,4 +1,4 @@
-const cbor = require('cbor')
+const cbor = require('borc')
 const base58 = require('cardano-crypto.js').base58
 
 const {

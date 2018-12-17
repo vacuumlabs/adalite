@@ -1,5 +1,5 @@
 const assert = require('assert')
-const cbor = require('cbor')
+const cbor = require('borc')
 
 const CborIndefiniteLengthArray = require('../../frontend/wallet/helpers/CborIndefiniteLengthArray')
 

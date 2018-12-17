@@ -1144,6 +1144,16 @@ bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
 
+borc@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/borc/-/borc-2.0.4.tgz#52926dc561137188c6ca9fe01c9542576529a689"
+  integrity sha512-SCVjto/dbKfduyl+LDQ1Km28ly2aTIXtJbrYZWHFQAxkHph96I/zXTrTQXWuJobG8lQZjIA/dw9z7hmJHJhjMg==
+  dependencies:
+    bignumber.js "^7.2.1"
+    commander "^2.15.0"
+    ieee754 "^1.1.8"
+    json-text-sequence "^0.1"
+
 brace-expansion@^1.1.7:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"
@@ -1337,23 +1347,14 @@ camelcase@^4.1.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
   integrity sha1-1UVjW+HjPFQmScaRc+Xeas+uNN0=
 
-cardano-crypto.js@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-4.2.1.tgz#ceddd9614dab17845b76e75751f537664854320d"
-  integrity sha512-IBA7I7GFi8lagCE6T9RtleVxRsqgvj299vy3F8W2h6Q+a5fNFxxTt7jBXT0DefBZTedeHOqjmp/rTFZ/ETNZzA==
+cardano-crypto.js@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-4.2.3.tgz#b0ef4ae4cd0bf84b6a948d82a4fe4c75ee779b9c"
+  integrity sha512-CQqdpBZnQEdSu8+vvBYOSOTfQ4MerhH7KRl/BqDqEMG3cc3LgCwSMmSnQxSD9VRZKAUnvqEtMll5lvwYeu9bTw==
   dependencies:
     bip39-light "^1.0.7"
-    cbor "^4.1.1"
-
-cbor@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/cbor/-/cbor-4.1.1.tgz#a6bc17020b45685d315c6bbc971f3bb3c973fde9"
-  integrity sha512-x9Pc1gT3JxUEZTOA9YdRdpg8hohBEFPAc26c85PlGYvzoc77PXr1lvfBKmBPFcf7eYsOs0hWRWWmfqJozrvDnw==
-  dependencies:
-    bignumber.js "^7.2.1"
-    commander "^2.16.0"
-    json-text-sequence "^0.1"
-    nofilter "^0.0.3"
+    borc "^2.0.4"
+    pbkdf2 "^3.0.17"
 
 chalk@2.4.1, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.4.1:
   version "2.4.1"
@@ -1568,10 +1569,10 @@ commander@2.15.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
   integrity sha512-VlfT9F3V0v+jr4yxPc5gg9s62/fIVWsd2Bk2iD435um1NlGMYdVCq+MjcXnhYq2icNOizHr1kK+5TI6H0Hy0ag==
 
-commander@^2.16.0:
-  version "2.16.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.16.0.tgz#f16390593996ceb4f3eeb020b31d78528f7f8a50"
-  integrity sha512-sVXqklSaotK9at437sFlFpyOcJonxe0yST/AG9DkQKUdIE6IqGIMv4SfAQSKaJbSdVEJYItASCrBiVQHq1HQew==
+commander@^2.15.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
+  integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
 
 commander@~2.13.0:
   version "2.13.0"
@@ -2681,7 +2682,7 @@ iconv-lite@^0.4.17, iconv-lite@^0.4.4:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-ieee754@^1.1.11, ieee754@^1.1.4:
+ieee754@^1.1.11, ieee754@^1.1.4, ieee754@^1.1.8:
   version "1.1.12"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
   integrity sha512-GguP+DRY+pJ3soyIiGPTvdiVXjZ+DbXOxGpXn3eMvNW4x4irjqXm4wHKscC+TfxSJ0yw/S1F24tqdMNsMZTiLA==
@@ -3767,11 +3768,6 @@ node-pre-gyp@^0.10.0:
     semver "^5.3.0"
     tar "^4"
 
-nofilter@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/nofilter/-/nofilter-0.0.3.tgz#241e342078177a8693a3043e83f37567e276410c"
-  integrity sha1-JB40IHgXeoaTowQ+g/N1Z+J2QQw=
-
 nomnom@^1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/nomnom/-/nomnom-1.8.1.tgz#2151f722472ba79e50a76fc125bb8c8f2e4dc2a7"
@@ -4122,6 +4118,17 @@ path-type@^3.0.0:
   integrity sha512-T2ZUsdZFHgA3u4e5PfPbjd7HDDpxPnQb5jN0SrDsjNSuVXHJqtwTnWqG0B1jZrgmJ/7lj1EmVIByWt1gxGkWvg==
   dependencies:
     pify "^3.0.0"
+
+pbkdf2@^3.0.17:
+  version "3.0.17"
+  resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.17.tgz#976c206530617b14ebb32114239f7b09336e93a6"
+  integrity sha512-U/il5MsrZp7mGg3mSQfn742na2T+1/vHDCG5/iTI3X9MKUuYUZVLQhyRsg06mCgDBTd57TxzgZt7P+fYfjRLtA==
+  dependencies:
+    create-hash "^1.1.2"
+    create-hmac "^1.1.4"
+    ripemd160 "^2.0.1"
+    safe-buffer "^5.0.1"
+    sha.js "^2.4.8"
 
 pbkdf2@^3.0.3, pbkdf2@^3.0.9:
   version "3.0.16"

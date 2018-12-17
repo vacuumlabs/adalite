@@ -2,7 +2,7 @@ const {generateMnemonic} = require('./wallet/mnemonic')
 const {ADALITE_CONFIG} = require('./config')
 const derivationSchemes = require('./wallet/derivation-schemes')
 const FileSaver = require('file-saver')
-const cbor = require('cbor')
+const cbor = require('borc')
 const {
   sendAddressValidator,
   sendAmountValidator,

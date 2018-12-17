@@ -1,5 +1,5 @@
 const assert = require('assert')
-const cbor = require('cbor')
+const cbor = require('borc')
 
 const {CardanoWallet, txFeeFunction} = require('../../frontend/wallet/cardano-wallet')
 const derivationSchemes = require('../../frontend/wallet/derivation-schemes')

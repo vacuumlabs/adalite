@@ -1,5 +1,5 @@
 const assert = require('assert')
-const cbor = require('cbor')
+const cbor = require('borc')
 
 const {HARDENED_THRESHOLD} = require('../../frontend/wallet/constants')
 const derivationSchemes = require('../../frontend/wallet/derivation-schemes')

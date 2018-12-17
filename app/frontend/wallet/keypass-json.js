@@ -1,6 +1,6 @@
 /* based on https://github.com/input-output-hk/cardano-crypto/blob/master/cbits/encrypted_sign.c */
 
-const cbor = require('cbor')
+const cbor = require('borc')
 const {cardanoMemoryCombine, blake2b, scrypt} = require('cardano-crypto.js')
 
 const {HARDENED_THRESHOLD} = require('./constants')

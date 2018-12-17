@@ -1,4 +1,4 @@
-const cbor = require('cbor')
+const cbor = require('borc')
 const {blake2b, base58} = require('cardano-crypto.js')
 
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')

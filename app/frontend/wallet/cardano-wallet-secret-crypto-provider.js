@@ -1,4 +1,4 @@
-const cbor = require('cbor')
+const cbor = require('borc')
 const {
   blake2b,
   sign: signMsg,
