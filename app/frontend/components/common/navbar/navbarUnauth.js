@@ -9,9 +9,9 @@ const NavbarUnauth = connect(
   actions
 )(({openGenerateMnemonicDialog}) =>
   h(
-    'div',
+    'nav',
     {class: 'navbar'},
-    h('h1', {class: 'navbar-heading'}, 'AdaLite'),
+    h('h1', {class: 'navbar-heading'}, 'AdaLite - Cardano Wallet'),
     h(
       'div',
       {class: 'navbar-wrapper'},
@@ -47,7 +47,7 @@ const NavbarUnauth = connect(
         h(
           'button',
           {
-            class: 'button primary navbar-button',
+            class: 'button outline navbar-button',
             /*
             * onMouseDown to prevent onBlur before handling the click event
             * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
