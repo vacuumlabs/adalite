@@ -1,5 +1,4 @@
 const {h} = require('preact')
-const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 
@@ -12,22 +11,25 @@ const NavbarUnauth = connect(
   h(
     'div',
     {class: 'navbar'},
+    h('h1', {class: 'navbar-heading'}, 'AdaLite'),
     h(
       'div',
-      {class: 'navbar-wrap-unauth'},
+      {class: 'navbar-wrapper'},
       h(
         'a',
-        {class: 'title', href: '/'},
-        h('img', {src: 'assets/adalite-logo.svg', alt: 'AdaLite - Cardano Wallet'})
+        {class: 'navbar-logo', href: '/'},
+        h('img', {
+          src: 'assets/adalite-logo.svg',
+          alt: 'AdaLite - Cardano Wallet',
+        })
       ),
-      h('div', {class: 'logo-version-number'}, APP_VERSION),
       h(
-        'span',
-        undefined,
+        'div',
+        {class: 'navbar-content'},
         h(
           'a',
           {
-            class: 'unauth-menu',
+            class: 'navbar-link',
             href: 'about',
             target: '_blank',
           },
@@ -36,7 +38,7 @@ const NavbarUnauth = connect(
         h(
           'a',
           {
-            class: 'unauth-menu',
+            class: 'navbar-link',
             href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
             target: '_blank',
           },
@@ -45,14 +47,14 @@ const NavbarUnauth = connect(
         h(
           'button',
           {
-            class: 'demo-button rounded-button',
+            class: 'button primary navbar-button',
             /*
             * onMouseDown to prevent onBlur before handling the click event
             * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
             */
             onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
           },
-          'Create new wallet'
+          'Create New Wallet'
         )
       )
     )
