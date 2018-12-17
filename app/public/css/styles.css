@@ -40,28 +40,7 @@
   --disabled: #ddd;
   --navbar-text: #777;
 }
-/* NORMALIZE */
-* {
-  box-sizing: border-box;
-}
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-html {
-  height: 100%;
-  font-size: 15px;
-}
-body {
-  margin: 0;
-  padding: 0;
-  font-family: JTMarnie, Arial, Helvetica, sans-serif;
-  height: 100%;
-  color: var(--text-color);
-}
-input:focus {
-  outline: none;
-}
+
 /* TYPOGRAPHY */
 h1 {
   font-weight: 300;
@@ -1538,6 +1517,7 @@ td {
   display: flex;
 }
 
+<<<<<<< HEAD
 /* BUTTONS */
 
 .button {
@@ -1582,4 +1562,47 @@ td {
 
 .button.small {
   padding: 8px 16px;
+=======
+/* REDESIGN 2.0 */
+
+/* VARIABLES */
+
+:root {
+  --pink: #e72076;
+  --darkGrey: #20323f;
+  --grey: #606a71;
+  --lightGrey: #e6e6e6;
+  --green: #78d088;
+  --blue: #78c9dd;
+  --red: #cf4040;
+  --orange: #f4b253;
+}
+
+/* NORMALIZE */
+
+* {
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  height: 100%;
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: JTMarnie, Arial, Helvetica, sans-serif;
+  height: 100%;
+  color: var(--darkGrey);
+}
+
+input:focus {
+  outline: none;
+>>>>>>> Re-defined colors & normalize moved to bottom of file
 }
