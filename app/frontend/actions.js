@@ -135,6 +135,12 @@ module.exports = ({setState, getState}) => {
       setState({
         walletLoadingError: {
           code: 'WalletInitializationError',
+          params: {
+            message:
+              e.name === 'NetworkError'
+                ? 'failed to fetch data from blockchain explorer'
+                : undefined,
+          },
         },
         loading: false,
       })

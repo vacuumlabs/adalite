@@ -13,7 +13,8 @@ const translations = {
   SendAmountIsTooBig: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
-  WalletInitializationError: () => 'Error during wallet initialization',
+  WalletInitializationError: ({message}) =>
+    `Error during wallet initialization${message ? `:  ${message}` : ''}`,
   TransactionRejectedByNetwork: () => 'Submitting the transaction into Cardano network failed.',
   TransactionRejected: () => 'Transaction rejected while signing.',
   TrezorRejected: () => 'Operation rejected by the Trezor hardware wallet.',
