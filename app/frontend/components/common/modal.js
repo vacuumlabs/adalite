@@ -1,6 +1,6 @@
 const {h} = require('preact')
 
-const Modal = ({children, closeHandler, bodyClass = '', showCloseButton = false}) =>
+const Modal = ({children, closeHandler, bodyClass = '', showCloseButton = true}) =>
   h(
     'div',
     {
@@ -18,7 +18,8 @@ const Modal = ({children, closeHandler, bodyClass = '', showCloseButton = false}
           e.key === 'Escape' && closeHandler()
         },
       },
-      showCloseButton && h('div', {class: 'modal-close', onClick: closeHandler}),
+      showCloseButton &&
+        h('button', {'class': 'modal-close', 'onClick': closeHandler, 'aria-label': 'Close dialog'}),
       children
     )
   )
