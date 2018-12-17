@@ -94,57 +94,6 @@ path {
   cursor: pointer;
 }
 
-/* BUTTONS */
-
-button,
-.button {
-  padding: 12px 24px;
-  border-radius: 4px;
-  font-size: 16px;
-  line-height: 32px;
-  font-weight: bold;
-  border: none;
-  transition: background-color var(--transition-easing) var(--transition-time);
-}
-
-button:hover,
-.button:hover {
-  cursor: pointer;
-}
-
-.button--primary {
-  background-color: var(--brand);
-  color: white;
-}
-
-.button--primary:disabled {
-  background-color: var(--brand-light);
-  color: white;
-}
-
-.button--primary:hover {
-  background-color: var(--brand-dark);
-}
-
-.button--outline {
-  background-color: white;
-  color: var(--brand);
-  border: 2px solid var(--brand);
-}
-
-.button--outline:hover {
-  background-color: var(--brand);
-  color: white;
-}
-
-.button--wide {
-  padding: 12px 40px;
-}
-
-.button--narrow {
-  padding: 8px 16px;
-}
-
 /* FORMS */
 input {
   padding: 0 0.5em;
@@ -1571,4 +1520,50 @@ td {
 
 .flex-align {
   display: flex;
+}
+
+/* BUTTONS */
+
+.button {
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 32px;
+  font-weight: bold;
+  border: none;
+  transition: background-color var(--transition-easing) var(--transition-time);
+  display: inline-block;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.button.primary {
+  background-color: var(--brand);
+  color: white;
+}
+
+.button.primary:disabled {
+  background-color: var(--brand-light);
+  color: white;
+}
+
+.button.primary:hover {
+  background-color: var(--brand-dark);
+}
+
+.button.outline {
+  background-color: white;
+  color: var(--brand);
+  border: 2px solid var(--brand);
+}
+
+.button.outline:hover {
+  background-color: var(--brand);
+  color: white;
+}
+
+.button.small {
+  padding: 8px 16px;
 }
