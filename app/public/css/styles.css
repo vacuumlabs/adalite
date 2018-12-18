@@ -1534,6 +1534,9 @@ td {
   --color-brand-light: #ea418a;
   --color-brand-dark: #c91563;
   --color-text: var(--color-grey-dark);
+  --color-success: var(--color-green);
+  --color-warning: var(--color-orange);
+  --color-error: var(--color-red);
 }
 
 /* NORMALIZE */
