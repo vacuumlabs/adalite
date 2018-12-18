@@ -1517,7 +1517,73 @@ td {
   display: flex;
 }
 
-<<<<<<< HEAD
+/* REDESIGN 2.0 */
+
+/* VARIABLES */
+
+:root {
+  --color-pink: #e72076;
+  --color-grey-dark: #20323f;
+  --color-grey: #606a71;
+  --color-grey-light: #e6e6e6;
+  --color-green: #78d088;
+  --color-blue: #78c9dd;
+  --color-red: #cf4040;
+  --color-orange: #f4b253;
+  --color-brand: var(--color-pink);
+  --color-text: var(--color-grey-dark);
+}
+
+/* NORMALIZE */
+
+* {
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  height: 100%;
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: JTMarnie, Arial, Helvetica, sans-serif;
+  height: 100%;
+  color: var(--color-text);
+}
+
+/* TYPOGRAPHY */
+
+h1 {
+  font-weight: normal;
+  margin: 0;
+  font-size: 32px;
+  line-height: 48px;
+}
+
+h2 {
+  font-weight: bold;
+  margin: 0;
+  font-size: 16px;
+  line-height: 32px;
+}
+
+a,
+a:hover {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
+p {
+  margin: 0;
+}
+
 /* BUTTONS */
 
 .button {
@@ -1562,48 +1628,4 @@ td {
 
 .button.small {
   padding: 8px 16px;
-=======
-/* REDESIGN 2.0 */
-
-/* VARIABLES */
-
-:root {
-  --pink: #e72076;
-  --darkGrey: #20323f;
-  --grey: #606a71;
-  --lightGrey: #e6e6e6;
-  --green: #78d088;
-  --blue: #78c9dd;
-  --red: #cf4040;
-  --orange: #f4b253;
-}
-
-/* NORMALIZE */
-
-* {
-  box-sizing: border-box;
-}
-
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-
-html {
-  height: 100%;
-  font-size: 14px;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: JTMarnie, Arial, Helvetica, sans-serif;
-  height: 100%;
-  color: var(--darkGrey);
-}
-
-input:focus,
-button:focus {
-  outline: none;
->>>>>>> Re-defined colors & normalize moved to bottom of file
 }
