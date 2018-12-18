@@ -1,10 +1,10 @@
 const {h} = require('preact')
 
-const Alert = ({children, alertType = 'success', bodyClass = ''}) =>
+const Alert = ({children, alertType = 'success'}) =>
   h(
     'div',
     {
-      class: `alert ${alertType} ${bodyClass}`,
+      class: `alert ${alertType}`,
     },
     h('div', {class: 'alert-content'}, children)
   )
