@@ -15,12 +15,13 @@
 }
 
 :root {
-  --brand: #eb1a75;
-  --brand-dark: #ed005b;
-  --brand-light: #d36a98;
+  --brand: #e72076;
+  --brand-dark: #da1c6f;
+  --brand-light: #f5a6c8;
   --brand-shadow: #eb1a75cc;
   --brand-shadow-light: #eb1a7544;
-  --transition: 0.25s;
+  --transition-easing: ease-in-out;
+  --transition-time: 0.25s;
   --width: 1200px;
   --small-screen-padding: 25px;
   --text-color: #333;
@@ -108,48 +109,7 @@ path {
   color: var(--brand);
   cursor: pointer;
 }
-/* BUTTON */
-button,
-.button-like {
-  background-color: var(--brand);
-  color: white;
-  border: 0;
-  border-radius: 8px;
-  padding: 0 1em;
-  height: 2.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform var(--transition);
-}
-button:disabled {
-  background-color: var(--brand-light);
-  cursor: not-allowed;
-}
-.button-like:hover,
-button:enabled:hover:active {
-  transform: scale(1.08);
-}
-button.danger {
-  background-color: var(--negative);
-}
-button.positive {
-  background-color: var(--positive);
-}
-button.cancel {
-  background-color: var(--input-background);
-  border: solid 1px var(--border);
-  color: var(--navbar-text);
-  margin-left: 1.5rem;
-}
-button:disabled {
-  background-color: var(--disabled);
-}
-button + button {
-  margin-left: 2em;
-}
-input + button {
-  margin-top: 1rem;
-}
+
 /* FORMS */
 input {
   padding: 0 0.5em;
@@ -263,7 +223,7 @@ td {
   color: var(--text-color);
   opacity: 0.8;
   display: inline-block;
-  transition: background-color var(--transition);
+  transition: background-color var(--transition--time);
 }
 .copy:hover {
   transform: scale(1.08);
@@ -1576,4 +1536,50 @@ td {
 
 .flex-align {
   display: flex;
+}
+
+/* BUTTONS */
+
+.button {
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 32px;
+  font-weight: bold;
+  border: none;
+  transition: background-color var(--transition-easing) var(--transition-time);
+  display: inline-block;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.button.primary {
+  background-color: var(--brand);
+  color: white;
+}
+
+.button.primary:disabled {
+  background-color: var(--brand-light);
+  color: white;
+}
+
+.button.primary:hover {
+  background-color: var(--brand-dark);
+}
+
+.button.outline {
+  background-color: white;
+  color: var(--brand);
+  border: 2px solid var(--brand);
+}
+
+.button.outline:hover {
+  background-color: var(--brand);
+  color: white;
+}
+
+.button.small {
+  padding: 8px 16px;
 }
