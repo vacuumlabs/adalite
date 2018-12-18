@@ -1623,6 +1623,11 @@ p {
   padding: 8px 16px;
 }
 
+.button.navbar {
+  margin-left: 16px;
+  padding: 7px 24px 8px 24px;
+}
+
 /* ALERTS */
 
 .alert {
