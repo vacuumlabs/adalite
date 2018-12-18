@@ -11,17 +11,21 @@ const NavbarUnauth = connect(
   h(
     'nav',
     {class: 'navbar'},
-    h('h1', {class: 'navbar-heading'}, 'AdaLite - Cardano Wallet'),
     h(
       'div',
       {class: 'navbar-wrapper'},
       h(
-        'a',
-        {class: 'navbar-logo', href: '/'},
-        h('img', {
-          src: 'assets/adalite-logo.svg',
-          alt: 'AdaLite - Cardano Wallet',
-        })
+        'h1',
+        {class: 'navbar-heading'},
+        h('span', {class: 'navbar-title'}, 'AdaLite - Cardano Wallet'),
+        h(
+          'a',
+          {class: 'navbar-logo', href: '/'},
+          h('img', {
+            src: 'assets/adalite-logo.svg',
+            alt: 'AdaLite - Cardano Wallet',
+          })
+        )
       ),
       h(
         'div',
@@ -32,6 +36,7 @@ const NavbarUnauth = connect(
             class: 'navbar-link',
             href: 'about',
             target: '_blank',
+            rel: 'noopener',
           },
           'About'
         ),
@@ -41,13 +46,14 @@ const NavbarUnauth = connect(
             class: 'navbar-link',
             href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
             target: '_blank',
+            rel: 'noopener',
           },
           'Help'
         ),
         h(
           'button',
           {
-            class: 'button outline navbar-button',
+            class: 'button outline navbar',
             /*
             * onMouseDown to prevent onBlur before handling the click event
             * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
