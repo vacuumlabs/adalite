@@ -41,29 +41,6 @@
   --navbar-text: #777;
 }
 
-/* FORMS */
-input {
-  padding: 0 0.5em;
-  height: 2rem;
-  font-size: 1rem;
-  margin: 0;
-}
-label span {
-  font-weight: bold;
-  display: block;
-  padding-bottom: 0.5rem;
-}
-label {
-  display: block;
-}
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type='number'] {
-  -moz-appearance: textfield;
-}
 /* TABLE */
 table {
   border-spacing: 0;
@@ -1098,6 +1075,8 @@ td {
   --color-warning: var(--color-orange);
   --color-error: var(--color-red);
   --color-border: var(--color-grey-light);
+  --transition-easing: ease-in-out;
+  --transition-time: 0.25s;
 }
 
 /* NORMALIZE */
@@ -1148,6 +1127,40 @@ a:hover {
 
 p {
   margin: 0;
+}
+
+/* INPUTS */
+
+.input {
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 32px;
+  color: var(--color-text);
+  background-color: white;
+  transition: border-color var(--transition-easing) var(--transition-time);
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input::-webkit-input-placeholder {
+  color: var(--color-grey);
+}
+.input::-moz-placeholder {
+  color: var(--color-grey);
+}
+.input:-ms-input-placeholder {
+  color: var(--color-grey);
+}
+.input:-moz-placeholder {
+  color: var(--color-grey);
+}
+
+.input.error {
+  border-color: var(--color-error);
 }
 
 /* BUTTONS */
