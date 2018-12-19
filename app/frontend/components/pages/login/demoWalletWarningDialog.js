@@ -41,7 +41,7 @@ class DemoWalletWarningDialogClass {
         h(
           'button',
           {
-            class: 'button primary modal-button',
+            class: 'button primary',
             onClick: closeDemoWalletWarningDialog,
             onKeyDown: (e) => {
               ;['Enter', 'Escape'].includes(e.key) && e.target.click()
