@@ -12,7 +12,7 @@ class DemoWalletWarningDialogClass {
   render({closeDemoWalletWarningDialog}) {
     return h(
       Modal,
-      {closeHandler: closeDemoWalletWarningDialog, showCloseButton: true},
+      {closeHandler: closeDemoWalletWarningDialog},
       h(
         'div',
         {class: 'modal-head'},
