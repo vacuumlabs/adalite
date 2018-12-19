@@ -1380,6 +1380,7 @@ p {
   padding: 32px 0;
 }
 
+<<<<<<< HEAD
 .navbar-wrapper {
   max-width: var(--width);
   width: 100%;
@@ -1411,6 +1412,8 @@ p {
 
 /* BRANDING */
 
+=======
+>>>>>>> Refactored light <> dark states & implemented review
 .branding-label {
   color: white;
   margin-bottom: 10px;
