@@ -1357,6 +1357,7 @@ p {
   font-size: 32px;
   line-height: 48px;
   margin-bottom: 16px;
+  font-weight: normal;
 }
 
 .modal-paragraph {
@@ -1374,8 +1375,53 @@ p {
   margin-top: 56px;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .modal-footer .button.primary {
   margin-bottom: 40px;
+}
+
+.modal-body .alert {
+  margin-top: 40px;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-head .modal-warning {
+  min-width: 185px;
+  margin-left: 40px;
+  margin-top: 16px;
+}
+
+.modal-warning {
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: bold;
+  letter-spacing: 0.6px;
+  color: var(--color-warning);
+  text-transform: uppercase;
+  padding-left: 28px;
+  position: relative;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.modal-warning:before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/alert_icon_warning.svg');
 }
