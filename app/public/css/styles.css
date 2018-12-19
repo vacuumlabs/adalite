@@ -1378,8 +1378,8 @@ p {
   align-items: center;
 }
 
-.modal-footer .button.primary {
-  margin-bottom: 40px;
+.modal-footer .modal-paragraph {
+  margin-top: 40px;
 }
 
 .modal-body .alert {
