@@ -1352,3 +1352,30 @@ p {
   max-width: 156px;
   display: block;
 }
+
+.modal-title {
+  font-size: 32px;
+  line-height: 48px;
+  margin-bottom: 16px;
+}
+
+.modal-paragraph {
+  font-size: 14px;
+  line-height: 24px;
+  margin: 0;
+}
+
+.modal-paragraph--bigger {
+  font-size: 16px;
+  line-height: 32px;
+}
+
+.modal-footer {
+  margin-top: 56px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-footer .button.primary {
+  margin-bottom: 40px;
+}
