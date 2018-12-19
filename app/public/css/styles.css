@@ -1408,3 +1408,24 @@ p {
   text-indent: -999999px;
   display: inline-block;
 }
+
+/* BRANDING */
+
+.branding-label {
+  color: white;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.6px;
+}
+
+.branding-label.dark {
+  color: var(--color-grey);
+}
+
+.branding-logo {
+  max-width: 156px;
+  display: block;
+}
