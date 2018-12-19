@@ -18,11 +18,8 @@ const Modal = ({children, closeHandler, bodyClass = ''}) =>
           e.key === 'Escape' && closeHandler()
         },
       },
-      h(
-        'span',
-        {class: 'modal-close-button', onClick: closeHandler},
-        h('img', {src: 'assets/close-icon.svg'})
-      ),
+      closeHandler &&
+        h('button', {'class': 'modal-close', 'onClick': closeHandler, 'aria-label': 'Close dialog'}),
       children
     )
   )
