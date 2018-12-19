@@ -1,5 +1,4 @@
 const {h} = require('preact')
-const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 
@@ -10,49 +9,58 @@ const NavbarUnauth = connect(
   actions
 )(({openGenerateMnemonicDialog}) =>
   h(
-    'div',
+    'nav',
     {class: 'navbar'},
     h(
       'div',
-      {class: 'navbar-wrap-unauth'},
+      {class: 'navbar-wrapper'},
       h(
-        'a',
-        {class: 'title', href: '/'},
-        h('img', {src: 'assets/adalite-logo.svg', alt: 'AdaLite - Cardano Wallet'})
+        'h1',
+        {class: 'navbar-heading'},
+        h('span', {class: 'navbar-title'}, 'AdaLite - Cardano Wallet'),
+        h(
+          'a',
+          {class: 'navbar-logo', href: '/'},
+          h('img', {
+            src: 'assets/adalite-logo.svg',
+            alt: 'AdaLite - Cardano Wallet',
+          })
+        )
       ),
-      h('div', {class: 'logo-version-number'}, APP_VERSION),
       h(
-        'span',
-        undefined,
+        'div',
+        {class: 'navbar-content'},
         h(
           'a',
           {
-            class: 'unauth-menu',
+            class: 'navbar-link',
             href: 'about',
             target: '_blank',
+            rel: 'noopener',
           },
           'About'
         ),
         h(
           'a',
           {
-            class: 'unauth-menu',
+            class: 'navbar-link',
             href: 'https://github.com/vacuumlabs/adalite/wiki',
             target: '_blank',
+            rel: 'noopener',
           },
           'Help'
         ),
         h(
           'button',
           {
-            class: 'demo-button rounded-button',
+            class: 'button outline navbar',
             /*
             * onMouseDown to prevent onBlur before handling the click event
             * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
             */
             onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
           },
-          'Create new wallet'
+          'Create New Wallet'
         )
       )
     )
