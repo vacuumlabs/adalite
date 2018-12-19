@@ -54,8 +54,8 @@ class DemoWalletWarningDialogClass {
         ),
         /* TODO: connect link click to creating new wallet action */
         h(
-          'div',
-          undefined,
+          'p',
+          {class: 'modal-paragraph'},
           'To securely store ADA, ',
           h('a', {href: '/'}, 'create your own new wallet')
         )
