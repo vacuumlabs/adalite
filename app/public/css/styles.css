@@ -1136,14 +1136,16 @@ p {
   border: 1px solid var(--color-border);
   padding: 12px 16px;
   font-size: 14px;
-  line-height: 32px;
+  min-height: 58px;
+  /* line-height: 32px; */
   color: var(--color-text);
   background-color: white;
-  transition: border-color var(--transition-easing) var(--transition-time);
+  transition: all var(--transition-easing) var(--transition-time);
 }
 
 .input:focus {
   outline: none;
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.06);
 }
 
 .input::-webkit-input-placeholder {
