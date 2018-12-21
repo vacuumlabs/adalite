@@ -41,54 +41,6 @@
   --navbar-text: #777;
 }
 
-/* TYPOGRAPHY */
-h1 {
-  font-weight: 300;
-  margin-top: 0;
-  margin-bottom: 0.5em;
-}
-h2 {
-  font-weight: 300;
-  font-size: 2.5rem;
-  margin-top: 0;
-  margin-bottom: 0.5em;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 0.25em;
-  padding-left: 0.2rem;
-}
-@media screen and (max-width: 7px) {
-  h2 {
-    font-size: 1.5rem;
-  }
-}
-h3 {
-  margin-bottom: 0.25em;
-  font-weight: 300;
-}
-h4 {
-  font-weight: 300;
-  font-size: 1.5em;
-  margin-top: 0;
-  margin-bottom: 0.5em;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0.25em;
-}
-a {
-  color: var(--brand);
-}
-p {
-  margin-top: 0.5em;
-  margin-bottom: 0.25em;
-}
-path {
-  fill: currentColor;
-}
-.link {
-  text-decoration: underline;
-  color: var(--brand);
-  cursor: pointer;
-}
-
 /* FORMS */
 input {
   padding: 0 0.5em;
