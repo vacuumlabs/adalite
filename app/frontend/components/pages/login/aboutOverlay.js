@@ -2,11 +2,13 @@ const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const Modal = require('../../common/modal')
+const Alert = require('../../common/alert')
+const Branding = require('../../common/branding')
 
-const WelcomeArticle = ({children, title, containerClass}) =>
+const WelcomeArticle = ({children, title, icon}) =>
   h(
     'article',
-    containerClass ? {class: `article greeting-article ${containerClass}`} : undefined,
+    {class: `greeting-article ${icon ? `icon ${icon}` : ''}`},
     h('h3', {class: 'article-title'}, title),
     h('p', {class: 'article-paragraph'}, children)
   )
@@ -36,13 +38,21 @@ class AboutOverlayClass extends Component {
       h(
         'section',
         {class: 'greeting'},
-        h('h2', {class: 'modal-title'}, 'Welcome to AdaLite'),
         h(
-          'p',
-          {class: 'modal-paragraph modal-paragraph--bigger'},
-          'We are an open-source client-side interface for direct interaction with the Cardano blockchain.'
+          'div',
+          {class: 'greeting-head'},
+          h('h2', {class: 'modal-title'}, 'Welcome to AdaLite'),
+          h(
+            'p',
+            {class: 'modal-paragraph bigger'},
+            'We are an open-source client-side interface for direct \n interaction with the Cardano blockchain.'
+          )
         ),
-        h('h3', undefined, 'Re-use alert here'),
+        h(
+          Alert,
+          {alertType: 'warning'},
+          'To be safe from losing access to your funds, please read the following advice carefully.'
+        ),
         h(
           'div',
           {class: 'greeting-articles'},
@@ -50,6 +60,7 @@ class AboutOverlayClass extends Component {
             WelcomeArticle,
             {
               title: "Don't loose your mnemonic",
+              icon: 'mnemonic',
             },
             `A new wallet is created by generating a cryptographic set of words
             (mnemonic). You use it to access your funds on the Cardano blockchain.
@@ -61,6 +72,7 @@ class AboutOverlayClass extends Component {
             WelcomeArticle,
             {
               title: 'Protect your funds',
+              icon: 'funds',
             },
             `The mnemonic is handled in your browser and never leaves
             your computer. However, if a virus or a hacker compromises your
@@ -71,6 +83,7 @@ class AboutOverlayClass extends Component {
             WelcomeArticle,
             {
               title: 'Consider using a hardware wallet',
+              icon: 'wallet',
             },
             `AdaLite allows you to access your funds using a hardware wallet. It
             currently supports Trezor model T. This allows you to interact with
@@ -82,17 +95,17 @@ class AboutOverlayClass extends Component {
             WelcomeArticle,
             {
               title: "Don't get phished",
+              icon: 'phishing',
             },
             `To protect yourself from phishers, bookmark official AdaLite address
             and `,
             h('b', undefined, 'always check the URL. The official address is https://adalite.io/.')
           )
         ),
-
         h(
           'div',
           {class: 'greeting-credits'},
-          h('div', undefined, 'DevelopedBy component'),
+          h(Branding, {dark: true}),
           h(
             'p',
             {class: 'credit-paragraph'},
@@ -104,21 +117,17 @@ class AboutOverlayClass extends Component {
 
         h(
           'div',
-          {class: 'modal-footer modal-footer--horizontal'},
+          {class: 'modal-footer greeting-footer'},
           h(
-            'div',
-            undefined,
-            h(
-              'label',
-              {class: 'centered-row action'},
-              h('input', {
-                type: 'checkbox',
-                checked: dontShowAgainCheckbox,
-                onChange: this.checkboxClick,
-                class: 'understand-checkbox',
-              }),
-              "Don't show this notice again."
-            )
+            'label',
+            {class: 'label-wrapper'},
+            h('input', {
+              type: 'checkbox',
+              checked: dontShowAgainCheckbox,
+              onChange: this.checkboxClick,
+              class: 'checkbox',
+            }),
+            "Don't show this notice again."
           ),
           h(
             'button',
