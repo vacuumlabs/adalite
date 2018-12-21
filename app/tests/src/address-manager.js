@@ -112,16 +112,16 @@ describe('wallet addresses derivation scheme V1', () => {
 
 describe('wallet addresses derivation scheme V2', () => {
   const expectedWalletAddresses = [
-    'Ae2tdPwUPEYzQAvoUDaw3kghu19zJcpZrxY5m2wKz2uQuaCXs8ea9EBAAFQ',
-    'Ae2tdPwUPEZHWwSaKPwi4JkDeijLQM93wgbfbmsA7ssGZLQ3Uh1unvABAKR',
-    'Ae2tdPwUPEZLeySAx2yxc1eXpdahTqR1fLp8XcVLAHLfHFpukMw7MDt7UyY',
-    'Ae2tdPwUPEZDV8rMvDE2hzXT984xEKE332zjiCgFuKAWiiXm7uGpuXoqJ2s',
-    'Ae2tdPwUPEZ7uybwGEgjtZ1dDVQAxBsFwaKJkKygzJvoep7kDwfSv3cE9K3',
-    'Ae2tdPwUPEZ9gop4Vtwe7x3dAxNcUQbzcvqzimnBuXWQLPFrVrL5okViSaW',
-    'Ae2tdPwUPEZ6uA8r8SaVzYyrXWC9bfywpvFFmXebycm8vB5F3SPWh6k66K8',
-    'Ae2tdPwUPEZGd4zAPiZycUr4txd1r4ercSyRa9WniDJtgv6BbUmpdf8sGiP',
-    'Ae2tdPwUPEZMgMJSVKf9TLPBfLd1hDBABfLtMhB5KamqVLS4VHmgZgJEjp5',
-    'Ae2tdPwUPEZ9dqx9Zoo3nMxmzFz4WCz4wWJSxwRG4QmFjZ7oWYSfvGJfc4R',
+    'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
+    'Ae2tdPwUPEZ7dnds6ZyhQdmgkrDFFPSDh8jG9RAhswcXt1bRauNw5jczjpV',
+    'Ae2tdPwUPEZ8LAVy21zj4BF97iWxKCmPv12W6a18zLX3V7rZDFFVgqUBkKw',
+    'Ae2tdPwUPEZ7Ed1V5G9oBoRoK3sbgFU8b9iZY2kegf4s6228EwVLRSq9NzP',
+    'Ae2tdPwUPEYyLw6UJRKnbbudG8PJR7KfPhioRW8m1BohkFAqR44pPg6BYVZ',
+    'Ae2tdPwUPEYw9wMWUnyutGYXdpVqNStf4g3TAxiAYMyACQAWXNFvs3fZ8do',
+    'Ae2tdPwUPEZ9wMYpKKXJLAEa5JV2CKBoiFvKfuqdtDLMARkaZG9P4K7ZRjX',
+    'Ae2tdPwUPEZHAZxwzS7MrSS8nc6DXt4Nj8FvrYHXCVDkzVEjrAfVxxZEL4H',
+    'Ae2tdPwUPEYz8hGBRWCNJFm2bDuSHBbphMT32wPxALXTVPWrRCtZhSPbRen',
+    'Ae2tdPwUPEZHxx6ug6oyXREcwQ1tjBY4D2B6M7rYL9LhbAXfRPfMtm3nV4J',
   ]
 
   it('should derive the right sequence of addresses from the root secret key', async () => {

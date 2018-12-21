@@ -1,4 +1,4 @@
-const {decodePaperWalletMnemonic, walletSecretFromMnemonic} = require('cardano-crypto.js')
+const {decodePaperWalletMnemonic, mnemonicToRootKeypair} = require('cardano-crypto.js')
 
 const {isMnemonicInPaperWalletFormat} = require('../mnemonic')
 const {validateMnemonic} = require('../mnemonic')
@@ -13,7 +13,7 @@ const mnemonicToWalletSecret = async (mnemonic, derivationScheme) => {
     mnemonic = await decodePaperWalletMnemonic(mnemonic)
   }
 
-  return walletSecretFromMnemonic(mnemonic, derivationScheme.number)
+  return mnemonicToRootKeypair(mnemonic, derivationScheme.number)
 }
 
 const mnemonicOrHdNodeStringToWalletSecret = async (

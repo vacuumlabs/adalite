@@ -1347,10 +1347,10 @@ camelcase@^4.1.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
   integrity sha1-1UVjW+HjPFQmScaRc+Xeas+uNN0=
 
-cardano-crypto.js@^4.2.3:
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-4.2.3.tgz#b0ef4ae4cd0bf84b6a948d82a4fe4c75ee779b9c"
-  integrity sha512-CQqdpBZnQEdSu8+vvBYOSOTfQ4MerhH7KRl/BqDqEMG3cc3LgCwSMmSnQxSD9VRZKAUnvqEtMll5lvwYeu9bTw==
+cardano-crypto.js@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-5.0.0.tgz#cfeae89a0c0dd1fefb1b854f2d2e268d0837b280"
+  integrity sha512-OT1RSwgGzedxtm6f6yAQF0NagC6BYwXeNyhfcsZfEQtdxyHS1kduM7U4+x3+WDVFen71/Zi9fFp23sOFkwQUig==
   dependencies:
     bip39-light "^1.0.7"
     borc "^2.0.4"
