@@ -1137,10 +1137,10 @@ p {
   padding: 12px 16px;
   font-size: 14px;
   min-height: 58px;
-  /* line-height: 32px; */
   color: var(--color-text);
   background-color: white;
-  transition: all var(--transition-easing) var(--transition-time);
+  transition: border-color var(--transition-easing) var(--transition-time),
+    box-shadow var(--transition-easing) var(--transition-time);
 }
 
 .input:focus {
