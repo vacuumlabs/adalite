@@ -450,92 +450,6 @@ td {
   margin-top: 0.5rem;
 }
 
-/* FOOTER */
-.footer {
-  width: 100%;
-  background-image: url('../assets/footer_bg.svg');
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.footer__wrapper {
-  max-width: var(--width);
-  width: 100%;
-  font-size: 1rem;
-  color: var(--text-color);
-  padding: 56px 0;
-  margin-left: auto;
-  margin-right: auto;
-}
-.footer__content {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: 1fr;
-}
-.footer__logo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-bottom: 48px;
-}
-.footer__logo__text {
-  color: #8f989f;
-  text-transform: uppercase;
-  font-size: 11px;
-  line-height: 16px;
-  letter-spacing: 0.6px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-.footer__donations {
-  align-self: end;
-}
-.footer__donations__text {
-  color: white;
-  font-size: 14px;
-  line-height: 24px;
-  font-weight: bold;
-  margin-bottom: 24px;
-}
-.footer__donations__list {
-  display: flex;
-  align-items: center;
-}
-.footer__donations__item {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  line-height: 24px;
-  color: white;
-  text-decoration: underline;
-  font-weight: bold;
-}
-.footer__donations__item:not(:last-child) {
-  margin-right: 32px;
-}
-.footer__donations__item img {
-  margin-right: 16px;
-}
-.footer__social {
-  display: grid;
-  grid-template: 1fr 1fr / 1fr 1fr;
-  grid-row-gap: 16px;
-}
-.footer__social__link {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  line-height: 24px;
-  color: white;
-  text-decoration: underline;
-  font-weight: bold;
-}
-.footer__social__link img {
-  margin-right: 16px;
-}
-.footer .rates {
-  font-size: 0.85em;
-}
-
 /*LANDING*/
 .intro-wrapper {
   margin: auto;
@@ -1167,6 +1081,13 @@ h2 {
   line-height: 32px;
 }
 
+h3 {
+  font-weight: bold;
+  margin: 0;
+  font-size: 14px;
+  line-height: 24px;
+}
+
 a,
 a:hover {
   color: var(--color-brand);
@@ -1503,24 +1424,145 @@ p {
   background-image: url('../assets/alert_icon_warning.svg');
 }
 
-.modal-mnemonic {
-  margin-top: 40px;
-  padding: 24px 24px 24px 64px;
-  border: 1px solid var(--color-border);
-  border-radius: 2px;
-  position: relative;
-  font-family: monospace;
+/* FOOTER */
+
+.footer {
+  background-image: url('../assets/footer_bg.svg');
+  background-position: center;
+  background-size: cover;
+  padding: 56px 0;
 }
 
-.modal-mnemonic:before {
+.footer-wrapper {
+  max-width: var(--width);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.footer .branding {
+  margin-bottom: 48px;
+  flex: 1 1 100%;
+}
+
+.footer .conversion {
+  margin-top: 32px;
+  flex: 1 1 100%;
+}
+
+.footer .social {
+  flex: 0 0 60%;
+  max-width: 60%;
+  margin-right: 10%;
+}
+
+.footer .donations {
+  flex: 0 0 30%;
+  max-width: 30%;
+}
+
+.conversion {
+  color: white;
+  padding-left: 40px;
+  position: relative;
+}
+
+.conversion:before {
   content: '';
   width: 24px;
   height: 24px;
   position: absolute;
-  top: 20px;
-  left: 24px;
-  background-repeat: no-repeat;
+  left: 0;
+  background-image: url('../assets/conversion_icon.svg');
   background-size: contain;
   background-position: center;
-  background-image: url('../assets/input_pencil_icon.svg');
+  background-repeat: no-repeat;
+}
+
+.conversion-link {
+  color: white;
+}
+
+.social {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding-left: 40px;
+  position: relative;
+  margin-bottom: 24px;
+  color: white;
+}
+
+.social-link:before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  left: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.social-link.email:before {
+  background-image: url('../assets/social_icon_email.svg');
+}
+
+.social-link.twitter:before {
+  background-image: url('../assets/social_icon_twitter.svg');
+}
+
+.social-link.telegram:before {
+  background-image: url('../assets/social_icon_telegram.svg');
+}
+
+.social-link.github:before {
+  background-image: url('../assets/social_icon_github.svg');
+}
+
+.donations {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.donations-title {
+  color: white;
+  font-weight: bold;
+  flex: 1 1 100%;
+  margin-bottom: 24px;
+}
+
+.donations-item {
+  color: white;
+  position: relative;
+  padding-left: 40px;
+  margin-right: 32px;
+}
+
+.donations-item:before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  left: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.donations-item.bitcoin:before {
+  background-image: url('../assets/donation_icon_bitcoin.svg');
+}
+
+.donations-item.ada:before {
+  background-image: url('../assets/donation_icon_ada.svg');
+}
+
+.donations-item.ether:before {
+  background-image: url('../assets/donation_icon_ether.svg');
 }
