@@ -1456,24 +1456,44 @@ p {
   background-image: url('../assets/alert_icon_warning.svg');
 }
 
-.modal-mnemonic {
-  margin-top: 40px;
-  padding: 24px 24px 24px 64px;
-  border: 1px solid var(--color-border);
-  border-radius: 2px;
-  position: relative;
-  font-family: monospace;
+/* MAIN PAGE */
+
+.page-wrapper {
+  display: flex;
+  height: 100%;
+  width: var(--width);
+  margin: 0 auto;
 }
 
-.modal-mnemonic:before {
-  content: '';
-  width: 24px;
-  height: 24px;
-  position: absolute;
-  top: 20px;
-  left: 24px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  background-image: url('../assets/input_pencil_icon.svg');
+.page-main {
+  flex: 0 0 66%;
+  max-width: 66%;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  flex: 1;
+  margin-left: 5%;
+  padding-left: 40px;
+  padding-left: 40px;
+}
+
+.sidebar .alert {
+  margin-left: -40px;
+  padding-left: 40px;
+  border-color: transparent;
+  margin-bottom: 64px;
+}
+
+.sidebar .alert:before {
+  left: 0;
+}
+
+.sidebar-paragraph {
+  margin-bottom: 64px;
+}
+
+.sidebar *:last-child {
+  margin-bottom: 0;
 }
