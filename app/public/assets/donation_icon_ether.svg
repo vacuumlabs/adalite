@@ -3,9 +3,9 @@
     <!-- Generator: Sketch 52.4 (67378) - http://www.bohemiancoding.com/sketch -->
     <title>Shape</title>
     <desc>Created with Sketch.</desc>
-    <g id="design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.399999976">
-        <g id="01-01-landing" transform="translate(-1271.000000, -1148.000000)" fill="#FFFFFF" fill-rule="nonzero">
-            <g id="Group-16" transform="translate(0.000000, 944.000000)">
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.399999976">
+        <g id="footer" transform="translate(-1271.000000, -204.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="Group-16">
                 <g id="Group-13" transform="translate(1169.000000, 153.000000)">
                     <g id="Group-12" transform="translate(102.000000, 49.000000)">
                         <path d="M12,2 C5.37258743,2 0,7.37258743 0,14 C0,20.6274126 5.37258743,26 12,26 C18.6274126,26 24,20.6274126 24,14 C24,7.37258743 18.6274126,2 12,2 Z M11.8444309,21.9503323 L7.10216833,15.242117 L11.8444309,18.0186386 L11.8444309,21.9503323 Z M11.8444309,17.0354505 L7.07008022,14.2388076 L11.8444309,12.1474676 L11.8444309,17.0354505 Z M11.8444309,11.8114426 L7.22384898,13.8352175 L11.8444309,6.07201292 L11.8444309,11.8114426 Z M12.1521802,6.06968309 L16.8376797,13.8640227 L12.1521802,11.8114426 L12.1521802,6.06968309 Z M12.1521802,21.9503323 L12.1521802,18.0186386 L16.8944428,15.242117 L12.1521802,21.9503323 Z M12.1521802,17.0355564 L12.1521802,12.1475735 L16.9300257,14.2403961 L12.1521802,17.0355564 Z" id="Shape"></path>
