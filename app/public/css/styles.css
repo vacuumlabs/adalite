@@ -1077,6 +1077,7 @@ td {
   --color-border: var(--color-grey-light);
   --transition-easing: ease-in-out;
   --transition-time: 0.25s;
+  --color-info: var(--color-blue);
 }
 
 /* NORMALIZE */
@@ -1259,6 +1260,14 @@ p {
 
 .alert.warning:before {
   background-image: url('../assets/alert_icon_warning.svg');
+}
+
+.alert.info {
+  border-color: var(--color-info);
+}
+
+.alert.info:before {
+  background-image: url('../assets/alert_icon_info.svg');
 }
 
 .alert-content {
