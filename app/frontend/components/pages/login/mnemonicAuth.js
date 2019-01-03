@@ -42,7 +42,7 @@ class LoadByMenmonicSectionClass extends Component {
         {class: 'intro-input-row'},
         h('input', {
           type: 'text',
-          class: 'styled-input-nodiv styled-unlock-input',
+          class: 'input',
           id: 'mnemonic-submitted',
           name: 'mnemonic-submitted',
           placeholder: 'Enter wallet mnemonic',
