@@ -1,7 +1,6 @@
 const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const {getTranslation} = require('../../../translations')
 
 const AboutOverlay = require('./aboutOverlay')
 const KeyFileAuth = require('./keyFileAuth')
@@ -23,20 +22,22 @@ class LoginPage extends Component {
     displayAboutOverlay,
     showGenerateMnemonicDialog,
   }) {
-    const authTab = (name, text) =>
+    const authTab = (name, text, recommended) =>
       h(
         'li',
         {
-          class: `authentication-tab ${name} ${authMethod === name ? 'selected' : ''}`,
+          class: `auth-tab ${name} ${authMethod === name ? 'selected' : ''} ${
+            recommended ? 'recommended' : ''
+          }`,
           onClick: () => setAuthMethod(name),
         },
-        text
+        h('span', {class: 'auth-tab-text'}, text)
       )
     const authOption = (type, title, text, tag) =>
       h(
         'div',
         {class: `auth-option ${type}`, onClick: () => setAuthMethod(type)},
-        tag && h('div', {class: `auth-option-tag ${tag}`}, tag),
+        tag && h('div', {class: `tag ${tag}`}, h('span', {class: 'tag-text'}, tag)),
         h('h3', {class: 'auth-option-title'}, title),
         h('p', {class: 'auth-option-text'}, text)
       )
@@ -53,24 +54,17 @@ class LoginPage extends Component {
           authOption('file', 'Key file', 'Encrypted .JSON file')
         )
       )
-    /* TODO: implement selected auth method content */
     const authWrapperSelected = () =>
       h(
         'div',
         {class: 'authentication-wrapper'},
         h(
           'ul',
-          {class: 'authentication-tabs'},
+          {class: 'auth-tabs'},
           authTab('mnemonic', 'Mnemonic'),
-          authTab('trezor', 'Hardware wallet'),
+          authTab('trezor', 'Hardware wallet', true),
           authTab('file', 'Key file')
         ),
-        walletLoadingError &&
-          h(
-            'p',
-            {class: 'alert error'},
-            getTranslation(walletLoadingError.code, walletLoadingError.params)
-          ),
         authMethod === 'mnemonic' && h(MnemonicAuth),
         authMethod === 'trezor' && h(HardwareAuth, {enableTrezor, loadWallet}),
         authMethod === 'file' && h(KeyFileAuth)
@@ -87,7 +81,7 @@ class LoginPage extends Component {
           authMethod === '' ? h(authWrapperInitial) : h(authWrapperSelected)
         )
       ),
-      /* TODO: replace with the loginPageSidebar component */
+      /* TODO: replace with the loginPageSidebar component after PR merge */
       h('aside', undefined, undefined),
       displayAboutOverlay && h(AboutOverlay),
       showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
