@@ -10,7 +10,6 @@ const HardwareAuth = require('./hardwareAuth')
 const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
-const Alert = require('../../../components/common/alert')
 
 class LoginPage extends Component {
   render({
@@ -24,28 +23,47 @@ class LoginPage extends Component {
     displayAboutOverlay,
     showGenerateMnemonicDialog,
   }) {
-    const authOption = (name, text) =>
+    const authTab = (name, text) =>
       h(
         'li',
         {
-          class: authMethod === name && 'selected',
+          class: `authentication-tab ${name} ${authMethod === name ? 'selected' : ''}`,
           onClick: () => setAuthMethod(name),
         },
         text
       )
-    return h(
-      'div',
-      {class: 'page-wrapper'},
+    const authOption = (type, title, text, tag) =>
       h(
-        'main',
-        {class: 'page-main'},
-        h('h2', {class: 'intro-header'}, 'Access Cardano Wallet via'),
+        'div',
+        {class: `auth-option ${type}`, onClick: () => setAuthMethod(type)},
+        tag && h('div', {class: `auth-option-tag ${tag}`}, tag),
+        h('h3', {class: 'auth-option-title'}, title),
+        h('p', {class: 'auth-option-text'}, text)
+      )
+    const authWrapperInitial = () =>
+      h(
+        'div',
+        {class: 'authentication-wrapper initial'},
+        h('h2', {class: 'authentication-title'}, 'How do you want to access\nyour Cardano Wallet?'),
+        h(
+          'div',
+          {class: 'auth-options'},
+          authOption('mnemonic', 'Mnemonic', '12 or 27 word passphrase', 'fastest'),
+          authOption('trezor', 'Hardware Wallet', 'Supporting Trezor T', 'recommended'),
+          authOption('file', 'Key file', 'Encrypted .JSON file')
+        )
+      )
+    /* TODO: implement selected auth method content */
+    const authWrapperSelected = () =>
+      h(
+        'div',
+        {class: 'authentication-wrapper'},
         h(
           'ul',
-          {class: 'tab-row'},
-          authOption('mnemonic', 'Mnemonic'),
-          authOption('trezor', 'Hardware wallet'),
-          authOption('file', 'Key file')
+          {class: 'authentication-tabs'},
+          authTab('mnemonic', 'Mnemonic'),
+          authTab('trezor', 'Hardware wallet'),
+          authTab('file', 'Key file')
         ),
         walletLoadingError &&
           h(
@@ -56,27 +74,21 @@ class LoginPage extends Component {
         authMethod === 'mnemonic' && h(MnemonicAuth),
         authMethod === 'trezor' && h(HardwareAuth, {enableTrezor, loadWallet}),
         authMethod === 'file' && h(KeyFileAuth)
-      ),
+      )
+    return h(
+      'div',
+      {class: 'page-wrapper'},
       h(
-        'aside',
-        {class: 'sidebar'},
-        h(
-          Alert,
-          {alertType: 'success'},
-          h('strong', undefined, 'What is a key file?'),
-          h(
-            'p',
-            undefined,
-            'It’s an encrypted JSON file you can export and load later instead of typing the whole mnemonic passphrase to access your wallet.'
-          )
-        ),
+        'main',
+        {class: 'page-main'},
         h(
           'div',
-          {class: 'sidebar-paragraph'},
-          'AdaLite supports 3 means of accessing your wallet. For enhanced security, we recommend you to use a ',
-          h('strong', undefined, 'hardware wallet.')
+          {class: 'authentication card'},
+          authMethod === '' ? h(authWrapperInitial) : h(authWrapperSelected)
         )
       ),
+      /* TODO: replace with the loginPageSidebar component */
+      h('aside', undefined, undefined),
       displayAboutOverlay && h(AboutOverlay),
       showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
       showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
