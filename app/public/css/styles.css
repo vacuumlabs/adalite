@@ -1585,27 +1585,27 @@ p {
 }
 
 .auth-tab.mnemonic .auth-tab-text:before {
-  background-image: url('../assets/cursor_icon_grey.svg');
+  background-image: url('../assets/tab_icon_mnemonic_grey.svg');
 }
 
 .auth-tab.trezor .auth-tab-text:before {
-  background-image: url('../assets/lock_icon_grey.svg');
+  background-image: url('../assets/tab_icon_trezor_grey.svg');
 }
 
 .auth-tab.file .auth-tab-text:before {
-  background-image: url('../assets/file_icon_grey.svg');
+  background-image: url('../assets/tab_icon_file_grey.svg');
 }
 
 .auth-tab.mnemonic.selected .auth-tab-text:before {
-  background-image: url('../assets/cursor_icon.svg');
+  background-image: url('../assets/tab_icon_mnemonic.svg');
 }
 
 .auth-tab.trezor.selected .auth-tab-text:before {
-  background-image: url('../assets/lock_icon.svg');
+  background-image: url('../assets/tab_icon_trezor.svg');
 }
 
 .auth-tab.file.selected .auth-tab-text:before {
-  background-image: url('../assets/file_icon.svg');
+  background-image: url('../assets/tab_icon_file.svg');
 }
 
 .auth-tab.recommended .auth-tab-text:after {
