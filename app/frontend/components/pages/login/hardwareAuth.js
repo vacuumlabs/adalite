@@ -20,7 +20,7 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
 
   return h(
     'div',
-    {class: 'auth-section'},
+    {class: 'authentication-content'},
     h(
       'div',
       undefined,

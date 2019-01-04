@@ -28,7 +28,7 @@ class LoadByMenmonicSectionClass extends Component {
   }) {
     return h(
       'div',
-      {class: 'auth-section'},
+      {class: 'authentication-content'},
       h(
         'div',
         {class: 'centered-row margin-bottom'},
