@@ -1188,13 +1188,13 @@ p {
   color: white;
 }
 
+.button.primary:hover {
+  background-color: var(--brand-dark);
+}
+
 .button.primary:disabled {
   background-color: var(--brand-light);
   color: white;
-}
-
-.button.primary:hover {
-  background-color: var(--brand-dark);
 }
 
 .button.outline {
@@ -1476,4 +1476,68 @@ p {
   background-size: contain;
   background-position: center;
   background-image: url('../assets/input_pencil_icon.svg');
+}
+
+/* DROPZONE */
+
+.dropzone {
+  border-radius: 4px;
+  border: 2px dashed #e6e6e6;
+  background-color: #fcfcfc;
+  transition: border-color var(--transition-easing) var(--transition-time);
+}
+
+.dropzone.error {
+  border-color: var(--color-error);
+}
+
+.dropzone-input {
+  display: none;
+}
+
+.dropzone-content {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dropzone-content.has-file {
+  padding: 52px 40px;
+}
+
+.dropzone-paragraph {
+  margin-bottom: 16px;
+}
+
+.dropzone-filename {
+  margin-bottom: 16px;
+  padding-left: 24px;
+  text-align: center;
+  position: relative;
+  color: var(--color-grey);
+}
+
+.dropzone-filename:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 12px;
+  height: 15px;
+  background-image: url('../assets/file_icon.svg');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.dropzone-link {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
+.dropzone-link:hover {
+  cursor: pointer;
 }
