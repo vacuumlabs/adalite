@@ -27,84 +27,88 @@ const Footer = connect(
       h(Branding),
       h(
         'div',
-        {class: 'social'},
+        {class: 'footer-row'},
         h(
-          'a',
-          {
-            href: 'mailto:adalite@vacuumlabs.com',
-            target: '_blank',
-            rel: 'noopener',
-            class: 'social-link email',
-          },
-          'adalite@vacuumlabs.com'
+          'div',
+          {class: 'social'},
+          h(
+            'a',
+            {
+              href: 'mailto:adalite@vacuumlabs.com',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link email',
+            },
+            'adalite@vacuumlabs.com'
+          ),
+          h(
+            'a',
+            {
+              href: 'https://t.me/AdaLite',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link telegram',
+            },
+            'Telegram'
+          ),
+          h(
+            'a',
+            {
+              href: 'https://github.com/vacuumlabs/adalite',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link github',
+            },
+            'View on Github'
+          ),
+          h(
+            'a',
+            {
+              href: 'https://twitter.com/AdaLiteWallet',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link twitter',
+            },
+            'Twitter'
+          )
         ),
         h(
-          'a',
-          {
-            href: 'https://t.me/AdaLite',
-            target: '_blank',
-            rel: 'noopener',
-            class: 'social-link telegram',
-          },
-          'Telegram'
-        ),
-        h(
-          'a',
-          {
-            href: 'https://github.com/vacuumlabs/adalite',
-            target: '_blank',
-            rel: 'noopener',
-            class: 'social-link github',
-          },
-          'View on Github'
-        ),
-        h(
-          'a',
-          {
-            href: 'https://twitter.com/AdaLiteWallet',
-            target: '_blank',
-            rel: 'noopener',
-            class: 'social-link twitter',
-          },
-          'Twitter'
-        )
-      ),
-      h(
-        'div',
-        {class: 'donations'},
-        h('h3', {class: 'donations-title'}, 'Donations are really appreciated'),
-        h(
-          'a',
-          {
-            class: 'donations-item bitcoin',
-            href: BTC_BLOCKCHAIN_EXPLORER + BTC_DONATION_ADDRESS,
-            target: '_blank',
-            title: 'Donate via Bitcoin',
-            rel: 'noopener',
-          },
-          'BTC'
-        ),
-        h(
-          'a',
-          {
-            class: 'donations-item ether',
-            href: ETH_BLOCKCHAIN_EXPLORER + ETH_DONATION_ADDRESS,
-            target: '_blank',
-            title: 'Donate via Ethereum',
-            rel: 'noopener',
-          },
-          'ETH'
-        ),
-        h(
-          'a',
-          {
-            class: 'donations-item ada',
-            href: '#',
-            onClick: () => openAddressDetail({address: ADA_DONATION_ADDRESS}),
-            title: 'Donate via Adalite',
-            rel: 'noopener',
-          },
-          'ADA'
+          'div',
+          {class: 'donations'},
+          h('h3', {class: 'donations-title'}, 'Donations are really appreciated'),
+          h(
+            'a',
+            {
+              class: 'donations-item bitcoin',
+              href: BTC_BLOCKCHAIN_EXPLORER + BTC_DONATION_ADDRESS,
+              target: '_blank',
+              title: 'Donate via Bitcoin',
+              rel: 'noopener',
+            },
+            'BTC'
+          ),
+          h(
+            'a',
+            {
+              class: 'donations-item ether',
+              href: ETH_BLOCKCHAIN_EXPLORER + ETH_DONATION_ADDRESS,
+              target: '_blank',
+              title: 'Donate via Ethereum',
+              rel: 'noopener',
+            },
+            'ETH'
+          ),
+          h(
+            'a',
+            {
+              class: 'donations-item ada',
+              href: '#',
+              onClick: () => openAddressDetail({address: ADA_DONATION_ADDRESS}),
+              title: 'Donate via Adalite',
+              rel: 'noopener',
+            },
+            'ADA'
+          )
         )
       ),
       showConversionRates &&
