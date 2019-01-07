@@ -16,32 +16,38 @@ class GenerateMnemonicDialogClass extends Component {
       },
       h(
         'div',
-        {class: 'margin-top-sm center'},
-        h('h4', undefined, 'Generate a Mnemonic Phrase'),
-        h(
-          'h7',
-          undefined,
-          'Write these words down. ',
-          h('b', undefined, 'Do not copy them to your clipboard or save them anywhere online!')
-        ),
-        h('div', {class: 'gray-row mnemonic-box force-select-all'}, mnemonic),
+        {class: 'modal-head'},
         h(
           'div',
-          {class: ''},
+          undefined,
+          h('h2', {class: 'modal-title'}, 'Create New Wallet'),
           h(
-            'button',
-            {
-              onClick: confirmGenerateMnemonicDialog,
-              onKeyDown: (e) => {
-                e.key === 'Enter' && e.target.click()
-                e.preventDefault()
-              },
-              ref: (element) => {
-                this.confirmBtn = element
-              },
-            },
-            'Confirm'
+            'p',
+            {class: 'modal-paragraph'},
+            'New wallet is created together with a mnemonic phrase. Write the mnemonic phrase down, you will need it to access your wallet. ',
+            h('strong', undefined, 'Don’t copy it to your clipboard or save it anywhere online.')
           )
+        ),
+        h('div', {class: 'modal-warning'}, 'Proceed with caution')
+      ),
+      h('div', {class: 'modal-mnemonic'}, mnemonic),
+      h(
+        'div',
+        {class: 'modal-footer'},
+        h(
+          'button',
+          {
+            class: 'button primary',
+            onClick: confirmGenerateMnemonicDialog,
+            onKeyDown: (e) => {
+              e.key === 'Enter' && e.target.click()
+              e.preventDefault()
+            },
+            ref: (element) => {
+              this.confirmBtn = element
+            },
+          },
+          'I’ve written my mnemonic down'
         )
       )
     )

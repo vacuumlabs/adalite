@@ -1097,6 +1097,7 @@ td {
   --color-success: var(--color-green);
   --color-warning: var(--color-orange);
   --color-error: var(--color-red);
+  --color-border: var(--color-grey-light);
 }
 
 /* NORMALIZE */
@@ -1351,6 +1352,7 @@ p {
   background-size: contain;
   background-repeat: no-repeat;
   border: none;
+  background-color: transparent;
 }
 
 .modal-close:hover {
@@ -1428,4 +1430,26 @@ p {
   background-size: contain;
   background-position: center;
   background-image: url('../assets/alert_icon_warning.svg');
+}
+
+.modal-mnemonic {
+  margin-top: 40px;
+  padding: 24px 24px 24px 64px;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  position: relative;
+  font-family: monospace;
+}
+
+.modal-mnemonic:before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/input_pencil_icon.svg');
 }
