@@ -31,7 +31,7 @@ class LoginPage extends Component {
           }`,
           onClick: () => setAuthMethod(name),
         },
-        h('span', {class: 'auth-tab-text'}, text)
+        h('span', {class: `auth-tab-text ${name}`}, text)
       )
     const authOption = (type, title, text, tag) =>
       h(
@@ -41,10 +41,10 @@ class LoginPage extends Component {
         h('h3', {class: 'auth-option-title'}, title),
         h('p', {class: 'auth-option-text'}, text)
       )
-    const authWrapperInitial = () =>
+    const authCardInitial = () =>
       h(
         'div',
-        {class: 'authentication-wrapper initial'},
+        {class: 'authentication card initial'},
         h('h2', {class: 'authentication-title'}, 'How do you want to access\nyour Cardano Wallet?'),
         h(
           'div',
@@ -54,10 +54,10 @@ class LoginPage extends Component {
           authOption('file', 'Key file', 'Encrypted .JSON file')
         )
       )
-    const authWrapperSelected = () =>
+    const authCard = () =>
       h(
         'div',
-        {class: 'authentication-wrapper'},
+        {class: 'authentication card'},
         h(
           'ul',
           {class: 'auth-tabs'},
@@ -72,15 +72,7 @@ class LoginPage extends Component {
     return h(
       'div',
       {class: 'page-wrapper'},
-      h(
-        'main',
-        {class: 'page-main'},
-        h(
-          'div',
-          {class: 'authentication card'},
-          authMethod === '' ? h(authWrapperInitial) : h(authWrapperSelected)
-        )
-      ),
+      h('main', {class: 'page-main'}, authMethod === '' ? h(authCardInitial) : h(authCard)),
       /* TODO: replace with the loginPageSidebar component after PR merge */
       h('aside', undefined, undefined),
       displayAboutOverlay && h(AboutOverlay),
