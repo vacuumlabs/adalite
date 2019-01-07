@@ -1055,6 +1055,7 @@ td {
 html {
   height: 100%;
   font-size: 14px;
+  line-height: 24px;
 }
 
 body {
@@ -1430,35 +1431,34 @@ p {
   background-image: url('../assets/footer_bg.svg');
   background-position: center;
   background-size: cover;
-  padding: 56px 0;
+  padding: 56px 0 32px 0;
 }
 
 .footer-wrapper {
   max-width: var(--width);
   margin: 0 auto;
+}
+
+.footer-row {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .footer .branding {
   margin-bottom: 48px;
-  flex: 1 1 100%;
 }
 
 .footer .conversion {
   margin-top: 32px;
-  flex: 1 1 100%;
+  margin-bottom: 8px;
 }
 
 .footer .social {
-  flex: 0 0 60%;
-  max-width: 60%;
-  margin-right: 10%;
+  width: 60%;
 }
 
 .footer .donations {
-  flex: 0 0 30%;
-  max-width: 30%;
+  width: 30%;
 }
 
 .conversion {
