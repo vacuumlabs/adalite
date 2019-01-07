@@ -1248,6 +1248,20 @@ p {
   text-align: left;
 }
 
+.alert.sidebar {
+  margin-left: -40px;
+  padding: 0 0 0 40px;
+  border-color: transparent;
+}
+
+.alert.sidebar:before {
+  left: 0;
+}
+
+.alert .sidebar-link {
+  display: inline;
+}
+
 /* NAVIGATION */
 
 .navbar {
