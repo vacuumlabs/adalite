@@ -1,6 +1,7 @@
 const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const isLeftClick = require('../../../helpers/isLeftClick')
 
 const AboutOverlay = require('./aboutOverlay')
 const KeyFileAuth = require('./keyFileAuth')
@@ -13,6 +14,7 @@ const LogoutNotification = require('./logoutNotification')
 class LoginPage extends Component {
   render({
     loadWallet,
+    loadDemoWallet,
     walletLoadingError,
     authMethod,
     setAuthMethod,
@@ -72,7 +74,24 @@ class LoginPage extends Component {
     return h(
       'div',
       {class: 'page-wrapper'},
-      h('main', {class: 'page-main'}, authMethod === '' ? h(authCardInitial) : h(authCard)),
+      h(
+        'main',
+        {class: 'page-main'},
+        authMethod === '' ? h(authCardInitial) : h(authCard),
+        h(
+          'div',
+          {class: 'page-demo'},
+          'Try the ',
+          h(
+            'a',
+            {
+              href: '#',
+              onMouseDown: (e) => isLeftClick(e, loadDemoWallet),
+            },
+            'demo wallet'
+          )
+        )
+      ),
       /* TODO: replace with the loginPageSidebar component after PR merge */
       h('aside', undefined, undefined),
       displayAboutOverlay && h(AboutOverlay),

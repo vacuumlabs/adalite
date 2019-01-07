@@ -1469,6 +1469,11 @@ p {
   width: 66%;
 }
 
+.page-demo {
+  margin-top: 56px;
+  text-align: center;
+}
+
 /* CARD */
 
 .card {
