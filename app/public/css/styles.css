@@ -1074,10 +1074,10 @@ td {
   --color-success: var(--color-green);
   --color-warning: var(--color-orange);
   --color-error: var(--color-red);
+  --color-info: var(--color-blue);
   --color-border: var(--color-grey-light);
   --transition-easing: ease-in-out;
   --transition-time: 0.25s;
-  --color-info: var(--color-blue);
 }
 
 /* NORMALIZE */
