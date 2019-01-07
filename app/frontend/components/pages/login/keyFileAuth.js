@@ -157,11 +157,14 @@ class LoadKeyFileClass extends Component {
 
     return h(
       'div',
-      /* TODO: refactor auth-section class */
-      {class: 'auth-section'},
+      {class: 'authentication-content'},
       h(
         'div',
-        {class: `dropzone ${error ? 'error' : ''}`},
+        {
+          class: `dropzone ${error ? 'error' : ''}`,
+          onDragOver: this.dragOver,
+          onDrop: this.drop,
+        },
         h('input', {
           class: 'dropzone-input',
           type: 'file',
@@ -184,7 +187,7 @@ class LoadKeyFileClass extends Component {
           this.filePasswordField = element
         },
         onKeyDown: (e) => e.key === 'Enter' && this.unlockKeyfile(),
-        autocomplete: 'nope',
+        autocomplete: 'off',
       }),
       h(
         'button',
