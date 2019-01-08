@@ -1166,6 +1166,14 @@ p {
   border-color: var(--color-error);
 }
 
+.input.fullwidth {
+  width: 100%;
+}
+
+.input.authentication {
+  margin-bottom: 24px;
+}
+
 /* BUTTONS */
 
 .button {
@@ -1540,4 +1548,30 @@ p {
 
 .dropzone-link:hover {
   cursor: pointer;
+}
+
+/* TODO: move to authentication section after rebasing */
+
+.authentication-content .dropzone {
+  margin-bottom: 24px;
+}
+
+.authentication-paragraph {
+  margin-bottom: 16px;
+}
+
+/* VALIDATION */
+
+.validation-row {
+  display: flex;
+  align-items: center;
+}
+
+.validation-message {
+  padding-left: 40px;
+  flex: 1;
+}
+
+.validation-message.error {
+  color: var(--color-error);
 }
