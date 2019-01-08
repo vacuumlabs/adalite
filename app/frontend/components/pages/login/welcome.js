@@ -5,48 +5,59 @@ const Modal = require('../../common/modal')
 const Alert = require('../../common/alert')
 const Branding = require('../../common/branding')
 
-const WelcomeArticle = ({children, title, icon}) =>
+const Article = ({children, title, icon}) =>
   h(
     'article',
-    {class: `greeting-article ${icon ? `icon ${icon}` : ''}`},
+    {class: 'article'},
+    h('span', {class: `article-icon ${icon ? `${icon}` : ''}`}),
     h('h3', {class: 'article-title'}, title),
     h('p', {class: 'article-paragraph'}, children)
   )
 
-class AboutOverlayClass extends Component {
+const Credits = () =>
+  h(
+    'section',
+    {class: 'credits'},
+    h(Branding, {dark: true}),
+    h(
+      'p',
+      {class: 'credits-paragraph'},
+      `AdaLite was not created by Cardano Foundation, Emurgo, or IOHK.
+    This project was created with passion by Vacuumlabs. We appreciate
+    any feedback, donation or contribution to the codebase.`
+    )
+  )
+
+class Welcome extends Component {
   constructor(props) {
     super(props)
     this.state = {
       dontShowAgainCheckbox: false,
     }
     this.checkboxClick = this.checkboxClick.bind(this)
-    this.toggleAboutOverlay = this.toggleAboutOverlay.bind(this)
+    this.closeWelcome = this.closeWelcome.bind(this)
   }
 
   checkboxClick() {
     this.setState({dontShowAgainCheckbox: !this.state.dontShowAgainCheckbox})
   }
 
-  toggleAboutOverlay() {
-    this.props.toggleAboutOverlay(this.state.dontShowAgainCheckbox)
+  closeWelcome() {
+    this.props.closeWelcome(this.state.dontShowAgainCheckbox)
   }
 
-  render({toggleAboutOverlay}, {dontShowAgainCheckbox}) {
+  render({closeWelcome}, {dontShowAgainCheckbox}) {
     return h(
       Modal,
-      {closeHandler: toggleAboutOverlay},
+      {closeHandler: closeWelcome},
       h(
         'section',
-        {class: 'greeting'},
+        {class: 'welcome'},
+        h('h2', {class: 'welcome-title'}, 'Welcome to AdaLite'),
         h(
-          'div',
-          {class: 'greeting-head'},
-          h('h2', {class: 'modal-title'}, 'Welcome to AdaLite'),
-          h(
-            'p',
-            {class: 'modal-paragraph bigger'},
-            'We are an open-source client-side interface for direct \n interaction with the Cardano blockchain.'
-          )
+          'p',
+          {class: 'welcome-subtitle'},
+          'We are an open-source client-side interface for direct \n interaction with the Cardano blockchain.'
         ),
         h(
           Alert,
@@ -55,9 +66,9 @@ class AboutOverlayClass extends Component {
         ),
         h(
           'div',
-          {class: 'greeting-articles'},
+          {class: 'welcome-articles'},
           h(
-            WelcomeArticle,
+            Article,
             {
               title: "Don't loose your mnemonic",
               icon: 'mnemonic',
@@ -69,7 +80,7 @@ class AboutOverlayClass extends Component {
             to your funds.`
           ),
           h(
-            WelcomeArticle,
+            Article,
             {
               title: 'Protect your funds',
               icon: 'funds',
@@ -80,7 +91,7 @@ class AboutOverlayClass extends Component {
             the AdaLite website and access the funds.`
           ),
           h(
-            WelcomeArticle,
+            Article,
             {
               title: 'Consider using a hardware wallet',
               icon: 'wallet',
@@ -92,7 +103,7 @@ class AboutOverlayClass extends Component {
             they don't leave Trezor.`
           ),
           h(
-            WelcomeArticle,
+            Article,
             {
               title: "Don't get phished",
               icon: 'phishing',
@@ -102,42 +113,29 @@ class AboutOverlayClass extends Component {
             h('b', undefined, 'always check the URL. The official address is https://adalite.io/.')
           )
         ),
+        h(Credits),
         h(
           'div',
-          {class: 'greeting-credits'},
-          h(Branding, {dark: true}),
-          h(
-            'p',
-            {class: 'credit-paragraph'},
-            `AdaLite was not created by Cardano Foundation, Emurgo, or IOHK.
-            This project was created with passion by Vacuumlabs. We appreciate
-            any feedback, donation or contribution to the codebase.`
-          )
-        ),
-
-        h(
-          'div',
-          {class: 'modal-footer greeting-footer'},
+          {class: 'welcome-footer'},
           h(
             'label',
-            {class: 'label-wrapper'},
+            {class: 'checkbox'},
             h('input', {
               type: 'checkbox',
               checked: dontShowAgainCheckbox,
               onChange: this.checkboxClick,
-              class: 'checkbox',
+              class: 'checkbox-input',
             }),
+            h('span', {class: 'checkbox-indicator'}, undefined),
             "Don't show this notice again."
           ),
           h(
             'button',
             {
-              onClick: this.toggleAboutOverlay,
+              onClick: this.closeWelcome,
               class: 'button primary wide modal-button',
-              autofocus: true,
               onKeyDown: (e) => {
                 e.key === 'Enter' && e.target.click()
-                e.key === 'Tab' && e.preventDefault()
               },
             },
             'I understand, continue to the AdaLite'
@@ -151,4 +149,4 @@ class AboutOverlayClass extends Component {
 module.exports = connect(
   {},
   actions
-)(AboutOverlayClass)
+)(Welcome)
