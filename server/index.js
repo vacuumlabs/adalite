@@ -43,7 +43,7 @@ app.get('*', (req, res) => {
           <meta charset="UTF-8"/>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <meta name="robots" content="index,follow">
-          <meta name="description" content="Free open-source web-browser Cardano wallet with Trezor support">
+          <meta name="description" content="Free open-source web-browser Cardano wallet with Trezor support. Highly secure and accessible from everywhere.">
           <meta name="keywords" content="Cardano, Ada, Wallet, Cryptocurrency, Adalite, Trezor">
           
           <meta name="twitter:site" content="@AdaLiteWallet">
