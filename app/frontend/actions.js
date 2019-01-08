@@ -258,13 +258,13 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const toggleAboutOverlay = (state, rememberInStorage) => {
+  const closeWelcome = (state, rememberInStorage) => {
     // we may get an ignored click event as the second argument, check only against booleans
     if (rememberInStorage === true) {
       window.localStorage.setItem('dontShowDisclaimer', true)
     }
     return {
-      displayAboutOverlay: !state.displayAboutOverlay,
+      displayWelcome: !state.displayWelcome,
     }
   }
 
@@ -500,7 +500,7 @@ module.exports = ({setState, getState}) => {
     logout,
     exportJsonWallet,
     reloadWalletInfo,
-    toggleAboutOverlay,
+    closeWelcome,
     calculateFee,
     confirmTransaction,
     cancelTransaction,
