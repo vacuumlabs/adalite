@@ -2177,6 +2177,10 @@ p {
   align-items: center;
 }
 
+.checkbox:hover {
+  cursor: pointer;
+}
+
 .checkbox-indicator {
   margin-right: 8px;
   width: 20px;
