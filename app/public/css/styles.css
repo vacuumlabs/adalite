@@ -1166,12 +1166,9 @@ p {
   border-color: var(--color-error);
 }
 
-.input.fullwidth {
-  width: 100%;
-}
-
 .input.authentication {
   margin-bottom: 24px;
+  width: 100%;
 }
 
 /* BUTTONS */

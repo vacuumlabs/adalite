@@ -177,7 +177,7 @@ class LoadKeyFileClass extends Component {
       ),
       h('input', {
         type: 'password',
-        class: 'input fullwidth authentication',
+        class: 'input authentication',
         id: 'keyfile-password',
         name: 'keyfile-password',
         placeholder: 'Enter password',
