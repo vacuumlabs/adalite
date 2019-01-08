@@ -3,13 +3,12 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
 const KeypassJson = require('../../../wallet/keypass-json')
-const Modal = require('../../common/modal')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      fileName: ' ',
+      fileName: '',
       keyFile: undefined,
     }
     this.selectFile = this.selectFile.bind(this)
@@ -56,7 +55,7 @@ class LoadKeyFileClass extends Component {
       this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
     } catch (e) {
       this.props.stopLoadingAction()
-      this.setState({error: 'Wrong password'})
+      this.setState({error: 'Password for provided key file is incorrect.'})
     }
   }
 
@@ -116,7 +115,8 @@ class LoadKeyFileClass extends Component {
           debugLog(`Key file parsing failure: ${err}`)
           this.props.stopLoadingAction()
           this.setState({
-            error: 'Key File parsing failure!',
+            error:
+              'Provided file is incorrect. To access your wallet, continue by selecting a valid JSON key file.',
           })
         }
         return true
@@ -173,11 +173,11 @@ class LoadKeyFileClass extends Component {
           multiple: false,
           onChange: this.selectFile,
         }),
-        fileName === ' ' ? h(noFileContent) : h(selectedFileContent)
+        fileName === '' ? h(noFileContent) : h(selectedFileContent)
       ),
       h('input', {
         type: 'password',
-        class: 'input',
+        class: 'input fullwidth authentication',
         id: 'keyfile-password',
         name: 'keyfile-password',
         placeholder: 'Enter password',
@@ -190,22 +190,26 @@ class LoadKeyFileClass extends Component {
         autocomplete: 'off',
       }),
       h(
-        'button',
-        {
-          disabled: !password,
-          onClick: this.unlockKeyfile,
-          class: 'button primary',
-          onKeyDown: (e) => {
-            e.key === 'Enter' && e.target.click()
-            if (e.key === 'Tab') {
-              this.filePasswordField.focus(e)
-              e.preventDefault()
-            }
+        'div',
+        {class: 'validation-row'},
+        h(
+          'button',
+          {
+            disabled: !(password && fileName !== ''),
+            onClick: this.unlockKeyfile,
+            class: 'button primary',
+            onKeyDown: (e) => {
+              e.key === 'Enter' && e.target.click()
+              if (e.key === 'Tab') {
+                this.filePasswordField.focus(e)
+                e.preventDefault()
+              }
+            },
           },
-        },
-        'Unlock'
-      ),
-      error && h('div', {class: 'alert error key-file-error'}, error)
+          'Unlock'
+        ),
+        error && h('div', {class: 'validation-message error'}, error)
+      )
     )
   }
 }
