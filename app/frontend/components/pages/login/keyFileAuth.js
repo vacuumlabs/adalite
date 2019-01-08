@@ -166,7 +166,7 @@ class LoadKeyFileClass extends Component {
           onDrop: this.drop,
         },
         h('input', {
-          class: 'dropzone-input',
+          class: 'dropzone-file-input',
           type: 'file',
           id: 'loadFile',
           accept: 'application/json,.json',

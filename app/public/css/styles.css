@@ -1499,7 +1499,7 @@ p {
   border-color: var(--color-error);
 }
 
-.dropzone-input {
+.dropzone-file-input {
   display: none;
 }
 
@@ -1526,7 +1526,7 @@ p {
   color: var(--color-grey);
 }
 
-.dropzone-filename:before {
+.dropzone-filename::before {
   content: '';
   position: absolute;
   left: 0;
