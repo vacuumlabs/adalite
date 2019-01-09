@@ -1136,7 +1136,8 @@ p {
   line-height: 32px;
   font-weight: bold;
   border: none;
-  transition: background-color var(--transition-easing) var(--transition-time);
+  transition: background-color var(--transition-easing) var(--transition-time),
+    color var(--transition-easing) var(--transition-time);
   display: inline-block;
 }
 
@@ -1216,6 +1217,40 @@ p {
   color: var(--color-brand);
 }
 
+.button.logout {
+  margin-left: 16px;
+  padding: 7px 24px 8px 56px;
+  position: relative;
+  color: var(--color-grey);
+  border: 2px solid var(--color-border);
+  font-weight: normal;
+  background-color: white;
+  font-size: 14px;
+}
+
+.button.logout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 24px;
+  margin: auto;
+  width: 16px;
+  height: 16px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('../assets/logout_symbol.svg');
+}
+
+.button.logout:hover {
+  color: var(--color-brand);
+}
+
+.button.logout:hover::before {
+  background-image: url('../assets/logout_symbol_active.svg');
+}
+
 /* ALERTS */
 
 .alert {
@@ -1293,6 +1328,24 @@ p {
   padding: 32px 0;
 }
 
+.navbar.demo {
+  position: relative;
+}
+
+.navbar.demo::before {
+  content: '';
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-error);
+  position: absolute;
+  top: 0;
+}
+
+.navbar-heading {
+  line-height: initial;
+  max-height: 37px;
+}
+
 .navbar-wrapper {
   max-width: var(--width);
   width: 100%;
@@ -1300,6 +1353,46 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.navbar-content {
+  flex: 1;
+  justify-content: flex-end;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-demo {
+  margin-left: 16px;
+  padding: 8px 16px;
+  background-color: var(--color-error);
+  color: white;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.6px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 2px;
+  position: relative;
+}
+
+.navbar-demo::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 4px 6px 0;
+  border-color: transparent var(--color-error) transparent;
+}
+
+.navbar-version {
+  margin-left: 32px;
+  color: var(--color-grey);
 }
 
 .navbar-link {
@@ -1484,6 +1577,7 @@ p {
   background-image: url('../assets/input_pencil_icon.svg');
 }
 
+<<<<<<< HEAD
 /* MAIN PAGE */
 
 .page-wrapper {
@@ -1502,6 +1596,8 @@ p {
   text-align: center;
 }
 
+=======
+>>>>>>> Styled logged-in navbar
 /* CARD */
 
 .card {
@@ -1509,6 +1605,7 @@ p {
   padding: 40px 56px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
 }
+<<<<<<< HEAD
 
 .card-title {
   margin-bottom: 24px;
@@ -2251,3 +2348,5 @@ p {
   padding-top: 40px;
   border-top: 1px solid var(--color-border);
 }
+=======
+>>>>>>> Styled logged-in navbar
