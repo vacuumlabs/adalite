@@ -43,24 +43,30 @@ const TransactionHistory = ({transactionHistory}) =>
     'div',
     {class: 'transactions card'},
     h('h2', {class: 'transactions-title'}, 'Transaction History'),
-    ...transactionHistory.map((transaction) =>
-      h(
+    transactionHistory.length === 0
+      ? h('div', {class: 'transactions-empty'}, 'No transactions found')
+      : h(
         'div',
-        {class: 'transaction-item'},
-        h('div', {class: 'transaction-date'}, formatDate(transaction.ctbTimeIssued)),
-        h(FormattedAmount, {amount: transaction.effect}),
-        h(TransactionAddress, {address: transaction.ctbId}),
-        h(FormattedFee, {fee: transaction.fee})
+        {class: 'transactions-content'},
+        ...transactionHistory.map((transaction) =>
+          h(
+            'div',
+            {class: 'transaction-item'},
+            h('div', {class: 'transaction-date'}, formatDate(transaction.ctbTimeIssued)),
+            h(FormattedAmount, {amount: transaction.effect}),
+            h(TransactionAddress, {address: transaction.ctbId}),
+            h(FormattedFee, {fee: transaction.fee})
+          )
+        ),
+        /* TODO: Implement button functionality */
+        h(
+          'button',
+          {
+            class: 'button primary fullwidth',
+          },
+          'Show another 8 transactions'
+        )
       )
-    ),
-    /* TODO: implement button functionality */
-    h(
-      'button',
-      {
-        class: 'button primary fullwidth',
-      },
-      'Show another 8 transactions'
-    )
   )
 
 module.exports = TransactionHistory
