@@ -6,11 +6,9 @@ const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSIO
 const NavbarAuth = connect(
   (state) => ({
     isDemoWallet: state.isDemoWallet,
-    showExportJsonWalletDialog: state.showExportJsonWalletDialog,
-    usingTrezor: state.usingTrezor,
   }),
   actions
-)(({isDemoWallet, usingTrezor, logout}) => {
+)(({isDemoWallet, logout}) => {
   const {
     history: {pushState},
   } = window
@@ -28,7 +26,7 @@ const NavbarAuth = connect(
           'a',
           {
             class: 'navbar-logo',
-            href: '/',
+            href: '#',
             onClick: () => window.history.pushState({}, 'txHistory', 'txHistory'),
           },
           h('img', {
