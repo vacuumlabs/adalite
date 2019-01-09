@@ -30,7 +30,6 @@ const TransactionAddress = ({address}) =>
     'a',
     {
       class: 'transaction-address',
-      tooltip: 'Examine via AdaScan.net',
       href: `https://adascan.net/transaction/${address}`,
       target: '_blank',
       rel: 'noopener',
@@ -43,6 +42,7 @@ const TransactionHistory = ({transactionHistory}) =>
     'div',
     {class: 'transactions card'},
     h('h2', {class: 'transactions-title'}, 'Transaction History'),
+    /* TODO: Load transaction items by chunks */
     transactionHistory.length === 0
       ? h('div', {class: 'transactions-empty'}, 'No transactions found')
       : h(
