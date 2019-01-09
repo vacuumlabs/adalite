@@ -27,7 +27,7 @@ const Conversions = ({balance, conversionRates}) =>
       {class: 'conversions-item'},
       `€ ${printConversionRate(balance, conversionRates, 'EUR')}`
     ),
-    h('div', {class: 'conversions-help'}, '?')
+    h('div', {class: 'conversions-help'}, '')
   )
 
 const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
