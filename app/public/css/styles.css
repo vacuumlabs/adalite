@@ -1398,13 +1398,6 @@ p {
   cursor: pointer;
 }
 
-.modal-title {
-  font-size: 32px;
-  line-height: 48px;
-  margin-bottom: 16px;
-  font-weight: normal;
-}
-
 .modal-paragraph {
   font-size: 14px;
   line-height: 24px;
@@ -1435,11 +1428,11 @@ p {
 .modal-head {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .modal-head .modal-warning {
   min-width: 185px;
-  margin-left: 40px;
   margin-top: 16px;
 }
 
