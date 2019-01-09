@@ -9,9 +9,6 @@ const NavbarAuth = connect(
   }),
   actions
 )(({isDemoWallet, logout}) => {
-  const {
-    history: {pushState},
-  } = window
   return h(
     'nav',
     {class: `navbar ${isDemoWallet ? 'demo' : ''}`},
@@ -27,7 +24,6 @@ const NavbarAuth = connect(
           {
             class: 'navbar-logo',
             href: '#',
-            onClick: () => window.history.pushState({}, 'txHistory', 'txHistory'),
           },
           h('img', {
             src: 'assets/adalite-logo.svg',
