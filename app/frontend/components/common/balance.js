@@ -2,17 +2,6 @@ const {h} = require('preact')
 const printAda = require('../../helpers/printAda')
 const {printConversionRate} = require('../../helpers/printConversionRates')
 
-const truncatePrintAda = (amount, maxDigits) => {
-  const amountString = amount.toString()
-  if (amountString.length <= maxDigits) {
-    return amount
-  }
-  if (amountString.indexOf('.') <= maxDigits + 1) {
-    return amountString.substr(0, maxDigits + 1)
-  }
-  return `${Math.trunc(amountString / 1000)}K`
-}
-
 const Conversions = ({balance, conversionRates}) =>
   h(
     'div',
