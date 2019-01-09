@@ -1539,5 +1539,5 @@ p {
   color: var(--color-grey);
   text-align: center;
   padding-top: 40px;
-  border-top: 1px solid var(--color-grey-light);
+  border-top: 1px solid var(--color-border);
 }
