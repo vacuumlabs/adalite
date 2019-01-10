@@ -64,81 +64,6 @@
 .align-right {
   text-align: right;
 }
-/* ADDRESS */
-.address {
-  border: 1px solid var(--border);
-  border-left: none;
-  border-right: none;
-  background-color: white;
-  height: 2rem;
-  font-size: 1rem;
-  font-family: monospace;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-}
-.address-start {
-  border-left: 1px solid var(--border);
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-}
-.address-end {
-  padding-right: 1rem;
-}
-.address-wrap {
-  display: flex;
-  padding-right: 9em;
-}
-.address-wrap + .address-wrap {
-  margin-top: 0.5rem;
-}
-
-.address-link {
-  color: var(--text-color);
-  opacity: 0.8;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: #eee;
-  height: 3rem;
-  width: 4rem;
-  content: ' ';
-  display: inline-block;
-  transition: background-color var(--transition);
-}
-.address-link:hover {
-  transform: scale(1.08);
-}
-.address-wrap + button {
-  margin-top: 1rem;
-}
-.copy {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: #eee;
-  height: 3rem;
-  width: 4rem;
-  color: var(--text-color);
-  opacity: 0.8;
-  display: inline-block;
-  transition: background-color var(--transition--time);
-}
-.copy:hover {
-  transform: scale(1.08);
-}
-.show-address-detail {
-  color: var(--text-color);
-  border: 1px solid var(--border);
-  height: 2rem;
-  width: 2.4rem;
-  padding: 0.3rem 0.4rem;
-  content: ' ';
-  display: inline-block;
-  transition: background-color var(--transition);
-}
-
-.show-address-detail:hover {
-  background-color: #ddd;
-}
 
 .verify-address {
   border: 1px solid var(--border);
@@ -1080,6 +1005,7 @@ a,
 a:hover {
   color: var(--color-brand);
   text-decoration: underline;
+  cursor: pointer;
 }
 
 p {
@@ -1277,6 +1203,31 @@ p {
   width: 79px;
   height: 22px;
   background-image: url('../assets/trezor_logo_white.svg');
+}
+
+.button.view-more {
+  background-color: transparent;
+  padding: 0;
+  color: var(--color-brand);
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 24px;
+  text-decoration: underline;
+  padding-right: 26px;
+  position: relative;
+}
+
+.button.view-more::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  right: 0;
+  width: 11px;
+  height: 5px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('../assets/caret_down_symbol.svg');
 }
 
 /* ALERTS */
@@ -2682,4 +2633,92 @@ p {
     display: block;
     max-width: 100%;
   }
+}
+
+/* ADDRESSES */
+
+.addresses {
+  padding-bottom: 21px;
+}
+
+.addresses-title {
+  margin-bottom: 24px;
+}
+
+.addresses-content {
+  margin-bottom: 19px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.address {
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.address-value {
+  color: var(--color-grey);
+  word-break: break-all;
+  margin-bottom: 16px;
+}
+
+.address-links {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.address-link {
+  color: var(--color-grey);
+  margin-right: 24px;
+}
+
+.address-link:last-child {
+  margin-right: 0;
+}
+
+.address-link.qr {
+  margin-left: auto;
+}
+
+.address:hover .address-link {
+  color: var(--color-brand);
+}
+
+.address:hover .address-value {
+  color: var(--color-text);
+}
+
+.address:hover .copy::before {
+  background-image: url('../assets/copy_symbol_active.svg');
+}
+
+.addresses .view-more {
+  display: block;
+  margin: 0 auto;
+}
+
+/* COPY */
+
+.copy {
+  position: relative;
+  padding-left: 21px;
+}
+
+.copy::before {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/copy_symbol.svg');
+}
+
+.copy:hover::before {
+  background-image: url('../assets/copy_symbol_active.svg');
 }

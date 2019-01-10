@@ -7,11 +7,15 @@ const MyAddresses = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
     'div',
     {class: 'addresses card'},
     h('h2', {class: 'addresses-title'}, 'My Addresses'),
-    ...ownAddressesWithMeta.map((adr) =>
-      h(AddressItem, {address: adr.address, bip32path: adr.bip32StringPath})
+    h(
+      'div',
+      {class: 'addresses-content'},
+      ...ownAddressesWithMeta.map((adr) =>
+        h(AddressItem, {address: adr.address, bip32path: adr.bip32StringPath})
+      )
     ),
     /* TODO: Implement View all addresses functionality */
-    h('button', {class: 'button caret'}, 'View all addresses')
+    h('button', {class: 'button view-more'}, 'View all addresses')
   )
 )
 
