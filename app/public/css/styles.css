@@ -1455,6 +1455,10 @@ p {
   overflow-y: scroll;
 }
 
+.modal-body.narrow {
+  width: auto;
+}
+
 .modal-close {
   width: 16px;
   height: 16px;
@@ -2695,6 +2699,11 @@ p {
 .addresses .view-more {
   display: block;
   margin: 0 auto;
+}
+
+.address-qr {
+  padding: 24px 32px;
+  text-align: center;
 }
 
 /* COPY */
