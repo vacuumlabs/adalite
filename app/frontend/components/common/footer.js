@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../actions')
+const Branding = require('./branding')
 const {
   BTC_BLOCKCHAIN_EXPLORER,
   BTC_DONATION_ADDRESS,
@@ -21,110 +22,112 @@ const Footer = connect(
     'footer',
     {class: 'footer'},
     h(
-      'p',
-      undefined,
-      h('span', {class: 'footer-text-before-logo'}, 'Developed by '),
-      h(
-        'a',
-        {href: 'https://vacuumlabs.com', target: '_blank'},
-        h('img', {src: 'assets/vacuumlabs-logo.svg'})
-      )
-    ),
-    h(
-      'p',
-      undefined,
-      h(
-        'span',
-        {class: 'contact-link'},
-        h('a', {href: 'https://github.com/vacuumlabs/adalite', target: '_blank'}, 'View on Github')
-      ),
-      '/',
-      h(
-        'span',
-        {class: 'contact-link'},
-        h('a', {href: 'mailto:adalite@vacuumlabs.com', target: '_blank'}, 'Contact us')
-      ),
-      '/',
-      h(
-        'span',
-        {class: 'contact-link'},
-        h('a', {href: 'https://t.me/AdaLite', target: '_blank'}, 'Telegram')
-      ),
-      '/',
-      h(
-        'span',
-        {class: 'contact-link'},
-        h('a', {href: 'https://twitter.com/AdaLiteWallet', target: '_blank'}, 'Twitter')
-      )
-    ),
-    h(
-      'p',
-      undefined,
-      h('div', undefined, 'Donations are really appreciated! '),
+      'div',
+      {class: 'footer-wrapper'},
+      h(Branding),
       h(
         'div',
-        undefined,
+        {class: 'footer-row'},
         h(
-          'span',
-          undefined,
+          'div',
+          {class: 'social'},
           h(
             'a',
             {
-              class: 'contact-link',
+              href: 'mailto:adalite@vacuumlabs.com',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link email',
+            },
+            'adalite@vacuumlabs.com'
+          ),
+          h(
+            'a',
+            {
+              href: 'https://t.me/AdaLite',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link telegram',
+            },
+            'Telegram'
+          ),
+          h(
+            'a',
+            {
+              href: 'https://github.com/vacuumlabs/adalite',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link github',
+            },
+            'View on Github'
+          ),
+          h(
+            'a',
+            {
+              href: 'https://twitter.com/AdaLiteWallet',
+              target: '_blank',
+              rel: 'noopener',
+              class: 'social-link twitter',
+            },
+            'Twitter'
+          )
+        ),
+        h(
+          'div',
+          {class: 'donations'},
+          h('h3', {class: 'donations-title'}, 'Donations are really appreciated'),
+          h(
+            'a',
+            {
+              class: 'donations-item bitcoin',
               href: BTC_BLOCKCHAIN_EXPLORER + BTC_DONATION_ADDRESS,
               target: '_blank',
-              title: 'link to blockchain explorer',
+              title: 'Donate via Bitcoin',
+              rel: 'noopener',
             },
             'BTC'
           ),
-          '/'
-        ),
-        h(
-          'span',
-          undefined,
           h(
             'a',
             {
-              class: 'contact-link',
+              class: 'donations-item ether',
               href: ETH_BLOCKCHAIN_EXPLORER + ETH_DONATION_ADDRESS,
               target: '_blank',
-              title: 'link to blockchain explorer',
+              title: 'Donate via Ethereum',
+              rel: 'noopener',
             },
             'ETH'
           ),
-          '/'
-        ),
-        h(
-          'span',
-          undefined,
           h(
             'a',
             {
-              class: 'contact-link',
+              class: 'donations-item ada',
               href: '#',
               onClick: () => openAddressDetail({address: ADA_DONATION_ADDRESS}),
-              title: 'show address detail',
+              title: 'Donate via Adalite',
+              rel: 'noopener',
             },
             'ADA'
           )
         )
-      )
-    ),
-    showConversionRates &&
-      h(
-        'p',
-        {class: 'rates'},
-        h('div', undefined, 'Conversion rates from '),
+      ),
+      showConversionRates &&
         h(
-          'a',
-          {
-            class: 'contact-link',
-            href: 'https://www.cryptocompare.com/api/',
-            target: '_blank',
-          },
-          'CryptoCompare'
+          'div',
+          {class: 'conversion'},
+          'Conversion rates from ',
+          h(
+            'a',
+            {
+              class: 'conversion-link',
+              href: 'https://www.cryptocompare.com/api/',
+              target: '_blank',
+              rel: 'noopener',
+            },
+            'CryptoCompare'
+          )
         )
-      )
+    )
   )
 )
 

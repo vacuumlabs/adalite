@@ -22,7 +22,7 @@
   --brand-shadow-light: #eb1a7544;
   --transition-easing: ease-in-out;
   --transition-time: 0.25s;
-  --width: 1200px;
+  --width: 1288px;
   --small-screen-padding: 25px;
   --text-color: #333;
   --input-text-inactive: #999;
@@ -448,45 +448,6 @@ td {
 }
 .margin-top-s {
   margin-top: 0.5rem;
-}
-
-/* FOOTER */
-.footer {
-  max-width: var(--width);
-  width: 100%;
-  font-size: 1rem;
-  color: var(--text-color);
-  border-top: 1px solid var(--border);
-  padding: 1rem 0;
-  margin-left: calc(100vw - 100%);
-  margin-top: auto;
-  align-self: center;
-}
-.footer p {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-}
-.footer p:first-child,
-.footer p:last-child {
-  margin-bottom: 0;
-}
-.footer .logo {
-  height: 2rem;
-}
-.footer .contact-link {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-}
-.footer .rates {
-  font-size: 0.85em;
-}
-.footer-text-before-logo {
-  position: relative;
-  top: 2.5px;
 }
 
 /*LANDING*/
@@ -1094,6 +1055,7 @@ td {
 html {
   height: 100%;
   font-size: 14px;
+  line-height: 24px;
 }
 
 body {
@@ -1118,6 +1080,13 @@ h2 {
   margin: 0;
   font-size: 16px;
   line-height: 32px;
+}
+
+h3 {
+  font-weight: bold;
+  margin: 0;
+  font-size: 14px;
+  line-height: 24px;
 }
 
 a,
@@ -1476,4 +1445,146 @@ p {
   background-size: contain;
   background-position: center;
   background-image: url('../assets/input_pencil_icon.svg');
+}
+
+/* FOOTER */
+
+.footer {
+  background-image: url('../assets/footer_bg.svg');
+  background-position: center;
+  background-size: cover;
+  padding: 56px 0 32px 0;
+}
+
+.footer-wrapper {
+  max-width: var(--width);
+  margin: 0 auto;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer .branding {
+  margin-bottom: 48px;
+}
+
+.footer .conversion {
+  margin-top: 32px;
+  margin-bottom: 8px;
+}
+
+.footer .social {
+  width: 60%;
+}
+
+.footer .donations {
+  width: 30%;
+}
+
+.conversion {
+  color: white;
+  padding-left: 40px;
+  position: relative;
+}
+
+.conversion:before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  left: 0;
+  background-image: url('../assets/conversion_icon.svg');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.conversion-link {
+  color: white;
+}
+
+.social {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding-left: 40px;
+  position: relative;
+  margin-bottom: 24px;
+  color: white;
+}
+
+.social-link:before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  left: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.social-link.email:before {
+  background-image: url('../assets/social_icon_email.svg');
+}
+
+.social-link.twitter:before {
+  background-image: url('../assets/social_icon_twitter.svg');
+}
+
+.social-link.telegram:before {
+  background-image: url('../assets/social_icon_telegram.svg');
+}
+
+.social-link.github:before {
+  background-image: url('../assets/social_icon_github.svg');
+}
+
+.donations {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.donations-title {
+  color: white;
+  font-weight: bold;
+  flex: 1 1 100%;
+  margin-bottom: 24px;
+}
+
+.donations-item {
+  color: white;
+  position: relative;
+  padding-left: 40px;
+  margin-right: 32px;
+}
+
+.donations-item:before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  left: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.donations-item.bitcoin:before {
+  background-image: url('../assets/donation_icon_bitcoin.svg');
+}
+
+.donations-item.ada:before {
+  background-image: url('../assets/donation_icon_ada.svg');
+}
+
+.donations-item.ether:before {
+  background-image: url('../assets/donation_icon_ether.svg');
 }
