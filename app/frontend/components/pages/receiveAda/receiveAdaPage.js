@@ -1,18 +1,21 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
-const AddressContainer = require('./addressContainer')
+const AddressItem = require('./addressItem')
 
-const OwnAddressesList = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
+const MyAddresses = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
   h(
     'div',
-    {class: 'no-select'},
-    h('h2', undefined, 'My Addresses'),
+    {class: 'addresses card'},
+    h('h2', {class: 'addresses-title'}, 'My Addresses'),
     ...ownAddressesWithMeta.map((adr) =>
-      h(AddressContainer, {address: adr.address, bip32path: adr.bip32StringPath})
-    )
+      h(AddressItem, {address: adr.address, bip32path: adr.bip32StringPath})
+    ),
+    /* TODO: Implement View all addresses functionality */
+    h('button', {class: 'button caret'}, 'View all addresses')
   )
 )
 
-const ReceiveAdaPage = () => h('div', {class: 'content-wrapper'}, h(OwnAddressesList))
+/* TODO: Refactor after creating dashboard layout*/
+const ReceiveAdaPage = () => h('div', {class: 'content-wrapper'}, h(MyAddresses))
 
 module.exports = ReceiveAdaPage
