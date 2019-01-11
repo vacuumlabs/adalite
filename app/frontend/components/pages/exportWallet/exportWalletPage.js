@@ -4,189 +4,185 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
 
+const Hint = ({title, text, type}) =>
+  h(
+    'div',
+    {class: `hint ${type}`},
+    h('h3', {class: 'hint-title'}, title),
+    h('p', {class: 'hint-paragraph'}, text)
+  )
+
 class ExportWalletDialog extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      walletName: 'Ada_lite',
-      isWalletNameValid: true,
+      walletName: '',
       password: '',
       confirmation: '',
-      isPasswordDirty: false,
-      isPasswordConfirmationDirty: false,
+      passwordTouched: false,
+      confirmationTouched: false,
+      walletNameValid: false,
+      isPasswordValid: false,
       showError: false,
+      errorMessage: '',
     }
 
     this.updateWalletName = this.updateWalletName.bind(this)
     this.updatePassword = this.updatePassword.bind(this)
-    this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this)
+    this.updateConfirmation = this.updateConfirmation.bind(this)
     this.exportJsonWallet = this.exportJsonWallet.bind(this)
-    this.touchPasswordConfirmationField = this.touchPasswordConfirmationField.bind(this)
-    this.touchPasswordField = this.touchPasswordField.bind(this)
-  }
-
-  componentDidMount() {
-    this.walletNameField.focus()
+    this.touchConfirmation = this.touchConfirmation.bind(this)
+    this.touchPassword = this.touchPassword.bind(this)
   }
 
   exportJsonWallet(e) {
     try {
       this.props.exportJsonWallet(this.state.password, this.state.walletName)
       this.setState({password: '', confirmation: ''})
-      this.walletNameField.focus()
     } catch (exception) {
-      this.setState({showError: true})
+      this.setState({showError: true, errorMessage: 'Wallet export failed.'})
       debugLog(e)
     }
-    setTimeout(() => this.state.showError && this.setState({showError: false}), 3000)
+    setTimeout(
+      () => this.state.showError && this.setState({showError: false, errorMessage: ''}),
+      3000
+    )
   }
 
   isPasswordValid(password, confirmation) {
-    if (password !== confirmation || !password.trim().length) {
-      return false
-    } else {
-      return true
-    }
+    return password === confirmation && password.trim().length
   }
 
   updatePassword(e) {
+    const passwordValid = this.isPasswordValid(e.target.value, this.state.confirmation)
+    const passwordsTouched = this.state.passwordTouched && this.state.confirmationTouched
     this.setState({
       password: e.target.value,
-      isPasswordValid: this.isPasswordValid(e.target.value, this.state.confirmation),
+      isPasswordValid: passwordValid,
+      showError: passwordsTouched && !passwordValid,
+      errorMessage: passwordsTouched && !passwordValid && 'Both passwords must match',
     })
   }
 
-  updatePasswordConfirmation(e) {
+  updateConfirmation(e) {
+    const passwordValid = this.isPasswordValid(this.state.password, e.target.value)
+    const passwordsTouched = this.state.passwordTouched && this.state.confirmationTouched
     this.setState({
       confirmation: e.target.value,
-      isPasswordValid: this.isPasswordValid(this.state.password, e.target.value),
+      isPasswordValid: passwordValid,
+      showError: passwordsTouched && !passwordValid,
+      errorMessage: passwordsTouched && !passwordValid && 'Both passwords must match',
     })
   }
 
   updateWalletName(e) {
+    const walletName = e.target.value
+    const walletNameValid = /^[a-zA-Z0-9-_]+$/.test(e.target.value)
     this.setState({
-      walletName: e.target.value,
-      isWalletNameValid: /^[a-zA-Z0-9-_]+$/.test(e.target.value),
+      walletName,
+      walletNameValid,
+      showError: !walletNameValid && walletName !== '',
+      errorMessage:
+        !walletNameValid &&
+        walletName !== '' &&
+        'Allowed characters for wallet name are only a-z, A-Z, 0-9, -, _',
     })
   }
 
-  touchPasswordField() {
-    this.setState({isPasswordDirty: true})
+  touchPassword() {
+    this.setState({passwordTouched: true})
   }
 
-  touchPasswordConfirmationField() {
-    this.setState({isPasswordConfirmationDirty: true})
+  touchConfirmation() {
+    this.setState({confirmationTouched: true})
   }
 
   render(
     {_},
-    {
-      confirmation,
-      password,
-      walletName,
-      isPasswordValid,
-      isPasswordDirty,
-      isPasswordConfirmationDirty,
-      isWalletNameValid,
-      showError,
-    }
+    {confirmation, password, walletName, showError, isPasswordValid, errorMessage, walletNameValid}
   ) {
     return h(
       'div',
-      {class: 'content-wrapper'},
+      {class: 'page-wrapper'},
       h(
-        'div',
-        {class: 'margin-2rem'},
-        h('h2', undefined, 'Export wallet to JSON file:'),
+        'main',
+        {class: 'page-main'},
         h(
           'div',
-          {class: 'export-walet-dialog'},
-          showError && h('div', {class: 'alert error'}, 'Wallet export failed'),
+          {class: 'export download card'},
           h(
             'div',
-            {class: 'row'},
-            h('label', {for: 'keyfile-name'}, h('span', undefined, 'Choose wallet name:'))
-          ),
-          h('input', {
-            type: 'text',
-            class: 'styled-input-nodiv',
-            id: 'keyfile-name',
-            name: 'keyfile-name',
-            placeholder: 'adalite_wallet',
-            value: walletName,
-            onInput: this.updateWalletName,
-            onBlur: this.touchPasswordField,
-            autocomplete: 'off',
-            ref: (element) => {
-              this.walletNameField = element
-            },
-          }),
-          h(
-            'div',
-            {class: 'row margin-top'},
-            h('label', {for: 'keyfile-password'}, h('span', undefined, 'Password:'))
-          ),
-          h('input', {
-            type: 'password',
-            class: 'styled-input-nodiv',
-            id: 'keyfile-password',
-            name: 'keyfile-password',
-            placeholder: 'Enter password',
-            value: password,
-            onInput: this.updatePassword,
-            onBlur: this.touchPasswordField,
-            autocomplete: 'new-password',
-          }),
-          h(
-            'div',
-            {class: 'row margin-top'},
+            {class: 'export-content'},
+            h('h2', {class: 'export-title'}, 'Export Key File (Encrypted JSON)'),
+            h('input', {
+              type: 'text',
+              class: 'input',
+              id: 'keyfile-name',
+              name: 'keyfile-name',
+              placeholder: 'Wallet name',
+              value: walletName,
+              onInput: this.updateWalletName,
+              autocomplete: 'off',
+            }),
+            h('input', {
+              type: 'password',
+              class: 'input',
+              id: 'keyfile-password',
+              name: 'keyfile-password',
+              placeholder: 'Password',
+              value: password,
+              onInput: this.updatePassword,
+              onBlur: this.touchPassword,
+              autocomplete: 'off',
+            }),
+            h('input', {
+              type: 'password',
+              class: 'input',
+              id: 'keyfile-password-confirmation',
+              name: 'keyfile-password-confirmation',
+              placeholder: 'Repeat password',
+              value: confirmation,
+              onInput: this.updateConfirmation,
+              onBlur: this.touchConfirmation,
+              autocomplete: 'off',
+            }),
             h(
-              'label',
-              {for: 'keyfile-password-confirmation'},
-              h('span', undefined, 'Password confirmation:')
+              'div',
+              {class: 'validation-row'},
+              h(
+                'button',
+                {
+                  class: 'button primary',
+                  disabled: showError || !isPasswordValid || !walletNameValid,
+                  onClick: this.exportJsonWallet,
+                },
+                'Download the key file'
+              ),
+              showError && h('div', {class: 'validation-message error'}, errorMessage)
             )
           ),
-          h('input', {
-            type: 'password',
-            class: 'styled-input-nodiv',
-            id: 'keyfile-password-confirmation',
-            name: 'keyfile-password-confirmation',
-            placeholder: 'Enter password confirmation',
-            value: confirmation,
-            onInput: this.updatePasswordConfirmation,
-            onBlur: this.touchPasswordConfirmationField,
-            autocomplete: 'new-password',
-          }),
-          h(
-            'p',
-            {
-              class: `validationMsg margin-top center ${
-                (!isPasswordValid && isPasswordDirty && isPasswordConfirmationDirty) ||
-                !isWalletNameValid
-                  ? ''
-                  : 'hidden'
-              }`,
-            },
-            !isWalletNameValid
-              ? 'Allowed characters for wallet name are only a-z, A-Z, 0-9, -, _'
-              : 'Password must match and cannot be empty'
-          ),
-          h(
-            'button',
-            {
-              disabled: !this.isPasswordValid(password, confirmation) || !isWalletNameValid,
-              onClick: this.exportJsonWallet,
-              onKeyDown: (e) => {
-                if (e.key === 'Tab') {
-                  this.walletNameField.focus()
-                  e.preventDefault()
-                }
-              },
-              class: 'button-like submit-button',
-            },
-            'Export'
-          )
+          /* TODO: add TAG element after rebase from PR 310 */
+          h('div', undefined, 'PROCEED WITH CAUTION')
         )
+      ),
+      h(
+        'aside',
+        {class: 'sidebar export'},
+        h(Hint, {
+          type: 'lose',
+          title: 'Do not lose it',
+          text: 'Key file cannot be recovered.',
+        }),
+        h(Hint, {
+          type: 'share',
+          title: 'Do not Share it',
+          text: 'Use it in the official AdaLite only.',
+        }),
+        h(Hint, {
+          type: 'backup',
+          title: 'Make multiple backups',
+          text: 'Store it safely in multiple places.',
+        })
       )
     )
   }

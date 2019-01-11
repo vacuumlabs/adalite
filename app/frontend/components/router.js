@@ -34,7 +34,7 @@ const TopLevelRouter = connect((state) => ({
       content = h(TxHistoryPage)
   }
   // TODO is Alert used anywhere? if so add here
-  return h('main', {class: 'main'}, content)
+  return content
 })
 
 module.exports = {
