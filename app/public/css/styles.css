@@ -1685,6 +1685,14 @@ p {
   cursor: pointer;
 }
 
+.auth-option .tag {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
 .auth-option-title {
   font-weight: bold;
   font-size: 16px;
@@ -1699,11 +1707,7 @@ p {
 /* TAGS */
 
 .tag {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  right: 0;
-  margin: auto;
+  position: relative;
 }
 
 .tag.fastest {
