@@ -18,7 +18,7 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
 
   return h(
     'div',
-    {class: 'auth-section'},
+    {class: 'authentication-content'},
     h(
       'div',
       undefined,
