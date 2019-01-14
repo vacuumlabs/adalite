@@ -165,6 +165,7 @@ module.exports = ({setState, getState}) => {
       mnemonic: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
       mnemonicValidationError: undefined,
       walletLoadingError: undefined,
+      authMethod: 'mnemonic',
     })
   }
 

@@ -134,7 +134,7 @@ class LoadKeyFileClass extends Component {
   render({loadingAction}, {fileName, error, encrypted, password}) {
     return h(
       'div',
-      {class: 'auth-section'},
+      {class: 'authentication-content'},
       h(
         'div',
         undefined,
