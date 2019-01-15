@@ -27,30 +27,34 @@ const FormattedFee = ({fee}) => {
 
 const TransactionAddress = ({address}) =>
   h(
-    'a',
-    {
-      class: 'transaction-address',
-      href: `https://adascan.net/transaction/${address}`,
-      target: '_blank',
-      rel: 'noopener',
-    },
-    'View details'
+    'div',
+    undefined,
+    h(
+      'a',
+      {
+        class: 'transaction-address',
+        href: `https://adascan.net/transaction/${address}`,
+        target: '_blank',
+        rel: 'noopener',
+      },
+      'View details'
+    )
   )
 
 const TransactionHistory = ({transactionHistory}) =>
   h(
     'div',
     {class: 'transactions card'},
-    h('h2', {class: 'transactions-title'}, 'Transaction History'),
+    h('h2', {class: 'card-title'}, 'Transaction History'),
     /* TODO: Load transaction items by chunks */
     transactionHistory.length === 0
       ? h('div', {class: 'transactions-empty'}, 'No transactions found')
       : h(
-        'div',
+        'ul',
         {class: 'transactions-content'},
         ...transactionHistory.map((transaction) =>
           h(
-            'div',
+            'li',
             {class: 'transaction-item'},
             h('div', {class: 'transaction-date'}, formatDate(transaction.ctbTimeIssued)),
             h(FormattedAmount, {amount: transaction.effect}),

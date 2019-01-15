@@ -1498,6 +1498,13 @@ p {
 
 /* TRANSACTIONS */
 
+.transactions-content {
+  padding: 0;
+  margin: 0;
+}
+
+/* TRANSACTIONS */
+
 .transaction-item {
   display: grid;
   grid-template-columns: 50% 50%;
@@ -1508,8 +1515,7 @@ p {
 }
 
 .transaction-date {
-  display: flex;
-  align-items: center;
+  align-self: center;
 }
 
 .transaction-amount {
