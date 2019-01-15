@@ -4,6 +4,8 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
 
+const Tag = require('../../common/tag')
+
 const Hint = ({title, text, type}) =>
   h(
     'div',
@@ -113,7 +115,12 @@ class ExportWalletDialog extends Component {
           h(
             'div',
             {class: 'export-content'},
-            h('h2', {class: 'export-title'}, 'Export Key File (Encrypted JSON)'),
+            h(
+              'h2',
+              {class: 'export-title'},
+              'Export Key File ',
+              h('span', {class: 'export-subtitle'}, '(Encrypted JSON)')
+            ),
             h('input', {
               type: 'text',
               class: 'input',
@@ -161,8 +168,7 @@ class ExportWalletDialog extends Component {
               showError && h('div', {class: 'validation-message error'}, errorMessage)
             )
           ),
-          /* TODO: add TAG element after rebase from PR 310 */
-          h('div', undefined, 'PROCEED WITH CAUTION')
+          h(Tag, {type: 'warning big', text: 'PROCEED WITH CAUTION'})
         )
       ),
       h(
