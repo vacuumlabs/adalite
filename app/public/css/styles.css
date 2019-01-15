@@ -1248,6 +1248,20 @@ p {
   text-align: left;
 }
 
+.alert.sidebar {
+  margin-left: -40px;
+  padding: 0 0 0 40px;
+  border-color: transparent;
+}
+
+.alert.sidebar:before {
+  left: 0;
+}
+
+.alert .sidebar-link {
+  display: inline;
+}
+
 /* NAVIGATION */
 
 .navbar {
@@ -1954,4 +1968,46 @@ p {
 
 .validation-message.error {
   color: var(--color-error);
+}
+
+/* MAIN PAGE */
+
+.page-wrapper {
+  display: flex;
+  height: 100%;
+  width: var(--width);
+  margin: 0 auto;
+}
+
+.page-main {
+  width: 66%;
+}
+
+/* CARD */
+
+.card {
+  background-color: white;
+  padding: 40px 56px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  flex: 1;
+  margin-left: 5%;
+  padding-left: 40px;
+  padding-top: 216px;
+}
+
+.sidebar-link {
+  display: block;
+}
+
+.sidebar-item {
+  margin-bottom: 24px;
+}
+
+.sidebar-item.spacy {
+  margin-bottom: 64px;
 }
