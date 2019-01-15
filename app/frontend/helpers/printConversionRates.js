@@ -11,10 +11,16 @@ const formatFiat = (amount, maxDigits) => {
   return `${addThousandsCommas(Math.trunc(amount / 1000), 0)}k`
 }
 
+const printConversionRate = (amount, conversionRates, currency) =>
+  isNaN(Number(amount)) ? '' : formatFiat(conversionRates[currency] * amount * 0.000001)
+
 const printConversionRates = (amount, conversionRates, maxDigits) =>
   isNaN(Number(amount))
     ? ''
     : `$\u00A0${formatFiat(conversionRates.USD * amount * 0.000001, maxDigits)},
        €\u00A0${formatFiat(conversionRates.EUR * amount * 0.000001, maxDigits)}`
 
-module.exports = printConversionRates
+module.exports = {
+  printConversionRates,
+  printConversionRate,
+}
