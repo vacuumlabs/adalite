@@ -1135,6 +1135,11 @@ p {
   border-color: var(--color-error);
 }
 
+.input.authentication {
+  margin-bottom: 24px;
+  width: 100%;
+}
+
 /* BUTTONS */
 
 .button {
@@ -1157,13 +1162,13 @@ p {
   color: white;
 }
 
+.button.primary:hover {
+  background-color: var(--brand-dark);
+}
+
 .button.primary:disabled {
   background-color: var(--brand-light);
   color: white;
-}
-
-.button.primary:hover {
-  background-color: var(--brand-dark);
 }
 
 .button.outline {
@@ -1859,4 +1864,94 @@ p {
 
 .donations-item.ether:before {
   background-image: url('../assets/donation_icon_ether.svg');
+}
+
+/* DROPZONE */
+
+.dropzone {
+  border-radius: 4px;
+  border: 2px dashed #e6e6e6;
+  background-color: #fcfcfc;
+  transition: border-color var(--transition-easing) var(--transition-time);
+}
+
+.dropzone.error {
+  border-color: var(--color-error);
+}
+
+.dropzone-file-input {
+  display: none;
+}
+
+.dropzone-content {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dropzone-content.has-file {
+  padding: 52px 40px;
+}
+
+.dropzone-paragraph {
+  margin-bottom: 16px;
+}
+
+.dropzone-filename {
+  margin-bottom: 16px;
+  padding-left: 24px;
+  text-align: center;
+  position: relative;
+  color: var(--color-grey);
+}
+
+.dropzone-filename::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 12px;
+  height: 15px;
+  background-image: url('../assets/file_icon.svg');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.dropzone-link {
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+
+.dropzone-link:hover {
+  cursor: pointer;
+}
+
+/* TODO: move to authentication section after rebasing */
+
+.authentication-content .dropzone {
+  margin-bottom: 24px;
+}
+
+.authentication-paragraph {
+  margin-bottom: 16px;
+}
+
+/* VALIDATION */
+
+.validation-row {
+  display: flex;
+  align-items: center;
+}
+
+.validation-message {
+  padding-left: 40px;
+  flex: 1;
+}
+
+.validation-message.error {
+  color: var(--color-error);
 }

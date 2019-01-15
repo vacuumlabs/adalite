@@ -3,13 +3,12 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
 const KeypassJson = require('../../../wallet/keypass-json')
-const Modal = require('../../common/modal')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      fileName: ' ',
+      fileName: '',
       keyFile: undefined,
     }
     this.selectFile = this.selectFile.bind(this)
@@ -56,7 +55,7 @@ class LoadKeyFileClass extends Component {
       this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
     } catch (e) {
       this.props.stopLoadingAction()
-      this.setState({error: 'Wrong password'})
+      this.setState({error: 'Password for provided key file is incorrect.'})
     }
   }
 
@@ -116,7 +115,8 @@ class LoadKeyFileClass extends Component {
           debugLog(`Key file parsing failure: ${err}`)
           this.props.stopLoadingAction()
           this.setState({
-            error: 'Key File parsing failure!',
+            error:
+              'Provided file is incorrect. To access your wallet, continue by selecting a valid JSON key file.',
           })
         }
         return true
@@ -125,95 +125,90 @@ class LoadKeyFileClass extends Component {
   }
 
   render({loadingAction}, {fileName, error, encrypted, password}) {
+    const noFileContent = () =>
+      h(
+        'div',
+        {class: 'dropzone-content'},
+        h('p', {class: 'dropzone-paragraph'}, 'Drop a key file here'),
+        h(
+          'label',
+          {
+            class: 'button primary small',
+            for: 'loadFile',
+          },
+          'Select key file'
+        )
+      )
+
+    const selectedFileContent = () =>
+      h(
+        'div',
+        {class: 'dropzone-content has-file'},
+        h('div', {class: 'dropzone-filename'}, fileName),
+        h(
+          'label',
+          {
+            class: 'dropzone-link',
+            for: 'loadFile',
+          },
+          'Select a different key file'
+        )
+      )
+
     return h(
       'div',
       {class: 'authentication-content'},
       h(
         'div',
-        undefined,
+        {
+          class: `dropzone ${error ? 'error' : ''}`,
+          onDragOver: this.dragOver,
+          onDrop: this.drop,
+        },
+        h('input', {
+          class: 'dropzone-file-input',
+          type: 'file',
+          id: 'loadFile',
+          accept: 'application/json,.json',
+          multiple: false,
+          onChange: this.selectFile,
+        }),
+        fileName === '' ? h(noFileContent) : h(selectedFileContent)
+      ),
+      h('input', {
+        type: 'password',
+        class: 'input authentication',
+        id: 'keyfile-password',
+        name: 'keyfile-password',
+        placeholder: 'Enter password',
+        value: password,
+        onInput: this.updatePassword,
+        ref: (element) => {
+          this.filePasswordField = element
+        },
+        onKeyDown: (e) => e.key === 'Enter' && this.unlockKeyfile(),
+        autocomplete: 'off',
+      }),
+      h(
+        'div',
+        {class: 'validation-row'},
         h(
-          'div',
-          {class: 'load-file-row'},
-          h(
-            'div',
-            {
-              class: 'drop-area',
-              onDragOver: this.dragOver,
-              onDrop: this.drop,
+          'button',
+          {
+            disabled: !(password && fileName !== ''),
+            onClick: this.unlockKeyfile,
+            class: 'button primary',
+            onKeyDown: (e) => {
+              e.key === 'Enter' && e.target.click()
+              if (e.key === 'Tab') {
+                this.filePasswordField.focus(e)
+                e.preventDefault()
+              }
             },
-            h('b', {class: 'centered-row margin-1rem'}, 'Drop a key file here'),
-            h('div', {class: 'centered-row'}, fileName),
-            h(
-              'div',
-              {class: 'centered-row margin-top'},
-              h(
-                'div',
-                undefined,
-                h('input', {
-                  class: 'display-none',
-                  type: 'file',
-                  id: 'loadFile',
-                  accept: 'application/json,.json',
-                  multiple: false,
-                  onChange: this.selectFile,
-                }),
-                h(
-                  'label',
-                  {class: 'button-like', for: 'loadFile'},
-                  h('div', undefined, 'Select key File')
-                )
-              )
-            )
-          )
+          },
+          'Unlock'
         ),
-        encrypted &&
-          h(
-            Modal,
-            {
-              closeHandler: this.closePasswordModal,
-              bodyClass: 'width-auto',
-            },
-            h(
-              'div',
-              {class: 'margin-1rem'},
-              h('h4', undefined, 'Enter password:'),
-              h(
-                'div',
-                {class: 'intro-input-row margin-top'},
-                h('input', {
-                  type: 'password',
-                  class: 'styled-input-nodiv styled-unlock-input',
-                  id: 'keyfile-password',
-                  name: 'keyfile-password',
-                  placeholder: 'Enter key file password',
-                  value: password,
-                  onInput: this.updatePassword,
-                  ref: (element) => {
-                    this.filePasswordField = element
-                  },
-                  onKeyDown: (e) => e.key === 'Enter' && this.unlockKeyfile(),
-                  autocomplete: 'nope',
-                }),
-                h(
-                  'button',
-                  {
-                    disabled: !password,
-                    onClick: this.unlockKeyfile,
-                    onKeyDown: (e) => {
-                      e.key === 'Enter' && e.target.click()
-                      if (e.key === 'Tab') {
-                        this.filePasswordField.focus(e)
-                        e.preventDefault()
-                      }
-                    },
-                  },
-                  'Unlock'
-                )
-              ),
-              error && h('div', {class: 'alert error key-file-error'}, error)
-            )
-          ),
-        error && h('div', {class: 'alert error key-file-error'}, error)
+        error && h('div', {class: 'validation-message error'}, error)
       )
     )
   }
