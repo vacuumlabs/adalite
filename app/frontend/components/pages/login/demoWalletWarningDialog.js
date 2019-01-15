@@ -12,22 +12,16 @@ class DemoWalletWarningDialogClass {
   render({closeDemoWalletWarningDialog}) {
     return h(
       Modal,
-      {closeHandler: closeDemoWalletWarningDialog},
+      {
+        closeHandler: closeDemoWalletWarningDialog,
+        title: 'Access demo wallet',
+        showWarning: true,
+      },
       h(
-        'div',
-        {class: 'modal-head'},
-        h(
-          'div',
-          undefined,
-          h('h2', {class: 'modal-title'}, 'Access demo wallet'),
-          h(
-            'p',
-            {class: 'modal-paragraph'},
-            'You are about to access publicly available wallet intended to show public how AdaLite looks and works. ',
-            h('strong', undefined, 'Your funds will not be safe here.')
-          )
-        ),
-        h('div', {class: 'modal-warning'}, 'Proceed with caution')
+        'p',
+        {class: 'modal-paragraph'},
+        'You are about to access publicly available wallet intended to show public how AdaLite looks and works. ',
+        h('strong', undefined, 'Your funds will not be safe here.')
       ),
       h(
         Alert,

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.4 (67378) - http://www.bohemiancoding.com/sketch -->
+    <title>Artboard</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="lock_icon" transform="translate(14.000000, 7.000000)" fill="#E72076" fill-rule="nonzero">
+            <path d="M2,12 L2,25.093498 L10,28.7987611 L18,25.093498 L18,12 L2,12 Z M0,10 L20,10 L20,26.3712831 L10,31.0028621 L0,26.3712831 L0,10 Z M5.01764349,9.95584828 L5.01764349,6.94736842 C5.01764349,4.240165 7.28229623,2 10,2 C12.7188855,2 14.9866125,4.24132969 14.9866125,6.94736842 L14.9866125,9.95584828 L16.9866125,9.95584828 L16.9866125,6.94736842 C16.9866125,3.11044279 13.7969577,0 10,0 C6.20304235,0 3.01764349,3.11044279 3.01764349,6.94736842 L3.01764349,9.95584828 L5.01764349,9.95584828 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>
