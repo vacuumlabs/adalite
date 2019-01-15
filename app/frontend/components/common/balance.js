@@ -1,66 +1,47 @@
 const {h} = require('preact')
 const printAda = require('../../helpers/printAda')
-const printConversionRates = require('../../helpers/printConversionRates')
+const {printConversionRate} = require('../../helpers/printConversionRates')
 
-const truncatePrintAda = (amount, maxDigits) => {
-  const amountString = amount.toString()
-  if (amountString.length <= maxDigits) {
-    return amount
-  }
-  if (amountString.indexOf('.') <= maxDigits + 1) {
-    return amountString.substr(0, maxDigits + 1)
-  }
-  return `${Math.trunc(amountString / 1000)}K`
-}
+const Conversions = ({balance, conversionRates}) =>
+  h(
+    'div',
+    {class: 'conversions'},
+    h(
+      'div',
+      {class: 'conversions-item'},
+      `$ ${printConversionRate(balance, conversionRates, 'USD')}`
+    ),
+    h(
+      'div',
+      {class: 'conversions-item'},
+      `€ ${printConversionRate(balance, conversionRates, 'EUR')}`
+    ),
+    h('div', {class: 'conversions-help'}, '')
+  )
 
 const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
   h(
     'div',
-    {class: 'balance-block'},
-    h('h2', undefined, 'Balance'),
+    {class: 'balance card'},
+    h('h2', {class: 'balance-title'}, 'Balance'),
     h(
-      'span',
-      {class: 'balance-value'},
+      'div',
+      {class: 'balance-row'},
       h(
-        'span',
-        {class: 'on-desktop-only'},
+        'div',
+        {class: 'balance-amount'},
         isNaN(Number(balance)) ? balance : `${printAda(balance)}`
       ),
       h(
-        'span',
-        {class: 'on-mobile-only not-narrow-screen'},
-        isNaN(Number(balance)) ? balance : `${truncatePrintAda(printAda(balance), 12)}`
-      ),
-      h(
-        'span',
-        {class: 'narrow-screen-only'},
-        isNaN(Number(balance)) ? balance : `${truncatePrintAda(printAda(balance), 10)}`
-      ),
-      h('img', {src: 'assets/ada-icon.svg', className: 'ada-sign-big'}),
-      h(
         'button',
-        {class: 'button button--refresh', onClick: reloadWalletInfo},
-        h('img', {src: 'assets/refresh-icon.svg'})
+        {
+          class: 'button refresh',
+          onClick: reloadWalletInfo,
+        },
+        'Refresh Balance'
       )
     ),
-    conversionRates &&
-      h(
-        'div',
-        {className: 'other-currencies-balance on-desktop-only'},
-        `(${printConversionRates(balance, conversionRates)})`
-      ),
-    conversionRates &&
-      h(
-        'div',
-        {className: 'other-currencies-balance on-mobile-only not-narrow-screen'},
-        `(${printConversionRates(balance, conversionRates, 12)})`
-      ),
-    conversionRates &&
-      h(
-        'div',
-        {className: 'other-currencies-balance narrow-screen-only'},
-        `(${printConversionRates(balance, conversionRates, 10)})`
-      )
+    conversionRates && h(Conversions, {balance, conversionRates})
   )
 
 module.exports = Balance

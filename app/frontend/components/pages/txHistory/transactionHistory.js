@@ -1,6 +1,6 @@
 const {h} = require('preact')
 const printAda = require('../../../helpers/printAda')
-const printConversionRates = require('../../../helpers/printConversionRates')
+const {printConversionRates} = require('../../../helpers/printConversionRates')
 const formatDate = require('../../../helpers/formatDate')
 const Tooltip = require('../../common/tooltip')
 
