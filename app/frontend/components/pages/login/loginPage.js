@@ -3,7 +3,7 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const isLeftClick = require('../../../helpers/isLeftClick')
 
-const AboutOverlay = require('./aboutOverlay')
+const Welcome = require('./welcome')
 const KeyFileAuth = require('./keyFileAuth')
 const MnemonicAuth = require('./mnemonicAuth')
 const HardwareAuth = require('./hardwareAuth')
@@ -22,7 +22,7 @@ class LoginPage extends Component {
     enableTrezor,
     showDemoWalletWarningDialog,
     logoutNotificationOpen,
-    displayAboutOverlay,
+    displayWelcome,
     showGenerateMnemonicDialog,
   }) {
     const authTab = (name, text, recommended) =>
@@ -94,7 +94,7 @@ class LoginPage extends Component {
         )
       ),
       h(LoginPageSidebar),
-      displayAboutOverlay && h(AboutOverlay),
+      displayWelcome && h(Welcome),
       showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
       showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
       logoutNotificationOpen && h(LogoutNotification)
@@ -109,7 +109,7 @@ module.exports = connect(
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
     logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,
-    displayAboutOverlay: state.displayAboutOverlay,
+    displayWelcome: state.displayWelcome,
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
   }),
   actions

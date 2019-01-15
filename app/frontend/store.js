@@ -12,7 +12,7 @@ const initialState = {
     title: 'Wrong mnemonic',
     hint: 'Hint: Ensure that your mnemonic is without mistake.',
   },
-  displayAboutOverlay: !window.localStorage.getItem('dontShowDisclaimer'),
+  displayWelcome: !window.localStorage.getItem('dontShowDisclaimer'),
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   newWalletMnemonic: '',

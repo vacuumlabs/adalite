@@ -6,14 +6,12 @@ const isLeftClick = require('../../../helpers/isLeftClick')
 
 class LoadByMenmonicSectionClass extends Component {
   componentDidMount() {
-    !this.props.displayAboutOverlay && this.mnemonicField.focus()
+    !this.props.displayWelcome && this.mnemonicField.focus()
   }
 
   componentDidUpdate() {
     const shouldFormFocus =
-      !this.props.mnemonic &&
-      !this.props.displayAboutOverlay &&
-      !this.props.showDemoWalletWarningDialog
+      !this.props.mnemonic && !this.props.displayWelcome && !this.props.showDemoWalletWarningDialog
     shouldFormFocus && this.mnemonicField.focus()
   }
 
@@ -104,7 +102,7 @@ class LoadByMenmonicSectionClass extends Component {
 module.exports = connect(
   (state) => ({
     mnemonic: state.mnemonic,
-    displayAboutOverlay: state.displayAboutOverlay,
+    displayWelcome: state.displayWelcome,
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
     mnemonicValidationError: state.mnemonicValidationError,
     showMnemonicValidationError: state.showMnemonicValidationError,
