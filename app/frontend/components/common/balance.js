@@ -23,7 +23,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
   h(
     'div',
     {class: 'balance card'},
-    h('h2', {class: 'balance-title'}, 'Balance'),
+    h('h2', {class: 'card-title balance-title'}, 'Balance'),
     h(
       'div',
       {class: 'balance-row'},
