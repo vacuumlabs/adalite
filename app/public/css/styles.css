@@ -1175,8 +1175,7 @@ p {
   line-height: 32px;
   font-weight: bold;
   border: none;
-  transition: background-color var(--transition-easing) var(--transition-time),
-    color var(--transition-easing) var(--transition-time);
+  transition: background-color var(--transition-easing) var(--transition-time);
   display: inline-block;
 }
 
