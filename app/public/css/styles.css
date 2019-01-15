@@ -720,11 +720,6 @@
   }
 }
 /*SEND-ADA*/
-.transaction-fee {
-  text-align: right;
-  display: block;
-  margin: 5px;
-}
 .loading-inside-button {
   display: inline-block;
   border: 2px solid rgba(150, 150, 150, 0.4);
@@ -1178,6 +1173,10 @@ p {
   padding: 8px 16px;
 }
 
+.button.fullwidth {
+  width: 100%;
+}
+
 .button.navbar {
   margin-left: 16px;
   padding: 7px 24px 8px 24px;
@@ -1509,6 +1508,13 @@ p {
   background-color: white;
   padding: 40px 56px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  margin-bottom: 24px;
+  font-size: 16px;
+  line-height: 32px;
+  font-weight: bold;
 }
 
 /* AUTHENTICATION */
@@ -2032,6 +2038,10 @@ p {
 
 /* BALANCE */
 
+.balance-title {
+  margin-bottom: 0;
+}
+
 .balance-row {
   display: flex;
   align-items: center;
@@ -2190,4 +2200,54 @@ p {
 
 .checkbox-input:checked + .checkbox-indicator {
   background-image: url('../assets/checkbox_checked.svg');
+}
+
+/* TRANSACTIONS */
+
+.transactions-content {
+  padding: 0;
+  margin: 0;
+}
+
+.transaction-item {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-grey);
+}
+
+.transaction-date {
+  align-self: center;
+}
+
+.transaction-amount {
+  line-height: 32px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: right;
+}
+
+.transaction-amount.credit {
+  color: var(--color-success);
+}
+
+.transaction-amount.debit {
+  color: var(--color-error);
+}
+
+.transaction-address {
+  color: rgba(96, 106, 113, 0.64);
+}
+
+.transaction-fee {
+  text-align: right;
+}
+
+.transactions-empty {
+  color: var(--color-grey);
+  text-align: center;
+  padding-top: 40px;
+  border-top: 1px solid var(--color-border);
 }
