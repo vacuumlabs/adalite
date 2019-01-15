@@ -1508,6 +1508,14 @@ p {
   padding: 56px;
 }
 
+.authentication-content .dropzone {
+  margin-bottom: 24px;
+}
+
+.authentication-paragraph {
+  margin-bottom: 16px;
+}
+
 /* AUTHENTICATION TABS */
 
 .auth-tabs {
@@ -1954,16 +1962,6 @@ p {
   cursor: pointer;
 }
 
-/* TODO: move to authentication section after rebasing */
-
-.authentication-content .dropzone {
-  margin-bottom: 24px;
-}
-
-.authentication-paragraph {
-  margin-bottom: 16px;
-}
-
 /* VALIDATION */
 
 .validation-row {
@@ -1978,27 +1976,6 @@ p {
 
 .validation-message.error {
   color: var(--color-error);
-}
-
-/* MAIN PAGE */
-
-.page-wrapper {
-  display: flex;
-  height: 100%;
-  width: var(--width);
-  margin: 0 auto;
-}
-
-.page-main {
-  width: 66%;
-}
-
-/* CARD */
-
-.card {
-  background-color: white;
-  padding: 40px 56px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
 }
 
 /* SIDEBAR */
@@ -2020,14 +1997,6 @@ p {
 
 .sidebar-item.spacy {
   margin-bottom: 64px;
-}
-
-/* CARD */
-
-.card {
-  background-color: white;
-  padding: 40px 56px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
 }
 
 /* BALANCE */
