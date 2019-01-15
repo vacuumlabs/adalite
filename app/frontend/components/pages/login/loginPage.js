@@ -10,6 +10,7 @@ const HardwareAuth = require('./hardwareAuth')
 const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
+const LoginPageSidebar = require('./loginPageSidebar')
 
 class LoginPage extends Component {
   render({
@@ -91,8 +92,7 @@ class LoginPage extends Component {
           )
         )
       ),
-      /* TODO: replace with the loginPageSidebar component after PR merge */
-      h('aside', undefined, undefined),
+      h(LoginPageSidebar),
       displayAboutOverlay && h(AboutOverlay),
       showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
       showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
