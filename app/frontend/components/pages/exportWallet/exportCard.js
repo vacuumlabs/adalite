@@ -7,7 +7,7 @@ const ExportCard = () =>
     h(
       'div',
       {class: 'export-head'},
-      h('h2', {class: 'export-title'}, 'Export your wallet key file'),
+      h('h2', {class: 'card-title export-title'}, 'Export your wallet key file'),
       h('div', {class: 'export-type'}, 'JSON file')
     ),
     h(
