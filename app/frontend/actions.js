@@ -157,6 +157,7 @@ module.exports = ({setState, getState}) => {
       mnemonicValidationError: undefined,
       showGenerateMnemonicDialog: true,
       authMethod: 'mnemonic',
+      showMnemonicInfoAlert: true,
     })
   }
 
