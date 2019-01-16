@@ -1122,9 +1122,12 @@ p {
   border-color: var(--color-error);
 }
 
-.input.authentication {
-  margin-bottom: 24px;
+.input.fullwidth {
   width: 100%;
+}
+
+.input.auth {
+  margin-bottom: 24px;
 }
 
 /* BUTTONS */
@@ -1285,6 +1288,10 @@ p {
 
 .alert .sidebar-link {
   display: inline;
+}
+
+.alert.auth {
+  margin-bottom: 24px;
 }
 
 /* NAVIGATION */
@@ -1545,12 +1552,24 @@ p {
   padding: 56px;
 }
 
+.authentication-content.centered {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
 .authentication-content .dropzone {
   margin-bottom: 24px;
 }
 
 .authentication-paragraph {
+  margin-bottom: 40px;
+}
+
+.authentication-label {
   margin-bottom: 16px;
+  padding-left: 8px;
+  display: block;
 }
 
 /* AUTHENTICATION TABS */
