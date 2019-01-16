@@ -1,4 +1,5 @@
 const {h} = require('preact')
+const Tag = require('./tag')
 
 const Modal = ({children, closeHandler, bodyClass = '', title, showWarning}) =>
   h(
@@ -24,7 +25,7 @@ const Modal = ({children, closeHandler, bodyClass = '', title, showWarning}) =>
         'div',
         {class: 'modal-head'},
         title && h('h2', {class: 'modal-title'}, title),
-        showWarning && h('div', {class: 'modal-warning'}, 'Proceed with caution')
+        showWarning && h(Tag, {type: 'big warning', text: 'Proceed with caution'})
       ),
       children
     )
