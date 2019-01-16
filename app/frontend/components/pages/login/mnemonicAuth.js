@@ -2,7 +2,6 @@ const {h, Component} = require('preact')
 const {getTranslation} = require('../../../translations')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const isLeftClick = require('../../../helpers/isLeftClick')
 
 const Alert = require('../../common/alert')
 
