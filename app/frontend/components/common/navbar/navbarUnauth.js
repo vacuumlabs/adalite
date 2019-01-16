@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
 
 const isLeftClick = require('../../../helpers/isLeftClick')
 
@@ -27,6 +28,7 @@ const NavbarUnauth = connect(
           })
         )
       ),
+      h('div', {class: 'navbar-version'}, `Ver. ${APP_VERSION}`),
       h(
         'div',
         {class: 'navbar-content'},
