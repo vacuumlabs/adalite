@@ -1472,6 +1472,7 @@ p {
 }
 
 .modal-mnemonic {
+  position: relative;
   margin-top: 40px;
   padding: 24px 24px 24px 64px;
   border: 1px solid var(--color-border);
@@ -1483,7 +1484,7 @@ p {
   width: 24px;
   height: 24px;
   position: absolute;
-  top: 20px;
+  top: 24px;
   left: 24px;
   background-repeat: no-repeat;
   background-size: contain;
