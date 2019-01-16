@@ -123,7 +123,7 @@ class ExportWalletDialog extends Component {
             ),
             h('input', {
               type: 'text',
-              class: 'input',
+              class: 'input fullwidth export',
               id: 'keyfile-name',
               name: 'keyfile-name',
               placeholder: 'Wallet name',
@@ -133,7 +133,7 @@ class ExportWalletDialog extends Component {
             }),
             h('input', {
               type: 'password',
-              class: 'input',
+              class: 'input fullwidth export',
               id: 'keyfile-password',
               name: 'keyfile-password',
               placeholder: 'Password',
@@ -144,7 +144,7 @@ class ExportWalletDialog extends Component {
             }),
             h('input', {
               type: 'password',
-              class: 'input',
+              class: 'input fullwidth export',
               id: 'keyfile-password-confirmation',
               name: 'keyfile-password-confirmation',
               placeholder: 'Repeat password',
