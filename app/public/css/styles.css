@@ -2537,6 +2537,27 @@ p {
     line-height: 40px;
   }
 
+  /* PAGE MAIN */
+
+  .page-wrapper {
+    display: block;
+  }
+
+  .page-main {
+    width: 100%;
+  }
+
+  /* SIDEBAR */
+
+  .sidebar {
+    margin: 0;
+    padding: 56px 32px 56px 56px;
+  }
+
+  .sidebar-item.spacy {
+    margin-bottom: 56px;
+  }
+
   /* BUTTONS */
 
   .button {
