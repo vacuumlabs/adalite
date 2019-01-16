@@ -33,6 +33,7 @@ const initialState = {
   logoutNotificationOpen: false,
   rawTransactionOpen: false,
   rawTransaction: '',
+  showMnemonicInfoAlert: false,
 }
 
 const createStore = () =>
