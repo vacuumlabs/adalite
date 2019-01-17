@@ -18,74 +18,19 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
 
   return h(
     'div',
-    {class: 'authentication-content'},
+    {class: 'authentication-content centered'},
     h(
       'div',
-      undefined,
-      'Hardware wallets provide the best security level for storing your cryptocurrencies.'
+      {class: 'authentication-paragraph'},
+      'AdaLite supports Trezor model T (firmware version >= 2.0.8)'
     ),
     h(
-      'div',
-      undefined,
-      h(
-        'div',
-        {class: 'margin-top'},
-        `AdaLite supports Trezor model T and Ledger Nano S${
-          disableLedgerByFlag ? ' (coming soon!)' : '.'
-        }`,
-        disableLedgerByFlag
-          ? undefined
-          : h(
-            'div',
-            {class: 'margin-top'},
-            h(
-              'a',
-              {
-                href: 'https://github.com/vacuumlabs/adalite/wiki/Troubleshooting',
-                target: 'blank',
-              },
-              'Trouble connecting?'
-            )
-          )
-      ),
-      h(
-        'div',
-        {class: 'centered-row margin-top'},
-        h(
-          'button',
-          {
-            onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR}),
-          },
-          h(
-            'div',
-            undefined,
-            h('span', undefined, 'use '),
-            h('span', {class: 'hw-wallet-btn-text'}, 'TREZOR')
-          )
-        ),
-        h(
-          'button',
-          {
-            onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER}),
-            disabled: disableLedger,
-          },
-          h(
-            'div',
-            undefined,
-            h('span', undefined, 'use '),
-            h('span', {class: 'hw-wallet-btn-text'}, 'LEDGER')
-          )
-        )
-      ),
-      h(
-        'div',
-        {class: 'margin-top'},
-        'You can support us by purchasing ',
-        TrezorAffiliateLink('Trezor'),
-        ' or ',
-        LedgerAffiliateLink('Ledger'),
-        ' using our affiliate links.'
-      )
+      'button',
+      {
+        class: 'button primary trezor',
+        onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR}),
+      },
+      'Unlock with'
     )
   )
 }
