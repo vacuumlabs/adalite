@@ -1583,6 +1583,7 @@ p {
 
 .page-wrapper {
   display: flex;
+  min-height: 100%;
   max-width: var(--width);
   margin: 0 auto;
   flex: 1;
@@ -1649,8 +1650,6 @@ p {
 
 .authentication-title {
   font-weight: normal;
-  font-size: 32px;
-  line-height: 48px;
   text-align: center;
   white-space: pre-wrap;
   margin-bottom: 56px;
@@ -2858,6 +2857,10 @@ p {
     border: 0;
   }
 
+  .card.authentication {
+    border: 0;
+  }
+
   /* INPUTS */
 
   .input.export {
@@ -2912,5 +2915,40 @@ p {
 
   .hint:last-child {
     margin-bottom: 0;
+  }
+
+  /* AUTHENTICATION */
+
+  .authentication.initial {
+    padding: 56px 16px 0 16px;
+  }
+
+  .authentication-title {
+    margin-bottom: 40px;
+  }
+
+  .auth-options {
+    display: block;
+    border-bottom: none;
+    border-radius: 0;
+  }
+
+  .auth-option {
+    padding-bottom: 24px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .auth-option:first-child {
+    border-radius: 0;
+  }
+
+  .auth-option:last-child {
+    border-radius: 0;
+    border-right: none;
+  }
+
+  .page-demo {
+    margin-top: 40px;
   }
 }
