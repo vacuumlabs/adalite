@@ -1253,6 +1253,24 @@ p {
   background-image: url('../assets/logout_symbol_active.svg');
 }
 
+.button.trezor {
+  position: relative;
+  padding-right: 119px;
+}
+
+.button.trezor::before {
+  content: '';
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  right: 24px;
+  top: 16px;
+  width: 79px;
+  height: 22px;
+  background-image: url('../assets/trezor_logo_white.svg');
+}
+
 /* ALERTS */
 
 .alert {
@@ -1649,6 +1667,7 @@ p {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .authentication-content .dropzone {
@@ -1659,6 +1678,10 @@ p {
   margin-bottom: 16px;
   padding-left: 8px;
   display: block;
+}
+
+.authentication-paragraph {
+  margin-bottom: 40px;
 }
 
 /* AUTHENTICATION TABS */
