@@ -43,7 +43,7 @@ const SendValidation = ({
       h(AmountErrorMessage, {sendAmount, sendAmountValidationError})
     )
     : sendResponse.success &&
-      h('div', {class: 'validation-message send success'}, 'Transaction successful')
+      h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
 
 const SendAdaPage = ({
   sendResponse,
