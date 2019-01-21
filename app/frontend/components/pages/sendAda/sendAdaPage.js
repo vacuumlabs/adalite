@@ -67,11 +67,15 @@ const SendAdaPage = ({
   rawTransactionOpen,
   setRawTransactionOpen,
   rawTransaction,
+  coinsAmount,
 }) => {
   const enableSubmit =
     sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
 
-  const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
+  const rawTransactionHandler = async () => {
+    await getRawTransaction(sendAddress, coinsAmount)
+    setRawTransactionOpen(true)
+  }
 
   return h(
     'div',
@@ -152,7 +156,7 @@ const SendAdaPage = ({
         'button',
         {
           class: 'button primary',
-          disabled: !enableSubmit,
+          disabled: !enableSubmit || feeRecalculating,
           onClick: confirmTransaction,
           ref: (element) => {
             this.submitTxBtn = element
@@ -169,6 +173,15 @@ const SendAdaPage = ({
           sendAddressValidationError,
           sendResponse,
         })
+    ),
+    h(
+      'a',
+      {
+        href: '#',
+        class: 'send-raw',
+        onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
+      },
+      'Raw unsigned transaction'
     ),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
@@ -189,6 +202,7 @@ module.exports = connect(
     showThanksForDonation: state.showThanksForDonation,
     rawTransaction: state.rawTransaction,
     rawTransactionOpen: state.rawTransactionOpen,
+    coinsAmount: state.sendAmount.coins,
   }),
   actions
 )(SendAdaPage)
