@@ -1,4 +1,4 @@
-const {h, Component} = require('preact')
+const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 
