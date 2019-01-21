@@ -181,14 +181,6 @@
   font-size: 16px;
 }
 
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
 @keyframes loading-spin {
   0% {
     transform: rotate(0deg);
@@ -196,15 +188,6 @@
   100% {
     transform: rotate(360deg);
   }
-}
-.loading {
-  display: inline-block;
-  border: 8px solid rgba(150, 150, 150, 0.4);
-  border-left-color: var(--brand);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: loading-spin 1s linear infinite;
 }
 
 .ontop {
@@ -2707,7 +2690,6 @@ button[data-balloon] {
 .review-bottom .button:first-child {
   margin-bottom: 32px;
 }
-<<<<<<< HEAD
 
 /* ANIMATIONS */
 
@@ -3474,5 +3456,3 @@ button[data-balloon] {
     margin: 0;
   }
 }
-=======
->>>>>>> Styled Transaction review
