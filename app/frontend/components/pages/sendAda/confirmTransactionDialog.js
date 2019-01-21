@@ -9,15 +9,7 @@ class ConfirmTransactionDialogClass {
     this.cancelTx.focus()
   }
 
-  render({
-    sendAddress,
-    sendAmount,
-    transactionFee,
-    submitTransaction,
-    cancelTransaction,
-    waitingForTrezor,
-    usingTrezor,
-  }) {
+  render({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) {
     const total = sendAmount + transactionFee
     return h(
       Modal,

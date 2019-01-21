@@ -413,7 +413,9 @@ module.exports = ({setState, getState}) => {
 
   const submitTransaction = async (state) => {
     if (state.usingTrezor) {
+      /* TODO: Check if waitingForTrezor can be deleted safely */
       setState({waitingForTrezor: true})
+      loadingAction(state, 'Waiting for Trezor...')
     } else {
       loadingAction(state, 'Submitting transaction...')
     }
