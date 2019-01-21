@@ -378,6 +378,7 @@ module.exports = ({setState, getState}) => {
       transactionFee: 0,
       loading: false,
       showConfirmTransactionDialog: false,
+      showTransactionErrorModal: false,
     })
   }
 
@@ -444,6 +445,7 @@ module.exports = ({setState, getState}) => {
       sendResponse = {
         success: false,
         error: e.name,
+        showTransactionErrorModal: true,
       }
     } finally {
       resetSendForm(state)
@@ -457,6 +459,12 @@ module.exports = ({setState, getState}) => {
   const closeThanksForDonationModal = (state) => {
     setState({
       showThanksForDonation: false,
+    })
+  }
+
+  const closeTransactionErrorModal = (state) => {
+    setState({
+      showTransactionErrorModal: false,
     })
   }
 
@@ -523,5 +531,6 @@ module.exports = ({setState, getState}) => {
     setLogoutNotificationOpen,
     setRawTransactionOpen,
     getRawTransaction,
+    closeTransactionErrorModal,
   }
 }
