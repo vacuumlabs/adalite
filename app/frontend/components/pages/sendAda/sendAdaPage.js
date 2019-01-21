@@ -96,16 +96,12 @@ const SendAdaPage = ({
       'div',
       {class: 'send-values'},
       h(
-        'div',
-        undefined,
-        h(
-          'label',
-          {
-            class: 'send-label',
-            for: 'send-amount',
-          },
-          'Amount'
-        )
+        'label',
+        {
+          class: 'ada-label',
+          for: 'send-amount',
+        },
+        'Amount'
       ),
       h(
         'div',
@@ -138,14 +134,10 @@ const SendAdaPage = ({
       ),
       h(
         'div',
-        undefined,
-        h(
-          'div',
-          {
-            class: 'send-label',
-          },
-          'Fee'
-        )
+        {
+          class: 'ada-label',
+        },
+        'Fee'
       ),
       h('div', {class: 'send-fee'}, printAda(transactionFee))
     ),
