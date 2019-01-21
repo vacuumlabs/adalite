@@ -6,25 +6,23 @@ const DonateThanksModal = ({closeThanksForDonationModal}) =>
   h(
     Modal,
     {
-      closeHanlder: closeThanksForDonationModal,
+      closeHandler: closeThanksForDonationModal,
+      title: 'Thank you!',
+      bodyClass: 'donation',
     },
+    /* TODO: Change copy */
     h(
-      'div',
-      {
-        class: 'centered-row',
-      },
-      h('h3', undefined, 'Thank you for supporting AdaLite developers!')
+      'p',
+      {class: 'modal-paragraph'},
+      'Your support helps us in many ways. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi bibendum condimentum feugiat. Etiam vel vulputate lorem.'
     ),
     h(
-      'div',
-      {class: 'centered-row margin-top'},
-      h(
-        'button',
-        {
-          onClick: closeThanksForDonationModal,
-        },
-        'OK'
-      )
+      'button',
+      {
+        class: 'button primary',
+        onClick: closeThanksForDonationModal,
+      },
+      "You're welcome"
     )
   )
 
