@@ -2707,6 +2707,7 @@ button[data-balloon] {
 .review-bottom .button:first-child {
   margin-bottom: 32px;
 }
+<<<<<<< HEAD
 
 /* ANIMATIONS */
 
@@ -3473,3 +3474,5 @@ button[data-balloon] {
     margin: 0;
   }
 }
+=======
+>>>>>>> Styled Transaction review
