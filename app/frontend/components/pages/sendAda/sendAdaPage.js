@@ -8,6 +8,7 @@ const printAda = require('../../../helpers/printAda')
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
 const RawTransactionModal = require('./rawTransactionModal')
 const DonateThanksModal = require('./donateThanksModal')
+const TransactionErrorModal = require('./transactionErrorModal')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee')
 
@@ -41,12 +42,8 @@ const SendValidation = ({
       h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
       h(AmountErrorMessage, {sendAmount, sendAmountValidationError})
     )
-    : sendResponse &&
-      h(
-        'div',
-        {class: `validation-message send ${sendResponse.success ? 'success' : 'error'}`},
-        sendResponse.success ? 'Transaction successful' : 'Transaction failed'
-      )
+    : sendResponse.success &&
+      h('div', {class: 'validation-message send success'}, 'Transaction successful')
 
 const SendAdaPage = ({
   sendResponse,
@@ -63,6 +60,8 @@ const SendAdaPage = ({
   sendMaxFunds,
   showThanksForDonation,
   closeThanksForDonationModal,
+  closeTransactionErrorModal,
+  showTransactionErrorModal,
   getRawTransaction,
   rawTransactionOpen,
   setRawTransactionOpen,
@@ -98,7 +97,7 @@ const SendAdaPage = ({
       h(
         'label',
         {
-          class: 'ada-label',
+          class: 'ada-label amount',
           for: 'send-amount',
         },
         'Amount'
@@ -164,6 +163,7 @@ const SendAdaPage = ({
           sendAddress,
           sendAddressValidationError,
           sendResponse,
+          closeTransactionErrorModal,
         })
     ),
     h(
@@ -175,6 +175,11 @@ const SendAdaPage = ({
       },
       'Raw unsigned transaction'
     ),
+    showTransactionErrorModal &&
+      h(TransactionErrorModal, {
+        closeTransactionErrorModal,
+        errorMessage: getTranslation(sendResponse.error, {sendResponse}),
+      }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
     showThanksForDonation && h(DonateThanksModal, {closeThanksForDonationModal})
@@ -190,6 +195,7 @@ module.exports = connect(
     sendAmount: state.sendAmount.fieldValue,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
+    showTransactionErrorModal: state.showTransactionErrorModal,
     feeRecalculating: state.calculatingFee,
     showThanksForDonation: state.showThanksForDonation,
     rawTransaction: state.rawTransaction,
