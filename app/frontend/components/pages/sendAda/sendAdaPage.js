@@ -9,7 +9,7 @@ const ConfirmTransactionDialog = require('./confirmTransactionDialog')
 const RawTransactionModal = require('./rawTransactionModal')
 const DonateThanksModal = require('./donateThanksModal')
 
-const CalculatingFee = () => h('div', {class: 'validation-message'}, 'Calculating fee')
+const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee')
 
 const AmountErrorMessage = ({sendAmount, sendAmountValidationError}) =>
   sendAmountValidationError &&
@@ -37,14 +37,14 @@ const SendValidation = ({
   sendAmountValidationError || sendAddressValidationError
     ? h(
       'div',
-      {class: 'validation-message error'},
+      {class: 'validation-message send error'},
       h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
       h(AmountErrorMessage, {sendAmount, sendAmountValidationError})
     )
     : sendResponse &&
       h(
         'div',
-        {class: `validation-message ${sendResponse.success ? 'success' : 'error'}`},
+        {class: `validation-message send ${sendResponse.success ? 'success' : 'error'}`},
         sendResponse.success ? 'Transaction successful' : 'Transaction failed'
       )
 
@@ -80,7 +80,7 @@ const SendAdaPage = ({
     h('input', {
       type: 'text',
       id: 'send-address',
-      class: 'input send-address',
+      class: 'input send-address fullwidth',
       name: 'send-address',
       placeholder: 'Receiving address',
       value: sendAddress,
@@ -92,12 +92,16 @@ const SendAdaPage = ({
       'div',
       {class: 'send-values'},
       h(
-        'label',
-        {
-          class: 'send-label',
-          for: 'send-amount',
-        },
-        'Amount'
+        'div',
+        undefined,
+        h(
+          'label',
+          {
+            class: 'send-label',
+            for: 'send-amount',
+          },
+          'Amount'
+        )
       ),
       h(
         'div',
@@ -125,15 +129,19 @@ const SendAdaPage = ({
             class: 'button send-max',
             onClick: sendMaxFunds,
           },
-          'MAX'
+          'Max'
         )
       ),
       h(
         'div',
-        {
-          class: 'send-label',
-        },
-        'Fee'
+        undefined,
+        h(
+          'div',
+          {
+            class: 'send-label',
+          },
+          'Fee'
+        )
       ),
       h('div', {class: 'send-fee'}, printAda(transactionFee))
     ),
