@@ -13,28 +13,26 @@ class LogoutNotification {
       Modal,
       {
         closeHandler: () => setLogoutNotificationOpen(false),
+        title: 'You’ve been logged out',
+        bodyClass: 'centered',
       },
+      h('p', {class: 'modal-paragraph'}, 'We’ve logged you out after 15 minutes of inactivity.'),
       h(
         'div',
-        {class: 'center'},
-        h('h4', undefined, 'Notification'),
-        h('p', undefined, 'You were logged out due to inactivity.'),
+        {class: 'modal-footer'},
         h(
-          'div',
-          {class: 'box-button-wrapper'},
-          h(
-            'button',
-            {
-              onClick: () => setLogoutNotificationOpen(false),
-              onKeyDown: (e) => {
-                ;['Enter', 'Escape'].includes(e.key) && e.target.click()
-              },
-              ref: (element) => {
-                this.understandDemoBtn = element
-              },
+          'button',
+          {
+            class: 'button primary',
+            onClick: () => setLogoutNotificationOpen(false),
+            onKeyDown: (e) => {
+              ;['Enter', 'Escape'].includes(e.key) && e.target.click()
             },
-            'I understand'
-          )
+            ref: (element) => {
+              this.understandDemoBtn = element
+            },
+          },
+          'Continue'
         )
       )
     )
