@@ -2485,6 +2485,7 @@ p {
 }
 
 .transaction-address {
+  justify-self: start;
   color: rgba(96, 106, 113, 0.64);
 }
 
@@ -2950,5 +2951,21 @@ p {
 
   .page-demo {
     margin-top: 40px;
+  }
+
+  /* TRANSACTIONS */
+
+  .transaction-address {
+    order: 1;
+    align-self: center;
+  }
+  .transaction-amount {
+    order: 2;
+  }
+  .transaction-date {
+    order: 3;
+  }
+  .transaction-fee {
+    order: 4;
   }
 }
