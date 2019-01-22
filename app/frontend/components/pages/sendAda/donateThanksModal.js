@@ -8,7 +8,7 @@ const DonateThanksModal = ({closeThanksForDonationModal}) =>
     {
       closeHandler: closeThanksForDonationModal,
       title: 'Thank you!',
-      bodyClass: 'donation',
+      bodyClass: 'centered',
     },
     /* TODO: Change copy */
     h(
@@ -17,12 +17,16 @@ const DonateThanksModal = ({closeThanksForDonationModal}) =>
       'Your support helps us in many ways. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi bibendum condimentum feugiat. Etiam vel vulputate lorem.'
     ),
     h(
-      'button',
-      {
-        class: 'button primary',
-        onClick: closeThanksForDonationModal,
-      },
-      "You're welcome"
+      'div',
+      {class: 'modal-footer'},
+      h(
+        'button',
+        {
+          class: 'button primary',
+          onClick: closeThanksForDonationModal,
+        },
+        "You're welcome"
+      )
     )
   )
 
