@@ -13,20 +13,68 @@ const LogoutNotification = require('./logoutNotification')
 const LoginPageSidebar = require('./loginPageSidebar')
 const Tag = require('../../common/tag')
 
+const AUTH_METHOD_NAMES = {
+  mnemonic: 'Mnemonic',
+  trezor: 'Hardware Wallet',
+  file: 'Key file',
+}
+
+const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
+
 class LoginPage extends Component {
-  render({
-    loadWallet,
-    loadDemoWallet,
-    walletLoadingError,
-    authMethod,
-    setAuthMethod,
-    enableTrezor,
-    showDemoWalletWarningDialog,
-    logoutNotificationOpen,
-    displayWelcome,
-    showGenerateMnemonicDialog,
-  }) {
-    const authTab = (name, text, recommended) =>
+  constructor(props) {
+    super(props)
+    this.state = {
+      isDropdownOpen: false,
+    }
+    this.toggleDropdown = this.toggleDropdown.bind(this)
+  }
+
+  toggleDropdown() {
+    this.setState({isDropdownOpen: !this.state.isDropdownOpen})
+  }
+
+  render(
+    {
+      loadWallet,
+      loadDemoWallet,
+      walletLoadingError,
+      authMethod,
+      setAuthMethod,
+      enableTrezor,
+      showDemoWalletWarningDialog,
+      logoutNotificationOpen,
+      displayWelcome,
+      showGenerateMnemonicDialog,
+    },
+    {isDropdownOpen}
+  ) {
+    const currentDropdownItem = (authMethod) =>
+      h(
+        'div',
+        {
+          class: `dropdown-item current ${authMethod} ${
+            authMethod === 'trezor' ? 'recommended' : ''
+          }`,
+          onClick: this.toggleDropdown,
+        },
+        h('span', {class: 'dropdown-item-text'}, getAuthMethodName(authMethod))
+      )
+    const dropdownItem = (name, recommended) =>
+      h(
+        'li',
+        {
+          class: `dropdown-item ${name} ${authMethod === name ? 'selected' : ''} ${
+            recommended ? 'recommended' : ''
+          }`,
+          onClick: () => {
+            this.toggleDropdown()
+            setAuthMethod(name)
+          },
+        },
+        h('span', {class: `dropdown-item-text ${name}`}, getAuthMethodName(name))
+      )
+    const authTab = (name, recommended) =>
       h(
         'li',
         {
@@ -35,14 +83,14 @@ class LoginPage extends Component {
           }`,
           onClick: () => setAuthMethod(name),
         },
-        h('span', {class: `auth-tab-text ${name}`}, text)
+        h('span', {class: `auth-tab-text ${name}`}, getAuthMethodName(name))
       )
-    const authOption = (type, title, text, tag) =>
+    const authOption = (type, text, tag) =>
       h(
         'div',
         {class: `auth-option ${type}`, onClick: () => setAuthMethod(type)},
         tag && h(Tag, {type: `auth ${tag}`, text: tag}),
-        h('h3', {class: 'auth-option-title'}, title),
+        h('h3', {class: 'auth-option-title'}, getAuthMethodName(type)),
         h('p', {class: 'auth-option-text'}, text)
       )
     const authCardInitial = () =>
@@ -53,9 +101,9 @@ class LoginPage extends Component {
         h(
           'div',
           {class: 'auth-options'},
-          authOption('mnemonic', 'Mnemonic', '12 or 27 word passphrase', 'fastest'),
-          authOption('trezor', 'Hardware Wallet', 'Supporting Trezor T', 'recommended'),
-          authOption('file', 'Key file', 'Encrypted .JSON file')
+          authOption('mnemonic', '12 or 27 word passphrase', 'fastest'),
+          authOption('trezor', 'Supporting Trezor T', 'recommended'),
+          authOption('file', 'Encrypted .JSON file')
         )
       )
     const authCard = () =>
@@ -65,9 +113,21 @@ class LoginPage extends Component {
         h(
           'ul',
           {class: 'auth-tabs'},
-          authTab('mnemonic', 'Mnemonic'),
-          authTab('trezor', 'Hardware wallet', true),
-          authTab('file', 'Key file')
+          authTab('mnemonic'),
+          authTab('trezor', true),
+          authTab('file')
+        ),
+        h(
+          'div',
+          {class: `dropdown auth ${isDropdownOpen ? 'open' : ''}`},
+          currentDropdownItem(authMethod),
+          h(
+            'ul',
+            {class: 'dropdown-items'},
+            dropdownItem('mnemonic'),
+            dropdownItem('trezor', true),
+            dropdownItem('file')
+          )
         ),
         authMethod === 'mnemonic' && h(MnemonicAuth),
         authMethod === 'trezor' && h(HardwareAuth, {enableTrezor, loadWallet}),
