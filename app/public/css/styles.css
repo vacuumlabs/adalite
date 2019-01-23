@@ -1619,22 +1619,6 @@ p {
   flex: 1;
 }
 
-.page-column {
-  flex: 1 1 50%;
-}
-
-.page-column:first-child {
-  padding-right: 28px;
-}
-
-.page-column:last-child {
-  padding-left: 28px;
-}
-
-.page-column .card {
-  margin-bottom: 56px;
-}
-
 .page-main {
   width: 66%;
 }
@@ -1642,6 +1626,32 @@ p {
 .page-demo {
   margin-top: 56px;
   text-align: center;
+}
+
+/* DASHBOARD */
+
+.dashboard.desktop {
+  display: flex;
+}
+
+.dashboard.mobile {
+  display: none;
+}
+
+.dashboard-column {
+  flex: 1 1 50%;
+}
+
+.dashboard-column:first-child {
+  padding-right: 28px;
+}
+
+.dashboard-column:last-child {
+  padding-left: 28px;
+}
+
+.dashboard-column .card {
+  margin-bottom: 56px;
 }
 
 /* CARD */

@@ -18,11 +18,16 @@ const TxHistoryPage = connect(
     {class: 'page-wrapper'},
     h(
       'div',
-      {class: 'page-column'},
-      h(Balance, {balance, reloadWalletInfo, conversionRates}),
-      h(TransactionHistory, {transactionHistory, conversionRates})
+      {class: 'dashboard desktop'},
+      h(
+        'div',
+        {class: 'dashboard-column'},
+        h(Balance, {balance, reloadWalletInfo, conversionRates}),
+        h(TransactionHistory, {transactionHistory, conversionRates})
+      ),
+      h('div', {class: 'dashboard-column'}, h(ExportCard))
     ),
-    h('div', {class: 'page-column'}, h(ExportCard))
+    h('div', {class: 'dashboard mobile'}, 'Lorem ipsum')
   )
 )
 
