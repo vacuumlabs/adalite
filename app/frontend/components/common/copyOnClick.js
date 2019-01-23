@@ -5,6 +5,7 @@ const debugLog = require('../../helpers/debugLog')
 class CopyOnClick extends Component {
   constructor(props) {
     super(props)
+    this.state = {copied: false}
     this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(this)
     this.copyTextToClipboard = this.copyTextToClipboard.bind(this)
   }
@@ -31,20 +32,23 @@ class CopyOnClick extends Component {
       } else {
         this.fallbackCopyTextToClipboard()
       }
+      this.setState({copied: true})
+      setTimeout(() => {
+        this.setState({copied: false})
+      }, 3000)
     } catch (err) {
       debugLog('Could not copy text: ', err)
     }
   }
 
-  render({elementClass, text, tabIndex, copyBtnRef}) {
+  render({elementClass, text, tabIndex}, {copied}) {
     return h(
       'a',
       {
         class: `${elementClass} copy`,
         onClick: this.copyTextToClipboard,
-        ref: copyBtnRef,
       },
-      text
+      copied ? 'Copied to clipboard' : text
     )
   }
 }
