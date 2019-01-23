@@ -3455,4 +3455,14 @@ button[data-balloon] {
   .address-link.qr {
     margin: 0;
   }
+
+    /* DASHBOARD */
+
+    .dashboard.desktop {
+      display: none;
+    }
+  
+    .dashboard.mobile {
+      display: block;
+    }
 }

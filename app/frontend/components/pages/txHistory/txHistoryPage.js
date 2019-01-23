@@ -5,6 +5,9 @@ const Balance = require('../../common/balance')
 const TransactionHistory = require('./transactionHistory')
 const ExportCard = require('../exportWallet/exportCard')
 
+const DashboardTabs = ({balance, transactionHistory, reloadWalletInfo, conversionRates}) =>
+  h('div', {class: 'dashboard-tabs'})
+
 const TxHistoryPage = connect(
   (state) => ({
     balance: state.balance,
@@ -27,7 +30,13 @@ const TxHistoryPage = connect(
       ),
       h('div', {class: 'dashboard-column'}, h(ExportCard))
     ),
-    h('div', {class: 'dashboard mobile'}, 'Lorem ipsum')
+    h(
+      'div',
+      {class: 'dashboard mobile'},
+      h(Balance, {balance, reloadWalletInfo, conversionRates}),
+      h('div', {class: 'dashboard-tabs'}, h(DashboardTabs)),
+      h(ExportCard)
+    )
   )
 )
 
