@@ -49,7 +49,7 @@ class Welcome extends Component {
   render({closeWelcome}, {dontShowAgainCheckbox}) {
     return h(
       Modal,
-      {closeHandler: closeWelcome},
+      undefined,
       h(
         'section',
         {class: 'welcome'},
