@@ -21,12 +21,13 @@ const Modal = ({children, closeHandler, bodyClass = '', title, showWarning}) =>
       },
       closeHandler &&
         h('button', {'class': 'modal-close', 'onClick': closeHandler, 'aria-label': 'Close dialog'}),
-      h(
-        'div',
-        {class: 'modal-head'},
-        title && h('h2', {class: 'modal-title'}, title),
-        showWarning && h(Tag, {type: 'big warning', text: 'Proceed with caution'})
-      ),
+      title &&
+        h(
+          'div',
+          {class: 'modal-head'},
+          title && h('h2', {class: 'modal-title'}, title),
+          showWarning && h(Tag, {type: 'big warning', text: 'Proceed with caution'})
+        ),
       children
     )
   )
