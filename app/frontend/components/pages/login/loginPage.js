@@ -11,6 +11,7 @@ const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
 const LoginPageSidebar = require('./loginPageSidebar')
+const Tag = require('../../common/tag')
 
 class LoginPage extends Component {
   render({
@@ -40,7 +41,7 @@ class LoginPage extends Component {
       h(
         'div',
         {class: `auth-option ${type}`, onClick: () => setAuthMethod(type)},
-        tag && h('div', {class: `tag ${tag}`}, h('span', {class: 'tag-text'}, tag)),
+        tag && h(Tag, {type: `auth ${tag}`, text: tag}),
         h('h3', {class: 'auth-option-title'}, title),
         h('p', {class: 'auth-option-text'}, text)
       )

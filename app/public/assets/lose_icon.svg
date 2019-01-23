@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.4 (67378) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 36</title>
+    <desc>Created with Sketch.</desc>
+    <g id="✅--Done" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="02-03-02-export-no-modal" transform="translate(-1052.000000, -329.000000)" stroke="#E72076">
+            <g id="Group-14" transform="translate(1052.000000, 320.000000)">
+                <g id="Group-36" transform="translate(0.000000, 9.000000)">
+                    <path d="M4,1 C2.34314575,1 1,2.34314575 1,4 L1,26 C1,27.6568542 2.34314575,29 4,29 L26,29 C27.6568542,29 29,27.6568542 29,26 L29,4 C29,2.34314575 27.6568542,1 26,1 L4,1 Z" id="Rectangle" stroke-width="2"></path>
+                    <g id="Group-35" transform="translate(7.000000, 7.000000)">
+                        <path d="M0,0 L3.68325999,3.68325999 M12.3362818,12.3362818 L16,16" id="Shape" stroke-width="1.5"></path>
+                        <path d="M16,0 L12.2848905,3.7151095 M3.63453267,12.3654673 L0,16" id="Shape" stroke-width="1.5"></path>
+                        <circle id="Oval" stroke-width="2" cx="8" cy="8" r="6"></circle>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
