@@ -15,10 +15,14 @@ const TxHistoryPage = connect(
 )(({balance, transactionHistory, reloadWalletInfo, conversionRates}) =>
   h(
     'div',
-    {class: 'content-wrapper'},
-    h(Balance, {balance, reloadWalletInfo, conversionRates}),
-    h(TransactionHistory, {transactionHistory, conversionRates}),
-    h(ExportCard)
+    {class: 'page-wrapper'},
+    h(
+      'div',
+      {class: 'page-column'},
+      h(Balance, {balance, reloadWalletInfo, conversionRates}),
+      h(TransactionHistory, {transactionHistory, conversionRates})
+    ),
+    h('div', {class: 'page-column'}, h(ExportCard))
   )
 )
 
