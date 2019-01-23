@@ -2557,6 +2557,41 @@ p {
     padding: 40px 16px;
   }
 
+  .modal-head {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .modal-paragraph {
+    text-align: center;
+    white-space: normal;
+  }
+
+  .modal-paragraph a {
+    display: block;
+  }
+
+  .modal-body .alert {
+    margin-top: 24px;
+  }
+
+  .modal-footer {
+    margin-top: 40px;
+  }
+
+  .modal-footer .modal-paragraph {
+    margin-top: 24px;
+  }
+
+  .modal-mnemonic {
+    padding: 16px 24px 16px 60px;
+  }
+
+  .modal-close {
+    top: 24px;
+    right: 24px;
+  }
+
   /* WELCOME MODAL */
 
   .welcome-subtitle {
