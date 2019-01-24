@@ -27,18 +27,14 @@ const FormattedFee = ({fee}) => {
 
 const TransactionAddress = ({address}) =>
   h(
-    'div',
-    undefined,
-    h(
-      'a',
-      {
-        class: 'transaction-address',
-        href: `https://adascan.net/transaction/${address}`,
-        target: '_blank',
-        rel: 'noopener',
-      },
-      'View details'
-    )
+    'a',
+    {
+      class: 'transaction-address',
+      href: `https://adascan.net/transaction/${address}`,
+      target: '_blank',
+      rel: 'noopener',
+    },
+    'View details'
   )
 
 const TransactionHistory = ({transactionHistory}) =>
