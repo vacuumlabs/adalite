@@ -47,7 +47,7 @@
 .wrap {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
 }
 .main {
   max-width: var(--width);
@@ -1581,9 +1581,9 @@ p {
 
 .page-wrapper {
   display: flex;
-  height: 100%;
   max-width: var(--width);
   margin: 0 auto;
+  flex: 1;
 }
 
 .page-main {
@@ -1593,6 +1593,32 @@ p {
 .page-demo {
   margin-top: 56px;
   text-align: center;
+}
+
+/* DASHBOARD */
+
+.dashboard.desktop {
+  display: flex;
+}
+
+.dashboard.mobile {
+  display: none;
+}
+
+.dashboard-column {
+  flex: 1 1 50%;
+}
+
+.dashboard-column:first-child {
+  padding-right: 28px;
+}
+
+.dashboard-column:last-child {
+  padding-left: 28px;
+}
+
+.dashboard-column .card {
+  margin-bottom: 56px;
 }
 
 /* CARD */
