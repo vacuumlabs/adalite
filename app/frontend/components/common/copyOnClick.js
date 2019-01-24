@@ -1,12 +1,11 @@
 const {h, Component} = require('preact')
 
 const debugLog = require('../../helpers/debugLog')
-const Tooltip = require('./tooltip')
 
 class CopyOnClick extends Component {
   constructor(props) {
     super(props)
-    this.state = {tooltip: 'Copy to clipboard'}
+    this.state = {copied: false}
     this.fallbackCopyTextToClipboard = this.fallbackCopyTextToClipboard.bind(this)
     this.copyTextToClipboard = this.copyTextToClipboard.bind(this)
   }
@@ -33,28 +32,23 @@ class CopyOnClick extends Component {
       } else {
         this.fallbackCopyTextToClipboard()
       }
-      this.setState({tooltip: 'Copied!'})
+      this.setState({copied: true})
+      setTimeout(() => {
+        this.setState({copied: false})
+      }, 3000)
     } catch (err) {
       debugLog('Could not copy text: ', err)
     }
   }
 
-  render({value, tabIndex, copyBtnRef}, {tooltip}) {
+  render({elementClass, text, tabIndex}, {copied}) {
     return h(
-      Tooltip,
-      {tooltip},
-      h(
-        'a',
-        {
-          class: 'copy margin-1rem centered-row',
-          onClick: this.copyTextToClipboard,
-          onMouseEnter: () => this.setState({tooltip: 'Copy to clipboard'}),
-          onKeyDown: (e) => ['Enter', ' '].includes(e.key) && e.target.click(),
-          tabIndex,
-          ref: copyBtnRef,
-        },
-        h('img', {src: 'assets/copy-icon.svg'})
-      )
+      'a',
+      {
+        class: `${elementClass} copy`,
+        onClick: this.copyTextToClipboard,
+      },
+      copied ? 'Copied to clipboard' : text
     )
   }
 }
