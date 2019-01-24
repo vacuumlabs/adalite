@@ -562,9 +562,6 @@
   height: 0.8rem;
   width: 0.65rem;
 }
-.content-wrapper > div {
-  margin: 2rem 0;
-}
 .balance-text {
   font-weight: 300;
   font-size: 2.5rem;
@@ -2640,8 +2637,18 @@ p {
     padding: 56px 32px 56px 56px;
   }
 
+  .sidebar.export {
+    padding: 40px 16px;
+  }
+
   .sidebar-item.spacy {
     margin-bottom: 56px;
+  }
+
+  /* NAVBAR */
+
+  .navbar {
+    padding-bottom: 0;
   }
 
   /* BUTTONS */
@@ -2767,5 +2774,73 @@ p {
   .social-link {
     display: block;
     max-width: 100%;
+  }
+
+  /* CARD */
+
+  .card {
+    box-shadow: none;
+    padding: 40px 16px;
+    border-bottom: 1px solid var(--color-grey-light);
+  }
+
+  .card.export:not(.download) {
+    border: 0;
+  }
+
+  /* INPUTS */
+
+  .input.export {
+    margin-bottom: 24px;
+  }
+
+  /* VALIDATION */
+
+  .validation-row {
+    flex-direction: column-reverse;
+  }
+
+  .validation-message {
+    margin-bottom: 16px;
+    padding-left: 0;
+    text-align: center;
+  }
+
+  /* EXPORT */
+
+  .export.download {
+    flex-direction: column-reverse;
+  }
+
+  .export.download .tag {
+    margin-bottom: 16px;
+  }
+
+  .export.download .export-title {
+    font-size: 24px;
+    line-height: 40px;
+  }
+
+  .export-content .validation-row {
+    margin-top: 16px;
+  }
+
+  .export-content .button {
+    width: 100%;
+  }
+
+  /* HINT */
+
+  .hint {
+    padding-left: 56px;
+    margin-bottom: 48px;
+  }
+
+  .hint::before {
+    left: 8px;
+  }
+
+  .hint:last-child {
+    margin-bottom: 0;
   }
 }
