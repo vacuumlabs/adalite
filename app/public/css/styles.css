@@ -75,86 +75,6 @@
   transition: background-color var(--transition);
   cursor: pointer;
 }
-
-.with-tooltip {
-  position: relative;
-  cursor: pointer;
-}
-.with-tooltip:after {
-  filter: alpha(opacity=0);
-  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
-  -moz-opacity: 0;
-  -khtml-opacity: 0;
-  opacity: 0;
-
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 0.25em 1em;
-
-  content: attr(tooltip);
-  pointer-events: none;
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 10;
-  bottom: 100%;
-  left: 50%;
-  -webkit-transition: all 0.18s ease-out 0.28s;
-  -moz-transition: all 0.18s ease-out 0.28s;
-  -ms-transition: all 0.18s ease-out 0.28s;
-  -o-transition: all 0.18s ease-out 0.28s;
-  transition: all 0.18s ease-out 0.18s;
-  -webkit-transform: translate(-50%, 0);
-  -moz-transform: translate(-50%, 0);
-  -ms-transform: translate(-50%, 0);
-  transform: translate(-50%, 0);
-  -webkit-transform-origin: top;
-  -moz-transform-origin: top;
-  -ms-transform-origin: top;
-  transform-origin: top;
-}
-
-.with-tooltip.active:after {
-  filter: alpha(opacity=80);
-  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=100)';
-  -moz-opacity: 0.8;
-  -khtml-opacity: 0.8;
-  opacity: 0.8;
-  pointer-events: none;
-}
-
-.with-tooltip:before {
-  filter: alpha(opacity=0);
-  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
-  -moz-opacity: 0;
-  -khtml-opacity: 0;
-  opacity: 0;
-  content: '';
-  z-index: 10;
-  position: absolute;
-  left: 50%;
-  border: 0.5rem solid transparent;
-  border-top-color: black;
-  -webkit-transition: all 0.18s ease-out 0.28s;
-  -moz-transition: all 0.18s ease-out 0.28s;
-  -ms-transition: all 0.18s ease-out 0.28s;
-  -o-transition: all 0.18s ease-out 0.28s;
-  transition: all 0.18s ease-out 0.18s;
-  -webkit-transform: translate(-50%, 0);
-  -moz-transform: translate(-50%, 0);
-  -ms-transform: translate(-50%, 0);
-  transform: translate(-50%, 0);
-}
-
-.with-tooltip.active:before {
-  filter: alpha(opacity=80);
-  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=100)';
-  -moz-opacity: 0.8;
-  -khtml-opacity: 0.8;
-  opacity: 0.8;
-  pointer-events: auto;
-}
 .full-address {
   padding: 0.5rem;
   background-color: #eee;
@@ -946,6 +866,7 @@
   --color-error: var(--color-red);
   --color-info: var(--color-blue);
   --color-border: var(--color-grey-light);
+  --color-tooltip-background: #3e4042;
   --transition-easing: ease-in-out;
   --transition-time: 0.25s;
 }
@@ -1225,6 +1146,113 @@ p {
   background-repeat: no-repeat;
   background-size: contain;
   background-image: url('../assets/caret_down_symbol.svg');
+}
+
+/* TOOLTIP */
+
+button[data-balloon] {
+  overflow: visible;
+}
+
+[data-balloon] {
+  position: relative;
+  cursor: pointer;
+}
+
+[data-balloon]::after {
+  filter: alpha(opacity=0);
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+  -moz-opacity: 0;
+  -khtml-opacity: 0;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: all 0.18s ease-out 0.18s;
+  -moz-transition: all 0.18s ease-out 0.18s;
+  -ms-transition: all 0.18s ease-out 0.18s;
+  -o-transition: all 0.18s ease-out 0.18s;
+  transition: all 0.18s ease-out 0.18s;
+  background: rgba(62, 64, 66, 0.96);
+  border-radius: 4px;
+  color: #fff;
+  content: attr(data-balloon);
+  padding: 8px;
+  position: absolute;
+  white-space: pre;
+  z-index: 10;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: normal;
+}
+
+[data-balloon]::before {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 4px 8px 0 8px;
+  border-color: rgba(62, 64, 66, 0.96) transparent transparent transparent;
+  filter: alpha(opacity=0);
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+  -moz-opacity: 0;
+  -khtml-opacity: 0;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: all 0.18s ease-out 0.18s;
+  -moz-transition: all 0.18s ease-out 0.18s;
+  -ms-transition: all 0.18s ease-out 0.18s;
+  -o-transition: all 0.18s ease-out 0.18s;
+  transition: all 0.18s ease-out 0.18s;
+  content: '';
+  position: absolute;
+  z-index: 10;
+}
+
+[data-balloon]:hover::before,
+[data-balloon]:hover::after,
+[data-balloon][data-balloon-visible]::before,
+[data-balloon][data-balloon-visible]::after {
+  filter: alpha(opacity=100);
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=100)';
+  -moz-opacity: 1;
+  -khtml-opacity: 1;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-balloon]::after {
+  bottom: 100%;
+  left: 0;
+  -webkit-transform: translate(0, 10px);
+  -moz-transform: translate(0, 10px);
+  -ms-transform: translate(0, 10px);
+  transform: translate(0, 10px);
+  -webkit-transform-origin: top;
+  -moz-transform-origin: top;
+  -ms-transform-origin: top;
+  transform-origin: top;
+}
+
+[data-balloon]::before {
+  bottom: 100%;
+  left: 8px;
+  margin-bottom: 4px;
+  -webkit-transform: translate(0, 10px);
+  -moz-transform: translate(0, 10px);
+  -ms-transform: translate(0, 10px);
+  transform: translate(0, 10px);
+}
+
+[data-balloon]:hover::after {
+  -webkit-transform: translate(0, -8px);
+  -moz-transform: translate(0, -8px);
+  -ms-transform: translate(0, -8px);
+  transform: translate(0, -8px);
+}
+
+[data-balloon]:hover::before {
+  -webkit-transform: translate(0, 0);
+  -moz-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  transform: translate(0, 0);
 }
 
 /* ALERTS */
