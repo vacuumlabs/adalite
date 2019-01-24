@@ -1669,6 +1669,57 @@ button[data-balloon] {
   margin-bottom: 56px;
 }
 
+.dashboard-content {
+  width: 100%;
+}
+
+.dashboard-tabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-tab {
+  flex: 1;
+  background: linear-gradient(
+    -180deg,
+    rgba(252, 252, 252, 0) 0%,
+    #fcfcfc 100%,
+    rgba(252, 252, 252, 1) 50%
+  );
+  padding: 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-bottom-color: var(--color-border);
+  border-right-color: rgba(230, 230, 230, 0.4);
+}
+
+.dashboard-tab:last-child {
+  border-right-color: transparent;
+}
+
+.dashboard-tab.selected {
+  background: white;
+  border-bottom-color: transparent;
+  border-right-color: var(--color-border);
+  border-left-color: var(--color-border);
+}
+
+.dashboard-tab:first-child.selected {
+  border-left-color: transparent;
+}
+
+.dashboard-tab:last-child.selected {
+  border-right-color: transparent;
+}
+
+.dashboard-tab:hover {
+  cursor: pointer;
+}
+
 /* CARD */
 
 .card {
