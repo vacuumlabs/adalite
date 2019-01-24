@@ -1,12 +1,47 @@
-const {h} = require('preact')
+const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const Balance = require('../../common/balance')
 const TransactionHistory = require('./transactionHistory')
 const ExportCard = require('../exportWallet/exportCard')
 
-const DashboardTabs = ({balance, transactionHistory, reloadWalletInfo, conversionRates}) =>
-  h('div', {class: 'dashboard-tabs'})
+class DashboardMobileContent extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {selectedTab: 'transactions'}
+    this.changeTab = this.changeTab.bind(this)
+  }
+  changeTab(tabName) {
+    this.setState({selectedTab: tabName})
+  }
+  render({balance, transactionHistory, reloadWalletInfo, conversionRates}, {selectedTab}) {
+    const dashboardTab = (tabName, tabText) =>
+      h(
+        'li',
+        {
+          class: `dashboard-tab ${tabName === selectedTab ? 'selected' : ''}`,
+          onClick: () => this.changeTab(tabName),
+        },
+        tabText
+      )
+
+    return h(
+      'div',
+      {class: 'dashboard-content'},
+      h(
+        'ul',
+        {class: 'dashboard-tabs'},
+        dashboardTab('transactions', 'Transactions'),
+        dashboardTab('send', 'Send ADA'),
+        dashboardTab('receive', 'Receive ADA')
+      ),
+      selectedTab === 'send' && h(Balance, {balance, reloadWalletInfo, conversionRates}),
+      selectedTab === 'transactions' &&
+        h(TransactionHistory, {transactionHistory, conversionRates}),
+      selectedTab === 'receive' && h(ExportCard)
+    )
+  }
+}
 
 const TxHistoryPage = connect(
   (state) => ({
@@ -33,8 +68,9 @@ const TxHistoryPage = connect(
     h(
       'div',
       {class: 'dashboard mobile'},
+      // TODO: Replace with correct tab components after merging Addresses & Send Ada
       h(Balance, {balance, reloadWalletInfo, conversionRates}),
-      h('div', {class: 'dashboard-tabs'}, h(DashboardTabs)),
+      h(DashboardMobileContent, {balance, transactionHistory, reloadWalletInfo, conversionRates}),
       h(ExportCard)
     )
   )
