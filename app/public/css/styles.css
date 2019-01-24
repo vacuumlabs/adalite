@@ -2779,6 +2779,16 @@ p {
     font-size: 14px;
   }
 
+  .button.refresh {
+    text-indent: -9999em;
+    padding-left: 24px;
+  }
+
+  .button.refresh::before {
+    left: 0;
+    right: 0;
+  }
+
   /* NAVBAR */
 
   .navbar {
@@ -2977,6 +2987,10 @@ p {
 
   .card.authentication {
     border: 0;
+  }
+
+  .card-title {
+    font-size: 14px;
   }
 
   /* INPUTS */
