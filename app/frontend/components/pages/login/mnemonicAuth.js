@@ -2,6 +2,7 @@ const {h, Component} = require('preact')
 const {getTranslation} = require('../../../translations')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const tooltip = require('../../common/tooltip')
 
 const Alert = require('../../common/alert')
 
@@ -58,34 +59,27 @@ class LoadByMenmonicSectionClass extends Component {
         onKeyDown: (e) => e.key === 'Enter' && this.goBtn.click(),
       }),
       h(
-        'div',
-        {class: 'validation-row'},
-        h(
-          'button',
-          {
-            class: 'button primary',
-            disabled: !mnemonic || mnemonicValidationError,
-            onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
-            onKeyDown: (e) => {
-              e.key === 'Enter' && e.target.click()
-              if (e.key === 'Tab') {
-                this.mnemonicField.focus()
-                e.preventDefault()
-              }
-            },
-            ref: (element) => {
-              this.goBtn = element
-            },
+        'button',
+        {
+          class: 'button primary',
+          disabled: !mnemonic || mnemonicValidationError,
+          onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
+          ...tooltip(
+            'Your input appear to be incorrect.\nCheck for the typos and try again.',
+            showMnemonicValidationError && mnemonic && mnemonicValidationError
+          ),
+          onKeyDown: (e) => {
+            e.key === 'Enter' && e.target.click()
+            if (e.key === 'Tab') {
+              this.mnemonicField.focus()
+              e.preventDefault()
+            }
           },
-          'Unlock'
-        ),
-        mnemonicValidationError &&
-          showMnemonicValidationError &&
-          h(
-            'div',
-            {class: 'validation-message error'},
-            getTranslation(mnemonicValidationError.code)
-          )
+          ref: (element) => {
+            this.goBtn = element
+          },
+        },
+        'Unlock'
       )
     )
   }
