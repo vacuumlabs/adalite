@@ -3,24 +3,30 @@ const QRious = require('../../libs/qrious')
 const connect = require('unistore/preact').connect
 const actions = require('../../actions')
 
-const Tooltip = require('./tooltip')
 const Modal = require('./modal')
 const CopyOnClick = require('./copyOnClick')
 
 class AddressDetailDialogClass extends Component {
-  componentDidUpdate() {
-    this.props.showDetail && this.copyBtn && this.copyBtn.focus()
-    // known bug: Trezor emulator steals the focus
+  constructor(props) {
+    super(props)
+    this.state = {showCopyMessage: false}
+    this.toggleCopyMessage = this.toggleCopyMessage.bind(this)
+  }
+
+  toggleCopyMessage(copied) {
+    this.setState({showCopyMessage: copied})
   }
 
   render({
     showDetail,
-    showVerification,
-    error,
-    verifyAddress,
     closeAddressDetail,
+    verificationError,
+    verifyAddress,
+    showVerification,
     hwWalletName,
     waitingForHwWallet,
+  }, {
+    showCopyMessage,
   }) {
     return (
       showDetail &&
@@ -29,89 +35,84 @@ class AddressDetailDialogClass extends Component {
         {
           closeHandler: closeAddressDetail,
         },
-        h('b', undefined, 'Address:'),
         h(
           'div',
-          {class: 'full-address-row'},
+          {class: 'detail'},
           h(
-            'span',
-            {
-              class: 'full-address force-select-all',
-            },
-            showDetail.address
-          )
-        ),
-        showVerification
-          ? h(
             'div',
-            undefined,
-            h('b', undefined, 'Derivation path:'),
+            {class: 'detail-content'},
+            h('div', {class: 'detail-label'}, 'Address'),
             h(
               'div',
-              {class: 'full-address-row'},
-              h('span', {class: 'full-address'}, showDetail.bip32path)
-            ),
-            h(
-              'div',
-              {class: 'text-center'},
-              h(
-                'button', {
-                  class: `${waitingForHwWallet ? 'waiting-for-hw-wallet-button' : ''}`,
-                  onClick: verifyAddress,
-                },
-                h('div', {
-                  class: `${waitingForHwWallet ? 'loading-inside-button' : ''}`,
-                }),
-                `Verify on ${hwWalletName}`)
-            )
-          )
-          : h(
-            'div',
-            undefined,
-            h(
-              'div',
-              {class: 'centered-row'},
-              h('img', {
-                src: new QRious({
-                  value: showDetail.address,
-                  level: 'M',
-                  size: 200,
-                }).toDataURL(),
-              })
-            ),
-            h(
-              'div',
-              {class: 'centered-row'},
+              {class: 'detail-input address'},
+              h('div', {class: 'detail-address'}, showDetail.address),
               h(CopyOnClick, {
                 value: showDetail.address,
-                tabIndex: 0,
-                copyBtnRef: (element) => {
-                  this.copyBtn = element
-                },
+                elementClass: 'address-copy',
+                text: '',
+                copiedCallback: this.toggleCopyMessage,
+                enableTooltip: false,
               }),
+              showCopyMessage && h('span', {class: 'detail-copy-message'}, 'Copied to clipboard')
+            ),
+            h('div', {class: 'detail-label'}, 'Derivation path'),
+            h(
+              'div',
+              {class: 'detail-row'},
               h(
-                Tooltip,
-                {tooltip: 'Examine via AdaScan.net'},
-                h(
-                  'a',
-                  {
-                    href: `https://adascan.net/address/${showDetail.address}`,
-                    target: '_blank',
-                    class: 'address-link margin-1rem centered-row',
-                    tabIndex: 0,
-                    onKeyDown: (e) => {
-                      e.key === 'Enter' && e.target.click()
-                      if (e.key === 'Tab') {
-                        this.copyBtn.focus()
+                'div',
+                {class: 'detail-input'},
+                h('div', {class: 'detail-derivation'}, showDetail.bip32path)
+              ),
+              showVerification &&
+                (verificationError
+                  ? h(
+                    'div',
+                    {class: 'detail-error'},
+                    h(
+                      'div',
+                      undefined,
+                      'Verification failed. ',
+                      h(
+                        'a',
+                        {
+                          href: '#',
+                          class: 'detail-verify',
+                          onClick: (e) => {
+                            e.preventDefault()
+                            verifyAddress()
+                          },
+                        },
+                        'Try again'
+                      )
+                    )
+                  )
+                  : h(
+                    'a',
+                    {
+                      href: '#',
+                      class: 'detail-verify',
+                      onClick: (e) => {
                         e.preventDefault()
-                      }
+                        !waitingForHwWallet && verifyAddress()
+                      },
                     },
-                  },
-                  h('img', {src: 'assets/link-icon.svg'})
-                )
-              )
+                    waitingForHwWallet ? 'Verifying address..' : `Verify on ${hwWalletName}`
+                  ))
             )
+          ),
+          h(
+            'div',
+            {class: 'detail-qr'},
+            h('img', {
+              src: new QRious({
+                value: showDetail.address,
+                level: 'M',
+                size: 200,
+              }).toDataURL(),
+            })
           )
+        )
       )
     )
   }
@@ -120,10 +121,10 @@ class AddressDetailDialogClass extends Component {
 module.exports = connect(
   (state) => ({
     showDetail: state.showAddressDetail,
+    verificationError: state.addressVerificationError,
     showVerification: state.showAddressVerification,
-    error: state.addressVerificationError,
-    hwWalletName: state.hwWalletName,
     waitingForHwWallet: state.waitingForHwWallet,
+    hwWalletName: state.hwWalletName,
   }),
   actions
 )(AddressDetailDialogClass)
