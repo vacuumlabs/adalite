@@ -21,10 +21,11 @@ const NavbarUnauth = connect(
         h('span', {class: 'navbar-title'}, 'AdaLite - Cardano Wallet'),
         h(
           'a',
-          {class: 'navbar-logo', href: '/'},
+          {href: '/'},
           h('img', {
             src: 'assets/adalite-logo.svg',
             alt: 'AdaLite - Cardano Wallet',
+            class: 'navbar-logo',
           })
         )
       ),
@@ -51,19 +52,19 @@ const NavbarUnauth = connect(
             rel: 'noopener',
           },
           'Help'
-        ),
-        h(
-          'button',
-          {
-            class: 'button outline navbar',
-            /*
-            * onMouseDown to prevent onBlur before handling the click event
-            * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
-            */
-            onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
-          },
-          'Create New Wallet'
         )
+      ),
+      h(
+        'button',
+        {
+          class: 'button outline navbar',
+          /*
+          * onMouseDown to prevent onBlur before handling the click event
+          * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
+          */
+          onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
+        },
+        'Create New Wallet'
       )
     )
   )

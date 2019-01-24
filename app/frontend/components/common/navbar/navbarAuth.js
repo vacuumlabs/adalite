@@ -22,12 +22,12 @@ const NavbarAuth = connect(
         h(
           'a',
           {
-            class: 'navbar-logo',
             href: '#',
           },
           h('img', {
             src: 'assets/adalite-logo.svg',
             alt: 'AdaLite - Cardano Wallet',
+            class: 'navbar-logo',
           })
         )
       ),
@@ -55,15 +55,15 @@ const NavbarAuth = connect(
             rel: 'noopener',
           },
           'Help'
-        ),
-        h(
-          'button',
-          {
-            class: 'button logout',
-            onClick: () => setTimeout(logout, 100),
-          },
-          'Logout'
         )
+      ),
+      h(
+        'button',
+        {
+          class: 'button logout',
+          onClick: () => setTimeout(logout, 100),
+        },
+        'Logout'
       )
     )
   )
