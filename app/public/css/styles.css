@@ -1565,6 +1565,18 @@ p {
   background-image: url('../assets/input_pencil_icon.svg');
 }
 
+.modal-body.centered {
+  text-align: center;
+}
+
+.modal-body.centered .modal-head {
+  justify-content: center;
+}
+
+.modal-body.centered .modal-footer {
+  margin-top: 40px;
+}
+
 /* MAIN PAGE */
 
 .page-wrapper {
