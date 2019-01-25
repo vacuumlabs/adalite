@@ -22,9 +22,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}-{{ checksum "app/package.json"}}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
 
       - run: cp .env.example .env
       - run: yarn install
@@ -34,7 +32,7 @@ jobs:
           paths:
             - node_modules
             - app/node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}-{{ checksum "app/package.json"}}
+          key: v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
 
       # run tests!
       - run: yarn eslint
