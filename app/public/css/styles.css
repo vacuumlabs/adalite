@@ -1182,6 +1182,7 @@ button[data-balloon] {
   font-size: 14px;
   line-height: 24px;
   font-weight: normal;
+  text-align: left;
 }
 
 [data-balloon]::before {
@@ -1208,8 +1209,8 @@ button[data-balloon] {
 
 [data-balloon]:hover::before,
 [data-balloon]:hover::after,
-[data-balloon][data-balloon-visible]::before,
-[data-balloon][data-balloon-visible]::after {
+[data-balloon][data-balloon-visible='true']::before,
+[data-balloon][data-balloon-visible='true']::after {
   filter: alpha(opacity=100);
   -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=100)';
   -moz-opacity: 1;
