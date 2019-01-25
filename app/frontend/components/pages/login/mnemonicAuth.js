@@ -2,6 +2,7 @@ const {h, Component} = require('preact')
 const {getTranslation} = require('../../../translations')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const tooltip = require('../../common/tooltip')
 
 const Alert = require('../../common/alert')
 
@@ -66,6 +67,10 @@ class LoadByMenmonicSectionClass extends Component {
             class: 'button primary',
             disabled: !mnemonic || mnemonicValidationError,
             onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
+            ...tooltip(
+              'Your input appears to be incorrect.\nCheck for the typos and try again.',
+              showMnemonicValidationError && mnemonic && mnemonicValidationError
+            ),
             onKeyDown: (e) => {
               e.key === 'Enter' && e.target.click()
               if (e.key === 'Tab') {

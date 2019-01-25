@@ -2,6 +2,8 @@ const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
+const tooltip = require('../../common/tooltip')
+
 const KeypassJson = require('../../../wallet/keypass-json')
 
 class LoadKeyFileClass extends Component {
@@ -198,6 +200,10 @@ class LoadKeyFileClass extends Component {
             disabled: !(password && fileName !== ''),
             onClick: this.unlockKeyfile,
             class: 'button primary',
+            ...tooltip(
+              'Please fill in the password for the\nselected key file before proceeding.',
+              !password && fileName !== ''
+            ),
             onKeyDown: (e) => {
               e.key === 'Enter' && e.target.click()
               if (e.key === 'Tab') {
