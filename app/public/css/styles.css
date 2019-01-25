@@ -3181,4 +3181,14 @@ button[data-balloon] {
   [data-balloon]::before {
     display: none;
   }
+
+  /* ADDRESSES */
+
+  .address-link.copy {
+    display: none;
+  }
+
+  .address-link.qr {
+    margin: 0;
+  }
 }
