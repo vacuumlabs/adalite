@@ -1716,6 +1716,10 @@ button[data-balloon] {
   margin-bottom: 40px;
 }
 
+.authentication .validation-message {
+  display: none;
+}
+
 /* AUTHENTICATION TABS */
 
 .auth-tabs {
@@ -2189,6 +2193,7 @@ button[data-balloon] {
 .validation-row {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .validation-message {
@@ -3101,6 +3106,10 @@ button[data-balloon] {
     padding: 56px 16px 0 16px;
   }
 
+  .authentication .validation-message {
+    display: block;
+  }
+
   .authentication-title {
     margin-bottom: 40px;
   }
@@ -3162,5 +3171,14 @@ button[data-balloon] {
   }
   .transaction-fee {
     order: 4;
+  }
+
+  /* TOOLTIP */
+
+  [data-balloon]:hover::after,
+  [data-balloon]:hover::before,
+  [data-balloon]::after,
+  [data-balloon]::before {
+    display: none;
   }
 }

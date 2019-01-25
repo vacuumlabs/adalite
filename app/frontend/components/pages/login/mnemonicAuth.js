@@ -59,27 +59,38 @@ class LoadByMenmonicSectionClass extends Component {
         onKeyDown: (e) => e.key === 'Enter' && this.goBtn.click(),
       }),
       h(
-        'button',
-        {
-          class: 'button primary',
-          disabled: !mnemonic || mnemonicValidationError,
-          onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
-          ...tooltip(
-            'Your input appears to be incorrect.\nCheck for the typos and try again.',
-            showMnemonicValidationError && mnemonic && mnemonicValidationError
-          ),
-          onKeyDown: (e) => {
-            e.key === 'Enter' && e.target.click()
-            if (e.key === 'Tab') {
-              this.mnemonicField.focus()
-              e.preventDefault()
-            }
+        'div',
+        {class: 'validation-row'},
+        h(
+          'button',
+          {
+            class: 'button primary',
+            disabled: !mnemonic || mnemonicValidationError,
+            onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
+            ...tooltip(
+              'Your input appears to be incorrect.\nCheck for the typos and try again.',
+              showMnemonicValidationError && mnemonic && mnemonicValidationError
+            ),
+            onKeyDown: (e) => {
+              e.key === 'Enter' && e.target.click()
+              if (e.key === 'Tab') {
+                this.mnemonicField.focus()
+                e.preventDefault()
+              }
+            },
+            ref: (element) => {
+              this.goBtn = element
+            },
           },
-          ref: (element) => {
-            this.goBtn = element
-          },
-        },
-        'Unlock'
+          'Unlock'
+        ),
+        mnemonicValidationError &&
+          showMnemonicValidationError &&
+          h(
+            'div',
+            {class: 'validation-message error'},
+            getTranslation(mnemonicValidationError.code)
+          )
       )
     )
   }
