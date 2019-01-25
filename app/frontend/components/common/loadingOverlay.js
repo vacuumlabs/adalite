@@ -6,9 +6,9 @@ const LoadingOverlay = connect(['loadingMessage', 'loading'])(
     loading
       ? h(
         'div',
-        {class: 'overlay ontop'},
-        h('div', {class: 'loading'}),
-        loadingMessage ? h('p', undefined, loadingMessage) : ''
+        {class: 'loading'},
+        h('div', {class: 'spinner'}, h('span', undefined)),
+        loadingMessage ? h('p', {class: 'loading-message'}, loadingMessage) : ''
       )
       : null
 )

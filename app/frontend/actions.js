@@ -406,6 +406,7 @@ module.exports = ({setState, getState}) => {
       transactionFee: 0,
       loading: false,
       showConfirmTransactionDialog: false,
+      showTransactionErrorModal: false,
     })
   }
 
@@ -440,7 +441,9 @@ module.exports = ({setState, getState}) => {
 
   const submitTransaction = async (state) => {
     if (state.usingHwWallet) {
+      /* TODO: Check if waitingForTrezor can be deleted safely */
       setState({waitingForHwWallet: true})
+      loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     } else {
       loadingAction(state, 'Submitting transaction...')
     }
@@ -473,6 +476,7 @@ module.exports = ({setState, getState}) => {
         success: false,
         error: e.name,
         message: e.message,
+        showTransactionErrorModal: true,
       }
     } finally {
       resetSendForm(state)
@@ -486,6 +490,12 @@ module.exports = ({setState, getState}) => {
   const closeThanksForDonationModal = (state) => {
     setState({
       showThanksForDonation: false,
+    })
+  }
+
+  const closeTransactionErrorModal = (state) => {
+    setState({
+      showTransactionErrorModal: false,
     })
   }
 
@@ -552,5 +562,6 @@ module.exports = ({setState, getState}) => {
     setLogoutNotificationOpen,
     setRawTransactionOpen,
     getRawTransaction,
+    closeTransactionErrorModal,
   }
 }
