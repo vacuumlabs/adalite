@@ -1207,8 +1207,8 @@ button[data-balloon] {
   z-index: 10;
 }
 
-[data-balloon]:hover::before,
-[data-balloon]:hover::after,
+[data-balloon]:not([data-balloon-visible]):hover::before,
+[data-balloon]:not([data-balloon-visible]):hover::after,
 [data-balloon][data-balloon-visible='true']::before,
 [data-balloon][data-balloon-visible='true']::after {
   filter: alpha(opacity=100);
@@ -1242,14 +1242,16 @@ button[data-balloon] {
   transform: translate(0, 10px);
 }
 
-[data-balloon]:hover::after {
+[data-balloon]:not([data-balloon-visible]):hover::after,
+[data-balloon][data-balloon-visible='true']::after {
   -webkit-transform: translate(0, -8px);
   -moz-transform: translate(0, -8px);
   -ms-transform: translate(0, -8px);
   transform: translate(0, -8px);
 }
 
-[data-balloon]:hover::before {
+[data-balloon]:not([data-balloon-visible]):hover::before,
+[data-balloon][data-balloon-visible='true']::before {
   -webkit-transform: translate(0, 0);
   -moz-transform: translate(0, 0);
   -ms-transform: translate(0, 0);
@@ -2344,12 +2346,12 @@ button[data-balloon] {
 
 /* COPY */
 
-.copy {
+.copy-text {
   position: relative;
   padding-left: 21px;
 }
 
-.copy::before {
+.copy-text::before {
   content: '';
   position: absolute;
   width: 13px;
@@ -2364,7 +2366,7 @@ button[data-balloon] {
   background-image: url('../assets/copy_symbol.svg');
 }
 
-.copy:hover::before {
+.copy:hover .copy-text::before {
   background-image: url('../assets/copy_symbol_active.svg');
 }
 

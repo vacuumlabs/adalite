@@ -50,7 +50,7 @@ class CopyOnClick extends Component {
         onClick: this.copyTextToClipboard,
         ...tooltip('Copied to clipboard', true, copied),
       },
-      text
+      h('span', {class: 'copy-text'}, text)
     )
   }
 }
