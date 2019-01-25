@@ -4,6 +4,7 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const mnemonicToWalletSecretDef = require('../../../wallet/helpers/mnemonicToWalletSecretDef')
 const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
+const tooltip = require('../../common/tooltip')
 const Alert = require('../../common/alert')
 
 class LoadByMenmonicSectionClass extends Component {
@@ -66,10 +67,14 @@ class LoadByMenmonicSectionClass extends Component {
           {
             class: 'button primary',
             disabled: !mnemonic || mnemonicValidationError,
-            onClick: async () => loadWallet({
+            onClick: () => async () => loadWallet({
               cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
               walletSecretDef: await mnemonicToWalletSecretDef(mnemonic.trim()),
             }),
+            ...tooltip(
+              'Your input appears to be incorrect.\nCheck for the typos and try again.',
+              showMnemonicValidationError && mnemonic && mnemonicValidationError
+            ),
             onKeyDown: (e) => {
               e.key === 'Enter' && e.target.click()
               if (e.key === 'Tab') {

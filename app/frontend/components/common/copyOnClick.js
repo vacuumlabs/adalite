@@ -1,6 +1,7 @@
 const {h, Component} = require('preact')
 
 const debugLog = require('../../helpers/debugLog')
+const tooltip = require('./tooltip')
 
 class CopyOnClick extends Component {
   constructor(props) {
@@ -41,14 +42,15 @@ class CopyOnClick extends Component {
     }
   }
 
-  render({elementClass, text, tabIndex}, {copied}) {
+  render({elementClass, text}, {copied}) {
     return h(
       'a',
       {
         class: `${elementClass} copy`,
         onClick: this.copyTextToClipboard,
+        ...tooltip('Copied to clipboard', true, copied),
       },
-      copied ? 'Copied to clipboard' : text
+      h('span', {class: 'copy-text'}, text)
     )
   }
 }
