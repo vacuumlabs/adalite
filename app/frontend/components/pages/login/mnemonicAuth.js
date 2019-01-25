@@ -65,7 +65,7 @@ class LoadByMenmonicSectionClass extends Component {
           disabled: !mnemonic || mnemonicValidationError,
           onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
           ...tooltip(
-            'Your input appear to be incorrect.\nCheck for the typos and try again.',
+            'Your input appears to be incorrect.\nCheck for the typos and try again.',
             showMnemonicValidationError && mnemonic && mnemonicValidationError
           ),
           onKeyDown: (e) => {
