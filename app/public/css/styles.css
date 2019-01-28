@@ -3542,7 +3542,7 @@ button[data-balloon] {
     grid-column-gap: 24px;
   }
 
-  .send .button {
+  .send .button.primary {
     width: 100%;
   }
 }
