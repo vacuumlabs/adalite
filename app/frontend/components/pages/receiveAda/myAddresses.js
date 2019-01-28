@@ -6,7 +6,7 @@ const MyAddresses = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
   h(
     'div',
     {class: 'addresses card'},
-    h('h2', {class: 'addresses-title'}, 'My Addresses'),
+    h('h2', {class: 'card-title'}, 'My Addresses'),
     h(
       'div',
       {class: 'addresses-content'},
@@ -19,7 +19,4 @@ const MyAddresses = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
   )
 )
 
-/* TODO: Refactor after creating dashboard layout*/
-const ReceiveAdaPage = () => h('div', {class: 'content-wrapper'}, h(MyAddresses))
-
-module.exports = ReceiveAdaPage
+module.exports = MyAddresses

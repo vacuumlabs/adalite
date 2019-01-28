@@ -5,6 +5,7 @@ const Balance = require('../../common/balance')
 const TransactionHistory = require('./transactionHistory')
 const ExportCard = require('../exportWallet/exportCard')
 const SendAdaPage = require('../sendAda/sendAdaPage')
+const MyAddresses = require('../receiveAda/myAddresses')
 
 class DashboardMobileContent extends Component {
   constructor(props) {
@@ -39,7 +40,7 @@ class DashboardMobileContent extends Component {
       selectedTab === 'send' && h(SendAdaPage),
       selectedTab === 'transactions' &&
         h(TransactionHistory, {transactionHistory, conversionRates}),
-      selectedTab === 'receive' && h(ExportCard)
+      selectedTab === 'receive' && h(MyAddresses)
     )
   }
 }
