@@ -23,6 +23,10 @@ const NavbarAuth = connect(
           'a',
           {
             href: '#',
+            onClick: (e) => {
+              e.preventDefault()
+              window.history.pushState({}, 'txHistory', 'txHistory')
+            },
           },
           h('img', {
             src: 'assets/adalite-logo.svg',
