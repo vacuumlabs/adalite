@@ -11,7 +11,7 @@ const NavbarAuth = connect(
 )(({isDemoWallet, logout}) => {
   return h(
     'nav',
-    {class: `navbar ${isDemoWallet ? 'demo' : ''}`},
+    {class: `navbar authed ${isDemoWallet ? 'demo' : ''}`},
     h(
       'div',
       {class: 'navbar-wrapper'},
