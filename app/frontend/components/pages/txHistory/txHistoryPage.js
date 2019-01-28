@@ -65,7 +65,7 @@ const TxHistoryPage = connect(
         h(Balance, {balance, reloadWalletInfo, conversionRates}),
         h(TransactionHistory, {transactionHistory, conversionRates})
       ),
-      h('div', {class: 'dashboard-column'}, h(ExportCard))
+      h('div', {class: 'dashboard-column'}, h(SendAdaPage), h(MyAddresses), h(ExportCard))
     ),
     h(
       'div',
