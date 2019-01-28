@@ -1,13 +1,9 @@
-const {h, Component} = require('preact')
+const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const Modal = require('../../common/modal')
 
-class GenerateMnemonicDialogClass extends Component {
-  componentDidMount() {
-    this.confirmBtn.focus()
-  }
-
+class GenerateMnemonicDialogClass {
   render({confirmGenerateMnemonicDialog, mnemonic, closeGenerateMnemonicDialog}) {
     return h(
       Modal,
@@ -34,9 +30,6 @@ class GenerateMnemonicDialogClass extends Component {
             onKeyDown: (e) => {
               e.key === 'Enter' && e.target.click()
               e.preventDefault()
-            },
-            ref: (element) => {
-              this.confirmBtn = element
             },
           },
           'I wrote down my mnemonic'
