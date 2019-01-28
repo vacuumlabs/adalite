@@ -972,8 +972,9 @@ p {
 .input.send-amount {
   border: none;
   padding: 0;
-  flex: 1;
   color: var(--color-grey);
+  display: block;
+  width: 100%;
 }
 
 .input.send-amount:focus {
@@ -983,8 +984,15 @@ p {
 .input-wrapper {
   border-radius: 4px;
   border: 1px solid var(--color-border);
-  padding: 12px 16px;
-  display: flex;
+  padding: 12px 62px 12px 16px;
+  position: relative;
+}
+
+.input-wrapper .button.send-max {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 16px;
 }
 
 /* BUTTONS */
@@ -1630,6 +1638,7 @@ button[data-balloon] {
   display: flex;
   min-height: 100%;
   max-width: var(--width);
+  width: 100%;
   margin: 0 auto;
   flex: 1;
 }
@@ -3354,12 +3363,17 @@ button[data-balloon] {
 
   .validation-row {
     flex-direction: column-reverse;
+    align-items: flex-start
   }
 
   .validation-message {
     margin-bottom: 16px;
     padding-left: 0;
     text-align: center;
+  }
+
+  .validation-message.send {
+    padding-left: 0;
   }
 
   /* EXPORT */
@@ -3507,13 +3521,28 @@ button[data-balloon] {
     margin: 0;
   }
 
-    /* DASHBOARD */
+  /* DASHBOARD */
 
-    .dashboard.desktop {
-      display: none;
-    }
-  
-    .dashboard.mobile {
-      display: block;
-    }
+  .dashboard.desktop {
+    display: none;
+  }
+
+  .dashboard.mobile {
+    display: block;
+  }
+
+  /* SEND ADA */
+
+  .send .card-title {
+    display: none;
+  }
+
+  .send-values {
+    grid-template-columns: 72px 1fr;
+    grid-column-gap: 24px;
+  }
+
+  .send .button {
+    width: 100%;
+  }
 }
