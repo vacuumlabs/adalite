@@ -1380,6 +1380,7 @@ button[data-balloon] {
 
 .navbar-logo {
   max-height: 37px;
+  width: 100%;
 }
 
 .navbar-wrapper {
@@ -3184,6 +3185,7 @@ button[data-balloon] {
   .navbar-heading {
     order: 1;
     margin: 0;
+    padding-left: 16px;
   }
 
   .navbar .button {
@@ -3206,7 +3208,6 @@ button[data-balloon] {
   }
 
   .navbar-logo {
-    margin-left: 16px;
     max-height: 28px;
   }
 
