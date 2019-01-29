@@ -3096,6 +3096,57 @@ button[data-balloon] {
   border: none;
 }
 
+.dashboard-content {
+  width: 100%;
+}
+
+.dashboard-tabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-tab {
+  flex: 1;
+  background: linear-gradient(
+    -180deg,
+    rgba(252, 252, 252, 0) 0%,
+    #fcfcfc 100%,
+    rgba(252, 252, 252, 1) 50%
+  );
+  padding: 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-bottom-color: var(--color-border);
+  border-right-color: rgba(230, 230, 230, 0.4);
+}
+
+.dashboard-tab:last-child {
+  border-right-color: transparent;
+}
+
+.dashboard-tab.selected {
+  background: white;
+  border-bottom-color: transparent;
+  border-right-color: var(--color-border);
+  border-left-color: var(--color-border);
+}
+
+.dashboard-tab:first-child.selected {
+  border-left-color: transparent;
+}
+
+.dashboard-tab:last-child.selected {
+  border-right-color: transparent;
+}
+
+.dashboard-tab:hover {
+  cursor: pointer;
+}
+
 /* MOBILE MEDIA QUERIES */
 
 @media screen and (max-width: 767px) {
@@ -3700,9 +3751,10 @@ button[data-balloon] {
 
    /* EXPORT */
 
-   .export.download {
+  .export.download {
     position: relative;
     margin-bottom: 24px;
+    margin-top: 48px;
   }
 
   .export.download .tag {
@@ -3736,4 +3788,50 @@ button[data-balloon] {
   .hint::before {
     left: 8px;
   }
+
+  /* DASHBOARD */
+
+  .dashboard.desktop {
+    display: none;
+  }
+
+  .dashboard.mobile {
+    display: block;
+    padding: 48px 48px 0 48px;
+  }
+
+  .dashboard-tabs {
+    margin: 48px 0 32px 0;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+  }
+
+  .dashboard-tab {
+    border-width: 0 1px 0 0;
+    background-color: #fcfcfc;
+    color: var(--color-grey);
+    border-right-color: var(--color-border);
+  }
+
+  .dashboard-tab.selected {
+    background-color: #ffffff;
+    color: var(--color-grey-dark);
+    border-left-color: var(--color-border);
+    border-right-color: var(--color-border);
+  }
+
+  .dashboard-tab:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .dashboard-tab:last-child {
+    border-radius: 0 4px 4px 0;
+    border-right-color: transparent;
+  }
+
+  .dashboard.mobile .card {
+    margin-bottom: 48px;
+  }
+
 }
