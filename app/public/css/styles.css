@@ -3559,7 +3559,6 @@ button[data-balloon] {
   }
 }
 
-
 /* TABLET MEDIA QUERIES */
 
 @media screen and (min-width: 768px) and (max-width: 1024px) {
@@ -3697,5 +3696,44 @@ button[data-balloon] {
   .welcome-footer .button {
     margin-left: 0;
     margin-top: 16px;
+  }
+
+   /* EXPORT */
+
+   .export.download {
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .export.download .tag {
+    position: absolute;
+    top: 40px;
+    right: 56px;
+    max-width: 185px;
+  }
+
+  .export.download .export-title {
+    font-size: 24px;
+    line-height: 40px;
+    padding-right: 201px;
+  }
+
+  .export-content .validation-row {
+    margin-top: 16px;
+  }
+
+  .export-content .button {
+    width: 100%;
+  }
+
+  /* HINT */
+
+  .hint {
+    padding-left: 56px;
+    margin-bottom: 48px;
+  }
+
+  .hint::before {
+    left: 8px;
   }
 }
