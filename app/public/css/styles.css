@@ -3558,18 +3558,13 @@ button[data-balloon] {
     padding: 16px 24px 16px 60px;
   }
 
-  /* CARD */
-
-  .card {
-    box-shadow: none;
-    padding: 40px 16px;
-    border-bottom: 1px solid var(--color-grey-light);
-  }
-
   /* AUTHENTICATION */
 
   .authentication {
     min-height: initial;
+    box-shadow: none;
+    padding: 40px 16px;
+    border-bottom: 1px solid var(--color-grey-light);
   }
 
   .authentication.initial {
