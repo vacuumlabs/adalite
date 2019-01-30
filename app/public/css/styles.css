@@ -1134,31 +1134,6 @@ p {
   background-image: url('../assets/trezor_logo_white.svg');
 }
 
-.button.view-more {
-  background-color: transparent;
-  padding: 0;
-  color: var(--color-brand);
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 24px;
-  text-decoration: underline;
-  padding-right: 26px;
-  position: relative;
-}
-
-.button.view-more::after {
-  content: '';
-  position: absolute;
-  top: 11px;
-  right: 0;
-  width: 11px;
-  height: 5px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-image: url('../assets/caret_down_symbol.svg');
-}
-
 .button.send-max {
   padding: 0;
   background: none;
@@ -2386,7 +2361,19 @@ button[data-balloon] {
 /* ADDRESSES */
 
 .addresses {
-  padding-bottom: 21px;
+  position: relative;
+  padding-right: 28px;
+}
+
+.addresses::before {
+  position: absolute;
+  content: '';
+  left: 56px;
+  right: 60px;
+  bottom: 40px;
+  height: 56px;
+  background-image: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.4));
+  z-index: 2;
 }
 
 .addresses-title {
@@ -2395,13 +2382,19 @@ button[data-balloon] {
 
 .addresses-content {
   margin-bottom: 19px;
-  border-bottom: 1px solid var(--color-border);
+  max-height: 736px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position: relative;
 }
 
 .address {
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding: 24px 16px 24px 0;
   border-top: 1px solid var(--color-border);
+}
+
+.address:last-child {
+  margin-bottom: 8px;
 }
 
 .address-value {
@@ -2590,13 +2583,14 @@ button[data-balloon] {
 
 .transactions {
   position: relative;
+  padding-right: 28px;
 }
 
 .transactions::before {
   position: absolute;
   content: '';
   left: 56px;
-  right: 56px;
+  right: 60px;
   bottom: 40px;
   height: 40px;
   background-image: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
@@ -2614,8 +2608,7 @@ button[data-balloon] {
 .transaction-item {
   display: grid;
   grid-template-columns: 50% 50%;
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding: 24px 16px 24px 0;
   border-top: 1px solid var(--color-border);
   color: var(--color-grey);
 }
