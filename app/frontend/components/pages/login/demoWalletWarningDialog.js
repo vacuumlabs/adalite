@@ -14,13 +14,13 @@ class DemoWalletWarningDialogClass {
       Modal,
       {
         closeHandler: closeDemoWalletWarningDialog,
-        title: 'Access demo wallet',
+        title: 'Accessing the demo wallet',
         showWarning: true,
       },
       h(
         'p',
         {class: 'modal-paragraph'},
-        'You are about to access publicly available wallet intended to show public how AdaLite looks and works. ',
+        'You are about to access a publicly available wallet intended to show public how AdaLite looks and works. ',
         h('strong', undefined, 'Your funds will not be safe here.')
       ),
       h(
@@ -51,7 +51,7 @@ class DemoWalletWarningDialogClass {
           'p',
           {class: 'modal-paragraph'},
           'To securely store ADA, ',
-          h('a', {href: '/'}, 'create your own new wallet')
+          h('a', {href: '/'}, 'create your new wallet')
         )
       )
     )

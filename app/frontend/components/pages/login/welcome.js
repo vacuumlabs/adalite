@@ -70,7 +70,7 @@ class Welcome extends Component {
           h(
             Article,
             {
-              title: "Don't loose your mnemonic",
+              title: "Don't lose your mnemonic",
               icon: 'mnemonic',
             },
             `A new wallet is created by generating a cryptographic set of words
@@ -88,7 +88,7 @@ class Welcome extends Component {
             `The mnemonic is handled in your browser and never leaves
             your computer. However, if a virus or a hacker compromises your
             computer, the attacker can steal the mnemonic you entered on
-            the AdaLite website and access the funds.`
+            the AdaLite website and access your funds.`
           ),
           h(
             Article,
@@ -96,11 +96,7 @@ class Welcome extends Component {
               title: 'Consider using a hardware wallet',
               icon: 'wallet',
             },
-            `AdaLite allows you to access your funds using a hardware wallet. It
-            currently supports Trezor model T. This allows you to interact with
-            AdaLite in the safest manner possible without giving away your
-            mnemonic. An attacker can't steal your mnemonic or private key since
-            they don't leave Trezor.`
+            'AdaLite allows you to access your funds using a hardware wallet. It currently supports Trezor model T. This enables you to interact with AdaLite in the safest manner possible without giving away your mnemonic. An attacker can’t steal your mnemonic or private key since they don’t leave Trezor.'
           ),
           h(
             Article,
@@ -108,7 +104,7 @@ class Welcome extends Component {
               title: "Don't get phished",
               icon: 'phishing',
             },
-            `To protect yourself from phishers, bookmark official AdaLite address
+            `To protect yourself from phishers, bookmark the official AdaLite address
             and `,
             h('b', undefined, 'always check the URL. The official address is https://adalite.io/.')
           )

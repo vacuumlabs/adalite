@@ -138,7 +138,7 @@ class LoadKeyFileClass extends Component {
             class: 'button primary small',
             for: 'loadFile',
           },
-          'Select key file'
+          'Select a key file'
         )
       )
 
@@ -159,7 +159,7 @@ class LoadKeyFileClass extends Component {
 
     return h(
       'div',
-      {class: 'authentication-content'},
+      {class: 'authentication-content key-file'},
       h(
         'div',
         {
@@ -182,7 +182,7 @@ class LoadKeyFileClass extends Component {
         class: 'input fullwidth auth',
         id: 'keyfile-password',
         name: 'keyfile-password',
-        placeholder: 'Enter password',
+        placeholder: 'Enter the password',
         value: password,
         onInput: this.updatePassword,
         ref: (element) => {
