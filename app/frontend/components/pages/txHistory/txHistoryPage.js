@@ -16,7 +16,7 @@ class DashboardMobileContent extends Component {
   changeTab(tabName) {
     this.setState({selectedTab: tabName})
   }
-  render({balance, transactionHistory, reloadWalletInfo, conversionRates}, {selectedTab}) {
+  render({transactionHistory, conversionRates}, {selectedTab}) {
     const dashboardTab = (tabName, tabText) =>
       h(
         'li',
@@ -50,9 +50,10 @@ const TxHistoryPage = connect(
     balance: state.balance,
     transactionHistory: state.transactionHistory,
     conversionRates: state.conversionRates && state.conversionRates.data,
+    showExportOption: state.showExportOption,
   }),
   actions
-)(({balance, transactionHistory, reloadWalletInfo, conversionRates}) =>
+)(({balance, transactionHistory, reloadWalletInfo, conversionRates, showExportOption}) =>
   h(
     'div',
     {class: 'page-wrapper'},
@@ -65,7 +66,13 @@ const TxHistoryPage = connect(
         h(Balance, {balance, reloadWalletInfo, conversionRates}),
         h(TransactionHistory, {transactionHistory, conversionRates})
       ),
-      h('div', {class: 'dashboard-column'}, h(SendAdaPage), h(MyAddresses), h(ExportCard))
+      h(
+        'div',
+        {class: 'dashboard-column'},
+        h(SendAdaPage),
+        h(MyAddresses),
+        showExportOption && h(ExportCard)
+      )
     ),
     h(
       'div',
@@ -73,7 +80,7 @@ const TxHistoryPage = connect(
       // TODO: Replace with correct tab components after merging Addresses & Send Ada
       h(Balance, {balance, reloadWalletInfo, conversionRates}),
       h(DashboardMobileContent, {balance, transactionHistory, reloadWalletInfo, conversionRates}),
-      h(ExportCard)
+      showExportOption && h(ExportCard)
     )
   )
 )
