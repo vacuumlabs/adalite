@@ -2369,7 +2369,7 @@ button[data-balloon] {
   position: absolute;
   content: '';
   left: 56px;
-  right: 60px;
+  right: 40px;
   bottom: 40px;
   height: 56px;
   background-image: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.4));
@@ -2385,6 +2385,7 @@ button[data-balloon] {
   max-height: 736px;
   overflow-x: hidden;
   overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 
@@ -2590,7 +2591,7 @@ button[data-balloon] {
   position: absolute;
   content: '';
   left: 56px;
-  right: 60px;
+  right: 40px;
   bottom: 40px;
   height: 40px;
   background-image: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
@@ -2602,6 +2603,7 @@ button[data-balloon] {
   margin: 0;
   max-height: 680px;
   overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 
