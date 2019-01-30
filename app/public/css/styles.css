@@ -2588,9 +2588,27 @@ button[data-balloon] {
 
 /* TRANSACTIONS */
 
+.transactions {
+  position: relative;
+}
+
+.transactions::before {
+  position: absolute;
+  content: '';
+  left: 56px;
+  right: 56px;
+  bottom: 40px;
+  height: 40px;
+  background-image: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+  z-index: 2;
+}
+
 .transactions-content {
   padding: 0;
   margin: 0;
+  max-height: 680px;
+  overflow-y: scroll;
+  position: relative;
 }
 
 .transaction-item {
@@ -2600,6 +2618,10 @@ button[data-balloon] {
   padding-bottom: 24px;
   border-top: 1px solid var(--color-border);
   color: var(--color-grey);
+}
+
+.transaction-item:last-child {
+  margin-bottom: 8px;
 }
 
 .transaction-date {
