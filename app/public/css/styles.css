@@ -3177,6 +3177,10 @@ button[data-balloon] {
     align-items: center;
   }
 
+  .modal-title {
+    text-align: center;
+  }
+
   .modal-paragraph {
     text-align: center;
     white-space: normal;
