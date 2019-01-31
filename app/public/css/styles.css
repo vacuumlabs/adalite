@@ -830,8 +830,6 @@
 
 :root {
   --width: 1288px;
-  --transition-easing: ease-in-out;
-  --transition-time: 0.25s;
   --color-pink: #e72076;
   --color-grey-dark: #20323f;
   --color-grey: #606a71;
@@ -996,7 +994,6 @@ p {
   line-height: 32px;
   font-weight: bold;
   border: none;
-  transition: background-color var(--transition-easing) var(--transition-time);
   display: inline-block;
 }
 
