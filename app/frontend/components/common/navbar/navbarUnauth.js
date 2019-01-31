@@ -30,7 +30,7 @@ const NavbarUnauth = () =>
           'a',
           {
             class: 'unauth-menu',
-            href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
+            href: 'https://github.com/vacuumlabs/adalite/wiki',
             target: '_blank',
           },
           'Help'

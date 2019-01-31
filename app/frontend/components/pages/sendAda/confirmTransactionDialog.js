@@ -15,8 +15,8 @@ class ConfirmTransactionDialogClass {
     transactionFee,
     submitTransaction,
     cancelTransaction,
-    waitingForTrezor,
-    usingTrezor,
+    waitingForHwWallet,
+    usingHwWallet,
   }) {
     const total = sendAmount + transactionFee
     return h(
@@ -62,7 +62,7 @@ class ConfirmTransactionDialogClass {
             h(
               'button',
               {
-                class: `${usingTrezor && waitingForTrezor ? 'waiting-for-trezor-button' : ''}`,
+                class: `${usingHwWallet && waitingForHwWallet ? 'waiting-for-hw-wallet-button' : ''}`,
                 onClick: submitTransaction,
                 ref: (element) => {
                   this.confirmTx = element
@@ -76,9 +76,9 @@ class ConfirmTransactionDialogClass {
                 },
               },
               h('div', {
-                class: `${usingTrezor && waitingForTrezor ? 'loading-inside-button' : ''}`,
+                class: `${usingHwWallet && waitingForHwWallet ? 'loading-inside-button' : ''}`,
               }),
-              usingTrezor && waitingForTrezor ? 'Waiting' : 'Confirm'
+              usingHwWallet && waitingForHwWallet ? 'Waiting' : 'Confirm'
             ),
             h(
               'button',
@@ -101,8 +101,8 @@ class ConfirmTransactionDialogClass {
           )
         )
       ),
-      usingTrezor &&
-        waitingForTrezor &&
+      usingHwWallet &&
+        waitingForHwWallet &&
         h('div', {class: 'transparent-overlay', onClick: (e) => e.stopPropagation()})
     )
   }
@@ -113,8 +113,8 @@ module.exports = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmount: state.sendAmountForTransactionFee,
     transactionFee: state.transactionFee,
-    waitingForTrezor: state.waitingForTrezor,
-    usingTrezor: state.usingTrezor,
+    waitingForHwWallet: state.waitingForHwWallet,
+    usingHwWallet: state.usingHwWallet,
   }),
   actions
 )(ConfirmTransactionDialogClass)

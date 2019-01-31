@@ -20,4 +20,9 @@ module.exports = {
   },
   DELAY_AFTER_TOO_MANY_REQUESTS: 2000,
   ADALITE_SUPPORT_EMAIL: 'adalite@vacuumlabs.com',
+  CRYPTO_PROVIDER_TYPES: {
+    LEDGER: 'LEDGER',
+    TREZOR: 'TREZOR',
+    WALLET_SECRET: 'WALLET_SECRET',
+  },
 }

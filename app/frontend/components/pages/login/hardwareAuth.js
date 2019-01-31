@@ -1,22 +1,15 @@
 const {h} = require('preact')
+const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 
-const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
+const LoadByHardwareWalletSection = ({loadWallet}) => {
   const TrezorAffiliateLink = (title) =>
     h('a', {href: 'https://shop.trezor.io/?offer_id=10&aff_id=1071', target: 'blank'}, title)
 
-  const TrezorComingSoon = () =>
-    h(
-      'div',
-      undefined,
-      h('div', {class: 'strong margin-top'}, 'Support for Trezor model T coming soon!'),
-      h(
-        'div',
-        {class: 'margin-top'},
-        'You can support us by purchasing Trezor using our affiliate ',
-        TrezorAffiliateLink('link'),
-        '.'
-      )
-    )
+  const LedgerAffiliateLink = (title) =>
+    h('a', {href: 'https://www.ledger.com/?r=8410116f31f3', target: 'blank'}, title)
+
+  // it doesn't work on Firefox even if U2F is enabled
+  const isFirefox = navigator.userAgent.indexOf('Firefox') !== -1
 
   return h(
     'div',
@@ -26,40 +19,58 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
       undefined,
       'Hardware wallets provide the best security level for storing your cryptocurrencies.'
     ),
-    !enableTrezor
-      ? h(TrezorComingSoon)
-      : h(
+    h(
+      'div',
+      undefined,
+      h(
         'div',
-        undefined,
+        {class: 'margin-top'},
+        'AdaLite supports Trezor model T and Ledger Nano S.',
         h(
-          'div',
-          {class: 'margin-top'},
-          'AdaLite supports Trezor model T (firmware version >= 2.1.0).'
-        ),
+          'a',
+          {href: 'https://github.com/vacuumlabs/adalite/wiki/Troubleshooting', target: 'blank'},
+          'Trouble connecting?'
+        )
+      ),
+      h(
+        'div',
+        {class: 'centered-row margin-top'},
         h(
-          'div',
-          {class: 'centered-row margin-top'},
+          'button',
+          {
+            onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR}),
+          },
           h(
-            'button',
-            {
-              onClick: () => loadWallet({cryptoProvider: 'trezor'}),
-            },
-            h(
-              'div',
-              undefined,
-              h('span', undefined, 'use '),
-              h('span', {class: 'trezor-text'}, 'TREZOR')
-            )
+            'div',
+            undefined,
+            h('span', undefined, 'use '),
+            h('span', {class: 'hw-wallet-btn-text'}, 'TREZOR')
           )
         ),
         h(
-          'div',
-          {class: 'margin-top'},
-          'You can support us by purchasing Trezor using our affiliate ',
-          TrezorAffiliateLink('link'),
-          '.'
+          'button',
+          {
+            onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER}),
+            disabled: isFirefox,
+          },
+          h(
+            'div',
+            undefined,
+            h('span', undefined, 'use '),
+            h('span', {class: 'hw-wallet-btn-text'}, 'LEDGER')
+          )
         )
+      ),
+      h(
+        'div',
+        {class: 'margin-top'},
+        'You can support us by purchasing ',
+        TrezorAffiliateLink('Trezor'),
+        ' or ',
+        LedgerAffiliateLink('Ledger'),
+        ' using our affiliate links.'
       )
+    )
   )
 }
 

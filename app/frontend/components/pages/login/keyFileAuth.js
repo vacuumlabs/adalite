@@ -4,6 +4,7 @@ const actions = require('../../../actions')
 const debugLog = require('../../../helpers/debugLog')
 const KeypassJson = require('../../../wallet/keypass-json')
 const Modal = require('../../common/modal')
+const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -53,7 +54,10 @@ class LoadKeyFileClass extends Component {
       )
 
       this.setState({error: undefined})
-      this.props.loadWallet({cryptoProvider: 'mnemonic', walletSecretDef})
+      this.props.loadWallet({
+        cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+        walletSecretDef,
+      })
     } catch (e) {
       this.props.stopLoadingAction()
       this.setState({error: 'Wrong password'})
@@ -109,7 +113,10 @@ class LoadKeyFileClass extends Component {
             this.props.loadingAction('Reading key file')
             const walletSecretDef = await KeypassJson.importWalletSecretDef(walletExport, '')
 
-            this.props.loadWallet({cryptoProvider: 'mnemonic', walletSecretDef})
+            this.props.loadWallet({
+              cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+              walletSecretDef,
+            })
             this.setState({error: undefined})
           }
         } catch (err) {

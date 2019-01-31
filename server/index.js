@@ -4,7 +4,9 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const compression = require('compression')
 const frontendConfig = require('./helpers/loadFrontendConfig')
-const app = express()
+const fs = require('fs')
+const https = require('https')
+let app = express()
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -78,7 +80,22 @@ app.get('*', (req, res) => {
     `)
 })
 
+/*
+* To run server in secure mode, you need to set
+* ADALITE_SERVER_URL to 'https://localhost:3000'.
+* ADALITE_ENABLE_HTTPS is defaultly set to true
+* (in package.json -> scripts -> dev)
+*/
+const enableHttps = process.env.ADALITE_ENABLE_HTTPS === 'true'
+if (enableHttps) {
+  const options = {
+    cert: fs.readFileSync('server.cert'),
+    key: fs.readFileSync('server.key'),
+  }
+  app = https.createServer(options, app)
+}
+
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Cardano wallet app listening on ${process.env.PORT}!`)
+  console.log(`Server is lisening on ${enableHttps ? 'secure' : ''} port ${process.env.PORT}!`)
 })

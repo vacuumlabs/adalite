@@ -6,14 +6,12 @@ const {generateMnemonic, validateMnemonic} = require('./mnemonic')
 const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
 const AddressManager = require('./address-manager')
 const BlockchainExplorer = require('./blockchain-explorer')
-const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypto-provider')
-const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
 const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES} = require('./constants')
 const shuffleArray = require('./helpers/shuffleArray')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
-const alertIfUnsupportedTrezorFwVersion = require('./helpers/alertIfUnsupportedTrezorFwVersion')
+const CryptoProviderFactory = require('./crypto-provider-factory')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -26,28 +24,20 @@ const CardanoWallet = async (options) => {
   const {walletSecretDef, config, randomSeed, network} = options
   const state = {
     randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
-    overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
     network,
   }
 
   const blockchainExplorer = BlockchainExplorer(config, state)
 
-  let cryptoProvider = null
-  if (options.cryptoProvider === 'trezor') {
-    await alertIfUnsupportedTrezorFwVersion()
-    cryptoProvider = CardanoTrezorCryptoProvider(config, state)
-  } else if (options.cryptoProvider === 'mnemonic') {
-    cryptoProvider = CardanoWalletSecretCryptoProvider(
-      {
-        walletSecretDef,
-        network,
-      },
-      state
-    )
-  } else {
-    throw new Error(`Uknown crypto provider: ${options.cryptoProvider}`)
-  }
+  const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(
+    options.cryptoProviderType,
+    Object.assign({}, config, {
+      walletSecretDef,
+      network,
+    }),
+    state
+  )
 
   const visibleAddressManager = AddressManager({
     accountIndex: state.accountIndex,
@@ -66,6 +56,14 @@ const CardanoWallet = async (options) => {
     isChange: true,
     blockchainExplorer,
   })
+
+  function isHwWallet() {
+    return cryptoProvider.isHwWallet()
+  }
+
+  function getHwWalletName() {
+    return isHwWallet ? cryptoProvider.getHwWalletName() : undefined
+  }
 
   async function submitTx(signedTx) {
     const {txBody, txHash} = signedTx
@@ -97,7 +95,7 @@ const CardanoWallet = async (options) => {
       .signTx(txAux, rawInputTxs, getAddressToAbsPathMapper())
       .catch((e) => {
         debugLog(e)
-        throw NamedError('TransactionRejected')
+        throw NamedError('TransactionRejected', e.message)
       })
 
     return signedTx
@@ -330,6 +328,8 @@ const CardanoWallet = async (options) => {
   }
 
   return {
+    isHwWallet,
+    getHwWalletName,
     getWalletSecretDef,
     submitTx,
     prepareSignedTx,

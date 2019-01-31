@@ -13,7 +13,15 @@ class AddressDetailDialogClass extends Component {
     // known bug: Trezor emulator steals the focus
   }
 
-  render({showDetail, showVerification, error, verifyAddress, closeAddressDetail}) {
+  render({
+    showDetail,
+    showVerification,
+    error,
+    verifyAddress,
+    closeAddressDetail,
+    hwWalletName,
+    waitingForHwWallet,
+  }) {
     return (
       showDetail &&
       h(
@@ -46,7 +54,15 @@ class AddressDetailDialogClass extends Component {
             h(
               'div',
               {class: 'text-center'},
-              h('button', {onClick: verifyAddress}, 'Verify on Trezor')
+              h(
+                'button', {
+                  class: `${waitingForHwWallet ? 'waiting-for-hw-wallet-button' : ''}`,
+                  onClick: verifyAddress,
+                },
+                h('div', {
+                  class: `${waitingForHwWallet ? 'loading-inside-button' : ''}`,
+                }),
+                `Verify on ${hwWalletName}`)
             )
           )
           : h(
@@ -106,6 +122,8 @@ module.exports = connect(
     showDetail: state.showAddressDetail,
     showVerification: state.showAddressVerification,
     error: state.addressVerificationError,
+    hwWalletName: state.hwWalletName,
+    waitingForHwWallet: state.waitingForHwWallet,
   }),
   actions
 )(AddressDetailDialogClass)

@@ -20,6 +20,8 @@ const CardanoWalletSecretCryptoProvider = (
     derivationScheme,
   })
 
+  const isHwWallet = () => false
+
   function getWalletSecret() {
     return state.masterHdNode.toBuffer()
   }
@@ -124,6 +126,7 @@ const CardanoWalletSecretCryptoProvider = (
     getDerivationScheme,
     deriveXpub,
     getHdPassphrase,
+    isHwWallet,
     _sign: sign,
     _checkTxInputsIntegrity: checkTxInputsIntegrity,
     _deriveHdNodeFromRoot: deriveHdNode,

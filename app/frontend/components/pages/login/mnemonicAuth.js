@@ -3,6 +3,7 @@ const {getTranslation} = require('../../../translations')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const mnemonicToWalletSecretDef = require('../../../wallet/helpers/mnemonicToWalletSecretDef')
+const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 
@@ -78,7 +79,7 @@ class LoadByMenmonicSectionClass extends Component {
               disabled: !mnemonic || mnemonicValidationError,
               onClick: async () =>
                 loadWallet({
-                  cryptoProvider: 'mnemonic',
+                  cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
                   walletSecretDef: await mnemonicToWalletSecretDef(mnemonic.trim()),
                 }),
               onKeyDown: (e) => {

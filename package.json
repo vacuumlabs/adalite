@@ -20,13 +20,14 @@
   "scripts": {
     "start-server": "node server/index.js",
     "build": "cd app && yarn install && yarn build",
-    "dev": "PORT=${PORT:-3000} node server/index.js & (cd app && yarn install && yarn dev)",
+    "dev": "yarn generate-cert && ADALITE_ENABLE_HTTPS=true PORT=${PORT:-3000} node server/index.js & (cd app && yarn install && yarn dev)",
     "test": "cd app && yarn install && yarn test",
     "test-chrome-headless": "cd app && yarn install && yarn test-chrome-headless",
     "mocha": "cd app && mocha-chrome --help",
     "eslint": "eslint . --max-warnings=0",
     "fix": "prettier-eslint --write \"{app/frontend,app/tests/src,server}/**/*.{js,jsx,json,css}\"",
-    "heroku-postbuild": "cd app && yarn install && yarn build"
+    "heroku-postbuild": "cd app && yarn install && yarn build",
+    "generate-cert": "test -e server.cert && echo \"certificate already exists\" || openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj \"/C=US\""
   },
   "husky": {
     "hooks": {

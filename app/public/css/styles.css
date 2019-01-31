@@ -1047,7 +1047,7 @@ td {
   padding: 2rem 1rem;
   height: unset;
 }
-.trezor-text {
+.hw-wallet-btn-text {
   font-size: 1.1rem;
   letter-spacing: 0.1rem;
   font-weight: 800;
@@ -1553,7 +1553,7 @@ td {
   left: 0;
 }
 
-.waiting-for-trezor-button {
+.waiting-for-hw-wallet-button {
   display: inline-flex;
   align-items: center;
 }
