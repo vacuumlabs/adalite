@@ -876,6 +876,7 @@ body {
   padding: 0;
   font-family: JTMarnie, Arial, Helvetica, sans-serif;
   height: 100%;
+  background-color: #FCFCFC;
   color: var(--color-text);
 }
 
@@ -1359,6 +1360,7 @@ button[data-balloon] {
 
 .navbar {
   padding: 32px 0 136px 0;
+  z-index: 2;
 }
 
 .navbar.demo {
@@ -3545,5 +3547,146 @@ button[data-balloon] {
 
   .send .button.primary {
     width: 100%;
+  }
+}
+
+
+/* TABLET MEDIA QUERIES */
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  /* PAGE MAIN */
+
+  .page-wrapper {
+    display: block;
+    padding: 0;
+  }
+
+  .page-main {
+    width: 100%;
+  }
+
+  /* SIDEBAR */
+
+  .sidebar {
+    margin: 0;
+    padding: 56px 32px 56px 56px;
+  }
+
+  .sidebar.export {
+    padding: 40px 16px;
+  }
+
+  .sidebar-item.spacy {
+    margin-bottom: 56px;
+  }
+
+  /* NAVBAR */
+
+  .navbar {
+    padding: 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .navbar-link {
+    margin-right: 32px;
+  }
+
+  /* FOOTER */
+
+  .footer {
+    padding: 56px 32px;
+    margin-top: 0;
+  }
+
+  .footer .branding {
+    margin-bottom: 56px;
+  }
+
+  .footer-row {
+    display: block;
+  }
+
+  .footer .social {
+    display: block;
+    width: 100%;
+    margin-bottom: 32px;
+  }
+
+  .footer .donations {
+    width: 100%;
+  }
+
+  .footer .conversion {
+    margin-top: 56px;
+    margin-bottom: 0;
+  }
+
+  .social-link {
+    display: inline-block;
+    width: 50%;
+  }
+
+  /* BUTTONS */
+
+  .button.navbar {
+    margin-left: 0;
+  }
+
+  /* MODALS */
+
+  .modal-body {
+    width: calc(100% - 32px);
+    max-height: calc(100% - 32px);
+  }
+
+  .modal-body .alert {
+    margin-top: 24px;
+  }
+
+  /* ALERTS */
+
+  .alert {
+    padding: 16px 24px 16px 60px;
+  }
+
+  /* AUTHENTICATION */
+
+  .authentication {
+    min-height: initial;
+    box-shadow: none;
+    padding: 40px 16px;
+    border-bottom: 1px solid var(--color-grey-light);
+  }
+
+  .authentication.initial {
+    padding: 64px 40px 80px 40px;
+  }
+
+  /* WELCOME MODAL */
+
+  .welcome-articles {
+    margin: 32px 0;
+    grid-template-columns: 1fr;
+    grid-row-gap: 24px;
+  }
+
+  .welcome-title {
+    margin-bottom: 8px;
+  }
+
+  .welcome .credits {
+    padding: 24px 0;
+  }
+
+  .welcome-footer {
+    margin-top: 32px;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 56px;
+  }
+
+  .welcome-footer .button {
+    margin-left: 0;
+    margin-top: 16px;
   }
 }
