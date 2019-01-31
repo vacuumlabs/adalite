@@ -1,25 +1,17 @@
 const cbor = require('borc')
-const {
-  blake2b,
-  sign: signMsg,
-  derivePublic,
-  derivePrivate,
-  xpubToHdPassphrase,
-} = require('cardano-crypto.js')
+const {blake2b, sign: signMsg, derivePrivate, xpubToHdPassphrase} = require('cardano-crypto.js')
 
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const HdNode = require('./hd-node')
 const {parseTxAux} = require('./helpers/cbor-parsers')
 const NamedError = require('../helpers/NamedError')
 const {NETWORKS} = require('./constants')
-const indexIsHardened = require('./helpers/indexIsHardened')
+const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 
 const CardanoWalletSecretCryptoProvider = (params, walletState, disableCaching = false) => {
   const state = Object.assign(walletState, {
     masterHdNode: HdNode({secret: params.walletSecret}),
     derivedHdNodes: {},
-    derivedXpubs: {},
-    derivedAddresses: {},
     network: params.network,
     derivationScheme: params.derivationScheme,
   })
@@ -28,31 +20,10 @@ const CardanoWalletSecretCryptoProvider = (params, walletState, disableCaching =
     return state.masterHdNode.toBuffer()
   }
 
-  function deriveXpub(derivationPath) {
-    const memoKey = JSON.stringify(derivationPath)
-
-    if (!state.derivedXpubs[memoKey]) {
-      const deriveHardened =
-        derivationPath.length === 0 || indexIsHardened(derivationPath[derivationPath.length - 1])
-
-      state.derivedXpubs[memoKey] = deriveHardened
-        ? deriveXpubHardened(derivationPath)
-        : deriveXpubNonHardened(derivationPath)
-    }
-
-    return state.derivedXpubs[memoKey]
-  }
-
-  function deriveXpubHardened(derivationPath) {
-    return deriveHdNode(derivationPath).extendedPublicKey
-  }
-
-  function deriveXpubNonHardened(derivationPath) {
-    const lastIndex = derivationPath[derivationPath.length - 1]
-    const parentXpub = deriveXpub(derivationPath.slice(0, derivationPath.length - 1))
-
-    return derivePublic(parentXpub, lastIndex, state.derivationScheme.number)
-  }
+  const deriveXpub = CachedDeriveXpubFactory(
+    state.derivationScheme,
+    (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
+  )
 
   function getHdPassphrase() {
     return xpubToHdPassphrase(state.masterHdNode.extendedPublicKey)
@@ -118,7 +89,7 @@ const CardanoWalletSecretCryptoProvider = (params, walletState, disableCaching =
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
         const absoluteDerivationPath = addressToAbsPathMapper(input.utxo.address)
-        const xpub = deriveHdNode(absoluteDerivationPath).extendedPublicKey
+        const xpub = await deriveXpub(absoluteDerivationPath)
         const protocolMagic = NETWORKS[state.network].protocolMagic
 
         /*

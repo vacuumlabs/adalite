@@ -1,11 +1,9 @@
-const {derivePublic} = require('cardano-crypto.js')
-const indexIsHardened = require('./helpers/indexIsHardened')
 // eslint-disable-next-line import/no-unresolved
 const {default: TrezorConnect} = require('trezor-connect')
+const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
-    derivedXpubs: {},
     rootHdPassphrase: null,
     derivedAddresses: {},
   })
@@ -14,10 +12,29 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     throw new Error(`Unsupported derivation scheme: ${state.derivationScheme.type}`)
   }
 
-  async function trezorDeriveAddress(absDerivationPath, displayConfirmation) {
+  const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
+    const response = await TrezorConnect.cardanoGetPublicKey({
+      path: absDerivationPath,
+      showOnTrezor: false,
+    })
+    if (response.error || !response.success) {
+      throw new Error('public key retrieval from Trezor failed')
+    }
+    return Buffer.from(response.payload.publicKey, 'hex')
+  })
+
+  function deriveHdNode(childIndex) {
+    throw new Error('This operation is not supported on TrezorCryptoProvider!')
+  }
+
+  function sign(message, absDerivationPath) {
+    throw new Error('Not supported')
+  }
+
+  async function displayAddressForPath(absDerivationPath) {
     const response = await TrezorConnect.cardanoGetAddress({
       path: absDerivationPath,
-      showOnTrezor: displayConfirmation,
+      showOnTrezor: true,
     })
 
     if (response.success) {
@@ -29,59 +46,6 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     }
 
     throw new Error('Trezor operation failed!')
-  }
-
-  function deriveXpub(absDerivationPath) {
-    const memoKey = JSON.stringify(absDerivationPath)
-
-    if (!state.derivedXpubs[memoKey]) {
-      const deriveHardened =
-        absDerivationPath.length === 0 ||
-        indexIsHardened(absDerivationPath[absDerivationPath.length - 1])
-
-      /*
-      * TODO - reset cache if the promise fails, for now it does not matter
-      * since a failure (e.g. rejection by user) there leads to
-      * the creation of a fresh wallet instance
-      */
-      state.derivedXpubs[memoKey] = deriveHardened
-        ? deriveXpubHardened(absDerivationPath)
-        : deriveXpubNonHardened(absDerivationPath)
-    }
-
-    return state.derivedXpubs[memoKey]
-  }
-
-  function deriveXpubHardened(absDerivationPath) {
-    return TrezorConnect.cardanoGetPublicKey({
-      path: absDerivationPath,
-      showOnTrezor: false,
-    }).then((response) => {
-      if (response.error || !response.success) {
-        return Promise.reject(response || 'operation failed')
-      }
-      return Buffer.from(response.payload.publicKey, 'hex')
-    })
-  }
-
-  async function deriveXpubNonHardened(absDerivationPath) {
-    const lastIndex = absDerivationPath[absDerivationPath.length - 1]
-    const parentXpub = await deriveXpub(absDerivationPath.slice(0, absDerivationPath.length - 1))
-
-    return derivePublic(parentXpub, lastIndex, state.derivationScheme.number)
-  }
-
-  function deriveHdNode(childIndex) {
-    throw new Error('This operation is not supported on TrezorCryptoProvider!')
-  }
-
-  function sign(message, absDerivationPath) {
-    throw new Error('Not supported')
-  }
-
-  async function trezorVerifyAddress(address, addressToAbsPathMapper) {
-    const absDerivationPath = addressToAbsPathMapper(address)
-    await trezorDeriveAddress(absDerivationPath, true)
   }
 
   function prepareInput(input, addressToAbsPathMapper) {
@@ -161,7 +125,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   return {
     getWalletSecret,
     signTx,
-    trezorVerifyAddress,
+    displayAddressForPath,
     deriveXpub,
     _sign: sign,
     _deriveHdNode: deriveHdNode,

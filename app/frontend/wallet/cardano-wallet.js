@@ -328,11 +328,11 @@ const CardanoWallet = async (options) => {
   }
 
   function verifyAddress(addr) {
-    if (!cryptoProvider.trezorVerifyAddress) {
+    if (!cryptoProvider.displayAddressForPath) {
       throw Error('unsupported operation: verifyAddress')
     }
-
-    return cryptoProvider.trezorVerifyAddress(addr, getAddressToAbsPathMapper())
+    const absDerivationPath = getAddressToAbsPathMapper()(addr)
+    return cryptoProvider.displayAddressForPath(absDerivationPath)
   }
 
   async function getNewUtxosFromTxAux(txAux) {
