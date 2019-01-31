@@ -61,6 +61,7 @@ module.exports = ({setState, getState}) => {
   const setAuthMethod = (state, option) => {
     setState({
       authMethod: option,
+      showExportOption: option === 'mnemonic' || option === 'file',
     })
   }
 
@@ -166,6 +167,7 @@ module.exports = ({setState, getState}) => {
       mnemonicValidationError: undefined,
       walletLoadingError: undefined,
       authMethod: 'mnemonic',
+      showExportOption: true,
     })
   }
 
