@@ -4,7 +4,14 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const compression = require('compression')
 const frontendConfig = require('./helpers/loadFrontendConfig')
+const fs = require('fs')
+const https = require('https')
 const app = express()
+
+const options = {
+  cert: fs.readFileSync('server.cert'),
+  key: fs.readFileSync('server.key'),
+}
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -69,7 +76,18 @@ app.get('*', (req, res) => {
     `)
 })
 
-app.listen(process.env.PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Cardano wallet app listening on ${process.env.PORT}!`)
-})
+/*******************************************************************************
+ To run server in secure mode, you need to set ADALITE_ENABLE_HTTPS to true and
+ ADALITE_SERVER_URL to 'https://localhost:3000'
+********************************************************************************/
+if (process.env.ADALITE_ENABLE_HTTPS === 'true') {
+  https.createServer(options, app).listen(process.env.PORT, () => {
+    // eslint-disable-next-line no-console
+    console.log(`Cardano wallet app listening on secure port ${process.env.PORT}!`)
+  })
+} else {
+  app.listen(process.env.PORT, () => {
+    // eslint-disable-next-line no-console
+    console.log(`Cardano wallet app listening on ${process.env.PORT}!`)
+  })
+}
