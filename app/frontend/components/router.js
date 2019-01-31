@@ -2,7 +2,7 @@ const {h} = require('preact')
 const connect = require('unistore/preact').connect
 
 const TxHistoryPage = require('./pages/txHistory/txHistoryPage')
-const ReceivePage = require('./pages/receiveAda/receiveAdaPage')
+const MyAddresses = require('./pages/receiveAda/myAddresses')
 const SendPage = require('./pages/sendAda/sendAdaPage')
 const LoginPage = require('./pages/login/loginPage')
 const ExportWalletPage = require('./pages/exportWallet/exportWalletPage')
@@ -21,7 +21,7 @@ const TopLevelRouter = connect((state) => ({
       content = h(TxHistoryPage)
       break
     case 'receive':
-      content = h(ReceivePage)
+      content = h(MyAddresses)
       break
     case 'send':
       content = h(SendPage)

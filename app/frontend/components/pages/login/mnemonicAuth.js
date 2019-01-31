@@ -7,10 +7,6 @@ const tooltip = require('../../common/tooltip')
 const Alert = require('../../common/alert')
 
 class LoadByMenmonicSectionClass extends Component {
-  componentDidMount() {
-    !this.props.displayWelcome && this.mnemonicField.focus()
-  }
-
   componentDidUpdate() {
     const shouldFormFocus =
       !this.props.mnemonic && !this.props.displayWelcome && !this.props.showDemoWalletWarningDialog
