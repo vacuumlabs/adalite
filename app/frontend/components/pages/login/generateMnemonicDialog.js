@@ -13,13 +13,13 @@ class GenerateMnemonicDialogClass extends Component {
       Modal,
       {
         closeHandler: closeGenerateMnemonicDialog,
-        title: 'Create New Wallet',
+        title: 'Create a New Wallet',
         showWarning: true,
       },
       h(
         'p',
         {class: 'modal-paragraph'},
-        'New wallet is created together with a mnemonic phrase. Write the mnemonic phrase down, you will need it to access your wallet. ',
+        'The new wallet is created together with a mnemonic phrase. Write the mnemonic phrase down, you will need it to access your wallet. ',
         h('strong', undefined, 'Don’t copy it to your clipboard or save it anywhere online.')
       ),
       h('div', {class: 'modal-mnemonic'}, mnemonic),
@@ -39,7 +39,7 @@ class GenerateMnemonicDialogClass extends Component {
               this.confirmBtn = element
             },
           },
-          'I’ve written my mnemonic down'
+          'I wrote down my mnemonic'
         )
       )
     )

@@ -1793,8 +1793,12 @@ button[data-balloon] {
   margin-bottom: 40px;
 }
 
-.authentication .validation-message {
+.authentication-content .validation-message {
   display: none;
+}
+
+.authentication-content.key-file .validation-message {
+  display: block;
 }
 
 /* AUTHENTICATION TABS */
@@ -3234,6 +3238,10 @@ button[data-balloon] {
   .modal-head {
     flex-direction: column-reverse;
     align-items: center;
+  }
+
+  .modal-title {
+    text-align: center;
   }
 
   .modal-paragraph {

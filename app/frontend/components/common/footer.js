@@ -75,7 +75,7 @@ const Footer = connect(
         h(
           'div',
           {class: 'donations'},
-          h('h3', {class: 'donations-title'}, 'Donations are really appreciated'),
+          h('h3', {class: 'donations-title'}, 'Donations are appreciated'),
           h(
             'a',
             {
