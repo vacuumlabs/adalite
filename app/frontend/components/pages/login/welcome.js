@@ -134,7 +134,7 @@ class Welcome extends Component {
                 e.key === 'Enter' && e.target.click()
               },
             },
-            'I understand, continue to the AdaLite'
+            'Continue to AdaLite'
           )
         )
       )

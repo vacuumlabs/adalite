@@ -20,7 +20,7 @@ class DemoWalletWarningDialogClass {
       h(
         'p',
         {class: 'modal-paragraph'},
-        'You are about to access a publicly available wallet intended to show public how AdaLite looks and works. ',
+        'You are about to access a publicly available wallet intended to show the public how AdaLite looks and works. ',
         h('strong', undefined, 'Your funds will not be safe here.')
       ),
       h(
@@ -44,7 +44,7 @@ class DemoWalletWarningDialogClass {
               this.understandDemoBtn = element
             },
           },
-          'I understand, continue to the demo wallet'
+          'Continue to the demo wallet'
         ),
         /* TODO: connect link click to creating new wallet action */
         h(
