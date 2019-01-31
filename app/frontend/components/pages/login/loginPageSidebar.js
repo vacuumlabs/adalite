@@ -13,7 +13,7 @@ const initialContent = () =>
       h(
         'p',
         {class: 'sidebar-paragraph'},
-        'AdaLite supports 3 means of accessing your wallet. For enhanced security, we recommend you to use a ',
+        'AdaLite supports three means of accessing your wallet. For enhanced security, we recommend you to use a ',
         h('strong', undefined, 'hardware wallet.')
       )
     ),
@@ -185,7 +185,7 @@ const fileContent = () =>
       h(
         'p',
         undefined,
-        'Encrypted key file is not the most secure access method. For enhanced security, we strongly recommend you to use a ',
+        'The encrypted key file is not the most secure access method. For enhanced security, we strongly recommend you to use a ',
         h(
           'a',
           {
