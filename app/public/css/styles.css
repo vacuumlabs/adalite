@@ -64,6 +64,7 @@ body {
   height: 100%;
   background-color: #fcfcfc;
   color: var(--color-text);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* TYPOGRAPHY */
@@ -2748,10 +2749,6 @@ button[data-balloon] {
     border: 0;
   }
 
-  .card.authentication {
-    border: 0;
-  }
-
   .card-title {
     font-size: 14px;
   }
@@ -2836,6 +2833,7 @@ button[data-balloon] {
 
   .authentication.initial {
     padding: 56px 16px 0 16px;
+    border: 0;
   }
 
   .authentication .validation-message {
