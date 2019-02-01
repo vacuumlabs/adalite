@@ -1,7 +1,6 @@
 const TransportU2F = require('@ledgerhq/hw-transport-u2f').default // for browser
 const Ada = require('@ledgerhq/hw-app-ada').default
-const {derivePublic} = require('cardano-crypto.js')
-const indexIsHardened = require('./helpers/indexIsHardened')
+const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 const cbor = require('borc')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 
@@ -10,7 +9,6 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   const ada = new Ada(transport)
 
   const state = Object.assign(walletState, {
-    derivedXpubs: {},
     rootHdPassphrase: null,
     derivedAddresses: {},
   })
@@ -19,44 +17,14 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     throw new Error(`Unsupported derivation scheme: ${state.derivationScheme.type}`)
   }
 
-  function deriveXpub(absDerivationPath) {
-    const memoKey = JSON.stringify(absDerivationPath)
-
-    if (!state.derivedXpubs[memoKey]) {
-      const deriveHardened =
-        absDerivationPath.length === 0 ||
-        indexIsHardened(absDerivationPath[absDerivationPath.length - 1])
-
-      /*
-      * TODO - reset cache if the promise fails, for now it does not matter
-      * since a failure (e.g. rejection by user) there leads to
-      * the creation of a fresh wallet instance
-      */
-      state.derivedXpubs[memoKey] = deriveHardened
-        ? deriveXpubHardened(absDerivationPath)
-        : deriveXpubNonHardened(absDerivationPath)
-    }
-
-    return state.derivedXpubs[memoKey]
-  }
-
-  function deriveXpubHardened(absDerivationPath) {
+  const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
     try {
-      return ada.getExtendedPublicKey(absDerivationPath).then((response) => {
-        // public key which returns trezor-connect contains public key folowed by chain code (see node object in trezor-connect response).
-        return Buffer.from(response.publicKeyHex.concat(response.chainCodeHex), 'hex')
-      })
+      const response = await ada.getExtendedPublicKey(absDerivationPath)
+      return Buffer.from(response.publicKeyHex.concat(response.chainCodeHex), 'hex')
     } catch (err) {
-      return Promise.reject('operation failed')
+      throw new Error('public key retrieval from Ledger failed')
     }
-  }
-
-  async function deriveXpubNonHardened(absDerivationPath) {
-    const lastIndex = absDerivationPath[absDerivationPath.length - 1]
-    const parentXpub = await deriveXpub(absDerivationPath.slice(0, absDerivationPath.length - 1))
-
-    return derivePublic(parentXpub, lastIndex, state.derivationScheme.number)
-  }
+  })
 
   function deriveHdNode(childIndex) {
     throw new Error('This operation is not supported on LedgerCryptoProvider!')
@@ -66,8 +34,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     throw new Error('Not supported')
   }
 
-  async function deviceDisplayAddress(address, addressToAbsPathMapper) {
-    const absDerivationPath = addressToAbsPathMapper(address)
+  async function displayAddressForPath(absDerivationPath) {
     try {
       await ada.showAddress(absDerivationPath)
     } catch (err) {
@@ -151,7 +118,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   return {
     getWalletSecret,
     signTx,
-    deviceDisplayAddress,
+    displayAddressForPath,
     deriveXpub,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
