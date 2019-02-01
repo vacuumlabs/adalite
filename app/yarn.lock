@@ -10,14 +10,6 @@
     core-js "^2.5.7"
     regenerator-runtime "^0.12.0"
 
-"@ledgerhq/hw-app-ada@^4.35.0":
-  version "4.35.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-ada/-/hw-app-ada-4.35.0.tgz#3b6d4573a8121d55d03fa078a28f579fe2057e24"
-  integrity sha512-RdX2Iv32qKoIuPEtGYlDIgiayzPF0ok+FzNNscZIRjXiRI3Ao8JP8LSn8yN6zuDvIxX38dI/jY4Inlw+mYD/1A==
-  dependencies:
-    "@ledgerhq/hw-transport" "^4.35.0"
-    node-int64 "^0.4.0"
-
 "@ledgerhq/hw-transport-u2f@^4.7.3":
   version "4.32.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.32.0.tgz#847969744aafecfa6c16bc481fe6615814ee2385"
@@ -30,13 +22,6 @@
   version "4.32.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.32.0.tgz#592b9dc51459cb1cd31ce9444cf943f627bc4beb"
   integrity sha512-Wgsk9UHC4RShqYoDeIEeKgHZOvNCtB0WWIG0xqlVPzS+IcKDkIxtXQw7hTA7GQSuDuGeauVtlbTQ5yat6+2/BA==
-  dependencies:
-    events "^3.0.0"
-
-"@ledgerhq/hw-transport@^4.35.0":
-  version "4.35.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.35.0.tgz#aa7b851111ed759cd7489fa07a7b34c1773e8314"
-  integrity sha512-o8ekdoCkHMvOByIKDmAMNDjm8Q5cu+sbqmebPtGrHAPbgIZBUbNA5UupY/Om+xypdxXYnuBw+MF8FyIVOjnIsg==
   dependencies:
     events "^3.0.0"
 
@@ -3292,6 +3277,10 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
+"ledgerhq@https://github.com/vacuumlabs/ledgerjs-cardano.git":
+  version "0.0.0"
+  resolved "https://github.com/vacuumlabs/ledgerjs-cardano.git#a1288e2567c7fc7ffefd3457014b706f67777892"
+
 leven@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
@@ -3798,11 +3787,6 @@ node-dir@0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/node-dir/-/node-dir-0.1.8.tgz#55fb8deb699070707fb67f91a460f0448294c77d"
   integrity sha1-VfuN62mQcHB/tn+RpGDwRIKUx30=
-
-node-int64@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
-  integrity sha1-h6kGXNs1XTGC2PlM4RGIuCXGijs=
 
 node-libs-browser@^2.0.0:
   version "2.1.0"

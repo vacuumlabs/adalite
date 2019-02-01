@@ -1,5 +1,5 @@
 const TransportU2F = require('@ledgerhq/hw-transport-u2f').default // for browser
-const Ada = require('@ledgerhq/hw-app-ada').default
+const Ada = require('ledgerhq/hw-app-ada').default // temporary hack, should be @ledgerhq
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 const cbor = require('borc')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
