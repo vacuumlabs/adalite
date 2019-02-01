@@ -2414,7 +2414,7 @@ button[data-balloon] {
 }
 
 .dropdown.open .dropdown-item.current {
-  border-radius: 4px 4px 0 0 ;
+  border-radius: 4px 4px 0 0;
 }
 
 .dropdown-item.selected {
@@ -3255,7 +3255,51 @@ button[data-balloon] {
     margin-bottom: 48px;
   }
 
+  /* TRANSACTIONS */
+
+  .transactions {
+    padding-right: 56px;
+  }
+
+  .transactions::before {
+    display: none;
+  }
+
+  .transaction-item {
+    padding-right: 0;
+  }
+
+  .transaction-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .transactions-content {
+    max-height: initial;
+    overflow: hidden;
+  }
+
   /* ADDRESS */
+
+  .addresses {
+    padding-right: 56px;
+  }
+
+  .addresses::before {
+    display: none;
+  }
+
+  .address {
+    padding-right: 0;
+  }
+
+  .address:last-child {
+    margin-bottom: 0;
+  }
+
+  .addresses-content {
+    max-height: initial;
+    overflow: hidden;
+  }
 
   .detail-content {
     margin-right: 32px;
