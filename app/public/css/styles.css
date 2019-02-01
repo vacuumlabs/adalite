@@ -2213,6 +2213,10 @@ button[data-balloon] {
   line-height: 32px;
 }
 
+.export-content {
+  width: 100%;
+}
+
 .export-type {
   color: var(--color-grey);
   position: relative;
@@ -2541,6 +2545,10 @@ button[data-balloon] {
     padding-top: 64px;
   }
 
+  .navbar.authed {
+    padding-bottom: 0;
+  }
+
   .navbar.demo::before {
     display: none;
   }
@@ -2690,6 +2698,10 @@ button[data-balloon] {
   .footer {
     padding: 56px 32px;
     margin-top: 0;
+  }
+
+  .footer-wrapper {
+    padding: 0;
   }
 
   .footer .branding {
@@ -3049,6 +3061,10 @@ button[data-balloon] {
   .navbar {
     padding: 16px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .navbar.authed {
+    padding-bottom: 0;
   }
 
   .navbar-link {
