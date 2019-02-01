@@ -223,7 +223,12 @@ module.exports = ({setState, getState}) => {
   }
 
   const openAddressDetail = (state, {address, bip32path}) => {
-    const showAddressVerification = (state.usingTrezor || state.usingLedger) && bip32path //because we don't want to
+    /*
+    * because we don't want to trigger trezor address
+    * verification for the  donation address
+    */
+    const showAddressVerification = (state.usingTrezor || state.usingLedger) && bip32path
+
     // trigger trezor address verification for the  donation address
     setState({
       showAddressDetail: {address, bip32path},
