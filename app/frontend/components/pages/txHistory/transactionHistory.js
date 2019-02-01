@@ -42,7 +42,6 @@ const TransactionHistory = ({transactionHistory}) =>
     'div',
     {class: 'transactions card'},
     h('h2', {class: 'card-title'}, 'Transaction History'),
-    /* TODO: Load transaction items by chunks */
     transactionHistory.length === 0
       ? h('div', {class: 'transactions-empty'}, 'No transactions found')
       : h(
@@ -57,14 +56,6 @@ const TransactionHistory = ({transactionHistory}) =>
             h(TransactionAddress, {address: transaction.ctbId}),
             h(FormattedFee, {fee: transaction.fee})
           )
-        ),
-        /* TODO: Implement button functionality */
-        h(
-          'button',
-          {
-            class: 'button primary fullwidth',
-          },
-          'Show another 8 transactions'
         )
       )
   )
