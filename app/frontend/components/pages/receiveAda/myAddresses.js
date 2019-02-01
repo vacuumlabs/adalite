@@ -13,9 +13,7 @@ const MyAddresses = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
       ...ownAddressesWithMeta.map((adr) =>
         h(AddressItem, {address: adr.address, bip32path: adr.bip32StringPath})
       )
-    ),
-    /* TODO: Implement View all addresses functionality */
-    h('button', {class: 'button view-more'}, 'View all addresses')
+    )
   )
 )
 
