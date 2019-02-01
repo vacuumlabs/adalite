@@ -23,6 +23,10 @@
     "test-chrome-headless": "yarn test && node node_modules/.bin/mocha-headless-chrome -f tests/index.html"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "@ledgerhq/hw-app-ada": "^4.35.0",
+    "@ledgerhq/hw-transport-u2f": "^4.7.3",
+    "base-x": "^3.0.5",
     "bip39-light": "^1.0.7",
     "borc": "^2.1.0",
     "cardano-crypto.js": "^5.0.0",

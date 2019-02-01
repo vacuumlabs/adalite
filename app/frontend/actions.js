@@ -75,6 +75,14 @@ module.exports = ({setState, getState}) => {
           derivationScheme: derivationSchemes.v2,
         })
         break
+      case 'ledger':
+        wallet = await Cardano.CardanoWallet({
+          cryptoProvider: 'ledger',
+          config: ADALITE_CONFIG,
+          network: 'mainnet',
+          derivationScheme: derivationSchemes.v2,
+        })
+        break
       case 'mnemonic':
         secret = secret.trim()
         wallet = await Cardano.CardanoWallet({
@@ -104,6 +112,7 @@ module.exports = ({setState, getState}) => {
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
       const usingTrezor = cryptoProvider === 'trezor'
+      const usingLedger = cryptoProvider === 'ledger'
       const isDemoWallet = secret === ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       setState({
         walletIsLoaded,
@@ -116,6 +125,7 @@ module.exports = ({setState, getState}) => {
         loading: false,
         mnemonic: '',
         usingTrezor,
+        usingLedger,
         isDemoWallet,
         showDemoWalletWarningDialog: isDemoWallet,
         showGenerateMnemonicDialog: false,
@@ -200,7 +210,7 @@ module.exports = ({setState, getState}) => {
 
   const verifyAddress = async (address) => {
     const state = getState()
-    if (state.usingTrezor && state.showAddressDetail) {
+    if ((state.usingTrezor || state.usingLedger) && state.showAddressDetail) {
       try {
         await wallet.verifyAddress(state.showAddressDetail.address)
         setState({showAddressVerification: false})
@@ -213,7 +223,7 @@ module.exports = ({setState, getState}) => {
   }
 
   const openAddressDetail = (state, {address, bip32path}) => {
-    const showAddressVerification = state.usingTrezor && bip32path //because we don't want to
+    const showAddressVerification = (state.usingTrezor || state.usingLedger) && bip32path //because we don't want to
     // trigger trezor address verification for the  donation address
     setState({
       showAddressDetail: {address, bip32path},

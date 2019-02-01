@@ -50,6 +50,18 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
               h('span', undefined, 'use '),
               h('span', {class: 'trezor-text'}, 'TREZOR')
             )
+          ),
+          h(
+            'button',
+            {
+              onClick: () => loadWallet({cryptoProvider: 'ledger'}),
+            },
+            h(
+              'div',
+              undefined,
+              h('span', undefined, 'use '),
+              h('span', {class: 'trezor-text'}, 'LEDGER')
+            )
           )
         ),
         h(
