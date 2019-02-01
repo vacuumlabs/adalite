@@ -615,6 +615,10 @@ button[data-balloon] {
   text-decoration: none;
 }
 
+.navbar-link.export {
+  display: none;
+}
+
 .navbar-title {
   width: 0;
   height: 0;
@@ -2601,6 +2605,10 @@ button[data-balloon] {
     max-height: 28px;
   }
 
+  .navbar-link.export {
+    display: block;
+  }
+
   .navbar-link:last-child {
     margin: 0;
   }
@@ -2907,16 +2915,24 @@ button[data-balloon] {
     overflow: auto;
   }
 
+  .transactions-empty {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+
   .transaction-address {
     order: 1;
     align-self: center;
   }
+
   .transaction-amount {
     order: 2;
   }
+
   .transaction-date {
     order: 3;
   }
+
   .transaction-fee {
     order: 4;
   }
