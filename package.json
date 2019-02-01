@@ -26,7 +26,8 @@
     "eslint": "eslint . --max-warnings=0",
     "fix": "prettier-eslint --write \"{app/frontend,app/tests/src,server}/**/*.{js,jsx,json,css}\"",
     "heroku-postbuild": "cd app && yarn install && yarn build",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "generate-cert": "openssl req -nodes -new -x509 -keyout server.key -out server.cert"
   },
   "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "lint-staged": {
