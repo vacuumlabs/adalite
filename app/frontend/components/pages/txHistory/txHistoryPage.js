@@ -77,7 +77,6 @@ const TxHistoryPage = connect(
     h(
       'div',
       {class: 'dashboard mobile'},
-      // TODO: Replace with correct tab components after merging Addresses & Send Ada
       h(Balance, {balance, reloadWalletInfo, conversionRates}),
       h(DashboardMobileContent, {balance, transactionHistory, reloadWalletInfo, conversionRates}),
       showExportOption && h(ExportCard)
