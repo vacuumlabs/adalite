@@ -66,41 +66,55 @@ module.exports = ({setState, getState}) => {
 
   const loadWallet = async (state, {cryptoProvider, secret}) => {
     loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined})
-    switch (cryptoProvider) {
-      case 'trezor':
-        wallet = await Cardano.CardanoWallet({
-          cryptoProvider: 'trezor',
-          config: ADALITE_CONFIG,
-          network: 'mainnet',
-          derivationScheme: derivationSchemes.v2,
-        })
-        break
-      case 'ledger':
-        wallet = await Cardano.CardanoWallet({
-          cryptoProvider: 'ledger',
-          config: ADALITE_CONFIG,
-          network: 'mainnet',
-          derivationScheme: derivationSchemes.v2,
-        })
-        break
-      case 'mnemonic':
-        secret = secret.trim()
-        wallet = await Cardano.CardanoWallet({
-          cryptoProvider: 'mnemonic',
-          mnemonicOrHdNodeString: secret,
-          config: ADALITE_CONFIG,
-          network: 'mainnet',
-          derivationScheme: derivationSchemes.v1,
-        })
-        break
-      default:
-        return setState({
-          loading: false,
-          walletLoadingError: {
-            code: 'UnknownCryptoProvider',
-            params: {cryptoProvider},
+    try {
+      switch (cryptoProvider) {
+        case 'trezor':
+          wallet = await Cardano.CardanoWallet({
+            cryptoProvider: 'trezor',
+            config: ADALITE_CONFIG,
+            network: 'mainnet',
+            derivationScheme: derivationSchemes.v2,
+          })
+          break
+        case 'ledger':
+          wallet = await Cardano.CardanoWallet({
+            cryptoProvider: 'ledger',
+            config: ADALITE_CONFIG,
+            network: 'mainnet',
+            derivationScheme: derivationSchemes.v2,
+          })
+          break
+        case 'mnemonic':
+          secret = secret.trim()
+          wallet = await Cardano.CardanoWallet({
+            cryptoProvider: 'mnemonic',
+            mnemonicOrHdNodeString: secret,
+            config: ADALITE_CONFIG,
+            network: 'mainnet',
+            derivationScheme: derivationSchemes.v1,
+          })
+          break
+        default:
+          return setState({
+            loading: false,
+            walletLoadingError: {
+              code: 'UnknownCryptoProvider',
+              params: {cryptoProvider},
+            },
+          })
+      }
+    } catch (e) {
+      debugLog(e)
+      setState({
+        walletLoadingError: {
+          code: 'WalletInitializationError',
+          params: {
+            message: e.name === 'TransportError' ? e.message : undefined,
           },
-        })
+        },
+        loading: false,
+      })
+      return false
     }
     try {
       const walletIsLoaded = true
