@@ -16,6 +16,7 @@
   "bugs": {
     "url": "https://github.com/vacuumlabs/adalite/issues"
   },
+  "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "scripts": {
     "start-server": "node server/index.js",
     "build": "cd app && yarn install && yarn build",
@@ -25,10 +26,13 @@
     "mocha": "cd app && mocha-chrome --help",
     "eslint": "eslint . --max-warnings=0",
     "fix": "prettier-eslint --write \"{app/frontend,app/tests/src,server}/**/*.{js,jsx,json,css}\"",
-    "heroku-postbuild": "cd app && yarn install && yarn build",
-    "precommit": "lint-staged"
+    "heroku-postbuild": "cd app && yarn install && yarn build"
   },
-  "homepage": "https://github.com/vacuumlabs/adalite#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "{app/frontend,app/tests,server}/**/*.{js,jsx,json,css}": [
       "prettier-eslint --write",
@@ -55,7 +59,7 @@
     "eslint-config-vacuumlabs": "^1.5.0",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-react": "^7.7.0",
-    "husky": "^0.14.3",
+    "husky": "^1.3.1",
     "lint-staged": "^7.0.4",
     "prettier": "^1.12.1",
     "prettier-eslint-cli": "^4.7.1",
