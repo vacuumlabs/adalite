@@ -1,12 +1,12 @@
 const TransportU2F = require('@ledgerhq/hw-transport-u2f').default // for browser
-const Ada = require('ledgerhq/hw-app-ada').default // temporary hack, should be @ledgerhq
+const Ledger = require('ledgerhq/hw-app-ada').default // temporary hack, should be @ledgerhq
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 const cbor = require('borc')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 
 const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   const transport = await TransportU2F.create()
-  const ada = new Ada(transport)
+  const ledger = new Ledger(transport)
 
   const state = Object.assign(walletState, {
     rootHdPassphrase: null,
@@ -19,10 +19,10 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
 
   const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
     try {
-      const response = await ada.getExtendedPublicKey(absDerivationPath)
+      const response = await ledger.getExtendedPublicKey(absDerivationPath)
       return Buffer.from(response.publicKeyHex.concat(response.chainCodeHex), 'hex')
     } catch (err) {
-      throw new Error('public key retrieval from Ledger failed')
+      throw new Error('Public key retrieval from Ledger failed')
     }
   })
 
@@ -36,7 +36,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
 
   async function displayAddressForPath(absDerivationPath) {
     try {
-      await ada.showAddress(absDerivationPath)
+      await ledger.showAddress(absDerivationPath)
     } catch (err) {
       throw new Error('Ledger operation failed!')
     }
@@ -47,37 +47,30 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   }
 
   function prepareInput(input, addressToAbsPathMapper, txDataHex) {
-    const data = {
+    return {
       txDataHex,
       outputIndex: input.outputIndex,
       path: addressToAbsPathMapper(input.utxo.address),
     }
-
-    return data
   }
 
   function prepareOutput(output, addressToAbsPathMapper) {
-    const data = {
+    const result = {
       amountStr: `${output.coins}`,
     }
 
     if (output.isChange) {
-      data.path = addressToAbsPathMapper(output.address)
+      result.path = addressToAbsPathMapper(output.address)
     } else {
-      data.address58 = output.address
+      result.address58 = output.address
     }
 
-    return data
+    return result
   }
 
-  async function prepareWitnesses(witnesses) {
-    const data = []
-    for (const witness of witnesses) {
-      const extendedPublicKey = await deriveXpub(witness.path)
-      data.push(TxWitness(extendedPublicKey, Buffer.from(witness.witnessHex, 'hex')))
-    }
-
-    return data
+  async function prepareWitness(witness) {
+    const extendedPublicKey = await deriveXpub(witness.path)
+    return TxWitness(extendedPublicKey, Buffer.from(witness.witnessHex, 'hex'))
   }
 
   function prepareBody(unsignedTx, txWitnesses) {
@@ -87,31 +80,28 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
     const transactions = rawInputTxs.map((tx) => tx.toString('hex'))
 
-    const inputs = []
-    for (let i = 0; i < unsignedTx.inputs.length; i++) {
-      inputs.push(await prepareInput(unsignedTx.inputs[i], addressToAbsPathMapper, transactions[i]))
+    const inputs = await Promise.all(
+      unsignedTx.inputs.map((input, i) =>
+        prepareInput(input, addressToAbsPathMapper, transactions[i]))
+    )
+
+    const outputs = await Promise.all(
+      unsignedTx.outputs.map((output) => prepareOutput(output, addressToAbsPathMapper))
+    )
+
+    const response = await ledger.signTransaction(inputs, outputs)
+
+    if (response.txHashHex !== unsignedTx.getId()) {
+      throw new Error('Tx serialization mismatch between Ledger and Adalite')
     }
 
-    const outputs = []
-    for (const output of unsignedTx.outputs) {
-      const data = await prepareOutput(output, addressToAbsPathMapper)
-      outputs.push(data)
-    }
-
-    try {
-      const response = await ada.signTransaction(inputs, outputs)
-
-      if (response.txHashHex !== unsignedTx.getId()) {
-        throw new Error('Ledger: Transaction was corrupted')
-      } else {
-        const txWitnesses = await prepareWitnesses(response.witnesses)
-        return {
-          txHash: response.txHashHex,
-          txBody: prepareBody(unsignedTx, txWitnesses),
-        }
-      }
-    } catch (err) {
-      throw new Error(err)
+    // serialize signed transaction for submission
+    const txWitnesses = await Promise.all(
+      response.witnesses.map((witness) => prepareWitness(witness))
+    )
+    return {
+      txHash: response.txHashHex,
+      txBody: prepareBody(unsignedTx, txWitnesses),
     }
   }
 

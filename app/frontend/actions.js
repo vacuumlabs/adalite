@@ -1,6 +1,5 @@
 const {generateMnemonic} = require('./wallet/mnemonic')
 const {ADALITE_CONFIG} = require('./config')
-const derivationSchemes = require('./wallet/derivation-schemes')
 const FileSaver = require('file-saver')
 const cbor = require('borc')
 const {
@@ -13,10 +12,10 @@ const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
 const getConversionRates = require('./helpers/getConversionRates')
 const sleep = require('./helpers/sleep')
-const {ADA_DONATION_ADDRESS} = require('./wallet/constants')
+const {ADA_DONATION_ADDRESS, LEDGER, TREZOR} = require('./wallet/constants')
 const NamedError = require('./helpers/NamedError')
-const Cardano = require('./wallet/cardano-wallet')
 const KeypassJson = require('./wallet/keypass-json')
+const CryptoProviderFactory = require('./wallet/crypto-provider-factory')
 
 let wallet = null
 
@@ -67,54 +66,30 @@ module.exports = ({setState, getState}) => {
   const loadWallet = async (state, {cryptoProvider, secret}) => {
     loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined})
     try {
-      switch (cryptoProvider) {
-        case 'trezor':
-          wallet = await Cardano.CardanoWallet({
-            cryptoProvider: 'trezor',
-            config: ADALITE_CONFIG,
-            network: 'mainnet',
-            derivationScheme: derivationSchemes.v2,
-          })
-          break
-        case 'ledger':
-          wallet = await Cardano.CardanoWallet({
-            cryptoProvider: 'ledger',
-            config: ADALITE_CONFIG,
-            network: 'mainnet',
-            derivationScheme: derivationSchemes.v2,
-          })
-          break
-        case 'mnemonic':
-          secret = secret.trim()
-          wallet = await Cardano.CardanoWallet({
-            cryptoProvider: 'mnemonic',
-            mnemonicOrHdNodeString: secret,
-            config: ADALITE_CONFIG,
-            network: 'mainnet',
-            derivationScheme: derivationSchemes.v1,
-          })
-          break
-        default:
-          return setState({
-            loading: false,
-            walletLoadingError: {
-              code: 'UnknownCryptoProvider',
-              params: {cryptoProvider},
-            },
-          })
-      }
+      const cpFactory = CryptoProviderFactory()
+      wallet = await cpFactory.getWallet(cryptoProvider, secret)
     } catch (e) {
-      debugLog(e)
-      setState({
-        walletLoadingError: {
-          code: 'WalletInitializationError',
-          params: {
-            message: e.name === 'TransportError' ? e.message : undefined,
+      if (e.name === 'UnknownCryptoProviderError') {
+        return setState({
+          loading: false,
+          walletLoadingError: {
+            code: 'UnknownCryptoProvider',
+            params: {cryptoProvider: e.message},
           },
-        },
-        loading: false,
-      })
-      return false
+        })
+      } else {
+        debugLog(e)
+        setState({
+          walletLoadingError: {
+            code: 'WalletInitializationError',
+            params: {
+              message: e.name === 'TransportError' ? e.message : undefined,
+            },
+          },
+          loading: false,
+        })
+        return false
+      }
     }
     try {
       const walletIsLoaded = true
@@ -125,8 +100,8 @@ module.exports = ({setState, getState}) => {
       const sendAmount = {fieldValue: ''}
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
-      const usingTrezor = cryptoProvider === 'trezor'
-      const usingLedger = cryptoProvider === 'ledger'
+      const usingTrezor = cryptoProvider === TREZOR
+      const usingLedger = cryptoProvider === LEDGER
       const isDemoWallet = secret === ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       setState({
         walletIsLoaded,

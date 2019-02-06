@@ -76,18 +76,18 @@ app.get('*', (req, res) => {
     `)
 })
 
-/*******************************************************************************
- To run server in secure mode, you need to set ADALITE_ENABLE_HTTPS to true and
- ADALITE_SERVER_URL to 'https://localhost:3000'
-********************************************************************************/
+/*
+* To run server in secure mode, you need to set ADALITE_ENABLE_HTTPS to true and
+* ADALITE_SERVER_URL to 'https://localhost:3000'
+*/
 if (process.env.ADALITE_ENABLE_HTTPS === 'true') {
   https.createServer(options, app).listen(process.env.PORT, () => {
     // eslint-disable-next-line no-console
-    console.log(`Cardano wallet app listening on secure port ${process.env.PORT}!`)
+    console.log(`Server is listening on secure port ${process.env.PORT}!`)
   })
 } else {
   app.listen(process.env.PORT, () => {
     // eslint-disable-next-line no-console
-    console.log(`Cardano wallet app listening on ${process.env.PORT}!`)
+    console.log(`Server is lisening on port ${process.env.PORT}!`)
   })
 }

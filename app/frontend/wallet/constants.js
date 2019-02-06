@@ -18,4 +18,7 @@ module.exports = {
       protocolMagic: 1097911063,
     },
   },
+
+  LEDGER: 'LEDGER',
+  TREZOR: 'TREZOR',
 }

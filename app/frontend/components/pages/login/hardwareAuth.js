@@ -1,4 +1,5 @@
 const {h} = require('preact')
+const {LEDGER, TREZOR} = require('../../../wallet/constants')
 
 const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
   const TrezorAffiliateLink = (title) =>
@@ -42,7 +43,7 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
           h(
             'button',
             {
-              onClick: () => loadWallet({cryptoProvider: 'trezor'}),
+              onClick: () => loadWallet({cryptoProvider: TREZOR}),
             },
             h(
               'div',
@@ -54,7 +55,7 @@ const LoadByHardwareWalletSection = ({enableTrezor, loadWallet}) => {
           h(
             'button',
             {
-              onClick: () => loadWallet({cryptoProvider: 'ledger'}),
+              onClick: () => loadWallet({cryptoProvider: LEDGER}),
             },
             h(
               'div',
