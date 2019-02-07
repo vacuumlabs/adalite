@@ -30,10 +30,10 @@ const NavbarAuth = connect(
     pathname: state.router.pathname,
     isDemoWallet: state.isDemoWallet,
     showExportJsonWalletDialog: state.showExportJsonWalletDialog,
-    usingTrezor: state.usingTrezor,
+    usingHwWallet: state.usingHwWallet,
   }),
   actions
-)(({pathname, isDemoWallet, usingTrezor, logout}) => {
+)(({pathname, isDemoWallet, usingHwWallet, logout}) => {
   const {
     history: {pushState},
   } = window
@@ -120,7 +120,7 @@ const NavbarAuth = connect(
               'Receive'
             )
           ),
-          !usingTrezor &&
+          !usingHwWallet &&
             h(
               'label',
               {class: 'inline', for: 'navcollapse'},

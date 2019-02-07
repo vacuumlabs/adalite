@@ -19,13 +19,8 @@ class AddressDetailDialogClass extends Component {
     error,
     verifyAddress,
     closeAddressDetail,
-    usingTrezor,
-    usingLedger,
+    hwWalletName,
   }) {
-    let device = null
-    if (usingTrezor) device = 'Trezor'
-    if (usingLedger) device = 'Ledger'
-
     return (
       showDetail &&
       h(
@@ -58,7 +53,7 @@ class AddressDetailDialogClass extends Component {
             h(
               'div',
               {class: 'text-center'},
-              h('button', {onClick: verifyAddress}, `Verify on ${device}`)
+              h('button', {onClick: verifyAddress}, `Verify on ${hwWalletName}`)
             )
           )
           : h(
@@ -118,8 +113,7 @@ module.exports = connect(
     showDetail: state.showAddressDetail,
     showVerification: state.showAddressVerification,
     error: state.addressVerificationError,
-    usingTrezor: state.usingTrezor,
-    usingLedger: state.usingLedger,
+    hwWalletName: state.hwWalletName,
   }),
   actions
 )(AddressDetailDialogClass)

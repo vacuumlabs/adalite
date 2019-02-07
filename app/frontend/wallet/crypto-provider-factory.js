@@ -3,7 +3,7 @@ const {ADALITE_CONFIG} = require('../config')
 const {LEDGER, TREZOR} = require('./constants')
 const derivationSchemes = require('./derivation-schemes')
 
-const CryptoProviderFactory = () => {
+const CryptoProviderFactory = (() => {
 
   const UnknownCryptoProviderError = (message) => {
     const error = new Error(message)
@@ -47,6 +47,6 @@ const CryptoProviderFactory = () => {
   return {
     getWallet,
   }
-}
+})()
 
 module.exports = CryptoProviderFactory

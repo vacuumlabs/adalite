@@ -12,6 +12,9 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     throw new Error(`Unsupported derivation scheme: ${state.derivationScheme.type}`)
   }
 
+  const isHwWallet = () => true
+  const getHwWalletName = () => 'Trezor'
+
   const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
     const response = await TrezorConnect.cardanoGetPublicKey({
       path: absDerivationPath,
@@ -127,6 +130,8 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     signTx,
     displayAddressForPath,
     deriveXpub,
+    isHwWallet,
+    getHwWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
   }

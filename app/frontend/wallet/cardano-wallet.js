@@ -87,6 +87,9 @@ const CardanoWallet = async (options) => {
   // fetch unspent outputs list asynchronously
   getUnspentTxOutputs()
 
+  const isHwWallet = () => cryptoProvider.isHwWallet()
+  const getHwWalletName = () => cryptoProvider.getHwWalletName()
+
   async function submitTx(signedTx) {
     const {txBody, txHash} = signedTx
     const response = await blockchainExplorer.submitTxRaw(txHash, txBody).catch((e) => {
@@ -382,6 +385,8 @@ const CardanoWallet = async (options) => {
   }
 
   return {
+    isHwWallet,
+    getHwWalletName,
     getSecret,
     submitTx,
     prepareSignedTx,

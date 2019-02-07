@@ -17,6 +17,9 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     throw new Error(`Unsupported derivation scheme: ${state.derivationScheme.type}`)
   }
 
+  const isHwWallet = () => true
+  const getHwWalletName = () => 'Ledger'
+
   const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
     try {
       const response = await ledger.getExtendedPublicKey(absDerivationPath)
@@ -110,6 +113,8 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     signTx,
     displayAddressForPath,
     deriveXpub,
+    isHwWallet,
+    getHwWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
   }
