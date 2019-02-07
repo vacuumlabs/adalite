@@ -1,6 +1,6 @@
 const Cardano = require('./cardano-wallet')
 const {ADALITE_CONFIG} = require('../config')
-const {LEDGER, TREZOR} = require('./constants')
+const {LEDGER, TREZOR, MNEMONIC} = require('./constants')
 const derivationSchemes = require('./derivation-schemes')
 
 const CryptoProviderFactory = (() => {
@@ -29,10 +29,10 @@ const CryptoProviderFactory = (() => {
           derivationScheme: derivationSchemes.v2,
         })
 
-      case 'mnemonic':
+      case MNEMONIC:
         secret = secret.trim()
         return await Cardano.CardanoWallet({
-          cryptoProvider: 'mnemonic',
+          cryptoProvider: MNEMONIC,
           mnemonicOrHdNodeString: secret,
           config: ADALITE_CONFIG,
           network: 'mainnet',

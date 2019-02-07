@@ -2,6 +2,7 @@ const {h, Component} = require('preact')
 const {getTranslation} = require('../../../translations')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const {MNEMONIC} = require('../../../wallet/constants')
 
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 
@@ -75,7 +76,7 @@ class LoadByMenmonicSectionClass extends Component {
                 mnemonic && !mnemonicValidationError ? 'pulse' : ''
               }`,
               disabled: !mnemonic || mnemonicValidationError,
-              onClick: () => loadWallet({cryptoProvider: 'mnemonic', secret: mnemonic}),
+              onClick: () => loadWallet({cryptoProvider: MNEMONIC, secret: mnemonic}),
               onKeyDown: (e) => {
                 e.key === 'Enter' && e.target.click()
                 if (e.key === 'Tab') {

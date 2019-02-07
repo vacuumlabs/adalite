@@ -10,7 +10,7 @@ const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypt
 const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const CardanoLedgerCryptoProvider = require('./cardano-ledger-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
-const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES, LEDGER, TREZOR} = require('./constants')
+const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES, LEDGER, TREZOR, MNEMONIC} = require('./constants')
 const derivationSchemes = require('./derivation-schemes.js')
 const shuffleArray = require('./helpers/shuffleArray')
 const {parseTx} = require('./helpers/cbor-parsers')
@@ -46,7 +46,7 @@ const CardanoWallet = async (options) => {
     cryptoProvider = CardanoTrezorCryptoProvider(config, state)
   } else if (options.cryptoProvider === LEDGER) {
     cryptoProvider = await CardanoLedgerCryptoProvider(config, state)
-  } else if (options.cryptoProvider === 'mnemonic') {
+  } else if (options.cryptoProvider === MNEMONIC) {
     const {walletSecret, derivationScheme} = await mnemonicOrHdNodeStringToWalletSecret(
       mnemonicOrHdNodeString,
       options.derivationScheme

@@ -21,4 +21,5 @@ module.exports = {
 
   LEDGER: 'LEDGER',
   TREZOR: 'TREZOR',
+  MNEMONIC: 'MNEMONIC',
 }

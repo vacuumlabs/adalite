@@ -16,7 +16,6 @@ class LoginPage extends Component {
     walletLoadingError,
     authMethod,
     setAuthMethod,
-    enableTrezor,
     showDemoWalletWarningDialog,
     logoutNotificationOpen,
     displayAboutOverlay,
@@ -41,7 +40,7 @@ class LoginPage extends Component {
           'ul',
           {class: 'tab-row'},
           authOption('mnemonic', 'Mnemonic'),
-          authOption('trezor', 'Hardware wallet'),
+          authOption('hw-wallet', 'Hardware wallet'),
           authOption('file', 'Key file')
         ),
         walletLoadingError &&
@@ -51,7 +50,7 @@ class LoginPage extends Component {
             getTranslation(walletLoadingError.code, walletLoadingError.params)
           ),
         authMethod === 'mnemonic' && h(MnemonicAuth),
-        authMethod === 'trezor' && h(HardwareAuth, {enableTrezor, loadWallet}),
+        authMethod === 'hw-wallet' && h(HardwareAuth, {loadWallet}),
         authMethod === 'file' && h(KeyFileAuth)
       ),
       displayAboutOverlay && h(AboutOverlay),
@@ -64,7 +63,6 @@ class LoginPage extends Component {
 module.exports = connect(
   (state) => ({
     authMethod: state.authMethod,
-    enableTrezor: state.enableTrezor,
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
     logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,

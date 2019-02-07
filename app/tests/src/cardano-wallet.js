@@ -5,6 +5,7 @@ const {CardanoWallet, txFeeFunction} = require('../../frontend/wallet/cardano-wa
 const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
 const mockNetwork = require('./common/mock')
 const {TxAux} = require('../../frontend/wallet/transaction')
+const {MNEMONIC} = require('../../frontend/wallet/constants')
 
 const testSeed = 39
 
@@ -21,7 +22,7 @@ const mockConfig2 = {
 }
 
 const unusedWalletConfig = {
-  cryptoProvider: 'mnemonic',
+  cryptoProvider: MNEMONIC,
   mnemonicOrHdNodeString:
     'rain flame hip basic extend capable chair oppose gorilla fun aunt emotion',
   config: mockConfig1,
@@ -31,7 +32,7 @@ const unusedWalletConfig = {
 }
 
 const usedWalletConfig = {
-  cryptoProvider: 'mnemonic',
+  cryptoProvider: MNEMONIC,
   mnemonicOrHdNodeString:
     'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
   config: mockConfig2,
@@ -41,7 +42,7 @@ const usedWalletConfig = {
 }
 
 const smallUtxosWalletConfig = {
-  cryptoProvider: 'mnemonic',
+  cryptoProvider: MNEMONIC,
   mnemonicOrHdNodeString: 'blame matrix water coil diet seat nerve street movie turkey jump bundle',
   config: mockConfig1,
   randomSeed: testSeed,
