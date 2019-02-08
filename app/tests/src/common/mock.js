@@ -1499,6 +1499,1067 @@ const mock = (ADALITE_CONFIG) => {
           caTxList: [],
         },
       },
+      /*
+      * addresses to test discovery of addresses with v2 derivation scheme
+      * from mnemonic:
+      *  cost dash dress stove morning robust group affair
+      *  stomach vacant route volume yellow salute laugh
+      */
+      'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X',
+          caType: 'CPubKeyAddress',
+          caTxNum: 1,
+          caBalance: {getCoin: '100000'},
+          caTxList: [
+            {
+              ctbId: '7d5412fe0b42df9e8131d4b3199eb174c28d280b9a2e78240c523754ecad737e',
+              ctbTimeIssued: 1550060011,
+              ctbInputs: [
+                [
+                  'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
+                  {getCoin: '1833852'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+                  {getCoin: '1565858'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '1833852'},
+              ctbOutputSum: {getCoin: '1665858'},
+            },
+          ],
+        },
+      },
+      'Ae2tdPwUPEZ6ZMHV9PaJbYqPjNNBUPDksRThhZ5qrqHHU4LXgQ7h9XzYAHC': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ6ZMHV9PaJbYqPjNNBUPDksRThhZ5qrqHHU4LXgQ7h9XzYAHC',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ8LAVy21zj4BF97iWxKCmPv12W6a18zLX3V7rZDFFVgqUBkKw': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ8LAVy21zj4BF97iWxKCmPv12W6a18zLX3V7rZDFFVgqUBkKw',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZFv14bjnVcXgRLA39FUgjw2hFmRxufNGbxwNx2ivBAZHmeaa5': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZFv14bjnVcXgRLA39FUgjw2hFmRxufNGbxwNx2ivBAZHmeaa5',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYw9wMWUnyutGYXdpVqNStf4g3TAxiAYMyACQAWXNFvs3fZ8do': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYw9wMWUnyutGYXdpVqNStf4g3TAxiAYMyACQAWXNFvs3fZ8do',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZDFJ38Ad8PzQaxN4hoqeMfDmP9qvajLDGZSq7Hi26fZJEVnJ8': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZDFJ38Ad8PzQaxN4hoqeMfDmP9qvajLDGZSq7Hi26fZJEVnJ8',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ7zES3hWiT1RSjVoRwteJWTNMzsjNixtrvR6wMHPPTHroAwnJ': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ7zES3hWiT1RSjVoRwteJWTNMzsjNixtrvR6wMHPPTHroAwnJ',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZHAZxwzS7MrSS8nc6DXt4Nj8FvrYHXCVDkzVEjrAfVxxZEL4H': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZHAZxwzS7MrSS8nc6DXt4Nj8FvrYHXCVDkzVEjrAfVxxZEL4H',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ9wMYpKKXJLAEa5JV2CKBoiFvKfuqdtDLMARkaZG9P4K7ZRjX': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ9wMYpKKXJLAEa5JV2CKBoiFvKfuqdtDLMARkaZG9P4K7ZRjX',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZHxx6ug6oyXREcwQ1tjBY4D2B6M7rYL9LhbAXfRPfMtm3nV4J': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZHxx6ug6oyXREcwQ1tjBY4D2B6M7rYL9LhbAXfRPfMtm3nV4J',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYvtUpMc6eGLCo92od8m4utcBHTgYvARfUYY51BUowoQRm2hos': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYvtUpMc6eGLCo92od8m4utcBHTgYvARfUYY51BUowoQRm2hos',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYz8hGBRWCNJFm2bDuSHBbphMT32wPxALXTVPWrRCtZhSPbRen': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYz8hGBRWCNJFm2bDuSHBbphMT32wPxALXTVPWrRCtZhSPbRen',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ7Ed1V5G9oBoRoK3sbgFU8b9iZY2kegf4s6228EwVLRSq9NzP': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ7Ed1V5G9oBoRoK3sbgFU8b9iZY2kegf4s6228EwVLRSq9NzP',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZFg6vSmeiJKxGxwyJjMgbfVfRirMJBMYHJs2sYfQgX4DW85F8': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZFg6vSmeiJKxGxwyJjMgbfVfRirMJBMYHJs2sYfQgX4DW85F8',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ7dnds6ZyhQdmgkrDFFPSDh8jG9RAhswcXt1bRauNw5jczjpV': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ7dnds6ZyhQdmgkrDFFPSDh8jG9RAhswcXt1bRauNw5jczjpV',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZNJGBKu6uB7nT4JYXiM7Gexvr9TaEuUFMwC7ns6JeYH6osQrE': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZNJGBKu6uB7nT4JYXiM7Gexvr9TaEuUFMwC7ns6JeYH6osQrE',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ7F6a36T3Twgha2KDKHNvPSbYGNQNj4Rh5TeNATPffS7NCLkW': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ7F6a36T3Twgha2KDKHNvPSbYGNQNj4Rh5TeNATPffS7NCLkW',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYyLw6UJRKnbbudG8PJR7KfPhioRW8m1BohkFAqR44pPg6BYVZ': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYyLw6UJRKnbbudG8PJR7KfPhioRW8m1BohkFAqR44pPg6BYVZ',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: '7d5412fe0b42df9e8131d4b3199eb174c28d280b9a2e78240c523754ecad737e',
+              ctbTimeIssued: 1550060011,
+              ctbInputs: [
+                [
+                  'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
+                  {getCoin: '1833852'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+                  {getCoin: '1565858'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '1833852'},
+              ctbOutputSum: {getCoin: '1665858'},
+            },
+            {
+              ctbId: '8a83d5fa699980323ced882e2825fed2c8320a43d5b51e145627a96523019336',
+              ctbTimeIssued: 1550059851,
+              ctbInputs: [
+                [
+                  'DdzFFzCqrhsnqinhdc9QQR9QEFHk7Eq21kN8hFP2Mwk3e8uqCKagwk9Me2uBHJ7kXSTvw1auvAZNE4dc4svfrJtqH6vfYYDr3Ng2UjEu',
+                  {getCoin: '2000000'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
+                  {getCoin: '1833852'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '2000000'},
+              ctbOutputSum: {getCoin: '1833852'},
+            },
+          ],
+        },
+      },
+      'Ae2tdPwUPEZBSAotfZ47iZ1QtBCDRGEXfftG75di13axqhaviJvWpT48dm6': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZBSAotfZ47iZ1QtBCDRGEXfftG75di13axqhaviJvWpT48dm6',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ8gWGpNQAfqeTcTXai47wQ3bmjpYcmaE8Dcr2eSpV3VwzjAxC': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ8gWGpNQAfqeTcTXai47wQ3bmjpYcmaE8Dcr2eSpV3VwzjAxC',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZKGFrUtqLj76kZuYfBMUNEcP21Loj6wcshXQosiRErjWsbLWw': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZKGFrUtqLj76kZuYfBMUNEcP21Loj6wcshXQosiRErjWsbLWw',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZJWdNtdoVG4bMA18ZxKE2944Mr1FKk5EfEu3M4gsJTntm3dVo': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZJWdNtdoVG4bMA18ZxKE2944Mr1FKk5EfEu3M4gsJTntm3dVo',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZLUrETVtMfNA3wQVvky6qG3VZ7urH1ZwJC6ipBBXkikFRiAnE': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZLUrETVtMfNA3wQVvky6qG3VZ7urH1ZwJC6ipBBXkikFRiAnE',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZLbb6GEBCTaogQrJr391fESo2UKHrvPBYFrw6SCg4EcVLmn1z': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZLbb6GEBCTaogQrJr391fESo2UKHrvPBYFrw6SCg4EcVLmn1z',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYwJN7vyddNCKjFUEdFV5kuaJvwCgVjqSUKCyoayKvDVdx2V2d': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYwJN7vyddNCKjFUEdFV5kuaJvwCgVjqSUKCyoayKvDVdx2V2d',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYy3NF1CfqLHTDZFMV18LQGoaShEbA4ajVgDPvkc4HQvdBXchD': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYy3NF1CfqLHTDZFMV18LQGoaShEbA4ajVgDPvkc4HQvdBXchD',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ55kSg8Lh3QnfQV7rfnsvXrEd5QgWTy94jtHKv6QgaUks3fbM': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ55kSg8Lh3QnfQV7rfnsvXrEd5QgWTy94jtHKv6QgaUks3fbM',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZL2W3FJHBcrWamYV1HLBeUyQMMmhcfHkJ5Q2kfj8XzA2fzb6f': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZL2W3FJHBcrWamYV1HLBeUyQMMmhcfHkJ5Q2kfj8XzA2fzb6f',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZKmwzSAMFRREGnjBbRGdmMBaJcPEkuWJ8fbUAh2nFJv2j8kmb': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZKmwzSAMFRREGnjBbRGdmMBaJcPEkuWJ8fbUAh2nFJv2j8kmb',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ6gw4xtRiXkuseQ5KRxxpBpD8pkKUBK9EXDZKUTvRMApKdCoL': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ6gw4xtRiXkuseQ5KRxxpBpD8pkKUBK9EXDZKUTvRMApKdCoL',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZAiGSitwh7unMpMP5XZQGYbiuSpwcEq2G3eKpdHSyp2GsGXmf': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZAiGSitwh7unMpMP5XZQGYbiuSpwcEq2G3eKpdHSyp2GsGXmf',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ6x5FVXf9RCChzhPr6insstyhidQr63k7uha5EQ2tj57gz3dK': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ6x5FVXf9RCChzhPr6insstyhidQr63k7uha5EQ2tj57gz3dK',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZF92nHTjuWJWCZjNDY4EVfh55HzeqMMJNS43TuZJE5xZi6LUp': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZF92nHTjuWJWCZjNDY4EVfh55HzeqMMJNS43TuZJE5xZi6LUp',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ51PWr2WyxGU3MwVqFKw4DhGRq8XbdG785wTUQgfiSv2ztwq8': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ51PWr2WyxGU3MwVqFKw4DhGRq8XbdG785wTUQgfiSv2ztwq8',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ8vVCrdEK94by5Tywz2q37jrqqoB5NszC91AE5hgGPHLWdqa1': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ8vVCrdEK94by5Tywz2q37jrqqoB5NszC91AE5hgGPHLWdqa1',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZDAnb8FrJkMEmuuo2VxUhoxaHktxDSwqfMBmPZ97X8KR8JNT7': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZDAnb8FrJkMEmuuo2VxUhoxaHktxDSwqfMBmPZ97X8KR8JNT7',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZJCrvdqaWgHfb5scpkKdgXb4QUEqxp91E6XH33sLJaqjMLU15': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZJCrvdqaWgHfb5scpkKdgXb4QUEqxp91E6XH33sLJaqjMLU15',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ7DUouRCERfJ8fYHcugjaaZN7GyK8ueH8TtRW8YeP64nDZ1v4': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ7DUouRCERfJ8fYHcugjaaZN7GyK8ueH8TtRW8YeP64nDZ1v4',
+          caType: 'CPubKeyAddress',
+          caTxNum: 1,
+          caBalance: {getCoin: '200000'},
+          caTxList: [
+            {
+              ctbId: 'd5c49afce8926714fa5161458f7ee2073040fafc82bc82237bd9bcb269f6dfa2',
+              ctbTimeIssued: 1550060091,
+              ctbInputs: [
+                [
+                  'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+                  {getCoin: '1565858'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'Ae2tdPwUPEZ7DUouRCERfJ8fYHcugjaaZN7GyK8ueH8TtRW8YeP64nDZ1v4',
+                  {getCoin: '200000'},
+                ],
+                [
+                  'Ae2tdPwUPEZ4thUT2Rjo6DJiZksAQReYEzhxkP3xq5NFxFJchxDbKL5tbag',
+                  {getCoin: '1197864'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '1565858'},
+              ctbOutputSum: {getCoin: '1397864'},
+            },
+          ],
+        },
+      },
+      'Ae2tdPwUPEZ72p9ArnL9T3tQasvedXq52U9XBAUdxv8bTyFT7zL6KDMUTTN': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ72p9ArnL9T3tQasvedXq52U9XBAUdxv8bTyFT7zL6KDMUTTN',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ4sAJKpweWu22MGeHYyUbtig9SevKyWUoRuhY825ZAMRVbggk': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ4sAJKpweWu22MGeHYyUbtig9SevKyWUoRuhY825ZAMRVbggk',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZMh5Yk6jSd4SjkgVi6tMzQ4s57J8VY12CecYvneXv67rSfyhf': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZMh5Yk6jSd4SjkgVi6tMzQ4s57J8VY12CecYvneXv67rSfyhf',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ6riCqkF8vKDixxoHUruBLsWN4Wj4bcNGN2DC7RPAMUvUbpdd': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ6riCqkF8vKDixxoHUruBLsWN4Wj4bcNGN2DC7RPAMUvUbpdd',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZHhSVu3reuyYWR8TGNNPVagsUpitRzDjcdQyToWGcb5K7nmef': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZHhSVu3reuyYWR8TGNNPVagsUpitRzDjcdQyToWGcb5K7nmef',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZFpa6Nw7o4zA5UpBT71tcX4igi49JRV1wvBpsAem5h8vUUCp5': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZFpa6Nw7o4zA5UpBT71tcX4igi49JRV1wvBpsAem5h8vUUCp5',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYyteisfRHfp6gg5Q4uwct9mm3xNihmZGo7W1cSrzd2UyQB3S3': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYyteisfRHfp6gg5Q4uwct9mm3xNihmZGo7W1cSrzd2UyQB3S3',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZJKvAatArE3MGj7tqx1wsHk4jL7QYzmrsRGYm1J9YrdWNfixc': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZJKvAatArE3MGj7tqx1wsHk4jL7QYzmrsRGYm1J9YrdWNfixc',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZBzhWdzYJTr6wQT1dj4sAvgo5KjP8vuuXSyPUdVmi3HQELjNP': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZBzhWdzYJTr6wQT1dj4sAvgo5KjP8vuuXSyPUdVmi3HQELjNP',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ6QkpyEGCnz32kCLP5PVxSKm5XAqrHrSrPaqZdnSupqxnyo2T': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ6QkpyEGCnz32kCLP5PVxSKm5XAqrHrSrPaqZdnSupqxnyo2T',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYwz4yhAi2KtnE9PbsJVQC8vji4GXWSYRJg97wq8TKPXzaQdwt': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYwz4yhAi2KtnE9PbsJVQC8vji4GXWSYRJg97wq8TKPXzaQdwt',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZKcvSM61gZBNJRbADBvSdPPmVM8DGpy8dE1Bpy7SKLhMpghEi': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZKcvSM61gZBNJRbADBvSdPPmVM8DGpy8dE1Bpy7SKLhMpghEi',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ7ENmwyU4cgqVbxFNyuDHUGgwrePYtaLPRmjtg7RPaMbp6J8B': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ7ENmwyU4cgqVbxFNyuDHUGgwrePYtaLPRmjtg7RPaMbp6J8B',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ2HJPPRjm5DUwnqtnCFgf4DU5yh425PoqXnNiU9ZbBweRSW9x': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ2HJPPRjm5DUwnqtnCFgf4DU5yh425PoqXnNiU9ZbBweRSW9x',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ2YGAb9K5uizF4eybGWpqRr1Z1N2XQqrZGX9iWnowZ3DKHMGn': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ2YGAb9K5uizF4eybGWpqRr1Z1N2XQqrZGX9iWnowZ3DKHMGn',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYz2Vp78b7coZ4W2vJ83WpTcfExAP17dpGLvKN7oQ33ytj62tb': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYz2Vp78b7coZ4W2vJ83WpTcfExAP17dpGLvKN7oQ33ytj62tb',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZBeK2WmJ772pHoiFEYAa8fDbY9UTbFL2fEp2zJTW45Ki7hRT4': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZBeK2WmJ772pHoiFEYAa8fDbY9UTbFL2fEp2zJTW45Ki7hRT4',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ5oc6P6TH3ZF8rDBNFeT2T6fg9ZfRGbWVShwDnSzDKndvFcEh': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ5oc6P6TH3ZF8rDBNFeT2T6fg9ZfRGbWVShwDnSzDKndvFcEh',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZCF7EU4xt3Q8aafuPXBz1ikKycQEW8XM97TDp4auLL5RWYEMk': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZCF7EU4xt3Q8aafuPXBz1ikKycQEW8XM97TDp4auLL5RWYEMk',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYyUd3StyBMaGxDxdMcemVqxqKqsZmTDMjQrCRS9osVooZJdnm': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYyUd3StyBMaGxDxdMcemVqxqKqsZmTDMjQrCRS9osVooZJdnm',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZKJtNKuj6TB58D1Ne1ZTUGpRhNihHK4kJRgJEcYTCQGGkTzeP': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZKJtNKuj6TB58D1Ne1ZTUGpRhNihHK4kJRgJEcYTCQGGkTzeP',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+          caType: 'CPubKeyAddress',
+          caTxNum: 2,
+          caBalance: {getCoin: '0'},
+          caTxList: [
+            {
+              ctbId: 'd5c49afce8926714fa5161458f7ee2073040fafc82bc82237bd9bcb269f6dfa2',
+              ctbTimeIssued: 1550060091,
+              ctbInputs: [
+                [
+                  'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+                  {getCoin: '1565858'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'Ae2tdPwUPEZ7DUouRCERfJ8fYHcugjaaZN7GyK8ueH8TtRW8YeP64nDZ1v4',
+                  {getCoin: '200000'},
+                ],
+                [
+                  'Ae2tdPwUPEZ4thUT2Rjo6DJiZksAQReYEzhxkP3xq5NFxFJchxDbKL5tbag',
+                  {getCoin: '1197864'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '1565858'},
+              ctbOutputSum: {getCoin: '1397864'},
+            },
+            {
+              ctbId: '7d5412fe0b42df9e8131d4b3199eb174c28d280b9a2e78240c523754ecad737e',
+              ctbTimeIssued: 1550060011,
+              ctbInputs: [
+                [
+                  'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
+                  {getCoin: '1833852'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X',
+                  {getCoin: '100000'},
+                ],
+                [
+                  'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+                  {getCoin: '1565858'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '1833852'},
+              ctbOutputSum: {getCoin: '1665858'},
+            },
+          ],
+        },
+      },
+      'Ae2tdPwUPEZN3GEFq8FoMzsSchMRwjcwzUoHsy3ARHUHQQHZxYzeDXtAkir': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZN3GEFq8FoMzsSchMRwjcwzUoHsy3ARHUHQQHZxYzeDXtAkir',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZHszSLNV6L8qAFE1Jh7Q8u5z3h4NU3NRReAn4e47zhDgJTnRC': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZHszSLNV6L8qAFE1Jh7Q8u5z3h4NU3NRReAn4e47zhDgJTnRC',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZD9a9iktQ4YRVU8tSUE5KgUWJAWcVhNrh8G3xEXbd2ZJBH7Jx': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZD9a9iktQ4YRVU8tSUE5KgUWJAWcVhNrh8G3xEXbd2ZJBH7Jx',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZFkwwYuqW1HMx2RXV9p8dNuNC1Gdw2aZXA8KXPXsDtobEQ14Q': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZFkwwYuqW1HMx2RXV9p8dNuNC1Gdw2aZXA8KXPXsDtobEQ14Q',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZAFUycTo6T73A5F97Ew5D7gN4NL139rpp86HCU4K6th9DKzeH': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZAFUycTo6T73A5F97Ew5D7gN4NL139rpp86HCU4K6th9DKzeH',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ64DHikwFaJMdQNJBce9tvbABG3X9gCeaNzfF68ckKX2n2L4c': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ64DHikwFaJMdQNJBce9tvbABG3X9gCeaNzfF68ckKX2n2L4c',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZCBqBMTJyMFwrknLY1qf4wuorQw9XtNUoPHoZAD4yrsBnuerU': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZCBqBMTJyMFwrknLY1qf4wuorQw9XtNUoPHoZAD4yrsBnuerU',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ3EimSircxs5JoJ9BGbvmhtQX9MV7Lq6hQC3ZBNfShPiS2xHm': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ3EimSircxs5JoJ9BGbvmhtQX9MV7Lq6hQC3ZBNfShPiS2xHm',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYz66u2V5S35o7pDxzeYfTJ31ekfzFDGECosSg7TBUMGvs8pC3': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYz66u2V5S35o7pDxzeYfTJ31ekfzFDGECosSg7TBUMGvs8pC3',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ9ax2V8dFamdbGCUASw4cgs1Wog7UCXKNYhiL34ifNfYAHYCV': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ9ax2V8dFamdbGCUASw4cgs1Wog7UCXKNYhiL34ifNfYAHYCV',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZAUpyN6Vq1NRSxZEHYk2J6uw2qm9bXYWQXaiRTkqZY6yhSFoe': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZAUpyN6Vq1NRSxZEHYk2J6uw2qm9bXYWQXaiRTkqZY6yhSFoe',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ8uLjrq8p6aWNpQTwHrV5RDzdtmbZrW72xj3kAqpsZiuvQ1t4': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ8uLjrq8p6aWNpQTwHrV5RDzdtmbZrW72xj3kAqpsZiuvQ1t4',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZEwDwRoBzJt3WwhpdEZXzQZTMx7xEjUGRqN2TziD7dj87bTnz': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZEwDwRoBzJt3WwhpdEZXzQZTMx7xEjUGRqN2TziD7dj87bTnz',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZL7TdN2Ugr3isi3m5UoH6nXnMZA63VuYBBsbTiqALv3UMM2bS': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZL7TdN2Ugr3isi3m5UoH6nXnMZA63VuYBBsbTiqALv3UMM2bS',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ4thUT2Rjo6DJiZksAQReYEzhxkP3xq5NFxFJchxDbKL5tbag': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ4thUT2Rjo6DJiZksAQReYEzhxkP3xq5NFxFJchxDbKL5tbag',
+          caType: 'CPubKeyAddress',
+          caTxNum: 1,
+          caBalance: {getCoin: '1197864'},
+          caTxList: [
+            {
+              ctbId: 'd5c49afce8926714fa5161458f7ee2073040fafc82bc82237bd9bcb269f6dfa2',
+              ctbTimeIssued: 1550060091,
+              ctbInputs: [
+                [
+                  'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+                  {getCoin: '1565858'},
+                ],
+              ],
+              ctbOutputs: [
+                [
+                  'Ae2tdPwUPEZ7DUouRCERfJ8fYHcugjaaZN7GyK8ueH8TtRW8YeP64nDZ1v4',
+                  {getCoin: '200000'},
+                ],
+                [
+                  'Ae2tdPwUPEZ4thUT2Rjo6DJiZksAQReYEzhxkP3xq5NFxFJchxDbKL5tbag',
+                  {getCoin: '1197864'},
+                ],
+              ],
+              ctbInputSum: {getCoin: '1565858'},
+              ctbOutputSum: {getCoin: '1397864'},
+            },
+          ],
+        },
+      },
+      'Ae2tdPwUPEZ1j7ShGjWmWJNmtN9neEYgMcixuguum8cidaRnGERGh8QMDGb': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ1j7ShGjWmWJNmtN9neEYgMcixuguum8cidaRnGERGh8QMDGb',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZLtvX2byRkHWM2kFHJh3HwvsPefnwhmWw9mJfHuXo7FBMuyxg': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZLtvX2byRkHWM2kFHJh3HwvsPefnwhmWw9mJfHuXo7FBMuyxg',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZLYjtsKf6xjC5TCmD3RKS5BXMY3bhPv9P8X7QATo3dLzVLU2m': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZLYjtsKf6xjC5TCmD3RKS5BXMY3bhPv9P8X7QATo3dLzVLU2m',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ58nzeM5vDihSMYpqCcfWTSJc3jgVyTzt7hvPQ58XU4ZLEfYT': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ58nzeM5vDihSMYpqCcfWTSJc3jgVyTzt7hvPQ58XU4ZLEfYT',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZDLthWxHrTWKYgFeoQvc8THJko7QfFBqQRLjcQnBQoqduzq6q': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZDLthWxHrTWKYgFeoQvc8THJko7QfFBqQRLjcQnBQoqduzq6q',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZLWfGLKuiWp5m4zLBAWy1LkDaSy9ycQajApZtsaKCkJJyamSd': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZLWfGLKuiWp5m4zLBAWy1LkDaSy9ycQajApZtsaKCkJJyamSd',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYyWhFrZwNih7D2w1FFXrvwcwyzaCh4XCricYYdGUigCFHS7Pe': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYyWhFrZwNih7D2w1FFXrvwcwyzaCh4XCricYYdGUigCFHS7Pe',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ4uD3NtLDVzmpVzzL39RqK4CFHSTGnNTN5Ma8DqiUhWfFPgVy': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ4uD3NtLDVzmpVzzL39RqK4CFHSTGnNTN5Ma8DqiUhWfFPgVy',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZDdf7CvxwE9gFmWR277Pj6FmUMFHgciGdZUe82jo2w11U5Gob': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZDdf7CvxwE9gFmWR277Pj6FmUMFHgciGdZUe82jo2w11U5Gob',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ24T2cAj6YFKTrfpZ4aUid6uMSk7GK89Gg514r52qdyvSuLSa': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ24T2cAj6YFKTrfpZ4aUid6uMSk7GK89Gg514r52qdyvSuLSa',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ8xkAfy4P6BTupRYyPNqLkiVkCktimxSKr17852wJRAQtz16M': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ8xkAfy4P6BTupRYyPNqLkiVkCktimxSKr17852wJRAQtz16M',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYyHsy1ZVX9QGyGos2o4xyRE6ZSYou3fmWasS5EkcmmSK1rhkx': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYyHsy1ZVX9QGyGos2o4xyRE6ZSYou3fmWasS5EkcmmSK1rhkx',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYzWEjFxbZUzRvLJyJfbhMz1DhupW4vjVwQjFuEpFKMjoZy6Ny': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYzWEjFxbZUzRvLJyJfbhMz1DhupW4vjVwQjFuEpFKMjoZy6Ny',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZGdX1Dr1xtbLfCWsusntTPNbaUnTvnP2j7dTAhxTKYGLmM1qG': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZGdX1Dr1xtbLfCWsusntTPNbaUnTvnP2j7dTAhxTKYGLmM1qG',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ8hXwJgxGqTQnyCHRvFVBaDyvQeVHNukEcu3JXMPi9j8dMKYe': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ8hXwJgxGqTQnyCHRvFVBaDyvQeVHNukEcu3JXMPi9j8dMKYe',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZN8peUM1ELGiRVrFt5VKSctYCNq9gEWuAbzevsVBFjeowEUof': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZN8peUM1ELGiRVrFt5VKSctYCNq9gEWuAbzevsVBFjeowEUof',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYxW34N4VVVsBPKk9XB2CqTQhsPgghjpG3UcVcgrft8YYeUT6q': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYxW34N4VVVsBPKk9XB2CqTQhsPgghjpG3UcVcgrft8YYeUT6q',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ92XTjnqfaN4M6bmv4hiJNooWyT64RYt81uM9ToCreVWxY2VD': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ92XTjnqfaN4M6bmv4hiJNooWyT64RYt81uM9ToCreVWxY2VD',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZLE1YXsaszJ1fLc4g2XtLZHJmQgbjUWZs9qg6grzwgAaRwiy7': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZLE1YXsaszJ1fLc4g2XtLZHJmQgbjUWZs9qg6grzwgAaRwiy7',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ4Mj93jxTC494UDWq6VszrVTrv6NpyuviPF5pGQdvSM1631oP': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ4Mj93jxTC494UDWq6VszrVTrv6NpyuviPF5pGQdvSM1631oP',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZG3bQYAGEQZ1eJHVAFTqHrDxVeppyT5eVBzuDbZdDS2DTw4iK': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZG3bQYAGEQZ1eJHVAFTqHrDxVeppyT5eVBzuDbZdDS2DTw4iK',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEYzKBemPWgecqrU2xUbXAwVpBqx2GPnQ1vVhmsBgabtsmWBRQF': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEYzKBemPWgecqrU2xUbXAwVpBqx2GPnQ1vVhmsBgabtsmWBRQF',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ29vSHdocM8CBxgzogumqhkVsb8iKnsbLB2wpgV4TUWCWDBkh': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ29vSHdocM8CBxgzogumqhkVsb8iKnsbLB2wpgV4TUWCWDBkh',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
+      'Ae2tdPwUPEZ3nVk9jvSGjEqUW2L214T1FZuiq6X7aMDbHQ3KqkN9cCdh6nz': {
+        Right: {
+          caAddress: 'Ae2tdPwUPEZ3nVk9jvSGjEqUW2L214T1FZuiq6X7aMDbHQ3KqkN9cCdh6nz',
+          caType: 'CPubKeyAddress',
+          caTxNum: 0,
+          caBalance: {getCoin: '0'},
+          caTxList: [],
+        },
+      },
       '*': {},
     }
     for (const address in addressesAndResponses) {
@@ -1637,6 +2698,9 @@ const mock = (ADALITE_CONFIG) => {
             cuCoins: {getCoin: '5000'},
           },
         ],
+      },
+      '["Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X","Ae2tdPwUPEZ7DUouRCERfJ8fYHcugjaaZN7GyK8ueH8TtRW8YeP64nDZ1v4","Ae2tdPwUPEZ4thUT2Rjo6DJiZksAQReYEzhxkP3xq5NFxFJchxDbKL5tbag"]': {
+        Right: [],
       },
     }
 

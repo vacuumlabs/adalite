@@ -7,33 +7,68 @@ const AddressManager = require('../../frontend/wallet/address-manager')
 const range = require('../../frontend/wallet/helpers/range')
 const mnemonicOrHdNodeStringToWalletSecret = require('../../frontend/wallet/helpers/mnemonicOrHdNodeStringToWalletSecret')
 const cryptoProviderSettings = require('./common/crypto-provider-settings')
+const BlockchainExplorer = require('../../frontend/wallet/blockchain-explorer')
+
+const mockConfig = {
+  ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
+  ADALITE_SERVER_URL: 'http://localhost:3000',
+  ADALITE_WALLET_ADDRESS_LIMIT_V1: 10,
+  ADALITE_GAP_LIMIT: 10,
+}
+
+const blockchainExplorer = BlockchainExplorer(mockConfig, {})
 
 const cryptoProviders = []
 const addressManagers = []
 
-const initAddressManager = async (settings, i) => {
-  const parsedWalletSecret = await mnemonicOrHdNodeStringToWalletSecret(settings.secret)
+const addressManagerSettings = [
+  {
+    isChange: false,
+    cryptoSettings: cryptoProviderSettings[0],
+  },
+  {
+    isChange: false,
+    cryptoSettings: cryptoProviderSettings[1],
+  },
+  {
+    isChange: false,
+    cryptoSettings: cryptoProviderSettings[2],
+  },
+  {
+    isChange: false,
+    cryptoSettings: cryptoProviderSettings[3],
+  },
+  {
+    isChange: true,
+    cryptoSettings: cryptoProviderSettings[3],
+  },
+]
 
+const initAddressManager = async (settings, i) => {
+  const {cryptoSettings, isChange} = settings
+  const parsedWalletSecret = await mnemonicOrHdNodeStringToWalletSecret(cryptoSettings.secret)
   cryptoProviders[i] = CardanoWalletSecretCryptoProvider(
     {
       derivationScheme: parsedWalletSecret.derivationScheme,
       walletSecret: parsedWalletSecret.walletSecret,
-      network: settings.network,
+      network: cryptoSettings.network,
     },
     true
   )
 
   addressManagers[i] = AddressManager({
     accountIndex: HARDENED_THRESHOLD,
-    addressLimit: 10,
+    addressLimitV1: mockConfig.ADALITE_WALLET_ADDRESS_LIMIT_V1,
+    gapLimit: mockConfig.ADALITE_GAP_LIMIT,
     cryptoProvider: cryptoProviders[i],
     derivationScheme: parsedWalletSecret.derivationScheme,
     disableCaching: true,
-    isChange: false,
+    isChange,
+    blockchainExplorer,
   })
 }
 
-before(async () => await Promise.all(cryptoProviderSettings.map(initAddressManager)))
+before(async () => await Promise.all(addressManagerSettings.map(initAddressManager)))
 
 const childIndex2 = 0xf9745151
 const childIndex3 = 0x10000323
@@ -130,5 +165,50 @@ describe('wallet addresses derivation scheme V2', () => {
       .map(derivationSchemes.v2.toAbsoluteDerivationPath)
     const walletAddresses = await addressManagers[3]._deriveAddresses(derivationPaths)
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
+  })
+})
+
+describe('wallet addresses discovery scheme V2', () => {
+  const expectedWalletAddresses = [
+    'Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W',
+    'Ae2tdPwUPEZ7dnds6ZyhQdmgkrDFFPSDh8jG9RAhswcXt1bRauNw5jczjpV',
+    'Ae2tdPwUPEZ8LAVy21zj4BF97iWxKCmPv12W6a18zLX3V7rZDFFVgqUBkKw',
+    'Ae2tdPwUPEZ7Ed1V5G9oBoRoK3sbgFU8b9iZY2kegf4s6228EwVLRSq9NzP',
+    'Ae2tdPwUPEYyLw6UJRKnbbudG8PJR7KfPhioRW8m1BohkFAqR44pPg6BYVZ',
+    'Ae2tdPwUPEYw9wMWUnyutGYXdpVqNStf4g3TAxiAYMyACQAWXNFvs3fZ8do',
+    'Ae2tdPwUPEZ9wMYpKKXJLAEa5JV2CKBoiFvKfuqdtDLMARkaZG9P4K7ZRjX',
+    'Ae2tdPwUPEZHAZxwzS7MrSS8nc6DXt4Nj8FvrYHXCVDkzVEjrAfVxxZEL4H',
+    'Ae2tdPwUPEYz8hGBRWCNJFm2bDuSHBbphMT32wPxALXTVPWrRCtZhSPbRen',
+    'Ae2tdPwUPEZHxx6ug6oyXREcwQ1tjBY4D2B6M7rYL9LhbAXfRPfMtm3nV4J',
+    'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X',
+    'Ae2tdPwUPEZ7F6a36T3Twgha2KDKHNvPSbYGNQNj4Rh5TeNATPffS7NCLkW',
+    'Ae2tdPwUPEYvtUpMc6eGLCo92od8m4utcBHTgYvARfUYY51BUowoQRm2hos',
+    'Ae2tdPwUPEZNJGBKu6uB7nT4JYXiM7Gexvr9TaEuUFMwC7ns6JeYH6osQrE',
+    'Ae2tdPwUPEZDFJ38Ad8PzQaxN4hoqeMfDmP9qvajLDGZSq7Hi26fZJEVnJ8',
+    'Ae2tdPwUPEZBSAotfZ47iZ1QtBCDRGEXfftG75di13axqhaviJvWpT48dm6',
+    'Ae2tdPwUPEZFg6vSmeiJKxGxwyJjMgbfVfRirMJBMYHJs2sYfQgX4DW85F8',
+    'Ae2tdPwUPEZ7zES3hWiT1RSjVoRwteJWTNMzsjNixtrvR6wMHPPTHroAwnJ',
+    'Ae2tdPwUPEZFv14bjnVcXgRLA39FUgjw2hFmRxufNGbxwNx2ivBAZHmeaa5',
+    'Ae2tdPwUPEZ6ZMHV9PaJbYqPjNNBUPDksRThhZ5qrqHHU4LXgQ7h9XzYAHC',
+  ]
+
+  const expectedWalletChangeAddrs = [
+    'Ae2tdPwUPEZ2HcLJSwBAujZSsiuWdz57b2KeiJ6FeqgYEh7omJVpUwccDVe',
+    'Ae2tdPwUPEZ4thUT2Rjo6DJiZksAQReYEzhxkP3xq5NFxFJchxDbKL5tbag',
+    'Ae2tdPwUPEZFkwwYuqW1HMx2RXV9p8dNuNC1Gdw2aZXA8KXPXsDtobEQ14Q',
+    'Ae2tdPwUPEZAFUycTo6T73A5F97Ew5D7gN4NL139rpp86HCU4K6th9DKzeH',
+    'Ae2tdPwUPEZ58nzeM5vDihSMYpqCcfWTSJc3jgVyTzt7hvPQ58XU4ZLEfYT',
+    'Ae2tdPwUPEZ64DHikwFaJMdQNJBce9tvbABG3X9gCeaNzfF68ckKX2n2L4c',
+    'Ae2tdPwUPEZLtvX2byRkHWM2kFHJh3HwvsPefnwhmWw9mJfHuXo7FBMuyxg',
+    'Ae2tdPwUPEYz66u2V5S35o7pDxzeYfTJ31ekfzFDGECosSg7TBUMGvs8pC3',
+    'Ae2tdPwUPEZ8uLjrq8p6aWNpQTwHrV5RDzdtmbZrW72xj3kAqpsZiuvQ1t4',
+    'Ae2tdPwUPEZ3EimSircxs5JoJ9BGbvmhtQX9MV7Lq6hQC3ZBNfShPiS2xHm',
+  ]
+
+  it('should discover the right sequence of addresses from the root secret key', async () => {
+    const walletAddresses = await addressManagers[3].discoverAddresses()
+    const walletChangeAddresses = await addressManagers[4].discoverAddresses()
+    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
+    assert.equal(JSON.stringify(walletChangeAddresses), JSON.stringify(expectedWalletChangeAddrs))
   })
 })

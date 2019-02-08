@@ -82,7 +82,6 @@ module.exports = ({setState, getState}) => {
           mnemonicOrHdNodeString: secret,
           config: ADALITE_CONFIG,
           network: 'mainnet',
-          derivationScheme: derivationSchemes.v1,
         })
         break
       default:

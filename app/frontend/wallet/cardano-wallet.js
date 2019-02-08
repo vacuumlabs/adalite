@@ -63,22 +63,22 @@ const CardanoWallet = async (options) => {
 
   const visibleAddressManager = AddressManager({
     accountIndex: state.accountIndex,
-    addressLimit: config.ADALITE_WALLET_ADDRESS_LIMIT,
+    addressLimitV1: config.ADALITE_WALLET_ADDRESS_LIMIT_V1,
+    gapLimit: config.ADALITE_GAP_LIMIT,
     cryptoProvider,
     derivationScheme: state.derivationScheme,
     isChange: false,
+    blockchainExplorer,
   })
 
   const changeAddressManager = AddressManager({
     accountIndex: state.accountIndex,
-    addressLimit: config.ADALITE_WALLET_ADDRESS_LIMIT,
+    addressLimitV1: config.ADALITE_WALLET_ADDRESS_LIMIT_V1,
+    gapLimit: config.ADALITE_GAP_LIMIT,
     cryptoProvider,
     derivationScheme: state.derivationScheme,
-    /*
-    * we disable discovering actual change addresses for now
-    * when we decide to include them, we just need to set isChange to true
-    */
-    isChange: false,
+    isChange: true,
+    blockchainExplorer,
   })
 
   // fetch unspent outputs list asynchronously
@@ -219,12 +219,9 @@ const CardanoWallet = async (options) => {
     if (coins > Number.MAX_SAFE_INTEGER) {
       throw new Error(`Unsupported amount of coins: ${coins}`)
     }
-
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins
     }, 0)
-
-    //first we try one output transaction
     const oneOutputFee = txFeeFunction(estimateTxSize(txInputs, address, coins, false))
 
     /*
@@ -235,7 +232,6 @@ const CardanoWallet = async (options) => {
     if (coins + oneOutputFee >= txInputsCoinsSum) {
       return oneOutputFee
     } else {
-      //we try to compute fee for 2 output tx
       const twoOutputFee = txFeeFunction(estimateTxSize(txInputs, address, coins, true))
       if (coins + twoOutputFee > txInputsCoinsSum) {
         //means one output transaction was possible, while 2 output is not
@@ -284,8 +280,12 @@ const CardanoWallet = async (options) => {
   }
 
   async function getChangeAddress() {
-    // if we used all available addresses return random address from the available ones
-    const addresses = await changeAddressManager.discoverAddresses()
+    /*
+    * We use visible addresses as change addresses to mainintain
+    * AdaLite original functionality which did not consider change addresses.
+    * This is an intermediate step between legacy mode and full Yoroi compatibility.
+    */
+    const addresses = await visibleAddressManager.discoverAddresses()
     const randomSeedGenerator = new PseudoRandom(state.randomSeed)
 
     return addresses[randomSeedGenerator.nextInt() % addresses.length]

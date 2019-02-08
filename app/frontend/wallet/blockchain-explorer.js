@@ -79,7 +79,6 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     const addressesUsageMask = await Promise.all(
       addresses.map(async (elem) => await isAddressUsed(elem))
     )
-
     return addresses.filter((address, i) => !addressesUsageMask[i])
   }
 

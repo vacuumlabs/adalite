@@ -18,4 +18,5 @@ module.exports = {
       protocolMagic: 1097911063,
     },
   },
+  DELAY_AFTER_TOO_MANY_REQUESTS: 2000,
 }

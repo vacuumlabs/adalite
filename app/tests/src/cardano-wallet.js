@@ -11,13 +11,15 @@ const testSeed = 39
 const mockConfig1 = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
   ADALITE_SERVER_URL: 'http://localhost:3000',
-  ADALITE_WALLET_ADDRESS_LIMIT: 5,
+  ADALITE_WALLET_ADDRESS_LIMIT_V1: 5,
+  ADALITE_GAP_LIMIT: 20,
 }
 
 const mockConfig2 = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
   ADALITE_SERVER_URL: 'http://localhost:3000',
-  ADALITE_WALLET_ADDRESS_LIMIT: 15,
+  ADALITE_WALLET_ADDRESS_LIMIT_V1: 15,
+  ADALITE_GAP_LIMIT: 20,
 }
 
 const unusedWalletConfig = {
@@ -49,6 +51,16 @@ const smallUtxosWalletConfig = {
   derivationScheme: derivationSchemes.v1,
 }
 
+const usedV2WalletConfig = {
+  cryptoProvider: 'mnemonic',
+  mnemonicOrHdNodeString:
+    'cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh',
+  config: mockConfig1,
+  randomSeed: testSeed,
+  network: 'mainnet',
+  derivationScheme: derivationSchemes.v2,
+}
+
 const wallets = {}
 
 const initWallet = async (id, config) => {
@@ -60,6 +72,7 @@ before(() =>
     initWallet('unused', unusedWalletConfig),
     initWallet('used', usedWalletConfig),
     initWallet('smallUtxos', smallUtxosWalletConfig),
+    initWallet('v2Used', usedV2WalletConfig),
   ])
 )
 
@@ -89,6 +102,13 @@ describe('wallet balance computation', () => {
 
     assert.equal(await wallets.used.getBalance(), 2967795)
   })
+
+  it('should properly fetch nonempty wallet balance with derivation scheme v2', async () => {
+    const mockNet = mockNetwork(mockConfig2)
+    mockNet.mockAddressSummaryEndpoint()
+
+    assert.equal(await wallets.v2Used.getBalance(), 1497864)
+  })
 })
 
 describe('wallet change address computation', () => {
@@ -111,6 +131,16 @@ describe('wallet change address computation', () => {
       'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E'
     )
   })
+
+  it('should properly compute change address for v2 derivation scheme', async () => {
+    const mockNet = mockNetwork(mockConfig2)
+    mockNet.mockAddressSummaryEndpoint()
+
+    assert.equal(
+      await wallets.v2Used.getChangeAddress(5),
+      'Ae2tdPwUPEZ8gWGpNQAfqeTcTXai47wQ3bmjpYcmaE8Dcr2eSpV3VwzjAxC'
+    )
+  })
 })
 
 describe('test fetching wallet addresses', () => {
@@ -122,6 +152,15 @@ describe('test fetching wallet addresses', () => {
       'DdzFFzCqrhsnKPbAXKaqbnEi2vE7d9cfzSMsNZGPofconNp1xugeSQBmBnrnfiHiYh77Cj8Wd1UDy7jz9KuwN8QVdCUCoW9ic4PG7QJu'
     )
     assert.equal(addresses[4].bip32StringPath, "m/0'/4'")
+  })
+  it('should properly fetch list of v2 wallet addresses with metadata', async () => {
+    const addresses = await wallets.v2Used.getVisibleAddressesWithMeta()
+
+    assert.equal(
+      addresses[4].address,
+      'Ae2tdPwUPEYyLw6UJRKnbbudG8PJR7KfPhioRW8m1BohkFAqR44pPg6BYVZ'
+    )
+    assert.equal(addresses[4].bip32StringPath, "m/44'/1815'/0'/0/4")
   })
 })
 
