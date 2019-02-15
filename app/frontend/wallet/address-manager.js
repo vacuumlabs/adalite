@@ -60,7 +60,7 @@ const AddressManager = ({
       childIndexBegin += gapLimit
     }
 
-    return reduceAddressesToV1LimitIfPossible(addresses)
+    return addresses
   }
 
   function deriveAddressesBlock(childIndexBegin, childIndexEnd) {
@@ -69,17 +69,6 @@ const AddressManager = ({
       .map(derivationScheme.toAbsoluteDerivationPath)
 
     return deriveAddresses(absDerivationPaths)
-  }
-
-  /*
-   * To maintain default behavior of AdaLite, we reduce addreses
-   * to default 10 if no address beyond the first 10 are used
-   */
-  async function reduceAddressesToV1LimitIfPossible(addresses) {
-    const isSomeAddressUsedPastV1Limit = await blockchainExplorer.isSomeAddressUsed(
-      addresses.slice(addressLimitV1)
-    )
-    return isSomeAddressUsedPastV1Limit ? addresses : addresses.slice(0, addressLimitV1)
   }
 
   async function discoverAddressesWithMeta() {

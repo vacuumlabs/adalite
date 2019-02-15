@@ -85,7 +85,6 @@ const CardanoWalletSecretCryptoProvider = (params, walletState, disableCaching =
 
   async function signTxGetStructured(txAux, addressToAbsPathMapper) {
     const txHash = txAux.getId()
-
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
         const absoluteDerivationPath = addressToAbsPathMapper(input.utxo.address)

@@ -12,7 +12,6 @@ const PseudoRandom = require('./helpers/PseudoRandom')
 const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES} = require('./constants')
 const derivationSchemes = require('./derivation-schemes.js')
 const shuffleArray = require('./helpers/shuffleArray')
-const {parseTx} = require('./helpers/cbor-parsers')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
 const mnemonicOrHdNodeStringToWalletSecret = require('./helpers/mnemonicOrHdNodeStringToWalletSecret')
@@ -30,7 +29,6 @@ const CardanoWallet = async (options) => {
 
   const state = {
     randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
-    ownUtxos: {},
     overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
     network,
@@ -81,19 +79,12 @@ const CardanoWallet = async (options) => {
     blockchainExplorer,
   })
 
-  // fetch unspent outputs list asynchronously
-  getUnspentTxOutputs()
-
   async function submitTx(signedTx) {
     const {txBody, txHash} = signedTx
     const response = await blockchainExplorer.submitTxRaw(txHash, txBody).catch((e) => {
       debugLog(e)
       throw NamedError('TransactionRejectedByNetwork')
     })
-
-    //TODO: refactor signing process so we dont need to reparse signed transaction for this
-    const {txAux} = parseTx(Buffer.from(txBody, 'hex'))
-    await updateUtxosFromTxAux(txAux)
 
     return response
   }
@@ -111,7 +102,6 @@ const CardanoWallet = async (options) => {
     const rawInputTxs = await Promise.all(
       txAux.inputs.map(({txHash}) => blockchainExplorer.fetchTxRaw(txHash))
     )
-
     const signedTx = await cryptoProvider
       .signTx(txAux, rawInputTxs, getAddressToAbsPathMapper())
       .catch((e) => {
@@ -162,19 +152,16 @@ const CardanoWallet = async (options) => {
       coins += profitableUtxos[i].coins
     }
     const txFee = computeTxFee(txInputs, address, coins)
-
     return Math.max(coins - txFee, 0)
   }
 
   async function getTxFee(address, coins) {
     const txInputs = await prepareTxInputs(address, coins)
-
     return computeTxFee(txInputs, address, coins)
   }
 
   async function getBalance() {
     const addresses = await discoverAllAddresses()
-
     return blockchainExplorer.getBalance(addresses)
   }
 
@@ -293,20 +280,7 @@ const CardanoWallet = async (options) => {
 
   async function getUnspentTxOutputs() {
     const addresses = await discoverAllAddresses()
-    const currentOverallTxCount = await blockchainExplorer.getOverallTxCount(addresses)
-
-    if (state.overallTxCountSinceLastUtxoFetch < currentOverallTxCount) {
-      const response = await blockchainExplorer.fetchUnspentTxOutputs(addresses)
-
-      state.ownUtxos = Object.assign(
-        {},
-        ...response.map((elem) => ({[`${elem.txHash}_${elem.outputIndex}`]: elem}))
-      )
-
-      state.overallTxCountSinceLastUtxoFetch = currentOverallTxCount
-    }
-
-    return Object.values(state.ownUtxos)
+    return await blockchainExplorer.fetchUnspentTxOutputs(addresses)
   }
 
   async function discoverAllAddresses() {
@@ -349,33 +323,6 @@ const CardanoWallet = async (options) => {
     }
 
     return result
-  }
-
-  async function updateUtxosFromTxAux(txAux) {
-    const spentUtxos = txAux.inputs.map((elem) => elem.utxo)
-    discardUtxos(spentUtxos)
-
-    addUtxos(await getNewUtxosFromTxAux(txAux))
-
-    state.overallTxCountSinceLastUtxoFetch++
-
-    // shift randomSeed for next unspent outputs selection
-    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
-    for (let i = 0; i < spentUtxos.length; i++) {
-      state.randomSeed = randomSeedGenerator.nextInt()
-    }
-  }
-
-  function discardUtxos(utxos) {
-    utxos.map((utxo) => {
-      delete state.ownUtxos[`${utxo.txHash}_${utxo.outputIndex}`]
-    })
-  }
-
-  function addUtxos(utxos) {
-    utxos.map((utxo) => {
-      state.ownUtxos[`${utxo.txHash}_${utxo.outputIndex}`] = utxo
-    })
   }
 
   return {

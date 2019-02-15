@@ -9,7 +9,6 @@ const mockConfig = {
   ADALITE_WALLET_ADDRESS_LIMIT_V1: 20,
   ADALITE_GAP_LIMIT: 20,
 }
-const mockNet = mockNetwork(mockConfig)
 
 const blockchainExplorer = BlockchainExplorer(mockConfig, {})
 
@@ -511,12 +510,13 @@ const expectedTxHistory = [
 describe('wallet history parsing', function() {
   this.timeout(10000)
 
-  mockNet.mockAddressSummaryEndpoint()
-
   it('should properly fetch wallet history', async () => {
+    const mockNet = mockNetwork(mockConfig)
+    mockNet.mockBulkAddressSummaryEndpoint()
     const txHistory = await blockchainExplorer.getTxHistory(addresses)
 
     assert.equal(JSON.stringify(txHistory), JSON.stringify(expectedTxHistory))
+    mockNet.clean()
   })
 })
 
@@ -524,13 +524,13 @@ describe('wallet history parsing', function() {
 describe('wallet unspent outputs fetching', function() {
   this.timeout(10000)
 
-  mockNet.mockAddressSummaryEndpoint()
-  mockNet.mockUtxoEndpoint()
-
   it('should properly fetch unspent transaction outputs for addresses', async () => {
+    const mockNet = mockNetwork(mockConfig)
+    mockNet.mockUtxoEndpoint()
     const utxos = await blockchainExplorer.fetchUnspentTxOutputs([addresses[6], addresses[9]])
     const utxoSum = utxos.reduce((acc, cur) => acc + cur.coins, 0)
 
     assert.equal(utxoSum, 2967795)
+    mockNet.clean()
   })
 })

@@ -16,6 +16,8 @@ const mockConfig = {
   ADALITE_GAP_LIMIT: 10,
 }
 
+const mockNetwork = require('./common/mock')
+
 const blockchainExplorer = BlockchainExplorer(mockConfig, {})
 
 const cryptoProviders = []
@@ -206,9 +208,12 @@ describe('wallet addresses discovery scheme V2', () => {
   ]
 
   it('should discover the right sequence of addresses from the root secret key', async () => {
+    const mockNet = mockNetwork(mockConfig)
+    mockNet.mockBulkAddressSummaryEndpoint()
     const walletAddresses = await addressManagers[3].discoverAddresses()
     const walletChangeAddresses = await addressManagers[4].discoverAddresses()
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
     assert.equal(JSON.stringify(walletChangeAddresses), JSON.stringify(expectedWalletChangeAddrs))
+    mockNet.clean()
   })
 })
