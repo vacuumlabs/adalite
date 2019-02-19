@@ -3902,19 +3902,22 @@ button[data-balloon] {
   .welcome {
     position: relative;
     margin-bottom: -112px;
+    margin-left: -56px;
+    margin-right: -56px;
+  }
+
+  .welcome-body {
+    padding-left: 56px;
+    padding-right: 56px;
   }
 
   .welcome-footer {
     position: -webkit-sticky;
     position: sticky;
-    width: calc(100% + 112px);
+    width: 100%;
     bottom: -56px;
-    left: 0;
-    right: 0;
-    background-color: white;
     border-top: 1px solid var(--color-border);
     padding: 24px 56px;
-    margin-left: -56px;
     margin-top: 0;
   }
 
@@ -3924,10 +3927,18 @@ button[data-balloon] {
 }
 
 @media screen and (max-width: 767px) and (max-height: 1366px) {
-  .welcome-footer {
-    width: calc(100% + 32px);
-    bottom: -40px;
+  .welcome {
     margin-left: -16px;
+    margin-right: -16px;
+  }
+
+  .welcome-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .welcome-footer {
+    bottom: -40px;
     padding: 24px 16px;
   }
 }

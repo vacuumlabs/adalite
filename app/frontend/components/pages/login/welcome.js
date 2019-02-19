@@ -53,63 +53,71 @@ class Welcome extends Component {
       h(
         'section',
         {class: 'welcome'},
-        h('h2', {class: 'welcome-title'}, 'Welcome to AdaLite'),
-        h(
-          'p',
-          {class: 'welcome-subtitle'},
-          'We are an open-source client-side interface for direct \n interaction with the Cardano blockchain.'
-        ),
-        h(
-          Alert,
-          {alertType: 'warning'},
-          'To be safe from losing access to your funds, please read the following advice carefully.'
-        ),
         h(
           'div',
-          {class: 'welcome-articles'},
+          {class: 'welcome-body'},
+          h('h2', {class: 'welcome-title'}, 'Welcome to AdaLite'),
           h(
-            Article,
-            {
-              title: "Don't lose your mnemonic",
-              icon: 'mnemonic',
-            },
-            `A new wallet is created by generating a cryptographic set of words
+            'p',
+            {class: 'welcome-subtitle'},
+            'We are an open-source client-side interface for direct \n interaction with the Cardano blockchain.'
+          ),
+          h(
+            Alert,
+            {alertType: 'warning'},
+            'To be safe from losing access to your funds, please read the following advice carefully.'
+          ),
+          h(
+            'div',
+            {class: 'welcome-articles'},
+            h(
+              Article,
+              {
+                title: "Don't lose your mnemonic",
+                icon: 'mnemonic',
+              },
+              `A new wallet is created by generating a cryptographic set of words
             (mnemonic). You use it to access your funds on the Cardano blockchain.
             We don't store your mnemonic, and there is no way to reset it.
             If you lose your mnemonic, we cannot help you to restore the access
             to your funds.`
-          ),
-          h(
-            Article,
-            {
-              title: 'Protect your funds',
-              icon: 'funds',
-            },
-            `The mnemonic is handled in your browser and never leaves
+            ),
+            h(
+              Article,
+              {
+                title: 'Protect your funds',
+                icon: 'funds',
+              },
+              `The mnemonic is handled in your browser and never leaves
             your computer. However, if a virus or a hacker compromises your
             computer, the attacker can steal the mnemonic you entered on
             the AdaLite website and access your funds.`
-          ),
-          h(
-            Article,
-            {
-              title: 'Consider using a hardware wallet',
-              icon: 'wallet',
-            },
-            'AdaLite allows you to access your funds using a hardware wallet. It currently supports Trezor model T. This enables you to interact with AdaLite in the safest manner possible without giving away your mnemonic. An attacker can’t steal your mnemonic or private key since they don’t leave Trezor.'
-          ),
-          h(
-            Article,
-            {
-              title: "Don't get phished",
-              icon: 'phishing',
-            },
-            `To protect yourself from phishers, bookmark the official AdaLite address
+            ),
+            h(
+              Article,
+              {
+                title: 'Consider using a hardware wallet',
+                icon: 'wallet',
+              },
+              'AdaLite allows you to access your funds using a hardware wallet. It currently supports Trezor model T. This enables you to interact with AdaLite in the safest manner possible without giving away your mnemonic. An attacker can’t steal your mnemonic or private key since they don’t leave Trezor.'
+            ),
+            h(
+              Article,
+              {
+                title: "Don't get phished",
+                icon: 'phishing',
+              },
+              `To protect yourself from phishers, bookmark the official AdaLite address
             and `,
-            h('b', undefined, 'always check the URL. The official address is https://adalite.io/.')
-          )
+              h(
+                'b',
+                undefined,
+                'always check the URL. The official address is https://adalite.io/.'
+              )
+            )
+          ),
+          h(Credits)
         ),
-        h(Credits),
         h(
           'div',
           {class: 'welcome-footer'},
