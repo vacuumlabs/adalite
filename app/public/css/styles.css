@@ -874,7 +874,7 @@ body {
   padding: 0;
   font-family: JTMarnie, Arial, Helvetica, sans-serif;
   height: 100%;
-  background-color: #FCFCFC;
+  background-color: #fcfcfc;
   color: var(--color-text);
 }
 
@@ -1580,6 +1580,10 @@ button[data-balloon] {
   padding: 24px 24px 24px 64px;
   border: 1px solid var(--color-border);
   border-radius: 4px;
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
 }
 
 .modal-mnemonic:before {
@@ -2372,7 +2376,11 @@ button[data-balloon] {
   right: 40px;
   bottom: 40px;
   height: 56px;
-  background-image: linear-gradient(to top, rgb(255, 255, 255), rgba(255, 255, 255, 0.4));
+  background-image: linear-gradient(
+    to top,
+    rgb(255, 255, 255),
+    rgba(255, 255, 255, 0.4)
+  );
   z-index: 2;
 }
 
@@ -2594,7 +2602,11 @@ button[data-balloon] {
   right: 40px;
   bottom: 40px;
   height: 40px;
-  background-image: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+  background-image: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0)
+  );
   z-index: 2;
 }
 
@@ -3443,7 +3455,7 @@ button[data-balloon] {
 
   .validation-row {
     flex-direction: column-reverse;
-    align-items: flex-start
+    align-items: flex-start;
   }
 
   .validation-message {
@@ -3800,7 +3812,7 @@ button[data-balloon] {
     margin-top: 16px;
   }
 
-   /* EXPORT */
+  /* EXPORT */
 
   .export.download {
     position: relative;
@@ -3884,5 +3896,4 @@ button[data-balloon] {
   .dashboard.mobile .card {
     margin-bottom: 48px;
   }
-
 }
