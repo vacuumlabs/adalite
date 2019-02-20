@@ -15,6 +15,11 @@ const AddressItem = connect(
     h(
       'div',
       {class: 'address-links'},
+      h(CopyOnClick, {
+        value: address,
+        elementClass: 'address-link',
+        text: 'Copy Address',
+      }),
       h(
         'a',
         {
@@ -28,16 +33,11 @@ const AddressItem = connect(
       h(
         'a',
         {
-          class: 'address-link qr',
+          class: 'address-link more',
           onClick: () => openAddressDetail({address, bip32path}),
         },
-        'View QR Code'
-      ),
-      h(CopyOnClick, {
-        value: address,
-        elementClass: 'address-link',
-        text: 'Copy Address',
-      })
+        'View more'
+      )
     )
   )
 )
