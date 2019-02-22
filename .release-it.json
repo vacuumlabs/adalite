@@ -1,5 +1,5 @@
 {
-  "src": {
+  "git": {
     "commitArgs": "-S",
     "tagArgs": "-S",
     "commitMessage": "%s",
