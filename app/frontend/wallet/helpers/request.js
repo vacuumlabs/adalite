@@ -5,6 +5,7 @@ const request = async function request(url, method = 'GET', body = null, headers
   let requestParams = {
     method,
     headers,
+    credentials: 'include',
   }
   if (method.toUpperCase() !== 'GET') {
     requestParams = Object.assign({}, requestParams, {body})
