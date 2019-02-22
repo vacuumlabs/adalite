@@ -9,3 +9,6 @@ node_modules/
 app/node_modules/
 app/tests/dist/
 app/dist/
+server.cert
+server.key
+
