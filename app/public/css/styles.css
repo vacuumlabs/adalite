@@ -3897,3 +3897,49 @@ button[data-balloon] {
     margin-bottom: 48px;
   }
 }
+
+@media screen and (max-height: 1366px) {
+  .welcome {
+    position: relative;
+    margin-bottom: -112px;
+    margin-left: -56px;
+    margin-right: -56px;
+  }
+
+  .welcome-body {
+    padding-left: 56px;
+    padding-right: 56px;
+  }
+
+  .welcome-footer {
+    position: -webkit-sticky;
+    position: sticky;
+    width: 100%;
+    bottom: -56px;
+    border-top: 1px solid var(--color-border);
+    padding: 24px 56px;
+    margin-top: 0;
+    background-color: white;
+  }
+
+  .welcome .credits {
+    border-bottom-width: 0;
+  }
+}
+
+@media screen and (max-width: 767px) and (max-height: 1366px) {
+  .welcome {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+
+  .welcome-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .welcome-footer {
+    bottom: -40px;
+    padding: 24px 16px;
+  }
+}
