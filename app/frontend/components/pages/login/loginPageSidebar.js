@@ -11,10 +11,14 @@ const initialContent = () =>
       'div',
       {class: 'sidebar-item spacy'},
       h(
-        'p',
-        {class: 'sidebar-paragraph'},
-        'AdaLite supports three means of accessing your wallet. For enhanced security, we recommend you to use a ',
-        h('strong', undefined, 'hardware wallet.')
+        Alert,
+        {alertType: 'info sidebar'},
+        h(
+          'p',
+          undefined,
+          'AdaLite supports three means of accessing your wallet. For enhanced security, we recommend you to use a ',
+          h('strong', undefined, 'hardware wallet.')
+        )
       )
     ),
     h(
@@ -74,12 +78,11 @@ const mnemonicContent = () =>
           'p',
           undefined,
           'It’s a passphrase which serves as a seed to restore the addresses and their respective public and private keys associated with your wallet. We use the same derivation scheme as ',
-          /* TODO: use correct link */
           h(
             'a',
             {
               class: 'sidebar-link',
-              href: '#',
+              href: 'https://daedaluswallet.io/',
               rel: 'noopener',
             },
             'Deadalus - the official Cardano wallet.'
