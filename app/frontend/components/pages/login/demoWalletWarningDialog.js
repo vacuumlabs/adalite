@@ -5,10 +5,6 @@ const Modal = require('../../common/modal')
 const Alert = require('../../common/alert')
 
 class DemoWalletWarningDialogClass {
-  componentDidMount() {
-    this.understandDemoBtn.focus()
-  }
-
   render({closeDemoWalletWarningDialog}) {
     return h(
       Modal,
@@ -39,9 +35,6 @@ class DemoWalletWarningDialogClass {
             onClick: closeDemoWalletWarningDialog,
             onKeyDown: (e) => {
               ;['Enter', 'Escape'].includes(e.key) && e.target.click()
-            },
-            ref: (element) => {
-              this.understandDemoBtn = element
             },
           },
           'Continue to the demo wallet'
