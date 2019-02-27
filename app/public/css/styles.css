@@ -503,6 +503,7 @@ button[data-balloon] {
   margin-left: -40px;
   padding: 0 0 0 40px;
   border-color: transparent;
+  background-color: transparent;
 }
 
 .alert.sidebar:before {
