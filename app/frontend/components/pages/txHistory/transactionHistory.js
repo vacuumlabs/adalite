@@ -34,7 +34,7 @@ const TransactionAddress = ({address}) =>
       target: '_blank',
       rel: 'noopener',
     },
-    'View details'
+    'View on AdaScan'
   )
 
 const TransactionHistory = ({transactionHistory}) =>
