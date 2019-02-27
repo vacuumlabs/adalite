@@ -26,7 +26,7 @@ class AddressDetailDialogClass extends Component {
     hwWalletName,
     waitingForHwWallet,
   }, {
-    showCopyMessage,
+    showCopyMessage
   }) {
     return (
       showDetail &&

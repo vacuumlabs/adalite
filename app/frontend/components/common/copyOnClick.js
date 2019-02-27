@@ -34,21 +34,23 @@ class CopyOnClick extends Component {
         this.fallbackCopyTextToClipboard()
       }
       this.setState({copied: true})
+      this.props.copiedCallback && this.props.copiedCallback(true)
       setTimeout(() => {
         this.setState({copied: false})
+        this.props.copiedCallback && this.props.copiedCallback(false)
       }, 3000)
     } catch (err) {
       debugLog('Could not copy text: ', err)
     }
   }
 
-  render({elementClass, text}, {copied}) {
+  render({elementClass, text, enableTooltip = true}, {copied}) {
     return h(
       'a',
       {
         class: `${elementClass} copy`,
         onClick: this.copyTextToClipboard,
-        ...tooltip('Copied to clipboard', true, copied),
+        ...tooltip('Copied to clipboard', true, enableTooltip && copied),
       },
       h('span', {class: 'copy-text'}, text)
     )
