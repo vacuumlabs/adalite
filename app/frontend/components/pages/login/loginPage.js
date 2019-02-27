@@ -22,20 +22,6 @@ const AUTH_METHOD_NAMES = {
 const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
 
 class LoginPage extends Component {
-<<<<<<< HEAD
-  render({
-    loadWallet,
-    loadDemoWallet,
-    walletLoadingError,
-    authMethod,
-    setAuthMethod,
-    showDemoWalletWarningDialog,
-    logoutNotificationOpen,
-    displayWelcome,
-    showGenerateMnemonicDialog,
-  }) {
-    const authTab = (name, text, recommended) =>
-=======
   constructor(props) {
     super(props)
     this.state = {
@@ -89,7 +75,6 @@ class LoginPage extends Component {
         h('span', {class: `dropdown-item-text ${name}`}, getAuthMethodName(name))
       )
     const authTab = (name, recommended) =>
->>>>>>> f24558b... Mobile Login tabs (#351)
       h(
         'li',
         {
