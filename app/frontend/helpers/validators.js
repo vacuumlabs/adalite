@@ -1,6 +1,6 @@
 const {isValidAddress} = require('cardano-crypto.js')
 
-const {validateMnemonic, validatePaperWalletMnemonic} = require('../wallet/mnemonic')
+const {validateMnemonic} = require('../wallet/mnemonic')
 
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
@@ -44,10 +44,10 @@ const feeValidator = (sendAmount, transactionFee, balance) => {
   return validationError
 }
 
-const mnemonicValidator = async (mnemonic) => {
+const mnemonicValidator = (mnemonic) => {
   let validationError = null
 
-  if (!validateMnemonic(mnemonic) && !(await validatePaperWalletMnemonic(mnemonic))) {
+  if (!validateMnemonic(mnemonic)) {
     validationError = {
       code: 'InvalidMnemonic',
     }
