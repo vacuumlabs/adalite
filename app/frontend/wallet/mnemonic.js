@@ -13,7 +13,7 @@ function generateMnemonic(wordCount) {
 function validateMnemonic(mnemonic) {
   try {
     return (
-      !!mnemonic && (bip39.validateMnemonic(mnemonic) || isMnemonicInPaperWalletFormat(mnemonic))
+      !!mnemonic && (bip39.validateMnemonic(mnemonic) || validatePaperWalletMnemonic(mnemonic))
     )
   } catch (e) {
     return false
