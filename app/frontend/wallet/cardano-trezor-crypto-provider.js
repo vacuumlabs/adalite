@@ -1,16 +1,14 @@
 // eslint-disable-next-line import/no-unresolved
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 const {NETWORKS, ADALITE_SUPPORT_EMAIL} = require('./constants')
+const derivationSchemes = require('./derivation-schemes')
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
     rootHdPassphrase: null,
     derivedAddresses: {},
+    derivationScheme: derivationSchemes.v2,
   })
-
-  if (state.derivationScheme.type !== 'v2') {
-    throw new Error(`Unsupported derivation scheme: ${state.derivationScheme.type}`)
-  }
 
   const TrezorConnect = ADALITE_CONFIG.TREZOR_CONNECT_URL
     ? window.TrezorConnect
@@ -124,8 +122,13 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     throw new Error('Unsupported operation!')
   }
 
+  function getDerivationScheme() {
+    return state.derivationScheme
+  }
+
   return {
     getWalletSecret,
+    getDerivationScheme,
     signTx,
     displayAddressForPath,
     deriveXpub,

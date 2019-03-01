@@ -6,6 +6,7 @@ const derivationSchemes = {
     number: 1,
     startAddressIndex: HARDENED_THRESHOLD,
     toAbsoluteDerivationPath: (derivationPath) => [derivationPath[0], derivationPath[2]],
+    keyfileVersion: '1.0.0',
   },
   v2: {
     type: 'v2',
@@ -16,6 +17,7 @@ const derivationSchemes = {
         HARDENED_THRESHOLD + 44, // 44'
         HARDENED_THRESHOLD + 1815, // 1815'
       ].concat(derivationPath),
+    keyfileVersion: '2.0.0',
   },
 }
 

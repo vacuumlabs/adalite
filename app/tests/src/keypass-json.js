@@ -1,9 +1,10 @@
 const assert = require('assert')
 const {
-  importWalletSecret,
-  exportWalletSecret,
+  importWalletSecretDef,
+  exportWalletSecretDef,
   isWalletExportEncrypted,
 } = require('../../frontend/wallet/keypass-json')
+const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
 
 const walletSecretObj1 = {
   wallet: {
@@ -41,39 +42,83 @@ const walletSecretUnencrypted2 = Buffer.from(
   'hex'
 )
 
+const walletSecretObj3 = {
+  wallet: {
+    accounts: [{name: 'Initial account', index: 2147483648}],
+    walletSecretKey:
+      'WIAze+nH7ClW3CeSNkCXIi8rFqobR8GYWye8SrYVfNTPf4Jd1iv20VKtEXcUuRk9kBBLFol+s82TVDMlWG/MuMNsVWm8n6Rh9nuTVbPai9QpjFCZ/U4AFBURelm0JPhc5IzKjMNfPCviewsmViRIo6S2v9GjgokYuHrnbOF66WqDBg==',
+    walletMeta: {name: 'Ada_lite', assurance: 'normal', unit: 'ADA'},
+    passwordHash:
+      'WGQxNHw4fDF8V0NDWlRIWGszUmd2ZWkza3pQbGF3ZzZIM0o3SEg3UXZzSi9sM01iYno5SGdFdz09fE9KWkpYRkJzUGFXTW4zWENudzBjMzRVak9BZXVQbWlTVEU2YjhIRi9hRTA9',
+  },
+  fileType: 'WALLETS_EXPORT',
+  fileVersion: '2.0.0',
+}
+const walletPassword3 = 'aaa'
+const walletSecretUnencrypted3 = Buffer.from(
+  'a018cd746e128a0be0782b228c275473205445c33b9000a33dd5668b430b574426877cfe435fddda02409b839b7386f3738f10a30b95a225f4b720ee71d2505b5569bc9fa461f67b9355b3da8bd4298c5099fd4e001415117a59b424f85ce48cca8cc35f3c2be27b0b26562448a3a4b6bfd1a3828918b87ae76ce17ae96a8306',
+  'hex'
+)
+
 describe('Wallet import', () => {
   it('should properly import wallet encrypted with nonempty password', async () => {
-    const walletSecret = await importWalletSecret(walletSecretObj1, walletPassword1)
-    assert(walletSecret.equals(walletSecretUnencrypted1))
+    const walletSecretDef = await importWalletSecretDef(walletSecretObj1, walletPassword1)
+    assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted1))
   })
 
   it('should properly import wallet encrypted with empty password', async () => {
-    const walletSecret = await importWalletSecret(walletSecretObj2, walletPassword2)
-    assert(walletSecret.equals(walletSecretUnencrypted2))
+    const walletSecretDef = await importWalletSecretDef(walletSecretObj2, walletPassword2)
+    assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted2))
   }).timeout(5000)
+
+  it('should properly import v2 wallet encrypted with nonempty password', async () => {
+    const walletSecretDef = await importWalletSecretDef(walletSecretObj3, walletPassword3)
+    assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted3))
+  })
 })
 
 describe('Wallet export', () => {
   it('should properly export wallet encrypted with nonempty password', async () => {
-    const walletSecretObj = await exportWalletSecret(
-      walletSecretUnencrypted1,
+    const walletSecretObj = await exportWalletSecretDef(
+      {
+        rootSecret: walletSecretUnencrypted1,
+        derivationScheme: derivationSchemes.v1,
+      },
       walletPassword1,
       'json1'
     )
-    const walletSecret = await importWalletSecret(walletSecretObj, walletPassword1)
+    const walletSecretDef = await importWalletSecretDef(walletSecretObj, walletPassword1)
 
-    assert(walletSecret.equals(walletSecretUnencrypted1))
+    assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted1))
   }).timeout(5000)
 
-  it('should properly export wallet encrypted with nonempty password', async () => {
-    const walletSecretObj = await exportWalletSecret(
-      walletSecretUnencrypted2,
+  it('should properly export v1 wallet encrypted with empty password', async () => {
+    const walletSecretObj = await exportWalletSecretDef(
+      {
+        rootSecret: walletSecretUnencrypted2,
+        derivationScheme: derivationSchemes.v1,
+      },
       walletPassword2,
-      'json2'
+      'json2',
+      derivationSchemes.v1
     )
-    const walletSecret = await importWalletSecret(walletSecretObj, walletPassword2)
+    const walletSecretDef = await importWalletSecretDef(walletSecretObj, walletPassword2)
 
-    assert(walletSecret.equals(walletSecretUnencrypted2))
+    assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted2))
+  }).timeout(5000)
+
+  it('should properly export v2 wallet encrypted with nonempty password', async () => {
+    const walletSecretObj = await exportWalletSecretDef(
+      {
+        rootSecret: walletSecretUnencrypted3,
+        derivationScheme: derivationSchemes.v2,
+      },
+      walletPassword3,
+      'json1'
+    )
+    const walletSecretDef = await importWalletSecretDef(walletSecretObj, walletPassword3)
+
+    assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted3))
   }).timeout(5000)
 })
 

@@ -8,16 +8,24 @@ const NamedError = require('../helpers/NamedError')
 const {NETWORKS} = require('./constants')
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 
-const CardanoWalletSecretCryptoProvider = (params, walletState, disableCaching = false) => {
+const CardanoWalletSecretCryptoProvider = (
+  {walletSecretDef: {rootSecret, derivationScheme}, network},
+  walletState,
+  disableCaching = false
+) => {
   const state = Object.assign(walletState, {
-    masterHdNode: HdNode({secret: params.walletSecret}),
+    masterHdNode: HdNode({secret: rootSecret}),
     derivedHdNodes: {},
-    network: params.network,
-    derivationScheme: params.derivationScheme,
+    network,
+    derivationScheme,
   })
 
   function getWalletSecret() {
     return state.masterHdNode.toBuffer()
+  }
+
+  function getDerivationScheme() {
+    return state.derivationScheme
   }
 
   const deriveXpub = CachedDeriveXpubFactory(
@@ -113,6 +121,7 @@ const CardanoWalletSecretCryptoProvider = (params, walletState, disableCaching =
   return {
     signTx,
     getWalletSecret,
+    getDerivationScheme,
     deriveXpub,
     getHdPassphrase,
     _sign: sign,

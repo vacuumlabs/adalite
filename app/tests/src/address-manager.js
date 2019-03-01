@@ -5,7 +5,7 @@ const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
 const CardanoWalletSecretCryptoProvider = require('../../frontend/wallet/cardano-wallet-secret-crypto-provider')
 const AddressManager = require('../../frontend/wallet/address-manager')
 const range = require('../../frontend/wallet/helpers/range')
-const mnemonicOrHdNodeStringToWalletSecret = require('../../frontend/wallet/helpers/mnemonicOrHdNodeStringToWalletSecret')
+const mnemonicToWalletSecretDef = require('../../frontend/wallet/helpers/mnemonicToWalletSecretDef')
 const cryptoProviderSettings = require('./common/crypto-provider-settings')
 const BlockchainExplorer = require('../../frontend/wallet/blockchain-explorer')
 
@@ -48,11 +48,20 @@ const addressManagerSettings = [
 
 const initAddressManager = async (settings, i) => {
   const {cryptoSettings, isChange} = settings
-  const parsedWalletSecret = await mnemonicOrHdNodeStringToWalletSecret(cryptoSettings.secret)
+
+  let walletSecretDef
+  if (cryptoSettings.type === 'walletSecretDef') {
+    walletSecretDef = {
+      rootSecret: Buffer.from(cryptoSettings.secret, 'hex'),
+      derivationScheme: derivationSchemes[cryptoSettings.derivationSchemeType],
+    }
+  } else {
+    walletSecretDef = await mnemonicToWalletSecretDef(cryptoSettings.secret)
+  }
+
   cryptoProviders[i] = CardanoWalletSecretCryptoProvider(
     {
-      derivationScheme: parsedWalletSecret.derivationScheme,
-      walletSecret: parsedWalletSecret.walletSecret,
+      walletSecretDef,
       network: cryptoSettings.network,
     },
     true
@@ -63,7 +72,6 @@ const initAddressManager = async (settings, i) => {
     defaultAddressCount: mockConfig.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: mockConfig.ADALITE_GAP_LIMIT,
     cryptoProvider: cryptoProviders[i],
-    derivationScheme: parsedWalletSecret.derivationScheme,
     disableCaching: true,
     isChange,
     blockchainExplorer,

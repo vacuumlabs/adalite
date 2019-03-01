@@ -10,11 +10,9 @@ const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypt
 const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const PseudoRandom = require('./helpers/PseudoRandom')
 const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES} = require('./constants')
-const derivationSchemes = require('./derivation-schemes.js')
 const shuffleArray = require('./helpers/shuffleArray')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
-const mnemonicOrHdNodeStringToWalletSecret = require('./helpers/mnemonicOrHdNodeStringToWalletSecret')
 const alertIfUnsupportedTrezorFwVersion = require('./helpers/alertIfUnsupportedTrezorFwVersion')
 
 function txFeeFunction(txSizeInBytes) {
@@ -25,14 +23,12 @@ function txFeeFunction(txSizeInBytes) {
 }
 
 const CardanoWallet = async (options) => {
-  const {mnemonicOrHdNodeString, config, randomSeed, network} = options
-
+  const {walletSecretDef, config, randomSeed, network} = options
   const state = {
     randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
     overallTxCountSinceLastUtxoFetch: 0,
     accountIndex: HARDENED_THRESHOLD,
     network,
-    derivationScheme: options.derivationScheme || derivationSchemes.v2,
   }
 
   const blockchainExplorer = BlockchainExplorer(config, state)
@@ -42,15 +38,9 @@ const CardanoWallet = async (options) => {
     await alertIfUnsupportedTrezorFwVersion()
     cryptoProvider = CardanoTrezorCryptoProvider(config, state)
   } else if (options.cryptoProvider === 'mnemonic') {
-    const {walletSecret, derivationScheme} = await mnemonicOrHdNodeStringToWalletSecret(
-      mnemonicOrHdNodeString,
-      options.derivationScheme
-    )
-
     cryptoProvider = CardanoWalletSecretCryptoProvider(
       {
-        walletSecret,
-        derivationScheme,
+        walletSecretDef,
         network,
       },
       state
@@ -64,7 +54,6 @@ const CardanoWallet = async (options) => {
     defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: config.ADALITE_GAP_LIMIT,
     cryptoProvider,
-    derivationScheme: state.derivationScheme,
     isChange: false,
     blockchainExplorer,
   })
@@ -74,7 +63,6 @@ const CardanoWallet = async (options) => {
     defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: config.ADALITE_GAP_LIMIT,
     cryptoProvider,
-    derivationScheme: state.derivationScheme,
     isChange: true,
     blockchainExplorer,
   })
@@ -89,8 +77,11 @@ const CardanoWallet = async (options) => {
     return response
   }
 
-  function getSecret() {
-    return cryptoProvider.getWalletSecret()
+  function getWalletSecretDef() {
+    return {
+      rootSecret: cryptoProvider.getWalletSecret(),
+      derivationScheme: cryptoProvider.getDerivationScheme(),
+    }
   }
 
   async function prepareSignedTx(address, coins) {
@@ -339,7 +330,7 @@ const CardanoWallet = async (options) => {
   }
 
   return {
-    getSecret,
+    getWalletSecretDef,
     submitTx,
     prepareSignedTx,
     getBalance,

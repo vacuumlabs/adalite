@@ -1,6 +1,5 @@
 const {generateMnemonic} = require('./wallet/mnemonic')
 const {ADALITE_CONFIG} = require('./config')
-const derivationSchemes = require('./wallet/derivation-schemes')
 const FileSaver = require('file-saver')
 const cbor = require('borc')
 const {
@@ -64,7 +63,7 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const loadWallet = async (state, {cryptoProvider, secret}) => {
+  const loadWallet = async (state, {cryptoProvider, walletSecretDef}) => {
     loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined})
     switch (cryptoProvider) {
       case 'trezor':
@@ -72,16 +71,14 @@ module.exports = ({setState, getState}) => {
           cryptoProvider: 'trezor',
           config: ADALITE_CONFIG,
           network: 'mainnet',
-          derivationScheme: derivationSchemes.v2,
         })
         break
       case 'mnemonic':
-        secret = secret.trim()
         wallet = await Cardano.CardanoWallet({
           cryptoProvider: 'mnemonic',
-          mnemonicOrHdNodeString: secret,
           config: ADALITE_CONFIG,
           network: 'mainnet',
+          walletSecretDef,
         })
         break
       default:
@@ -103,7 +100,10 @@ module.exports = ({setState, getState}) => {
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
       const usingTrezor = cryptoProvider === 'trezor'
-      const isDemoWallet = secret === ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
+      const isDemoWallet =
+        walletSecretDef &&
+        walletSecretDef.rootSecret === ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
+
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
@@ -464,7 +464,7 @@ module.exports = ({setState, getState}) => {
 
   const exportJsonWallet = async (state, password, walletName) => {
     const walletExport = JSON.stringify(
-      await KeypassJson.exportWalletSecret(wallet.getSecret(), password, walletName)
+      await KeypassJson.exportWalletSecretDef(wallet.getWalletSecretDef(), password, walletName)
     )
 
     const blob = new Blob([walletExport], {type: 'application/json;charset=utf-8'})

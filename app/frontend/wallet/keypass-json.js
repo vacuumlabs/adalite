@@ -2,6 +2,7 @@
 
 const cbor = require('borc')
 const {cardanoMemoryCombine, blake2b, scrypt} = require('cardano-crypto.js')
+const derivationSchemes = require('./derivation-schemes')
 
 const {HARDENED_THRESHOLD} = require('./constants')
 
@@ -80,17 +81,25 @@ function parseWalletExportObj(walletExportObj) {
   if (walletExportObj.fileType !== 'WALLETS_EXPORT') {
     throw Error('Invalid file type')
   }
-  if (walletExportObj.fileVersion !== '1.0.0') {
-    throw Error('Invalid file version')
-  }
 
   const {passwordHash: b64PasswordHash, walletSecretKey: b64WalletSecret} = walletExportObj.wallet
   const passwordHash = Buffer.from(b64PasswordHash, 'base64')
-  const walletSecret = cbor.decode(Buffer.from(b64WalletSecret, 'base64'))
+  const derivationScheme = Object.values(derivationSchemes).find(
+    (x) => x.keyfileVersion === walletExportObj.fileVersion
+  )
+
+  if (derivationScheme === undefined) {
+    throw Error(`Invalid file version: ${walletExportObj.fileVersion}`)
+  }
+
+  const walletSecretDef = {
+    rootSecret: cbor.decode(Buffer.from(b64WalletSecret, 'base64')),
+    derivationScheme,
+  }
 
   return {
     passwordHash,
-    walletSecret,
+    walletSecretDef,
   }
 }
 
@@ -101,8 +110,8 @@ async function isWalletExportEncrypted(walletExportObj) {
   return !isPasswordVerified
 }
 
-async function importWalletSecret(walletExportObj, password) {
-  const {passwordHash, walletSecret} = parseWalletExportObj(walletExportObj)
+async function importWalletSecretDef(walletExportObj, password) {
+  const {passwordHash, walletSecretDef} = parseWalletExportObj(walletExportObj)
 
   const isPasswordVerified = await verifyPassword(password, passwordHash)
   if (!isPasswordVerified) {
@@ -110,14 +119,16 @@ async function importWalletSecret(walletExportObj, password) {
   }
 
   if (!password) {
-    return walletSecret
+    return walletSecretDef
   }
 
-  return decryptWalletSecret(walletSecret, password)
+  walletSecretDef.rootSecret = decryptWalletSecret(walletSecretDef.rootSecret, password)
+
+  return walletSecretDef
 }
 
-async function exportWalletSecret(walletSecret, password, walletName) {
-  const encryptedWalletSecret = encryptWalletSecret(walletSecret, password)
+async function exportWalletSecretDef(walletSecretDef, password, walletName) {
+  const encryptedWalletSecret = encryptWalletSecret(walletSecretDef.rootSecret, password)
   const packedPasswordHash = await hashPasswordAndPack(password, getRandomSaltForPasswordHash())
 
   return {
@@ -137,12 +148,12 @@ async function exportWalletSecret(walletSecret, password, walletName) {
       passwordHash: cbor.encode(Buffer.from(packedPasswordHash, 'ascii')).toString('base64'),
     },
     fileType: 'WALLETS_EXPORT',
-    fileVersion: '1.0.0',
+    fileVersion: walletSecretDef.derivationScheme.keyfileVersion,
   }
 }
 
 module.exports = {
-  importWalletSecret,
-  exportWalletSecret,
+  importWalletSecretDef,
+  exportWalletSecretDef,
   isWalletExportEncrypted,
 }

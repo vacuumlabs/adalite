@@ -5,18 +5,24 @@ const {HARDENED_THRESHOLD} = require('../../frontend/wallet/constants')
 const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
 const CardanoWalletSecretCryptoProvider = require('../../frontend/wallet/cardano-wallet-secret-crypto-provider')
 const tx = require('../../frontend/wallet/transaction')
-const mnemonicOrHdNodeStringToWalletSecret = require('../../frontend/wallet/helpers/mnemonicOrHdNodeStringToWalletSecret')
+const mnemonicToWalletSecretDef = require('../../frontend/wallet/helpers/mnemonicToWalletSecretDef')
 const cryptoProviderSettings = require('./common/crypto-provider-settings')
 
 const cryptoProviders = []
 
 const initCryptoProvider = async (settings, i) => {
-  const parsedWalletSecret = await mnemonicOrHdNodeStringToWalletSecret(settings.secret)
-
+  let walletSecretDef
+  if (settings.type === 'walletSecretDef') {
+    walletSecretDef = {
+      rootSecret: Buffer.from(settings.secret, 'hex'),
+      derivationScheme: derivationSchemes[settings.derivationSchemeType],
+    }
+  } else {
+    walletSecretDef = await mnemonicToWalletSecretDef(settings.secret)
+  }
   cryptoProviders[i] = CardanoWalletSecretCryptoProvider(
     {
-      derivationScheme: parsedWalletSecret.derivationScheme,
-      walletSecret: parsedWalletSecret.walletSecret,
+      walletSecretDef,
       network: settings.network,
     },
     true

@@ -2,9 +2,9 @@ const assert = require('assert')
 const cbor = require('borc')
 
 const {CardanoWallet, txFeeFunction} = require('../../frontend/wallet/cardano-wallet')
-const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
 const mockNetwork = require('./common/mock')
 const {TxAux} = require('../../frontend/wallet/transaction')
+const mnemonicToWalletSecretDef = require('../../frontend/wallet/helpers/mnemonicToWalletSecretDef')
 
 const testSeed = 39
 
@@ -24,46 +24,41 @@ const mockConfig2 = {
 
 const unusedWalletConfig = {
   cryptoProvider: 'mnemonic',
-  mnemonicOrHdNodeString:
-    'rain flame hip basic extend capable chair oppose gorilla fun aunt emotion',
+  mnemonic: 'rain flame hip basic extend capable chair oppose gorilla fun aunt emotion',
   config: mockConfig1,
   randomSeed: testSeed,
   network: 'mainnet',
-  derivationScheme: derivationSchemes.v1,
 }
 
 const usedWalletConfig = {
   cryptoProvider: 'mnemonic',
-  mnemonicOrHdNodeString:
-    'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
+  mnemonic: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
   config: mockConfig2,
   randomSeed: testSeed,
   network: 'mainnet',
-  derivationScheme: derivationSchemes.v1,
 }
 
 const smallUtxosWalletConfig = {
   cryptoProvider: 'mnemonic',
-  mnemonicOrHdNodeString: 'blame matrix water coil diet seat nerve street movie turkey jump bundle',
+  mnemonic: 'blame matrix water coil diet seat nerve street movie turkey jump bundle',
   config: mockConfig1,
   randomSeed: testSeed,
   network: 'mainnet',
-  derivationScheme: derivationSchemes.v1,
 }
 
 const usedV2WalletConfig = {
   cryptoProvider: 'mnemonic',
-  mnemonicOrHdNodeString:
+  mnemonic:
     'cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh',
   config: mockConfig1,
   randomSeed: testSeed,
   network: 'mainnet',
-  derivationScheme: derivationSchemes.v2,
 }
 
 const wallets = {}
 
 const initWallet = async (id, config) => {
+  config.walletSecretDef = await mnemonicToWalletSecretDef(config.mnemonic)
   wallets[id] = await CardanoWallet(config)
 }
 

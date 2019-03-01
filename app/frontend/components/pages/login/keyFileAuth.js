@@ -47,13 +47,13 @@ class LoadKeyFileClass extends Component {
     this.props.loadingAction('Unlocking key file')
 
     try {
-      const secret = (await KeypassJson.importWalletSecret(
+      const walletSecretDef = await KeypassJson.importWalletSecretDef(
         this.state.keyFile,
         this.state.password
-      )).toString('hex')
+      )
 
       this.setState({error: undefined})
-      this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
+      this.props.loadWallet({cryptoProvider: 'mnemonic', walletSecretDef})
     } catch (e) {
       this.props.stopLoadingAction()
       this.setState({error: 'Wrong password'})
@@ -107,9 +107,9 @@ class LoadKeyFileClass extends Component {
             })
           } else {
             this.props.loadingAction('Reading key file')
-            const secret = (await KeypassJson.importWalletSecret(walletExport, '')).toString('hex')
+            const walletSecretDef = await KeypassJson.importWalletSecretDef(walletExport, '')
 
-            this.props.loadWallet({cryptoProvider: 'mnemonic', secret})
+            this.props.loadWallet({cryptoProvider: 'mnemonic', walletSecretDef})
             this.setState({error: undefined})
           }
         } catch (err) {

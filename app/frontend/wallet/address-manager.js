@@ -7,14 +7,12 @@ const AddressManager = ({
   defaultAddressCount,
   gapLimit,
   cryptoProvider,
-  derivationScheme,
   disableCaching, // good for tests
   isChange,
   blockchainExplorer,
 }) => {
-  const state = {
-    deriveAddressMemo: {},
-  }
+  const deriveAddressMemo = {}
+  const derivationScheme = cryptoProvider.getDerivationScheme()
 
   validateParams()
 
@@ -113,12 +111,12 @@ const AddressManager = ({
     // in derivation scheme 1, the middle part of the derivation path is skipped
     const memoKey = JSON.stringify(absDerivationPath)
 
-    if (!state.deriveAddressMemo[memoKey] || disableCaching) {
+    if (!deriveAddressMemo[memoKey] || disableCaching) {
       const xpub = await cryptoProvider.deriveXpub(absDerivationPath)
       const hdPassphrase =
         derivationScheme.type === 'v1' ? await cryptoProvider.getHdPassphrase() : undefined
 
-      state.deriveAddressMemo[memoKey] = packAddress(
+      deriveAddressMemo[memoKey] = packAddress(
         absDerivationPath,
         xpub,
         hdPassphrase,
@@ -126,13 +124,13 @@ const AddressManager = ({
       )
     }
 
-    return state.deriveAddressMemo[memoKey]
+    return deriveAddressMemo[memoKey]
   }
 
   function getAddressToAbsPathMapping() {
     const result = {}
-    Object.keys(state.deriveAddressMemo).map((key) => {
-      result[state.deriveAddressMemo[key]] = JSON.parse(key)
+    Object.keys(deriveAddressMemo).map((key) => {
+      result[deriveAddressMemo[key]] = JSON.parse(key)
     })
 
     return result
