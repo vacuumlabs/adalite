@@ -1554,19 +1554,6 @@ button[data-balloon] {
   margin-right: 16px;
 }
 
-.conversions-help {
-  width: 16px;
-  height: 16px;
-  background-image: url('../assets/question_symbol.svg');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-}
-
-.conversions-help:hover {
-  cursor: pointer;
-}
-
 /* ADDRESSES */
 
 .addresses {
