@@ -18,7 +18,7 @@ class GenerateMnemonicDialogClass {
         'The new wallet is created together with a mnemonic phrase. Write the mnemonic phrase down, you will need it to access your wallet. ',
         h('strong', undefined, 'Don’t copy it to your clipboard or save it anywhere online.')
       ),
-      h('div', {class: 'modal-mnemonic'}, mnemonic),
+      h('div', {class: 'modal-mnemonic one-click-select'}, mnemonic),
       h(
         'div',
         {class: 'modal-footer'},

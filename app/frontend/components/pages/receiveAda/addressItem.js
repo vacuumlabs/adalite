@@ -11,7 +11,7 @@ const AddressItem = connect(
   h(
     'div',
     {class: 'address'},
-    h('p', {class: 'address-value'}, address),
+    h('p', {class: 'address-value one-click-select'}, address),
     h(
       'div',
       {class: 'address-links'},

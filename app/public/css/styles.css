@@ -101,6 +101,15 @@ p {
   margin: 0;
 }
 
+/* SELECTABILITY */
+
+.one-click-select {
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
+
 /* INPUTS */
 
 .input {
@@ -775,10 +784,6 @@ button[data-balloon] {
   padding: 24px 24px 24px 64px;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  -webkit-user-select: all;
-  -moz-user-select: all;
-  -ms-user-select: all;
-  user-select: all;
 }
 
 .modal-mnemonic:before {
@@ -1956,10 +1961,6 @@ button[data-balloon] {
   word-wrap: break-word;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  -webkit-user-select: all;
-  -moz-user-select: all;
-  -ms-user-select: all;
-  user-select: all;
 }
 
 /* SEND */
