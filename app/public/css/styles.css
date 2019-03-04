@@ -1951,6 +1951,17 @@ button[data-balloon] {
   border-top: 1px solid var(--color-border);
 }
 
+.raw-transaction {
+  padding: 16px;
+  word-wrap: break-word;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
+
 /* SEND */
 
 .send-values {
