@@ -166,15 +166,17 @@ const SendAdaPage = ({
           closeTransactionErrorModal,
         })
     ),
-    h(
-      'a',
-      {
-        href: '#',
-        class: 'send-raw',
-        onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
-      },
-      'Raw unsigned transaction'
-    ),
+    enableSubmit &&
+      !feeRecalculating &&
+      h(
+        'a',
+        {
+          href: '#',
+          class: 'send-raw',
+          onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
+        },
+        'Raw unsigned transaction'
+      ),
     showTransactionErrorModal &&
       h(TransactionErrorModal, {
         closeTransactionErrorModal,
