@@ -18,7 +18,7 @@ class AddressDetailDialogClass extends Component {
   }
 
   render(
-    {showDetail, closeAddressDetail, verificationError, verifyAddress, showVerification},
+    {showDetail, closeAddressDetail, verificationError, verifyAddress, showVerification, verifying},
     {showCopyMessage}
   ) {
     return (
@@ -87,10 +87,10 @@ class AddressDetailDialogClass extends Component {
                       class: 'detail-verify',
                       onClick: (e) => {
                         e.preventDefault()
-                        verifyAddress()
+                        !verifying && verifyAddress()
                       },
                     },
-                    'Verify on Trezor'
+                    verifying ? 'Verifying address..' : 'Verify on Trezor'
                   ))
             )
           ),
@@ -116,6 +116,7 @@ module.exports = connect(
     showDetail: state.showAddressDetail,
     verificationError: state.addressVerificationError,
     showVerification: state.showAddressVerification,
+    verifying: state.addressVerifying,
   }),
   actions
 )(AddressDetailDialogClass)
