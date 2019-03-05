@@ -341,6 +341,10 @@ p {
   margin-left: 16px;
 }
 
+.button.send-max:disabled {
+  color: var(--color-grey-light);
+}
+
 /* TOOLTIP */
 
 button[data-balloon] {
