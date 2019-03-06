@@ -61,7 +61,7 @@ const CardanoWallet = async (options) => {
 
   const visibleAddressManager = AddressManager({
     accountIndex: state.accountIndex,
-    addressLimitV1: config.ADALITE_WALLET_ADDRESS_LIMIT_V1,
+    defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: config.ADALITE_GAP_LIMIT,
     cryptoProvider,
     derivationScheme: state.derivationScheme,
@@ -71,7 +71,7 @@ const CardanoWallet = async (options) => {
 
   const changeAddressManager = AddressManager({
     accountIndex: state.accountIndex,
-    addressLimitV1: config.ADALITE_WALLET_ADDRESS_LIMIT_V1,
+    defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: config.ADALITE_GAP_LIMIT,
     cryptoProvider,
     derivationScheme: state.derivationScheme,
@@ -272,10 +272,13 @@ const CardanoWallet = async (options) => {
     * AdaLite original functionality which did not consider change addresses.
     * This is an intermediate step between legacy mode and full Yoroi compatibility.
     */
-    const addresses = await visibleAddressManager.discoverAddresses()
-    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
+    const addresses = filterUnusedEndAddresses(
+      await visibleAddressManager.discoverAddressesWithMeta()
+    ).map((addrWithMeta) => addrWithMeta.address)
 
-    return addresses[randomSeedGenerator.nextInt() % addresses.length]
+    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
+    const result = addresses[randomSeedGenerator.nextInt() % addresses.length]
+    return result
   }
 
   async function getUnspentTxOutputs() {
@@ -292,8 +295,18 @@ const CardanoWallet = async (options) => {
       : visibleAddresses.concat(changeAddresses)
   }
 
-  function getVisibleAddressesWithMeta() {
-    return visibleAddressManager.discoverAddressesWithMeta()
+  async function getFilteredVisibleAddressesWithMeta() {
+    return filterUnusedEndAddresses(await visibleAddressManager.discoverAddressesWithMeta())
+  }
+
+  function filterUnusedEndAddresses(addressesWithMeta) {
+    const defaultAddressCount = config.ADALITE_DEFAULT_ADDRESS_COUNT
+    for (let i = addressesWithMeta.length - 1; i >= defaultAddressCount; --i) {
+      if (addressesWithMeta[i].isUsedAsOutput || addressesWithMeta[i].isUsedAsInput) {
+        return addressesWithMeta.slice(0, i + 1)
+      }
+    }
+    return addressesWithMeta.slice(0, defaultAddressCount)
   }
 
   async function isOwnAddress(addr) {
@@ -335,7 +348,7 @@ const CardanoWallet = async (options) => {
     getTxFee,
     getHistory,
     isOwnAddress,
-    getVisibleAddressesWithMeta,
+    getFilteredVisibleAddressesWithMeta,
     prepareTxAux,
     verifyAddress,
     fetchTxInfo,

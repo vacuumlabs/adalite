@@ -12,7 +12,7 @@ const BlockchainExplorer = require('../../frontend/wallet/blockchain-explorer')
 const mockConfig = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
   ADALITE_SERVER_URL: 'http://localhost:3000',
-  ADALITE_WALLET_ADDRESS_LIMIT_V1: 10,
+  ADALITE_DEFAULT_ADDRESS_COUNT: 10,
   ADALITE_GAP_LIMIT: 10,
 }
 
@@ -60,7 +60,7 @@ const initAddressManager = async (settings, i) => {
 
   addressManagers[i] = AddressManager({
     accountIndex: HARDENED_THRESHOLD,
-    addressLimitV1: mockConfig.ADALITE_WALLET_ADDRESS_LIMIT_V1,
+    defaultAddressCount: mockConfig.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: mockConfig.ADALITE_GAP_LIMIT,
     cryptoProvider: cryptoProviders[i],
     derivationScheme: parsedWalletSecret.derivationScheme,

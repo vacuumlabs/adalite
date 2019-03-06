@@ -4,7 +4,7 @@ const {packAddress} = require('cardano-crypto.js')
 
 const AddressManager = ({
   accountIndex,
-  addressLimitV1,
+  defaultAddressCount,
   gapLimit,
   cryptoProvider,
   derivationScheme,
@@ -22,8 +22,8 @@ const AddressManager = ({
     if (!gapLimit) {
       throw Error(`Invalid gap limit: ${gapLimit}`)
     }
-    if (!addressLimitV1) {
-      throw Error(`Invalid addressLimitV1: ${addressLimitV1}`)
+    if (!defaultAddressCount) {
+      throw Error(`Invalid defaultAddressCount: ${defaultAddressCount}`)
     }
   }
 
@@ -40,7 +40,7 @@ const AddressManager = ({
 
   function discoverAddressesV1() {
     const childIndexBegin = derivationScheme.startAddressIndex
-    const childIndexEnd = childIndexBegin + addressLimitV1
+    const childIndexEnd = childIndexBegin + defaultAddressCount
     return deriveAddressesBlock(childIndexBegin, childIndexEnd)
   }
 
@@ -72,12 +72,37 @@ const AddressManager = ({
   }
 
   async function discoverAddressesWithMeta() {
-    return (await discoverAddresses()).map((address) => {
+    const addresses = await discoverAddresses()
+    const {usedAsInputAddresses, usedAsOutputAddresses} = await getUsedAddresses(addresses)
+
+    return addresses.map((address) => {
       return {
         address,
         bip32StringPath: toBip32StringPath(getAddressToAbsPathMapping()[address]),
+        isUsedAsOutput: usedAsOutputAddresses.has(address),
+        isUsedAsInput: usedAsInputAddresses.has(address),
       }
     })
+  }
+
+  async function getUsedAddresses(addresses) {
+    const txHistory = await blockchainExplorer.getTxHistory(addresses)
+    const usedAsOutputAddresses = new Set()
+    const usedAsInputAddresses = new Set()
+
+    txHistory.forEach((trx) => {
+      trx.ctbOutputs.forEach((output) => {
+        usedAsOutputAddresses.add(output[0])
+      })
+      trx.ctbInputs.forEach((input) => {
+        usedAsInputAddresses.add(input[0])
+      })
+    })
+
+    return {
+      usedAsInputAddresses,
+      usedAsOutputAddresses,
+    }
   }
 
   function deriveAddresses(absDerivationPaths) {

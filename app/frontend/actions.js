@@ -95,7 +95,7 @@ module.exports = ({setState, getState}) => {
     }
     try {
       const walletIsLoaded = true
-      const ownAddressesWithMeta = await wallet.getVisibleAddressesWithMeta()
+      const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
       const conversionRates = getConversionRates(state)
@@ -237,7 +237,7 @@ module.exports = ({setState, getState}) => {
     loadingAction(state, 'Reloading wallet info...')
 
     const balance = await wallet.getBalance()
-    const ownAddressesWithMeta = await wallet.getVisibleAddressesWithMeta()
+    const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
     const transactionHistory = await wallet.getHistory()
     const conversionRates = getConversionRates(state)
 

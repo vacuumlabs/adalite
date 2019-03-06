@@ -11,14 +11,14 @@ const testSeed = 39
 const mockConfig1 = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
   ADALITE_SERVER_URL: 'http://localhost:3000',
-  ADALITE_WALLET_ADDRESS_LIMIT_V1: 5,
+  ADALITE_DEFAULT_ADDRESS_COUNT: 5,
   ADALITE_GAP_LIMIT: 20,
 }
 
 const mockConfig2 = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
   ADALITE_SERVER_URL: 'http://localhost:3000',
-  ADALITE_WALLET_ADDRESS_LIMIT_V1: 15,
+  ADALITE_DEFAULT_ADDRESS_COUNT: 15,
   ADALITE_GAP_LIMIT: 20,
 }
 
@@ -124,22 +124,22 @@ describe('wallet change address computation', () => {
 
   it('should properly compute change address', async () => {
     assert.equal(
-      await wallets.used.getChangeAddress(5),
+      await wallets.used.getChangeAddress(),
       'DdzFFzCqrht2BjaxbFgHEYYHmHNotTdp6p727yGnMccSovXj2ZmR83Q4hYXkong6L7D8aB5Y2fRTZ1zgLJzSzFght3J799UTbeTBJk4E'
     )
   })
 
   it('should properly compute change address for v2 derivation scheme', async () => {
     assert.equal(
-      await wallets.v2Used.getChangeAddress(5),
-      'Ae2tdPwUPEZ8gWGpNQAfqeTcTXai47wQ3bmjpYcmaE8Dcr2eSpV3VwzjAxC'
+      await wallets.v2Used.getChangeAddress(),
+      'Ae2tdPwUPEYwJN7vyddNCKjFUEdFV5kuaJvwCgVjqSUKCyoayKvDVdx2V2d'
     )
   })
 })
 
 describe('test fetching wallet addresses', () => {
   it('should properly fetch list of wallet addresses with metadata', async () => {
-    const addresses = await wallets.used.getVisibleAddressesWithMeta()
+    const addresses = await wallets.used.getFilteredVisibleAddressesWithMeta()
 
     assert.equal(
       addresses[4].address,
@@ -148,7 +148,7 @@ describe('test fetching wallet addresses', () => {
     assert.equal(addresses[4].bip32StringPath, "m/0'/4'")
   })
   it('should properly fetch list of v2 wallet addresses with metadata', async () => {
-    const addresses = await wallets.v2Used.getVisibleAddressesWithMeta()
+    const addresses = await wallets.v2Used.getFilteredVisibleAddressesWithMeta()
 
     assert.equal(
       addresses[4].address,
@@ -229,6 +229,7 @@ describe('transaction serialization', () => {
   it('should properly discard utxos that cause an increase of fee higher than their value', async () => {
     const mockNet = mockNetwork(mockConfig1)
     mockNet.mockUtxoEndpoint()
+    mockNet.mockBulkAddressSummaryEndpoint()
 
     const txAux = await wallets.smallUtxos.prepareTxAux(myAddress, 1000000)
 
@@ -321,6 +322,27 @@ describe('test transaction submission', () => {
     assert.deepEqual(result, {
       txHash: '73131c773879e7e634022f8e0175399b7e7814c42684377cf6f8c7a1adb23112',
     })
+    mockNet.clean()
+  })
+})
+
+describe('filtering visible addresses', () => {
+  it('should properly filter unused ending addresses of v1 wallet', async () => {
+    const mockNet = mockNetwork(mockConfig2)
+    mockNet.mockBulkAddressSummaryEndpoint()
+
+    const result = await wallets.used.getFilteredVisibleAddressesWithMeta()
+    assert.equal(result.length, 15)
+
+    mockNet.clean()
+  })
+  it('should properly filter unused ending addresses of v2 wallet', async () => {
+    const mockNet = mockNetwork(mockConfig2)
+    mockNet.mockBulkAddressSummaryEndpoint()
+
+    const result = await wallets.v2Used.getFilteredVisibleAddressesWithMeta()
+    assert.equal(result.length, 31)
+
     mockNet.clean()
   })
 })

@@ -277,6 +277,13 @@ const bulkSummaryRequests = [
     'Ae2tdPwUPEZN3GEFq8FoMzsSchMRwjcwzUoHsy3ARHUHQQHZxYzeDXtAkir',
     'Ae2tdPwUPEZD9a9iktQ4YRVU8tSUE5KgUWJAWcVhNrh8G3xEXbd2ZJBH7Jx',
   ],
+  [
+    'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ',
+    'DdzFFzCqrhtA8C86FGbYkcnHuu8uNmjZ4M6pDKKYXAwZRYr1Q8mXHmUFhgjcTCkuSDnx8xA7tu75727wAc6Ki5nM2PDFK3JXfdYfbvHC',
+    'DdzFFzCqrhsp3YjWh3BHaGTmpi3yCVrcaSoJhiEAkBcT4FsA3rXNC31jDfw8oT1mZ9g3n6nJb4hPzKgCHgT53QpqfGwQHy94gLb7GKsY',
+    'DdzFFzCqrhsrndfZ3UoB2eYXwjxFUePiR27BiYfqgPbqzMUiz25sjhxfLjzVhDqT4bsmiypfYKwH66UfFDGsaEffA1HYFw46upt6G7J5',
+    'DdzFFzCqrhsr5ysDEKPH1QGFGnUBbSufGWtCfRZ9zLpSU5c7FacKfyJgmNaDHiPZLfjTbwzcvW53ySj89CECGp6FKHCiSnLF6ZJc7Zag',
+  ],
 ]
 
 module.exports = bulkSummaryRequests

@@ -6,7 +6,7 @@ const mockNetwork = require('./common/mock')
 const mockConfig = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
   ADALITE_SERVER_URL: 'http://localhost:3000',
-  ADALITE_WALLET_ADDRESS_LIMIT_V1: 20,
+  ADALITE_DEFAULT_ADDRESS_COUNT: 20,
   ADALITE_GAP_LIMIT: 20,
 }
 
