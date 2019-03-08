@@ -3,9 +3,10 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const express = require('express')
 const compression = require('compression')
-const frontendConfig = require('./helpers/loadFrontendConfig')
 const fs = require('fs')
 const https = require('https')
+const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
+
 let app = express()
 
 app.use(bodyParser.json())
@@ -16,10 +17,10 @@ app.enable('trust proxy') // to get the actual request protocol on heroku (impor
 app.use(require('./middlewares/redirectToBaseUrl'))
 
 // don't track in local dev => no need for local redis
-if (process.env.REDIS_URL) {
+if (backendConfig.REDIS_URL) {
   app.use(require('./middlewares/stats').trackVisits)
   app.use(require('./middlewares/stats').trackTxSubmissionCount)
-  app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: process.env.STATS_PWD}))
+  app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.STATS_PWD}))
   require('./statsPage')(app)
 }
 
@@ -28,18 +29,18 @@ app.use(express.static('app/dist'))
 app.use('/about', express.static('about'))
 
 // disable csp when developing trezor firmware to be able to load it
-if (!process.env.TREZOR_CONNECT_URL) {
+if (!backendConfig.TREZOR_CONNECT_URL) {
   app.use(require('./middlewares/csp'))
 }
 
-if (process.env.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
+if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./mocking')(app)
 } else {
   require('./transactionSubmitter')(app)
 }
 
 app.get('*', (req, res) => {
-  const serverUrl = process.env.ADALITE_SERVER_URL
+  const serverUrl = backendConfig.ADALITE_SERVER_URL
   return res.status(200).send(`
       <!doctype html>
       <html>
@@ -62,8 +63,8 @@ app.get('*', (req, res) => {
           <link rel="stylesheet" type="text/css" href="css/styles.css">
           <link rel="icon" type="image/ico" href="assets/favicon.ico">
           ${
-  process.env.TREZOR_CONNECT_URL
-    ? `<script src="${process.env.TREZOR_CONNECT_URL}"></script>`
+  backendConfig.TREZOR_CONNECT_URL
+    ? `<script src="${backendConfig.TREZOR_CONNECT_URL}"></script>`
     : ''
 }
           <noscript>
@@ -95,7 +96,7 @@ if (enableHttps) {
   app = https.createServer(options, app)
 }
 
-app.listen(process.env.PORT, () => {
+app.listen(backendConfig.PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server is lisening on ${enableHttps ? 'secure' : ''} port ${process.env.PORT}!`)
+  console.log(`Server is lisening on ${enableHttps ? 'secure' : ''} port ${backendConfig.PORT}!`)
 })
