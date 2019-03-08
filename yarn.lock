@@ -677,6 +677,11 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
+check-types@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/check-types/-/check-types-8.0.1.tgz#b7debfc8df239a9837d10eaba2b894d348baf22a"
+  integrity sha512-9gd7PEGnvDwyGnNNaGRcfIH2gS1hpfmxhUDI6nkrSuo2WdKr7rG2ZfCPA2MUCi1iX22XpHvBufYIG2Z/raQNnw==
+
 ci-info@^1.5.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-1.6.0.tgz#2ca20dbb9ceb32d4524a683303313f0304b1e497"
