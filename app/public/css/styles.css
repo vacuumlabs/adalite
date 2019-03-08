@@ -101,6 +101,15 @@ p {
   margin: 0;
 }
 
+/* SELECTABILITY */
+
+.one-click-select {
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
+
 /* INPUTS */
 
 .input {
@@ -330,6 +339,10 @@ p {
   color: var(--color-brand);
   text-decoration: underline;
   margin-left: 16px;
+}
+
+.button.send-max:disabled {
+  color: var(--color-grey-light);
 }
 
 /* TOOLTIP */
@@ -775,10 +788,6 @@ button[data-balloon] {
   padding: 24px 24px 24px 64px;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  -webkit-user-select: all;
-  -moz-user-select: all;
-  -ms-user-select: all;
-  user-select: all;
 }
 
 .modal-mnemonic:before {
@@ -1554,19 +1563,6 @@ button[data-balloon] {
   margin-right: 16px;
 }
 
-.conversions-help {
-  width: 16px;
-  height: 16px;
-  background-image: url('../assets/question_symbol.svg');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-}
-
-.conversions-help:hover {
-  cursor: pointer;
-}
-
 /* ADDRESSES */
 
 .addresses {
@@ -1962,6 +1958,13 @@ button[data-balloon] {
   text-align: center;
   padding-top: 40px;
   border-top: 1px solid var(--color-border);
+}
+
+.raw-transaction {
+  padding: 16px;
+  word-wrap: break-word;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
 }
 
 /* SEND */
