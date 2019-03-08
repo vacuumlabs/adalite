@@ -966,6 +966,13 @@ button[data-balloon] {
   align-items: flex-start;
 }
 
+.authentication-content.hardware {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .authentication-content .dropzone {
   margin-bottom: 24px;
 }
@@ -991,6 +998,10 @@ button[data-balloon] {
 .authentication-link {
   display: block;
   margin-top: 24px;
+}
+
+.authentication-image {
+  max-width: 144px;
 }
 
 /* AUTHENTICATION TABS */
@@ -2890,8 +2901,26 @@ button[data-balloon] {
     padding: 24px 0 32px 0;
   }
 
+  .authentication-content.hardware {
+    flex-direction: column-reverse;
+  }
+
+  .authentication-content.hardware .button {
+    margin: 0 auto;
+    display: block;
+  }
+
+  .authentication-content.hardware .authentication-paragraph {
+    text-align: center;
+  }
+
   .authentication-paragraph {
     margin-top: 16px;
+  }
+
+  .authentication-image {
+    margin-top: 8px;
+    margin-bottom: 16px;
   }
 
   .page-demo {
