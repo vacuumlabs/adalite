@@ -71,6 +71,8 @@ const SendAdaPage = ({
   const enableSubmit =
     sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
 
+  const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
+
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
     setRawTransactionOpen(true)
@@ -127,6 +129,7 @@ const SendAdaPage = ({
           {
             class: 'button send-max',
             onClick: sendMaxFunds,
+            disabled: !isSendAddressValid,
           },
           'Max'
         )
@@ -166,15 +169,17 @@ const SendAdaPage = ({
           closeTransactionErrorModal,
         })
     ),
-    h(
-      'a',
-      {
-        href: '#',
-        class: 'send-raw',
-        onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
-      },
-      'Raw unsigned transaction'
-    ),
+    enableSubmit &&
+      !feeRecalculating &&
+      h(
+        'a',
+        {
+          href: '#',
+          class: 'send-raw',
+          onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
+        },
+        'Raw unsigned transaction'
+      ),
     showTransactionErrorModal &&
       h(TransactionErrorModal, {
         closeTransactionErrorModal,

@@ -221,10 +221,7 @@ module.exports = ({setState, getState}) => {
       try {
         setState({waitingForHwWallet: true})
         await wallet.verifyAddress(state.showAddressDetail.address)
-        setState({
-          showAddressVerification: false,
-          waitingForHwWallet: false,
-        })
+        setState({showAddressVerification: false, waitingForHwWallet: false})
       } catch (e) {
         setState({
           showAddressDetail: undefined,
@@ -442,6 +439,7 @@ module.exports = ({setState, getState}) => {
   }
 
   const submitTransaction = async (state) => {
+    setState({showConfirmTransactionDialog: false})
     if (state.usingHwWallet) {
       /* TODO: Check if waitingForTrezor can be deleted safely */
       setState({waitingForHwWallet: true})
