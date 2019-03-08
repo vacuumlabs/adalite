@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 const {NETWORKS, ADALITE_SUPPORT_EMAIL} = require('./constants')
-const {ADALITE_SERVER_URL} = require('../config').ADALITE_CONFIG
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -19,7 +18,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
 
   TrezorConnect.manifest({
     email: ADALITE_SUPPORT_EMAIL,
-    appUrl: ADALITE_SERVER_URL,
+    appUrl: ADALITE_CONFIG.ADALITE_SERVER_URL,
   })
 
   const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
