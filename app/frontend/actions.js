@@ -201,8 +201,9 @@ module.exports = ({setState, getState}) => {
     const state = getState()
     if (state.usingTrezor && state.showAddressDetail) {
       try {
+        setState({addressVerifying: true})
         await wallet.verifyAddress(state.showAddressDetail.address)
-        setState({showAddressVerification: false})
+        setState({showAddressVerification: false, addressVerifying: false})
       } catch (e) {
         setState({
           showAddressDetail: undefined,
@@ -414,6 +415,7 @@ module.exports = ({setState, getState}) => {
   }
 
   const submitTransaction = async (state) => {
+    setState({showConfirmTransactionDialog: false})
     if (state.usingTrezor) {
       /* TODO: Check if waitingForTrezor can be deleted safely */
       setState({waitingForTrezor: true})

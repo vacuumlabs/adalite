@@ -15,15 +15,7 @@ class RawTransactionModal {
         'div',
         {class: 'width-auto'},
         h('h4', undefined, 'Raw unsigned transaction'),
-        h(
-          'div',
-          undefined,
-          h(
-            'div',
-            {class: 'raw-unsigned-transaction force-select-all'},
-            h('span', undefined, rawTransaction)
-          )
-        )
+        h('div', {class: 'raw-transaction one-click-select'}, rawTransaction)
       )
     )
   }
