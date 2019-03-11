@@ -64,6 +64,6 @@
     "lint-staged": "^7.0.4",
     "prettier": "^1.12.1",
     "prettier-eslint-cli": "^4.7.1",
-    "release-it": "^10.1.0"
+    "release-it": "^10.3.1"
   }
 }

@@ -4096,7 +4096,7 @@ registry-url@^3.0.3:
   dependencies:
     rc "^1.0.1"
 
-release-it@^10.1.0:
+release-it@^10.3.1:
   version "10.3.1"
   resolved "https://registry.yarnpkg.com/release-it/-/release-it-10.3.1.tgz#1868139d2b468cde7f1459feb2856652bf412b6f"
   integrity sha512-S0+CM4Nmb0Ihs5yyEHlO7igtcdsky8qgK3vHBClzD6BJ9LVHO3gA9ZlSi2f4taPYdyWHO3WNXBuI0UTJLtDPMA==
