@@ -281,7 +281,7 @@ p {
 }
 
 .button.logout {
-  margin-left: 32px;
+  margin-left: 16px;
   padding: 7px 24px 8px 56px;
   position: relative;
   color: var(--color-grey);
@@ -616,14 +616,11 @@ button[data-balloon] {
 }
 
 .navbar-link {
+  margin-right: 40px;
   font-size: 14px;
   line-height: 32px;
   text-decoration: none;
   color: var(--color-grey-dark);
-}
-
-.navbar-link + .navbar-link {
-  margin-left: 40px;
 }
 
 .navbar-link:hover {
@@ -2534,8 +2531,8 @@ button[data-balloon] {
     padding-bottom: 0;
   }
 
-  .navbar-link + .navbar-link {
-    margin-left: 24px;
+  .navbar-link:last-child {
+    margin-right: 0;
   }
 
   /* BUTTONS */
@@ -2595,12 +2592,6 @@ button[data-balloon] {
     order: 1;
     margin: 0;
     padding-left: 16px;
-    grid-column: span 2;
-  }
-
-  .navbar.authed .navbar-heading,
-  .navbar.demo .navbar-heading {
-    grid-column: 1;
   }
 
   .navbar .button {
@@ -3096,10 +3087,6 @@ button[data-balloon] {
 
   .navbar.authed {
     padding-bottom: 8px;
-  }
-
-  .navbar-link + .navbar-link {
-    margin-left: 32px;
   }
 
   .navbar.demo {
