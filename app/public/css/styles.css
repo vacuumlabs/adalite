@@ -281,7 +281,7 @@ p {
 }
 
 .button.logout {
-  margin-left: 16px;
+  margin-left: 32px;
   padding: 7px 24px 8px 56px;
   position: relative;
   color: var(--color-grey);
@@ -560,8 +560,7 @@ button[data-balloon] {
 }
 
 .navbar-logo {
-  max-height: 37px;
-  width: 100%;
+  max-width: 158px;
 }
 
 .navbar-wrapper {
@@ -617,11 +616,14 @@ button[data-balloon] {
 }
 
 .navbar-link {
-  margin-right: 40px;
   font-size: 14px;
   line-height: 32px;
   text-decoration: none;
   color: var(--color-grey-dark);
+}
+
+.navbar-link + .navbar-link {
+  margin-left: 40px;
 }
 
 .navbar-link:hover {
@@ -987,6 +989,11 @@ button[data-balloon] {
 
 .authentication-content.key-file .validation-message {
   display: block;
+}
+
+.authentication-link {
+  display: block;
+  margin-top: 24px;
 }
 
 /* AUTHENTICATION TABS */
@@ -2527,6 +2534,10 @@ button[data-balloon] {
     padding-bottom: 0;
   }
 
+  .navbar-link + .navbar-link {
+    margin-left: 24px;
+  }
+
   /* BUTTONS */
 
   .button {
@@ -2584,6 +2595,12 @@ button[data-balloon] {
     order: 1;
     margin: 0;
     padding-left: 16px;
+    grid-column: span 2;
+  }
+
+  .navbar.authed .navbar-heading,
+  .navbar.demo .navbar-heading {
+    grid-column: 1;
   }
 
   .navbar .button {
@@ -2606,15 +2623,11 @@ button[data-balloon] {
   }
 
   .navbar-logo {
-    max-height: 28px;
+    max-width: 120px;
   }
 
   .navbar-link.export {
     display: block;
-  }
-
-  .navbar-link:last-child {
-    margin: 0;
   }
 
   /* ALERTS */
@@ -3085,8 +3098,8 @@ button[data-balloon] {
     padding-bottom: 8px;
   }
 
-  .navbar-link {
-    margin-right: 32px;
+  .navbar-link + .navbar-link {
+    margin-left: 32px;
   }
 
   .navbar.demo {

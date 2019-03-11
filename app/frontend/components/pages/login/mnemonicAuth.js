@@ -21,6 +21,7 @@ class LoadByMenmonicSectionClass extends Component {
     loadWallet,
     showMnemonicValidationError,
     showMnemonicInfoAlert,
+    openGenerateMnemonicDialog,
   }) {
     return h(
       'div',
@@ -87,6 +88,17 @@ class LoadByMenmonicSectionClass extends Component {
             {class: 'validation-message error'},
             getTranslation(mnemonicValidationError.code)
           )
+      ),
+      h(
+        'a',
+        {
+          class: 'authentication-link',
+          onClick: (e) => {
+            e.preventDefault()
+            openGenerateMnemonicDialog()
+          },
+        },
+        'Create New Wallet'
       )
     )
   }
