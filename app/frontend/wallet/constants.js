@@ -16,7 +16,7 @@ module.exports = {
       protocolMagic: 764824073,
     },
     TESTNET: {
-      testnet: 'testnet',
+      name: 'testnet',
       protocolMagic: 1097911063,
     },
   },
