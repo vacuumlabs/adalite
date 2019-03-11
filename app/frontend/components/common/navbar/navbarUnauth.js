@@ -8,7 +8,7 @@ const isLeftClick = require('../../../helpers/isLeftClick')
 const NavbarUnauth = connect(
   null,
   actions
-)(({openGenerateMnemonicDialog}) =>
+)(() =>
   h(
     'nav',
     {class: 'navbar'},
@@ -53,18 +53,6 @@ const NavbarUnauth = connect(
           },
           'Help'
         )
-      ),
-      h(
-        'button',
-        {
-          class: 'button outline navbar',
-          /*
-          * onMouseDown to prevent onBlur before handling the click event
-          * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
-          */
-          onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
-        },
-        'Create New Wallet'
       )
     )
   )
