@@ -44,7 +44,7 @@ class LoadByMenmonicSectionClass extends Component {
       h(
         'div',
         {class: 'centered-row margin-bottom'},
-        'Enter the 12-word wallet mnemonic or 27-word Daedalus paper wallet mnemonic'
+        'Enter the 12 or 15-word wallet mnemonic or 27-word Daedalus paper wallet mnemonic'
       ),
       mnemonicValidationError &&
         showMnemonicValidationError &&
