@@ -1,7 +1,7 @@
 {
   "git": {
-    "commitArgs": "-S",
-    "tagArgs": "-S",
+    "commitArgs": "-s",
+    "tagArgs": "-s",
     "commitMessage": "%s",
     "tagName": "v%s"
   },
