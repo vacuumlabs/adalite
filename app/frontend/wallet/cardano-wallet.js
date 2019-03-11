@@ -29,7 +29,6 @@ const CardanoWallet = async (options) => {
   }
 
   const blockchainExplorer = BlockchainExplorer(config, state)
-
   const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(
     options.cryptoProviderType,
     Object.assign({}, config, {

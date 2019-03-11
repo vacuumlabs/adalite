@@ -5,7 +5,6 @@ const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const HdNode = require('./hd-node')
 const {parseTxAux} = require('./helpers/cbor-parsers')
 const NamedError = require('../helpers/NamedError')
-const {NETWORKS} = require('./constants')
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 
 const CardanoWalletSecretCryptoProvider = (
@@ -99,7 +98,7 @@ const CardanoWalletSecretCryptoProvider = (
       txAux.inputs.map(async (input) => {
         const absoluteDerivationPath = addressToAbsPathMapper(input.utxo.address)
         const xpub = await deriveXpub(absoluteDerivationPath)
-        const protocolMagic = NETWORKS[state.network].protocolMagic
+        const protocolMagic = state.network.protocolMagic
 
         /*
         * the "01" byte is a constant to denote signatures of transactions

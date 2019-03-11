@@ -5,7 +5,7 @@ const {CardanoWallet, txFeeFunction} = require('../../frontend/wallet/cardano-wa
 const mockNetwork = require('./common/mock')
 const {TxAux} = require('../../frontend/wallet/transaction')
 const mnemonicToWalletSecretDef = require('../../frontend/wallet/helpers/mnemonicToWalletSecretDef')
-const {CRYPTO_PROVIDER_TYPES} = require('../../frontend/wallet/constants')
+const {CRYPTO_PROVIDER_TYPES, NETWORKS} = require('../../frontend/wallet/constants')
 
 const testSeed = 39
 
@@ -28,7 +28,7 @@ const unusedWalletConfig = {
   mnemonic: 'rain flame hip basic extend capable chair oppose gorilla fun aunt emotion',
   config: mockConfig1,
   randomSeed: testSeed,
-  network: 'mainnet',
+  network: NETWORKS.MAINNET,
 }
 
 const usedWalletConfig = {
@@ -36,7 +36,7 @@ const usedWalletConfig = {
   mnemonic: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
   config: mockConfig2,
   randomSeed: testSeed,
-  network: 'mainnet',
+  network: NETWORKS.MAINNET,
 }
 
 const smallUtxosWalletConfig = {
@@ -44,7 +44,7 @@ const smallUtxosWalletConfig = {
   mnemonic: 'blame matrix water coil diet seat nerve street movie turkey jump bundle',
   config: mockConfig1,
   randomSeed: testSeed,
-  network: 'mainnet',
+  network: NETWORKS.MAINNET,
 }
 
 const usedV2WalletConfig = {
@@ -53,7 +53,7 @@ const usedV2WalletConfig = {
     'cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh',
   config: mockConfig1,
   randomSeed: testSeed,
-  network: 'mainnet',
+  network: NETWORKS.MAINNET,
 }
 
 const wallets = {}

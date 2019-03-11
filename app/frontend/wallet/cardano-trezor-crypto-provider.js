@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
-const {NETWORKS, ADALITE_SUPPORT_EMAIL} = require('./constants')
+const {ADALITE_SUPPORT_EMAIL} = require('./constants')
 const derivationSchemes = require('./derivation-schemes')
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
@@ -83,13 +83,6 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     return data
   }
 
-  function getProtocolMagic(network) {
-    if (!NETWORKS[network]) {
-      throw new Error(`Unknown network: ${network}`)
-    }
-    return NETWORKS[network].protocolMagic
-  }
-
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
     const inputs = []
     for (const input of unsignedTx.inputs) {
@@ -108,7 +101,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       inputs,
       outputs,
       transactions,
-      protocol_magic: getProtocolMagic(state.network),
+      protocol_magic: state.network.protocolMagic,
     })
 
     if (response.success) {

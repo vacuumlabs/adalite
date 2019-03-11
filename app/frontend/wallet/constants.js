@@ -11,10 +11,12 @@ module.exports = {
     'DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5',
   TX_WITNESS_SIZE_BYTES: 139,
   NETWORKS: {
-    mainnet: {
+    MAINNET: {
+      name: 'mainnet',
       protocolMagic: 764824073,
     },
-    testnet: {
+    TESTNET: {
+      testnet: 'testnet',
       protocolMagic: 1097911063,
     },
   },
