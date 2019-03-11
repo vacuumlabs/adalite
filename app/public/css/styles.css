@@ -560,8 +560,7 @@ button[data-balloon] {
 }
 
 .navbar-logo {
-  max-height: 37px;
-  width: 100%;
+  max-width: 158px;
 }
 
 .navbar-wrapper {
@@ -987,6 +986,11 @@ button[data-balloon] {
 
 .authentication-content.key-file .validation-message {
   display: block;
+}
+
+.authentication-link {
+  display: block;
+  margin-top: 24px;
 }
 
 /* AUTHENTICATION TABS */
@@ -2527,6 +2531,10 @@ button[data-balloon] {
     padding-bottom: 0;
   }
 
+  .navbar-link:last-child {
+    margin-right: 0;
+  }
+
   /* BUTTONS */
 
   .button {
@@ -2606,15 +2614,11 @@ button[data-balloon] {
   }
 
   .navbar-logo {
-    max-height: 28px;
+    max-width: 120px;
   }
 
   .navbar-link.export {
     display: block;
-  }
-
-  .navbar-link:last-child {
-    margin: 0;
   }
 
   /* ALERTS */
@@ -3083,10 +3087,6 @@ button[data-balloon] {
 
   .navbar.authed {
     padding-bottom: 8px;
-  }
-
-  .navbar-link {
-    margin-right: 32px;
   }
 
   .navbar.demo {
