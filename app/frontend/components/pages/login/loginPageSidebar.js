@@ -18,21 +18,17 @@ const initialContent = () =>
           undefined,
           'AdaLite supports three means of accessing your wallet. For enhanced security, we recommend you to use a ',
           h('strong', undefined, 'hardware wallet.')
+        ),
+        h(
+          'a',
+          {
+            class: 'sidebar-link',
+            href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#hardware-wallets',
+            rel: 'noopener',
+            target: 'blank',
+          },
+          'What is a Hardware Wallet'
         )
-      )
-    ),
-    h(
-      'div',
-      {class: 'sidebar-item'},
-      h(
-        'a',
-        {
-          class: 'sidebar-link',
-          href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#hardware-wallets',
-          rel: 'noopener',
-          target: 'blank',
-        },
-        'What is a Hardware Wallet'
       )
     )
   )
@@ -43,7 +39,7 @@ const mnemonicContent = () =>
     {class: 'sidebar-content'},
     h(
       'div',
-      {class: 'sidebar-item spacy'},
+      {class: 'sidebar-item'},
       h(
         Alert,
         {alertType: 'info sidebar'},
@@ -51,7 +47,42 @@ const mnemonicContent = () =>
         h(
           'p',
           undefined,
-          'It’s a passphrase which serves as a seed to restore the addresses and their respective public and private keys associated with your wallet. We use the same derivation scheme as ',
+          'It’s a passphrase which serves as a seed to restore the addresses and their respective public and private keys associated with your wallet.'
+        )
+      )
+    ),
+    h(
+      'div',
+      {class: 'sidebar-item spacy'},
+      h(
+        Alert,
+        {alertType: 'info sidebar'},
+        h(
+          'p',
+          undefined,
+          'AdaLite is fully interoperable with ',
+          h(
+            'a',
+            {
+              class: 'sidebar-link',
+              href: 'https://yoroi-wallet.com/',
+              rel: 'noopener',
+              target: 'blank',
+            },
+            'Yoroi'
+          ),
+          ' (15 words) mnemonics and ',
+          h(
+            'a',
+            {
+              class: 'sidebar-link',
+              href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#daedalus-compatibility',
+              rel: 'noopener',
+              target: 'blank',
+            },
+            'partially'
+          ),
+          ' interoperable with ',
           h(
             'a',
             {
@@ -60,8 +91,9 @@ const mnemonicContent = () =>
               rel: 'noopener',
               target: 'blank',
             },
-            'Daedalus - the official Cardano wallet.'
-          )
+            'Daedalus'
+          ),
+          ' (12/27 words) mnemonics.'
         )
       )
     ),

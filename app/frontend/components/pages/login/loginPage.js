@@ -105,7 +105,7 @@ class LoginPage extends Component {
         h(
           'div',
           {class: 'auth-options'},
-          authOption('mnemonic', '12 or 27 word passphrase', 'fastest'),
+          authOption('mnemonic', '12, 15 or 27 word passphrase', 'fastest'),
           authOption('trezor', 'Supporting Trezor T', 'recommended'),
           authOption('file', 'Encrypted .JSON file')
         )
