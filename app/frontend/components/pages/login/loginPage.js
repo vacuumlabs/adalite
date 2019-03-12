@@ -12,6 +12,8 @@ const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
 const LoginPageSidebar = require('./loginPageSidebar')
 const Tag = require('../../common/tag')
+const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
+const {getTranslation} = require('../../../translations')
 
 const AUTH_METHOD_NAMES = {
   mnemonic: 'Mnemonic',
@@ -46,6 +48,8 @@ class LoginPage extends Component {
       logoutNotificationOpen,
       displayWelcome,
       showGenerateMnemonicDialog,
+      showWalletLoadingErrorModal,
+      closeWalletLoadingErrorModal,
     },
     {isDropdownOpen}
   ) {
@@ -60,7 +64,6 @@ class LoginPage extends Component {
         },
         h('span', {class: 'dropdown-item-text'}, getAuthMethodName(authMethod))
       )
-    console.log(authMethod)
     const dropdownItem = (name, recommended) =>
       h(
         'li',
@@ -159,7 +162,12 @@ class LoginPage extends Component {
       displayWelcome && h(Welcome),
       showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
       showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
-      logoutNotificationOpen && h(LogoutNotification)
+      logoutNotificationOpen && h(LogoutNotification),
+      showWalletLoadingErrorModal &&
+        h(WalletLoadingErrorModal, {
+          closeHandler: closeWalletLoadingErrorModal,
+          errorMessage: getTranslation(walletLoadingError.code, walletLoadingError.params),
+        })
     )
   }
 }
@@ -172,6 +180,7 @@ module.exports = connect(
     walletLoadingError: state.walletLoadingError,
     displayWelcome: state.displayWelcome,
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
+    showWalletLoadingErrorModal: state.showWalletLoadingErrorModal,
   }),
   actions
 )(LoginPage)

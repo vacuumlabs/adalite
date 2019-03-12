@@ -1,34 +1,11 @@
-const {h} = require('preact')
+const ErrorModal = require('../../common/errorModal')
 
-const Modal = require('../../common/modal')
-const Alert = require('../../common/alert')
-
-const TransactionErrorModal = ({closeTransactionErrorModal, errorMessage}) =>
-  h(
-    Modal,
-    {
-      closeHandler: closeTransactionErrorModal,
-      title: 'Transaction error',
-    },
-    h(
-      Alert,
-      {
-        alertType: 'error',
-      },
-      errorMessage
-    ),
-    h(
-      'div',
-      {class: 'modal-footer'},
-      h(
-        'button',
-        {
-          class: 'button primary',
-          onClick: closeTransactionErrorModal,
-        },
-        'I understand, continue to the demo wallet'
-      )
-    )
-  )
+const TransactionErrorModal = ({closeHandler, errorMessage}) =>
+  ErrorModal({
+    closeHandler,
+    errorMessage,
+    title: 'Transaction error',
+    buttonTitle: 'OK',
+  })
 
 module.exports = TransactionErrorModal

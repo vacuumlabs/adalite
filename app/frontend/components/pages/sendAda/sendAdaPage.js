@@ -182,7 +182,7 @@ const SendAdaPage = ({
       ),
     showTransactionErrorModal &&
       h(TransactionErrorModal, {
-        closeTransactionErrorModal,
+        closeHandler: closeTransactionErrorModal,
         errorMessage: getTranslation(sendResponse.error, {sendResponse}),
       }),
     rawTransactionOpen && h(RawTransactionModal),

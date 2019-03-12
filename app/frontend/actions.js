@@ -155,6 +155,7 @@ module.exports = ({setState, getState}) => {
             message,
           },
         },
+        showWalletLoadingErrorModal: true,
         loading: false,
       })
     }
@@ -166,6 +167,7 @@ module.exports = ({setState, getState}) => {
       mnemonic: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
       mnemonicValidationError: undefined,
       walletLoadingError: undefined,
+      showWalletLoadingErrorModal: false,
       authMethod: 'mnemonic',
       showExportOption: true,
     })
@@ -192,6 +194,12 @@ module.exports = ({setState, getState}) => {
   const closeDemoWalletWarningDialog = (state) => {
     setState({
       showDemoWalletWarningDialog: false,
+    })
+  }
+
+  const closeWalletLoadingErrorModal = (state) => {
+    setState({
+      showWalletLoadingErrorModal: false,
     })
   }
 
@@ -563,5 +571,6 @@ module.exports = ({setState, getState}) => {
     setRawTransactionOpen,
     getRawTransaction,
     closeTransactionErrorModal,
+    closeWalletLoadingErrorModal,
   }
 }

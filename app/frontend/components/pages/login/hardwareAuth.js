@@ -61,6 +61,7 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
         {
           class: `button ${disableLedger ? 'grey' : 'primary'} ledger`,
           disabled: disableLedger,
+          onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER}),
         },
         'Unlock with'
       )
