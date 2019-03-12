@@ -60,6 +60,7 @@ class LoginPage extends Component {
         },
         h('span', {class: 'dropdown-item-text'}, getAuthMethodName(authMethod))
       )
+    console.log(authMethod)
     const dropdownItem = (name, recommended) =>
       h(
         'li',
