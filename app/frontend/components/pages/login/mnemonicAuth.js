@@ -64,10 +64,11 @@ class LoadByMenmonicSectionClass extends Component {
           {
             class: 'button primary',
             disabled: !mnemonic || mnemonicValidationError,
-            onClick: () => async () => loadWallet({
-              cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
-              walletSecretDef: await mnemonicToWalletSecretDef(mnemonic.trim()),
-            }),
+            onClick: async () =>
+              loadWallet({
+                cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+                walletSecretDef: await mnemonicToWalletSecretDef(mnemonic.trim()),
+              }),
             ...tooltip(
               'Your input appears to be incorrect.\nCheck for the typos and try again.',
               showMnemonicValidationError && mnemonic && mnemonicValidationError

@@ -28,7 +28,11 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
         alt: 'Trezor model T',
       }),
       h('div', {class: 'authentication-paragraph'}, 'Trezor model T'),
-      h('div', {class: 'authentication-paragraph small'}, '(firmware version >= 2.0.8)'),
+      h(
+        'div',
+        {class: 'authentication-paragraph small'},
+        TrezorAffiliateLink('Support us by buying one')
+      ),
       h(
         'button',
         {
@@ -47,31 +51,15 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
         alt: 'Ledger Nano S',
       }),
       h('div', {class: 'authentication-paragraph'}, 'Ledger Nano S'),
-      h('div', {class: 'authentication-paragraph small'}, 'coming soon'),
       h(
-        'button',
-        {
-          class: 'button grey ledger',
-          disabled: true,
-        },
-        'Unlock with'
-      )
-    ),
-    h(
-      'div',
-      {class: 'authentication-buttons'},
-      h(
-        'button',
-        {
-          class: 'button primary trezor',
-          onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER}),
-        },
-        'Unlock with'
+        'div',
+        {class: 'authentication-paragraph small'},
+        disableLedgerByFlag ? 'coming soon' : LedgerAffiliateLink('Support us by buying one')
       ),
       h(
         'button',
         {
-          class: 'button grey ledger',
+          class: `button ${disableLedger ? 'grey' : 'primary'} ledger`,
           disabled: disableLedger,
         },
         'Unlock with'

@@ -28,7 +28,7 @@ const initialState = {
   },
   mnemonic: '',
   validationMsg: undefined,
-  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : 'mnemonic',
+  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
   showDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
   rawTransactionOpen: false,
