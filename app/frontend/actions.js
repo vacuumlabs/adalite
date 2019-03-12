@@ -449,13 +449,11 @@ module.exports = ({setState, getState}) => {
   const submitTransaction = async (state) => {
     setState({showConfirmTransactionDialog: false})
     if (state.usingHwWallet) {
-      /* TODO: Check if waitingForTrezor can be deleted safely */
       setState({waitingForHwWallet: true})
       loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     } else {
       loadingAction(state, 'Submitting transaction...')
     }
-
     let sendResponse
 
     try {
@@ -484,13 +482,13 @@ module.exports = ({setState, getState}) => {
         success: false,
         error: e.name,
         message: e.message,
-        showTransactionErrorModal: true,
       }
     } finally {
       resetSendForm(state)
       setState({
         waitingForHwWallet: false,
         sendResponse,
+        showTransactionErrorModal: !sendResponse.success,
       })
     }
   }
