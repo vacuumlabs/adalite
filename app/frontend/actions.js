@@ -263,6 +263,7 @@ module.exports = ({setState, getState}) => {
 
   const logout = () => {
     wallet = null
+    window.history.pushState({}, '/', '/')
     return {walletIsLoaded: false}
   }
 
