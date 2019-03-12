@@ -30,35 +30,9 @@ const initialContent = () =>
           class: 'sidebar-link',
           href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#hardware-wallets',
           rel: 'noopener',
+          target: 'blank',
         },
         'What is a Hardware Wallet'
-      )
-    ),
-    h(
-      'div',
-      {class: 'sidebar-item'},
-      h(
-        'a',
-        {
-          class: 'sidebar-link',
-          href: 'https://wiki.trezor.io/Cardano_(ADA)',
-          rel: 'noopener',
-        },
-        'How to use Trezor T with AdaLite'
-      )
-    ),
-    h(
-      'p',
-      {class: 'sidebar-paragraph'},
-      'If you want to purchase Trezor, please consider supporting us by using our ',
-      h(
-        'a',
-        {
-          class: 'sidebar-link',
-          href: 'https://shop.trezor.io/?offer_id=10&aff_id=1071',
-          rel: 'noopener',
-        },
-        'affiliate link.'
       )
     )
   )
@@ -84,8 +58,9 @@ const mnemonicContent = () =>
               class: 'sidebar-link',
               href: 'https://daedaluswallet.io/',
               rel: 'noopener',
+              target: 'blank',
             },
-            'Deadalus - the official Cardano wallet.'
+            'Daedalus - the official Cardano wallet.'
           )
         )
       )
@@ -103,6 +78,7 @@ const mnemonicContent = () =>
             class: 'sidebar-link',
             href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#hardware-wallets',
             rel: 'noopener',
+            target: 'blank',
           },
           'hardware wallet.'
         )
@@ -145,22 +121,37 @@ const walletContent = () =>
           class: 'sidebar-link',
           href: 'https://wiki.trezor.io/Cardano_(ADA)',
           rel: 'noopener',
+          target: 'blank',
         },
         'How to use Trezor T with AdaLite'
       )
     ),
     h(
-      'p',
-      {class: 'sidebar-paragraph'},
-      'If you want to purchase Trezor, please consider supporting us by using our ',
+      'div',
+      {class: 'sidebar-item'},
       h(
         'a',
         {
           class: 'sidebar-link',
-          href: 'https://shop.trezor.io/?offer_id=10&aff_id=1071',
+          href: 'https://github.com/vacuumlabs/adalite/wiki/How-to-use-Ledger-Nano-S-with-AdaLite',
           rel: 'noopener',
+          target: 'blank',
         },
-        'affiliate link.'
+        'How to use Ledger Nano S with AdaLite'
+      )
+    ),
+    h(
+      'div',
+      {class: 'sidebar-item'},
+      h(
+        'a',
+        {
+          class: 'sidebar-link',
+          href: 'https://github.com/vacuumlabs/adalite/wiki/Troubleshooting',
+          rel: 'noopener',
+          target: 'blank',
+        },
+        'Troubleshooting'
       )
     )
   )
@@ -195,6 +186,7 @@ const fileContent = () =>
             class: 'sidebar-link',
             href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#hardware-wallets',
             rel: 'noopener',
+            target: 'blank',
           },
           'hardware wallet.'
         )
