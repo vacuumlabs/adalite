@@ -16,6 +16,7 @@ const {ADA_DONATION_ADDRESS, NETWORKS} = require('./wallet/constants')
 const NamedError = require('./helpers/NamedError')
 const KeypassJson = require('./wallet/keypass-json')
 const {CardanoWallet} = require('./wallet/cardano-wallet')
+const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 
 let wallet = null
 
@@ -105,9 +106,12 @@ module.exports = ({setState, getState}) => {
       const sendResponse = ''
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
+      const demoRootSecret = (await mnemonicToWalletSecretDef(
+        ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
+      )).rootSecret
       const isDemoWallet =
         walletSecretDef &&
-        walletSecretDef.rootSecret === ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
+        walletSecretDef.rootSecret.equals(demoRootSecret)
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
