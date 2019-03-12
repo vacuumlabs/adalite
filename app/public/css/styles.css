@@ -233,6 +233,11 @@ p {
   color: white;
 }
 
+.button.grey {
+  background-color: var(--color-grey-light);
+  color: white;
+}
+
 .button.small {
   padding: 8px 16px;
 }
@@ -330,6 +335,24 @@ p {
   width: 79px;
   height: 22px;
   background-image: url('../assets/trezor_logo_white.svg');
+}
+
+.button.ledger {
+  position: relative;
+  padding-right: 119px;
+}
+
+.button.ledger::before {
+  content: '';
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  right: 24px;
+  top: 19px;
+  width: 82px;
+  height: 20px;
+  background-image: url('../assets/ledger_logo_white.svg');
 }
 
 .button.send-max {
@@ -966,6 +989,11 @@ button[data-balloon] {
   align-items: flex-start;
 }
 
+.authentication-content.hardware {
+  display: flex;
+  padding: 0;
+}
+
 .authentication-content .dropzone {
   margin-bottom: 24px;
 }
@@ -980,6 +1008,11 @@ button[data-balloon] {
   margin-bottom: 40px;
 }
 
+.authentication-paragraph.small {
+  font-size: 12px;
+  color: var(--color-grey);
+}
+
 .authentication-content .validation-message {
   display: none;
 }
@@ -991,6 +1024,48 @@ button[data-balloon] {
 .authentication-link {
   display: block;
   margin-top: 24px;
+}
+
+.authentication-wallet {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 48px;
+}
+
+.authentication-wallet:first-child::after {
+  position: absolute;
+  content: '';
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  height: 242px;
+  width: 1px;
+  background-color: var(--color-grey-light);
+}
+
+.authentication-wallet .authentication-paragraph {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.authentication-wallet .button {
+  margin-top: 16px;
+}
+
+.authentication-image {
+  max-width: 144px;
+  max-height: 178px;
+}
+
+.authentication-wallet .authentication-image {
+  margin-bottom: 24px;
+}
+.authentication-buttons {
+  display: none;
 }
 
 /* AUTHENTICATION TABS */
@@ -2890,8 +2965,40 @@ button[data-balloon] {
     padding: 24px 0 32px 0;
   }
 
-  .authentication-paragraph {
-    margin-top: 16px;
+  .authentication-content.hardware {
+    flex-wrap: wrap;
+    padding-top: 16px;
+  }
+
+  .authentication-content.hardware .authentication-paragraph {
+    text-align: center;
+  }
+
+  .authentication-image {
+    margin-top: 8px;
+    margin-bottom: 16px;
+  }
+
+  .authentication-wallet {
+    padding: 16px 0;
+  }
+
+  .authentication-wallet::after {
+    display: none;
+  }
+
+  .authentication-wallet .button {
+    display: none;
+  }
+
+  .authentication-buttons {
+    display: block;
+    flex: 1 1 100%;
+  }
+
+  .authentication-buttons .button {
+    display: block;
+    margin: 16px auto;
   }
 
   .page-demo {
