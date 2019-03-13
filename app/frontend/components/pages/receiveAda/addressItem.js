@@ -11,7 +11,12 @@ const AddressItem = connect(
   h(
     'div',
     {class: 'address'},
-    h('p', {class: 'address-value one-click-select'}, address),
+    h(
+      'div',
+      {class: 'address-value'},
+      h('p', {class: 'address-number no-select'}, `/${bip32path.split('/').pop()}`),
+      h('p', {class: 'one-click-select'}, address)
+    ),
     h(
       'div',
       {class: 'address-links'},
