@@ -1690,6 +1690,21 @@ button[data-balloon] {
   color: var(--color-grey);
   word-break: break-all;
   margin-bottom: 16px;
+  display: flex;
+}
+
+.address-number {
+  font-weight: bold;
+  word-break: normal;
+  margin-right: 16px;
+}
+
+.no-select {
+  user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
 }
 
 .address-links {
