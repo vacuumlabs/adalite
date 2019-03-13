@@ -2,14 +2,6 @@
 # yarn lockfile v1
 
 
-"@babel/polyfill@^7.2.5":
-  version "7.2.5"
-  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.2.5.tgz#6c54b964f71ad27edddc567d065e57e87ed7fa7d"
-  integrity sha512-8Y/t3MWThtMLYr0YNC/Q76tqN1w30+b0uQMeFUYauG2UGTR19zyUtFrAzT23zNtBxPp+LbE5E/nwV/q/r3y6ug==
-  dependencies:
-    core-js "^2.5.7"
-    regenerator-runtime "^0.12.0"
-
 "@babel/runtime@^7.3.1":
   version "7.3.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.3.4.tgz#73d12ba819e365fcf7fd152aed56d6df97d21c83"
@@ -392,6 +384,11 @@ babel-polyfill@^6.26.0:
     core-js "^2.5.0"
     regenerator-runtime "^0.10.5"
 
+babel-regenerator-runtime@^6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/babel-regenerator-runtime/-/babel-regenerator-runtime-6.5.0.tgz#0e41cd1c9f80442466f015c749fff8ba98f8e110"
+  integrity sha1-DkHNHJ+ARCRm8BXHSf/4upj44RA=
+
 babel-runtime@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
@@ -435,11 +432,6 @@ big.js@^5.2.2:
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
-bignumber.js@^7.2.1:
-  version "7.2.1"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
-  integrity sha512-S4XzBk5sMB+Rcb/LNcpzXr57VRTxgAvaAEDAl1AwRx27j00hT84O6OkteE7u8UB3NuaaygCRrEpqox4uDOrbdQ==
-
 bignumber.js@^8.0.1:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
@@ -467,16 +459,6 @@ bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
-
-borc@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/borc/-/borc-2.0.4.tgz#52926dc561137188c6ca9fe01c9542576529a689"
-  integrity sha512-SCVjto/dbKfduyl+LDQ1Km28ly2aTIXtJbrYZWHFQAxkHph96I/zXTrTQXWuJobG8lQZjIA/dw9z7hmJHJhjMg==
-  dependencies:
-    bignumber.js "^7.2.1"
-    commander "^2.15.0"
-    ieee754 "^1.1.8"
-    json-text-sequence "^0.1"
 
 borc@^2.1.0:
   version "2.1.0"
@@ -650,13 +632,13 @@ camelcase@^5.0.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.2.0.tgz#e7522abda5ed94cc0489e1b8466610e88404cf45"
   integrity sha512-IXFsBS2pC+X0j0N/GE7Dm7j3bsEBp+oTpb7F50dwEVX7rf3IgwO9XatnegTsDtniKCUtEJH4fSU6Asw7uoVLfQ==
 
-cardano-crypto.js@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-5.0.0.tgz#cfeae89a0c0dd1fefb1b854f2d2e268d0837b280"
-  integrity sha512-OT1RSwgGzedxtm6f6yAQF0NagC6BYwXeNyhfcsZfEQtdxyHS1kduM7U4+x3+WDVFen71/Zi9fFp23sOFkwQUig==
+cardano-crypto.js@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-5.1.1.tgz#3d543c5bec27256eb05c6cb10df1e69a370dc962"
+  integrity sha512-rPNesSchGV/uIZE/UzWTIl7H+poQqljFJBfEL9a8tkoVw2FXSwqj0hd6vNlmLlvrIarws+kh/xcjvMAGmwtYTg==
   dependencies:
     bip39-light "^1.0.7"
-    borc "^2.0.4"
+    borc "^2.1.0"
     pbkdf2 "^3.0.17"
 
 chalk@2.4.1:
@@ -839,11 +821,6 @@ core-js@^2.4.0, core-js@^2.5.0:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.5.tgz#44bc8d249e7fb2ff5d00e0341a7ffb94fbf67895"
   integrity sha512-klh/kDpwX8hryYL14M9w/xei6vrv6sE8gTHDG7/T/+SEovB/G4ejwcfE/CBzO6Edsu+OETZMZ3wcX/EjUkrl5A==
-
-core-js@^2.5.7:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.3.tgz#4b70938bdffdaf64931e66e2db158f0892289c49"
-  integrity sha512-l00tmFFZOBHtYhN4Cz7k32VM7vTn3rE2ANjQDxdEN6zmXZ/xq1jQuutnmHvMG1ZJ7xd72+TA5YpUK8wz3rWsfQ==
 
 core-util-is@~1.0.0:
   version "1.0.2"
@@ -1804,7 +1781,7 @@ json-schema-traverse@^0.4.1:
   resolved "https://registry.yarnpkg.com/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz#69f6a87d9513ab8bb8fe63bdb0979c448e684660"
   integrity sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==
 
-json-text-sequence@^0.1, json-text-sequence@~0.1.0:
+json-text-sequence@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/json-text-sequence/-/json-text-sequence-0.1.1.tgz#a72f217dc4afc4629fff5feb304dc1bd51a2f3d2"
   integrity sha1-py8hfcSvxGKf/1/rME3BvVGi89I=

@@ -1,7 +1,7 @@
 const env = process.env.NODE_ENV
 
 module.exports = {
-  entry: ['@babel/polyfill', './frontend/walletApp.js'], // @babel/polyfill is required for ledger integration
+  entry: ['babel-regenerator-runtime', './frontend/walletApp.js'], // babel-regenerator-runtime is required for ledger
   output: {
     filename: 'frontend.bundle.js',
     libraryTarget: 'var',
