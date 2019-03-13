@@ -141,7 +141,7 @@ const walletContent = () =>
       h(
         'p',
         {class: 'sidebar-paragraph'},
-        'Computers might be vulnerable to attacks on program and system level. Typing your mnemonic directly may put your wallet at risk. We currently support Trezor T hardware wallet.'
+        'Computers might be vulnerable to attacks on program and system level. Typing your mnemonic directly may put your wallet at risk. We currently support Trezor Model T and Ledger Nano S hardware wallets.'
       )
     ),
     h(
