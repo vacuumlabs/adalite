@@ -13,13 +13,28 @@ check.assert(
   booleans.includes(env.ADALITE_ENABLE_DEBUGGING),
   'ADALITE_ENABLE_DEBUGGING must be boolean'
 )
-check.assert.nonEmptyString(env.ADALITE_SERVER_URL)
-check.assert.nonEmptyString(env.ADALITE_BLOCKCHAIN_EXPLORER_URL)
-check.assert.positive(parseInt(env.ADALITE_DEFAULT_ADDRESS_COUNT, 10))
-check.assert.positive(parseInt(env.ADALITE_GAP_LIMIT, 10))
-check.assert.nonEmptyString(env.ADALITE_DEMO_WALLET_MNEMONIC)
+check.assert.nonEmptyString(env.ADALITE_SERVER_URL, 'ADALITE_SERVER_URL must be a non empty string')
+check.assert.nonEmptyString(
+  env.ADALITE_BLOCKCHAIN_EXPLORER_URL,
+  'ADALITE_SERVER_URL must be a non empty string'
+)
+check.assert.positive(
+  parseInt(env.ADALITE_DEFAULT_ADDRESS_COUNT, 10),
+  'ADALITE_DEFAULT_ADDRESS_COUNT must be a positive number'
+)
+check.assert.positive(
+  parseInt(env.ADALITE_GAP_LIMIT, 10),
+  'ADALITE_GAP_LIMIT must be a positive number'
+)
+check.assert.nonEmptyString(
+  env.ADALITE_DEMO_WALLET_MNEMONIC,
+  'ADALITE_DEMO_WALLET_MNEMONIC must be a non empty string'
+)
 check.assert(booleans.includes(env.ADALITE_ENABLE_TREZOR), 'ADALITE_ENABLE_TREZOR must be boolean')
-check.assert.positive(parseInt(env.ADALITE_LOGOUT_AFTER, 10))
+check.assert.positive(
+  parseInt(env.ADALITE_LOGOUT_AFTER, 10),
+  'ADALITE_LOGOUT_AFTER must be a positive number'
+)
 check.assert(
   booleans.includes(env.ADALITE_ENABLE_SERVER_MOCKING_MODE),
   'ADALITE_ENABLE_SERVER_MOCKING_MODE must be boolean'
