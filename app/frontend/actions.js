@@ -175,8 +175,8 @@ module.exports = ({setState, getState}) => {
 
   const openGenerateMnemonicDialog = (state) => {
     setState({
-      mnemonic: generateMnemonic(),
-      mnemonicValidationError: undefined,
+      newWalletMnemonic: generateMnemonic(),
+      mnemonic: '',
       showGenerateMnemonicDialog: true,
       authMethod: 'mnemonic',
       showMnemonicInfoAlert: true,
@@ -185,8 +185,7 @@ module.exports = ({setState, getState}) => {
 
   const closeGenerateMnemonicDialog = (state) => {
     setState({
-      mnemonic: '',
-      mnemonicValidationError: undefined,
+      newWalletMnemonic: '',
       showGenerateMnemonicDialog: false,
     })
   }
@@ -205,6 +204,7 @@ module.exports = ({setState, getState}) => {
 
   const confirmGenerateMnemonicDialog = (state) => {
     setState({
+      newWalletMnemonic: '',
       showGenerateMnemonicDialog: false,
     })
   }
