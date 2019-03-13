@@ -56,7 +56,7 @@ class Welcome extends Component {
         h(
           'div',
           {class: 'welcome-body'},
-          h('h2', {class: 'welcome-title'}, 'Welcome to AdaLite'),
+          h('h2', {class: 'welcome-title'}, 'Welcome to AdaLite wallet'),
           h(
             'p',
             {class: 'welcome-subtitle'},
