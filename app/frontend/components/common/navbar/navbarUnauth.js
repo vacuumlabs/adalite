@@ -37,16 +37,6 @@ const NavbarUnauth = connect(
           'a',
           {
             class: 'navbar-link',
-            href: 'about',
-            target: '_blank',
-            rel: 'noopener',
-          },
-          'About'
-        ),
-        h(
-          'a',
-          {
-            class: 'navbar-link',
             href: 'https://github.com/vacuumlabs/adalite/wiki',
             target: '_blank',
             rel: 'noopener',
