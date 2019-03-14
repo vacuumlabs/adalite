@@ -71,7 +71,7 @@ const mnemonicContent = () =>
             },
             'Yoroi'
           ),
-          ' (15 words) mnemonics and ',
+          ' mnemonics (15 words) and ',
           h(
             'a',
             {
@@ -93,7 +93,7 @@ const mnemonicContent = () =>
             },
             'Daedalus'
           ),
-          ' (12/27 words) mnemonics.'
+          ' mnemonics (12/27 words).'
         )
       )
     ),
