@@ -233,7 +233,7 @@ class LoginPageSidebar extends Component {
       {class: 'sidebar'},
       authMethod === '' && h(initialContent),
       authMethod === 'mnemonic' && h(mnemonicContent),
-      authMethod === 'trezor' && h(walletContent),
+      authMethod === 'hw-wallet' && h(walletContent),
       authMethod === 'file' && h(fileContent)
     )
   }

@@ -16,9 +16,9 @@ const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
 const {getTranslation} = require('../../../translations')
 
 const AUTH_METHOD_NAMES = {
-  mnemonic: 'Mnemonic',
-  trezor: 'Hardware Wallet',
-  file: 'Key file',
+  'mnemonic': 'Mnemonic',
+  'hw-wallet': 'Hardware Wallet',
+  'file': 'Key file',
 }
 
 const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
@@ -58,7 +58,7 @@ class LoginPage extends Component {
         'div',
         {
           class: `dropdown-item current ${authMethod} ${
-            authMethod === 'trezor' ? 'recommended' : ''
+            authMethod === 'hw-wallet' ? 'recommended' : ''
           }`,
           onClick: this.toggleDropdown,
         },
@@ -106,7 +106,7 @@ class LoginPage extends Component {
           'div',
           {class: 'auth-options'},
           authOption('mnemonic', '12, 15 or 27 word passphrase', 'fastest'),
-          authOption('trezor', 'Supporting Trezor T', 'recommended'),
+          authOption('hw-wallet', 'Supporting Trezor T', 'recommended'),
           authOption('file', 'Encrypted .JSON file')
         )
       )
@@ -118,7 +118,7 @@ class LoginPage extends Component {
           'ul',
           {class: 'auth-tabs'},
           authTab('mnemonic'),
-          authTab('trezor', true),
+          authTab('hw-wallet', true),
           authTab('file')
         ),
         h(
@@ -129,12 +129,12 @@ class LoginPage extends Component {
             'ul',
             {class: 'dropdown-items'},
             dropdownItem('mnemonic'),
-            dropdownItem('trezor', true),
+            dropdownItem('hw-wallet', true),
             dropdownItem('file')
           )
         ),
         authMethod === 'mnemonic' && h(MnemonicAuth),
-        authMethod === 'trezor' && h(HardwareAuth, {loadWallet}),
+        authMethod === 'hw-wallet' && h(HardwareAuth, {loadWallet}),
         authMethod === 'file' && h(KeyFileAuth)
       )
     return h(
