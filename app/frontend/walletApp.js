@@ -1,5 +1,5 @@
 const {h, render} = require('preact')
-const Provider = require('unistore/preact').Provider
+const Provider = require('./libs/unistore/preact').Provider
 const App = require('./components/app')
 
 const {createStore} = require('./store')

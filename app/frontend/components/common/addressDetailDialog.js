@@ -1,5 +1,5 @@
 const {h, Component} = require('preact')
-const QRious = require('../../libs/qrious')
+const QRious = require('qrious')
 const connect = require('unistore/preact').connect
 const actions = require('../../actions')
 
@@ -17,17 +17,18 @@ class AddressDetailDialogClass extends Component {
     this.setState({showCopyMessage: copied})
   }
 
-  render({
-    showDetail,
-    closeAddressDetail,
-    verificationError,
-    verifyAddress,
-    showVerification,
-    hwWalletName,
-    waitingForHwWallet,
-  }, {
-    showCopyMessage,
-  }) {
+  render(
+    {
+      showDetail,
+      closeAddressDetail,
+      verificationError,
+      verifyAddress,
+      showVerification,
+      hwWalletName,
+      waitingForHwWallet,
+    },
+    {showCopyMessage}
+  ) {
     return (
       showDetail &&
       h(

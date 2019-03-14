@@ -21,4 +21,12 @@ module.exports = {
   node: {
     fs: 'empty',
   },
+  resolve: {
+    alias: {
+      'babel-runtime': '@babel/runtime', // so both ledger and trezor-connect use the same library for babel runtime
+      'unistore': `${__dirname}/frontend/libs/unistore`,
+      'file-saver': `${__dirname}/frontend/libs/file-saver`,
+      'qrious': `${__dirname}/frontend/libs/qrious`,
+    },
+  },
 }

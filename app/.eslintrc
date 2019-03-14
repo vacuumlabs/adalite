@@ -1,0 +1,9 @@
+{
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./webpack.build.config.js" 
+      }
+    }
+  }
+}
