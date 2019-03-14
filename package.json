@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "body-parser": "^1.18.2",
-    "check-types": "7.4.0",
+    "check-types": "^8.0.2",
     "compression": "^1.7.2",
     "cors": "^2.8.4",
     "device": "^0.3.9",
