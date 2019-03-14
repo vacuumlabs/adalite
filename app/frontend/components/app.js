@@ -10,9 +10,9 @@ const AddressDetailDialog = require('./common/addressDetailDialog')
 const AutoLogout = require('./autoLogout')
 const ADALITE_LOGOUT_AFTER = require('../config').ADALITE_CONFIG.ADALITE_LOGOUT_AFTER
 
-const Navbar = connect((state) => ({
-  walletIsLoaded: state.walletIsLoaded,
-}))(({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth)))
+const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
+  ({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth))
+)
 
 const App = () =>
   h(

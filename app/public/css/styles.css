@@ -846,6 +846,10 @@ button[data-balloon] {
   width: 100%;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 .page-wrapper {
   display: flex;
   min-height: 100%;

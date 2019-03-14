@@ -300,9 +300,9 @@ module.exports = ({setState, getState}) => {
     if (rememberInStorage === true) {
       window.localStorage.setItem('dontShowDisclaimer', true)
     }
-    return {
-      displayWelcome: !state.displayWelcome,
-    }
+    setState({
+      displayWelcome: false,
+    })
   }
 
   const validateSendForm = (state) => {
@@ -349,9 +349,13 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const confirmTransaction = () => ({showConfirmTransactionDialog: true})
+  const confirmTransaction = () => ({
+    showConfirmTransactionDialog: true,
+  })
 
-  const cancelTransaction = () => ({showConfirmTransactionDialog: false})
+  const cancelTransaction = () => ({
+    showConfirmTransactionDialog: false,
+  })
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 

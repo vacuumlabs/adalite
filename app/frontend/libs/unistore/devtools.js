@@ -1,11 +1,11 @@
 /* eslint-disable */
 /*
-* unistore 3.0.5
-* source: https://github.com/developit/unistore/blob/e452251fea0cfabec633727d636846f7e2a747ac/devtools.js
+* unistore 3.0.4
+* source: https://github.com/developit/unistore/blob/9606b2dd6a2fd7a3d3ee288e1400b4154fc89b27/devtools.js
 */
 
 module.exports = function unistoreDevTools(store) {
-  var extension = window.__REDUX_DEVTOOLS_EXTENSION__ || window.top.__REDUX_DEVTOOLS_EXTENSION__
+  var extension = window.devToolsExtension || window.top.devToolsExtension
   var ignoreState = false
 
   if (!extension) {
