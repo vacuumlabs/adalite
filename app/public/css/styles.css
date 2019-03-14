@@ -1710,7 +1710,7 @@ button[data-balloon] {
   margin-right: auto;
 }
 
-.address:hover .address-link {
+.address-link:hover {
   color: var(--color-brand);
 }
 
