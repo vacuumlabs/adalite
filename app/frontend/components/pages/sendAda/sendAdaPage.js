@@ -10,7 +10,7 @@ const RawTransactionModal = require('./rawTransactionModal')
 const DonateThanksModal = require('./donateThanksModal')
 const TransactionErrorModal = require('./transactionErrorModal')
 
-const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee')
+const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
 const AmountErrorMessage = ({sendAmount, sendAmountValidationError}) =>
   sendAmountValidationError &&
