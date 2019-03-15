@@ -1,7 +1,7 @@
 const {h} = require('preact')
 const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 const {
-  ADALITE_CONFIG: {DISABLE_LEDGER},
+  ADALITE_CONFIG: {ADALITE_DISABLE_LEDGER},
 } = require('../../../config')
 
 const LoadByHardwareWalletSection = ({loadWallet}) => {
@@ -10,10 +10,9 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
 
   const LedgerAffiliateLink = (title) =>
     h('a', {href: 'https://www.ledger.com/?r=8410116f31f3', target: 'blank'}, title)
-
   // it doesn't work on Firefox even if U2F is enabled
   const isFirefox = navigator.userAgent.indexOf('Firefox') !== -1
-  const disableLedgerByFlag = DISABLE_LEDGER === 'true'
+  const disableLedgerByFlag = ADALITE_DISABLE_LEDGER === 'true'
   const disableLedger = disableLedgerByFlag || isFirefox
 
   return h(
