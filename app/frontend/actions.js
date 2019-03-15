@@ -229,7 +229,7 @@ module.exports = ({setState, getState}) => {
       try {
         setState({waitingForHwWallet: true})
         await wallet.verifyAddress(state.showAddressDetail.address)
-        setState({showAddressVerification: false, waitingForHwWallet: false})
+        setState({waitingForHwWallet: false})
       } catch (e) {
         setState({
           showAddressDetail: undefined,
