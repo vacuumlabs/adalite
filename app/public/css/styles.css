@@ -1145,7 +1145,7 @@ button[data-balloon] {
   background-image: url('../assets/tab_icon_mnemonic_grey.svg');
 }
 
-.auth-tab-text.trezor::before {
+.auth-tab-text.hw-wallet::before {
   background-image: url('../assets/tab_icon_trezor_grey.svg');
 }
 
@@ -1157,7 +1157,7 @@ button[data-balloon] {
   background-image: url('../assets/tab_icon_mnemonic.svg');
 }
 
-.auth-tab.selected .auth-tab-text.trezor::before {
+.auth-tab.selected .auth-tab-text.hw-wallet::before {
   background-image: url('../assets/tab_icon_trezor.svg');
 }
 
@@ -1235,7 +1235,7 @@ button[data-balloon] {
   background-image: url('../assets/cursor_icon.svg');
 }
 
-.auth-option.trezor::before {
+.auth-option.hw-wallet::before {
   background-image: url('../assets/lock_icon.svg');
 }
 
@@ -2476,7 +2476,7 @@ button[data-balloon] {
   background-image: url('../assets/cursor_icon.svg');
 }
 
-.dropdown-item.trezor::before {
+.dropdown-item.hw-wallet::before {
   background-image: url('../assets/lock_icon.svg');
 }
 
