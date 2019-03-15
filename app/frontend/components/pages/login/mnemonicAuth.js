@@ -16,6 +16,7 @@ class LoadByMenmonicSectionClass extends Component {
 
   render({
     mnemonic,
+    mnemonicInputValue,
     mnemonicValidationError,
     updateMnemonic,
     checkForMnemonicValidationError,
@@ -47,7 +48,7 @@ class LoadByMenmonicSectionClass extends Component {
         id: 'mnemonic-submitted',
         name: 'mnemonic-submitted',
         placeholder: 'Enter your wallet mnemonic',
-        value: mnemonic,
+        value: mnemonicInputValue,
         onInput: updateMnemonic,
         onBlur: checkForMnemonicValidationError,
         autocomplete: 'off',
@@ -112,6 +113,7 @@ class LoadByMenmonicSectionClass extends Component {
 module.exports = connect(
   (state) => ({
     mnemonic: state.mnemonic,
+    mnemonicInputValue: state.mnemonicInputValue,
     displayWelcome: state.displayWelcome,
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
     mnemonicValidationError: state.mnemonicValidationError,

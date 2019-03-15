@@ -17,6 +17,7 @@ const NamedError = require('./helpers/NamedError')
 const KeypassJson = require('./wallet/keypass-json')
 const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
+const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 
 let wallet = null
 
@@ -165,6 +166,7 @@ module.exports = ({setState, getState}) => {
   const loadDemoWallet = (state) => {
     setState({
       mnemonic: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
+      mnemonicInputValue: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
       mnemonicValidationError: undefined,
       walletLoadingError: undefined,
       showWalletLoadingErrorModal: false,
@@ -177,6 +179,7 @@ module.exports = ({setState, getState}) => {
     setState({
       newWalletMnemonic: generateMnemonic(),
       mnemonic: '',
+      mnemonicInputValue: '',
       showGenerateMnemonicDialog: true,
       authMethod: 'mnemonic',
       showMnemonicInfoAlert: true,
@@ -210,9 +213,11 @@ module.exports = ({setState, getState}) => {
   }
 
   const updateMnemonic = async (state, e) => {
+    const sanitizedMnemonic = sanitizeMnemonic(e.target.value)
     setState({
-      mnemonic: e.target.value,
-      mnemonicValidationError: await mnemonicValidator(e.target.value),
+      mnemonicInputValue: e.target.value,
+      mnemonic: sanitizedMnemonic,
+      mnemonicValidationError: await mnemonicValidator(sanitizedMnemonic),
       showMnemonicValidationError: false,
     })
   }
