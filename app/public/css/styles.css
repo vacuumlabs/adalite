@@ -716,7 +716,7 @@ button[data-balloon] {
   max-height: 95%;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0);
   border-radius: 2px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .modal-close {
@@ -1141,7 +1141,7 @@ button[data-balloon] {
   background-image: url('../assets/tab_icon_mnemonic_grey.svg');
 }
 
-.auth-tab-text.hw-wallet::before {
+.auth-tab-text.trezor::before {
   background-image: url('../assets/tab_icon_trezor_grey.svg');
 }
 
@@ -1153,7 +1153,7 @@ button[data-balloon] {
   background-image: url('../assets/tab_icon_mnemonic.svg');
 }
 
-.auth-tab.selected .auth-tab-text.hw-wallet::before {
+.auth-tab.selected .auth-tab-text.trezor::before {
   background-image: url('../assets/tab_icon_trezor.svg');
 }
 
@@ -1231,7 +1231,7 @@ button[data-balloon] {
   background-image: url('../assets/cursor_icon.svg');
 }
 
-.auth-option.hw-wallet::before {
+.auth-option.trezor::before {
   background-image: url('../assets/lock_icon.svg');
 }
 
@@ -2472,7 +2472,7 @@ button[data-balloon] {
   background-image: url('../assets/cursor_icon.svg');
 }
 
-.dropdown-item.hw-wallet::before {
+.dropdown-item.trezor::before {
   background-image: url('../assets/lock_icon.svg');
 }
 
