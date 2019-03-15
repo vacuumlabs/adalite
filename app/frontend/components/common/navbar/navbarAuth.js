@@ -7,9 +7,10 @@ const NavbarAuth = connect(
   (state) => ({
     isDemoWallet: state.isDemoWallet,
     showExportOption: state.showExportOption,
+    currentPath: state.router.pathname,
   }),
   actions
-)(({isDemoWallet, logout, showExportOption}) => {
+)(({isDemoWallet, logout, showExportOption, currentPath}) => {
   return h(
     'nav',
     {class: `navbar authed ${isDemoWallet ? 'demo' : ''}`},
@@ -41,7 +42,21 @@ const NavbarAuth = connect(
       h(
         'div',
         {class: 'navbar-content'},
+        currentPath === '/exportWallet' &&
+          h(
+            'a',
+            {
+              class: 'navbar-link export',
+              href: '#',
+              onClick: (e) => {
+                e.preventDefault()
+                window.history.pushState({}, 'txHistory', 'txHistory')
+              },
+            },
+            'Home'
+          ),
         showExportOption &&
+          currentPath === '/txHistory' &&
           h(
             'a',
             {
