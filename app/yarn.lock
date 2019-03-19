@@ -9,10 +9,10 @@
   dependencies:
     regenerator-runtime "^0.12.0"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-1.0.3.tgz#6058ecb5948240f4d70d4f82da5c84fb7ad47a51"
-  integrity sha512-pF6pIde9b6OycwVlR0PBW/XSpI+W6mG4fdKAtUuhXK2ldQi440oxPo1CCVcAirN1/s6vNOyt3P/DrdL572BNdQ==
+"@cardano-foundation/ledgerjs-hw-app-cardano@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-1.0.4.tgz#ae87ef2924cc3baf95b1268d0390eecedae8f040"
+  integrity sha512-02TROr1GqQrOJHyNVgZBaK9xFXGSdKyBTDBpbQRZB8v2zWeja5btGOn7sj3m1KNf3fB8a3+PP4RQ+gf/aJ2v5Q==
   dependencies:
     "@ledgerhq/hw-transport" "^4.35.0"
     babel-polyfill "^6.26.0"
