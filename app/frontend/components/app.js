@@ -2,6 +2,7 @@ const {h} = require('preact')
 const connect = require('unistore/preact').connect
 
 const TopLevelRouter = require('./router').TopLevelRouter
+const Welcome = require('./common/welcome')
 const Footer = require('./common/footer')
 const LoadingOverlay = require('./common/loadingOverlay')
 const NavbarAuth = require('./common/navbar/navbarAuth')
@@ -14,7 +15,7 @@ const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
   ({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth))
 )
 
-const App = () =>
+const App = connect((state) => ({displayWelcome: state.displayWelcome}))(({displayWelcome}) =>
   h(
     'div',
     {class: 'wrap'},
@@ -23,7 +24,9 @@ const App = () =>
     h(TopLevelRouter),
     h(Footer),
     h(AddressDetailDialog),
-    ADALITE_LOGOUT_AFTER > 0 && h(AutoLogout)
+    ADALITE_LOGOUT_AFTER > 0 && h(AutoLogout),
+    displayWelcome && h(Welcome)
   )
+)
 
 module.exports = App

@@ -6,10 +6,9 @@ const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSIO
 const NavbarAuth = connect(
   (state) => ({
     isDemoWallet: state.isDemoWallet,
-    showExportOption: state.showExportOption,
   }),
   actions
-)(({isDemoWallet, logout, showExportOption}) => {
+)(({isDemoWallet, logout, openWelcome}) => {
   return h(
     'nav',
     {class: `navbar authed ${isDemoWallet ? 'demo' : ''}`},
@@ -41,19 +40,18 @@ const NavbarAuth = connect(
       h(
         'div',
         {class: 'navbar-content'},
-        showExportOption &&
-          h(
-            'a',
-            {
-              class: 'navbar-link export',
-              href: '#',
-              onClick: (e) => {
-                e.preventDefault()
-                window.history.pushState({}, 'exportWallet', 'exportWallet')
-              },
+        h(
+          'a',
+          {
+            class: 'navbar-link',
+            href: '#',
+            onClick: (e) => {
+              e.preventDefault()
+              openWelcome()
             },
-            'Export'
-          ),
+          },
+          'About'
+        ),
         h(
           'a',
           {
