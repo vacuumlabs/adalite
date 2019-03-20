@@ -2,13 +2,11 @@ const {CRYPTO_PROVIDER_TYPES} = require('./constants')
 const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypto-provider')
 const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const CardanoLedgerCryptoProvider = require('./cardano-ledger-crypto-provider')
-const alertIfUnsupportedTrezorFwVersion = require('./helpers/alertIfUnsupportedTrezorFwVersion')
 
 const CryptoProviderFactory = (() => {
   const getCryptoProvider = (cryptoProviderType, config, state) => {
     switch (cryptoProviderType) {
       case CRYPTO_PROVIDER_TYPES.TREZOR:
-        alertIfUnsupportedTrezorFwVersion()
         return CardanoTrezorCryptoProvider(config, state)
 
       case CRYPTO_PROVIDER_TYPES.LEDGER:
