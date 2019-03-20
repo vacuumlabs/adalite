@@ -8,7 +8,7 @@ const isLeftClick = require('../../../helpers/isLeftClick')
 const NavbarUnauth = connect(
   null,
   actions
-)(({openGenerateMnemonicDialog}) =>
+)(({openGenerateMnemonicDialog, openWelcome}) =>
   h(
     'nav',
     {class: 'navbar'},
@@ -33,6 +33,18 @@ const NavbarUnauth = connect(
       h(
         'div',
         {class: 'navbar-content'},
+        h(
+          'a',
+          {
+            class: 'navbar-link',
+            href: '#',
+            onClick: (e) => {
+              e.preventDefault()
+              openWelcome()
+            },
+          },
+          'About'
+        ),
         h(
           'a',
           {

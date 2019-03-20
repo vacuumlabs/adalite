@@ -1,9 +1,9 @@
 const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const Modal = require('../../common/modal')
-const Alert = require('../../common/alert')
-const Branding = require('../../common/branding')
+const actions = require('../../actions')
+const Modal = require('./modal')
+const Alert = require('./alert')
+const Branding = require('./branding')
 
 const Article = ({children, title, icon}) =>
   h(
@@ -32,7 +32,7 @@ class Welcome extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      dontShowAgainCheckbox: false,
+      dontShowAgainCheckbox: window.localStorage.getItem('dontShowDisclaimer') === 'true',
     }
     this.checkboxClick = this.checkboxClick.bind(this)
     this.closeWelcome = this.closeWelcome.bind(this)
@@ -131,7 +131,7 @@ class Welcome extends Component {
               class: 'checkbox-input',
             }),
             h('span', {class: 'checkbox-indicator'}, undefined),
-            "Don't show this notice again."
+            "Don't show on startup again."
           ),
           h(
             'button',

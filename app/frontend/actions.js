@@ -303,11 +303,15 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const closeWelcome = (state, rememberInStorage) => {
+  const openWelcome = (state) => {
+    setState({
+      displayWelcome: true,
+    })
+  }
+
+  const closeWelcome = (state, dontShowDisclaimer) => {
     // we may get an ignored click event as the second argument, check only against booleans
-    if (rememberInStorage === true) {
-      window.localStorage.setItem('dontShowDisclaimer', true)
-    }
+    window.localStorage.setItem('dontShowDisclaimer', dontShowDisclaimer)
     setState({
       displayWelcome: false,
     })
@@ -559,6 +563,7 @@ module.exports = ({setState, getState}) => {
     logout,
     exportJsonWallet,
     reloadWalletInfo,
+    openWelcome,
     closeWelcome,
     calculateFee,
     confirmTransaction,
