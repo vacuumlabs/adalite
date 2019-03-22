@@ -9,6 +9,7 @@ const appVersion = require('../../package.json').version
 const boolStrings = ['true', 'false']
 const isBoolString = (str) => boolStrings.includes(str)
 const isPositiveIntString = (str) => check.positive(parseInt(str, 10))
+const isIntString = (str) => check.integer(parseInt(str, 10))
 
 const checkMap = check.map(process.env, {
   PORT: isPositiveIntString,
@@ -18,7 +19,7 @@ const checkMap = check.map(process.env, {
   ADALITE_DEFAULT_ADDRESS_COUNT: isPositiveIntString,
   ADALITE_GAP_LIMIT: isPositiveIntString,
   ADALITE_DEMO_WALLET_MNEMONIC: check.nonEmptyString,
-  ADALITE_LOGOUT_AFTER: isPositiveIntString,
+  ADALITE_LOGOUT_AFTER: isIntString,
   ADALITE_DISABLE_LEDGER: isBoolString,
   ADALITE_ENABLE_SERVER_MOCKING_MODE: isBoolString,
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS: isBoolString,
