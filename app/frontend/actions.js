@@ -232,12 +232,15 @@ module.exports = ({setState, getState}) => {
     const state = getState()
     if (state.usingHwWallet && state.showAddressDetail) {
       try {
-        setState({waitingForHwWallet: true})
+        setState({
+          waitingForHwWallet: true,
+          addressVerificationError: false,
+        })
         await wallet.verifyAddress(state.showAddressDetail.address)
         setState({waitingForHwWallet: false})
       } catch (e) {
         setState({
-          showAddressDetail: undefined,
+          addressVerificationError: true,
           waitingForHwWallet: false,
         })
       }
