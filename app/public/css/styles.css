@@ -1146,7 +1146,7 @@ button[data-balloon] {
 }
 
 .auth-tab-text.hw-wallet::before {
-  background-image: url('../assets/tab_icon_trezor_grey.svg');
+  background-image: url('../assets/tab_icon_shield_grey.svg');
 }
 
 .auth-tab-text.file::before {
@@ -1158,7 +1158,7 @@ button[data-balloon] {
 }
 
 .auth-tab.selected .auth-tab-text.hw-wallet::before {
-  background-image: url('../assets/tab_icon_trezor.svg');
+  background-image: url('../assets/tab_icon_shield.svg');
 }
 
 .auth-tab.selected .auth-tab-text.file::before {
@@ -1236,7 +1236,7 @@ button[data-balloon] {
 }
 
 .auth-option.hw-wallet::before {
-  background-image: url('../assets/lock_icon.svg');
+  background-image: url('../assets/shield_icon.svg');
 }
 
 .auth-option.file::before {
@@ -1913,11 +1913,11 @@ button[data-balloon] {
 }
 
 .welcome .article-icon.funds {
-  background-image: url('../assets/shield_icon_bounded.svg');
+  background-image: url('../assets/lock_icon_bounded.svg');
 }
 
 .welcome .article-icon.wallet {
-  background-image: url('../assets/lock_icon_bounded.svg');
+  background-image: url('../assets/shield_icon_bounded.svg');
 }
 
 .welcome .article-icon.phishing {
@@ -2477,7 +2477,7 @@ button[data-balloon] {
 }
 
 .dropdown-item.hw-wallet::before {
-  background-image: url('../assets/lock_icon.svg');
+  background-image: url('../assets/shield_icon.svg');
 }
 
 .dropdown-item.file::before {
