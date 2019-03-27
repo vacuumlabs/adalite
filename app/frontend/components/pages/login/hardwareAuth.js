@@ -10,10 +10,7 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
 
   const LedgerAffiliateLink = (title) =>
     h('a', {href: 'https://www.ledger.com/?r=8410116f31f3', target: 'blank'}, title)
-  // it doesn't work on Firefox even if U2F is enabled
-  const isFirefox = navigator.userAgent.indexOf('Firefox') !== -1
-  const disableLedgerByFlag = ADALITE_DISABLE_LEDGER === 'true'
-  const disableLedger = disableLedgerByFlag || isFirefox
+  const disableLedger = ADALITE_DISABLE_LEDGER === 'true'
 
   return h(
     'div',
@@ -53,7 +50,7 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
       h(
         'div',
         {class: 'authentication-paragraph small'},
-        disableLedgerByFlag ? 'coming soon' : LedgerAffiliateLink('Support us by buying one')
+        disableLedger ? 'coming soon' : LedgerAffiliateLink('Support us by buying one')
       ),
       h(
         'button',

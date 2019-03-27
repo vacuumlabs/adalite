@@ -93,6 +93,7 @@ module.exports = ({setState, getState}) => {
           code,
           params,
         },
+        showWalletLoadingErrorModal: true,
         loading: false,
       })
       return false
