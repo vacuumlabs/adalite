@@ -3006,10 +3006,6 @@ button[data-balloon] {
     display: none;
   }
 
-  .authentication-wallet .button {
-    display: none;
-  }
-
   .authentication-buttons {
     display: block;
     flex: 1 1 100%;
