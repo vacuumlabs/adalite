@@ -25,6 +25,11 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
         {class: 'authentication-paragraph small'},
         TrezorAffiliateLink('Support us by buying one')
       ),
+      // poor man's way to keep the unlock buttons aligned
+      h('div', {
+        class: 'authentication-paragraph small',
+        dangerouslySetInnerHTML: {__html: '&nbsp;'},
+      }),
       h(
         'button',
         {
@@ -43,6 +48,7 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
         alt: 'Ledger Nano S',
       }),
       h('div', {class: 'authentication-paragraph'}, 'Ledger Nano S'),
+      h('div', {class: 'authentication-paragraph small'}, 'also with Android device'),
       h(
         'div',
         {class: 'authentication-paragraph small'},

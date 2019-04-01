@@ -87,13 +87,13 @@ class LoginPage extends Component {
         },
         h('span', {class: `auth-tab-text ${name}`}, getAuthMethodName(name))
       )
-    const authOption = (type, text, tag) =>
+    const authOption = (type, texts, tag) =>
       h(
         'div',
         {class: `auth-option ${type}`, onClick: () => setAuthMethod(type)},
         tag && h(Tag, {type: `auth ${tag}`, text: tag}),
         h('h3', {class: 'auth-option-title'}, getAuthMethodName(type)),
-        h('p', {class: 'auth-option-text'}, text)
+        ...texts.map((text) => h('p', {class: 'auth-option-text'}, text))
       )
     const authCardInitial = () =>
       h(
@@ -103,9 +103,13 @@ class LoginPage extends Component {
         h(
           'div',
           {class: 'auth-options'},
-          authOption('mnemonic', '12, 15 or 27 word passphrase', 'fastest'),
-          authOption('hw-wallet', 'Supporting Trezor T', 'recommended'),
-          authOption('file', 'Encrypted .JSON file')
+          authOption('mnemonic', ['12, 15 or 27 word passphrase'], 'fastest'),
+          authOption(
+            'hw-wallet',
+            ['Trezor T', 'Ledger Nano S', 'Android device & Ledger'],
+            'recommended'
+          ),
+          authOption('file', ['Encrypted .JSON file'])
         )
       )
     const authCard = () =>
