@@ -37,7 +37,7 @@ e.g. by `cp .env.example .env`
 ```
 yarn install
 yarn build
-PORT=3000 yarn start-server
+ADALITE_PORT=3000 yarn start-server
 ```
 
 Navigate to http://localhost:3000 (or wherever you've configured)

@@ -5,8 +5,8 @@ const App = require('./components/app')
 const {createStore} = require('./store')
 const {ADALITE_CONFIG} = require('./config')
 
-if (ADALITE_CONFIG.TREZOR_CONNECT_URL) {
-  const url = new URL(ADALITE_CONFIG.TREZOR_CONNECT_URL)
+if (ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL) {
+  const url = new URL(ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL)
   window.__TREZOR_CONNECT_SRC = `${url.origin}/`
 }
 

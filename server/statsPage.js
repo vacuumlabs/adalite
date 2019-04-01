@@ -95,13 +95,13 @@ module.exports = function(app, env) {
             <title>AdaLite Wallet Stats</title>
             <link rel="icon" type="image/ico" href="assets/favicon.ico">
           </head>
-      
+
           <body>
             Stats of transaction submissions and estimates of unique IPs visits per day, month and in total.
 
             <div>${statsHtml}</div>
           </body>
-      
+
         </html>
       `)
     } catch (e) {

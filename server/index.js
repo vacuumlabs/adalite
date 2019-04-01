@@ -20,7 +20,7 @@ app.use(require('./middlewares/redirectToBaseUrl'))
 if (backendConfig.REDIS_URL) {
   app.use(require('./middlewares/stats').trackVisits)
   app.use(require('./middlewares/stats').trackTxSubmissionCount)
-  app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.STATS_PWD}))
+  app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.ADALITE_STATS_PWD}))
   require('./statsPage')(app)
 }
 
@@ -29,7 +29,7 @@ app.use(express.static('app/dist'))
 app.use('/about', express.static('about'))
 
 // disable csp when developing trezor firmware to be able to load it
-if (!backendConfig.TREZOR_CONNECT_URL) {
+if (!backendConfig.ADALITE_TREZOR_CONNECT_URL) {
   app.use(require('./middlewares/csp'))
 }
 
@@ -44,7 +44,7 @@ app.get('*', (req, res) => {
   return res.status(200).send(`
       <!doctype html>
       <html>
-    
+
         <head>
           <title>AdaLite - Cardano Wallet</title>
           <meta charset="UTF-8"/>
@@ -52,13 +52,13 @@ app.get('*', (req, res) => {
           <meta name="robots" content="index,follow">
           <meta name="description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support. Highly secure and accessible from everywhere.">
           <meta name="keywords" content="Cardano, Ada, Wallet, Cryptocurrency, Adalite, Trezor">
-          
+
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:site" content="@AdaLiteWallet">
           <meta name="twitter:title" content="AdaLite - Cardano Wallet" />
           <meta name="twitter:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support" />
           <meta name="twitter:image" content="${serverUrl}/about/images/twitter-card.png" />
-          
+
           <meta property="og:type" content="website" />
           <meta property="og:site_name" content="AdaLite" />
           <meta property="og:locale" content="en_US" />
@@ -66,13 +66,13 @@ app.get('*', (req, res) => {
           <meta property="og:title" content="AdaLite - Cardano Wallet">
           <meta property="og:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support">
           <meta property="og:image" content="${serverUrl}/about/images/og-image.png">
-          
+
           <script src="js/init.js"></script>
           <link rel="stylesheet" type="text/css" href="css/styles.css">
           <link rel="icon" type="image/ico" href="assets/favicon.ico">
           ${
-  backendConfig.TREZOR_CONNECT_URL
-    ? `<script src="${backendConfig.TREZOR_CONNECT_URL}"></script>`
+  backendConfig.ADALITE_TREZOR_CONNECT_URL
+    ? `<script src="${backendConfig.ADALITE_TREZOR_CONNECT_URL}"></script>`
     : ''
 }
           <noscript>
@@ -80,11 +80,11 @@ app.get('*', (req, res) => {
             <a href="/about">Link to about page</a>
           </noscript>
         </head>
-    
+
         <body data-config='${JSON.stringify(frontendConfig)}'>
           <div id="root" style="width: 100%; height: 100%;"></div>
         </body>
-    
+
       </html>
     `)
 })

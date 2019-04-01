@@ -10,7 +10,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     derivationScheme: derivationSchemes.v2,
   })
 
-  const TrezorConnect = ADALITE_CONFIG.TREZOR_CONNECT_URL
+  const TrezorConnect = ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL
     ? window.TrezorConnect
     : require('trezor-connect').default
 

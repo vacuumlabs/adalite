@@ -20,7 +20,6 @@ const checkMap = check.map(process.env, {
   ADALITE_GAP_LIMIT: isPositiveIntString,
   ADALITE_DEMO_WALLET_MNEMONIC: check.nonEmptyString,
   ADALITE_LOGOUT_AFTER: isIntString,
-  ADALITE_DISABLE_LEDGER: isBoolString,
   ADALITE_ENABLE_SERVER_MOCKING_MODE: isBoolString,
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS: isBoolString,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS: isBoolString,
@@ -28,26 +27,33 @@ const checkMap = check.map(process.env, {
 
 const {
   PORT,
+  REDIS_URL,
   ADALITE_ENABLE_DEBUGGING,
   ADALITE_SERVER_URL,
   ADALITE_BLOCKCHAIN_EXPLORER_URL,
   ADALITE_DEFAULT_ADDRESS_COUNT,
   ADALITE_GAP_LIMIT,
-  REDIS_URL,
-  STATS_PWD,
+  ADALITE_STATS_PWD,
   ADALITE_DEMO_WALLET_MNEMONIC,
   ADALITE_LOGOUT_AFTER,
-  ADALITE_DISABLE_LEDGER,
   ADALITE_ENABLE_SERVER_MOCKING_MODE,
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS,
-  TREZOR_CONNECT_URL,
+  ADALITE_TREZOR_CONNECT_URL,
 } = process.env
 
 if (!check.all(checkMap)) {
-  // eslint-disable-next-line no-console
-  console.log(checkMap)
-  throw new Error('Invalid environment variables')
+  let problemFound = false
+  for (const k of Object.keys(checkMap)) {
+    if (!checkMap[k]) {
+      problemFound = true
+      // eslint-disable-next-line no-console
+      console.log('Invalid environment variable', k)
+    }
+  }
+  if (problemFound) {
+    throw new Error('Invalid environment variables')
+  }
 }
 
 const frontendConfig = {
@@ -66,20 +72,19 @@ const frontendConfig = {
   ADALITE_ENABLE_DEBUGGING: ADALITE_ENABLE_DEBUGGING === 'true',
   ADALITE_APP_VERSION: appVersion,
   ADALITE_LOGOUT_AFTER,
-  TREZOR_CONNECT_URL,
-  ADALITE_DISABLE_LEDGER,
+  ADALITE_TREZOR_CONNECT_URL,
 }
 
 const backendConfig = {
-  STATS_PWD,
+  PORT,
   REDIS_URL,
-  TREZOR_CONNECT_URL,
+  ADALITE_STATS_PWD,
+  ADALITE_TREZOR_CONNECT_URL,
   ADALITE_ENABLE_SERVER_MOCKING_MODE,
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS,
   ADALITE_BLOCKCHAIN_EXPLORER_URL,
   ADALITE_SERVER_URL,
-  PORT,
 }
 
 module.exports = {

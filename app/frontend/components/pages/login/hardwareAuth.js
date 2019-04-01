@@ -1,8 +1,5 @@
 const {h} = require('preact')
 const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
-const {
-  ADALITE_CONFIG: {ADALITE_DISABLE_LEDGER},
-} = require('../../../config')
 
 const LoadByHardwareWalletSection = ({loadWallet}) => {
   const TrezorAffiliateLink = (title) =>
@@ -10,7 +7,6 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
 
   const LedgerAffiliateLink = (title) =>
     h('a', {href: 'https://www.ledger.com/?r=8410116f31f3', target: 'blank'}, title)
-  const disableLedger = ADALITE_DISABLE_LEDGER === 'true'
 
   return h(
     'div',
@@ -50,13 +46,12 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
       h(
         'div',
         {class: 'authentication-paragraph small'},
-        disableLedger ? 'coming soon' : LedgerAffiliateLink('Support us by buying one')
+        LedgerAffiliateLink('Support us by buying one')
       ),
       h(
         'button',
         {
-          class: `button ${disableLedger ? 'grey' : 'primary'} ledger`,
-          disabled: disableLedger,
+          class: 'button primary ledger',
           onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER}),
         },
         'Unlock with'
