@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:10.7-browsers
+      - image: circleci/node:11.9-browsers
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -27,6 +27,7 @@ jobs:
       - run: cp .env.example .env
       - run: yarn install
       - run: cd app && yarn install && cd ../
+      - run: yarn audit
 
       - save_cache:
           paths:
