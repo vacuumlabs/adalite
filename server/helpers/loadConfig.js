@@ -1,6 +1,7 @@
 // config intended to be passed on to frontend
 // keys in process .env must be referenced explicitly
 // so dotenv-webpack is able to include them in the test bundle for Mocha tests
+require('dotenv').config()
 const check = require('check-types')
 
 // process.env.npm_package_version is undefined on Heroku
