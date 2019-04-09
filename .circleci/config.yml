@@ -28,6 +28,7 @@ jobs:
       - run: yarn install
       - run: cd app && yarn install && cd ../
       - run: yarn audit
+      - run: cd app && yarn audit && cd ../
 
       - save_cache:
           paths:
