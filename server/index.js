@@ -25,7 +25,6 @@ if (backendConfig.REDIS_URL) {
 
 app.use(express.static('app/public'))
 app.use(express.static('app/dist'))
-app.use('/about', express.static('about'))
 
 // disable csp when developing trezor firmware to be able to load it
 if (!backendConfig.ADALITE_TREZOR_CONNECT_URL) {
@@ -56,7 +55,7 @@ app.get('*', (req, res) => {
           <meta name="twitter:site" content="@AdaLiteWallet">
           <meta name="twitter:title" content="AdaLite - Cardano Wallet" />
           <meta name="twitter:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support" />
-          <meta name="twitter:image" content="${serverUrl}/about/images/twitter-card.png" />
+          <meta name="twitter:image" content="${serverUrl}/assets/twitter-card.png" />
 
           <meta property="og:type" content="website" />
           <meta property="og:site_name" content="AdaLite" />
@@ -64,7 +63,7 @@ app.get('*', (req, res) => {
           <meta property="og:url" content="${serverUrl}">
           <meta property="og:title" content="AdaLite - Cardano Wallet">
           <meta property="og:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support">
-          <meta property="og:image" content="${serverUrl}/about/images/og-image.png">
+          <meta property="og:image" content="${serverUrl}/assets/og-image.png">
 
           <script src="js/init.js"></script>
           <link rel="stylesheet" type="text/css" href="css/styles.css">
@@ -76,7 +75,6 @@ app.get('*', (req, res) => {
 }
           <noscript>
             Your browser does not support JavaScript or it is turned off.<br/>
-            <a href="/about">Link to about page</a>
           </noscript>
         </head>
 
