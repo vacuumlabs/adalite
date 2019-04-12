@@ -2583,6 +2583,18 @@ button[data-balloon] {
   cursor: pointer;
 }
 
+@media screen and (min-width: 1024px) and (max-width: 1112px) {
+  .button.refresh {
+    text-indent: -9999em;
+    padding-left: 24px;
+  }
+
+  .button.refresh::before {
+    left: 0;
+    right: 0;
+  }
+}
+
 /* MOBILE MEDIA QUERIES */
 
 @media screen and (max-width: 767px) {
