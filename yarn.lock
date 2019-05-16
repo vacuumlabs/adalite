@@ -1882,10 +1882,10 @@ expand-brackets@^2.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-express-basic-auth@^1.1.5:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/express-basic-auth/-/express-basic-auth-1.1.6.tgz#a9d20e4d8da8f7212d4865f6006f9214c4b41a20"
-  integrity sha512-fRh/UU2q/YhvY0/Pkzi3VcLyjIExveW2NOOnOGgO6yO0jKXt6zcKPVPWSrL8nlhlh+YEH5LOjz+CGFML5dJQNw==
+express-basic-auth@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/express-basic-auth/-/express-basic-auth-1.2.0.tgz#a1d40b07721376ba916e73571a60969211224808"
+  integrity sha512-iJ0h1Gk6fZRrFmO7tP9nIbxwNgCUJASfNj5fb0Hy15lGtbqqsxpt7609+wq+0XlByZjXmC/rslWQtnuSTVRIcg==
   dependencies:
     basic-auth "^2.0.1"
 

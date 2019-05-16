@@ -44,10 +44,10 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
       {class: 'authentication-wallet'},
       h('img', {
         class: 'authentication-image',
-        src: 'assets/ledger.jpg',
-        alt: 'Ledger Nano S',
+        src: 'assets/ledger_nano_s_x.jpg',
+        alt: 'Ledger Nano S/X',
       }),
-      h('div', {class: 'authentication-paragraph'}, 'Ledger Nano S'),
+      h('div', {class: 'authentication-paragraph'}, 'Ledger Nano S/X'),
       h('div', {class: 'authentication-paragraph small'}, 'also with Android device'),
       h(
         'div',
