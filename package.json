@@ -1,6 +1,6 @@
 {
   "name": "cardano",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "A simple Cardano wallet",
   "main": "app.js",
   "repository": {
