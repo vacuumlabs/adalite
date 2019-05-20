@@ -48,13 +48,13 @@ app.get('*', (req, res) => {
           <meta charset="UTF-8"/>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <meta name="robots" content="index,follow">
-          <meta name="description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support. Highly secure and accessible from everywhere.">
+          <meta name="description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S and Nano X support. Highly secure and accessible from everywhere.">
           <meta name="keywords" content="Cardano, Ada, Wallet, Cryptocurrency, Adalite, Trezor">
 
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:site" content="@AdaLiteWallet">
           <meta name="twitter:title" content="AdaLite - Cardano Wallet" />
-          <meta name="twitter:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support" />
+          <meta name="twitter:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S and Nano X support" />
           <meta name="twitter:image" content="${serverUrl}/assets/twitter-card.png" />
 
           <meta property="og:type" content="website" />
@@ -62,7 +62,7 @@ app.get('*', (req, res) => {
           <meta property="og:locale" content="en_US" />
           <meta property="og:url" content="${serverUrl}">
           <meta property="og:title" content="AdaLite - Cardano Wallet">
-          <meta property="og:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S support">
+          <meta property="og:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S and Nano X support">
           <meta property="og:image" content="${serverUrl}/assets/og-image.png">
 
           <script src="js/init.js"></script>

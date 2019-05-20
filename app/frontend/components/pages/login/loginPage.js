@@ -106,7 +106,7 @@ class LoginPage extends Component {
           authOption('mnemonic', ['12, 15 or 27 word passphrase'], 'fastest'),
           authOption(
             'hw-wallet',
-            ['Trezor T', 'Ledger Nano S', 'Android device & Ledger'],
+            ['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger'],
             'recommended'
           ),
           authOption('file', ['Encrypted .JSON file'])

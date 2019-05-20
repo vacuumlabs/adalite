@@ -141,7 +141,7 @@ const walletContent = () =>
       h(
         'p',
         {class: 'sidebar-paragraph'},
-        'Computers might be vulnerable to attacks on program and system level. Typing your mnemonic directly may put your wallet at risk. We currently support Trezor Model T and Ledger Nano S hardware wallets.'
+        'Computers might be vulnerable to attacks on program and system level. Typing your mnemonic directly may put your wallet at risk. We currently support Trezor Model T and Ledger Nano S and Nano X hardware wallets.'
       )
     ),
     h(
@@ -169,7 +169,7 @@ const walletContent = () =>
           rel: 'noopener',
           target: 'blank',
         },
-        'How to use Ledger Nano S with AdaLite'
+        'How to use Ledger Nano S/X with AdaLite'
       )
     ),
     h(
