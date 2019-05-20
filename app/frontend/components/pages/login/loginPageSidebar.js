@@ -165,7 +165,8 @@ const walletContent = () =>
         'a',
         {
           class: 'sidebar-link',
-          href: 'https://github.com/vacuumlabs/adalite/wiki/How-to-use-Ledger-Nano-S-with-AdaLite',
+          href:
+            'https://github.com/vacuumlabs/adalite/wiki/How-to-use-Ledger-Nano-S-and-Nano-X-with-AdaLite',
           rel: 'noopener',
           target: 'blank',
         },
