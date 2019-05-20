@@ -46,6 +46,7 @@
   "resolutions": {
     "babel-polyfill": "6.26.0",
     "babel-runtime": "6.26.0",
-    "@babel/runtime": "7.3.4"
+    "@babel/runtime": "7.3.4",
+    "puppeteer": "1.13.0"
   }
 }
