@@ -30,11 +30,11 @@ const TransactionAddress = ({address}) =>
     'a',
     {
       class: 'transaction-address',
-      href: `https://adascan.net/transaction/${address}`,
+      href: `https://seiza.com/blockchain/transaction/${address}`,
       target: '_blank',
       rel: 'noopener',
     },
-    'View on AdaScan'
+    'View on Seiza'
   )
 
 const TransactionHistory = ({transactionHistory}) =>

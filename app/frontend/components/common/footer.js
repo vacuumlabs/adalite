@@ -103,7 +103,7 @@ const Footer = connect(
             'a',
             {
               class: 'donations-item ada',
-              href: `https://adascan.net/address/${ADA_DONATION_ADDRESS}`,
+              href: `https://seiza.com/blockchain/address/${ADA_DONATION_ADDRESS}`,
               target: '_blank',
               title: 'Donate via Adalite',
               rel: 'noopener',

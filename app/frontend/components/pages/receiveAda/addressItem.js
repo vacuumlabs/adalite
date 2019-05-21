@@ -29,11 +29,11 @@ const AddressItem = connect(
         'a',
         {
           class: 'address-link',
-          href: `https://adascan.net/address/${address}`,
+          href: `https://seiza.com/blockchain/address/${address}`,
           target: '_blank',
           rel: 'noopener',
         },
-        'View on AdaScan'
+        'View on Seiza'
       ),
       h(
         'a',
