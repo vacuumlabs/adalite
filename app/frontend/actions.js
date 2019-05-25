@@ -80,6 +80,7 @@ module.exports = ({setState, getState}) => {
       let code
       const params = {}
       switch (e.name) {
+        case 'TransportOpenUserCancelled':
         case 'TransportError':
           params.message = e.message
           code = 'WalletInitializationError'
