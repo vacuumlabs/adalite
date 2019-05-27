@@ -10,7 +10,7 @@ const checkWebusbSupportOrFail = () => {
   if (!navigator.usb) {
     throw NamedError(
       'TransportError',
-      'WebUSB support is needed for Ledger. ' + 'Please use Chrome or Opera.'
+      'WebUSB support is needed for Ledger. Please use Chrome or Opera.'
     )
   }
 }
