@@ -73,7 +73,7 @@ const trackTxSubmissions = mung.json((body, req, res) => {
       const {txBody} = req.body
       const txOutAmount = parseTxBodyOutAmount(txBody)
 
-      incrCountersBy(`${txSubmissionType}:volume`, txOutAmount)
+      incrCountersBy(`${txSubmissionType}:sentOut`, txOutAmount)
     }
   }
 })

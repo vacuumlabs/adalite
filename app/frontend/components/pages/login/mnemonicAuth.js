@@ -6,6 +6,7 @@ const mnemonicToWalletSecretDef = require('../../../wallet/helpers/mnemonicToWal
 const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 const tooltip = require('../../common/tooltip')
 const Alert = require('../../common/alert')
+const sanitizeMnemonic = require('../../../helpers/sanitizeMnemonic')
 
 class LoadByMenmonicSectionClass extends Component {
   componentDidUpdate() {
@@ -15,7 +16,6 @@ class LoadByMenmonicSectionClass extends Component {
   }
 
   render({
-    mnemonic,
     mnemonicInputValue,
     mnemonicValidationError,
     updateMnemonic,
@@ -25,6 +25,8 @@ class LoadByMenmonicSectionClass extends Component {
     showMnemonicInfoAlert,
     openGenerateMnemonicDialog,
   }) {
+    const sanitizedMnemonic = sanitizeMnemonic(mnemonicInputValue)
+
     return h(
       'div',
       {class: `authentication-content ${showMnemonicInfoAlert ? '' : 'centered'}`},
@@ -64,15 +66,15 @@ class LoadByMenmonicSectionClass extends Component {
           'button',
           {
             class: 'button primary',
-            disabled: !mnemonic || mnemonicValidationError,
+            disabled: !sanitizedMnemonic || mnemonicValidationError,
             onClick: async () =>
               loadWallet({
                 cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
-                walletSecretDef: await mnemonicToWalletSecretDef(mnemonic.trim()),
+                walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
               }),
             ...tooltip(
               'Your input appears to be incorrect.\nCheck for the typos and try again.',
-              showMnemonicValidationError && mnemonic && mnemonicValidationError
+              showMnemonicValidationError && sanitizedMnemonic && mnemonicValidationError
             ),
             onKeyDown: (e) => {
               e.key === 'Enter' && e.target.click()
@@ -112,7 +114,6 @@ class LoadByMenmonicSectionClass extends Component {
 
 module.exports = connect(
   (state) => ({
-    mnemonic: state.mnemonic,
     mnemonicInputValue: state.mnemonicInputValue,
     displayWelcome: state.displayWelcome,
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,

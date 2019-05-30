@@ -125,7 +125,7 @@ module.exports = ({setState, getState}) => {
         sendResponse,
         transactionHistory,
         loading: false,
-        mnemonic: '',
+        mnemonicInputValue: '',
         usingHwWallet,
         hwWalletName,
         isDemoWallet,
@@ -167,7 +167,6 @@ module.exports = ({setState, getState}) => {
 
   const loadDemoWallet = (state) => {
     setState({
-      mnemonic: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
       mnemonicInputValue: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
       mnemonicValidationError: undefined,
       walletLoadingError: undefined,
@@ -180,7 +179,6 @@ module.exports = ({setState, getState}) => {
   const openGenerateMnemonicDialog = (state) => {
     setState({
       newWalletMnemonic: generateMnemonic(15),
-      mnemonic: '',
       mnemonicInputValue: '',
       showGenerateMnemonicDialog: true,
       authMethod: 'mnemonic',
@@ -215,11 +213,10 @@ module.exports = ({setState, getState}) => {
   }
 
   const updateMnemonic = async (state, e) => {
-    const sanitizedMnemonic = sanitizeMnemonic(e.target.value)
+    const mnemonicInputValue = e.target.value
     setState({
-      mnemonicInputValue: e.target.value,
-      mnemonic: sanitizedMnemonic,
-      mnemonicValidationError: await mnemonicValidator(sanitizedMnemonic),
+      mnemonicInputValue,
+      mnemonicValidationError: await mnemonicValidator(sanitizeMnemonic(mnemonicInputValue)),
       showMnemonicValidationError: false,
     })
   }

@@ -12,9 +12,9 @@ const getStats = async () => {
       'unsuccessful:total': [],
       'unsuccessful:monthly': [],
       'unsuccessful:daily': [],
-      'volume:total': [],
-      'volume:monthly': [],
-      'volume:daily': [],
+      'sentOut:total': [],
+      'sentOut:monthly': [],
+      'sentOut:daily': [],
     },
     otherTxSubmissions: {
       'successful:total': [],
@@ -23,9 +23,9 @@ const getStats = async () => {
       'unsuccessful:total': [],
       'unsuccessful:monthly': [],
       'unsuccessful:daily': [],
-      'volume:total': [],
-      'volume:monthly': [],
-      'volume:daily': [],
+      'sentOut:total': [],
+      'sentOut:monthly': [],
+      'sentOut:daily': [],
     },
   }
 
@@ -54,13 +54,15 @@ const getStats = async () => {
       period = `${period}:${nameTokens[2]}`
     }
 
-    stats[subject][period].push([nameTokens[nameTokens.length - 1], item[1]])
+    if (stats[subject] && stats[subject][period]) {
+      stats[subject][period].push([nameTokens[nameTokens.length - 1], item[1]])
+    }
   })
 
   return stats
 }
 
-const isAdaAmountKey = (key) => key.search('volume:') !== -1
+const isAdaAmountKey = (key) => key.search('sentOut:') !== -1
 
 module.exports = function(app, env) {
   app.get('/usage_stats', async (req, res) => {
