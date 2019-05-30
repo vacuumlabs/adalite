@@ -12,6 +12,9 @@ const getStats = async () => {
       'unsuccessful:total': [],
       'unsuccessful:monthly': [],
       'unsuccessful:daily': [],
+      'volume:total': [],
+      'volume:monthly': [],
+      'volume:daily': [],
     },
     otherTxSubmissions: {
       'successful:total': [],
@@ -20,6 +23,9 @@ const getStats = async () => {
       'unsuccessful:total': [],
       'unsuccessful:monthly': [],
       'unsuccessful:daily': [],
+      'volume:total': [],
+      'volume:monthly': [],
+      'volume:daily': [],
     },
   }
 
@@ -54,6 +60,8 @@ const getStats = async () => {
   return stats
 }
 
+const isAdaAmountKey = (key) => key.search('volume:') !== -1
+
 module.exports = function(app, env) {
   app.get('/usage_stats', async (req, res) => {
     try {
@@ -67,15 +75,18 @@ module.exports = function(app, env) {
     .map(
       (period) => `
               <ul>
-                <li>${period}</li>
+                <li>${isAdaAmountKey(period) ? `${period} (ADA)` : period} </li>
                 <ul>
                   ${stats[subject][period]
     .map(
-      (item) => `
-                    <li>
-                      ${item[0]}:   <b>${item[1]}</b>
-                    </li>
-                  `
+      (item) => {
+        const [key, value] = item
+        return `
+          <li>
+            ${key}:   <b>${isAdaAmountKey(period) ? Math.round(value / 1000000) : value}</b>
+          </li>
+        `
+      }
     )
     .join('')}
               </ul>

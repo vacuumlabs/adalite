@@ -18,7 +18,7 @@ app.use(require('./middlewares/redirectToBaseUrl'))
 // don't track in local dev => no need for local redis
 if (backendConfig.REDIS_URL) {
   app.use(require('./middlewares/stats').trackVisits)
-  app.use(require('./middlewares/stats').trackTxSubmissionCount)
+  app.use(require('./middlewares/stats').trackTxSubmissions)
   app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.ADALITE_STATS_PWD}))
   require('./statsPage')(app)
 }
