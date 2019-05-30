@@ -69,7 +69,7 @@ const mnemonicContent = () =>
               rel: 'noopener',
               target: 'blank',
             },
-            'Yoroi'
+            'Yoroi-type'
           ),
           ' mnemonics (15 words) and ',
           h(
@@ -91,7 +91,7 @@ const mnemonicContent = () =>
               rel: 'noopener',
               target: 'blank',
             },
-            'Daedalus'
+            'Daedalus-type'
           ),
           ' mnemonics (12/27 words).'
         )

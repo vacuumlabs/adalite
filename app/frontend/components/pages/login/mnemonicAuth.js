@@ -42,7 +42,7 @@ class LoadByMenmonicSectionClass extends Component {
           class: 'authentication-label',
           for: 'mnemonic-submitted',
         },
-        'Enter the 12 or 15-word wallet mnemonic or 27-word Daedalus paper wallet mnemonic'
+        'Enter the 12 or 15-word wallet mnemonic or 27-word Daedalus-type paper wallet mnemonic'
       ),
       h('input', {
         type: 'text',
