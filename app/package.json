@@ -25,7 +25,6 @@
   "dependencies": {
     "@cardano-foundation/ledgerjs-hw-app-cardano": "^1.0.6",
     "@ledgerhq/hw-transport": "^4.60.3",
-    "@ledgerhq/hw-transport-u2f": "^4.60.3",
     "@ledgerhq/hw-transport-webusb": "^4.60.3",
     "babel-regenerator-runtime": "^6.5.0",
     "bip39-light": "^1.0.7",

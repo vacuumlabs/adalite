@@ -1,24 +1,23 @@
-const LedgerTransportU2F = require('@ledgerhq/hw-transport-u2f').default
 const LedgerTransportWebusb = require('@ledgerhq/hw-transport-webusb').default
 const Ledger = require('@cardano-foundation/ledgerjs-hw-app-cardano').default
 const cbor = require('borc')
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
-const debugLog = require('../helpers/debugLog')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const derivationSchemes = require('./derivation-schemes')
+const NamedError = require('../helpers/NamedError')
+
+const checkWebusbSupportOrFail = () => {
+  if (!navigator.usb) {
+    throw NamedError(
+      'TransportError',
+      'WebUSB support is needed for Ledger. Please use Chrome or Opera.'
+    )
+  }
+}
 
 const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
-  let transport
-  try {
-    transport = await LedgerTransportU2F.create()
-  } catch (u2fError) {
-    try {
-      transport = await LedgerTransportWebusb.create()
-    } catch (webUsbError) {
-      debugLog(webUsbError)
-      throw u2fError
-    }
-  }
+  checkWebusbSupportOrFail()
+  const transport = await LedgerTransportWebusb.create()
   transport.setExchangeTimeout(ADALITE_CONFIG.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
   const state = Object.assign(walletState, {
