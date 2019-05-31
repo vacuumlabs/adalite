@@ -11,9 +11,8 @@ class AutoLogout extends Component {
   }
 
   logout() {
-    this.props.closeDemoWalletWarningDialog()
-    this.props.setLogoutNotificationOpen(true)
     this.props.logout()
+    this.props.setLogoutNotificationOpen(true)
   }
 
   resetTimer() {

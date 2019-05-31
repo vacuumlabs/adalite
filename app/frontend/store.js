@@ -5,7 +5,7 @@ const ADALITE_CONFIG = require('./config').ADALITE_CONFIG
 
 const initialState = {
   loading: false,
-  loadingMessage: 'Loading your <b>funds</b>.',
+  loadingMessage: '',
   alert: {
     show: false,
     type: 'success', // OPTIONS are error, warning, success
@@ -34,6 +34,8 @@ const initialState = {
   rawTransactionOpen: false,
   rawTransaction: '',
   showMnemonicInfoAlert: false,
+  transactionHistory: [],
+  sendResponse: {},
 }
 
 const createStore = () =>
@@ -43,4 +45,5 @@ const createStore = () =>
 
 module.exports = {
   createStore,
+  initialState,
 }

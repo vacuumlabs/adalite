@@ -18,6 +18,7 @@ const KeypassJson = require('./wallet/keypass-json')
 const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
+const {initialState} = require('./store')
 
 let wallet = null
 
@@ -270,8 +271,11 @@ module.exports = ({setState, getState}) => {
 
   const logout = () => {
     wallet = null
+    setState({
+      ...initialState,
+      displayWelcome: false,
+    }, true) // force overwriting the state
     window.history.pushState({}, '/', '/')
-    return {walletIsLoaded: false}
   }
 
   const reloadWalletInfo = async (state) => {
