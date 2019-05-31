@@ -10,11 +10,10 @@ const DonateThanksModal = ({closeThanksForDonationModal}) =>
       title: 'Thank you!',
       bodyClass: 'centered',
     },
-    /* TODO: Change copy */
     h(
       'p',
       {class: 'modal-paragraph'},
-      'Your support helps us in many ways. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi bibendum condimentum feugiat. Etiam vel vulputate lorem.'
+      'Thank you for your donation which has allowed us to sustain our efforts in making a difference in the Cardano community. We appreciate your kindness.'
     ),
     h(
       'div',
