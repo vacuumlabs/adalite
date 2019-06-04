@@ -76,31 +76,7 @@ module.exports = ({setState, getState}) => {
         config: ADALITE_CONFIG,
         network: NETWORKS.MAINNET,
       })
-    } catch (e) {
-      debugLog(e)
-      let code
-      const params = {}
-      switch (e.name) {
-        case 'TransportOpenUserCancelled':
-        case 'TransportError':
-          params.message = e.message
-          code = 'WalletInitializationError'
-          break
-        default:
-          params.message = undefined
-          code = 'WalletInitializationError'
-      }
-      setState({
-        walletLoadingError: {
-          code,
-          params,
-        },
-        showWalletLoadingErrorModal: true,
-        loading: false,
-      })
-      return false
-    }
-    try {
+
       const walletIsLoaded = true
       const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
       const transactionHistory = await wallet.getHistory()
@@ -146,10 +122,18 @@ module.exports = ({setState, getState}) => {
     } catch (e) {
       debugLog(e)
       let message
-      if (e.name === 'NetworkError') {
-        message = 'failed to fetch data from blockchain explorer'
-      } else if (e.name === 'TransportError' || e.name === 'TransportStatusError') {
-        message = e.message
+      switch (e.name) {
+        case 'NetworkError':
+          message = 'failed to fetch data from blockchain explorer'
+          break
+        case 'TransportOpenUserCancelled':
+        case 'TransportError':
+        case 'TransportStatusError':
+        case 'TrezorError':
+          message = e.message
+          break
+        default:
+          break
       }
 
       setState({
