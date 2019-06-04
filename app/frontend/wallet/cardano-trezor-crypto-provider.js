@@ -2,6 +2,8 @@
 const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 const {ADALITE_SUPPORT_EMAIL} = require('./constants')
 const derivationSchemes = require('./derivation-schemes')
+const NamedError = require('../helpers/NamedError')
+const debugLog = require('../helpers/debugLog')
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -27,9 +29,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       path: absDerivationPath,
       showOnTrezor: false,
     })
-    if (response.error || !response.success) {
-      throw new Error('public key retrieval from Trezor failed')
-    }
+    throwIfNotSuccess(response)
     return Buffer.from(response.payload.publicKey, 'hex')
   })
 
@@ -47,15 +47,13 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       showOnTrezor: true,
     })
 
-    if (response.success) {
-      state.derivedAddresses[JSON.stringify(absDerivationPath)] = {
-        derivationPath: absDerivationPath,
-        address: response.payload.address,
-      }
-      return response.payload.address
-    }
+    throwIfNotSuccess(response)
 
-    throw new Error('Trezor operation failed!')
+    state.derivedAddresses[JSON.stringify(absDerivationPath)] = {
+      derivationPath: absDerivationPath,
+      address: response.payload.address,
+    }
+    return response.payload.address
   }
 
   function prepareInput(input, addressToAbsPathMapper) {
@@ -104,13 +102,14 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       protocol_magic: state.network.protocolMagic,
     })
 
-    if (response.success) {
-      return {
-        txHash: response.payload.hash,
-        txBody: response.payload.body,
-      }
-    } else {
-      throw new Error(response.payload.error)
+    if (response.error || !response.success) {
+      debugLog(response)
+      throw new NamedError('TrezorError', response.payload.error)
+    }
+
+    return {
+      txHash: response.payload.hash,
+      txBody: response.payload.body,
     }
   }
 
@@ -120,6 +119,16 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
 
   function getDerivationScheme() {
     return state.derivationScheme
+  }
+
+  function throwIfNotSuccess(response) {
+    if (response.error || !response.success) {
+      debugLog(response)
+      throw new NamedError(
+        'TrezorError',
+        'Trezor operation failed, please make sure ad blockers are switched off for this site'
+      )
+    }
   }
 
   return {
