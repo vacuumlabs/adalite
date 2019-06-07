@@ -27,14 +27,30 @@ const FormattedFee = ({fee}) => {
 
 const TransactionAddress = ({address}) =>
   h(
-    'a',
-    {
-      class: 'transaction-address',
-      href: `https://seiza.com/blockchain/transaction/${address}`,
-      target: '_blank',
-      rel: 'noopener',
-    },
-    'View on Seiza'
+    'div',
+    {class: 'blockexplorer-link'},
+    h('span', {}, 'View on '),
+    h(
+      'a',
+      {
+        class: 'transaction-address',
+        href: `https://seiza.com/blockchain/transaction/${address}`,
+        target: '_blank',
+        rel: 'noopener',
+      },
+      'Seiza'
+    ),
+    h('span', {}, ' | '),
+    h(
+      'a',
+      {
+        class: 'transaction-address',
+        href: `https://adascan.net/transaction/${address}`,
+        target: '_blank',
+        rel: 'noopener',
+      },
+      'AdaScan'
+    )
   )
 
 const TransactionHistory = ({transactionHistory}) =>

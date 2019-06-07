@@ -2861,6 +2861,10 @@ button[data-balloon] {
 
   /* CARD */
 
+  .blockexplorer-link {
+    white-space: nowrap;
+  }
+
   .card {
     box-shadow: none;
     padding: 40px 16px;

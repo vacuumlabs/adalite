@@ -19,21 +19,39 @@ const AddressItem = connect(
     ),
     h(
       'div',
-      {class: 'address-links'},
+      {class: 'address-links blockexplorer-link'},
       h(CopyOnClick, {
         value: address,
         elementClass: 'address-link',
         text: 'Copy Address',
       }),
       h(
-        'a',
-        {
-          class: 'address-link',
-          href: `https://seiza.com/blockchain/address/${address}`,
-          target: '_blank',
-          rel: 'noopener',
-        },
-        'View on Seiza'
+        'div',
+        {},
+        h('span', {}, 'View on '),
+        h(
+          'a',
+          {
+            class: 'address-link',
+            href: `https://seiza.com/blockchain/address/${address}`,
+            style: 'margin-right:0',
+            target: '_blank',
+            rel: 'noopener',
+          },
+          'Seiza'
+        ),
+        h('span', {}, ' | '),
+        h(
+          'a',
+          {
+            class: 'address-link',
+            href: `https://adascan.net/address/${address}`,
+            style: 'margin-right:24px',
+            target: '_blank',
+            rel: 'noopener',
+          },
+          'AdaScan'
+        )
       ),
       h(
         'a',
