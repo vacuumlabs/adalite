@@ -24,6 +24,7 @@ const checkMap = check.map(process.env, {
   ADALITE_ENABLE_SERVER_MOCKING_MODE: isBoolString,
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS: isBoolString,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS: isBoolString,
+  ADALITE_SUPPORT_EMAIL: check.nonEmptyString,
 })
 
 const {
@@ -41,6 +42,7 @@ const {
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS,
   ADALITE_TREZOR_CONNECT_URL,
+  ADALITE_SUPPORT_EMAIL,
 } = process.env
 
 if (!check.all(checkMap)) {
@@ -60,9 +62,9 @@ if (!check.all(checkMap)) {
 const frontendConfig = {
   ADALITE_SERVER_URL,
   /*
-  * if mocking is enabled, blockchain url is replaced with server url so the server is
-  * able to intercept the requests from the frontend and mock the responses
-  */
+   * if mocking is enabled, blockchain url is replaced with server url so the server is
+   * able to intercept the requests from the frontend and mock the responses
+   */
   ADALITE_BLOCKCHAIN_EXPLORER_URL:
     ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true'
       ? ADALITE_SERVER_URL
@@ -74,6 +76,7 @@ const frontendConfig = {
   ADALITE_APP_VERSION: appVersion,
   ADALITE_LOGOUT_AFTER,
   ADALITE_TREZOR_CONNECT_URL,
+  ADALITE_SUPPORT_EMAIL,
 }
 
 const backendConfig = {

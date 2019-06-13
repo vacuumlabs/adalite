@@ -8,7 +8,6 @@ const {
   ETH_BLOCKCHAIN_EXPLORER,
   ETH_DONATION_ADDRESS,
   ADA_DONATION_ADDRESS,
-  ADALITE_SUPPORT_EMAIL,
 } = require('../../wallet/constants')
 
 const showRatesOn = ['/txHistory', '/send']
@@ -18,7 +17,7 @@ const Footer = connect(
     showConversionRates: showRatesOn.indexOf(state.router.pathname) !== -1 && state.walletIsLoaded,
   }),
   actions
-)(({openAddressDetail, showConversionRates}) =>
+)(({openAddressDetail, showConversionRates, showContactFormModal}) =>
   h(
     'footer',
     {class: 'footer'},
@@ -35,12 +34,10 @@ const Footer = connect(
           h(
             'a',
             {
-              href: `mailto:${ADALITE_SUPPORT_EMAIL}`,
-              target: '_blank',
-              rel: 'noopener',
               class: 'social-link email',
+              onClick: showContactFormModal,
             },
-            ADALITE_SUPPORT_EMAIL
+            'Contact us'
           ),
           h(
             'a',

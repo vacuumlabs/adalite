@@ -517,6 +517,18 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const showContactFormModal = (state) => {
+    setState({
+      showContactFormModal: true,
+    })
+  }
+
+  const closeContactFormModal = (state) => {
+    setState({
+      showContactFormModal: false,
+    })
+  }
+
   const exportJsonWallet = async (state, password, walletName) => {
     const walletExport = JSON.stringify(
       await KeypassJson.exportWalletSecretDef(wallet.getWalletSecretDef(), password, walletName)
@@ -583,5 +595,7 @@ module.exports = ({setState, getState}) => {
     getRawTransaction,
     closeTransactionErrorModal,
     closeWalletLoadingErrorModal,
+    showContactFormModal,
+    closeContactFormModal,
   }
 }

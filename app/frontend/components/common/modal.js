@@ -29,16 +29,26 @@ class Modal extends Component {
             e.key === 'Escape' && closeHandler()
           },
         },
-        closeHandler &&
-          h('button', {'class': 'modal-close', 'onClick': closeHandler, 'aria-label': 'Close dialog'}),
-        title &&
-          h(
-            'div',
-            {class: 'modal-head'},
-            title && h('h2', {class: 'modal-title'}, title),
-            showWarning && h(Tag, {type: 'big warning', text: 'Proceed with caution'})
-          ),
-        children
+        h(
+          'div',
+          {
+            class: 'modal-content',
+          },
+          closeHandler &&
+            h('button', {
+              'class': 'modal-close',
+              'onClick': closeHandler,
+              'aria-label': 'Close dialog',
+            }),
+          title &&
+            h(
+              'div',
+              {class: 'modal-head'},
+              title && h('h2', {class: 'modal-title'}, title),
+              showWarning && h(Tag, {type: 'big warning', text: 'Proceed with caution'})
+            ),
+          children
+        )
       )
     )
   }
