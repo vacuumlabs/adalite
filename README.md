@@ -4,26 +4,23 @@ A very simple Cardano wallet written entirely in JS.
 
 # Some disclaimers before we start
 
-AdaLite is not created by Cardano Foundation, Emurgo, or IOHK. The official Cardano team has not reviewed this code and is not responsible for any damage it may cause you. The AdaLite does not store your private keys and you are responsible for storing them safely. Please be aware that if your computer is compromised, your mnemonic may be leaked when used as the access method on Adalite. We encourage you to use AdaLite with a hardware wallet for maximum safety. We appreciate feedback, especially a review of the crypto-related code.
+AdaLite is not created by Cardano Foundation, Emurgo, or IOHK. The official Cardano team has not reviewed this code and is not responsible for any damage it may cause you. AdaLite does not store your private keys and you are responsible for storing them safely. Please be aware that if your computer is compromised, your mnemonic may be leaked when used as the access method on Adalite. We encourage you to use AdaLite with a hardware wallet for maximum safety. We appreciate feedback, especially a review of the crypto-related code.
 
 ## Why we are building this
 
-The [official Cardano wallet](https://github.com/input-output-hk/daedalus) from IOHK runs a full node and takes a long time to sync the blockchain. It's also very big and downloads >500MB of JavaScript dependencies (which can create a large attack surface and requires a lot of auditing). AdaLite is much smaller (< 3000 Lines of code) and is thus much easier to audit. Since it doesn't run a full node or require to sync the entire blockchain it's also very fast. Recovering your wallet from the mnemonic only takes a few seconds.
+The [official Cardano wallet](https://github.com/input-output-hk/daedalus) from IOHK runs a full node and takes a long time to sync the blockchain. It's also very big and downloads >500MB of JavaScript dependencies (which can create a large attack surface and requires a lot of auditing). AdaLite is much smaller and is thus much easier to audit. Since it doesn't run a full node or require to sync the entire blockchain it's also very fast. Recovering your wallet from the mnemonic only takes a few seconds.
 
 ## Validate the source
 
 If you want, you can verify the integrity of the code running in your browser, you can:
 
-- checkout the latest version (currently 1.0.0)
+- checkout the latest version from the master branch (the one being deployed)
 - build the project
 - download the source .js from devtools and compare it to the built version
 
-## Compatibility with Daedalus
+## Compatibility with Daedalus/Yoroi
 
-If you generate your wallet with AdaLite, you can see it's content in Daedalus. The catch is -
-if you generate new addresses in Daedalus and use it, AdaLite won't recognize them. If you want
-to continue using your wallet in AdaLite, you should move the funds to an address recognized by
-AdaLite.
+See https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#compatibility-with-other-wallets
 
 ## Run project locally
 
@@ -72,7 +69,7 @@ The `ADALITE_ENABLE_SERVER_MOCKING_MODE` flag tells the server to start in mocki
 
 `ADALITE_MOCK_TX_SUMMARY_SUCCESS` tells the mock server whether to return that the transaction exists in the blockchain or not - this is useful for polling for transaction status after submission.
 
-## test
+## Test
 
 #### lint tests
 
