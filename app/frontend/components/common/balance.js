@@ -40,7 +40,32 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
         'Refresh Balance'
       )
     ),
-    conversionRates && h(Conversions, {balance, conversionRates})
+    conversionRates && h(Conversions, {balance, conversionRates}),
+    h(
+      'div',
+      {class: 'buy-ada-partner-wrapper'},
+      h(
+        'a',
+        {
+          class: 'button primary outline link buy-ada-partner-link',
+          href: 'https://exchange.adalite.io/',
+          target: '_blank',
+        },
+        'Buy ADA'
+      ),
+      h(
+        'span',
+        {
+          class: 'buy-ada-partner-logo',
+        },
+        'Powered by',
+        h('img', {
+          class: 'buy-ada-partner-logo-img',
+          src: 'assets/coinswitch-logo.svg',
+          alt: 'CoinSwitch logo',
+        })
+      )
+    )
   )
 
 module.exports = Balance

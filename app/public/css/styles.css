@@ -21,6 +21,7 @@
   --color-pink: #e72076;
   --color-grey-dark: #20323f;
   --color-grey: #606a71;
+  --color-grey-medium: #99A0A4;
   --color-grey-light: #e6e6e6;
   --color-green: #78d088;
   --color-blue: #78c9dd;
@@ -244,6 +245,11 @@ p {
 
 .button.fullwidth {
   width: 100%;
+}
+
+.button.link,
+.button.link:hover {
+  text-decoration: none;
 }
 
 .button.navbar {
@@ -1644,6 +1650,24 @@ button[data-balloon] {
 
 .conversions-item {
   margin-right: 16px;
+}
+
+.buy-ada-partner-wrapper {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.buy-ada-partner-logo {
+  margin-left: 24px;
+  font-size: 14px;
+  color: var(--color-grey-medium);
+  padding-bottom: 4px;
+}
+
+.buy-ada-partner-logo-img {
+  display: block;
+  max-width: 100%;
 }
 
 /* ADDRESSES */
