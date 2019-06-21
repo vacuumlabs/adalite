@@ -17,7 +17,9 @@ app.use(require('./middlewares/redirectToBaseUrl'))
 if (backendConfig.REDIS_URL) {
   app.use(require('./middlewares/stats').trackVisits)
   app.use(require('./middlewares/stats').trackTxSubmissions)
-  app.use(require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.ADALITE_STATS_PWD}))
+  app.use(
+    require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.ADALITE_STATS_PWD})
+  )
   require('./statsPage')(app)
 }
 
@@ -85,11 +87,11 @@ app.get('*', (req, res) => {
 })
 
 /*
-* To run server in secure mode, you need to set
-* ADALITE_SERVER_URL to 'https://localhost:3000'.
-* ADALITE_ENABLE_HTTPS is defaultly set to true
-* (in package.json -> scripts -> dev)
-*/
+ * To run server in secure mode, you need to set
+ * ADALITE_SERVER_URL to 'https://localhost:3000'.
+ * ADALITE_ENABLE_HTTPS is defaultly set to true
+ * (in package.json -> scripts -> dev)
+ */
 const enableHttps = process.env.ADALITE_ENABLE_HTTPS === 'true'
 if (enableHttps) {
   const options = {

@@ -90,9 +90,7 @@ module.exports = ({setState, getState}) => {
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       )).rootSecret
-      const isDemoWallet =
-        walletSecretDef &&
-        walletSecretDef.rootSecret.equals(demoRootSecret)
+      const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
@@ -256,10 +254,13 @@ module.exports = ({setState, getState}) => {
 
   const logout = () => {
     wallet = null
-    setState({
-      ...initialState,
-      displayWelcome: false,
-    }, true) // force overwriting the state
+    setState(
+      {
+        ...initialState,
+        displayWelcome: false,
+      },
+      true
+    ) // force overwriting the state
     window.history.pushState({}, '/', '/')
   }
 

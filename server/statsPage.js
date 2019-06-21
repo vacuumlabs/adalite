@@ -80,16 +80,14 @@ module.exports = function(app, env) {
                 <li>${isAdaAmountKey(period) ? `${period} (ADA)` : period} </li>
                 <ul>
                   ${stats[subject][period]
-    .map(
-      (item) => {
-        const [key, value] = item
-        return `
+    .map((item) => {
+      const [key, value] = item
+      return `
           <li>
             ${key}:   <b>${isAdaAmountKey(period) ? Math.round(value / 1000000) : value}</b>
           </li>
         `
-      }
-    )
+    })
     .join('')}
               </ul>
             </ul>

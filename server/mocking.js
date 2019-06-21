@@ -3,8 +3,8 @@ require('isomorphic-fetch')
 const sleep = require('./helpers/sleep')
 
 /*
-* Mocking of blockchain explorer and transaction submitter for developement purposes
-*/
+ * Mocking of blockchain explorer and transaction submitter for developement purposes
+ */
 module.exports = function(app, env) {
   app.post('/api/txs/submit', async (req, res) => {
     let txHash
