@@ -45,6 +45,8 @@ const {
   ADALITE_SUPPORT_EMAIL,
 } = process.env
 
+const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
+
 if (!check.all(checkMap)) {
   let problemFound = false
   for (const k of Object.keys(checkMap)) {
@@ -77,6 +79,7 @@ const frontendConfig = {
   ADALITE_LOGOUT_AFTER,
   ADALITE_TREZOR_CONNECT_URL,
   ADALITE_SUPPORT_EMAIL,
+  ADALITE_BACKEND_TOKEN,
 }
 
 const backendConfig = {
@@ -89,6 +92,7 @@ const backendConfig = {
   ADALITE_MOCK_TX_SUMMARY_SUCCESS,
   ADALITE_BLOCKCHAIN_EXPLORER_URL,
   ADALITE_SERVER_URL,
+  ADALITE_BACKEND_TOKEN,
 }
 
 module.exports = {

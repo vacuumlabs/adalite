@@ -21,6 +21,8 @@ const isSameOrigin = (urlString1, urlString2) => {
   )
 }
 
+const tokenMatches = (token) => token === process.env.ADALITE_BACKEND_TOKEN
+
 const parseTxBodyOutAmount = (txBody) => {
   /*
    * The following code works because AdaLite sends 1 or 2-output txs
@@ -62,9 +64,11 @@ const trackVisits = (req, res, next) => {
 
 const trackTxSubmissions = mung.json((body, req, res) => {
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
-    const txSubmissionType = isSameOrigin(req.get('origin'), process.env.ADALITE_SERVER_URL)
-      ? 'txSubmissions'
-      : 'otherTxSubmissions'
+    const txSubmissionType =
+      tokenMatches(req.get('token')) &&
+      isSameOrigin(req.get('origin'), process.env.ADALITE_SERVER_URL)
+        ? 'txSubmissions'
+        : 'otherTxSubmissions'
     const txSubmissionSuccess = body.Right ? 'successful' : 'unsuccessful'
 
     incrCountersBy(`${txSubmissionType}:${txSubmissionSuccess}`, 1)

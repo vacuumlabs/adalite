@@ -99,6 +99,7 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
   }
 
   async function submitTxRaw(txHash, txBody) {
+    const token = ADALITE_CONFIG.ADALITE_BACKEND_TOKEN
     const response = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/txs/submit`,
       'POST',
@@ -108,6 +109,7 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
       }),
       {
         'Content-Type': 'application/json',
+        ...(token ? {token} : {}),
       }
     )
 
