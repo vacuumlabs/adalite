@@ -1,4 +1,3 @@
-const cors = require('cors')
 const bodyParser = require('body-parser')
 const express = require('express')
 const compression = require('compression')
@@ -9,7 +8,6 @@ const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
 let app = express()
 
 app.use(bodyParser.json())
-app.use(cors())
 app.use(compression())
 
 app.enable('trust proxy') // to get the actual request protocol on heroku (important for redirect)
