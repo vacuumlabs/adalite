@@ -730,16 +730,13 @@ button[data-balloon] {
   z-index: 21;
   background-color: white;
   margin: auto;
+  padding: 56px;
   width: 100%;
   max-width: 952px;
   max-height: 95%;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0);
   border-radius: 2px;
   overflow-y: auto;
-}
-
-.modal-content {
-  padding: 56px;
 }
 
 .modal-close {
@@ -2817,9 +2814,6 @@ button[data-balloon] {
   .modal-body {
     width: calc(100% - 32px);
     max-height: calc(100% - 32px);
-  }
-
-  .modal-content {
     padding: 40px 16px;
   }
 
