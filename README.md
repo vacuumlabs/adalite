@@ -37,7 +37,7 @@ yarn build
 ADALITE_PORT=3000 yarn start-server
 ```
 
-Navigate to http://localhost:3000 (or wherever you've configured)
+Navigate to http://localhost:3000 (or wherever you've configured) and don't forget to set `.env` to `http://localhost:3000` if you were copying the default .env.example file. You may also need to disable caching in your browser to forget previous redirects.
 
 #### Development
 
