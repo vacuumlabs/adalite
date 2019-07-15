@@ -8,5 +8,10 @@
   "rules": {
     "no-bitwise": "off",
     "guard-for-in": "off"
+  },
+  "settings": {
+    "react": {
+        "version": "16.8"
+    }
   }
 }
