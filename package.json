@@ -47,6 +47,7 @@
     "compression": "^1.7.2",
     "device": "^0.3.9",
     "dotenv": "^6.0.0",
+    "eslint": "^6.0.1",
     "express": "^4.16.3",
     "express-basic-auth": "^1.2.0",
     "express-mung": "^0.5.1",
@@ -57,7 +58,6 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.2.2",
-    "eslint": "^4.18.2",
     "eslint-config-vacuumlabs": "^1.5.0",
     "eslint-import-resolver-webpack": "^0.11.0",
     "eslint-plugin-import": "^2.16.0",
