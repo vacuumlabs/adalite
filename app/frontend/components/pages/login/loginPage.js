@@ -11,6 +11,7 @@ const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
 const LoginPageSidebar = require('./loginPageSidebar')
 const Tag = require('../../common/tag')
+const Banner = require('../../common/banner')
 const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
 const {getTranslation} = require('../../../translations')
 
@@ -142,6 +143,7 @@ class LoginPage extends Component {
     return h(
       'div',
       {class: 'page-wrapper'},
+      h(Banner),
       h(
         'main',
         {class: 'page-main'},
