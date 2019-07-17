@@ -306,6 +306,13 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const closeBanner = (state) => {
+    window.localStorage.setItem('dontShowBanner', true)
+    setState({
+      showBanner: false,
+    })
+  }
+
   const validateSendForm = (state) => {
     setState({
       sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
@@ -598,5 +605,6 @@ module.exports = ({setState, getState}) => {
     closeWalletLoadingErrorModal,
     showContactFormModal,
     closeContactFormModal,
+    closeBanner,
   }
 }

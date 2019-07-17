@@ -6,6 +6,7 @@ const MyAddresses = require('./pages/receiveAda/myAddresses')
 const SendPage = require('./pages/sendAda/sendAdaPage')
 const LoginPage = require('./pages/login/loginPage')
 const ExportWalletPage = require('./pages/exportWallet/exportWalletPage')
+const StakingPage = require('./pages/staking/stakingPage')
 
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
@@ -18,6 +19,7 @@ const TopLevelRouter = connect((state) => ({
     return h(LoginPage)
   }
   const currentTab = pathname.split('/')[1]
+  if ((!walletIsLoaded || showDemoWalletWarningDialog) && currentTab !== 'staking') {return h(LoginPage)}
   let content
   switch (currentTab) {
     case 'txHistory':
@@ -31,6 +33,9 @@ const TopLevelRouter = connect((state) => ({
       break
     case 'exportWallet':
       content = h(ExportWalletPage)
+      break
+    case 'staking':
+      content = h(StakingPage)
       break
     default:
       window.history.pushState({}, 'txHistory', 'txHistory')
