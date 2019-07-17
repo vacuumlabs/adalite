@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Oval 2</title>
+    <desc>Created with Sketch.</desc>
+    <g id="[STK]-Staking" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="[STK-D]-02-comming-soon-page" transform="translate(-749.000000, -240.000000)" fill="#E72076">
+            <g id="Group-4" transform="translate(749.000000, 240.000000)">
+                <path d="M8,16 C12.418278,16 16,12.418278 16,8 C16,3.581722 12.418278,0 8,0 C3.581722,0 0,3.581722 0,8 C0,12.418278 3.581722,16 8,16 Z M8,3.5 L9.02943396,5.69320808 L9.23596004,6.1333061 L9.69802442,6.2038861 L12,6.55566577 L10.3342952,8.26284281 L10.0000888,8.60547322 L10.0789345,9.08926362 L10.4720977,11.4998133 L8.41322974,10.3615708 L8,10.1333995 L7.58677026,10.3617575 L5.52790233,11.5 L5.92106548,9.08945034 L5.99991121,8.60565994 L5.66570477,8.26302953 L4,6.55585249 L6.301798,6.20407282 L6.76386238,6.13349282 L6.97038846,5.6933948 L8,3.5 L8,3.5 Z" id="Oval-2"></path>
+            </g>
+        </g>
+    </g>
+</svg>

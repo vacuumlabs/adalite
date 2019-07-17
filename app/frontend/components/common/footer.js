@@ -32,9 +32,10 @@ const Footer = connect(
           'div',
           {class: 'social'},
           h(
-            'a',
+            'button',
             {
-              class: 'social-link email',
+              role: 'button',
+              class: 'button link social-link email',
               onClick: showContactFormModal,
             },
             'Contact us'

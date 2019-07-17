@@ -116,7 +116,7 @@ class ContactForm extends Component {
         ),
         h('button', {
           'onClick': this.closeContactFormModal,
-          'class': 'modal-close',
+          'class': 'button close modal-close',
           'aria-label': 'Close dialog',
           'onKeyDown': (e) => {
             e.key === 'Enter' && e.target.click()

@@ -36,7 +36,7 @@ class Modal extends Component {
           },
           closeHandler &&
             h('button', {
-              'class': 'modal-close',
+              'class': 'button close modal-close',
               'onClick': closeHandler,
               'aria-label': 'Close dialog',
             }),

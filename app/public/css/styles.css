@@ -208,10 +208,12 @@ p {
   font-weight: bold;
   border: none;
   display: inline-block;
+  text-decoration: none;
 }
 
 .button:hover {
   cursor: pointer;
+  text-decoration: none;
 }
 
 .button.primary {
@@ -259,11 +261,6 @@ p {
 
 .button.fullwidth {
   width: 100%;
-}
-
-.button.link,
-.button.link:hover {
-  text-decoration: none;
 }
 
 .button.navbar {
@@ -386,6 +383,16 @@ p {
 
 .button.send-max:disabled {
   color: var(--color-grey-light);
+}
+
+.button.close {
+  background-image: url('../assets/close_icon.svg');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: none;
+  background-color: transparent;
+  padding: 0;
 }
 
 /* TOOLTIP */
@@ -745,12 +752,6 @@ button[data-balloon] {
   position: absolute;
   top: 32px;
   right: 32px;
-  background-image: url('../assets/close_icon.svg');
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  border: none;
-  background-color: transparent;
 }
 
 .modal-close:hover {
@@ -878,6 +879,7 @@ button[data-balloon] {
   padding: 0 16px;
   margin: 0 auto;
   flex: 1;
+  position: relative;
 }
 
 .page-main {
@@ -887,6 +889,45 @@ button[data-balloon] {
 .page-demo {
   margin-top: 56px;
   text-align: center;
+}
+
+/* BANNER */
+
+.banner {
+  max-width: var(--width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -100px;
+  z-index: 10;
+}
+
+.banner-inner {
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+}
+
+.banner-text::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 16px;
+  vertical-align: middle;
+  background: url('../assets/icon-star.svg') no-repeat;
+  background-position: center center;
+}
+
+.banner-close {
+  float: right;
+  width: 10px;
+  height: 10px;
 }
 
 /* DASHBOARD */
@@ -1417,12 +1458,27 @@ button[data-balloon] {
 .social {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.button.link {
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: left;
+}
+
+.button.link:hover {
+  color: var(--color-brand);
 }
 
 .social-link {
   flex: 0 0 50%;
   max-width: 50%;
-  padding-left: 40px;
+  padding: 0 0 0 40px;
   position: relative;
   margin-bottom: 24px;
   color: white;
@@ -2016,6 +2072,53 @@ button[data-balloon] {
 
 .checkbox-input:checked + .checkbox-indicator {
   background-image: url('../assets/checkbox_checked.svg');
+}
+
+/* STAKING PAGE */
+
+.staking-wrapper {
+  max-width: 638px;
+  padding: 0 16px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  padding-bottom: 200px
+}
+
+.staking-label {
+  margin-bottom: 5px;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: var(--color-brand);
+  position: relative;
+  display: inline-block;
+}
+
+.staking-label::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background: url('../assets/icon-star-circled.svg') no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+.staking-title {
+  margin-bottom: 24px;
+}
+
+.staking-text {
+  margin-bottom: 48px;
+}
+
+.staking-form input {
+  max-width: 300px;
+  width: 100%;
+  margin-right: 24px;
 }
 
 /* CONTACT MODAL */
@@ -2692,6 +2795,23 @@ button[data-balloon] {
     width: 100%;
   }
 
+  /* BANNER */
+
+  .banner {
+    background-color: transparent;
+    position: static;
+  }
+
+  .banner-inner {
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .banner-text::before {
+    display: none;
+  }
+
   /* SIDEBAR */
 
   .sidebar {
@@ -2814,6 +2934,9 @@ button[data-balloon] {
   .modal-body {
     width: calc(100% - 32px);
     max-height: calc(100% - 32px);
+  }
+
+  .modal-content {
     padding: 40px 16px;
   }
 
@@ -3288,6 +3411,18 @@ button[data-balloon] {
   .send .button.primary {
     width: 100%;
   }
+
+  /* STAKING PAGE */
+
+  .staking-wrapper {
+    padding-top: 56px;
+    padding-bottom: 72px;
+  }
+
+  .staking-form .input {
+    max-width: inherit;
+    margin-bottom: 24px;
+  }
 }
 
 /* TABLET MEDIA QUERIES */
@@ -3302,6 +3437,16 @@ button[data-balloon] {
 
   .page-main {
     width: 100%;
+  }
+
+  /* BANNER */
+
+  .banner {
+    position: static;
+  }
+
+  .banner-inner {
+    background-color: transparent;
   }
 
   /* SIDEBAR */
@@ -3594,6 +3739,13 @@ button[data-balloon] {
 
   .detail-row .detail-input {
     margin-bottom: 24px;
+  }
+
+  /* STAKING PAGE */
+
+  .staking-wrapper {
+    padding-top: 120px;
+    padding-bottom: 120px;
   }
 }
 
