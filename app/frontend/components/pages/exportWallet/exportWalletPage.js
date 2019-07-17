@@ -107,88 +107,92 @@ class ExportWalletDialog extends Component {
       'div',
       {class: 'page-wrapper'},
       h(
-        'main',
-        {class: 'page-main'},
+        'div',
+        {class: 'page-inner'},
         h(
-          'div',
-          {class: 'export download card'},
+          'main',
+          {class: 'page-main'},
           h(
             'div',
-            {class: 'export-content'},
-            h(
-              'h2',
-              {class: 'export-title'},
-              'Export Key File ',
-              h('span', {class: 'export-subtitle'}, '(Encrypted JSON)')
-            ),
-            h('input', {
-              type: 'text',
-              class: 'input fullwidth export',
-              id: 'keyfile-name',
-              name: 'keyfile-name',
-              placeholder: 'Wallet name',
-              value: walletName,
-              onInput: this.updateWalletName,
-              autocomplete: 'off',
-            }),
-            h('input', {
-              type: 'password',
-              class: 'input fullwidth export',
-              id: 'keyfile-password',
-              name: 'keyfile-password',
-              placeholder: 'Choose a password',
-              value: password,
-              onInput: this.updatePassword,
-              onBlur: this.touchPassword,
-              autocomplete: 'off',
-            }),
-            h('input', {
-              type: 'password',
-              class: 'input fullwidth export',
-              id: 'keyfile-password-confirmation',
-              name: 'keyfile-password-confirmation',
-              placeholder: 'Repeat the password',
-              value: confirmation,
-              onInput: this.updateConfirmation,
-              onBlur: this.touchConfirmation,
-              autocomplete: 'off',
-            }),
+            {class: 'export download card'},
             h(
               'div',
-              {class: 'validation-row'},
+              {class: 'export-content'},
               h(
-                'button',
-                {
-                  class: 'button primary',
-                  disabled: showError || !isPasswordValid || !walletNameValid,
-                  onClick: this.exportJsonWallet,
-                },
-                'Download the key file'
+                'h2',
+                {class: 'export-title'},
+                'Export Key File ',
+                h('span', {class: 'export-subtitle'}, '(Encrypted JSON)')
               ),
-              showError && h('div', {class: 'validation-message error'}, errorMessage)
-            )
-          ),
-          h(Tag, {type: 'warning big', text: 'PROCEED WITH CAUTION'})
+              h('input', {
+                type: 'text',
+                class: 'input fullwidth export',
+                id: 'keyfile-name',
+                name: 'keyfile-name',
+                placeholder: 'Wallet name',
+                value: walletName,
+                onInput: this.updateWalletName,
+                autocomplete: 'off',
+              }),
+              h('input', {
+                type: 'password',
+                class: 'input fullwidth export',
+                id: 'keyfile-password',
+                name: 'keyfile-password',
+                placeholder: 'Choose a password',
+                value: password,
+                onInput: this.updatePassword,
+                onBlur: this.touchPassword,
+                autocomplete: 'off',
+              }),
+              h('input', {
+                type: 'password',
+                class: 'input fullwidth export',
+                id: 'keyfile-password-confirmation',
+                name: 'keyfile-password-confirmation',
+                placeholder: 'Repeat the password',
+                value: confirmation,
+                onInput: this.updateConfirmation,
+                onBlur: this.touchConfirmation,
+                autocomplete: 'off',
+              }),
+              h(
+                'div',
+                {class: 'validation-row'},
+                h(
+                  'button',
+                  {
+                    class: 'button primary',
+                    disabled: showError || !isPasswordValid || !walletNameValid,
+                    onClick: this.exportJsonWallet,
+                  },
+                  'Download the key file'
+                ),
+                showError && h('div', {class: 'validation-message error'}, errorMessage)
+              )
+            ),
+            h(Tag, {type: 'warning big', text: 'PROCEED WITH CAUTION'})
+          )
+        ),
+        h(
+          'aside',
+          {class: 'sidebar export'},
+          h(Hint, {
+            type: 'lose',
+            title: 'Do not lose it',
+            text: 'Key file cannot be recovered.',
+          }),
+          h(Hint, {
+            type: 'share',
+            title: 'Do not Share it',
+            text: 'Use it in the official AdaLite only.',
+          }),
+          h(Hint, {
+            type: 'backup',
+            title: 'Make multiple backups',
+            text: 'Store it safely in multiple places.',
+          })
         )
-      ),
-      h(
-        'aside',
-        {class: 'sidebar export'},
-        h(Hint, {
-          type: 'lose',
-          title: 'Do not lose it',
-          text: 'Key file cannot be recovered.',
-        }),
-        h(Hint, {
-          type: 'share',
-          title: 'Do not Share it',
-          text: 'Use it in the official AdaLite only.',
-        }),
-        h(Hint, {
-          type: 'backup',
-          title: 'Make multiple backups',
-          text: 'Store it safely in multiple places.',
-        })
       )
     )
   }

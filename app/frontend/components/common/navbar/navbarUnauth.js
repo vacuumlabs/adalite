@@ -36,6 +36,18 @@ const NavbarUnauth = connect(
         h(
           'a',
           {
+            class: 'navbar-link primary',
+            href: '#',
+            onClick: (e) => {
+              e.preventDefault()
+              window.history.pushState({}, 'staking', 'staking')
+            },
+          },
+          'Staking'
+        ),
+        h(
+          'a',
+          {
             class: 'navbar-link',
             href: '#',
             onClick: (e) => {

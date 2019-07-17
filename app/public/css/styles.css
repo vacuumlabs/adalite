@@ -584,12 +584,8 @@ button[data-balloon] {
 /* NAVIGATION */
 
 .navbar {
-  padding: 32px 0 136px 0;
+  padding: 32px 0 48px 0;
   z-index: 2;
-}
-
-.navbar.authed {
-  padding-bottom: 48px;
 }
 
 .navbar.demo {
@@ -607,6 +603,7 @@ button[data-balloon] {
 
 .navbar-heading {
   line-height: 0;
+  margin: 0;
 }
 
 .navbar-logo {
@@ -671,6 +668,18 @@ button[data-balloon] {
   line-height: 32px;
   text-decoration: none;
   color: var(--color-grey-dark);
+  position: relative;
+}
+
+.navbar-link.primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -10px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-brand);
+  border-radius: 50%;
 }
 
 .navbar-link:hover {
@@ -879,7 +888,13 @@ button[data-balloon] {
   padding: 0 16px;
   margin: 0 auto;
   flex: 1;
-  position: relative;
+  flex-wrap: wrap;
+}
+
+.page-inner {
+  width: 100%;
+  padding-top: 72px;
+  display: flex;
 }
 
 .page-main {
@@ -894,18 +909,7 @@ button[data-balloon] {
 /* BANNER */
 
 .banner {
-  max-width: var(--width);
   width: 100%;
-  margin: 0 auto;
-  padding: 0 16px;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -100px;
-  z-index: 10;
-}
-
-.banner-inner {
   background-color: #fff;
   display: flex;
   justify-content: space-between;
@@ -924,10 +928,11 @@ button[data-balloon] {
   background-position: center center;
 }
 
-.banner-close {
+.banner .banner-close {
   float: right;
-  width: 10px;
-  height: 10px;
+  width: 20px;
+  height: 20px;
+  background-size: 10px 10px;
 }
 
 /* DASHBOARD */
@@ -2078,11 +2083,13 @@ button[data-balloon] {
 
 .staking-wrapper {
   max-width: 638px;
-  padding: 0 16px;
+  padding: 100px 16px;
   width: 100%;
   margin: 0 auto;
   text-align: center;
-  padding-bottom: 200px
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .staking-label {
@@ -2093,13 +2100,14 @@ button[data-balloon] {
   color: var(--color-brand);
   position: relative;
   display: inline-block;
+  line-height: 1;
 }
 
 .staking-label::before {
   content: '';
   position: absolute;
   left: -24px;
-  top: 2px;
+  top: -4px;
   width: 16px;
   height: 16px;
   background: url('../assets/icon-star-circled.svg') no-repeat;
@@ -2786,7 +2794,8 @@ button[data-balloon] {
 
   /* PAGE MAIN */
 
-  .page-wrapper {
+  .page-wrapper,
+  .page-inner {
     display: block;
     padding: 0;
   }
@@ -2800,6 +2809,7 @@ button[data-balloon] {
   .banner {
     background-color: transparent;
     position: static;
+    margin-bottom: 0;
   }
 
   .banner-inner {
@@ -3416,7 +3426,7 @@ button[data-balloon] {
 
   .staking-wrapper {
     padding-top: 56px;
-    padding-bottom: 72px;
+    padding-bottom: 56px;
   }
 
   .staking-form .input {
@@ -3430,7 +3440,8 @@ button[data-balloon] {
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   /* PAGE MAIN */
 
-  .page-wrapper {
+  .page-wrapper,
+  .page-inner {
     display: block;
     padding: 0;
   }
@@ -3442,7 +3453,7 @@ button[data-balloon] {
   /* BANNER */
 
   .banner {
-    position: static;
+    margin-bottom: 0;
   }
 
   .banner-inner {
