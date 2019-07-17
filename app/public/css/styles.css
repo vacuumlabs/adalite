@@ -917,6 +917,10 @@ button[data-balloon] {
   padding: 20px 24px;
 }
 
+.banner-text {
+  flex: 1;
+}
+
 .banner-text::before {
   content: '';
   width: 24px;
@@ -929,7 +933,6 @@ button[data-balloon] {
 }
 
 .banner .banner-close {
-  float: right;
   width: 20px;
   height: 20px;
   background-size: 10px 10px;
@@ -2093,7 +2096,7 @@ button[data-balloon] {
 }
 
 .staking-label {
-  margin-bottom: 5px;
+  margin-bottom: 16px;
   font-size: 11px;
   text-transform: uppercase;
   font-weight: bold;
@@ -2107,7 +2110,7 @@ button[data-balloon] {
   content: '';
   position: absolute;
   left: -24px;
-  top: -4px;
+  top: -3px;
   width: 16px;
   height: 16px;
   background: url('../assets/icon-star-circled.svg') no-repeat;
