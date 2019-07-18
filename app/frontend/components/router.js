@@ -19,7 +19,9 @@ const TopLevelRouter = connect((state) => ({
     return h(LoginPage)
   }
   const currentTab = pathname.split('/')[1]
-  if ((!walletIsLoaded || showDemoWalletWarningDialog) && currentTab !== 'staking') {return h(LoginPage)}
+  if (!walletIsLoaded || showDemoWalletWarningDialog || currentTab !== 'staking') {
+    return h(LoginPage)
+  } // TODO: tab condition added for testing
   let content
   switch (currentTab) {
     case 'txHistory':
