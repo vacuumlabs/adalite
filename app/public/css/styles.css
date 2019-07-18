@@ -2947,9 +2947,6 @@ button[data-balloon] {
   .modal-body {
     width: calc(100% - 32px);
     max-height: calc(100% - 32px);
-  }
-
-  .modal-content {
     padding: 40px 16px;
   }
 
