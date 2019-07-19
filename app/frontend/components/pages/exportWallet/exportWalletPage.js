@@ -155,7 +155,15 @@ class ExportWalletDialog extends Component {
             }),
             h(
               'div',
-              {class: 'validation-row'},
+              {class: 'export-content-bottom'},
+              h(
+                'button',
+                {
+                  class: 'button secondary',
+                  onClick: () => window.history.back(),
+                },
+                'Back'
+              ),
               h(
                 'button',
                 {
