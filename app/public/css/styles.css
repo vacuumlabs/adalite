@@ -2419,6 +2419,15 @@ button[data-balloon] {
   margin-top: 24px;
 }
 
+.export-content-bottom {
+  display: flex;
+  align-items: center;
+}
+
+.export-content .button + .button {
+  margin-left: 24px;
+}
+
 /* VALIDATION */
 
 .validation-row {
@@ -3025,7 +3034,18 @@ button[data-balloon] {
   }
 
   .export-content .button {
-    width: 100%;
+    flex: 1;
+    white-space: nowrap;
+    padding: 8px 16px;
+  }
+
+  .export-content-bottom {
+    margin-bottom: 16px;
+    align-items: stretch;
+  }
+
+  .export-content .button + .button {
+    margin-left: 16px;
   }
 
   /* HINT */
