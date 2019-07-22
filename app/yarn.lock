@@ -20,15 +20,6 @@
     base-x "^3.0.5"
     node-int64 "^0.4.0"
 
-"@ledgerhq/devices@^4.60.3":
-  version "4.60.3"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-4.60.3.tgz#9a64d1b975878444e28047fcf71d4a14acfe6b4a"
-  integrity sha512-QCg0Kz60la4XBLj8xbASwarTQpAPTPG/cXE7+aXmwsEMqowxSlUtRF8hvbIBFn30Dt2KFsv7j3f7KPLv2HSCNA==
-  dependencies:
-    "@ledgerhq/errors" "^4.60.0"
-    "@ledgerhq/logs" "^4.60.3"
-    rxjs "^6.5.2"
-
 "@ledgerhq/devices@^4.68.0":
   version "4.68.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-4.68.0.tgz#bc674a6b00261ab916b1a34c4f2b5a62f0c94107"
@@ -38,37 +29,32 @@
     "@ledgerhq/logs" "^4.64.0"
     rxjs "^6.5.2"
 
-"@ledgerhq/errors@^4.60.0":
-  version "4.60.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.60.0.tgz#3c46161041823d0f70ff920a4696fd662609e40e"
-  integrity sha512-jGbDAuNw1KNB23osgK9RDa6jXNoz3QaSeaiJZjwYpCWSTH6v0vW5y5LPe9lomg5BcW2r65kNe1feLfZ4wJuu5A==
-
 "@ledgerhq/errors@^4.68.0":
   version "4.68.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.68.0.tgz#311980a3e2b3d43b2f7381cb6b122f5a57e2539b"
   integrity sha512-C+VjnCili9OgT4xaCpn0CYH+ri6BaJ4If7fFb5cXEj5WrahXBOLx6+tOWLaVXUIbBBaK+ia62+eSLecV2VMCqw==
 
-"@ledgerhq/hw-transport-u2f@^4.60.3":
-  version "4.60.3"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.60.3.tgz#aa039bcd9326c2333a5594deed73ec0719e38d30"
-  integrity sha512-qSEdmXSueW0fCUZgx2m4Rfha+Ed+IDxSDOhHToQv5hA6V0seMI6gIl15OwiOiTtGvvfaBpEc0Vgwv1/reCnX1A==
+"@ledgerhq/hw-transport-u2f@^4.68.0":
+  version "4.68.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-u2f/-/hw-transport-u2f-4.68.0.tgz#aaf49ee9344ec36fbadec9cbb11c6e60c9f3c4f0"
+  integrity sha512-toe2IfmOKMr8D7AA4b49phQYuct2J4EfcIL7uP2VQxY90k36RxDlTllGv75Kkc9RwsH8dhU883afUMDdI7Et4g==
   dependencies:
-    "@ledgerhq/errors" "^4.60.0"
-    "@ledgerhq/hw-transport" "^4.60.3"
-    "@ledgerhq/logs" "^4.60.3"
+    "@ledgerhq/errors" "^4.68.0"
+    "@ledgerhq/hw-transport" "^4.68.0"
+    "@ledgerhq/logs" "^4.64.0"
     u2f-api "0.2.7"
 
-"@ledgerhq/hw-transport-webusb@^4.60.3":
-  version "4.60.3"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-4.60.3.tgz#ac97d0c184afffe1482bde7791e631a525e6b8d3"
-  integrity sha512-m0EV/9YzIH79xsEANvvcnCcb/poaXh4uj4h1oCfl78uHWMEGu3olcINgp2MOvQmZQbEFJbC4KnsLQZ0ZwCUB2g==
+"@ledgerhq/hw-transport-webusb@^4.68.0":
+  version "4.68.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-4.68.0.tgz#8db49d9f07345cb73f8bd081a10dbd3e33726b81"
+  integrity sha512-LfkU6kjT9knIDlBkEoosrgU9rKmSabjav6dBfh1EPIGNEzhWllIf12SKIkzEDlbLqQw0/yYBF6rcGaALu1B8XQ==
   dependencies:
-    "@ledgerhq/devices" "^4.60.3"
-    "@ledgerhq/errors" "^4.60.0"
-    "@ledgerhq/hw-transport" "^4.60.3"
-    "@ledgerhq/logs" "^4.60.3"
+    "@ledgerhq/devices" "^4.68.0"
+    "@ledgerhq/errors" "^4.68.0"
+    "@ledgerhq/hw-transport" "^4.68.0"
+    "@ledgerhq/logs" "^4.64.0"
 
-"@ledgerhq/hw-transport@^4.35.0":
+"@ledgerhq/hw-transport@^4.35.0", "@ledgerhq/hw-transport@^4.68.0":
   version "4.68.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.68.0.tgz#47a2f2de6bb4ad7003a4da1f2f61730bb86f2f28"
   integrity sha512-+zvy8uI/4hB1lIjN/GBseCHG1hLDzySuJpcI4V4Zy5TPP8D/igw1F56nha5A8fRvzCCPl1zPQvTwg6Fj9lKdSw==
@@ -76,20 +62,6 @@
     "@ledgerhq/devices" "^4.68.0"
     "@ledgerhq/errors" "^4.68.0"
     events "^3.0.0"
-
-"@ledgerhq/hw-transport@^4.60.3":
-  version "4.60.3"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-4.60.3.tgz#6107d4a2687eedb0f7a3cb2f42ae2067b9e60dc7"
-  integrity sha512-X/Zl9sSVZyuPRvbdkbH9Wo22aLL6edURMwzyG9auqcGBkQoocfCqdAqG/MUc3XrnM14T9oqifJsw6Bq/nzPgaA==
-  dependencies:
-    "@ledgerhq/devices" "^4.60.3"
-    "@ledgerhq/errors" "^4.60.0"
-    events "^3.0.0"
-
-"@ledgerhq/logs@^4.60.3":
-  version "4.60.3"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-4.60.3.tgz#22448add32305eb2f1f70a5c2fc061f6a118e53a"
-  integrity sha512-s5ESzmfaB8ZY8xaU627KM5RUo3gXAvTX5v5mppH8h1km4j3Tkonc+pGdHyEz341oplY4ybdZeBUHkSVuvnEGMg==
 
 "@ledgerhq/logs@^4.64.0":
   version "4.64.0"
