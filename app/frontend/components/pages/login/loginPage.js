@@ -10,8 +10,8 @@ const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
 const LoginPageSidebar = require('./loginPageSidebar')
+const StakingBanner = require('./stakingBanner')
 const Tag = require('../../common/tag')
-const Banner = require('../../common/banner')
 const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
 const {getTranslation} = require('../../../translations')
 
@@ -149,7 +149,7 @@ class LoginPage extends Component {
     return h(
       'div',
       {class: 'page-wrapper'},
-      showBanner && h(Banner, {closeBanner: this.closeBannerClick}),
+      showBanner && h(StakingBanner, {closeBanner: this.closeBannerClick}),
       h(
         'div',
         {class: 'page-inner'},

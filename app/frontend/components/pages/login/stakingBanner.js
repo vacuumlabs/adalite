@@ -1,6 +1,6 @@
 const {h} = require('preact')
 
-const Banner = ({closeBanner}) =>
+const StakingBanner = ({closeBanner}) =>
   h(
     'div',
     {class: 'banner'},
@@ -29,4 +29,4 @@ const Banner = ({closeBanner}) =>
     })
   )
 
-module.exports = Banner
+module.exports = StakingBanner
