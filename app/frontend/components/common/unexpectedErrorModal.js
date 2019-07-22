@@ -22,11 +22,11 @@ const UnexpectedExceptionModal = ({closeHandler, e}) =>
     ),
     h(
       'div',
-      {class: 'modal-footer'},
+      {class: 'modal-footer send-error'},
       h(
         'button',
         {
-          class: 'button primary outline',
+          class: 'button outline',
           onClick: closeHandler,
         },
         'Cancel'
@@ -34,9 +34,10 @@ const UnexpectedExceptionModal = ({closeHandler, e}) =>
       h(
         'button',
         {
-          class: 'button primary',
+          class: 'button primary send-error',
           onClick: () => {
-            Sentry.captureException(e), closeHandler()
+            Sentry.captureException(e)
+            closeHandler()
           },
         },
         'Send'
