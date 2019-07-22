@@ -30,11 +30,11 @@ class LoginPage extends Component {
       isDropdownOpen: false,
     }
     this.toggleDropdown = this.toggleDropdown.bind(this)
-    this.closeBannerClick = this.closeBannerClick.bind(this)
+    this.closeStakingBannerClick = this.closeStakingBannerClick.bind(this)
   }
 
-  closeBannerClick() {
-    this.props.closeBanner()
+  closeStakingBannerClick() {
+    this.props.closeStakingBanner()
   }
 
   toggleDropdown() {
@@ -54,7 +54,7 @@ class LoginPage extends Component {
       showGenerateMnemonicDialog,
       showWalletLoadingErrorModal,
       closeWalletLoadingErrorModal,
-      showBanner,
+      showStakingBanner,
     },
     {isDropdownOpen}
   ) {
@@ -149,7 +149,7 @@ class LoginPage extends Component {
     return h(
       'div',
       {class: 'page-wrapper'},
-      showBanner && h(StakingBanner, {closeBanner: this.closeBannerClick}),
+      showStakingBanner && h(StakingBanner, {closeBanner: this.closeStakingBannerClick}),
       h(
         'div',
         {class: 'page-inner'},
@@ -193,7 +193,7 @@ module.exports = connect(
     walletLoadingError: state.walletLoadingError,
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
     showWalletLoadingErrorModal: state.showWalletLoadingErrorModal,
-    showBanner: state.showBanner,
+    showStakingBanner: state.showStakingBanner,
   }),
   actions
 )(LoginPage)

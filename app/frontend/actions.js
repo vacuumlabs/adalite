@@ -306,10 +306,10 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const closeBanner = (state) => {
-    window.localStorage.setItem('dontShowBanner', true)
+  const closeStakingBanner = (state) => {
+    window.localStorage.setItem('dontShowStakingBanner', true)
     setState({
-      showBanner: false,
+      showStakingBanner: false,
     })
   }
 
@@ -605,6 +605,6 @@ module.exports = ({setState, getState}) => {
     closeWalletLoadingErrorModal,
     showContactFormModal,
     closeContactFormModal,
-    closeBanner,
+    closeStakingBanner,
   }
 }
