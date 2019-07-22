@@ -8,11 +8,7 @@ const StakingPage = () =>
       'div',
       {class: 'staking-inner'},
       h('div', {class: 'staking-label'}, 'Upcoming'),
-      h(
-        'h2',
-        {class: 'staking-title'},
-        'Staking delegation and staking pool is comming to AdaLite'
-      ),
+      h('h2', {class: 'staking-title'}, 'Staking delegation and staking pool is coming to AdaLite'),
       h(
         'p',
         {class: 'staking-text'},
