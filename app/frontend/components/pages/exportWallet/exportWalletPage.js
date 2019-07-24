@@ -117,7 +117,15 @@ class ExportWalletDialog extends Component {
             {class: 'export download card'},
             h(
               'div',
-              {class: 'export-content'},
+              {class: 'export-content-bottom'},
+              h(
+                'button',
+                {
+                  class: 'button secondary',
+                  onClick: () => window.history.back(),
+                },
+                'Back'
+              ),
               h(
                 'h2',
                 {class: 'export-title'},

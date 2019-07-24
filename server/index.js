@@ -103,5 +103,5 @@ if (enableHttps) {
 
 app.listen(backendConfig.PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server is lisening on ${enableHttps ? 'secure' : ''} port ${backendConfig.PORT}!`)
+  console.log(`Server is listening on ${enableHttps ? 'secure' : ''} port ${backendConfig.PORT}!`)
 })
