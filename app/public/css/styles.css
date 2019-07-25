@@ -395,6 +395,21 @@ p {
   padding: 0;
 }
 
+/* FORM GLOBAL */
+
+.form-alert {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.form-alert.success {
+  color: var(--color-green);
+}
+
+.form-alert.error {
+  color: var(--color-error);
+}
+
 /* TOOLTIP */
 
 button[data-balloon] {
@@ -2159,6 +2174,10 @@ button[data-balloon] {
   margin-bottom: 20px;
 }
 
+.contact-form .form-alert {
+  margin-top: -15px;
+}
+
 /* TRANSACTIONS */
 
 .transactions {
@@ -3046,19 +3065,24 @@ button[data-balloon] {
 
   /* CONTACT MODAL */
 
-  .contact-form-bottom {
-    margin-bottom: 20px;
-    align-items: stretch;
-  }
-
   .contact-form .button {
     flex: 1;
     white-space: nowrap;
     padding: 10px 15px;
+    width: 100%;
+  }
+
+  .contact-form .contact-form-bottom {
+    flex-direction: column;
+  }
+
+  .contact-form button {
+    margin-top: 15px;
+    order: 1;
   }
 
   .contact-form .button + .button {
-    margin-left: 15px;
+    margin: 0;
   }
 
   /* FOOTER */
