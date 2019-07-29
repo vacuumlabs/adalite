@@ -1,13 +1,37 @@
 const {h, Component} = require('preact')
+const connect = require('unistore/preact').connect
+const actions = require('../../../actions')
 
 class StakingPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      submitted: false,
+      email: '',
+      emailValid: false,
+      errorMessage: '',
     }
+
+    this.isValidEmail = this.isValidEmail.bind(this)
+    this.updateEmail = this.updateEmail.bind(this)
   }
-  render() {
+
+  isValidEmail(email) {
+    // eslint-disable-next-line max-len
+    const re = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/gim
+    return re.test(email)
+  }
+
+  updateEmail({setEmailSubmitSuccess}, e) {
+    const isEmailValid = this.isValidEmail(e.target.value)
+    this.setState({
+      email: e.target.value,
+      emailValid: isEmailValid,
+      errorMessage: !isEmailValid && 'Invalid email format.',
+    })
+    setEmailSubmitSuccess(false)
+  }
+
+  render({submitEmailSubscription, emailSubmitSuccess}, {email, emailValid, errorMessage}) {
     return h(
       'div',
       {class: 'staking-wrapper'},
@@ -30,30 +54,47 @@ class StakingPage extends Component {
           {
             class: 'staking-form',
             id: 'stakingForm',
-            method: 'POST',
-            target: '_blank',
-            action: '',
+            // method: 'POST',
+            // target: '_blank',
+            // action: '',
           },
           h('input', {
             class: 'input',
             type: 'email',
             placeholder: 'Enter your email to get notified',
+            value: email,
             required: true,
+            onInput: this.updateEmail,
           }),
           h(
             'button',
             {
+              onClick: (e) => {
+                e.preventDefault()
+                emailValid ? submitEmailSubscription(email) : null
+              },
               class: 'button primary wide',
+              disabled: !emailValid,
               type: 'submit',
+              onKeyDown: (e) => {
+                e.key === 'Enter' && e.target.click()
+              },
             },
             'Subscribe'
           )
         ),
-        this.state.submitted &&
+        !emailValid && h('div', {class: 'validation-message error'}, errorMessage),
+        emailSubmitSuccess &&
           h('div', {class: 'form-alert success'}, 'You are successfully subscribed.')
       )
     )
   }
 }
 
-module.exports = StakingPage
+module.exports = connect(
+  (state) => ({
+    email: state.email,
+    emailSubmitSuccess: state.emailSubmitSuccess,
+  }),
+  actions
+)(StakingPage)

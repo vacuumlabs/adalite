@@ -570,6 +570,46 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  async function submitEmail(email) {
+    // possibly move, dunno where
+    const request = require('./wallet/helpers/request')
+    const response = await request(
+      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/emails/submit`,
+      'POST',
+      JSON.stringify({email}),
+      {
+        'Content-Type': 'application/json',
+      }
+    )
+
+    if (!response.Right) {
+      debugLog(`Unexpected email submission response: ${response}`)
+      throw NamedError('EmailSubmissionRejectedByNetwork')
+    }
+
+    return response.Right
+  }
+
+  const submitEmailSubscription = async (state, email) => {
+    let didSucceed
+    try {
+      emailSubmitResult = await submitEmail(email)
+
+      if (!emailSubmitResult) {
+        debugLog(emailSubmitResult)
+        throw NamedError('EmailSubmissionRejectedByNetwork')
+      }
+      didSucceed = true
+    } catch (e) {
+      debugLog(e)
+      didSucceed = false
+    } finally {
+      setState({
+        emailSubmitSuccess: didSucceed,
+      })
+    }
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -606,5 +646,6 @@ module.exports = ({setState, getState}) => {
     showContactFormModal,
     closeContactFormModal,
     closeStakingBanner,
+    submitEmailSubscription,
   }
 }

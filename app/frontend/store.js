@@ -37,6 +37,7 @@ const initialState = {
   showMnemonicInfoAlert: false,
   transactionHistory: [],
   sendResponse: {},
+  emailSubmitSuccess: false,
 }
 
 const createStore = () =>
