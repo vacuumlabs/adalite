@@ -33,8 +33,10 @@ if (!backendConfig.ADALITE_TREZOR_CONNECT_URL) {
 
 if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./mocking')(app)
+  // require('./emailSubmitter')(app)
 } else {
   require('./transactionSubmitter')(app)
+  // require('./emailSubmitter')(app)
 }
 
 app.get('*', (req, res) => {
