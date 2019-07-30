@@ -21,17 +21,19 @@ class StakingPage extends Component {
     return re.test(email)
   }
 
-  updateEmail({setEmailSubmitSuccess}, e) {
+  updateEmail(e) {
     const isEmailValid = this.isValidEmail(e.target.value)
     this.setState({
       email: e.target.value,
       emailValid: isEmailValid,
       errorMessage: !isEmailValid && 'Invalid email format.',
     })
-    setEmailSubmitSuccess(false)
   }
 
-  render({submitEmailSubscription, emailSubmitSuccess}, {email, emailValid, errorMessage}) {
+  render(
+    {submitEmailSubscription, emailSubmitSuccess, emailSubmitMessage},
+    {email, emailValid, errorMessage}
+  ) {
     return h(
       'div',
       {class: 'staking-wrapper'},
@@ -84,8 +86,11 @@ class StakingPage extends Component {
           )
         ),
         !emailValid && h('div', {class: 'validation-message error'}, errorMessage),
-        emailSubmitSuccess &&
-          h('div', {class: 'form-alert success'}, 'You are successfully subscribed.')
+        emailSubmitSuccess && h('div', {class: 'form-alert success'}, emailSubmitMessage),
+        !emailSubmitSuccess &&
+          emailSubmitMessage &&
+          h('div', {class: 'form-alert error'}, emailSubmitMessage)
+        // have yet to reset message and success upon change
       )
     )
   }
@@ -95,6 +100,7 @@ module.exports = connect(
   (state) => ({
     email: state.email,
     emailSubmitSuccess: state.emailSubmitSuccess,
+    emailSubmitMessage: state.emailSubmitMessage,
   }),
   actions
 )(StakingPage)

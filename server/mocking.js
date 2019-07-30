@@ -54,7 +54,7 @@ module.exports = function(app, env) {
 
   app.post('/api/emails/submit', async (req, res) => {
     const listId = 'c48db9ac44' // move to config
-    const APIKey = ...your API KEY here // move to config
+    const APIKey = 'INSERT YOUR API KEY HERE' // move to config
     const dataCenter = 'us9' // move to config
 
     let email
@@ -86,9 +86,17 @@ module.exports = function(app, env) {
       if (response.status === 200) {
         console.log('successfuly sent') // remove after testing
         return res.json({
-          Right: {email},
+          Right: 'Successfuly subscribed',
         })
       }
+
+      if (response.status === 400) {
+        console.log('already exists') // remove after testing
+        return res.json({
+          Left: 'Member already exists',
+        })
+      }
+
       return res.json({
         Left: 'Email submission rejected by network',
       })
