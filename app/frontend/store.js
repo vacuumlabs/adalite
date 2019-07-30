@@ -38,6 +38,7 @@ const initialState = {
   transactionHistory: [],
   sendResponse: {},
   emailSubmitSuccess: false,
+  emailSubmitMessage: '',
 }
 
 const createStore = () =>

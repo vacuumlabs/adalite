@@ -582,30 +582,29 @@ module.exports = ({setState, getState}) => {
       }
     )
 
-    if (!response.Right) {
-      debugLog(`Unexpected email submission response: ${response}`)
-      throw NamedError('EmailSubmissionRejectedByNetwork')
-    }
-
-    return response.Right
+    return response
   }
 
   const submitEmailSubscription = async (state, email) => {
     let didSucceed
+    let message
     try {
       emailSubmitResult = await submitEmail(email)
 
-      if (!emailSubmitResult) {
-        debugLog(emailSubmitResult)
-        throw NamedError('EmailSubmissionRejectedByNetwork')
+      if (emailSubmitResult.Left) {
+        didSucceed = false
+        message = emailSubmitResult.Left
+        throw NamedError('EmailSubmissionRejected')
       }
+
       didSucceed = true
+      message = emailSubmitResult.Right
     } catch (e) {
       debugLog(e)
-      didSucceed = false
     } finally {
       setState({
         emailSubmitSuccess: didSucceed,
+        emailSubmitMessage: message,
       })
     }
   }
