@@ -30,7 +30,12 @@ class StakingPage extends Component {
     })
   }
 
-  render({submitEmail, emailSubmitSuccess, emailSubmitMessage}, {email, emailValid, errorMessage}) {
+  handleSubmit(e) {
+    e.preventDefault()
+    if (this.state.emailValid) this.props.submitEmail(this.state.email)
+  }
+
+  render({emailSubmitSuccess, emailSubmitMessage}, {email, emailValid, errorMessage}) {
     return h(
       'div',
       {class: 'staking-wrapper'},
@@ -65,10 +70,7 @@ class StakingPage extends Component {
           h(
             'button',
             {
-              onClick: (e) => {
-                e.preventDefault()
-                emailValid ? submitEmail(email) : null
-              },
+              onClick: this.handleSubmit.bind(this),
               class: 'button primary wide',
               disabled: !emailValid,
               type: 'submit',
@@ -84,7 +86,6 @@ class StakingPage extends Component {
         !emailSubmitSuccess &&
           emailSubmitMessage &&
           h('div', {class: 'form-alert error'}, emailSubmitMessage)
-        // have yet to reset message and success upon change
       )
     )
   }
