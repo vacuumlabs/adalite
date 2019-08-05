@@ -19,6 +19,7 @@ const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
+const submitEmailRaw = require('./helpers/submitEmailRaw')
 
 let wallet = null
 
@@ -570,26 +571,11 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  async function submitEmail(email) {
-    // possibly move, dunno where
-    const request = require('./wallet/helpers/request')
-    const response = await request(
-      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/emails/submit`,
-      'POST',
-      JSON.stringify({email}),
-      {
-        'Content-Type': 'application/json',
-      }
-    )
-
-    return response
-  }
-
-  const submitEmailSubscription = async (state, email) => {
+  const submitEmail = async (state, email) => {
     let didSucceed
     let message
     try {
-      emailSubmitResult = await submitEmail(email)
+      emailSubmitResult = await submitEmailRaw(email)
 
       if (emailSubmitResult.Left) {
         didSucceed = false
@@ -645,6 +631,6 @@ module.exports = ({setState, getState}) => {
     showContactFormModal,
     closeContactFormModal,
     closeStakingBanner,
-    submitEmailSubscription,
+    submitEmail,
   }
 }

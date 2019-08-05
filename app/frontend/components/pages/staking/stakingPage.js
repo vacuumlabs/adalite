@@ -30,10 +30,7 @@ class StakingPage extends Component {
     })
   }
 
-  render(
-    {submitEmailSubscription, emailSubmitSuccess, emailSubmitMessage},
-    {email, emailValid, errorMessage}
-  ) {
+  render({submitEmail, emailSubmitSuccess, emailSubmitMessage}, {email, emailValid, errorMessage}) {
     return h(
       'div',
       {class: 'staking-wrapper'},
@@ -73,7 +70,7 @@ class StakingPage extends Component {
             {
               onClick: (e) => {
                 e.preventDefault()
-                emailValid ? submitEmailSubscription(email) : null
+                emailValid ? submitEmail(email) : null
               },
               class: 'button primary wide',
               disabled: !emailValid,
