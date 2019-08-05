@@ -26,7 +26,7 @@ class StakingPage extends Component {
     this.setState({
       email: e.target.value,
       emailValid: isEmailValid,
-      errorMessage: !isEmailValid && 'Invalid email format.',
+      errorMessage: !isEmailValid && 'Invalid email format',
     })
   }
 
@@ -53,9 +53,6 @@ class StakingPage extends Component {
           {
             class: 'staking-form',
             id: 'stakingForm',
-            // method: 'POST',
-            // target: '_blank',
-            // action: '',
           },
           h('input', {
             class: 'input',
@@ -82,7 +79,7 @@ class StakingPage extends Component {
             'Subscribe'
           )
         ),
-        !emailValid && h('div', {class: 'validation-message error'}, errorMessage),
+        !emailValid && h('div', {class: 'form-alert error'}, errorMessage),
         emailSubmitSuccess && h('div', {class: 'form-alert success'}, emailSubmitMessage),
         !emailSubmitSuccess &&
           emailSubmitMessage &&

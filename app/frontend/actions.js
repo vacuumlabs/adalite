@@ -572,10 +572,15 @@ module.exports = ({setState, getState}) => {
   }
 
   const submitEmail = async (state, email) => {
+    setState({
+      emailSubmitSuccess: false,
+      emailSubmitMessage: '',
+    })
+
     let didSucceed
     let message
     try {
-      emailSubmitResult = await submitEmailRaw(email)
+      const emailSubmitResult = await submitEmailRaw(email)
 
       if (emailSubmitResult.Left) {
         didSucceed = false
