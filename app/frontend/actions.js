@@ -19,6 +19,7 @@ const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
+const Sentry = require('@sentry/browser')
 
 let wallet = null
 
@@ -79,15 +80,15 @@ module.exports = ({setState, getState}) => {
 
       const walletIsLoaded = true
       const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
-      const transactionHistory = await wallet.getHistory()
-      const balance = await wallet.getBalance()
-      const conversionRates = getConversionRates(state)
+      const transactionHistory = await wallet.getHistory() //sentry
+      const balance = await wallet.getBalance() // sentry
+      const conversionRates = getConversionRates(state) //sentry
       const sendAmount = {fieldValue: ''}
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
       const unexpectedError = undefined
-      const usingHwWallet = wallet.isHwWallet()
-      const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
+      const usingHwWallet = wallet.isHwWallet() //sentry
+      const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined //
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       )).rootSecret
@@ -419,7 +420,6 @@ module.exports = ({setState, getState}) => {
       loading: false,
       showConfirmTransactionDialog: false,
       showTransactionErrorModal: false,
-      showUnexpectedErrorModal: false,
     })
   }
 
@@ -469,7 +469,6 @@ module.exports = ({setState, getState}) => {
       loadingAction(state, 'Submitting transaction...')
     }
     let sendResponse
-    let unexpectedError
 
     try {
       const address = state.sendAddress.fieldValue
@@ -500,15 +499,13 @@ module.exports = ({setState, getState}) => {
         error: e.name,
         message: e.message,
       }
-      unexpectedError = e
+      Sentry.captureException(e)
     } finally {
       resetSendFormState(state)
       setState({
         waitingForHwWallet: false,
         sendResponse,
-        unexpectedError,
         showTransactionErrorModal: !sendResponse.success,
-        showUnexpectedErrorModal: !sendResponse.success,
       })
     }
   }

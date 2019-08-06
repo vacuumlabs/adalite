@@ -1,48 +1,61 @@
-const {h} = require('preact')
-
+const {h, Component} = require('preact')
+const connect = require('unistore/preact').connect
+const actions = require('../../actions')
 const Modal = require('./modal')
 const Alert = require('./alert')
-const Sentry = require('@sentry/browser')
+// const {ADALITE_CONFIG} = require('../../config')
 
-Sentry.init({dsn: 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383'})
+class UnexpectedErrorModal extends Component {
+  constructor(props) {
+    super(props)
+    this.closeUnexpectedErrorModal = this.closeUnexpectedErrorModal.bind(this)
+  }
 
-const UnexpectedExceptionModal = ({closeHandler, e}) =>
-  h(
-    Modal,
-    {
-      closeHandler,
-      title: 'Something went wrong.',
-    },
-    h(
-      Alert,
+  closeUnexpectedErrorModal() {
+    this.props.closeUnexpectedErrorModal()
+  }
+
+  render({sendSentry}) {
+    return h(
+      Modal,
       {
-        alertType: 'error',
+        closeHandler: this.closeUnexpectedErrorModal,
+        title: 'Something went wrong.',
       },
-      e.stack
-    ),
-    h(
-      'div',
-      {class: 'modal-footer send-error'},
       h(
-        'button',
+        Alert,
         {
-          class: 'button outline',
-          onClick: closeHandler,
+          alertType: 'error',
         },
-        'Cancel'
+        JSON.stringify(sendSentry.event)
       ),
       h(
-        'button',
-        {
-          class: 'button primary send-error',
-          onClick: () => {
-            Sentry.captureException(e)
-            closeHandler()
+        'div',
+        {class: 'modal-footer send-error'},
+        h(
+          'button',
+          {
+            class: 'button outline',
+            onClick: this.closeUnexpectedErrorModal,
           },
-        },
-        'Send'
+          'Cancel'
+        ),
+        h(
+          'button',
+          {
+            class: 'button primary send-error',
+            onClick: sendSentry.resolve(false),
+          },
+          'Send'
+        )
       )
     )
-  )
+  }
+}
 
-module.exports = UnexpectedExceptionModal
+module.exports = connect(
+  (state) => ({
+    sendSentry: state.sendSentry,
+  }),
+  actions
+)(UnexpectedErrorModal)
