@@ -499,7 +499,6 @@ module.exports = ({setState, getState}) => {
         error: e.name,
         message: e.message,
       }
-      Sentry.captureException(e)
     } finally {
       resetSendFormState(state)
       setState({
@@ -529,6 +528,7 @@ module.exports = ({setState, getState}) => {
   }
 
   const showContactFormModal = (state) => {
+    undefinedFucntionCall()
     setState({
       showContactFormModal: true,
     })
