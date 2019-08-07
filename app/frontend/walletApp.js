@@ -60,8 +60,6 @@ Sentry.init({
   debug: true,
 
   beforeSend(event) {
-    console.log(event)
-
     return new Promise((resolve) => {
       store.setState({
         sendSentry: {
