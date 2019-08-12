@@ -19,7 +19,7 @@ const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
-const Sentry = require('@sentry/browser')
+const captureBySentry = require('./helpers/captureBySentry')
 
 let wallet = null
 
@@ -80,15 +80,14 @@ module.exports = ({setState, getState}) => {
 
       const walletIsLoaded = true
       const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
-      const transactionHistory = await wallet.getHistory() //sentry
-      const balance = await wallet.getBalance() // sentry
-      const conversionRates = getConversionRates(state) //sentry
+      const transactionHistory = await wallet.getHistory()
+      const balance = await wallet.getBalance()
+      const conversionRates = getConversionRates(state)
       const sendAmount = {fieldValue: ''}
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
-      const unexpectedError = undefined
-      const usingHwWallet = wallet.isHwWallet() //sentry
-      const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined //
+      const usingHwWallet = wallet.isHwWallet()
+      const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       )).rootSecret
@@ -100,7 +99,6 @@ module.exports = ({setState, getState}) => {
         sendAmount,
         sendAddress,
         sendResponse,
-        unexpectedError,
         transactionHistory,
         loading: false,
         mnemonicInputValue: '',
@@ -119,9 +117,16 @@ module.exports = ({setState, getState}) => {
         setState({
           conversionRates: null,
         })
+        throw NamedError('ConversationRatesError', 'Could not fetch conversion rates.')
       }
     } catch (e) {
+      setState({
+        loading: false,
+      })
       debugLog(e)
+      if (captureBySentry(e)) {
+        return false
+      }
       let message
       switch (e.name) {
         case 'NetworkError':
@@ -145,7 +150,6 @@ module.exports = ({setState, getState}) => {
           },
         },
         showWalletLoadingErrorModal: true,
-        loading: false,
       })
       return false
     }
@@ -499,12 +503,17 @@ module.exports = ({setState, getState}) => {
         error: e.name,
         message: e.message,
       }
+      if (captureBySentry(e)) {
+        return
+      }
+      setState({
+        showTransactionErrorModal: !sendResponse.success,
+      })
     } finally {
       resetSendFormState(state)
       setState({
         waitingForHwWallet: false,
         sendResponse,
-        showTransactionErrorModal: !sendResponse.success,
       })
     }
   }
@@ -528,7 +537,6 @@ module.exports = ({setState, getState}) => {
   }
 
   const showContactFormModal = (state) => {
-    undefinedFucntionCall()
     setState({
       showContactFormModal: true,
     })

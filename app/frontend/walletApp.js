@@ -53,8 +53,6 @@ window.onhashchange = () =>
     },
   })
 
-const Wrapper = h(Provider, {store}, h(App))
-
 Sentry.init({
   dsn: 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383',
   debug: true,
@@ -73,5 +71,7 @@ Sentry.init({
     })
   },
 })
+
+const Wrapper = h(Provider, {store}, h(App))
 
 render(Wrapper, document.getElementById('root'))
