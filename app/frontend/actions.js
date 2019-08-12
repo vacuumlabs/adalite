@@ -233,6 +233,7 @@ module.exports = ({setState, getState}) => {
           addressVerificationError: true,
           waitingForHwWallet: false,
         })
+        captureBySentry(e)
       }
     }
   }
@@ -273,29 +274,36 @@ module.exports = ({setState, getState}) => {
 
   const reloadWalletInfo = async (state) => {
     loadingAction(state, 'Reloading wallet info...')
-
-    const balance = await wallet.getBalance()
-    const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
-    const transactionHistory = await wallet.getHistory()
-    const conversionRates = getConversionRates(state)
-
-    // timeout setting loading state, so that loading shows even if everything was cached
-    setTimeout(() => setState({loading: false}), 500)
-    setState({
-      balance,
-      ownAddressesWithMeta,
-      transactionHistory,
-    })
     try {
+      const balance = await wallet.getBalance()
+      const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
+      const transactionHistory = await wallet.getHistory()
+      const conversionRates = getConversionRates(state)
+
+      // timeout setting loading state, so that loading shows even if everything was cached
+      setTimeout(() => setState({loading: false}), 500)
       setState({
-        conversionRates: await conversionRates,
+        balance,
+        ownAddressesWithMeta,
+        transactionHistory,
       })
+      try {
+        setState({
+          conversionRates: await conversionRates,
+        })
+      } catch (e) {
+        debugLog(`Could not fetch conversion rates: ${e}`)
+        setState({
+          conversionRates: null,
+          loading: false,
+        })
+        throw NamedError('ConversationRatesError', 'Could not fetch conversion rates.')
+      }
     } catch (e) {
-      debugLog(`Could not fetch conversion rates: ${e}`)
       setState({
-        conversionRates: null,
         loading: false,
       })
+      captureBySentry(e)
     }
   }
 
