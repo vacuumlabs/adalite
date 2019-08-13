@@ -306,7 +306,7 @@ const CardanoWallet = async (options) => {
 
   function verifyAddress(addr) {
     if (!cryptoProvider.displayAddressForPath) {
-      throw NamedError('NoSupportError', 'unsupported operation: verifyAddress')
+      throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
     }
     const absDerivationPath = getAddressToAbsPathMapper()(addr)
     return cryptoProvider.displayAddressForPath(absDerivationPath)
