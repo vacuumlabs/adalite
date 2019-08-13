@@ -40,7 +40,7 @@ module.exports = function(app, env) {
       })
     } catch (err) {
       return res.json({
-        Left: 'An unexpected error has happened',
+        Left: 'An unexpected error has occurred',
       })
     }
   })
