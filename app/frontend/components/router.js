@@ -14,13 +14,14 @@ const TopLevelRouter = connect((state) => ({
   showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
 }))(({pathname, walletIsLoaded, showDemoWalletWarningDialog}) => {
   // unlock not wrapped in main
-  if (!walletIsLoaded || showDemoWalletWarningDialog) {
-    window.history.pushState({}, '/', '/')
-    return h(LoginPage)
-  }
+  // if (!walletIsLoaded || showDemoWalletWarningDialog) {
+  //   window.history.pushState({}, '/', '/')
+  //   return h(LoginPage)
+  // }
   const currentTab = pathname.split('/')[1]
   if ((!walletIsLoaded || showDemoWalletWarningDialog) && currentTab !== 'staking') {
     // TODO: tab condition added for testing
+    window.history.pushState({}, '/', '/')
     return h(LoginPage)
   }
   let content

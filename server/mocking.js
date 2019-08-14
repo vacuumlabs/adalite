@@ -1,5 +1,4 @@
 require('isomorphic-fetch')
-
 const sleep = require('./helpers/sleep')
 
 /*
@@ -53,10 +52,6 @@ module.exports = function(app, env) {
   })
 
   app.post('/api/emails/submit', async (req, res) => {
-    const listId = 'c48db9ac44' // move to config
-    const APIKey = require('./APIKEY') // move to config - replace with your own mailchimp API key for testing
-    const dataCenter = 'us9' // move to config
-
     let email
     try {
       email = req.body.email
@@ -67,42 +62,11 @@ module.exports = function(app, env) {
       })
     }
 
-    try {
-      const response = await fetch(
-        `https://${dataCenter}.api.mailchimp.com/3.0/lists/${listId}/members/`,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            email_address: email,
-            status: 'subscribed',
-          }),
-          headers: {
-            'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': `Basic ${Buffer.from(`anystring:${APIKey}`).toString('base64')}`,
-          },
-        }
-      )
+    await sleep(600)
 
-      if (response.status === 200) {
-        return res.json({
-          Right: 'Successfuly subscribed',
-        })
-      }
-
-      if (response.status === 400) {
-        return res.json({
-          Left: 'Email already subscribed or invalid',
-        })
-      }
-
-      return res.json({
-        Left: 'Email submission rejected by network',
-      })
-    } catch (err) {
-      return res.json({
-        Left: 'An unexpected error has happened',
-      })
-    }
+    return res.json({
+      Right: 'Successfuly subscribed',
+    })
   })
 
   // the remaining requests are redirected to the actual blockchain explorer
