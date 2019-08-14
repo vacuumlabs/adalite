@@ -28,6 +28,7 @@ class StakingPage extends Component {
       emailValid: isEmailValid,
       errorMessage: !isEmailValid && 'Invalid email format',
     })
+    this.props.resetEmailSubmission()
   }
 
   handleSubmit(e) {

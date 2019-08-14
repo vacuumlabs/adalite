@@ -572,11 +572,6 @@ module.exports = ({setState, getState}) => {
   }
 
   const submitEmail = async (state, email) => {
-    setState({
-      emailSubmitSuccess: false,
-      emailSubmitMessage: '',
-    })
-
     let didSucceed
     let message
     try {
@@ -598,6 +593,13 @@ module.exports = ({setState, getState}) => {
         emailSubmitMessage: message,
       })
     }
+  }
+
+  const resetEmailSubmission = (state) => {
+    setState({
+      emailSubmitSuccess: false,
+      emailSubmitMessage: '',
+    })
   }
 
   return {
@@ -637,5 +639,6 @@ module.exports = ({setState, getState}) => {
     closeContactFormModal,
     closeStakingBanner,
     submitEmail,
+    resetEmailSubmission,
   }
 }
