@@ -91,7 +91,7 @@ module.exports = function(app, env) {
 
       if (response.status === 400) {
         return res.json({
-          Left: 'Member already exists or email is invalid',
+          Left: 'Email already subscribed or invalid',
         })
       }
 
