@@ -67,6 +67,8 @@ const SendAdaPage = ({
   setRawTransactionOpen,
   rawTransaction,
   coinsAmount,
+  updateDonation,
+  checkedDonationType,
 }) => {
   const enableSubmit =
     sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
@@ -135,13 +137,79 @@ const SendAdaPage = ({
         )
       ),
       h(
-        'div',
+        'label',
         {
           class: 'ada-label',
+          // for: 'send-amount',
         },
-        'Fee'
+        'Donate'
       ),
+      h(
+        'div',
+        {
+          class: 'radio-bar',
+        },
+        h('input', {
+          type: 'radio',
+          id: 'fixed',
+          name: 'radioDonate',
+          value: 'fixed',
+          onClick: updateDonation,
+          checked: checkedDonationType === 'fixed',
+          disabled: !isSendAddressValid || !sendAmount,
+        }),
+        h(
+          'label',
+          {
+            for: 'fixed',
+          },
+          '40 A'
+        ),
+        h('input', {
+          type: 'radio',
+          id: 'percentage',
+          name: 'radioDonate',
+          value: 'percentage',
+          onClick: updateDonation,
+          checked: checkedDonationType === 'percentage',
+          disabled: !isSendAddressValid || !sendAmount,
+        }),
+        h(
+          'label',
+          {
+            for: 'percentage',
+          },
+          '0.2%'
+        ),
+        h('input', {
+          type: 'radio',
+          id: 'custom',
+          name: 'radioDonate',
+          value: 'custom',
+          onClick: updateDonation,
+          checked: checkedDonationType === 'custom',
+          disabled: !isSendAddressValid || !sendAmount,
+        }),
+        h(
+          'label',
+          {
+            for: 'custom',
+            disabled: true,
+          },
+          'Custom'
+        )
+      ),
+      h('div', {class: 'ada-label'}, 'Fee'),
       h('div', {class: 'send-fee'}, printAda(transactionFee))
+    ),
+    h(
+      'div',
+      {
+        class: 'total-row',
+      },
+      h('div', {}, 'Total'),
+      h('div', {}, '1.649'),
+      h('div', {}, '0.516')
     ),
     h(
       'div',
@@ -206,6 +274,7 @@ module.exports = connect(
     rawTransaction: state.rawTransaction,
     rawTransactionOpen: state.rawTransactionOpen,
     coinsAmount: state.sendAmount.coins,
+    checkedDonationType: state.checkedDonationType,
   }),
   actions
 )(SendAdaPage)

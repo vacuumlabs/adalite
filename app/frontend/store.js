@@ -36,6 +36,7 @@ const initialState = {
   showMnemonicInfoAlert: false,
   transactionHistory: [],
   sendResponse: {},
+  checkedDonationType: '',
 }
 
 const createStore = () =>

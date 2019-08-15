@@ -563,6 +563,13 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const updateDonation = (state, e) => {
+    const newDonationType = state.checkedDonationType === e.target.value ? '' : e.target.value //reset if clicking the same
+    setState({
+      checkedDonationType: newDonationType,
+    })
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -598,5 +605,6 @@ module.exports = ({setState, getState}) => {
     closeWalletLoadingErrorModal,
     showContactFormModal,
     closeContactFormModal,
+    updateDonation,
   }
 }
