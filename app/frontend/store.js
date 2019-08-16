@@ -37,6 +37,7 @@ const initialState = {
   transactionHistory: [],
   sendResponse: {},
   checkedDonationType: '',
+  showCustomDonationInput: false,
 }
 
 const createStore = () =>

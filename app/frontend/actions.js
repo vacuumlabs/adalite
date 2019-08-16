@@ -570,6 +570,12 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const setCustomDonation = (state, e) => {
+    setState({
+      showCustomDonationInput: true,
+    })
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -606,5 +612,6 @@ module.exports = ({setState, getState}) => {
     showContactFormModal,
     closeContactFormModal,
     updateDonation,
+    setCustomDonation,
   }
 }

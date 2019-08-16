@@ -9,6 +9,7 @@ const ConfirmTransactionDialog = require('./confirmTransactionDialog')
 const RawTransactionModal = require('./rawTransactionModal')
 const DonateThanksModal = require('./donateThanksModal')
 const TransactionErrorModal = require('./transactionErrorModal')
+const DonationRadioButtons = require('./donationRadioButtons')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
@@ -69,6 +70,8 @@ const SendAdaPage = ({
   coinsAmount,
   updateDonation,
   checkedDonationType,
+  setCustomDonation,
+  showCustomDonationInput,
 }) => {
   const enableSubmit =
     sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
@@ -144,61 +147,7 @@ const SendAdaPage = ({
         },
         'Donate'
       ),
-      h(
-        'div',
-        {
-          class: 'radio-bar',
-        },
-        h('input', {
-          type: 'radio',
-          id: 'fixed',
-          name: 'radioDonate',
-          value: 'fixed',
-          onClick: updateDonation,
-          checked: checkedDonationType === 'fixed',
-          disabled: !isSendAddressValid || !sendAmount,
-        }),
-        h(
-          'label',
-          {
-            for: 'fixed',
-          },
-          '40 A'
-        ),
-        h('input', {
-          type: 'radio',
-          id: 'percentage',
-          name: 'radioDonate',
-          value: 'percentage',
-          onClick: updateDonation,
-          checked: checkedDonationType === 'percentage',
-          disabled: !isSendAddressValid || !sendAmount,
-        }),
-        h(
-          'label',
-          {
-            for: 'percentage',
-          },
-          '0.2%'
-        ),
-        h('input', {
-          type: 'radio',
-          id: 'custom',
-          name: 'radioDonate',
-          value: 'custom',
-          onClick: updateDonation,
-          checked: checkedDonationType === 'custom',
-          disabled: !isSendAddressValid || !sendAmount,
-        }),
-        h(
-          'label',
-          {
-            for: 'custom',
-            disabled: true,
-          },
-          'Custom'
-        )
-      ),
+      !showCustomDonationInput && h(DonationRadioButtons, {isSendAddressValid}),
       h('div', {class: 'ada-label'}, 'Fee'),
       h('div', {class: 'send-fee'}, printAda(transactionFee))
     ),
@@ -275,6 +224,7 @@ module.exports = connect(
     rawTransactionOpen: state.rawTransactionOpen,
     coinsAmount: state.sendAmount.coins,
     checkedDonationType: state.checkedDonationType,
+    showCustomDonationInput: state.showCustomDonationInput,
   }),
   actions
 )(SendAdaPage)
