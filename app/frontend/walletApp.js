@@ -54,7 +54,7 @@ window.onhashchange = () =>
   })
 
 Sentry.init({
-  dsn: ADALITE_CONFIG.ADALITE_SENTRY_DSN,
+  dsn: 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383',
   environment: ADALITE_CONFIG.ADALITE_ENV,
   // debug: true,
 
