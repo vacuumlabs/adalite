@@ -13,6 +13,7 @@ class StakingPage extends Component {
 
     this.isValidEmail = this.isValidEmail.bind(this)
     this.updateEmail = this.updateEmail.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   isValidEmail(email) {
@@ -71,7 +72,7 @@ class StakingPage extends Component {
           h(
             'button',
             {
-              onClick: this.handleSubmit.bind(this),
+              onClick: this.handleSubmit,
               class: 'button primary wide',
               disabled: !emailValid,
               type: 'submit',
