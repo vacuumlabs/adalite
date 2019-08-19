@@ -9,8 +9,15 @@ class ConfirmTransactionDialogClass {
     this.cancelTx.focus()
   }
 
-  render({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) {
-    const total = sendAmount + transactionFee
+  render({
+    sendAddress,
+    sendAmount,
+    transactionFee,
+    submitTransaction,
+    cancelTransaction,
+    donationAmount,
+  }) {
+    const total = sendAmount + transactionFee + donationAmount
     return h(
       Modal,
       {
@@ -64,6 +71,7 @@ module.exports = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmount: state.sendAmountForTransactionFee,
     transactionFee: state.transactionFee,
+    donationAmount: state.donationAmountForTransactionFee,
   }),
   actions
 )(ConfirmTransactionDialogClass)

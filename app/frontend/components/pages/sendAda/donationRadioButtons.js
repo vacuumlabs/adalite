@@ -8,6 +8,7 @@ const DonationRadioButtons = ({
   sendAmount,
   setCustomDonation,
   isSendAddressValid,
+  percentageValue,
 }) =>
   h(
     'div',
@@ -18,7 +19,7 @@ const DonationRadioButtons = ({
       type: 'radio',
       id: 'fixed',
       name: 'radioDonate',
-      value: 'fixed',
+      value: 40, //TODO: config this
       onClick: updateDonation,
       checked: checkedDonationType === 'fixed',
       disabled: !isSendAddressValid || !sendAmount,
@@ -28,13 +29,13 @@ const DonationRadioButtons = ({
       {
         for: 'fixed',
       },
-      '40 A'
+      '40 A' //TODO: config this
     ),
     h('input', {
       type: 'radio',
       id: 'percentage',
       name: 'radioDonate',
-      value: 'percentage',
+      value: percentageValue,
       onClick: updateDonation,
       checked: checkedDonationType === 'percentage',
       disabled: !isSendAddressValid || !sendAmount,
@@ -44,13 +45,13 @@ const DonationRadioButtons = ({
       {
         for: 'percentage',
       },
-      '0.2%'
+      `0.2% (${percentageValue})`
     ),
     h('input', {
       type: 'radio',
       id: 'custom',
       name: 'radioDonate',
-      value: 'custom',
+      value: 0,
       onClick: setCustomDonation,
       checked: checkedDonationType === 'custom',
       disabled: !isSendAddressValid || !sendAmount,

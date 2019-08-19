@@ -29,19 +29,25 @@ const AddressErrorMessage = ({sendAddress, sendAddressValidationError}) =>
   sendAddress !== '' &&
   h('span', undefined, getTranslation(sendAddressValidationError.code))
 
+const DonationErrorMessage = ({donationAmountValidationError}) =>
+  donationAmountValidationError &&
+  h('span', undefined, getTranslation(donationAmountValidationError.code))
+
 const SendValidation = ({
   sendAmount,
   sendAmountValidationError,
   sendAddress,
   sendAddressValidationError,
   sendResponse,
+  donationAmountValidationError,
 }) =>
-  sendAmountValidationError || sendAddressValidationError
+  sendAmountValidationError || sendAddressValidationError || donationAmountValidationError
     ? h(
       'div',
       {class: 'validation-message send error'},
       h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
-      h(AmountErrorMessage, {sendAmount, sendAmountValidationError})
+      h(AmountErrorMessage, {sendAmount, sendAmountValidationError}),
+      h(DonationErrorMessage, {donationAmountValidationError})
     )
     : sendResponse.success &&
       h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
@@ -52,6 +58,8 @@ const SendAdaPage = ({
   sendAddressValidationError,
   sendAmount,
   sendAmountValidationError,
+  donationAmount,
+  donationAmountValidationError,
   updateAddress,
   updateAmount,
   transactionFee,
@@ -71,12 +79,20 @@ const SendAdaPage = ({
   updateDonation,
   checkedDonationType,
   setCustomDonation,
+  updateCustomDonation,
   showCustomDonationInput,
+  maxAmount,
 }) => {
   const enableSubmit =
-    sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
+    sendAmount &&
+    !sendAmountValidationError &&
+    sendAddress &&
+    !sendAddressValidationError &&
+    !donationAmountValidationError
 
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
+
+  const percentageValue = 0 // TODO
 
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
@@ -142,12 +158,38 @@ const SendAdaPage = ({
       h(
         'label',
         {
-          class: 'ada-label',
-          // for: 'send-amount',
+          class: 'ada-label amount',
+          for: 'donation-amount',
         },
         'Donate'
       ),
-      !showCustomDonationInput && h(DonationRadioButtons, {isSendAddressValid}),
+      sendAmount >= maxAmount && h('div', {}, 'Insufficient balance for a donation.'),
+      !showCustomDonationInput &&
+        sendAmount < maxAmount &&
+        h(DonationRadioButtons, {isSendAddressValid, percentageValue}),
+      showCustomDonationInput &&
+        sendAmount < maxAmount &&
+        h(
+          //TODO: extract
+          'div',
+          {class: 'input-wrapper'},
+          h('input', {
+            class: 'input send-amount',
+            id: 'donation-amount',
+            name: 'donation-amount',
+            placeholder: '0.000000',
+            value: donationAmount,
+            onInput: updateCustomDonation,
+          }),
+          h(
+            'button',
+            {
+              class: 'button send-max',
+              // onClick: sendMaxFunds, //TODO
+            },
+            `0.2% (${percentageValue})`
+          )
+        ),
       h('div', {class: 'ada-label'}, 'Fee'),
       h('div', {class: 'send-fee'}, printAda(transactionFee))
     ),
@@ -183,6 +225,7 @@ const SendAdaPage = ({
           sendAddress,
           sendAddressValidationError,
           sendResponse,
+          donationAmountValidationError,
           closeTransactionErrorModal,
         })
     ),
@@ -215,6 +258,8 @@ module.exports = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmount.validationError,
     sendAmount: state.sendAmount.fieldValue,
+    donationAmountValidationError: state.donationAmount.validationError,
+    donationAmount: state.donationAmount.fieldValue,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     showTransactionErrorModal: state.showTransactionErrorModal,
@@ -225,6 +270,7 @@ module.exports = connect(
     coinsAmount: state.sendAmount.coins,
     checkedDonationType: state.checkedDonationType,
     showCustomDonationInput: state.showCustomDonationInput,
+    maxAmount: state.maxAmount,
   }),
   actions
 )(SendAdaPage)

@@ -181,7 +181,7 @@ describe('successful transaction fee computation', () => {
     mockNet.mockBulkAddressSummaryEndpoint()
     mockNet.mockUtxoEndpoint()
 
-    assert.equal(await wallets.used.getTxFee(myAddress, 47), 179288)
+    assert.equal(await wallets.used.getTxFee(myAddress, 47, false), 179288)
     mockNet.clean()
   })
 
@@ -189,7 +189,7 @@ describe('successful transaction fee computation', () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockUtxoEndpoint()
 
-    assert.equal(await wallets.used.getTxFee(shortAddress, 47), 177838)
+    assert.equal(await wallets.used.getTxFee(shortAddress, 47, false), 177838)
     mockNet.clean()
   })
 })
@@ -211,7 +211,7 @@ describe('transaction serialization', () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockUtxoEndpoint()
 
-    const txAux = await wallets.used.prepareTxAux(myAddress, 47)
+    const txAux = await wallets.used.prepareTxAux(myAddress, 47, false)
 
     // transaction serialization before providing witnesses
     const txAuxSerialized = cbor.encode(txAux).toString('hex')
@@ -227,7 +227,7 @@ describe('transaction serialization', () => {
     mockNet.mockUtxoEndpoint()
     mockNet.mockBulkAddressSummaryEndpoint()
 
-    const txAux = await wallets.smallUtxos.prepareTxAux(myAddress, 1000000)
+    const txAux = await wallets.smallUtxos.prepareTxAux(myAddress, 1000000, false)
 
     assert.equal(txAux.inputs.length, 2)
     mockNet.clean()
@@ -237,7 +237,7 @@ describe('transaction serialization', () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockUtxoEndpoint()
 
-    const txAux = await wallets.used.prepareTxAux(myAddress, 47)
+    const txAux = await wallets.used.prepareTxAux(myAddress, 47, false)
     const expectedTxHash = '73131c773879e7e634022f8e0175399b7e7814c42684377cf6f8c7a1adb23112'
 
     assert.equal(txAux.getId(), expectedTxHash)
@@ -250,7 +250,7 @@ describe('transaction serialization', () => {
     mockNet.mockRawTxEndpoint()
     mockNet.mockBulkAddressSummaryEndpoint()
 
-    const tx = await wallets.used.prepareSignedTx(myAddress, 47)
+    const tx = await wallets.used.prepareSignedTx(myAddress, 47, false)
 
     const expectedTxBody =
       '82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cab41e66f954dd7f1c16081755eb02ee61dc720bd9e05790f9de649b7a101581e581c140539c64edded60a7f2d169cb4da86a47bccc6a92e4130754fd0f36001a306ccb8f1a002a8c6cffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840951e97f421d44345f260f5d84070c93a0dbc7dfa883a2cbedb1cedee22cb86b459450d615d580d9a3bd49cf09f2848447287cf306f09115d831276cac42919088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840f44da425f699c39ca539c6e2e2262ed4a4b977dd8bdbb4450d40ab7503dc9b4ebca68a8f819d1f92bfdd2af2825b26bb07ef1f586c1135a88b1cdc8520142208'
@@ -312,7 +312,7 @@ describe('test transaction submission', () => {
     mockNet.mockTransactionSubmitter()
     mockNet.mockRawTxEndpoint()
 
-    const signedTx = await wallets.used.prepareSignedTx(myAddress, 47)
+    const signedTx = await wallets.used.prepareSignedTx(myAddress, 47, false)
     const result = await wallets.used.submitTx(signedTx)
 
     assert.deepEqual(result, {

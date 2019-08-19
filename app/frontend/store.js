@@ -22,6 +22,7 @@ const initialState = {
   sendAmount: {fieldValue: 0},
   transactionFee: 0,
   sendAmountForTransactionFee: 0,
+  donationAmountForTransactionFee: 0,
   router: {
     pathname: window.location.pathname,
     hash: window.location.hash,
@@ -38,6 +39,8 @@ const initialState = {
   sendResponse: {},
   checkedDonationType: '',
   showCustomDonationInput: false,
+  donationAmount: {fieldValue: 0},
+  maxAmount: Infinity,
 }
 
 const createStore = () =>

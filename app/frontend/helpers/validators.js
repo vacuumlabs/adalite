@@ -31,10 +31,19 @@ const sendAmountValidator = (fieldValue) => {
   return {fieldValue, coins, validationError}
 }
 
-const feeValidator = (sendAmount, transactionFee, balance) => {
+const donationAmountValidator = (fieldValue) => {
+  if (fieldValue === '') {
+    return {fieldValue, coins: 0, validationError: null}
+  } else {
+    return sendAmountValidator(fieldValue)
+  }
+}
+
+const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
   let validationError = null
 
-  if (sendAmount + transactionFee > balance) {
+  if (sendAmount + transactionFee + donationAmount > balance) {
+    //TODO: donations here as well
     validationError = {
       code: 'SendAmountInsufficientFunds',
       params: {balance},
@@ -61,4 +70,5 @@ module.exports = {
   sendAmountValidator,
   feeValidator,
   mnemonicValidator,
+  donationAmountValidator,
 }
