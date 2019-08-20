@@ -409,7 +409,7 @@ module.exports = ({setState, getState}) => {
       setState({
         sendResponse: '',
         sendAmount: sendAmountValidator(printAda(maxAmount)),
-        maxAmount: sendAmountValidator(printAda(maxAmount)).fieldValue,
+        maxAmount: sendAmountValidator(printAda(maxAmount)).fieldValue, // TODO: refactor
       })
       validateSendFormAndCalculateFee()
     } else {
@@ -417,6 +417,27 @@ module.exports = ({setState, getState}) => {
         sendAmount: Object.assign({}, state.sendAmount, {
           validationError: {code: 'SendAmountCantSendMaxFunds'},
         }),
+        calculatingFee: false,
+      })
+    }
+  }
+
+  const sendMaxDonation = async (state) => {
+    //TODO: perhaps refactor
+    setState({calculatingFee: true})
+
+    const maxDonationAmount = await wallet.getMaxDonationAmount(
+      state.sendAddress.fieldValue,
+      state.sendAmount.coins
+    )
+
+    if (maxDonationAmount > 0) {
+      setState({
+        donationAmount: sendAmountValidator(printAda(maxDonationAmount)),
+      })
+      validateSendFormAndCalculateFee()
+    } else {
+      setState({
         calculatingFee: false,
       })
     }
@@ -633,6 +654,7 @@ module.exports = ({setState, getState}) => {
     closeAddressDetail,
     verifyAddress,
     sendMaxFunds,
+    sendMaxDonation,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,

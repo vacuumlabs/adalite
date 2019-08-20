@@ -154,6 +154,21 @@ const CardanoWallet = async (options) => {
     return Math.max(coins - txFee, 0)
   }
 
+  async function getMaxDonationAmount(address, sendAmount) {
+    //TODO: refactor
+    const utxos = await getUnspentTxOutputs()
+    const txInputs = []
+    let coins = 0
+    const profitableUtxos = utxos.filter(isUtxoProfitable)
+
+    for (let i = 0; i < profitableUtxos.length; i++) {
+      txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
+      coins += profitableUtxos[i].coins
+    }
+    const txFee = computeTxFee(txInputs, address, sendAmount, true, coins - sendAmount)
+    return Math.max(coins - txFee - sendAmount, 0)
+  }
+
   async function getTxFee(address, coins, hasDonation, donationAmount) {
     const txInputs = await prepareTxInputs(address, coins, hasDonation, donationAmount)
     return computeTxFee(txInputs, address, coins, hasDonation, donationAmount)
@@ -356,6 +371,7 @@ const CardanoWallet = async (options) => {
     getBalance,
     getChangeAddress,
     getMaxSendableAmount,
+    getMaxDonationAmount,
     getTxFee,
     getHistory,
     isOwnAddress,

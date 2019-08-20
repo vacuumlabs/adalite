@@ -67,6 +67,7 @@ const SendAdaPage = ({
   showConfirmTransactionDialog,
   feeRecalculating,
   sendMaxFunds,
+  sendMaxDonation,
   showThanksForDonation,
   closeThanksForDonationModal,
   closeTransactionErrorModal,
@@ -92,7 +93,7 @@ const SendAdaPage = ({
 
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
 
-  const percentageValue = 0 // TODO
+  const percentageValue = '' // TODO
 
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
@@ -185,9 +186,10 @@ const SendAdaPage = ({
             'button',
             {
               class: 'button send-max',
-              // onClick: sendMaxFunds, //TODO
+              onClick: sendMaxDonation, //TODO
+              disabled: !enableSubmit || feeRecalculating,
             },
-            `0.2% (${percentageValue})`
+            'Max'
           )
         ),
       h('div', {class: 'ada-label'}, 'Fee'),

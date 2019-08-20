@@ -33,6 +33,7 @@ const sendAmountValidator = (fieldValue) => {
 
 const donationAmountValidator = (fieldValue) => {
   if (fieldValue === '') {
+    //TODO: keep in mind the bug with '0' and blank
     return {fieldValue, coins: 0, validationError: null}
   } else {
     return sendAmountValidator(fieldValue)
