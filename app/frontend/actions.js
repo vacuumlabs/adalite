@@ -281,7 +281,6 @@ module.exports = ({setState, getState}) => {
       balance,
       ownAddressesWithMeta,
       transactionHistory,
-      maxAmount: Infinity,
     })
     try {
       setState({
@@ -368,6 +367,48 @@ module.exports = ({setState, getState}) => {
     showConfirmTransactionDialog: false,
   })
 
+  const calculatePercentageDonation = async () => {
+    //TODO: remember fee, question about rounding
+    const state = getState()
+    const percentageDonation = parseFloat(state.sendAmount.fieldValue * 0.002).toFixed(6)
+    const address = state.sendAddress.fieldValue
+    const amount = state.sendAmount.coins
+    const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
+
+    if (amount + transactionFee + percentageDonation <= state.balance) {
+      //affordable
+      setState({
+        percentageDonationValue: percentageDonation,
+        percentageDonationText: '0.2%',
+      })
+      return
+    }
+
+    //exceeded balance, lower to 1%
+    const percentageDonationHalf = percentageDonation / 2
+    const transactionFeeHalfDonation = await wallet.getTxFee(
+      //TODO: is this necessary?
+      address,
+      amount,
+      true,
+      percentageDonationHalf
+    )
+
+    if (amount + transactionFeeHalfDonation + percentageDonationHalf <= state.balance) {
+      //afforable
+      setState({
+        percentageDonationValue: percentageDonationHalf,
+        percentageDonationText: '0.1%',
+      })
+    } else {
+      //set to 0
+      setState({
+        percentageDonationValue: 0,
+        percentageDonationText: '-',
+      })
+    }
+  }
+
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
   const validateSendFormAndCalculateFee = () => {
@@ -398,6 +439,7 @@ module.exports = ({setState, getState}) => {
       }),
     })
     validateSendFormAndCalculateFee()
+    calculatePercentageDonation()
   }
 
   const sendMaxFunds = async (state) => {
@@ -458,6 +500,10 @@ module.exports = ({setState, getState}) => {
       sendAddress: {fieldValue: ''},
       donationAmount: {fieldValue: ''},
       transactionFee: 0,
+      maxAmount: Infinity,
+      percentageDonationValue: '...',
+      percentageDonationText: '0.2%',
+      checkedDonationType: '',
     })
   }
 
@@ -519,7 +565,7 @@ module.exports = ({setState, getState}) => {
 
       sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
 
-      if (address === ADA_DONATION_ADDRESS) {
+      if (address === ADA_DONATION_ADDRESS || hasDonation) {
         setState({showThanksForDonation: true})
       }
 

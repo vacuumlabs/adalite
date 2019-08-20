@@ -41,6 +41,8 @@ const initialState = {
   showCustomDonationInput: false,
   donationAmount: {fieldValue: 0},
   maxAmount: Infinity,
+  percentageDonationValue: '...',
+  percentageDonationText: '0.2%',
 }
 
 const createStore = () =>

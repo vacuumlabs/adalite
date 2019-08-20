@@ -8,7 +8,8 @@ const DonationRadioButtons = ({
   sendAmount,
   setCustomDonation,
   isSendAddressValid,
-  percentageValue,
+  percentageDonationValue,
+  percentageDonationText,
 }) =>
   h(
     'div',
@@ -35,7 +36,7 @@ const DonationRadioButtons = ({
       type: 'radio',
       id: 'percentage',
       name: 'radioDonate',
-      value: percentageValue,
+      value: percentageDonationValue,
       onClick: updateDonation,
       checked: checkedDonationType === 'percentage',
       disabled: !isSendAddressValid || !sendAmount,
@@ -45,7 +46,7 @@ const DonationRadioButtons = ({
       {
         for: 'percentage',
       },
-      `0.2% (${percentageValue})`
+      `${percentageDonationText} (${percentageDonationValue})`
     ),
     h('input', {
       type: 'radio',
@@ -70,6 +71,8 @@ module.exports = connect(
   (state) => ({
     sendAmount: state.sendAmount.fieldValue,
     checkedDonationType: state.checkedDonationType,
+    percentageDonationValue: state.percentageDonationValue,
+    percentageDonationText: state.percentageDonationText,
   }),
   actions
 )(DonationRadioButtons)

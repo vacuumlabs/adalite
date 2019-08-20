@@ -167,7 +167,7 @@ const SendAdaPage = ({
       sendAmount >= maxAmount && h('div', {}, 'Insufficient balance for a donation.'),
       !showCustomDonationInput &&
         sendAmount < maxAmount &&
-        h(DonationRadioButtons, {isSendAddressValid, percentageValue}),
+        h(DonationRadioButtons, {isSendAddressValid}),
       showCustomDonationInput &&
         sendAmount < maxAmount &&
         h(
