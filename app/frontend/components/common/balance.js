@@ -1,22 +1,6 @@
 const {h} = require('preact')
 const printAda = require('../../helpers/printAda')
-const {printConversionRate} = require('../../helpers/printConversionRates')
-
-const Conversions = ({balance, conversionRates}) =>
-  h(
-    'div',
-    {class: 'conversions'},
-    h(
-      'div',
-      {class: 'conversions-item'},
-      `$ ${printConversionRate(balance, conversionRates, 'USD')}`
-    ),
-    h(
-      'div',
-      {class: 'conversions-item'},
-      `€ ${printConversionRate(balance, conversionRates, 'EUR')}`
-    )
-  )
+const Conversions = require('./conversions')
 
 const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
   h(

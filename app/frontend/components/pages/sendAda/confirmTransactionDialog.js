@@ -16,8 +16,8 @@ class ConfirmTransactionDialogClass {
     submitTransaction,
     cancelTransaction,
     donationAmount,
+    total,
   }) {
-    const total = sendAmount + transactionFee + donationAmount
     return h(
       Modal,
       {

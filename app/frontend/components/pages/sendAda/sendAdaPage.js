@@ -11,6 +11,7 @@ const DonateThanksModal = require('./donateThanksModal')
 const TransactionErrorModal = require('./transactionErrorModal')
 const DonationRadioButtons = require('./donationRadioButtons')
 const CustomDonationInput = require('./customDonationInput')
+const Conversions = require('../../common/conversions')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
@@ -59,6 +60,7 @@ const SendAdaPage = ({
   sendAddressValidationError,
   sendAmount,
   sendAmountValidationError,
+  sendAmountForTransactionFee,
   donationAmountValidationError,
   updateAddress,
   updateAmount,
@@ -78,6 +80,8 @@ const SendAdaPage = ({
   coinsAmount,
   showCustomDonationInput,
   maxAmount,
+  conversionRates,
+  donationAmount,
 }) => {
   const enableSubmit =
     sendAmount &&
@@ -87,6 +91,7 @@ const SendAdaPage = ({
     !donationAmountValidationError
 
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
+  const total = sendAmountForTransactionFee + transactionFee + donationAmount
 
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount) //TODO: also donations
@@ -173,8 +178,9 @@ const SendAdaPage = ({
         class: 'total-row',
       },
       h('div', {}, 'Total'),
-      h('div', {}, '1.649'),
-      h('div', {}, 'xxxx')
+      h('div', {}, printAda(total)),
+      h('div', {}, 'xxxx'),
+      conversionRates && h(Conversions, {balance: total, conversionRates}) //TODO: tidy
     ),
     h(
       'div',
@@ -232,7 +238,9 @@ module.exports = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmount.validationError,
     sendAmount: state.sendAmount.fieldValue,
+    sendAmountForTransactionFee: state.sendAmountForTransactionFee,
     donationAmountValidationError: state.donationAmount.validationError,
+    donationAmount: state.donationAmountForTransactionFee,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     showTransactionErrorModal: state.showTransactionErrorModal,
@@ -243,6 +251,7 @@ module.exports = connect(
     coinsAmount: state.sendAmount.coins,
     showCustomDonationInput: state.showCustomDonationInput,
     maxAmount: state.maxAmount,
+    conversionRates: state.conversionRates && state.conversionRates.data,
   }),
   actions
 )(SendAdaPage)
