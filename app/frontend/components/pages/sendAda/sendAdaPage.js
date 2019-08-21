@@ -10,6 +10,7 @@ const RawTransactionModal = require('./rawTransactionModal')
 const DonateThanksModal = require('./donateThanksModal')
 const TransactionErrorModal = require('./transactionErrorModal')
 const DonationRadioButtons = require('./donationRadioButtons')
+const CustomDonationInput = require('./customDonationInput')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
@@ -58,7 +59,6 @@ const SendAdaPage = ({
   sendAddressValidationError,
   sendAmount,
   sendAmountValidationError,
-  donationAmount,
   donationAmountValidationError,
   updateAddress,
   updateAmount,
@@ -67,7 +67,6 @@ const SendAdaPage = ({
   showConfirmTransactionDialog,
   feeRecalculating,
   sendMaxFunds,
-  sendMaxDonation,
   showThanksForDonation,
   closeThanksForDonationModal,
   closeTransactionErrorModal,
@@ -77,10 +76,6 @@ const SendAdaPage = ({
   setRawTransactionOpen,
   rawTransaction,
   coinsAmount,
-  updateDonation,
-  checkedDonationType,
-  setCustomDonation,
-  updateCustomDonation,
   showCustomDonationInput,
   maxAmount,
 }) => {
@@ -94,7 +89,7 @@ const SendAdaPage = ({
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
 
   const rawTransactionHandler = async () => {
-    await getRawTransaction(sendAddress, coinsAmount)
+    await getRawTransaction(sendAddress, coinsAmount) //TODO: also donations
     setRawTransactionOpen(true)
   }
 
@@ -168,28 +163,7 @@ const SendAdaPage = ({
         h(DonationRadioButtons, {isSendAddressValid}),
       showCustomDonationInput &&
         sendAmount < maxAmount &&
-        h(
-          //TODO: extract
-          'div',
-          {class: 'input-wrapper'},
-          h('input', {
-            class: 'input send-amount',
-            id: 'donation-amount',
-            name: 'donation-amount',
-            placeholder: '0.000000',
-            value: donationAmount,
-            onInput: updateCustomDonation,
-          }),
-          h(
-            'button',
-            {
-              class: 'button send-max',
-              onClick: sendMaxDonation, //TODO
-              disabled: !isSendAddressValid,
-            },
-            'Max'
-          )
-        ),
+        h(CustomDonationInput, {isSendAddressValid}),
       h('div', {class: 'ada-label'}, 'Fee'),
       h('div', {class: 'send-fee'}, printAda(transactionFee))
     ),
@@ -259,7 +233,6 @@ module.exports = connect(
     sendAmountValidationError: state.sendAmount.validationError,
     sendAmount: state.sendAmount.fieldValue,
     donationAmountValidationError: state.donationAmount.validationError,
-    donationAmount: state.donationAmount.fieldValue,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     showTransactionErrorModal: state.showTransactionErrorModal,
@@ -268,7 +241,6 @@ module.exports = connect(
     rawTransaction: state.rawTransaction,
     rawTransactionOpen: state.rawTransactionOpen,
     coinsAmount: state.sendAmount.coins,
-    checkedDonationType: state.checkedDonationType,
     showCustomDonationInput: state.showCustomDonationInput,
     maxAmount: state.maxAmount,
   }),

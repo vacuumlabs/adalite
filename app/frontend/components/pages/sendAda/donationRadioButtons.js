@@ -30,7 +30,7 @@ const DonationRadioButtons = ({
       {
         for: 'fixed',
       },
-      '40 A' //TODO: config this
+      '40 A' //TODO: config this, ada symbol before
     ),
     h('input', {
       type: 'radio',

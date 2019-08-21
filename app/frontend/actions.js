@@ -446,12 +446,13 @@ module.exports = ({setState, getState}) => {
     setState({calculatingFee: true})
 
     const maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
+    const adaptedMaxAmount = sendAmountValidator(printAda(maxAmount))
 
     if (maxAmount > 0) {
       setState({
         sendResponse: '',
-        sendAmount: sendAmountValidator(printAda(maxAmount)),
-        maxAmount: sendAmountValidator(printAda(maxAmount)).fieldValue, // TODO: refactor
+        sendAmount: adaptedMaxAmount,
+        maxAmount: adaptedMaxAmount.fieldValue,
       })
       validateSendFormAndCalculateFee()
     } else {

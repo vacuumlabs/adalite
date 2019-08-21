@@ -113,7 +113,8 @@ const CardanoWallet = async (options) => {
     const txInputs = await prepareTxInputs(address, coins, hasDonation, donationAmount)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => acc + elem.coins, 0)
     const fee = computeTxFee(txInputs, address, coins, hasDonation, donationAmount)
-    const changeAmount = txInputsCoinsSum - coins - fee - donationAmount
+    let changeAmount = txInputsCoinsSum - coins - fee
+    changeAmount -= hasDonation ? donationAmount : 0
 
     if (changeAmount < 0) {
       throw Error(`
@@ -140,7 +141,7 @@ const CardanoWallet = async (options) => {
     return TxAux(txInputs, txOutputs, {})
   }
 
-  async function getMaxSendableAmount(address) {
+  async function getTxInputsAndCoins() {
     const utxos = await getUnspentTxOutputs()
     const txInputs = []
     let coins = 0
@@ -150,21 +151,18 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
       coins += profitableUtxos[i].coins
     }
+
+    return {txInputs, coins}
+  }
+
+  async function getMaxSendableAmount(address) {
+    const {txInputs, coins} = await getTxInputsAndCoins()
     const txFee = computeTxFee(txInputs, address, coins, false)
     return Math.max(coins - txFee, 0)
   }
 
   async function getMaxDonationAmount(address, sendAmount) {
-    //TODO: refactor
-    const utxos = await getUnspentTxOutputs()
-    const txInputs = []
-    let coins = 0
-    const profitableUtxos = utxos.filter(isUtxoProfitable)
-
-    for (let i = 0; i < profitableUtxos.length; i++) {
-      txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
-      coins += profitableUtxos[i].coins
-    }
+    const {txInputs, coins} = await getTxInputsAndCoins()
     const txFee = computeTxFee(txInputs, address, sendAmount, true, coins - sendAmount)
     return Math.max(coins - txFee - sendAmount, 0)
   }
@@ -259,9 +257,9 @@ const CardanoWallet = async (options) => {
     const {ADA_DONATION_ADDRESS} = require('./constants')
     const donationAddressSize = base58.decode(ADA_DONATION_ADDRESS).length
 
-    /* TODO-DO NOT ASSUME
-    * we assume that at most two outputs (destination and change address) will be present
-    * encoded in an indefinite length array
+    /*
+    * we assume that at most three outputs (destination, change and possibly donation address)
+    * will be present encoded in an indefinite length array
     */
     const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
     const txOutputsSize = hasChange
