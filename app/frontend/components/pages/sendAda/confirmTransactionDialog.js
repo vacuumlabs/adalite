@@ -31,6 +31,8 @@ class ConfirmTransactionDialogClass {
         h('div', {class: 'review-address'}, sendAddress),
         h('div', {class: 'ada-label'}, 'Amount'),
         h('div', {class: 'review-amount'}, printAda(sendAmount)),
+        h('div', {class: 'ada-label'}, 'Donation'),
+        h('div', {class: 'review-amount'}, printAda(donationAmount)),
         h('div', {class: 'ada-label'}, 'Fee'),
         h('div', {class: 'review-fee'}, printAda(transactionFee)),
         h('div', {class: 'ada-label'}, 'Total'),

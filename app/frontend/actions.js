@@ -370,7 +370,7 @@ module.exports = ({setState, getState}) => {
   const calculatePercentageDonation = async () => {
     //TODO: remember fee, question about rounding
     const state = getState()
-    const percentageDonation = parseFloat(state.sendAmount.fieldValue * 0.002).toFixed(6)
+    const percentageDonation = state.sendAmount.fieldValue * 0.002
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)

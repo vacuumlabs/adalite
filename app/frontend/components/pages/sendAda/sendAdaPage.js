@@ -93,8 +93,6 @@ const SendAdaPage = ({
 
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
 
-  const percentageValue = '' // TODO
-
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
     setRawTransactionOpen(true)
@@ -187,7 +185,7 @@ const SendAdaPage = ({
             {
               class: 'button send-max',
               onClick: sendMaxDonation, //TODO
-              disabled: !enableSubmit || feeRecalculating,
+              disabled: !isSendAddressValid,
             },
             'Max'
           )
@@ -202,7 +200,7 @@ const SendAdaPage = ({
       },
       h('div', {}, 'Total'),
       h('div', {}, '1.649'),
-      h('div', {}, '0.516')
+      h('div', {}, 'xxxx')
     ),
     h(
       'div',
