@@ -226,7 +226,7 @@ const SendAdaPage = ({
         errorMessage: getTranslation(sendResponse.error, {sendResponse}),
       }),
     rawTransactionOpen && h(RawTransactionModal),
-    showConfirmTransactionDialog && h(ConfirmTransactionDialog),
+    showConfirmTransactionDialog && h(ConfirmTransactionDialog, {total}),
     showThanksForDonation && h(DonateThanksModal, {closeThanksForDonationModal})
   )
 }

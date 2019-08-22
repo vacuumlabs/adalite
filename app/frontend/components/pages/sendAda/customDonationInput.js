@@ -4,20 +4,21 @@ const actions = require('../../../actions')
 
 const CustomDonationInput = ({
   donationAmount,
-  updateCustomDonation,
+  updateDonation,
   sendMaxDonation,
   isSendAddressValid,
+  toggleCustomDonation,
 }) =>
   h(
     'div',
     {class: 'input-wrapper'},
     h('input', {
       class: 'input send-amount',
-      id: 'donation-amount',
+      id: 'custom',
       name: 'donation-amount',
       placeholder: '0.000000',
       value: donationAmount,
-      onInput: updateCustomDonation,
+      onInput: updateDonation,
     }),
     h(
       'button',
@@ -27,6 +28,14 @@ const CustomDonationInput = ({
         disabled: !isSendAddressValid,
       },
       'Max'
+    ),
+    h(
+      'button',
+      {
+        // class: // TODO: back button
+        onClick: toggleCustomDonation,
+      },
+      'Back' //TODO: change to just icon
     )
   )
 

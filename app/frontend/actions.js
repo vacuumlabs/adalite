@@ -652,28 +652,32 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const updateDonation = (state, e) => {
-    const newDonationType = state.checkedDonationType === e.target.id ? '' : e.target.id //reset if clicking the same
+  const resetDonation = () => {
     setState({
-      donationAmount: Object.assign({}, state.donationAmount, {
-        fieldValue: e.target.value,
-      }),
-      checkedDonationType: newDonationType,
+      checkedDonationType: '',
+      donationAmount: {fieldValue: ''},
     })
+  }
+
+  const updateDonation = (state, e) => {
+    if (state.checkedDonationType === e.target.id && e.target.id !== 'custom') {
+      // when clicking already selected button
+      resetDonation()
+    } else {
+      setState({
+        donationAmount: Object.assign({}, state.donationAmount, {
+          fieldValue: e.target.value,
+        }),
+        checkedDonationType: e.target.id,
+      })
+    }
     validateSendFormAndCalculateFee()
   }
 
-  const setCustomDonation = (state) => {
+  const toggleCustomDonation = (state) => {
+    resetDonation()
     setState({
-      showCustomDonationInput: true,
-    })
-  }
-
-  const updateCustomDonation = (state, e) => {
-    setState({
-      donationAmount: Object.assign({}, state.donationAmount, {
-        fieldValue: e.target.value,
-      }),
+      showCustomDonationInput: !state.showCustomDonationInput,
     })
     validateSendFormAndCalculateFee()
   }
@@ -715,7 +719,6 @@ module.exports = ({setState, getState}) => {
     showContactFormModal,
     closeContactFormModal,
     updateDonation,
-    setCustomDonation,
-    updateCustomDonation,
+    toggleCustomDonation,
   }
 }
