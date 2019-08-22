@@ -400,12 +400,6 @@ module.exports = ({setState, getState}) => {
         percentageDonationValue: percentageDonationHalf,
         percentageDonationText: '0.1%',
       })
-    } else {
-      //set to 0
-      setState({
-        percentageDonationValue: 0,
-        percentageDonationText: '-',
-      })
     }
   }
 
@@ -431,6 +425,17 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
+  const handlePercentageThreshold = (state, value) => {
+    if (value < 500) {
+      return
+    }
+
+    setState({
+      highestAmountReached: Math.max(value, state.highestAmountReached),
+    })
+    calculatePercentageDonation()
+  }
+
   const updateAmount = (state, e) => {
     setState({
       sendResponse: '',
@@ -439,9 +444,7 @@ module.exports = ({setState, getState}) => {
       }),
     })
     validateSendFormAndCalculateFee()
-    calculatePercentageDonation()
-
-    console.log(state.sendAmount.coins, state.maxAmount)
+    handlePercentageThreshold(state, e.target.value)
   }
 
   const resetDonation = () => {
@@ -455,10 +458,10 @@ module.exports = ({setState, getState}) => {
     setState({calculatingFee: true})
     resetDonation()
 
-    const maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
-    const adaptedMaxAmount = sendAmountValidator(printAda(maxAmount))
+    const maxSendAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
+    const adaptedMaxAmount = sendAmountValidator(printAda(maxSendAmount))
 
-    if (maxAmount > 0) {
+    if (maxSendAmount > 0) {
       setState({
         sendResponse: '',
         sendAmount: adaptedMaxAmount,
@@ -507,7 +510,7 @@ module.exports = ({setState, getState}) => {
 
   const resetSendFormFields = (state) => {
     setState({
-      sendAmount: {fieldValue: ''},
+      sendAmount: {fieldValue: '', coins: 0},
       sendAddress: {fieldValue: ''},
       donationAmount: {fieldValue: ''},
       transactionFee: 0,
@@ -515,6 +518,7 @@ module.exports = ({setState, getState}) => {
       percentageDonationValue: '...',
       percentageDonationText: '0.2%',
       checkedDonationType: '',
+      highestAmountReached: 0,
     })
   }
 

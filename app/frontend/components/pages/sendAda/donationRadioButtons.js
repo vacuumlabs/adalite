@@ -10,6 +10,7 @@ const DonationRadioButtons = ({
   isSendAddressValid,
   percentageDonationValue,
   percentageDonationText,
+  highestAmountReached,
 }) =>
   h(
     'div',
@@ -39,7 +40,7 @@ const DonationRadioButtons = ({
       value: percentageDonationValue,
       onClick: updateDonation,
       checked: checkedDonationType === 'percentage',
-      disabled: !isSendAddressValid || !sendAmount,
+      disabled: !isSendAddressValid || !sendAmount || highestAmountReached < 500,
     }),
     h(
       'label',
@@ -73,6 +74,7 @@ module.exports = connect(
     checkedDonationType: state.checkedDonationType,
     percentageDonationValue: state.percentageDonationValue,
     percentageDonationText: state.percentageDonationText,
+    highestAmountReached: state.highestAmountReached,
   }),
   actions
 )(DonationRadioButtons)

@@ -43,6 +43,7 @@ const initialState = {
   maxAmount: Infinity,
   percentageDonationValue: '...',
   percentageDonationText: '0.2%',
+  highestAmountReached: 0,
 }
 
 const createStore = () =>
