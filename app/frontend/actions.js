@@ -442,8 +442,16 @@ module.exports = ({setState, getState}) => {
     calculatePercentageDonation()
   }
 
+  const resetDonation = () => {
+    setState({
+      checkedDonationType: '',
+      donationAmount: {fieldValue: ''},
+    })
+  }
+
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
+    resetDonation()
 
     const maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
     const adaptedMaxAmount = sendAmountValidator(printAda(maxAmount))
@@ -649,13 +657,6 @@ module.exports = ({setState, getState}) => {
     setState({
       rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
       rawTransactionOpen: true,
-    })
-  }
-
-  const resetDonation = () => {
-    setState({
-      checkedDonationType: '',
-      donationAmount: {fieldValue: ''},
     })
   }
 
