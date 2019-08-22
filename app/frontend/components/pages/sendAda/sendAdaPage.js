@@ -162,12 +162,12 @@ const SendAdaPage = ({
         },
         'Donate'
       ),
-      sendAmount >= maxAmount && h('div', {}, 'Insufficient balance for a donation.'),
+      coinsAmount >= maxAmount && h('div', {}, 'Insufficient balance for a donation.'),
       !showCustomDonationInput &&
-        sendAmount < maxAmount &&
+        coinsAmount < maxAmount &&
         h(DonationRadioButtons, {isSendAddressValid}),
       showCustomDonationInput &&
-        sendAmount < maxAmount &&
+        coinsAmount < maxAmount &&
         h(CustomDonationInput, {isSendAddressValid}),
       h('div', {class: 'ada-label'}, 'Fee'),
       h('div', {class: 'send-fee'}, printAda(transactionFee))

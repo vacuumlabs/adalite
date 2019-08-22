@@ -83,7 +83,7 @@ module.exports = ({setState, getState}) => {
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
       const conversionRates = getConversionRates(state)
-      const sendAmount = {fieldValue: ''}
+      const sendAmount = {fieldValue: '', coins: 0}
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
       const usingHwWallet = wallet.isHwWallet()
@@ -440,6 +440,8 @@ module.exports = ({setState, getState}) => {
     })
     validateSendFormAndCalculateFee()
     calculatePercentageDonation()
+
+    console.log(state.sendAmount.coins, state.maxAmount)
   }
 
   const resetDonation = () => {
@@ -460,7 +462,7 @@ module.exports = ({setState, getState}) => {
       setState({
         sendResponse: '',
         sendAmount: adaptedMaxAmount,
-        maxAmount: adaptedMaxAmount.fieldValue,
+        maxAmount: adaptedMaxAmount.coins,
       })
       validateSendFormAndCalculateFee()
     } else {
