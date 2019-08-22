@@ -94,7 +94,7 @@ const SendAdaPage = ({
   const total = sendAmountForTransactionFee + transactionFee + donationAmount
 
   const rawTransactionHandler = async () => {
-    await getRawTransaction(sendAddress, coinsAmount) //TODO: also donations
+    await getRawTransaction(sendAddress, coinsAmount)
     setRawTransactionOpen(true)
   }
 

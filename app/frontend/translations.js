@@ -6,6 +6,7 @@ const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
   SendAmountIsNan: () => 'Invalid format: Amount has to be a number',
   SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
+  DonationAmountTooLow: () => 'Donations worth less than 1 ADA are not accepted',
   SendAmountInsufficientFunds: ({balance}) =>
     `Insufficient funds for the transaction. Your balance is ${printAda(balance)} ADA.`,
   SendAmountCantSendMaxFunds: () =>
