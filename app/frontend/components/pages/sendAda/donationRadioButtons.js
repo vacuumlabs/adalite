@@ -40,7 +40,7 @@ const DonationRadioButtons = ({
       value: percentageDonationValue,
       onClick: updateDonation,
       checked: checkedDonationType === 'percentage',
-      disabled: !isSendAddressValid || !sendAmount || highestAmountReached < 500,
+      disabled: !isSendAddressValid || !sendAmount || highestAmountReached < 500000000, //TODO: conf
     }),
     h(
       'label',

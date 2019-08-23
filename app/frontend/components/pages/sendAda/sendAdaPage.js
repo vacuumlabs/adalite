@@ -79,7 +79,8 @@ const SendAdaPage = ({
   rawTransaction,
   coinsAmount,
   showCustomDonationInput,
-  maxAmount,
+  maxSendAmount,
+  maxDonationAmount,
   conversionRates,
   donationAmount,
 }) => {
@@ -89,6 +90,8 @@ const SendAdaPage = ({
     sendAddress &&
     !sendAddressValidationError &&
     !donationAmountValidationError
+  //TODO: config
+  const isDonationSufficient = maxDonationAmount >= 1000000 && coinsAmount <= maxSendAmount
 
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
   const total = sendAmountForTransactionFee + transactionFee + donationAmount
@@ -162,12 +165,12 @@ const SendAdaPage = ({
         },
         'Donate'
       ),
-      coinsAmount >= maxAmount && h('div', {}, 'Insufficient balance for a donation.'),
+      !isDonationSufficient && h('div', {}, 'Insufficient balance for a donation.'),
       !showCustomDonationInput &&
-        coinsAmount < maxAmount &&
+        isDonationSufficient &&
         h(DonationRadioButtons, {isSendAddressValid}),
       showCustomDonationInput &&
-        coinsAmount < maxAmount &&
+        isDonationSufficient &&
         h(CustomDonationInput, {isSendAddressValid}),
       h('div', {class: 'ada-label'}, 'Fee'),
       h('div', {class: 'send-fee'}, printAda(transactionFee))
@@ -179,7 +182,6 @@ const SendAdaPage = ({
       },
       h('div', {}, 'Total'),
       h('div', {}, printAda(total)),
-      h('div', {}, 'xxxx'),
       conversionRates && h(Conversions, {balance: total, conversionRates}) //TODO: tidy
     ),
     h(
@@ -250,7 +252,8 @@ module.exports = connect(
     rawTransactionOpen: state.rawTransactionOpen,
     coinsAmount: state.sendAmount.coins,
     showCustomDonationInput: state.showCustomDonationInput,
-    maxAmount: state.maxAmount,
+    maxSendAmount: state.maxSendAmount,
+    maxDonationAmount: state.maxDonationAmount,
     conversionRates: state.conversionRates && state.conversionRates.data,
   }),
   actions

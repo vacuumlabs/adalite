@@ -425,15 +425,31 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
-  const handlePercentageThreshold = (state, value) => {
-    if (value < 500) {
+  const handleHighestAmountReached = () => {
+    const state = getState()
+    if (state.sendAmount.coins < 500000000) {
+      //TODO: config
       return
     }
 
     setState({
-      highestAmountReached: Math.max(value, state.highestAmountReached),
+      highestAmountReached: Math.max(state.sendAmount.coins, state.highestAmountReached),
     })
     calculatePercentageDonation()
+  }
+
+  const calculateMaxDonationAmount = async () => {
+    const state = getState()
+    const maxDonationAmount = await wallet.getMaxDonationAmount(
+      state.sendAddress.fieldValue,
+      state.sendAmount.coins
+    )
+
+    if (maxDonationAmount > 0) {
+      setState({
+        maxDonationAmount: sendAmountValidator(printAda(maxDonationAmount)).coins,
+      })
+    }
   }
 
   const updateAmount = (state, e) => {
@@ -444,7 +460,8 @@ module.exports = ({setState, getState}) => {
       }),
     })
     validateSendFormAndCalculateFee()
-    handlePercentageThreshold(state, e.target.value)
+    handleHighestAmountReached()
+    calculateMaxDonationAmount()
   }
 
   const resetDonation = () => {
@@ -465,7 +482,7 @@ module.exports = ({setState, getState}) => {
       setState({
         sendResponse: '',
         sendAmount: adaptedMaxAmount,
-        maxAmount: adaptedMaxAmount.coins,
+        maxSendAmount: adaptedMaxAmount.coins,
       })
       validateSendFormAndCalculateFee()
     } else {
@@ -478,26 +495,26 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const sendMaxDonation = async (state) => {
-    //TODO: perhaps refactor
-    setState({calculatingFee: true})
+  // const sendMaxDonation = async (state) => {
+  //   //TODO: perhaps refactor
+  //   setState({calculatingFee: true})
 
-    const maxDonationAmount = await wallet.getMaxDonationAmount(
-      state.sendAddress.fieldValue,
-      state.sendAmount.coins
-    )
+  //   const maxDonationAmount = await wallet.getMaxDonationAmount(
+  //     state.sendAddress.fieldValue,
+  //     state.sendAmount.coins
+  //   )
 
-    if (maxDonationAmount > 0) {
-      setState({
-        donationAmount: sendAmountValidator(printAda(maxDonationAmount)),
-      })
-      validateSendFormAndCalculateFee()
-    } else {
-      setState({
-        calculatingFee: false,
-      })
-    }
-  }
+  //   if (maxDonationAmount > 0) {
+  //     setState({
+  //       donationAmount: sendAmountValidator(printAda(maxDonationAmount)),
+  //     })
+  //     validateSendFormAndCalculateFee()
+  //   } else {
+  //     setState({
+  //       calculatingFee: false,
+  //     })
+  //   }
+  // }
 
   const resetSendFormState = (state) => {
     setState({
@@ -514,7 +531,8 @@ module.exports = ({setState, getState}) => {
       sendAddress: {fieldValue: ''},
       donationAmount: {fieldValue: ''},
       transactionFee: 0,
-      maxAmount: Infinity,
+      maxSendAmount: Infinity,
+      maxDonationAmount: Infinity,
       percentageDonationValue: '...',
       percentageDonationText: '0.2%',
       checkedDonationType: '',
@@ -712,7 +730,6 @@ module.exports = ({setState, getState}) => {
     closeAddressDetail,
     verifyAddress,
     sendMaxFunds,
-    sendMaxDonation,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,

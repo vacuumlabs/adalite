@@ -5,7 +5,6 @@ const actions = require('../../../actions')
 const CustomDonationInput = ({
   donationAmount,
   updateDonation,
-  sendMaxDonation,
   isSendAddressValid,
   toggleCustomDonation,
 }) =>
@@ -24,7 +23,7 @@ const CustomDonationInput = ({
       'button',
       {
         class: 'button send-max',
-        onClick: sendMaxDonation,
+        // onClick: sendMaxDonation, // TODO: replace with %
         disabled: !isSendAddressValid,
       },
       'Max'
