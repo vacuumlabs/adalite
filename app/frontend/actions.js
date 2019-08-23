@@ -483,6 +483,7 @@ module.exports = ({setState, getState}) => {
         sendResponse: '',
         sendAmount: adaptedMaxAmount,
         maxSendAmount: adaptedMaxAmount.coins,
+        maxDonationAmount: 0,
       })
       validateSendFormAndCalculateFee()
     } else {
