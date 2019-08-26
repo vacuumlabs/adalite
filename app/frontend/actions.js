@@ -454,11 +454,18 @@ module.exports = ({setState, getState}) => {
       state.sendAmount.coins
     )
 
-    if (maxDonationAmount > 0) {
-      setState({
-        maxDonationAmount: sendAmountValidator(printAda(maxDonationAmount)).coins,
-      })
+    let newMaxDonationAmount
+    if (maxDonationAmount >= 1000000) {
+      //TODO: config
+      newMaxDonationAmount = sendAmountValidator(printAda(maxDonationAmount)).coins
+    } else {
+      newMaxDonationAmount = 0
+      resetDonation()
     }
+
+    setState({
+      maxDonationAmount: newMaxDonationAmount,
+    })
   }
 
   const updateAmount = (state, e) => {
