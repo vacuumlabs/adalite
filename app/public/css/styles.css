@@ -201,6 +201,7 @@ p {
 /* BUTTONS */
 
 .button {
+  font-family: JTMarnie, Arial, Helvetica, sans-serif;
   padding: 12px 24px;
   border-radius: 4px;
   font-size: 16px;
@@ -1489,20 +1490,6 @@ button[data-balloon] {
   align-items: baseline;
 }
 
-.button.link {
-  background: transparent;
-  border: 0;
-  text-decoration: underline;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 24px;
-  text-align: left;
-}
-
-.button.link:hover {
-  color: var(--color-brand);
-}
-
 .social-link {
   flex: 0 0 50%;
   max-width: 50%;
@@ -1510,6 +1497,13 @@ button[data-balloon] {
   position: relative;
   margin-bottom: 24px;
   color: white;
+  background-color: transparent;
+  border: 0;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 24px;
 }
 
 .social-link:before {
