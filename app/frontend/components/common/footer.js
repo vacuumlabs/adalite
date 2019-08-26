@@ -35,7 +35,7 @@ const Footer = connect(
             'button',
             {
               role: 'button',
-              class: 'button link social-link email',
+              class: 'social-link email',
               onClick: showContactFormModal,
             },
             'Contact us'
