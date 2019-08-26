@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const CustomInputButton = require('./customDonationButton')
 
 const CustomDonationInput = ({
   donationAmount,
@@ -16,18 +17,10 @@ const CustomDonationInput = ({
       id: 'custom',
       name: 'donation-amount',
       placeholder: '0.000000',
-      value: donationAmount,
+      value: donationAmount.fieldValue,
       onInput: updateDonation,
     }),
-    h(
-      'button',
-      {
-        class: 'button send-max',
-        // onClick: sendMaxDonation, // TODO: replace with %
-        disabled: !isSendAddressValid,
-      },
-      'Max'
-    ),
+    h(CustomInputButton, {isSendAddressValid}),
     h(
       'button',
       {
@@ -40,7 +33,7 @@ const CustomDonationInput = ({
 
 module.exports = connect(
   (state) => ({
-    donationAmount: state.donationAmount.fieldValue,
+    donationAmount: state.donationAmount,
   }),
   actions
 )(CustomDonationInput)

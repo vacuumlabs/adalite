@@ -42,9 +42,9 @@ const initialState = {
   donationAmount: {fieldValue: 0},
   maxSendAmount: Infinity,
   maxDonationAmount: Infinity,
-  percentageDonationValue: '...',
+  percentageDonationValue: 0,
   percentageDonationText: '0.2%',
-  highestAmountReached: 0,
+  thresholdAmountReached: false,
 }
 
 const createStore = () =>

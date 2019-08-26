@@ -382,34 +382,21 @@ module.exports = ({setState, getState}) => {
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
 
+    setState({
+      percentageDonationValue: percentageDonation * 0.000001,
+      percentageDonationText: '0.2%',
+    })
+    resetDonation()
     if (amount + transactionFee + percentageDonation <= state.balance) {
-      //affordable
-      setState({
-        percentageDonationValue: percentageDonation * 0.000001,
-        percentageDonationText: '0.2%',
-      })
-      resetDonation()
       return
     }
 
-    //exceeded balance, lower to 1%
-    const percentageDonationHalf = percentageDonation / 2
-    const transactionFeeHalfDonation = await wallet.getTxFee(
-      //TODO: is this necessary?
-      address,
-      amount,
-      true,
-      percentageDonationHalf
-    )
-
-    if (amount + transactionFeeHalfDonation + percentageDonationHalf <= state.balance) {
-      //afforable
-      setState({
-        percentageDonationValue: percentageDonationHalf * 0.000001,
-        percentageDonationText: '0.1%',
-      })
-      resetDonation()
-    }
+    //exceeded balance, lower to 1%, minimum is 1 ADA
+    setState({
+      percentageDonationValue: Math.max((percentageDonation / 2) * 0.000001, 1),
+      percentageDonationText: '0.1%',
+    })
+    resetDonation()
   }
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
@@ -434,7 +421,7 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
-  const handleHighestAmountReached = () => {
+  const handleThresholdAmountReached = () => {
     const state = getState()
     if (state.sendAmount.coins < 500000000) {
       //TODO: config
@@ -442,7 +429,7 @@ module.exports = ({setState, getState}) => {
     }
 
     setState({
-      highestAmountReached: Math.max(state.sendAmount.coins, state.highestAmountReached),
+      thresholdAmountReached: true,
     })
     calculatePercentageDonation()
   }
@@ -476,7 +463,7 @@ module.exports = ({setState, getState}) => {
       }),
     })
     validateSendFormAndCalculateFee()
-    handleHighestAmountReached()
+    handleThresholdAmountReached()
     calculateMaxDonationAmount()
   }
 
@@ -545,10 +532,10 @@ module.exports = ({setState, getState}) => {
       transactionFee: 0,
       maxSendAmount: Infinity,
       maxDonationAmount: Infinity,
-      percentageDonationValue: '...',
+      percentageDonationValue: 0,
       percentageDonationText: '0.2%',
       checkedDonationType: '',
-      highestAmountReached: 0,
+      thresholdAmountReached: false,
     })
   }
 
@@ -711,6 +698,15 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
+  const setDonation = (state, value) => {
+    setState({
+      donationAmount: Object.assign({}, state.donationAmount, {
+        fieldValue: value.toString(),
+      }),
+    })
+    validateSendFormAndCalculateFee()
+  }
+
   const toggleCustomDonation = (state) => {
     resetDonation()
     setState({
@@ -756,5 +752,6 @@ module.exports = ({setState, getState}) => {
     closeContactFormModal,
     updateDonation,
     toggleCustomDonation,
+    setDonation,
   }
 }
