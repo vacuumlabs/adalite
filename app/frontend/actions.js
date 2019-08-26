@@ -92,7 +92,7 @@ module.exports = ({setState, getState}) => {
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
-      const donationAmount = {fieldValue: ''}
+      const donationAmount = {fieldValue: '', coins: 0}
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
@@ -367,10 +367,17 @@ module.exports = ({setState, getState}) => {
     showConfirmTransactionDialog: false,
   })
 
+  const resetDonation = () => {
+    setState({
+      checkedDonationType: '',
+      donationAmount: {fieldValue: '', coins: 0},
+    })
+  }
+
   const calculatePercentageDonation = async () => {
     //TODO: remember fee, question about rounding
     const state = getState()
-    const percentageDonation = state.sendAmount.fieldValue * 0.002
+    const percentageDonation = state.sendAmount.coins * 0.002
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
@@ -378,9 +385,10 @@ module.exports = ({setState, getState}) => {
     if (amount + transactionFee + percentageDonation <= state.balance) {
       //affordable
       setState({
-        percentageDonationValue: percentageDonation,
+        percentageDonationValue: percentageDonation * 0.000001,
         percentageDonationText: '0.2%',
       })
+      resetDonation()
       return
     }
 
@@ -397,9 +405,10 @@ module.exports = ({setState, getState}) => {
     if (amount + transactionFeeHalfDonation + percentageDonationHalf <= state.balance) {
       //afforable
       setState({
-        percentageDonationValue: percentageDonationHalf,
+        percentageDonationValue: percentageDonationHalf * 0.000001,
         percentageDonationText: '0.1%',
       })
+      resetDonation()
     }
   }
 
@@ -464,13 +473,6 @@ module.exports = ({setState, getState}) => {
     calculateMaxDonationAmount()
   }
 
-  const resetDonation = () => {
-    setState({
-      checkedDonationType: '',
-      donationAmount: {fieldValue: ''},
-    })
-  }
-
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
     resetDonation()
@@ -530,7 +532,7 @@ module.exports = ({setState, getState}) => {
     setState({
       sendAmount: {fieldValue: '', coins: 0},
       sendAddress: {fieldValue: ''},
-      donationAmount: {fieldValue: ''},
+      donationAmount: {fieldValue: '', coins: 0},
       transactionFee: 0,
       maxSendAmount: Infinity,
       maxDonationAmount: Infinity,
