@@ -540,6 +540,8 @@ module.exports = ({setState, getState}) => {
       sendAmount: {fieldValue: '', coins: 0},
       sendAddress: {fieldValue: ''},
       donationAmount: {fieldValue: '', coins: 0},
+      donationAmountForTransactionFee: 0,
+      sendAmountForTransactionFee: 0,
       transactionFee: 0,
       maxSendAmount: Infinity,
       maxDonationAmount: Infinity,
