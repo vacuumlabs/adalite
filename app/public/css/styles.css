@@ -1504,6 +1504,11 @@ button[data-balloon] {
   cursor: pointer;
   font-size: 14px;
   line-height: 24px;
+  font-family: inherit;
+}
+
+.social-link:hover {
+  color: var(--color-brand)
 }
 
 .social-link:before {
