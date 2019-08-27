@@ -62,7 +62,6 @@ const DonationRadioButtons = ({
       'label',
       {
         for: 'custom',
-        disabled: true,
       },
       'Custom'
     )

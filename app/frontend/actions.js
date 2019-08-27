@@ -386,8 +386,9 @@ module.exports = ({setState, getState}) => {
       percentageDonationValue: percentageDonation * 0.000001,
       percentageDonationText: '0.2%',
     })
-    resetDonation()
+
     if (amount + transactionFee + percentageDonation <= state.balance) {
+      resetDonation()
       return
     }
 
@@ -421,7 +422,7 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
-  const handleThresholdAmountReached = () => {
+  const handleThresholdAmount = () => {
     const state = getState()
     if (state.sendAmount.coins < 500000000) {
       //TODO: config
@@ -463,7 +464,7 @@ module.exports = ({setState, getState}) => {
       }),
     })
     validateSendFormAndCalculateFee()
-    handleThresholdAmountReached()
+    handleThresholdAmount()
     calculateMaxDonationAmount()
   }
 
@@ -472,13 +473,13 @@ module.exports = ({setState, getState}) => {
     resetDonation()
 
     const maxSendAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
-    const adaptedMaxAmount = sendAmountValidator(printAda(maxSendAmount))
+    const validatedMaxAmount = sendAmountValidator(printAda(maxSendAmount))
 
     if (maxSendAmount > 0) {
       setState({
         sendResponse: '',
-        sendAmount: adaptedMaxAmount,
-        maxSendAmount: adaptedMaxAmount.coins,
+        sendAmount: validatedMaxAmount,
+        maxSendAmount: validatedMaxAmount.coins,
         maxDonationAmount: 0,
       })
       validateSendFormAndCalculateFee()
@@ -491,27 +492,6 @@ module.exports = ({setState, getState}) => {
       })
     }
   }
-
-  // const sendMaxDonation = async (state) => {
-  //   //TODO: perhaps refactor
-  //   setState({calculatingFee: true})
-
-  //   const maxDonationAmount = await wallet.getMaxDonationAmount(
-  //     state.sendAddress.fieldValue,
-  //     state.sendAmount.coins
-  //   )
-
-  //   if (maxDonationAmount > 0) {
-  //     setState({
-  //       donationAmount: sendAmountValidator(printAda(maxDonationAmount)),
-  //     })
-  //     validateSendFormAndCalculateFee()
-  //   } else {
-  //     setState({
-  //       calculatingFee: false,
-  //     })
-  //   }
-  // }
 
   const resetSendFormState = (state) => {
     setState({

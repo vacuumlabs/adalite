@@ -18,7 +18,7 @@ const initialState = {
   newWalletMnemonic: '',
   ownAddressesWithMeta: [],
   // todo - object (sub-state) from send-ada form
-  sendAddress: {fieldValue: '', coins: 0},
+  sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0, coins: 0},
   transactionFee: 0,
   sendAmountForTransactionFee: 0,
@@ -39,7 +39,7 @@ const initialState = {
   sendResponse: {},
   checkedDonationType: '',
   showCustomDonationInput: false,
-  donationAmount: {fieldValue: 0},
+  donationAmount: {fieldValue: 0, coins: 0},
   maxSendAmount: Infinity,
   maxDonationAmount: Infinity,
   percentageDonationValue: 0,

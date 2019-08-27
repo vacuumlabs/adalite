@@ -29,6 +29,7 @@ class CustomInputButton extends Component {
     }
 
     if (this.props.donationAmount.coins > this.props.maxDonationAmount) {
+      //TODO: border
       buttonText = `Max (${this.props.maxDonationAmount * 0.000001})`
       buttonVal = this.props.maxDonationAmount * 0.000001
     }

@@ -113,8 +113,7 @@ const CardanoWallet = async (options) => {
     const txInputs = await prepareTxInputs(address, coins, hasDonation, donationAmount)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => acc + elem.coins, 0)
     const fee = computeTxFee(txInputs, address, coins, hasDonation, donationAmount)
-    let changeAmount = txInputsCoinsSum - coins - fee
-    changeAmount -= hasDonation ? donationAmount : 0
+    const changeAmount = txInputsCoinsSum - coins - fee - (hasDonation ? donationAmount : 0)
 
     if (changeAmount < 0) {
       throw Error(`
@@ -270,7 +269,7 @@ const CardanoWallet = async (options) => {
 
     const txMetaSize = 1 // currently empty Map
 
-    // the 1 is there for the CBOR "tag" for an array of 3 elements
+    // the 1 is there for the CBOR "tag" for an array of 4 elements
     const txAuxSize = 1 + txInputsSize + txOutputsSize + donationOutputSize + txMetaSize
 
     const txWitnessesSize = txInputs.length * TX_WITNESS_SIZE_BYTES + 1

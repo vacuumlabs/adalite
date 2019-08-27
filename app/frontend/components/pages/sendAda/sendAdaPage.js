@@ -82,7 +82,7 @@ const SendAdaPage = ({
   maxSendAmount,
   maxDonationAmount,
   conversionRates,
-  donationAmount,
+  donationAmountForTransactionFee,
 }) => {
   const enableSubmit =
     sendAmount &&
@@ -94,7 +94,7 @@ const SendAdaPage = ({
   const isDonationSufficient = maxDonationAmount >= 1000000 && coinsAmount <= maxSendAmount
 
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-  const total = sendAmountForTransactionFee + transactionFee + donationAmount
+  const total = sendAmountForTransactionFee + transactionFee + donationAmountForTransactionFee
 
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
@@ -182,7 +182,7 @@ const SendAdaPage = ({
       },
       h('div', {}, 'Total'),
       h('div', {}, printAda(total)),
-      conversionRates && h(Conversions, {balance: total, conversionRates}) //TODO: tidy
+      conversionRates && h(Conversions, {balance: total, conversionRates})
     ),
     h(
       'div',
@@ -242,7 +242,7 @@ module.exports = connect(
     sendAmount: state.sendAmount.fieldValue,
     sendAmountForTransactionFee: state.sendAmountForTransactionFee,
     donationAmountValidationError: state.donationAmount.validationError,
-    donationAmount: state.donationAmountForTransactionFee,
+    donationAmountForTransactionFee: state.donationAmountForTransactionFee,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     showTransactionErrorModal: state.showTransactionErrorModal,
