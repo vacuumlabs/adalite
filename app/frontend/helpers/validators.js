@@ -41,7 +41,9 @@ const donationAmountValidator = (fieldValue) => {
   }
 
   const validatedObj = sendAmountValidator(fieldValue)
-  if (validatedObj.coins >= 0 && validatedObj.coins < 1000000) {
+  const isAmountNaN =
+    validatedObj.validationError && validatedObj.validationError.code === 'SendAmountIsNan'
+  if (!isAmountNaN && validatedObj.coins >= 0 && validatedObj.coins < 1000000) {
     validatedObj.validationError = {code: 'DonationAmountTooLow'}
   }
 
