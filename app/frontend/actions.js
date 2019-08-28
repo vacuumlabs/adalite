@@ -426,6 +426,12 @@ module.exports = ({setState, getState}) => {
     const state = getState()
     if (state.sendAmount.coins < 500000000) {
       //TODO: config
+      if (state.thresholdAmountReached) {
+        setState({
+          percentageDonationValue: 1,
+          percentageDonationText: 'Min',
+        })
+      }
       return
     }
 
