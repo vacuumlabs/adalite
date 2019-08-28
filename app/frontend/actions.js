@@ -441,7 +441,7 @@ module.exports = ({setState, getState}) => {
       state.sendAddress.fieldValue,
       state.sendAmount.coins
     )
-
+    //TODO: split functions
     let newMaxDonationAmount
     if (maxDonationAmount >= 1000000) {
       //TODO: config

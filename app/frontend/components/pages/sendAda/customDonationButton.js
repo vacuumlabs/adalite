@@ -68,7 +68,7 @@ module.exports = connect(
     donationAmount: state.donationAmount,
     maxDonationAmount: state.maxDonationAmount,
     percentageDonationText: state.percentageDonationText,
-    percentageDonationValue: state.percentageDonationValue,
+    percentageDonationValue: Math.floor(state.percentageDonationValue * 1000) / 1000,
   }),
   actions
 )(CustomInputButton)

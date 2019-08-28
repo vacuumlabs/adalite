@@ -71,7 +71,7 @@ module.exports = connect(
   (state) => ({
     sendAmount: state.sendAmount.fieldValue,
     checkedDonationType: state.checkedDonationType,
-    percentageDonationValue: state.percentageDonationValue,
+    percentageDonationValue: Math.round(state.percentageDonationValue),
     percentageDonationText: state.percentageDonationText,
     thresholdAmountReached: state.thresholdAmountReached,
   }),
