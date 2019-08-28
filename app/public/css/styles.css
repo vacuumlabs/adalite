@@ -2101,10 +2101,38 @@ button[data-balloon] {
 
 .transaction-amount.credit {
   color: var(--color-success);
+  margin-right: 24px;
+}
+
+.transaction-amount.credit::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 30px;
+  margin: auto;
+  margin-left: 8px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url(../assets/ada_symbol_green.svg);
 }
 
 .transaction-amount.debit {
   color: var(--color-error);
+  margin-right: 24px;
+}
+
+.transaction-amount.debit::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 30px;
+  margin: auto;
+  margin-left: 8px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url(../assets/ada_symbol_red.svg);
 }
 
 .transaction-address {
@@ -2114,6 +2142,20 @@ button[data-balloon] {
 
 .transaction-fee {
   text-align: right;
+  margin-right: 24px;
+}
+
+.transaction-fee::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 22px;
+  margin: auto;
+  margin-left: 8px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url(../assets/ada_symbol_grey.svg);
 }
 
 .transactions-empty {
