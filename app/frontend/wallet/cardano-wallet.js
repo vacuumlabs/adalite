@@ -21,12 +21,14 @@ function txFeeFunction(txSizeInBytes) {
 }
 
 const CardanoWallet = async (options) => {
-  const {walletSecretDef, config, randomSeed, network} = options
+  const {walletSecretDef, config, randomInputSeed, randomChangeSeed, network} = options
   const state = {
-    randomSeed: randomSeed || Math.floor(Math.random() * MAX_INT32),
     accountIndex: HARDENED_THRESHOLD,
     network,
   }
+
+  let seeds
+  generateNewSeeds()
 
   const blockchainExplorer = BlockchainExplorer(config, state)
   const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(
@@ -172,7 +174,7 @@ const CardanoWallet = async (options) => {
 
   async function prepareTxInputs(address, coins) {
     // we do it pseudorandomly to guarantee fee computation stability
-    const randomGenerator = PseudoRandom(state.randomSeed)
+    const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
     const profitableUtxos = utxos.filter(isUtxoProfitable)
 
@@ -264,7 +266,7 @@ const CardanoWallet = async (options) => {
       await visibleAddressManager.discoverAddressesWithMeta()
     ).map((addrWithMeta) => addrWithMeta.address)
 
-    const randomSeedGenerator = new PseudoRandom(state.randomSeed)
+    const randomSeedGenerator = new PseudoRandom(seeds.randomChangeSeed)
     const result = addresses[randomSeedGenerator.nextInt() % addresses.length]
     return result
   }
@@ -326,6 +328,13 @@ const CardanoWallet = async (options) => {
     return result
   }
 
+  function generateNewSeeds() {
+    seeds = Object.assign({}, seeds, {
+      randomInputSeed: randomInputSeed || Math.floor(Math.random() * MAX_INT32),
+      randomChangeSeed: randomChangeSeed || Math.floor(Math.random() * MAX_INT32),
+    })
+  }
+
   return {
     isHwWallet,
     getHwWalletName,
@@ -343,6 +352,7 @@ const CardanoWallet = async (options) => {
     verifyAddress,
     fetchTxInfo,
     _getNewUtxosFromTxAux: getNewUtxosFromTxAux,
+    generateNewSeeds,
   }
 }
 
