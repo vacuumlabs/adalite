@@ -30,8 +30,10 @@ class CustomInputButton extends Component {
 
     if (this.props.donationAmount.coins > this.props.maxDonationAmount) {
       //TODO: border
-      buttonText = `Max (${this.props.maxDonationAmount * 0.000001})`
-      buttonVal = this.props.maxDonationAmount * 0.000001
+      //transform amount from lovelaces to ada floored on 3rd decimal
+      const maxDonationAmountInAda = Math.floor(this.props.maxDonationAmount * 0.001) / 1000
+      buttonText = `Max (${maxDonationAmountInAda})`
+      buttonVal = maxDonationAmountInAda
     }
 
     this.setState({
