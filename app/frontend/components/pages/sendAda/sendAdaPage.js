@@ -165,7 +165,8 @@ const SendAdaPage = ({
         },
         'Donate'
       ),
-      !isDonationSufficient && h('div', {}, 'Insufficient balance for a donation.'),
+      !isDonationSufficient &&
+        h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),
       !showCustomDonationInput &&
         isDonationSufficient &&
         h(DonationRadioButtons, {isSendAddressValid}),
@@ -178,11 +179,27 @@ const SendAdaPage = ({
     h(
       'div',
       {
-        class: 'total-row',
+        class: 'send-total',
       },
-      h('div', {}, 'Total'),
-      h('div', {}, printAda(total)),
-      conversionRates && h(Conversions, {balance: total, conversionRates})
+      h(
+        'div',
+        {
+          class: 'send-total-title',
+        },
+        'Total'
+      ),
+      h(
+        'div',
+        {class: 'send-total-inner'},
+        h(
+          'div',
+          {
+            class: 'send-total-ada',
+          },
+          printAda(total)
+        ),
+        conversionRates && h(Conversions, {balance: total, conversionRates})
+      )
     ),
     h(
       'div',

@@ -15,7 +15,7 @@ const DonationRadioButtons = ({
   h(
     'div',
     {
-      class: 'radio-bar',
+      class: 'send-donate',
     },
     h('input', {
       type: 'radio',
@@ -31,7 +31,13 @@ const DonationRadioButtons = ({
       {
         for: 'fixed',
       },
-      '40 A' //TODO: config this, ada symbol before
+      h(
+        'span',
+        {
+          class: 'ada-icon-before',
+        },
+        '40' //TODO: config this
+      )
     ),
     h('input', {
       type: 'radio',
@@ -47,7 +53,8 @@ const DonationRadioButtons = ({
       {
         for: 'percentage',
       },
-      `${percentageDonationText} (${percentageDonationValue})`
+      `${percentageDonationText} (`,
+      h('span', {class: 'ada-icon-before'}, `${percentageDonationValue})`)
     ),
     h('input', {
       type: 'radio',
