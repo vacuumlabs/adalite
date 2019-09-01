@@ -9,7 +9,7 @@ const ConfirmTransactionDialog = require('./confirmTransactionDialog')
 const RawTransactionModal = require('./rawTransactionModal')
 const DonateThanksModal = require('./donateThanksModal')
 const TransactionErrorModal = require('./transactionErrorModal')
-const DonationRadioButtons = require('./donationRadioButtons')
+const DonationButtons = require('./donationButtons')
 const CustomDonationInput = require('./customDonationInput')
 const Conversions = require('../../common/conversions')
 
@@ -167,9 +167,7 @@ const SendAdaPage = ({
       ),
       !isDonationSufficient &&
         h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),
-      !showCustomDonationInput &&
-        isDonationSufficient &&
-        h(DonationRadioButtons, {isSendAddressValid}),
+      !showCustomDonationInput && isDonationSufficient && h(DonationButtons, {isSendAddressValid}),
       showCustomDonationInput &&
         isDonationSufficient &&
         h(CustomDonationInput, {isSendAddressValid}),
