@@ -4,7 +4,7 @@ const actions = require('../../../actions')
 
 const DonationButtons = ({
   updateDonation,
-  checkedDonationType, //TODO: use or delete
+  checkedDonationType,
   sendAmount,
   toggleCustomDonation,
   isSendAddressValid,
@@ -20,20 +20,24 @@ const DonationButtons = ({
     h(
       'button',
       {
-        id: 'fixed',
-        value: 40, //TODO: config this
-        onClick: updateDonation,
-        disabled: !isSendAddressValid || !sendAmount,
+        'id': 'fixed',
+        'class': checkedDonationType === 'fixed' ? 'button donate active' : 'button donate',
+        'value': 40, //TODO: config this
+        'onClick': updateDonation,
+        'disabled': !isSendAddressValid || !sendAmount,
+        'aria-label': 'Fixed amount',
       },
       h('span', {class: 'ada-icon-before'}, '40') //TODO: config this)
     ),
     h(
       'button',
       {
-        id: 'percentage',
-        value: percentageDonationValue,
-        onClick: updateDonation,
-        disabled: !isSendAddressValid || !sendAmount || !thresholdAmountReached,
+        'id': 'percentage',
+        'class': checkedDonationType === 'percentage' ? 'button donate active' : 'button donate',
+        'value': percentageDonationValue,
+        'onClick': updateDonation,
+        'disabled': !isSendAddressValid || !sendAmount || !thresholdAmountReached,
+        'aria-label': 'Percentage amount',
       },
       `${percentageDonationText} (`,
       h('span', {class: 'ada-icon-before'}, `${percentageDonationValue})`)
@@ -41,6 +45,7 @@ const DonationButtons = ({
     h(
       'button',
       {
+        class: 'button donate',
         id: 'custom',
         onClick: toggleCustomDonation,
         disabled: !isSendAddressValid || !sendAmount,
