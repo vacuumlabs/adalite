@@ -1702,9 +1702,6 @@ button[data-balloon] {
 .conversions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  color: var(--color-grey);
-  padding-left: 16px;
 }
 
 .conversions-item + .conversions-item {
@@ -2229,6 +2226,12 @@ button[data-balloon] {
   color: rgba(96, 106, 113, 0.64);
   margin-top: 40px;
   display: inline-block;
+}
+
+.send .conversions {
+  justify-content: space-between;
+  color: var(--color-grey);
+  padding-left: 16px;
 }
 
 .send-donate {
