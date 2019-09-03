@@ -173,7 +173,6 @@ p {
 .input.send-amount {
   border: none;
   padding: 0;
-  color: var(--color-grey);
   display: block;
   width: 100%;
 }
