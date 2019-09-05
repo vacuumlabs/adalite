@@ -9,7 +9,7 @@ const CustomInputButton = ({
   donationAmount,
   maxDonationAmount,
 }) => {
-  const maxDonationAmountInAda = Math.floor(maxDonationAmount * 0.001) / 1000
+  const maxDonationAmountInAda = Math.floor(maxDonationAmount / 1000000)
 
   return donationAmount.coins > maxDonationAmount
     ? h(
