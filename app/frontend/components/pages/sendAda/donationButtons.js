@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const {AdaIcon} = require('../../common/svg')
 
 const DonationButtons = ({
   updateDonation,
@@ -27,7 +28,8 @@ const DonationButtons = ({
         'disabled': !isSendAddressValid || !sendAmount,
         'aria-label': 'Fixed amount',
       },
-      h('span', {class: 'ada-icon-before'}, '40') //TODO: config this)
+      h(AdaIcon),
+      '40' //TODO: config this)
     ),
     h(
       'button',
@@ -40,7 +42,8 @@ const DonationButtons = ({
         'aria-label': 'Percentage amount',
       },
       `${percentageDonationText} (`,
-      h('span', {class: 'ada-icon-before'}, `${percentageDonationValue})`)
+      h(AdaIcon),
+      `${percentageDonationValue})`
     ),
     h(
       'button',

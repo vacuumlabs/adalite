@@ -1,6 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
+const {AdaIcon} = require('../../common/svg')
 
 const CustomInputButton = ({
   isSendAddressValid,
@@ -20,7 +21,9 @@ const CustomInputButton = ({
         disabled: !isSendAddressValid,
         value: maxDonationAmountInAda,
       },
-      `Max (${maxDonationAmountInAda})`
+      'Max (',
+      h(AdaIcon),
+      `${maxDonationAmountInAda})`
     )
     : h(
       'button',
