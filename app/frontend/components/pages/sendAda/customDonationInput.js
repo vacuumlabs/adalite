@@ -1,7 +1,7 @@
 const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
-const CustomInputButton = require('./customDonationButton')
+const CustomInputButton = require('./customInputButton')
 
 const CustomDonationInput = ({
   donationAmount,
@@ -20,15 +20,7 @@ const CustomDonationInput = ({
       value: donationAmount.fieldValue,
       onInput: updateDonation,
     }),
-    h(CustomInputButton, {isSendAddressValid}),
-    h(
-      'button',
-      {
-        // class: // TODO: back button
-        onClick: toggleCustomDonation,
-      },
-      'Back' //TODO: change to just icon
-    )
+    h(CustomInputButton, {isSendAddressValid})
   )
 
 module.exports = connect(
