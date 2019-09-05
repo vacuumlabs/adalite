@@ -382,22 +382,18 @@ module.exports = ({setState, getState}) => {
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
 
-    setState({
-      percentageDonationValue: percentageDonation * 0.000001,
-      percentageDonationText: '0.2%',
-    })
-
     if (amount + transactionFee + percentageDonation <= state.balance) {
-      resetDonation()
-      return
+      setState({
+        percentageDonationValue: percentageDonation * 0.000001,
+        percentageDonationText: '0.2%',
+      })
+    } else {
+      //exceeded balance, lower to 1%, minimum is 1 ADA
+      setState({
+        percentageDonationValue: Math.max((percentageDonation / 2) * 0.000001, 1),
+        percentageDonationText: '0.1%',
+      })
     }
-
-    //exceeded balance, lower to 1%, minimum is 1 ADA
-    setState({
-      percentageDonationValue: Math.max((percentageDonation / 2) * 0.000001, 1),
-      percentageDonationText: '0.1%',
-    })
-    resetDonation()
   }
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
@@ -424,6 +420,10 @@ module.exports = ({setState, getState}) => {
 
   const handleThresholdAmount = () => {
     const state = getState()
+    if (state.checkedDonationType === 'percentage') {
+      resetDonation()
+    }
+
     if (state.sendAmount.coins < 500000000) {
       //TODO: config
       if (state.thresholdAmountReached) {
@@ -684,10 +684,10 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
-  const setDonation = (state, value) => {
+  const setDonation = (state, e) => {
     setState({
       donationAmount: Object.assign({}, state.donationAmount, {
-        fieldValue: value.toString(),
+        fieldValue: e.target.value,
       }),
     })
     validateSendFormAndCalculateFee()
