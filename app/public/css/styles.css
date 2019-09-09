@@ -195,6 +195,10 @@ p {
   right: 16px;
 }
 
+.input-wrapper.donation {
+  padding-right: 126px;
+}
+
 .textarea {
   font-family: JTMarnie, Arial, Helvetica, sans-serif;
 }

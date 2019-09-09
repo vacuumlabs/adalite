@@ -11,7 +11,7 @@ const CustomDonationInput = ({
 }) =>
   h(
     'div',
-    {class: 'input-wrapper'},
+    {class: 'input-wrapper donation'},
     h('input', {
       class: 'input send-amount',
       id: 'custom',
