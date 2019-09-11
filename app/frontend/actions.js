@@ -125,7 +125,6 @@ module.exports = ({setState, getState}) => {
         showGenerateMnemonicDialog: false,
       })
       await fetchConversionRates(state, conversionRates)
-      // throw NamedError('NetworkError', 'ahoj', true)
     } catch (e) {
       setState({
         loading: false,

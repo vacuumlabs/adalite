@@ -2,29 +2,7 @@ const {h} = require('preact')
 
 const Modal = require('./modal')
 const Alert = require('./alert')
-
-const Help = ({showHelp}) => {
-  showHelp &&
-    h(
-      'div',
-      {},
-      h(
-        'p',
-        {
-          class: 'instructions',
-        },
-        'For more information, try our ',
-        h(
-          'a',
-          {
-            href: 'https://github.com/vacuumlabs/adalite/wiki',
-          },
-          'Help'
-        ),
-        ' section.'
-      )
-    )
-}
+const HelpSection = require('./helpSection')
 
 const ErrorModal = ({closeHandler, title, buttonTitle, errorMessage, showHelp = false}) =>
   h(
@@ -40,7 +18,7 @@ const ErrorModal = ({closeHandler, title, buttonTitle, errorMessage, showHelp = 
       },
       errorMessage
     ),
-    h(Help, {showHelp}),
+    showHelp && h(HelpSection, undefined),
     h(
       'div',
       {class: 'modal-footer'},

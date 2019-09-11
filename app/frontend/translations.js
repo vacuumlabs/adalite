@@ -43,13 +43,13 @@ const translations = {
   UnknownCryptoProvider: () => 'Unknown crypto provider type',
   NetworkError: () => 'Network connection failed. Please check your network connection.',
 }
-
+/*  */
 function getTranslation(code, params) {
   if (!translations[code]) {
     debugLog(`Translation for ${code} not found!`)
     return null
   }
-  return translations[code] ? translations[code](params) : code
+  return params ? translations[code](params) : translations[code]({})
 }
 
 module.exports = {
