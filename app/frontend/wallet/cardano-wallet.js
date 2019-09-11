@@ -173,8 +173,13 @@ const CardanoWallet = async (options) => {
 
   async function prepareTxInputs(address, coins) {
     // we do it pseudorandomly to guarantee fee computation stability
-    const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
+    const randomGenerator = PseudoRandom(state.randomSeed)
+    const utxos = shuffleArray(
+      await getUnspentTxOutputs().catch((e) => {
+        throw NamedError('NetworkError')
+      }),
+      randomGenerator
+    )
     const profitableUtxos = utxos.filter(isUtxoProfitable)
 
     const txInputs = []

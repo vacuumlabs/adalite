@@ -327,7 +327,16 @@ module.exports = ({setState, getState}) => {
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
     // const transactionFee = computeTxFee(txInputs, address, coins)
-    const transactionFee = await wallet.getTxFee(address, amount)
+    let transactionFee
+    try {
+      transactionFee = await wallet.getTxFee(address, amount)
+    } catch (e) {
+      setState({
+        sendAmountValidationError: {code: 'NetworkError'},
+        calculatingFee: false,
+      })
+      return
+    }
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
     const newState = getState()

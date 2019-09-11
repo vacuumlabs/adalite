@@ -1,8 +1,8 @@
-const {isExpected} = require('./expectedErrors')
+const {getTranslation} = require('../translations')
 
 function captureBySentry(e) {
   // errorHadler
-  if (!isExpected(e)) {
+  if (!getTranslation(e.name)) {
     throw e
   }
   return

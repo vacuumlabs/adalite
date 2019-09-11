@@ -20,6 +20,9 @@ const translations = {
   // login errors
   WalletInitializationError: ({message}) =>
     `Error during wallet initialization${message ? `:  ${message}` : '.'}`,
+  TransportOpenUserCancelled: ({message}) => message,
+  TransportError: ({message}) => message,
+  TransportStatusError: ({message}) => message,
 
   // submit transaction errors
   TransactionRejectedByNetwork: () => 'Submitting the transaction into Cardano network failed.',

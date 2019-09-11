@@ -28,7 +28,7 @@ const request = async function request(url, method = 'GET', body = null, headers
     return response.json()
   } catch (e) {
     debugLog(e)
-    throw NamedError('RequestError', `${method} ${url} returns error: ${e}`)
+    throw NamedError('NetworkError', `${method} ${url} returns error: ${e}`)
   }
 }
 
