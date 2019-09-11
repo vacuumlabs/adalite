@@ -20,13 +20,14 @@ const translations = {
   // login errors
   WalletInitializationError: ({message}) =>
     `Error during wallet initialization${message ? `:  ${message}` : '.'}`,
-  TransportOpenUserCancelled: ({message}) => message,
-  TransportError: ({message}) => message,
-  TransportStatusError: ({message}) => message,
+  TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
+  TransportError: ({message}) => `TransportError: ${message}`,
+  TransportStatusError: ({message}) => `TransportStatusError: ${message}`,
 
   // submit transaction errors
   TransactionRejectedByNetwork: () => 'Submitting the transaction into Cardano network failed.',
-  TransactionRejected: ({message}) => message || 'Transaction rejected while signing.',
+  TransactionRejected: ({message}) =>
+    `Transaction rejected while signing${message ? `:  ${message}` : '.'}`,
   TrezorRejected: () => 'Operation rejected by the Trezor hardware wallet.',
   TransactionCorrupted: () => 'Transaction assembling failure.',
   TransactionNotFoundInBlockchainAfterSubmission: ({txHash}) =>
@@ -43,7 +44,7 @@ const translations = {
   UnknownCryptoProvider: () => 'Unknown crypto provider type',
   NetworkError: () => 'Network connection failed. Please check your network connection.',
 }
-/*  */
+
 function getTranslation(code, params) {
   if (!translations[code]) {
     debugLog(`Translation for ${code} not found!`)
