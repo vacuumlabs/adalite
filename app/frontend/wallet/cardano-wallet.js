@@ -131,7 +131,9 @@ const CardanoWallet = async (options) => {
   }
 
   async function getMaxSendableAmount(address) {
-    const utxos = await getUnspentTxOutputs()
+    const utxos = await getUnspentTxOutputs().catch((e) => {
+      throw NamedError('NetworkError')
+    })
     const txInputs = []
     let coins = 0
     const profitableUtxos = utxos.filter(isUtxoProfitable)

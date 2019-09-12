@@ -398,17 +398,23 @@ module.exports = ({setState, getState}) => {
 
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
-
-    const maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
-    const fieldValue = printAda(maxAmount)
-    setState({
-      sendResponse: '',
-      sendAmount: {
-        fieldValue,
-        coins: maxAmount || null,
-      },
-    })
-    validateSendFormAndCalculateFee()
+    let maxAmount
+    try {
+      maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
+      setState({
+        sendResponse: '',
+        sendAmount: {
+          fieldValue: printAda(maxAmount),
+          coins: maxAmount || null,
+        },
+      })
+      validateSendFormAndCalculateFee()
+    } catch (e) {
+      setState({
+        sendAmountValidationError: {code: 'NetworkError'},
+        calculatingFee: false,
+      })
+    }
   }
 
   const resetSendFormState = (state) => {
