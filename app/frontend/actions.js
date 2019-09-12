@@ -571,7 +571,7 @@ module.exports = ({setState, getState}) => {
       debugLog(e)
       setState({
         sendAmountValidationError: {
-          code: 'SendAmountInsufficientFunds',
+          code: e.name,
           params: {
             balance: state.balance,
           },

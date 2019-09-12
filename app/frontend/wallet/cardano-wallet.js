@@ -118,7 +118,7 @@ const CardanoWallet = async (options) => {
     const changeAmount = txInputsCoinsSum - coins - fee
 
     if (changeAmount < 0) {
-      throw NamedError('CoinFeeError')
+      throw NamedError('SendAmountInsufficientFunds')
     }
 
     const txOutputs = [TxOutput(address, coins, false)]
