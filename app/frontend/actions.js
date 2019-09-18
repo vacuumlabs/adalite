@@ -135,8 +135,8 @@ module.exports = ({setState, getState}) => {
         walletLoadingError: {
           code: e.name,
           params: {
-            message: e.message || undefined,
-            showHelp: e.showHelp || false,
+            message: e.message,
+            showHelp: e.showHelp,
           },
         },
         showWalletLoadingErrorModal: true,
@@ -325,13 +325,13 @@ module.exports = ({setState, getState}) => {
 
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
-    // const transactionFee = computeTxFee(txInputs, address, coins)
     let transactionFee
     try {
       transactionFee = await wallet.getTxFee(address, amount)
     } catch (e) {
+      captureBySentry(e)
       setState({
-        sendAmountValidationError: {code: 'NetworkError'},
+        sendAmountValidationError: {code: e.name},
         calculatingFee: false,
       })
       return
@@ -410,8 +410,9 @@ module.exports = ({setState, getState}) => {
       })
       validateSendFormAndCalculateFee()
     } catch (e) {
+      captureBySentry(e)
       setState({
-        sendAmountValidationError: {code: 'NetworkError'},
+        sendAmountValidationError: {code: e.name},
         calculatingFee: false,
       })
     }
@@ -460,7 +461,6 @@ module.exports = ({setState, getState}) => {
   const submitTransaction = async (state) => {
     setState({
       showConfirmTransactionDialog: false,
-      transactionSubmissionError: undefined,
     })
     if (state.usingHwWallet) {
       setState({waitingForHwWallet: true})
@@ -497,9 +497,9 @@ module.exports = ({setState, getState}) => {
         transactionSubmissionError: {
           code: e.name,
           params: {
-            message: e.message || undefined,
-            txHash: txSubmitResult ? txSubmitResult.txHash : undefined,
-            showHelp: e.showHelp || false,
+            message: e.message,
+            txHash: txSubmitResult && txSubmitResult.txHash,
+            showHelp: e.showHelp,
           },
         },
         showTransactionErrorModal: true,

@@ -2,29 +2,25 @@ const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
 
 const translations = {
-  // send form validation errors
   SendAddressInvalidAddress: () => 'Invalid address',
   SendAmountIsNan: () => 'Invalid format: Amount has to be a number',
   SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
   SendAmountInsufficientFunds: ({balance}) =>
     `Insufficient funds for the transaction. Your balance is ${printAda(balance)} ADA.`,
-  SendAmountCantSendMaxFunds: () =>
+  SendAmountCantSendAnyFunds: () =>
     'Sending funds is not possible since there is not enough balance to pay the transaction fee',
   SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,
 
-  // mnemotic login errors
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
 
-  // login errors
   WalletInitializationError: ({message}) =>
     `Error during wallet initialization${message ? `:  ${message}` : '.'}`,
   TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
   TransportError: ({message}) => `TransportError: ${message}`,
   TransportStatusError: ({message}) => `TransportStatusError: ${message}`,
 
-  // submit transaction errors
   TransactionRejectedByNetwork: () => 'Submitting the transaction into Cardano network failed.',
   TransactionRejected: ({message}) =>
     `Transaction rejected while signing${message ? `:  ${message}` : '.'}`,
@@ -40,7 +36,6 @@ const translations = {
   TrezorError: () =>
     'Trezor operation failed, please make sure ad blockers are switched off for this site',
 
-  // general errors
   UnknownCryptoProvider: () => 'Unknown crypto provider type',
   NetworkError: () => 'Network connection failed. Please check your network connection.',
 }

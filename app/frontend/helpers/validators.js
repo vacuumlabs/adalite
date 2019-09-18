@@ -18,7 +18,7 @@ const sendAmountValidator = (fieldValue, coins) => {
     return null
   }
   if (coins === null) {
-    return {code: 'SendAmountCantSendMaxFunds'}
+    return {code: 'SendAmountCantSendAnyFunds'}
   }
   if (!floatRegex.test(fieldValue) || isNaN(coins)) {
     return {code: 'SendAmountIsNan'}
@@ -37,7 +37,7 @@ const sendAmountValidator = (fieldValue, coins) => {
 
 const feeValidator = (sendAmount, transactionFee, balance) => {
   if (transactionFee >= balance) {
-    return {code: 'SendAmountCantSendMaxFunds'}
+    return {code: 'SendAmountCantSendAnyFunds'}
   }
   if (sendAmount + transactionFee > balance) {
     return {
