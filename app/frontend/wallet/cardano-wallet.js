@@ -96,7 +96,7 @@ const CardanoWallet = async (options) => {
       .signTx(txAux, rawInputTxs, getAddressToAbsPathMapper())
       .catch((e) => {
         debugLog(e)
-        throw NamedError('TransactionRejected', e.message)
+        throw NamedError('TransactionRejectedWhileSigning', e.message)
       })
 
     return signedTx

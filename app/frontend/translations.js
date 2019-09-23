@@ -15,29 +15,29 @@ const translations = {
 
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
 
-  WalletInitializationError: ({message}) =>
-    `Error during wallet initialization${message ? `:  ${message}` : '.'}`,
-  TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
-  TransportError: ({message}) => `TransportError: ${message}`,
-  TransportStatusError: ({message}) => `TransportStatusError: ${message}`,
+  TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser:${message}`,
+  TransportError: ({message}) => `TransportError:${message}`,
+  TransportStatusError: ({message}) => `TransportStatusError:${message}`,
 
-  TransactionRejectedByNetwork: () => 'Submitting the transaction into Cardano network failed.',
-  TransactionRejected: ({message}) =>
+  TransactionRejectedByNetwork: () =>
+    'TransactionRejectedByNetwork:Submitting the transaction into Cardano network failed.',
+  TransactionRejectedWhileSigning: ({message}) =>
     `Transaction rejected while signing${message ? `:  ${message}` : '.'}`,
-  TrezorRejected: () => 'Operation rejected by the Trezor hardware wallet.',
-  TransactionCorrupted: () => 'Transaction assembling failure.',
+  TrezorRejected: () => 'TrezorRejected:Operation rejected by the Trezor hardware wallet.',
+  TransactionCorrupted: () => 'TransactionCorrupted:Transaction assembling failure.',
   TransactionNotFoundInBlockchainAfterSubmission: ({txHash}) =>
-    `Transaction ${txHash} not found in blockchain after being submitted, check it later please.`,
-  TrezorSignTxError: () => 'Signing the transaction on trezor failed.',
-  LedgerOperationError: () => 'Ledger operation failed',
-  TxSerializationError: () => 'Tx serialization mismatch between Ledger and Adalite',
-  CoinAmountError: () => 'Unsupported amount of coins.',
-  CoinFeeError: () => 'Transaction inputs do not cover coins',
-  TrezorError: () =>
-    'Trezor operation failed, please make sure ad blockers are switched off for this site',
+    `TransactionNotFoundInBlockchainAfterSubmission:
+    Transaction ${txHash ||
+      ''} not found in blockchain after being submitted, check it later please.`,
+  TrezorSignTxError: ({message}) => `TrezorSignTxError:${message}`,
+  LedgerOperationError: ({message}) => `LedgerOperationError:${message}`,
+  TxSerializationError: ({message}) => `TxSerializationError:${message}`,
+  CoinAmountError: () => 'CoinAmounError:Unsupported amount of coins.',
+  TrezorError: ({message}) => `TrezorError:${message}`,
 
-  UnknownCryptoProvider: () => 'Unknown crypto provider type',
-  NetworkError: () => 'Network connection failed. Please check your network connection.',
+  CryptoProviderError: ({message}) => `CryptoProviderError:${message}`,
+  NetworkError: () =>
+    'NetworkError:Network connection failed. Please check your network connection.',
 }
 
 function getTranslation(code, params) {

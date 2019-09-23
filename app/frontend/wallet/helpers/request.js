@@ -23,7 +23,6 @@ const request = async function request(url, method = 'GET', body = null, headers
       throw NamedError(
         'NetworkError',
         `${url} returns error: ${response.status} on payload: ${JSON.stringify(requestParams)}`
-        //true
       )
     }
     return response.json()
