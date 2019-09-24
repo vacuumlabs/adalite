@@ -363,6 +363,27 @@ module.exports = ({setState, getState}) => {
     showConfirmTransactionDialog: false,
   })
 
+  const updateEmail = (state, e) => {
+    setState({
+      contactEmail: e.target.value,
+    })
+  }
+
+  const updateName = (state, e) => {
+    setState({
+      contactName: e.target.value,
+    })
+  }
+
+  const updateMessage = (state, e) => {
+    setState({
+      contactMessage: e.target.value,
+    })
+  }
+
+  // const sendUserFeedback = async (state) => {
+  // }
+
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
   const validateSendFormAndCalculateFee = (state) => {
@@ -543,6 +564,7 @@ module.exports = ({setState, getState}) => {
     setState({
       showContactFormModal: false,
     })
+    undefinedFunction()
   }
 
   const exportJsonWallet = async (state, password, walletName) => {
@@ -599,6 +621,9 @@ module.exports = ({setState, getState}) => {
     confirmTransaction,
     cancelTransaction,
     submitTransaction,
+    updateName,
+    updateEmail,
+    updateMessage,
     updateAddress,
     updateAmount,
     loadDemoWallet,
