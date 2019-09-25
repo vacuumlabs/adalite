@@ -13,14 +13,20 @@ app.use(compression())
 app.enable('trust proxy') // to get the actual request protocol on heroku (important for redirect)
 app.use(require('./middlewares/redirectToBaseUrl'))
 
+// don't track in local dev => no need for local GA
+if (backendConfig.ADALITE_GA_TRACKING_ID) {
+  app.use(require('./middlewares/statsGoogleAnalytics').trackVisits)
+  app.use(require('./middlewares/statsGoogleAnalytics').trackTxSubmissions)
+}
+
 // don't track in local dev => no need for local redis
 if (backendConfig.REDIS_URL) {
-  app.use(require('./middlewares/stats').trackVisits)
-  app.use(require('./middlewares/stats').trackTxSubmissions)
+  app.use(require('./middlewares/statsRedis').trackVisits)
+  app.use(require('./middlewares/statsRedis').trackTxSubmissions)
   app.use(
     require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.ADALITE_STATS_PWD})
   )
-  require('./statsPage')(app)
+  require('./statsPageRedis')(app)
 }
 
 app.use(express.static('app/public'))
@@ -103,5 +109,5 @@ if (enableHttps) {
 
 app.listen(backendConfig.PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server is lisening on ${enableHttps ? 'secure' : ''} port ${backendConfig.PORT}!`)
+  console.log(`Server is listening on ${enableHttps ? 'secure' : ''} port ${backendConfig.PORT}!`)
 })

@@ -3,7 +3,7 @@ const device = require('device')
 const client = redis.createClient(process.env.REDIS_URL)
 const mung = require('express-mung')
 const normalizeUrl = require('normalize-url')
-const cbor = require('borc')
+const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 
 const knownIps = new Set()
 
@@ -22,24 +22,6 @@ const isSameOrigin = (urlString1, urlString2) => {
 }
 
 const tokenMatches = (token) => token === process.env.ADALITE_BACKEND_TOKEN
-
-const parseTxBodyOutAmount = (txBody) => {
-  /*
-   * The following code works because AdaLite sends 1 or 2-output txs
-   * depending on the presence of change address, and the first one
-   * is always the amount intended to be sent out
-   */
-  try {
-    const decoded = cbor.decode(txBody)
-
-    // [txAux][outputs][0-th output][amount]
-    return decoded[0][1][0][1]
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e)
-    return 0
-  }
-}
 
 const incrCountersBy = (key, value) => {
   const [year, month, day] = getSlicedDate()
@@ -75,9 +57,19 @@ const trackTxSubmissions = mung.json((body, req, res) => {
 
     if (txSubmissionSuccess === 'successful') {
       const {txBody} = req.body
-      const txOutAmount = parseTxBodyOutAmount(txBody)
+      let txOutAmount = 0
+      let txTotalAmount = 0
+
+      try {
+        txOutAmount = parseTxBodyOutAmount(txBody)
+        txTotalAmount = parseTxBodyTotalAmount(txBody)
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e)
+      }
 
       incrCountersBy(`${txSubmissionType}:sentOut`, txOutAmount)
+      incrCountersBy(`${txSubmissionType}:sentTotal`, txTotalAmount)
     }
   }
 })

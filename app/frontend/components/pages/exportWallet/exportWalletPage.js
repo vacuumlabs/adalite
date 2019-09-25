@@ -24,9 +24,10 @@ class ExportWalletDialog extends Component {
       passwordTouched: false,
       confirmationTouched: false,
       walletNameValid: false,
-      isPasswordValid: false,
+      isPasswordValid: true,
       showError: false,
       errorMessage: '',
+      warningMessage: '',
     }
 
     this.updateWalletName = this.updateWalletName.bind(this)
@@ -52,17 +53,37 @@ class ExportWalletDialog extends Component {
   }
 
   isPasswordValid(password, confirmation) {
-    return password === confirmation && password.trim().length
+    return password === confirmation
+  }
+
+  getWarningMessage(password) {
+    let warnMsg = ''
+    if (password.trim().length < 8) {
+      warnMsg = 'OPTIONAL - Password should be at least 8 characters long'
+    }
+    if (!/^.*[0-9]+.*$/.test(password)) {
+      warnMsg = 'OPTIONAL - Password should contain at least one numerical digit'
+    }
+    if (!/^.*[A-Z]+.*$/.test(password)) {
+      warnMsg = 'OPTIONAL - Password should contain at least one uppercase letter'
+    }
+    if (!/^.*[a-z]+.*$/.test(password)) {
+      warnMsg = 'OPTIONAL - Password should contain at least one lowercase letter'
+    }
+
+    return warnMsg
   }
 
   updatePassword(e) {
     const passwordValid = this.isPasswordValid(e.target.value, this.state.confirmation)
+    const secureWarningMsg = this.getWarningMessage(e.target.value)
     const passwordsTouched = this.state.passwordTouched && this.state.confirmationTouched
     this.setState({
       password: e.target.value,
       isPasswordValid: passwordValid,
       showError: passwordsTouched && !passwordValid,
-      errorMessage: passwordsTouched && !passwordValid && 'Both passwords must match',
+      errorMessage: !passwordValid && 'Both passwords must match',
+      warningMessage: secureWarningMsg,
     })
   }
 
@@ -73,7 +94,7 @@ class ExportWalletDialog extends Component {
       confirmation: e.target.value,
       isPasswordValid: passwordValid,
       showError: passwordsTouched && !passwordValid,
-      errorMessage: passwordsTouched && !passwordValid && 'Both passwords must match',
+      errorMessage: !passwordValid && 'Both passwords must match',
     })
   }
 
@@ -101,7 +122,16 @@ class ExportWalletDialog extends Component {
 
   render(
     {_},
-    {confirmation, password, walletName, showError, isPasswordValid, errorMessage, walletNameValid}
+    {
+      confirmation,
+      password,
+      walletName,
+      showError,
+      isPasswordValid,
+      errorMessage,
+      warningMessage,
+      walletNameValid,
+    }
   ) {
     return h(
       'div',
@@ -136,7 +166,7 @@ class ExportWalletDialog extends Component {
               class: 'input fullwidth export',
               id: 'keyfile-password',
               name: 'keyfile-password',
-              placeholder: 'Choose a password',
+              placeholder: 'Choose a password (optional)',
               value: password,
               onInput: this.updatePassword,
               onBlur: this.touchPassword,
@@ -153,9 +183,25 @@ class ExportWalletDialog extends Component {
               onBlur: this.touchConfirmation,
               autocomplete: 'off',
             }),
+            (showError || warningMessage.length > 0) &&
+              h(
+                'div',
+                {class: 'validation-error-field'},
+                showError && h('div', {class: 'validation-message error'}, errorMessage),
+                warningMessage.length > 0 &&
+                  h('div', {class: 'validation-message warning'}, warningMessage)
+              ),
             h(
               'div',
-              {class: 'validation-row'},
+              {class: 'export-content-bottom'},
+              h(
+                'button',
+                {
+                  class: 'button secondary',
+                  onClick: () => window.history.back(),
+                },
+                'Back'
+              ),
               h(
                 'button',
                 {
@@ -164,8 +210,7 @@ class ExportWalletDialog extends Component {
                   onClick: this.exportJsonWallet,
                 },
                 'Download the key file'
-              ),
-              showError && h('div', {class: 'validation-message error'}, errorMessage)
+              )
             )
           ),
           h(Tag, {type: 'warning big', text: 'PROCEED WITH CAUTION'})
