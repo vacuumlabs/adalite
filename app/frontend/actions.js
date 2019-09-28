@@ -378,6 +378,28 @@ module.exports = ({setState, getState}) => {
     showConfirmTransactionDialog: false,
   })
 
+  const updateEmail = (state, e) => {
+    setState({
+      contactEmail: e.target.value,
+    })
+  }
+
+  const updateName = (state, e) => {
+    setState({
+      contactName: e.target.value,
+    })
+  }
+
+  const updateMessage = (state, e) => {
+    setState({
+      contactMessage: e.target.value,
+    })
+  }
+
+  const submitUserFeedback = (state) => {
+    // TODO
+  }
+
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
   const validateSendFormAndCalculateFee = (state) => {
@@ -620,6 +642,7 @@ module.exports = ({setState, getState}) => {
     closeTransactionErrorModal,
     closeWalletLoadingErrorModal,
     closeUnexpectedErrorModal,
+    submitUserFeedback,
     showContactFormModal,
     closeContactFormModal,
   }
