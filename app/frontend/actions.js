@@ -21,6 +21,7 @@ const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecr
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
 const captureBySentry = require('./helpers/captureBySentry')
+const submitFeedbackToSentry = require('./helpers/submitFeedbackToSentry')
 
 let wallet = null
 
@@ -396,8 +397,15 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const submitUserFeedback = (state) => {
-    // TODO
+  const submitUserFeedbackToSentry = async (state) => {
+    console.log('ahoj')
+    await submitFeedbackToSentry(
+      state.contactMessage,
+      state.contactEmail,
+      state.contactName,
+      state.sendSentry.event.event_id,
+      ''
+    )
   }
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
@@ -642,7 +650,7 @@ module.exports = ({setState, getState}) => {
     closeTransactionErrorModal,
     closeWalletLoadingErrorModal,
     closeUnexpectedErrorModal,
-    submitUserFeedback,
+    submitUserFeedbackToSentry,
     showContactFormModal,
     closeContactFormModal,
   }

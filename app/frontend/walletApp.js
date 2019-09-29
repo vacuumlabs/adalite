@@ -68,7 +68,7 @@ Sentry.init({
         showUnexpectedErrorModal: true,
       })
     }).then((res) => {
-      return res === true ? event : null
+      return res === true ? null : null
     })
   },
 })
