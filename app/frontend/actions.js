@@ -62,6 +62,19 @@ module.exports = ({setState, getState}) => {
     )
   }
 
+  const handleError = (errorName, e, params) => {
+    captureBySentry(e)
+    setState({
+      error: e,
+      [errorName]: {
+        code: e.name || e,
+        message: e.message,
+        showHelp: e.showHelp,
+        ...params,
+      },
+    })
+  }
+
   const setAuthMethod = (state, option) => {
     setState({
       authMethod: option,
@@ -79,7 +92,7 @@ module.exports = ({setState, getState}) => {
       setState({
         conversionRates: null,
       })
-      throw NamedError('ConversionRatesError', 'Could not fetch conversion rates.')
+      throw NamedError('ConversionRatesError', '`Could not fetch conversion rates.')
     }
     return true
   }
@@ -125,6 +138,7 @@ module.exports = ({setState, getState}) => {
         showGenerateMnemonicDialog: false,
       })
       await fetchConversionRates(state, conversionRates)
+      throw NamedError('NetworkError', 'dobree', true)
     } catch (e) {
       setState({
         loading: false,
@@ -132,6 +146,7 @@ module.exports = ({setState, getState}) => {
       debugLog(e)
       captureBySentry(e)
       setState({
+        error: e,
         walletLoadingError: {
           code: e.name,
           params: {
@@ -494,6 +509,7 @@ module.exports = ({setState, getState}) => {
       debugLog(e)
       captureBySentry(e)
       setState({
+        error: e,
         transactionSubmissionError: {
           code: e.name,
           params: {

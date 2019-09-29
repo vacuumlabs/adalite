@@ -1,7 +1,7 @@
 const {getTranslation} = require('../translations')
 
 function captureBySentry(e) {
-  if (!getTranslation(e.name)) {
+  if (e && !getTranslation(e.name)) {
     throw e
   }
   return

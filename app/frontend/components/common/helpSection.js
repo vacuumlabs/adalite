@@ -1,6 +1,14 @@
 const {h} = require('preact')
+const Sentry = require('@sentry/browser')
+const actions = require('../../actions')
+const connect = require('unistore/preact').connect
 
-const HelpSection = () =>
+const HelpSection = connect(
+  (state) => ({
+    error: state.error,
+  }),
+  actions
+)(({error}) =>
   h(
     'div',
     {},
@@ -18,7 +26,25 @@ const HelpSection = () =>
         'troubleshooting suggestions'
       ),
       ' before contacting us.'
+    ),
+    h(
+      'p',
+      {
+        class: 'modal-instructions',
+      },
+      "Didn't help?",
+      h(
+        'a',
+        {
+          onClick: () => {
+            Sentry.captureEvent(error)
+          },
+        },
+        'Send'
+      ),
+      ' us the error.'
     )
   )
+)
 
 module.exports = HelpSection
