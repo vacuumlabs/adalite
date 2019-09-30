@@ -7,13 +7,16 @@ const DonationButtons = ({
   updateDonation,
   checkedDonationType,
   sendAmount,
+  sendAmountValidationError,
   toggleCustomDonation,
   isSendAddressValid,
   percentageDonationValue,
   percentageDonationText,
   thresholdAmountReached,
-}) =>
-  h(
+}) => {
+  const isFormValid = isSendAddressValid && sendAmount && !sendAmountValidationError
+
+  return h(
     'div',
     {
       class: 'send-donate',
@@ -25,7 +28,7 @@ const DonationButtons = ({
         'class': checkedDonationType === 'fixed' ? 'button donate active' : 'button donate',
         'value': 40, //TODO: config this
         'onClick': updateDonation,
-        'disabled': !isSendAddressValid || !sendAmount,
+        'disabled': !isFormValid,
         'aria-label': 'Fixed amount',
       },
       h(AdaIcon),
@@ -38,7 +41,7 @@ const DonationButtons = ({
         'class': checkedDonationType === 'percentage' ? 'button donate active' : 'button donate',
         'value': percentageDonationValue,
         'onClick': updateDonation,
-        'disabled': !isSendAddressValid || !sendAmount || !thresholdAmountReached,
+        'disabled': !isFormValid || !thresholdAmountReached,
         'aria-label': 'Percentage amount',
       },
       `${percentageDonationText} (`,
@@ -51,15 +54,17 @@ const DonationButtons = ({
         class: 'button donate',
         id: 'custom',
         onClick: toggleCustomDonation,
-        disabled: !isSendAddressValid || !sendAmount,
+        disabled: !isFormValid,
       },
       'Custom'
     )
   )
+}
 
 module.exports = connect(
   (state) => ({
     sendAmount: state.sendAmount.fieldValue,
+    sendAmountValidationError: state.sendAmount.validationError,
     checkedDonationType: state.checkedDonationType,
     percentageDonationValue: Math.round(state.percentageDonationValue),
     percentageDonationText: state.percentageDonationText,

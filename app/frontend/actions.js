@@ -367,13 +367,6 @@ module.exports = ({setState, getState}) => {
     showConfirmTransactionDialog: false,
   })
 
-  const resetDonation = () => {
-    setState({
-      checkedDonationType: '',
-      donationAmount: {fieldValue: '', coins: 0},
-    })
-  }
-
   const calculatePercentageDonation = async () => {
     //TODO: remember fee, question about rounding
     const state = getState()
@@ -396,14 +389,64 @@ module.exports = ({setState, getState}) => {
     }
   }
 
+  const resetAmountFields = (state) => {
+    setState({
+      donationAmount: {fieldValue: '', coins: 0},
+      donationAmountForTransactionFee: 0,
+      sendAmountForTransactionFee: 0,
+      transactionFee: 0,
+      maxSendAmount: Infinity,
+      maxDonationAmount: Infinity,
+      percentageDonationValue: 0,
+      percentageDonationText: '0.2%',
+      checkedDonationType: '',
+      thresholdAmountReached: false,
+      showCustomDonationInput: false,
+    })
+  }
+
+  const resetSendFormState = (state) => {
+    setState({
+      sendResponse: '',
+      loading: false,
+      showConfirmTransactionDialog: false,
+      showTransactionErrorModal: false,
+    })
+  }
+
+  const resetSendFormFields = (state) => {
+    setState({
+      sendAmount: {fieldValue: '', coins: 0},
+      sendAddress: {fieldValue: ''},
+    })
+    resetAmountFields()
+  }
+
+  const resetDonation = () => {
+    setState({
+      checkedDonationType: '',
+      donationAmount: {fieldValue: '', coins: 0},
+    })
+  }
+
+  const isSendAmountNonPositive = (sendAmount) =>
+    sendAmount.validationError &&
+    (sendAmount.validationError.code === 'SendAmountIsNotPositive' ||
+      sendAmount.validationError.code === 'SendAmountIsNan')
+
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
   const validateSendFormAndCalculateFee = () => {
     validateSendForm(getState())
-    if (isSendFormFilledAndValid(getState())) {
+    const state = getState()
+
+    if (isSendFormFilledAndValid(state)) {
       setState({calculatingFee: true})
       debouncedCalculateFee()
     } else {
+      if (isSendAmountNonPositive(state.sendAmount)) {
+        resetAmountFields()
+      }
       setState({calculatingFee: false})
     }
   }
@@ -469,9 +512,12 @@ module.exports = ({setState, getState}) => {
         fieldValue: e.target.value,
       }),
     })
+
     validateSendFormAndCalculateFee()
-    handleThresholdAmount()
-    calculateMaxDonationAmount()
+    if (isSendFormFilledAndValid(state)) {
+      handleThresholdAmount()
+      calculateMaxDonationAmount()
+    }
   }
 
   const sendMaxFunds = async (state) => {
@@ -497,32 +543,6 @@ module.exports = ({setState, getState}) => {
         calculatingFee: false,
       })
     }
-  }
-
-  const resetSendFormState = (state) => {
-    setState({
-      sendResponse: '',
-      loading: false,
-      showConfirmTransactionDialog: false,
-      showTransactionErrorModal: false,
-    })
-  }
-
-  const resetSendFormFields = (state) => {
-    setState({
-      sendAmount: {fieldValue: '', coins: 0},
-      sendAddress: {fieldValue: ''},
-      donationAmount: {fieldValue: '', coins: 0},
-      donationAmountForTransactionFee: 0,
-      sendAmountForTransactionFee: 0,
-      transactionFee: 0,
-      maxSendAmount: Infinity,
-      maxDonationAmount: Infinity,
-      percentageDonationValue: 0,
-      percentageDonationText: '0.2%',
-      checkedDonationType: '',
-      thresholdAmountReached: false,
-    })
   }
 
   const waitForTxToAppearOnBlockchain = async (state, txHash, pollingInterval, maxRetries) => {
