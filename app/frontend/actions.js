@@ -398,13 +398,12 @@ module.exports = ({setState, getState}) => {
   }
 
   const submitUserFeedbackToSentry = async (state) => {
-    console.log('ahoj')
     await submitFeedbackToSentry(
       state.contactMessage,
       state.contactEmail,
       state.contactName,
       state.sendSentry.event.event_id,
-      ''
+      'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383'
     )
   }
 
