@@ -17,9 +17,11 @@ const CustomInputButton = ({
       'button',
       {
         class: 'button send-max',
-        onClick: setDonation,
+        onClick: (e) => {
+          e.preventDefault()
+          setDonation(maxDonationAmountInAda)
+        },
         disabled: !isSendAddressValid,
-        value: maxDonationAmountInAda,
       },
       'Max (',
       h(AdaIcon),

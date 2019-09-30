@@ -368,25 +368,21 @@ module.exports = ({setState, getState}) => {
   })
 
   const calculatePercentageDonation = async () => {
-    //TODO: remember fee, question about rounding
     const state = getState()
     const percentageDonation = state.sendAmount.coins * 0.002
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
 
-    if (amount + transactionFee + percentageDonation <= state.balance) {
-      setState({
-        percentageDonationValue: percentageDonation * 0.000001,
-        percentageDonationText: '0.2%',
-      })
-    } else {
-      //exceeded balance, lower to 1%, minimum is 1 ADA
-      setState({
-        percentageDonationValue: Math.max((percentageDonation / 2) * 0.000001, 1),
-        percentageDonationText: '0.1%',
-      })
-    }
+    return amount + transactionFee + percentageDonation <= state.balance
+      ? {
+        text: '0.2%',
+        value: Math.round(percentageDonation * 0.000001),
+      }
+      : {
+        text: '0.1%', // exceeded balance, lower to 1%, minimum is 1 ADA
+        value: Math.round(Math.max((percentageDonation / 2) * 0.000001, 1)),
+      }
   }
 
   const resetAmountFields = (state) => {
@@ -461,27 +457,56 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
-  const handleThresholdAmount = () => {
-    const state = getState()
-    if (state.checkedDonationType === 'percentage') {
-      resetDonation()
-    }
+  /*
+  SELECTED
+     0.2% -> 0.2% || Min =====> stay (but update and set)
+     Min  -> 0.2%       =====> reset (update)
+     Min  -> Min        =====> stay (not necessarily update and set)
+  UNSELECTED
+     ANY  -> ANY        =====> do not set, just update text n val
+  */
 
-    if (state.sendAmount.coins < 500000000) {
-      //TODO: config
-      if (state.thresholdAmountReached) {
-        setState({
-          percentageDonationValue: 1,
-          percentageDonationText: 'Min',
-        })
-      }
-      return
-    }
-
+  const setDonation = (state, value) => {
     setState({
-      thresholdAmountReached: true,
+      donationAmount: Object.assign({}, state.donationAmount, {
+        fieldValue: value.toString(),
+      }),
     })
-    calculatePercentageDonation()
+    validateSendFormAndCalculateFee()
+  }
+
+  const handleThresholdAmount = async () => {
+    const state = getState()
+    let newText,
+      newVal,
+      thresholdAmountReached = state.thresholdAmountReached
+    if (state.sendAmount.coins < 500000000) {
+      newVal = 1
+      newText = 'Min'
+    } else {
+      thresholdAmountReached = true
+      const percentageObj = await calculatePercentageDonation()
+      newVal = percentageObj.value
+      newText = percentageObj.text
+    }
+
+    if (state.checkedDonationType === 'percentage') {
+      // already selected
+      if (state.percentageDonationText === 'Min' && newText === '0.2%') {
+        // special case when we want user to notice if he goes from donating 1 ADA to 0.2%
+        resetDonation()
+      } else {
+        setDonation(state, newVal)
+      }
+    }
+
+    if (state.thresholdAmountReached || thresholdAmountReached) {
+      setState({
+        percentageDonationValue: newVal,
+        percentageDonationText: newText,
+        thresholdAmountReached: true,
+      })
+    }
   }
 
   const calculateMaxDonationAmount = async () => {
@@ -514,7 +539,7 @@ module.exports = ({setState, getState}) => {
     })
 
     validateSendFormAndCalculateFee()
-    if (isSendFormFilledAndValid(state)) {
+    if (isSendFormFilledAndValid(getState())) {
       handleThresholdAmount()
       calculateMaxDonationAmount()
     }
@@ -701,15 +726,6 @@ module.exports = ({setState, getState}) => {
         checkedDonationType: e.target.id,
       })
     }
-    validateSendFormAndCalculateFee()
-  }
-
-  const setDonation = (state, e) => {
-    setState({
-      donationAmount: Object.assign({}, state.donationAmount, {
-        fieldValue: e.target.value,
-      }),
-    })
     validateSendFormAndCalculateFee()
   }
 
