@@ -2254,7 +2254,7 @@ button[data-balloon] {
 }
 
 .send-donate {
-  margin: 0px;
+  margin: 6px 0px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   justify-content: space-between;
