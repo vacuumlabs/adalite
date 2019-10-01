@@ -532,6 +532,10 @@ button[data-balloon] {
   background-image: url('../assets/alert_icon_danger.svg');
 }
 
+.alert.error.event {
+  margin-top: unset;
+}
+
 .alert.success {
   border-color: var(--color-success);
 }
@@ -875,6 +879,10 @@ button[data-balloon] {
 
 .modal-body.centered .modal-footer {
   margin-top: 40px;
+}
+
+.modal-section {
+  margin-bottom: 16px;
 }
 
 /* MAIN PAGE */

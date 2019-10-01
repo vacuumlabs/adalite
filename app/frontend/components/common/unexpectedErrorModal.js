@@ -22,11 +22,62 @@ class UnexpectedErrorModal extends Component {
         closeHandler: () => this.closeAndResolve(false),
         title: 'Something went wrong.',
       },
-      h('p', {class: 'modal-paragraph'}, 'Do you want to inform Adalite about this error? '),
+      h(
+        'div',
+        {
+          class: 'modal-section',
+        },
+        h('p', {class: 'instruction'}, 'Do you want to inform Adalite about this error?'),
+        h('p', {class: 'instruction'}, 'Tell us what happened!')
+      ),
+      h(
+        'div',
+        {
+          class: 'contact-form',
+        },
+        h(
+          'div',
+          {
+            class: 'form-row',
+          },
+          h('input', {
+            type: 'text',
+            autocomplete: 'off',
+            placeholder: 'Your name',
+            name: 'name',
+            class: 'input fullwidth',
+            required: true,
+            onBlur: (e) => {
+              this.props.updateName(e)
+            },
+          }),
+          h('input', {
+            type: 'email',
+            autocomplete: 'off',
+            placeholder: 'Your email',
+            name: '_replyto',
+            class: 'input fullwidth',
+            required: true,
+            onBlur: (e) => {
+              this.props.updateEmail(e)
+            },
+          })
+        ),
+        h('textarea', {
+          placeholder: 'Your message',
+          autocomplete: 'off',
+          name: 'message',
+          class: 'input fullwidth textarea',
+          required: true,
+          onBlur: (e) => {
+            this.props.updateMessage(e)
+          },
+        })
+      ),
       h(
         Alert,
         {
-          alertType: 'error',
+          alertType: 'error event',
         },
         JSON.stringify(sendSentry.event)
       ),
