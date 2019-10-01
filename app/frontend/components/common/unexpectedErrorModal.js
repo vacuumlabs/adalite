@@ -41,23 +41,17 @@ class UnexpectedErrorModal extends Component {
             class: 'form-row',
           },
           h('input', {
-            type: 'text',
             autocomplete: 'off',
             placeholder: 'Your name',
-            name: 'name',
             class: 'input fullwidth',
-            required: true,
             onBlur: (e) => {
               this.props.updateName(e)
             },
           }),
           h('input', {
-            type: 'email',
             autocomplete: 'off',
             placeholder: 'Your email',
-            name: '_replyto',
             class: 'input fullwidth',
-            required: true,
             onBlur: (e) => {
               this.props.updateEmail(e)
             },
@@ -66,11 +60,9 @@ class UnexpectedErrorModal extends Component {
         h('textarea', {
           placeholder: 'Your message',
           autocomplete: 'off',
-          name: 'message',
           class: 'input fullwidth textarea',
-          required: true,
           onBlur: (e) => {
-            this.props.updateMessage(e)
+            this.props.updateComments(e)
           },
         })
       ),
