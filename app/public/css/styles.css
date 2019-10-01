@@ -2262,6 +2262,7 @@ button[data-balloon] {
 }
 
 .send-donate-msg {
+  margin: 17px 0px;
   padding-left: 16px;
 }
 
