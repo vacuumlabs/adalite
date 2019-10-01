@@ -18,7 +18,7 @@ const ErrorModal = ({closeHandler, title, buttonTitle, errorMessage, showHelp = 
       },
       errorMessage
     ),
-    showHelp && h(HelpSection, undefined),
+    showHelp && h(HelpSection, {closeHandler}),
     h(
       'div',
       {class: 'modal-footer'},

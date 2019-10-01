@@ -8,7 +8,7 @@ const HelpSection = connect(
     error: state.error,
   }),
   actions
-)(({error}) =>
+)(({closeHandler, error}) =>
   h(
     'div',
     {},
@@ -32,11 +32,12 @@ const HelpSection = connect(
       {
         class: 'modal-instructions',
       },
-      "Didn't help?",
+      "Didn't help? ",
       h(
         'a',
         {
           onClick: () => {
+            closeHandler()
             Sentry.captureEvent(error)
           },
         },
