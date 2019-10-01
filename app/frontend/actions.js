@@ -62,15 +62,18 @@ module.exports = ({setState, getState}) => {
     )
   }
 
-  const handleError = (errorName, e, params) => {
+  const handleError = (errorName, e, options) => {
+    debugLog(e)
     captureBySentry(e)
     setState({
       error: e,
       [errorName]: {
         code: e.name || e,
-        message: e.message,
-        showHelp: e.showHelp,
-        ...params,
+        params: {
+          message: e.message,
+          showHelp: e.showHelp,
+          ...options,
+        },
       },
     })
   }
@@ -82,7 +85,7 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const fetchConversionRates = async (state, conversionRates) => {
+  const fetchConversionRates = async (conversionRates) => {
     try {
       setState({
         conversionRates: await conversionRates,
@@ -137,23 +140,14 @@ module.exports = ({setState, getState}) => {
         showDemoWalletWarningDialog: isDemoWallet,
         showGenerateMnemonicDialog: false,
       })
-      await fetchConversionRates(state, conversionRates)
+      await fetchConversionRates(conversionRates)
       throw NamedError('NetworkError', 'dobree', true)
     } catch (e) {
       setState({
         loading: false,
       })
-      debugLog(e)
-      captureBySentry(e)
+      handleError('walletLoadingError', e)
       setState({
-        error: e,
-        walletLoadingError: {
-          code: e.name,
-          params: {
-            message: e.message,
-            showHelp: e.showHelp,
-          },
-        },
         showWalletLoadingErrorModal: true,
       })
       return false
