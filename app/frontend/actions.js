@@ -396,7 +396,6 @@ module.exports = ({setState, getState}) => {
       percentageDonationValue: 0,
       percentageDonationText: '0.2%',
       checkedDonationType: '',
-      thresholdAmountReached: false,
       showCustomDonationInput: false,
     })
   }
@@ -533,29 +532,51 @@ module.exports = ({setState, getState}) => {
     }
   }
 
+  const validateAndSetMaxFunds = (state, maxAmounts) => {
+    /* maxAmounts.donationAmount exists only if user triggers
+      this function with percentage donation selected */
+    const validatedMaxAmount = sendAmountValidator(printAda(maxAmounts.sendAmount))
+    const validatedPercentageAmount = maxAmounts.donationAmount
+      ? donationAmountValidator(printAda(maxAmounts.donationAmount))
+      : undefined
+
+    setState({
+      sendResponse: '',
+      sendAmount: validatedMaxAmount,
+      maxSendAmount: validatedMaxAmount.coins,
+      maxDonationAmount: maxAmounts.donationAmount || state.donationAmount.coins,
+    })
+
+    if (maxAmounts.donationAmount) {
+      setState({
+        percentageDonationValue: parseInt(validatedPercentageAmount.fieldValue, 10),
+        percentageDonationText: '0.2%',
+        donationAmount: validatedPercentageAmount,
+      })
+    }
+    validateSendFormAndCalculateFee()
+  }
+
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
-    resetDonation()
+    const maxAmounts = await wallet.getMaxSendableAmount(
+      state.sendAddress.fieldValue,
+      state.donationAmount.fieldValue !== '',
+      state.donationAmount.coins,
+      state.checkedDonationType
+    )
 
-    const maxSendAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
-    const validatedMaxAmount = sendAmountValidator(printAda(maxSendAmount))
-
-    if (maxSendAmount > 0) {
-      setState({
-        sendResponse: '',
-        sendAmount: validatedMaxAmount,
-        maxSendAmount: validatedMaxAmount.coins,
-        maxDonationAmount: 0,
-      })
-      validateSendFormAndCalculateFee()
-    } else {
+    if (maxAmounts.sendAmount <= 0) {
       setState({
         sendAmount: Object.assign({}, state.sendAmount, {
           validationError: {code: 'SendAmountCantSendMaxFunds'},
         }),
         calculatingFee: false,
       })
+      return
     }
+
+    validateAndSetMaxFunds(state, maxAmounts)
   }
 
   const waitForTxToAppearOnBlockchain = async (state, txHash, pollingInterval, maxRetries) => {

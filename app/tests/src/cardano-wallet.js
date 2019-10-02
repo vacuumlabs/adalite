@@ -199,9 +199,9 @@ describe('max sendable amount computation', () => {
     const mockNet = mockNetwork(mockConfig1)
     mockNet.mockUtxoEndpoint()
 
-    const maxSendableAmount = await wallets.smallUtxos.getMaxSendableAmount(myAddress)
+    const maxAmounts = await wallets.smallUtxos.getMaxSendableAmount(myAddress, false)
 
-    assert.equal(maxSendableAmount, 1324447)
+    assert.equal(maxAmounts.sendAmount, 1324447)
     mockNet.clean()
   })
 })

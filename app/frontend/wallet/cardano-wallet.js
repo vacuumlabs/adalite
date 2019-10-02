@@ -154,10 +154,41 @@ const CardanoWallet = async (options) => {
     return {txInputs, coins}
   }
 
-  async function getMaxSendableAmount(address) {
+  const getMaxSendableAmountWithDonation = (
+    address,
+    txInputs,
+    coins,
+    donationAmount,
+    donationType
+  ) => {
+    if (donationType === 'percentage') {
+      // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
+      const reducedAmount = coins / 1.002 //leave some for donation (0.2%)
+      const percentageDonation = reducedAmount * 0.002
+      // we show rounded % donations in the UI
+      const roundedDonation = Math.round(percentageDonation / 1000000) * 1000000
+      const diff = percentageDonation - roundedDonation
+      // add diff from rounding (can be negative)
+      const txFee = computeTxFee(txInputs, address, reducedAmount + diff, true, roundedDonation)
+      return {
+        sendAmount: reducedAmount + diff - txFee,
+        donationAmount: roundedDonation,
+      }
+    } else {
+      const txFee = computeTxFee(txInputs, address, coins - donationAmount, true, donationAmount)
+      return {sendAmount: Math.max(coins - donationAmount - txFee, 0)}
+    }
+  }
+
+  async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
     const {txInputs, coins} = await getTxInputsAndCoins()
-    const txFee = computeTxFee(txInputs, address, coins, false)
-    return Math.max(coins - txFee, 0)
+
+    if (!hasDonation) {
+      const txFee = computeTxFee(txInputs, address, coins, false)
+      return {sendAmount: Math.max(coins - txFee, 0)}
+    }
+
+    return getMaxSendableAmountWithDonation(address, txInputs, coins, donationAmount, donationType)
   }
 
   async function getMaxDonationAmount(address, sendAmount) {
