@@ -31,8 +31,8 @@ const DonationButtons = ({
         'disabled': !isFormValid,
         'aria-label': 'Fixed amount',
       },
-      h(AdaIcon),
-      '40' //TODO: config this)
+      '40 ', //TODO: config this
+      h(AdaIcon)
     ),
     h(
       'button',
@@ -45,8 +45,9 @@ const DonationButtons = ({
         'aria-label': 'Percentage amount',
       },
       `${percentageDonationText} (`,
+      `${percentageDonationValue} `,
       h(AdaIcon),
-      `${percentageDonationValue})`
+      ')'
     ),
     h(
       'button',

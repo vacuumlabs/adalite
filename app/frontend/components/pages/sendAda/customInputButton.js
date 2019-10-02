@@ -24,8 +24,9 @@ const CustomInputButton = ({
         disabled: !isSendAddressValid,
       },
       'Max (',
+      `${maxDonationAmountInAda} `,
       h(AdaIcon),
-      `${maxDonationAmountInAda})`
+      ')'
     )
     : h(
       'button',
