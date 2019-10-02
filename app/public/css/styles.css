@@ -2211,7 +2211,7 @@ button[data-balloon] {
   line-height: 32px;
 }
 
-.ada-label::after {
+.ada-label:not(.donation)::after {
   content: '';
   position: absolute;
   width: 9px;
@@ -2225,6 +2225,21 @@ button[data-balloon] {
   background-size: contain;
   background-position: center;
   background-image: url('../assets/ada_symbol_grey.svg');
+}
+
+.show-info::after {
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  left: 0;
+  top: -1px;
+  bottom: 0;
+  margin-left: 5px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/question_symbol.svg');
 }
 
 .send-values .ada-label {
@@ -3320,12 +3335,12 @@ button[data-balloon] {
 
   /* TOOLTIP */
 
-  [data-balloon]:hover::after,
+  /* [data-balloon]:hover::after,
   [data-balloon]:hover::before,
   [data-balloon]::after,
   [data-balloon]::before {
     display: none;
-  }
+  } */
 
   /* ADDRESSES */
 

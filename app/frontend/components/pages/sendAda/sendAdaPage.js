@@ -12,6 +12,7 @@ const TransactionErrorModal = require('./transactionErrorModal')
 const DonationButtons = require('./donationButtons')
 const CustomDonationInput = require('./customDonationInput')
 const Conversions = require('../../common/conversions')
+const MouseOverTooltip = require('../../common/mouseOverTooltip')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
@@ -160,10 +161,11 @@ const SendAdaPage = ({
       h(
         'label',
         {
-          class: 'ada-label amount',
+          class: 'ada-label amount donation',
           for: 'donation-amount',
         },
-        'Donate'
+        'Donate',
+        h(MouseOverTooltip)
       ),
       !isDonationSufficient &&
         h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),
