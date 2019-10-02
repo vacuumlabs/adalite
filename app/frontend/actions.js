@@ -367,7 +367,7 @@ module.exports = ({setState, getState}) => {
     showConfirmTransactionDialog: false,
   })
 
-  const calculatePercentageDonation = async () => {
+  const getPercentageDonationProperties = async () => {
     const state = getState()
     const percentageDonation = state.sendAmount.coins * 0.002
     const address = state.sendAddress.fieldValue
@@ -457,15 +457,6 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
-  /*
-  SELECTED
-     0.2% -> 0.2% || Min =====> stay (but update and set)
-     Min  -> 0.2%       =====> reset (update)
-     Min  -> Min        =====> stay (not necessarily update and set)
-  UNSELECTED
-     ANY  -> ANY        =====> do not set, just update text n val
-  */
-
   const setDonation = (state, value) => {
     setState({
       donationAmount: Object.assign({}, state.donationAmount, {
@@ -475,35 +466,32 @@ module.exports = ({setState, getState}) => {
     validateSendFormAndCalculateFee()
   }
 
+  const getProperTextAndVal = async (coins) => {
+    if (coins < 500000000) {
+      return {text: 'Min', value: 1}
+    }
+
+    const percentageProperties = await getPercentageDonationProperties()
+    return {
+      text: percentageProperties.text,
+      value: percentageProperties.value,
+      thresholdReached: true,
+    }
+  }
+
   const handleThresholdAmount = async () => {
     const state = getState()
-    let newText,
-      newVal,
-      thresholdAmountReached = state.thresholdAmountReached
-    if (state.sendAmount.coins < 500000000) {
-      newVal = 1
-      newText = 'Min'
-    } else {
-      thresholdAmountReached = true
-      const percentageObj = await calculatePercentageDonation()
-      newVal = percentageObj.value
-      newText = percentageObj.text
-    }
+    const donationProperties = await getProperTextAndVal(state.sendAmount.coins)
 
     if (state.checkedDonationType === 'percentage') {
       // already selected
-      if (state.percentageDonationText === 'Min' && newText === '0.2%') {
-        // special case when we want user to notice if he goes from donating 1 ADA to 0.2%
-        resetDonation()
-      } else {
-        setDonation(state, newVal)
-      }
+      setDonation(state, donationProperties.value)
     }
 
-    if (state.thresholdAmountReached || thresholdAmountReached) {
+    if (state.thresholdAmountReached || donationProperties.thresholdReached) {
       setState({
-        percentageDonationValue: newVal,
-        percentageDonationText: newText,
+        percentageDonationValue: donationProperties.value,
+        percentageDonationText: donationProperties.text,
         thresholdAmountReached: true,
       })
     }
