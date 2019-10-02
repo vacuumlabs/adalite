@@ -45,7 +45,6 @@ const feeValidator = (sendAmount, transactionFee, balance) => {
       params: {balance},
     }
   }
-
   return null
 }
 
@@ -57,7 +56,6 @@ const mnemonicValidator = (mnemonic) => {
       code: 'InvalidMnemonic',
     }
   }
-
   return validationError
 }
 

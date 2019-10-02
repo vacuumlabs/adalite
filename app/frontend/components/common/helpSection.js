@@ -11,12 +11,12 @@ const HelpSection = connect(
 )(({closeHandler, error}) =>
   h(
     'div',
-    {},
+    {
+      class: 'modal-instructions',
+    },
     h(
       'p',
-      {
-        class: 'modal-instructions',
-      },
+      {},
       'If you are experiencing problems, please try the following ',
       h(
         'a',
@@ -29,9 +29,7 @@ const HelpSection = connect(
     ),
     h(
       'p',
-      {
-        class: 'modal-instructions',
-      },
+      {},
       "Didn't help? ",
       h(
         'a',

@@ -63,19 +63,25 @@ module.exports = ({setState, getState}) => {
   }
 
   const handleError = (errorName, e, options) => {
-    debugLog(e)
-    captureBySentry(e)
-    setState({
-      error: e,
-      [errorName]: {
-        code: e.name || e,
-        params: {
-          message: e.message,
-          showHelp: e.showHelp,
-          ...options,
+    if (e && e.name) {
+      debugLog(e)
+      captureBySentry(e)
+      setState({
+        [errorName]: {
+          code: e.name,
+          params: {
+            message: e.message,
+            showHelp: e.showHelp,
+            ...options,
+          },
         },
-      },
-    })
+        error: e.showHelp ? e : undefined,
+      })
+    } else {
+      setState({
+        [errorName]: e,
+      })
+    }
   }
 
   const setAuthMethod = (state, option) => {
@@ -141,7 +147,6 @@ module.exports = ({setState, getState}) => {
         showGenerateMnemonicDialog: false,
       })
       await fetchConversionRates(conversionRates)
-      throw NamedError('NetworkError', 'dobree', true)
     } catch (e) {
       setState({
         loading: false,
@@ -206,9 +211,12 @@ module.exports = ({setState, getState}) => {
     const mnemonicInputValue = e.target.value
     setState({
       mnemonicInputValue,
-      mnemonicValidationError: await mnemonicValidator(sanitizeMnemonic(mnemonicInputValue)),
       showMnemonicValidationError: false,
     })
+    handleError(
+      'mnemonicValidationError',
+      await mnemonicValidator(sanitizeMnemonic(mnemonicInputValue))
+    )
   }
 
   const checkForMnemonicValidationError = (state) => {
@@ -229,10 +237,9 @@ module.exports = ({setState, getState}) => {
         setState({waitingForHwWallet: false})
       } catch (e) {
         setState({
-          addressVerificationError: true,
           waitingForHwWallet: false,
         })
-        captureBySentry(e)
+        handleError('addressVerificationError', true)
       }
     }
   }
@@ -291,7 +298,10 @@ module.exports = ({setState, getState}) => {
       setState({
         loading: false,
       })
-      captureBySentry(e)
+      handleError('walletLoadingError', e)
+      setState({
+        showWalletLoadingErrorModal: true,
+      })
     }
   }
 
@@ -310,13 +320,11 @@ module.exports = ({setState, getState}) => {
   }
 
   const validateSendForm = (state) => {
-    setState({
-      sendAddressValidationError: sendAddressValidator(state.sendAddress.fieldValue),
-      sendAmountValidationError: sendAmountValidator(
-        state.sendAmount.fieldValue,
-        state.sendAmount.coins
-      ),
-    })
+    handleError('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
+    handleError(
+      'sendAmountValidationError',
+      sendAmountValidator(state.sendAmount.fieldValue, state.sendAmount.coins)
+    )
   }
 
   const isSendFormFilledAndValid = (state) =>
@@ -338,9 +346,8 @@ module.exports = ({setState, getState}) => {
     try {
       transactionFee = await wallet.getTxFee(address, amount)
     } catch (e) {
-      captureBySentry(e)
+      handleError('sendAmountValidationError', {code: e.name})
       setState({
-        sendAmountValidationError: {code: e.name},
         calculatingFee: false,
       })
       return
@@ -355,10 +362,9 @@ module.exports = ({setState, getState}) => {
       setState({
         transactionFee,
         sendAmountForTransactionFee: amount,
-        sendAmountValidationError: feeValidator(amount, transactionFee, state.balance),
       })
+      handleError('sendAmountValidationError', feeValidator(amount, transactionFee, state.balance))
     }
-
     setState({
       calculatingFee: false,
     })
@@ -419,11 +425,10 @@ module.exports = ({setState, getState}) => {
       })
       validateSendFormAndCalculateFee()
     } catch (e) {
-      captureBySentry(e)
       setState({
-        sendAmountValidationError: {code: e.name},
         calculatingFee: false,
       })
+      handleError('sendAmountValidationError', {code: e.name})
     }
   }
 
@@ -500,18 +505,10 @@ module.exports = ({setState, getState}) => {
         setState({showThanksForDonation: true})
       }
     } catch (e) {
-      debugLog(e)
-      captureBySentry(e)
+      handleError('transactionSubmissionError', e, {
+        txHash: txSubmitResult && txSubmitResult.txHash,
+      })
       setState({
-        error: e,
-        transactionSubmissionError: {
-          code: e.name,
-          params: {
-            message: e.message,
-            txHash: txSubmitResult && txSubmitResult.txHash,
-            showHelp: e.showHelp,
-          },
-        },
         showTransactionErrorModal: true,
       })
     } finally {
@@ -578,14 +575,8 @@ module.exports = ({setState, getState}) => {
 
   const getRawTransaction = async (state, address, coins) => {
     const txAux = await wallet.prepareTxAux(address, coins).catch((e) => {
-      debugLog(e)
-      setState({
-        sendAmountValidationError: {
-          code: e.name,
-          params: {
-            balance: state.balance,
-          },
-        },
+      handleError('sendAmountValidationError', e, {
+        balance: state.balance,
       })
     })
     txAux &&
