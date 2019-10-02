@@ -112,7 +112,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     if (response.txHashHex !== unsignedTx.getId()) {
       throw NamedError(
         'TxSerializationError',
-        'Tx serialization mismatch between Ledger and Adalite', // add important info for the devs
+        'Tx serialization mismatch between Ledger and Adalite',
         true
       )
     }
