@@ -381,28 +381,29 @@ module.exports = ({setState, getState}) => {
 
   const updateEmail = (state, e) => {
     setState({
-      userEmail: e.target.value,
+      contactEmail: e.target.value,
     })
   }
 
   const updateName = (state, e) => {
     setState({
-      userName: e.target.value,
+      contactName: e.target.value,
     })
   }
 
-  const updateComments = (state, e) => {
+  const updateMessage = (state, e) => {
     setState({
-      userComments: e.target.value,
+      contactMessage: e.target.value,
     })
   }
 
   const submitUserFeedbackToSentry = async (state) => {
     await submitFeedbackToSentry(
-      state.userComments,
-      state.userEmail,
-      state.userName,
-      state.sendSentry.event.event_id
+      state.contactMessage,
+      state.contactEmail,
+      state.contactName,
+      state.sendSentry.event.event_id,
+      'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383'
     )
   }
 
@@ -630,7 +631,7 @@ module.exports = ({setState, getState}) => {
     submitTransaction,
     updateName,
     updateEmail,
-    updateComments,
+    updateMessage,
     updateAddress,
     updateAmount,
     loadDemoWallet,
