@@ -57,7 +57,6 @@ Sentry.init({
   dsn: 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383',
   environment: ADALITE_CONFIG.ADALITE_ENV,
   // debug: true,
-
   beforeSend(event) {
     return new Promise((resolve) => {
       store.setState({

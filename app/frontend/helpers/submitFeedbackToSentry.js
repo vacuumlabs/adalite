@@ -1,19 +1,19 @@
-const request = require('../wallet/helpers/request')
+const sleep = require('../helpers/sleep')
+const debugLog = require('./debugLog')
 
-async function sendFeedback(comments, email, name, eventId, token) {
+async function sendFeedback(comments, email, name, eventId) {
+  await sleep(5000) // to ensure the feedback gets send after the error
   if (!comments) return
   const params = {
     event_id: eventId,
-    name: name || 'no_name',
-    email: email || 'no_email',
+    name,
+    email,
     comments,
   }
-  let response
-  console.log(params)
-  console.log(JSON.stringify(params))
   const url = 'https://sentry.io/api/0/projects/vacuumlabs-sro/adalite-frontend/user-feedback/'
+  const token = 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383'
   try {
-    response = await fetch(url, {
+    await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,9 +22,7 @@ async function sendFeedback(comments, email, name, eventId, token) {
       body: JSON.stringify(params),
     })
   } catch (e) {
-    console.error(e)
-  } finally {
-    console.log(response)
+    debugLog(e)
   }
 }
 
