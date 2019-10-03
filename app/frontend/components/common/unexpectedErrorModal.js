@@ -97,8 +97,8 @@ class UnexpectedErrorModal extends Component {
           {
             class: 'button primary send-error',
             onClick: () => {
-              this.props.submitUserFeedbackToSentry()
               this.closeAndResolve(true)
+              this.props.submitUserFeedbackToSentry()
             },
           },
           'Send'
