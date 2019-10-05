@@ -1653,6 +1653,11 @@ button[data-balloon] {
   width: 100%;
 }
 
+.validation-error-field {
+  padding: 12px 16px;
+  margin: -24px 0px 8px;
+}
+
 .validation-message {
   padding-left: 40px;
   flex: 1;
@@ -1665,6 +1670,10 @@ button[data-balloon] {
 
 .validation-message.error {
   color: var(--color-error);
+}
+
+.validation-message.warning {
+  color: var(--color-warning);
 }
 
 .validation-message.transaction-success {
@@ -3169,6 +3178,11 @@ button[data-balloon] {
   .validation-row {
     flex-direction: column-reverse;
     align-items: flex-start;
+  }
+
+  .validation-error-field {
+    padding: 12px 16px;
+    margin: -16px 0px 0px;
   }
 
   .validation-message {

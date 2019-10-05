@@ -27,7 +27,8 @@ const unusedWalletConfig = {
   cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
   mnemonic: 'rain flame hip basic extend capable chair oppose gorilla fun aunt emotion',
   config: mockConfig1,
-  randomSeed: testSeed,
+  randomInputSeed: testSeed,
+  randomChangeSeed: testSeed,
   network: NETWORKS.MAINNET,
 }
 
@@ -35,7 +36,8 @@ const usedWalletConfig = {
   cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
   mnemonic: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
   config: mockConfig2,
-  randomSeed: testSeed,
+  randomInputSeed: testSeed,
+  randomChangeSeed: testSeed,
   network: NETWORKS.MAINNET,
 }
 
@@ -43,7 +45,8 @@ const smallUtxosWalletConfig = {
   cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
   mnemonic: 'blame matrix water coil diet seat nerve street movie turkey jump bundle',
   config: mockConfig1,
-  randomSeed: testSeed,
+  randomInputSeed: testSeed,
+  randomChangeSeed: testSeed,
   network: NETWORKS.MAINNET,
 }
 
@@ -52,7 +55,8 @@ const usedV2WalletConfig = {
   mnemonic:
     'cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh',
   config: mockConfig1,
-  randomSeed: testSeed,
+  randomInputSeed: testSeed,
+  randomChangeSeed: testSeed,
   network: NETWORKS.MAINNET,
 }
 

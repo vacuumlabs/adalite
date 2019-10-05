@@ -13,14 +13,20 @@ app.use(compression())
 app.enable('trust proxy') // to get the actual request protocol on heroku (important for redirect)
 app.use(require('./middlewares/redirectToBaseUrl'))
 
+// don't track in local dev => no need for local GA
+if (backendConfig.ADALITE_GA_TRACKING_ID) {
+  app.use(require('./middlewares/statsGoogleAnalytics').trackVisits)
+  app.use(require('./middlewares/statsGoogleAnalytics').trackTxSubmissions)
+}
+
 // don't track in local dev => no need for local redis
 if (backendConfig.REDIS_URL) {
-  app.use(require('./middlewares/stats').trackVisits)
-  app.use(require('./middlewares/stats').trackTxSubmissions)
+  app.use(require('./middlewares/statsRedis').trackVisits)
+  app.use(require('./middlewares/statsRedis').trackTxSubmissions)
   app.use(
     require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.ADALITE_STATS_PWD})
   )
-  require('./statsPage')(app)
+  require('./statsPageRedis')(app)
 }
 
 app.use(express.static('app/public'))
@@ -46,7 +52,7 @@ app.get('*', (req, res) => {
         <head>
           <title>AdaLite - Cardano Wallet</title>
           <meta charset="UTF-8"/>
-          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
           <meta name="robots" content="index,follow">
           <meta name="description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S and Nano X support. Highly secure and accessible from everywhere.">
           <meta name="keywords" content="Cardano, Ada, Wallet, Cryptocurrency, Adalite, Trezor">
