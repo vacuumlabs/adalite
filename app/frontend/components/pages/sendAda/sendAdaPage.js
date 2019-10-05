@@ -3,6 +3,7 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 
 const {getTranslation} = require('../../../translations')
+const {errorHasHelp} = require('../../../helpers/errorsWithHelp')
 const printAda = require('../../../helpers/printAda')
 
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
@@ -165,7 +166,7 @@ const SendAdaPage = ({
           transactionSubmissionError.code,
           transactionSubmissionError.params
         ),
-        showHelp: transactionSubmissionError.params.showHelp,
+        showHelp: errorHasHelp(transactionSubmissionError.code),
       }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),

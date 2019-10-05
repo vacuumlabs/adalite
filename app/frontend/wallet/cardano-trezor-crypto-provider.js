@@ -107,7 +107,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
 
     if (response.error || !response.success) {
       debugLog(response)
-      throw new NamedError('TrezorSignTxError', response.payload.error, true)
+      throw new NamedError('TrezorSignTxError', response.payload.error)
     }
 
     return {
@@ -129,8 +129,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       debugLog(response)
       throw new NamedError(
         'TrezorError',
-        'Trezor operation failed, please make sure ad blockers are switched off for this site',
-        true
+        'Trezor operation failed, please make sure ad blockers are switched off for this site'
       )
     }
   }

@@ -52,7 +52,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     try {
       await ledger.showAddress(absDerivationPath)
     } catch (err) {
-      throw NamedError('LedgerOperationError', `${err.name}: ${err.message}`, true)
+      throw NamedError('LedgerOperationError', `${err.name}: ${err.message}`)
     }
   }
 
@@ -112,8 +112,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     if (response.txHashHex !== unsignedTx.getId()) {
       throw NamedError(
         'TxSerializationError',
-        'Tx serialization mismatch between Ledger and Adalite',
-        true
+        'Tx serialization mismatch between Ledger and Adalite'
       )
     }
 

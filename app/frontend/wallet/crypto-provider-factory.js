@@ -19,8 +19,7 @@ const CryptoProviderFactory = (() => {
       default:
         throw NamedError(
           'CryptoProviderError',
-          `Unknown crypto provider type: ${cryptoProviderType}`,
-          true
+          `Unknown crypto provider type: ${cryptoProviderType}`
         )
     }
   }

@@ -65,6 +65,7 @@ module.exports = ({setState, getState}) => {
 
   const handleError = (errorName, e, options) => {
     if (e && e.name) {
+      // is a error
       debugLog(e)
       captureBySentry(e)
       setState({
@@ -72,11 +73,10 @@ module.exports = ({setState, getState}) => {
           code: e.name,
           params: {
             message: e.message,
-            showHelp: e.showHelp,
             ...options,
           },
         },
-        error: e.showHelp ? e : undefined,
+        error: e,
       })
     } else {
       setState({
