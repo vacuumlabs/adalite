@@ -92,15 +92,15 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
           ...baseEventData,
           action: `${txSubmissionType}:sentOut`,
           label: 'successful payment',
-          value: txSentAmount / 1000000,
+          value: Math.floor(txSentAmount / 1000000),
         })
 
-        const txTotaAmount = parseTxBodyTotalAmount(txBody)
+        const txTotalAmount = parseTxBodyTotalAmount(txBody)
         await trackEvent({
           ...baseEventData,
           action: `${txSubmissionType}:sentTotal`,
           label: 'total amount',
-          value: txTotaAmount / 1000000,
+          value: Math.floor(txTotalAmount / 1000000),
         })
       } else {
         await trackEvent({

@@ -24,9 +24,10 @@ class ExportWalletDialog extends Component {
       passwordTouched: false,
       confirmationTouched: false,
       walletNameValid: false,
-      isPasswordValid: false,
+      isPasswordValid: true,
       showError: false,
       errorMessage: '',
+      warningMessage: '',
     }
 
     this.updateWalletName = this.updateWalletName.bind(this)
@@ -52,17 +53,37 @@ class ExportWalletDialog extends Component {
   }
 
   isPasswordValid(password, confirmation) {
-    return password === confirmation && password.trim().length
+    return password === confirmation
+  }
+
+  getWarningMessage(password) {
+    let warnMsg = ''
+    if (password.trim().length < 8) {
+      warnMsg = 'OPTIONAL - Password should be at least 8 characters long'
+    }
+    if (!/^.*[0-9]+.*$/.test(password)) {
+      warnMsg = 'OPTIONAL - Password should contain at least one numerical digit'
+    }
+    if (!/^.*[A-Z]+.*$/.test(password)) {
+      warnMsg = 'OPTIONAL - Password should contain at least one uppercase letter'
+    }
+    if (!/^.*[a-z]+.*$/.test(password)) {
+      warnMsg = 'OPTIONAL - Password should contain at least one lowercase letter'
+    }
+
+    return warnMsg
   }
 
   updatePassword(e) {
     const passwordValid = this.isPasswordValid(e.target.value, this.state.confirmation)
+    const secureWarningMsg = this.getWarningMessage(e.target.value)
     const passwordsTouched = this.state.passwordTouched && this.state.confirmationTouched
     this.setState({
       password: e.target.value,
       isPasswordValid: passwordValid,
       showError: passwordsTouched && !passwordValid,
-      errorMessage: passwordsTouched && !passwordValid && 'Both passwords must match',
+      errorMessage: !passwordValid && 'Both passwords must match',
+      warningMessage: secureWarningMsg,
     })
   }
 
@@ -73,7 +94,7 @@ class ExportWalletDialog extends Component {
       confirmation: e.target.value,
       isPasswordValid: passwordValid,
       showError: passwordsTouched && !passwordValid,
-      errorMessage: passwordsTouched && !passwordValid && 'Both passwords must match',
+      errorMessage: !passwordValid && 'Both passwords must match',
     })
   }
 
@@ -101,20 +122,75 @@ class ExportWalletDialog extends Component {
 
   render(
     {_},
-    {confirmation, password, walletName, showError, isPasswordValid, errorMessage, walletNameValid}
+    {
+      confirmation,
+      password,
+      walletName,
+      showError,
+      isPasswordValid,
+      errorMessage,
+      warningMessage,
+      walletNameValid,
+    }
   ) {
     return h(
       'div',
       {class: 'page-wrapper'},
       h(
-        'div',
-        {class: 'page-inner'},
+        'main',
+        {class: 'page-main'},
         h(
-          'main',
-          {class: 'page-main'},
+          'div',
+          {class: 'export download card'},
           h(
             'div',
-            {class: 'export download card'},
+            {class: 'export-content'},
+            h(
+              'h2',
+              {class: 'export-title'},
+              'Export Key File ',
+              h('span', {class: 'export-subtitle'}, '(Encrypted JSON)')
+            ),
+            h('input', {
+              type: 'text',
+              class: 'input fullwidth export',
+              id: 'keyfile-name',
+              name: 'keyfile-name',
+              placeholder: 'Wallet name',
+              value: walletName,
+              onInput: this.updateWalletName,
+              autocomplete: 'off',
+            }),
+            h('input', {
+              type: 'password',
+              class: 'input fullwidth export',
+              id: 'keyfile-password',
+              name: 'keyfile-password',
+              placeholder: 'Choose a password (optional)',
+              value: password,
+              onInput: this.updatePassword,
+              onBlur: this.touchPassword,
+              autocomplete: 'off',
+            }),
+            h('input', {
+              type: 'password',
+              class: 'input fullwidth export',
+              id: 'keyfile-password-confirmation',
+              name: 'keyfile-password-confirmation',
+              placeholder: 'Repeat the password',
+              value: confirmation,
+              onInput: this.updateConfirmation,
+              onBlur: this.touchConfirmation,
+              autocomplete: 'off',
+            }),
+            (showError || warningMessage.length > 0) &&
+              h(
+                'div',
+                {class: 'validation-error-field'},
+                showError && h('div', {class: 'validation-message error'}, errorMessage),
+                warningMessage.length > 0 &&
+                  h('div', {class: 'validation-message warning'}, warningMessage)
+              ),
             h(
               'div',
               {class: 'export-content-bottom'},
@@ -127,80 +203,37 @@ class ExportWalletDialog extends Component {
                 'Back'
               ),
               h(
-                'h2',
-                {class: 'export-title'},
-                'Export Key File ',
-                h('span', {class: 'export-subtitle'}, '(Encrypted JSON)')
-              ),
-              h('input', {
-                type: 'text',
-                class: 'input fullwidth export',
-                id: 'keyfile-name',
-                name: 'keyfile-name',
-                placeholder: 'Wallet name',
-                value: walletName,
-                onInput: this.updateWalletName,
-                autocomplete: 'off',
-              }),
-              h('input', {
-                type: 'password',
-                class: 'input fullwidth export',
-                id: 'keyfile-password',
-                name: 'keyfile-password',
-                placeholder: 'Choose a password',
-                value: password,
-                onInput: this.updatePassword,
-                onBlur: this.touchPassword,
-                autocomplete: 'off',
-              }),
-              h('input', {
-                type: 'password',
-                class: 'input fullwidth export',
-                id: 'keyfile-password-confirmation',
-                name: 'keyfile-password-confirmation',
-                placeholder: 'Repeat the password',
-                value: confirmation,
-                onInput: this.updateConfirmation,
-                onBlur: this.touchConfirmation,
-                autocomplete: 'off',
-              }),
-              h(
-                'div',
-                {class: 'validation-row'},
-                h(
-                  'button',
-                  {
-                    class: 'button primary',
-                    disabled: showError || !isPasswordValid || !walletNameValid,
-                    onClick: this.exportJsonWallet,
-                  },
-                  'Download the key file'
-                ),
-                showError && h('div', {class: 'validation-message error'}, errorMessage)
+                'button',
+                {
+                  class: 'button primary',
+                  disabled: showError || !isPasswordValid || !walletNameValid,
+                  onClick: this.exportJsonWallet,
+                },
+                'Download the key file'
               )
-            ),
-            h(Tag, {type: 'warning big', text: 'PROCEED WITH CAUTION'})
-          )
-        ),
-        h(
-          'aside',
-          {class: 'sidebar export'},
-          h(Hint, {
-            type: 'lose',
-            title: 'Do not lose it',
-            text: 'Key file cannot be recovered.',
-          }),
-          h(Hint, {
-            type: 'share',
-            title: 'Do not Share it',
-            text: 'Use it in the official AdaLite only.',
-          }),
-          h(Hint, {
-            type: 'backup',
-            title: 'Make multiple backups',
-            text: 'Store it safely in multiple places.',
-          })
+            )
+          ),
+          h(Tag, {type: 'warning big', text: 'PROCEED WITH CAUTION'})
         )
+      ),
+      h(
+        'aside',
+        {class: 'sidebar export'},
+        h(Hint, {
+          type: 'lose',
+          title: 'Do not lose it',
+          text: 'Key file cannot be recovered.',
+        }),
+        h(Hint, {
+          type: 'share',
+          title: 'Do not Share it',
+          text: 'Use it in the official AdaLite only.',
+        }),
+        h(Hint, {
+          type: 'backup',
+          title: 'Make multiple backups',
+          text: 'Store it safely in multiple places.',
+        })
       )
     )
   }

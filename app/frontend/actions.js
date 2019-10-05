@@ -506,6 +506,7 @@ module.exports = ({setState, getState}) => {
       }
     } finally {
       resetSendFormState(state)
+      wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,
         sendResponse,
