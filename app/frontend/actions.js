@@ -400,8 +400,8 @@ module.exports = ({setState, getState}) => {
   const submitUserFeedbackToSentry = async (state) => {
     await submitFeedbackToSentry(
       state.userComments,
-      state.userEmail || 'noEmail',
-      state.userName || 'noName',
+      state.userEmail || 'user@email.com',
+      state.userName || 'user',
       state.sendSentry.event.event_id
     )
   }
