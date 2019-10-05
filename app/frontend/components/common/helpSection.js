@@ -36,7 +36,7 @@ const HelpSection = connect(
         {
           onClick: () => {
             closeHandler()
-            Sentry.captureEvent(error)
+            Sentry.captureException(error)
           },
         },
         'Send'
