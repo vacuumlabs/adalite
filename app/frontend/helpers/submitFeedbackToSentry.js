@@ -1,5 +1,6 @@
 const sleep = require('../helpers/sleep')
 const debugLog = require('./debugLog')
+const {ADALITE_CONFIG} = require('../config')
 
 async function sendFeedback(comments, email, name, eventId) {
   await sleep(5000) // to ensure the feedback gets send after the error
@@ -11,7 +12,7 @@ async function sendFeedback(comments, email, name, eventId) {
     comments,
   }
   const url = 'https://sentry.io/api/0/projects/vacuumlabs-sro/adalite-frontend/user-feedback/'
-  const token = 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383'
+  const token = ADALITE_CONFIG.SENTRY_DSN
   try {
     await fetch(url, {
       method: 'POST',
