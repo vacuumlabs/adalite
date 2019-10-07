@@ -1721,10 +1721,10 @@ button[data-balloon] {
 .balance-amount::after {
   content: '';
   position: absolute;
-  width: 15px;
+  width: 18px;
   height: 22px;
   right: 0;
-  top: 11px;
+  top: 12px;
   margin: auto;
   background-image: url('../assets/ada_symbol_balance.svg');
   background-repeat: no-repeat;
