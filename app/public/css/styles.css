@@ -449,6 +449,20 @@ p {
   fill: var(--color-grey-light);
 }
 
+/* is only going to be disabled */
+.button.donate.insufficient:disabled {
+  background-color: var(--color-border);
+  border-color: var(--color-border);
+}
+
+.button.donate.insufficient:disabled:hover {
+  background-color: var(--color-brand-light);
+  color: #fff;
+}
+
+.button.donate.insufficient:disabled:hover svg path {
+  fill: #fff;
+}
 /* TOOLTIP */
 
 button[data-balloon] {

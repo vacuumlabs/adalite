@@ -369,7 +369,7 @@ module.exports = ({setState, getState}) => {
 
   const getPercentageDonationProperties = async () => {
     const state = getState()
-    const percentageDonation = state.sendAmount.coins * 0.002
+    const percentageDonation = Math.round(state.sendAmount.coins * 0.002 * 0.000001) * 1000000
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
@@ -377,11 +377,11 @@ module.exports = ({setState, getState}) => {
     return amount + transactionFee + percentageDonation <= state.balance
       ? {
         text: '0.2%',
-        value: Math.round(percentageDonation * 0.000001),
+        value: percentageDonation * 0.000001,
       }
       : {
         text: '0.1%', // exceeded balance, lower to 1%, minimum is 1 ADA
-        value: Math.round(Math.max((percentageDonation / 2) * 0.000001, 1)),
+        value: Math.max(Math.round((percentageDonation / 2) * 0.000001), 1),
       }
   }
 
@@ -543,9 +543,9 @@ module.exports = ({setState, getState}) => {
     setState({
       sendResponse: '',
       sendAmount: validatedMaxAmount,
-      maxSendAmount: validatedMaxAmount.coins,
       maxDonationAmount: maxAmounts.donationAmount || state.donationAmount.coins,
     })
+    handleThresholdAmount() // because sendAmount might have reached threshold
 
     if (maxAmounts.donationAmount) {
       setState({
@@ -784,5 +784,6 @@ module.exports = ({setState, getState}) => {
     updateDonation,
     toggleCustomDonation,
     setDonation,
+    resetDonation,
   }
 }
