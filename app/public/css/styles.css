@@ -386,8 +386,19 @@ p {
   background: none;
   font-size: 14px;
   color: var(--color-brand);
-  text-decoration: underline;
+  text-decoration: none;
   margin-left: 16px;
+  font-weight: normal;
+}
+
+.button.send-max:enabled::after {
+  content: "";
+  position: absolute;
+  top: 60%;
+  height: 1px;
+  width: 100%;
+  left: 0%;
+  background-color: var(--color-brand);
 }
 
 .button.send-max:disabled {
