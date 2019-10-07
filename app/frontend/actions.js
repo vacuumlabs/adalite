@@ -381,8 +381,11 @@ module.exports = ({setState, getState}) => {
         value: toAda(percentageDonation),
       }
       : {
-        text: '0.1%', // exceeded balance, lower to 1%, minimum is 1 ADA
-        value: Math.max(Math.round(toAda(percentageDonation / 2)), 1),
+        text: '0.1%', // exceeded balance, lower to 1% or MIN
+        value: Math.max(
+          Math.round(toAda(percentageDonation / 2)),
+          ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE
+        ),
       }
   }
 
@@ -467,8 +470,9 @@ module.exports = ({setState, getState}) => {
   }
 
   const getProperTextAndVal = async (coins) => {
-    if (coins < 500000000) {
-      return {text: 'Min', value: 1}
+    if (coins < toCoins(500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
+      //because 0.2%
+      return {text: 'Min', value: ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE}
     }
 
     const percentageProperties = await getPercentageDonationProperties()
