@@ -166,7 +166,11 @@ const SendAdaPage = ({
           for: 'donation-amount',
         },
         'Donate',
-        h(MouseOverTooltip)
+        h(MouseOverTooltip, {
+          tooltipText:
+            'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
+          linkClass: 'show-info',
+        })
       ),
       !isDonationSufficient &&
         h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),

@@ -17,20 +17,19 @@ class MouseOverTooltip extends Component {
     this.setState({isActive: false})
   }
 
-  render({elementClass = '', text = '', enableTooltip = true}, {isActive}) {
+  render(
+    {elementClass = '', linkText = '', enableTooltip = true, tooltipText = '', linkClass = ''},
+    {isActive}
+  ) {
     return h(
       'a',
       {
         class: `${elementClass}`,
         onMouseEnter: this.showTooltip,
         onMouseLeave: this.hideTooltip,
-        ...tooltip(
-          'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
-          true,
-          isActive && enableTooltip
-        ),
+        ...tooltip(tooltipText, true, isActive && enableTooltip),
       },
-      h('span', {class: 'show-info'}, text)
+      h('span', {class: linkClass}, linkText)
     )
   }
 }
