@@ -55,6 +55,12 @@ const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
 
   if (sendAmount + transactionFee + donationAmount > balance) {
     validationError = {
+      code: 'DonationInsufficientBalance',
+      params: {balance},
+    }
+  }
+  if (sendAmount + transactionFee > balance) {
+    validationError = {
       code: 'SendAmountInsufficientFunds',
       params: {balance},
     }
