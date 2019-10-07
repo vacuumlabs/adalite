@@ -20,6 +20,7 @@ const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
+const {toCoins, toAda, roundWholeAdas} = require('./helpers/adaConverters')
 
 let wallet = null
 
@@ -369,7 +370,7 @@ module.exports = ({setState, getState}) => {
 
   const getPercentageDonationProperties = async () => {
     const state = getState()
-    const percentageDonation = Math.round(state.sendAmount.coins * 0.002 * 0.000001) * 1000000
+    const percentageDonation = roundWholeAdas(state.sendAmount.coins * 0.002)
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
@@ -377,11 +378,11 @@ module.exports = ({setState, getState}) => {
     return amount + transactionFee + percentageDonation <= state.balance
       ? {
         text: '0.2%',
-        value: percentageDonation * 0.000001,
+        value: toAda(percentageDonation),
       }
       : {
         text: '0.1%', // exceeded balance, lower to 1%, minimum is 1 ADA
-        value: Math.max(Math.round((percentageDonation / 2) * 0.000001), 1),
+        value: Math.max(Math.round(toAda(percentageDonation / 2)), 1),
       }
   }
 
@@ -502,10 +503,8 @@ module.exports = ({setState, getState}) => {
       state.sendAddress.fieldValue,
       state.sendAmount.coins
     )
-    //TODO: split functions
     let newMaxDonationAmount
-    if (maxDonationAmount >= 1000000) {
-      //TODO: config
+    if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
       newMaxDonationAmount = sendAmountValidator(printAda(maxDonationAmount)).coins
     } else {
       newMaxDonationAmount = 0

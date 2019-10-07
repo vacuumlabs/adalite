@@ -2,6 +2,8 @@ const {h, Component} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const {AdaIcon} = require('../../common/svg')
+const {ADALITE_FIXED_DONATION_VALUE} = require('../../../config').ADALITE_CONFIG
+const {toCoins} = require('../../../helpers/adaConverters')
 
 class DonationButtons extends Component {
   constructor(props) {
@@ -11,14 +13,14 @@ class DonationButtons extends Component {
   }
 
   getButtonClass(donationAmount, type) {
-    if (donationAmount * 1000000 > this.props.maxDonationAmount) {
+    if (toCoins(donationAmount) > this.props.maxDonationAmount) {
       return 'button donate insufficient'
     }
     return this.props.checkedDonationType === type ? 'button donate active' : 'button donate'
   }
 
   isInsufficient(donationAmount, type) {
-    if (donationAmount * 1000000 <= this.props.maxDonationAmount) {
+    if (toCoins(donationAmount) <= this.props.maxDonationAmount) {
       return false
     }
     if (this.props.checkedDonationType === type) {
@@ -48,13 +50,13 @@ class DonationButtons extends Component {
         'button',
         {
           'id': 'fixed',
-          'class': this.getButtonClass(40, 'fixed'),
-          'value': 40, //TODO: config this
+          'class': this.getButtonClass(ADALITE_FIXED_DONATION_VALUE, 'fixed'),
+          'value': ADALITE_FIXED_DONATION_VALUE,
           'onClick': updateDonation,
-          'disabled': !isFormValid || this.isInsufficient(40, 'fixed'),
+          'disabled': !isFormValid || this.isInsufficient(ADALITE_FIXED_DONATION_VALUE, 'fixed'),
           'aria-label': 'Fixed amount',
         },
-        '40 ', //TODO: config this
+        `${ADALITE_FIXED_DONATION_VALUE} `,
         h(AdaIcon)
       ),
       h(

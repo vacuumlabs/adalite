@@ -12,6 +12,7 @@ const shuffleArray = require('./helpers/shuffleArray')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
 const CryptoProviderFactory = require('./crypto-provider-factory')
+const {roundWholeAdas} = require('../helpers/adaConverters')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -166,7 +167,7 @@ const CardanoWallet = async (options) => {
       const reducedAmount = coins / 1.002 //leave some for donation (0.2%)
       const percentageDonation = reducedAmount * 0.002
       // we show rounded % donations in the UI
-      const roundedDonation = Math.round(percentageDonation / 1000000) * 1000000
+      const roundedDonation = roundWholeAdas(percentageDonation)
       const diff = percentageDonation - roundedDonation
       // add diff from rounding (can be negative)
       const txFee = computeTxFee(txInputs, address, reducedAmount + diff, true, roundedDonation)

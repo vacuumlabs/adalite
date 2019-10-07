@@ -1,8 +1,9 @@
 const {isValidAddress} = require('cardano-crypto.js')
-
+const {ADALITE_MIN_DONATION_VALUE} = require('../config').ADALITE_CONFIG
+const {toCoins} = require('../helpers/adaConverters')
 const {validateMnemonic} = require('../wallet/mnemonic')
 
-const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
+const parseCoins = (str) => Math.trunc(toCoins(parseFloat(str)))
 
 const sendAddressValidator = (fieldValue) => {
   return {
@@ -43,7 +44,11 @@ const donationAmountValidator = (fieldValue) => {
   const validatedObj = sendAmountValidator(fieldValue)
   const isAmountNaN =
     validatedObj.validationError && validatedObj.validationError.code === 'SendAmountIsNan'
-  if (!isAmountNaN && validatedObj.coins >= 0 && validatedObj.coins < 1000000) {
+  if (
+    !isAmountNaN &&
+    validatedObj.coins >= 0 &&
+    validatedObj.coins < toCoins(ADALITE_MIN_DONATION_VALUE)
+  ) {
     validatedObj.validationError = {code: 'DonationAmountTooLow'}
   }
 

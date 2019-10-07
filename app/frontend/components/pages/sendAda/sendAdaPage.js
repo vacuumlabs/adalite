@@ -13,6 +13,8 @@ const DonationButtons = require('./donationButtons')
 const CustomDonationInput = require('./customDonationInput')
 const Conversions = require('../../common/conversions')
 const MouseOverTooltip = require('../../common/mouseOverTooltip')
+const {ADALITE_MIN_DONATION_VALUE} = require('../../../config').ADALITE_CONFIG
+const {toCoins} = require('../../../helpers/adaConverters')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
@@ -91,9 +93,8 @@ const SendAdaPage = ({
     sendAddress &&
     !sendAddressValidationError &&
     !donationAmountValidationError
-  //TODO: config
-  const isDonationSufficient = maxDonationAmount >= 1000000 && coinsAmount <= maxSendAmount
-
+  const isDonationSufficient =
+    maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE) && coinsAmount <= maxSendAmount
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
   const total = sendAmountForTransactionFee + transactionFee + donationAmountForTransactionFee
 

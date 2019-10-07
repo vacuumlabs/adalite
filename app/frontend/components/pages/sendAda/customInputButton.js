@@ -2,6 +2,7 @@ const {h} = require('preact')
 const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 const {AdaIcon} = require('../../common/svg')
+const {toAda} = require('../../../helpers/adaConverters')
 
 const CustomInputButton = ({
   isSendAddressValid,
@@ -10,7 +11,7 @@ const CustomInputButton = ({
   donationAmount,
   maxDonationAmount,
 }) => {
-  const maxDonationAmountInAda = Math.floor(maxDonationAmount / 1000000)
+  const maxDonationAmountInAda = Math.floor(toAda(maxDonationAmount))
 
   return donationAmount.coins > maxDonationAmount
     ? h(
