@@ -112,7 +112,7 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
         ...(token ? {token} : {}),
       }
     )
-    if (response.Left == 'An unexpected error has occurred') {
+    if (response.Left === 'An unexpected error has occurred') {
       throw NamedError('UnexpectedTransactionSubmissionError')
     }
     if (!response.Right) {

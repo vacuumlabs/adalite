@@ -38,11 +38,14 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   })
 
   function deriveHdNode(childIndex) {
-    throw NamedError('NoSupportError', 'This operation is not supported on LedgerCryptoProvider!')
+    throw NamedError(
+      'UnsupportedOperationError',
+      'This operation is not supported on LedgerCryptoProvider!'
+    )
   }
 
   function sign(message, absDerivationPath) {
-    throw NamedError('NoSupportError', 'Not supported')
+    throw NamedError('UnsupportedOperationError', 'Not supported')
   }
 
   async function displayAddressForPath(absDerivationPath) {
@@ -54,7 +57,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   }
 
   function getWalletSecret() {
-    throw NamedError('NoSupportError', 'Unsupported operation!')
+    throw NamedError('UnsupportedOperationError', 'Unsupported operation!')
   }
 
   function getDerivationScheme() {

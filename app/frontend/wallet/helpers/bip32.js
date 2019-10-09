@@ -17,7 +17,7 @@ function fromBip32Path(bip32Path) {
     case 0:
       return []
     default:
-      throw NamedError('NoSupportError', `Unsupported derivation path: ${bip32Path}`)
+      throw NamedError('UnsupportedOperationError', `Unsupported derivation path: ${bip32Path}`)
   }
 }
 
