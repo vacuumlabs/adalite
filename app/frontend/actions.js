@@ -124,9 +124,7 @@ module.exports = ({setState, getState}) => {
         loading: false,
       })
       debugLog(e)
-      if (captureBySentry(e)) {
-        return false
-      }
+      captureBySentry(e)
       let message
       switch (e.name) {
         case 'NetworkError':
@@ -507,8 +505,10 @@ module.exports = ({setState, getState}) => {
       setState({
         transactionSubmissionError: {
           code: e.name,
-          message: e.message,
-          txHash: txSubmitResult ? txSubmitResult.txHash : undefined,
+          params: {
+            message: e.message,
+            txHash: txSubmitResult ? txSubmitResult.txHash : undefined,
+          },
         },
         showTransactionErrorModal: true,
       })

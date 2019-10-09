@@ -185,7 +185,10 @@ const SendAdaPage = ({
     showTransactionErrorModal &&
       h(TransactionErrorModal, {
         closeHandler: closeTransactionErrorModal,
-        errorMessage: getTranslation(transactionSubmissionError.code, {transactionSubmissionError}),
+        errorMessage: getTranslation(
+          transactionSubmissionError.code,
+          transactionSubmissionError.params
+        ),
       }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
