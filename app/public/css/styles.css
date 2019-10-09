@@ -3234,6 +3234,11 @@ button[data-balloon] {
     display: none;
   }
 
+  [data-balloon]::hover::after,
+  [data-ballon]::hover::before{
+    display: none;
+  }
+
   /* ADDRESSES */
 
   .addresses::before {
