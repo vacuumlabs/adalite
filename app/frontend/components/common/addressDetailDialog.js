@@ -51,8 +51,7 @@ class AddressDetailDialogClass extends Component {
                 CopyOnClick,
                 {
                   value: showDetail.address,
-                  elementClass: 'address-copy',
-                  text: '',
+                  elementClass: 'address-copy copy',
                   copiedCallback: this.toggleCopyMessage,
                   enableTooltip: false,
                 },

@@ -482,6 +482,10 @@ button[data-balloon] {
   transform: translate(0, 10px);
 }
 
+[data-balloon]:not([data-balloon-arrow])::before {
+  display: none;
+}
+
 [data-balloon]:not([data-balloon-visible]):hover::after,
 [data-balloon][data-balloon-visible='true']::after {
   -webkit-transform: translate(0, -8px);
@@ -3226,7 +3230,7 @@ button[data-balloon] {
   [data-balloon]:hover::before,
   [data-balloon]::after,
   [data-balloon]::before {
-    display: none;
+    position: absolute;
   }
 
   /* ADDRESSES */
