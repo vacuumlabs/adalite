@@ -19,6 +19,9 @@ const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
+const Sentry = require('@sentry/browser')
+
+Sentry.init({ dsn: 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383' });
 
 let wallet = null
 
