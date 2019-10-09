@@ -390,6 +390,7 @@ module.exports = ({setState, getState}) => {
       sendResponse: '',
       sendAmount: {
         fieldValue: printAda(maxAmount),
+        coins: maxAmount,
       },
     })
     validateSendFormAndCalculateFee()
@@ -546,12 +547,20 @@ module.exports = ({setState, getState}) => {
   const getRawTransaction = async (state, address, coins) => {
     const txAux = await wallet.prepareTxAux(address, coins).catch((e) => {
       debugLog(e)
-      throw e
+      setState({
+        sendAmountValidationError: {
+          code: 'SendAmountInsufficientFunds',
+          params: {
+            balance: state.balance,
+          },
+        },
+      })
     })
-    setState({
-      rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
-      rawTransactionOpen: true,
-    })
+    txAux &&
+      setState({
+        rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
+        rawTransactionOpen: true,
+      })
   }
 
   return {
