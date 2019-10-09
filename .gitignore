@@ -1,5 +1,6 @@
 .idea/
 .env
+.vscode/
 yarn-error.log
 *.sublime-project
 *.sublime-workspace

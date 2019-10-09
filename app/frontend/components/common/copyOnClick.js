@@ -44,15 +44,15 @@ class CopyOnClick extends Component {
     }
   }
 
-  render({elementClass, text, enableTooltip = true}, {copied}) {
+  render({children, elementClass, text, enableTooltip = true, hideOnMobiles = true}, {copied}) {
     return h(
       'a',
       {
-        class: `${elementClass} copy`,
+        class: `${elementClass} ${hideOnMobiles && 'copy'}`,
         onClick: this.copyTextToClipboard,
         ...tooltip('Copied to clipboard', true, enableTooltip && copied),
       },
-      h('span', {class: 'copy-text'}, text)
+      children
     )
   }
 }

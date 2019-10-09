@@ -15,16 +15,27 @@ const AddressItem = connect(
       'div',
       {class: 'address-value'},
       h('p', {class: 'address-number no-select'}, `/${bip32path.split('/').pop()}`),
-      h('p', {class: 'one-click-select'}, address)
+      h(
+        CopyOnClick,
+        {
+          value: address,
+          elementClass: 'address-link',
+          hideOnMobiles: false,
+        },
+        h('p', {class: 'one-click-select'}, address)
+      )
     ),
     h(
       'div',
       {class: 'address-links blockexplorer-link'},
-      h(CopyOnClick, {
-        value: address,
-        elementClass: 'address-link',
-        text: 'Copy Address',
-      }),
+      h(
+        CopyOnClick,
+        {
+          value: address,
+          elementClass: 'address-link',
+        },
+        h('span', {class: 'copy-text'}, 'Copy Address')
+      ),
       h(
         'div',
         {},

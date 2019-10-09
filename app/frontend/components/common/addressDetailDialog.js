@@ -47,13 +47,17 @@ class AddressDetailDialogClass extends Component {
               'div',
               {class: 'detail-input address'},
               h('div', {class: 'detail-address'}, showDetail.address),
-              h(CopyOnClick, {
-                value: showDetail.address,
-                elementClass: 'address-copy',
-                text: '',
-                copiedCallback: this.toggleCopyMessage,
-                enableTooltip: false,
-              }),
+              h(
+                CopyOnClick,
+                {
+                  value: showDetail.address,
+                  elementClass: 'address-copy',
+                  text: '',
+                  copiedCallback: this.toggleCopyMessage,
+                  enableTooltip: false,
+                },
+                h('span', {class: 'copy-text'}, '')
+              ),
               showCopyMessage && h('span', {class: 'detail-copy-message'}, 'Copied to clipboard')
             ),
             h('div', {class: 'detail-label'}, 'Derivation path'),
