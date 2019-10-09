@@ -5,7 +5,9 @@ const {validateMnemonic} = require('../wallet/mnemonic')
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
 const sendAddressValidator = (fieldValue) => {
-  return !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : undefined
+  return !isValidAddress(fieldValue) && fieldValue !== ''
+    ? {code: 'SendAddressInvalidAddress'}
+    : null
 }
 
 const sendAmountValidator = (fieldValue) => {
@@ -14,6 +16,9 @@ const sendAmountValidator = (fieldValue) => {
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
 
+  if (fieldValue === '') {
+    return null
+  }
   if (!floatRegex.test(fieldValue) || isNaN(coins)) {
     return {code: 'SendAmountIsNan'}
   }
@@ -26,7 +31,7 @@ const sendAmountValidator = (fieldValue) => {
   if (coins <= 0) {
     return {code: 'SendAmountIsNotPositive'}
   }
-  return undefined
+  return null
 }
 
 const feeValidator = (sendAmount, transactionFee, balance) => {
@@ -55,6 +60,7 @@ const mnemonicValidator = (mnemonic) => {
 }
 
 module.exports = {
+  parseCoins,
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,

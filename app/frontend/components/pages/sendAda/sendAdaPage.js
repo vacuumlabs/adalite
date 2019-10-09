@@ -12,56 +12,17 @@ const TransactionErrorModal = require('./transactionErrorModal')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
-const AmountErrorMessage = ({sendAmount, sendAmountValidationError}) =>
-  sendAmountValidationError &&
-  sendAmount !== '' &&
-  h(
-    'span',
-    undefined,
-    getTranslation(sendAmountValidationError.code, sendAmountValidationError.params)
-  )
+const SendFormErrorMessage = ({sendFormValidationError}) =>
+  h('span', undefined, getTranslation(sendFormValidationError.code, sendFormValidationError.params))
 
-const AddressErrorMessage = ({sendAddress, sendAddressValidationError}) =>
-  sendAddressValidationError &&
-  sendAddress !== '' &&
-  h('span', undefined, getTranslation(sendAddressValidationError.code))
-
-const AddressAndAmoutErrorMessage = ({
-  sendAddress,
-  sendAddressValidationError,
-  sendAmount,
-  sendAmountValidationError,
-}) => {
-  sendAddressValidationError &&
-    sendAmountValidationError &&
-    sendAddress !== '' &&
-    sendAmount !== '' &&
-    h('span', undefined, getTranslation('AddressAndAmountError'))
-}
-
-const SendValidation = ({
-  sendAmount,
-  sendAmountValidationError,
-  sendAddress,
-  sendAddressValidationError,
-  sendResponse,
-}) =>
-  sendAmountValidationError || sendAddressValidationError
+const SendValidation = ({sendFormValidationError, sendResponse}) =>
+  sendFormValidationError
     ? h(
       'div',
       {class: 'validation-message send error'},
-      sendAmountValidationError && sendAddressValidationError
-        ? h(AddressAndAmoutErrorMessage, {
-          sendAddress,
-          sendAddressValidationError,
-          sendAmount,
-          sendAmountValidationError,
-        })
-        : h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
-      h(AmountErrorMessage, {sendAmount, sendAmountValidationError})
+      h(SendFormErrorMessage, {sendFormValidationError})
     )
-    : sendResponse &&
-      sendResponse.success &&
+    : sendResponse.success &&
       h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
 
 const SendAdaPage = ({
@@ -88,6 +49,8 @@ const SendAdaPage = ({
   rawTransaction,
   coinsAmount,
 }) => {
+  const sendFormValidationError = sendAddressValidationError || sendAmountValidationError
+
   const enableSubmit =
     sendAmount && !sendAmountValidationError && sendAddress && !sendAddressValidationError
 
@@ -181,12 +144,8 @@ const SendAdaPage = ({
       feeRecalculating
         ? h(CalculatingFee)
         : h(SendValidation, {
-          sendAmount,
-          sendAmountValidationError,
-          sendAddress,
-          sendAddressValidationError,
+          sendFormValidationError,
           sendResponse,
-          closeTransactionErrorModal,
         })
     ),
     enableSubmit &&
@@ -218,9 +177,9 @@ module.exports = connect(
   (state) => ({
     transactionSubmissionError: state.transactionSubmissionError,
     sendResponse: state.sendResponse,
-    sendAddressValidationError: state.sendAddress.validationError,
+    sendAddressValidationError: state.sendAddressValidationError,
     sendAddress: state.sendAddress.fieldValue,
-    sendAmountValidationError: state.sendAmount.validationError,
+    sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount.fieldValue,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,

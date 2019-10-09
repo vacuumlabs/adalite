@@ -3,6 +3,7 @@ const {ADALITE_CONFIG} = require('./config')
 const FileSaver = require('file-saver')
 const cbor = require('borc')
 const {
+  parseCoins,
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,
@@ -299,21 +300,17 @@ module.exports = ({setState, getState}) => {
   }
 
   const validateSendForm = (state) => {
-    let sendFormValidationError
-    const addressError = sendAddressValidator(state.sendAddress.fieldValue)
-    const amountError = sendAmountValidator(state.sendAmount.fieldValue)
-
-    // 'SendAddressAndAmountError'
     setState({
-      sendFormValidationError,
+      sendAddressValidationError: sendAddressValidator(state.sendAddress.fieldValue),
+      sendAmountValidationError: sendAmountValidator(state.sendAmount.fieldValue),
     })
   }
 
   const isSendFormFilledAndValid = (state) =>
     state.sendAddress.fieldValue !== '' &&
     state.sendAmount.fieldValue !== '' &&
-    !state.sendAddress.validationError &&
-    !state.sendAmount.validationError
+    !state.sendAddressValidationError &&
+    !state.sendAmountValidationError
 
   const calculateFee = async () => {
     const state = getState()
@@ -335,9 +332,7 @@ module.exports = ({setState, getState}) => {
       setState({
         transactionFee,
         sendAmountForTransactionFee: amount,
-        sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: feeValidator(amount, transactionFee, state.balance),
-        }),
+        sendAmountValidationError: feeValidator(amount, transactionFee, state.balance),
       })
     }
 
@@ -357,11 +352,6 @@ module.exports = ({setState, getState}) => {
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
   const validateSendFormAndCalculateFee = (state) => {
-    setState({
-      sendAddress: Object.assign({}, state.sendAddress, {
-        coins: Math.trunc(parseFloat(state.sendAddress.fieldValue) * 1000000),
-      }),
-    })
     validateSendForm(getState())
     if (isSendFormFilledAndValid(getState())) {
       setState({calculatingFee: true})
@@ -386,6 +376,7 @@ module.exports = ({setState, getState}) => {
       sendResponse: '',
       sendAmount: Object.assign({}, state.sendAmount, {
         fieldValue: e.target.value,
+        coins: parseCoins(e.target.value),
       }),
     })
     validateSendFormAndCalculateFee()
@@ -398,8 +389,7 @@ module.exports = ({setState, getState}) => {
     setState({
       sendResponse: '',
       sendAmount: {
-        fieldValue: maxAmount,
-        coins: maxAmount,
+        fieldValue: printAda(maxAmount),
       },
     })
     validateSendFormAndCalculateFee()
