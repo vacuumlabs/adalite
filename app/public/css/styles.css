@@ -388,6 +388,11 @@ p {
   color: var(--color-grey-light);
 }
 
+.button.send-error {
+  position: absolute;
+  right: 0;
+}
+
 /* TOOLTIP */
 
 button[data-balloon] {
@@ -778,6 +783,12 @@ button[data-balloon] {
 
 .modal-footer .modal-paragraph {
   margin-top: 40px;
+}
+
+.modal-footer.send-error {
+  flex-direction: row;
+  position: relative;
+  align-items: normal;
 }
 
 .modal-body .alert {
