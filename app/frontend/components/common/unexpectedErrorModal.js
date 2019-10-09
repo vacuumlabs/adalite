@@ -2,16 +2,11 @@ const {h} = require('preact')
 
 const Modal = require('./modal')
 const Alert = require('./alert')
-
 const Sentry = require('@sentry/browser')
 
 Sentry.init({dsn: 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383'})
 
-const submitToSentry = (e) => {
-  Sentry.captureException(e)
-}
-
-const ExceptionModal = ({closeHandler, e}) =>
+const UnexpectedExceptionModal = ({closeHandler, e}) =>
   h(
     Modal,
     {
@@ -23,7 +18,7 @@ const ExceptionModal = ({closeHandler, e}) =>
       {
         alertType: 'error',
       },
-      e.toString()
+      e.stack
     ),
     h(
       'div',
@@ -40,11 +35,13 @@ const ExceptionModal = ({closeHandler, e}) =>
         'button',
         {
           class: 'button primary',
-          onClick: submitToSentry(e),
+          onClick: () => {
+            Sentry.captureException(e), closeHandler()
+          },
         },
         'Send'
       )
     )
   )
 
-module.exports = ExceptionModal
+module.exports = UnexpectedExceptionModal
