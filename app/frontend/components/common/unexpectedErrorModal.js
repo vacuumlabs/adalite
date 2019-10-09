@@ -22,6 +22,7 @@ class UnexpectedErrorModal extends Component {
         closeHandler: this.closeUnexpectedErrorModal,
         title: 'Something went wrong.',
       },
+      h('p', {class: 'modal-paragraph'}, 'Do you wanna inform Adalite about this error? '),
       h(
         Alert,
         {

@@ -180,11 +180,11 @@ const SendAdaPage = ({
         },
         'Raw unsigned transaction'
       ),
-    // showTransactionErrorModal &&
-    //   h(TransactionErrorModal, {
-    //     closeHandler: closeTransactionErrorModal,
-    //     errorMessage: getTranslation(sendResponse.error, {sendResponse}),
-    //   }),
+    showTransactionErrorModal &&
+      h(TransactionErrorModal, {
+        closeHandler: closeTransactionErrorModal,
+        errorMessage: getTranslation(sendResponse.error, {sendResponse}),
+      }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
     showThanksForDonation && h(DonateThanksModal, {closeThanksForDonationModal})
