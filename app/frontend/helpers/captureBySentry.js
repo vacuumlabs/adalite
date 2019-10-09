@@ -1,12 +1,11 @@
 const {isExpected} = require('./expectedErrors')
-const Sentry = require('@sentry/browser')
 
 function captureBySentry(e) {
+  // errorHadler
   if (!isExpected(e)) {
-    Sentry.captureException(e)
-    return true
+    throw e
   }
-  return false
+  return
 }
 
 module.exports = captureBySentry

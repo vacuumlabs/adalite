@@ -46,6 +46,7 @@ const SendValidation = ({
       h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
 
 const SendAdaPage = ({
+  transactionSubmissionError,
   sendResponse,
   sendAddress,
   sendAddressValidationError,
@@ -183,7 +184,7 @@ const SendAdaPage = ({
     showTransactionErrorModal &&
       h(TransactionErrorModal, {
         closeHandler: closeTransactionErrorModal,
-        errorMessage: getTranslation(sendResponse.error, {sendResponse}),
+        errorMessage: getTranslation(transactionSubmissionError.name, {transactionSubmissionError}),
       }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
@@ -193,6 +194,7 @@ const SendAdaPage = ({
 
 module.exports = connect(
   (state) => ({
+    transactionSubmissionError: state.transactionSubmissionError,
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddress.validationError,
     sendAddress: state.sendAddress.fieldValue,

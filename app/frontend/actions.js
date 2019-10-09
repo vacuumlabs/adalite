@@ -458,22 +458,21 @@ module.exports = ({setState, getState}) => {
         return {
           success: true,
           txHash,
-          error: undefined,
+          // error: undefined,
         }
       } else if (pollingCounter < maxRetries - 1) {
         await sleep(pollingInterval)
       }
     }
 
-    return {
-      success: false,
-      txHash,
-      error: 'TransactionNotFoundInBlockchainAfterSubmission',
-    }
+    throw NamedError('TransactionNotFoundInBlockchainAfterSubmission')
   }
 
   const submitTransaction = async (state) => {
-    setState({showConfirmTransactionDialog: false})
+    setState({
+      showConfirmTransactionDialog: false,
+      transactionSubmissionError: undefined,
+    })
     if (state.usingHwWallet) {
       setState({waitingForHwWallet: true})
       loadingAction(state, `Waiting for ${state.hwWalletName}...`)
@@ -481,6 +480,7 @@ module.exports = ({setState, getState}) => {
       loadingAction(state, 'Submitting transaction...')
     }
     let sendResponse
+    let txSubmitResult
 
     try {
       const address = state.sendAddress.fieldValue
@@ -490,34 +490,31 @@ module.exports = ({setState, getState}) => {
         setState({waitingForHwWallet: false})
         loadingAction(state, 'Submitting transaction...')
       }
-      const txSubmitResult = await wallet.submitTx(signedTx)
+      txSubmitResult = await wallet.submitTx(signedTx)
 
-      if (!txSubmitResult) {
-        debugLog(txSubmitResult)
-        throw NamedError('TransactionRejectedByNetwork')
-      }
+      // if (!txSubmitResult) {
+      //   debugLog(txSubmitResult)
+      //   throw NamedError('TransactionRejectedByNetwork')
+      // }
 
       sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
 
       if (address === ADA_DONATION_ADDRESS) {
         setState({showThanksForDonation: true})
       }
-
-      resetSendFormFields(state)
     } catch (e) {
       debugLog(e)
-      sendResponse = {
-        success: false,
-        error: e.name,
-        message: e.message,
-      }
-      if (captureBySentry(e)) {
-        return
-      }
+      captureBySentry(e)
       setState({
+        transactionSubmissionError: {
+          code: e.name,
+          message: e.message,
+          txHash: txSubmitResult.txHash,
+        },
         showTransactionErrorModal: true,
       })
     } finally {
+      resetSendFormFields(state)
       resetSendFormState(state)
       wallet.generateNewSeeds()
       setState({
