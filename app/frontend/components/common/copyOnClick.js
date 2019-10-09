@@ -48,10 +48,11 @@ class CopyOnClick extends Component {
     return h(
       'a',
       {
-        'class': `${elementClass}`,
-        'onClick': copy && this.copyTextToClipboard,
-        'data-balloon': onMobile ? 'Ahoj' : 'Copied to clipboard!',
-        'data-balloon-visible': copied ? 'true' : '',
+        class: `${elementClass}`,
+        onClick: copy && this.copyTextToClipboard,
+        ...tooltip('Ahoj', true, true),
+        // 'data-balloon': onMobile ? 'Ahoj' : 'Copied to clipboard!',
+        // 'data-balloon-visible': copied ? 'true' : '',
       },
       children
     )

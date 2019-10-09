@@ -482,10 +482,6 @@ button[data-balloon] {
   transform: translate(0, 10px);
 }
 
-[data-balloon]:not([data-balloon-arrow])::before {
-  display: none;
-}
-
 [data-balloon]:not([data-balloon-visible]):hover::after,
 [data-balloon][data-balloon-visible='true']::after {
   -webkit-transform: translate(0, -8px);
@@ -3225,12 +3221,16 @@ button[data-balloon] {
   }
 
   /* TOOLTIP */
+  
+  [data-balloon]::after {
+    position: fixed;
+    top: 90%;
+    left: 45%;
+    bottom: unset;
+  }
 
-  [data-balloon]:hover::after,
-  [data-balloon]:hover::before,
-  [data-balloon]::after,
   [data-balloon]::before {
-    position: absolute;
+    display: none;
   }
 
   /* ADDRESSES */
