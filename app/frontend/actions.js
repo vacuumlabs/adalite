@@ -389,6 +389,14 @@ module.exports = ({setState, getState}) => {
       }
   }
 
+  const resetPercentageDonation = () => {
+    setState({
+      thresholdAmountReached: false,
+      percentageDonationValue: 0,
+      percentageDonationText: '0.2%',
+    })
+  }
+
   const resetAmountFields = (state) => {
     setState({
       donationAmount: {fieldValue: '', coins: 0},
@@ -397,11 +405,10 @@ module.exports = ({setState, getState}) => {
       transactionFee: 0,
       maxSendAmount: Infinity,
       maxDonationAmount: Infinity,
-      percentageDonationValue: 0,
-      percentageDonationText: '0.2%',
       checkedDonationType: '',
       showCustomDonationInput: false,
     })
+    resetPercentageDonation()
   }
 
   const resetSendFormState = (state) => {
@@ -472,7 +479,11 @@ module.exports = ({setState, getState}) => {
   const getProperTextAndVal = async (coins) => {
     if (coins < toCoins(500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
       //because 0.2%
-      return {text: 'Min', value: ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE}
+      return {
+        text: 'Min',
+        value: ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE,
+        thresholdReached: false,
+      }
     }
 
     const percentageProperties = await getPercentageDonationProperties()
@@ -488,16 +499,20 @@ module.exports = ({setState, getState}) => {
     const donationProperties = await getProperTextAndVal(state.sendAmount.coins)
 
     if (state.checkedDonationType === 'percentage') {
-      // already selected
+      // %-button is selected, adjust % value because sendAmount changed
       setDonation(state, donationProperties.value)
     }
 
-    if (state.thresholdAmountReached || donationProperties.thresholdReached) {
+    if (state.checkedDonationType === 'percentage' || donationProperties.thresholdReached) {
+      // update %-button text and value
       setState({
         percentageDonationValue: donationProperties.value,
         percentageDonationText: donationProperties.text,
         thresholdAmountReached: true,
       })
+    } else {
+      // disable and reset %-button because sendAmount is too low
+      resetPercentageDonation()
     }
   }
 
