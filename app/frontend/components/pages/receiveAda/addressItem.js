@@ -11,15 +11,15 @@ class AddressItem extends Component {
     this.openAddressDetail = this.openAddressDetail.bind(this)
   }
 
-  openAddressDetail({address, bip32path}, enableTooltip) {
-    this.props.openAddressDetail({address, bip32path}, enableTooltip)
+  openAddressDetail({address, bip32path}, copyOnClick) {
+    this.props.openAddressDetail({address, bip32path}, copyOnClick)
   }
 
   updateDimensions() {
     if (window.innerWidth < 768) {
-      this.setState({onMobile: true})
+      this.setState({onSmallDevice: true})
     } else if (window.innerWidth > 767) {
-      this.setState({onMobile: false})
+      this.setState({onSmallDevice: false})
     }
   }
 
@@ -46,7 +46,7 @@ class AddressItem extends Component {
           {
             value: address,
             elementClass: 'address-link',
-            copy: this.state.onMobile,
+            copy: this.state.onSmallDevice,
           },
           h('p', {class: 'one-click-select'}, address)
         )
@@ -94,7 +94,7 @@ class AddressItem extends Component {
           'a',
           {
             class: 'address-link more',
-            onClick: () => this.openAddressDetail({address, bip32path}, this.state.onMobile),
+            onClick: () => this.openAddressDetail({address, bip32path}, this.state.onSmallDevice),
           },
           'View more'
         )

@@ -230,7 +230,7 @@ module.exports = ({setState, getState}) => {
     }
   }
 
-  const openAddressDetail = (state, {address, bip32path}, enableTooltip) => {
+  const openAddressDetail = (state, {address, bip32path}, copyOnClick) => {
     /*
     * because we don't want to trigger trezor address
     * verification for the  donation address
@@ -239,7 +239,7 @@ module.exports = ({setState, getState}) => {
 
     // trigger trezor address verification for the  donation address
     setState({
-      showAddressDetail: {address, bip32path, enableTooltip},
+      showAddressDetail: {address, bip32path, copyOnClick},
       showAddressVerification,
     })
   }

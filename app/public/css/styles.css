@@ -3225,7 +3225,8 @@ button[data-balloon] {
   [data-balloon]::after {
     position: fixed;
     top: 90%;
-    left: 45%;
+    left: 50%;
+    /* transform: translateX(-50%); */
     bottom: unset;
   }
 
