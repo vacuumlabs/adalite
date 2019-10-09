@@ -515,7 +515,7 @@ module.exports = ({setState, getState}) => {
         return
       }
       setState({
-        showTransactionErrorModal: !sendResponse.success,
+        showTransactionErrorModal: true,
       })
     } finally {
       resetSendFormState(state)

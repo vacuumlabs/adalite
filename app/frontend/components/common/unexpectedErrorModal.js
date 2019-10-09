@@ -7,10 +7,11 @@ const Alert = require('./alert')
 class UnexpectedErrorModal extends Component {
   constructor(props) {
     super(props)
-    this.closeUnexpectedErrorModal = this.closeUnexpectedErrorModal.bind(this)
+    this.closeAndResolve = this.closeAndResolve.bind(this)
   }
 
-  closeUnexpectedErrorModal() {
+  closeAndResolve(resolveValue) {
+    this.props.sendSentry.resolve(resolveValue)
     this.props.closeUnexpectedErrorModal()
   }
 
@@ -18,10 +19,7 @@ class UnexpectedErrorModal extends Component {
     return h(
       Modal,
       {
-        closeHandler: () => {
-          sendSentry.resolve(false)
-          this.closeUnexpectedErrorModal()
-        },
+        closeHandler: () => this.closeAndResolve(false),
         title: 'Something went wrong.',
       },
       h('p', {class: 'modal-paragraph'}, 'Do you want to inform Adalite about this error? '),
@@ -39,10 +37,7 @@ class UnexpectedErrorModal extends Component {
           'button',
           {
             class: 'button outline',
-            onClick: () => {
-              sendSentry.resolve(false)
-              this.closeUnexpectedErrorModal()
-            },
+            onClick: () => this.closeAndResolve(false),
           },
           'Cancel'
         ),
@@ -50,10 +45,7 @@ class UnexpectedErrorModal extends Component {
           'button',
           {
             class: 'button primary send-error',
-            onClick: () => {
-              sendSentry.resolve(true)
-              this.closeUnexpectedErrorModal()
-            },
+            onClick: () => this.closeAndResolve(true),
           },
           'Send'
         )
