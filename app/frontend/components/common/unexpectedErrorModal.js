@@ -45,7 +45,9 @@ class UnexpectedErrorModal extends Component {
           'button',
           {
             class: 'button primary send-error',
-            onClick: sendSentry.resolve(false),
+            onClick: () => {
+              sendSentry.resolve(true), this.closeUnexpectedErrorModal()
+            },
           },
           'Send'
         )
