@@ -6,6 +6,9 @@ const expectedErrors = {
   TransactionRejected: () => '', //txRejectedByUser d make more sense
   CoinFeeError: () => '',
   NetworkError: () => '',
+  TransportStatusError: () => '',
+  TrezorError: () => '',
+  TransactionRejectedByNetwork: () => '',
 }
 
 function isExpected(e) {

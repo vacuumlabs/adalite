@@ -70,7 +70,7 @@ const CardanoWallet = async (options) => {
     const {txBody, txHash} = signedTx
     const response = await blockchainExplorer.submitTxRaw(txHash, txBody).catch((e) => {
       debugLog(e)
-      throw NamedError('TransactionRejectedByNetwork')
+      throw e
     })
 
     return response

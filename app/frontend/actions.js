@@ -431,7 +431,7 @@ module.exports = ({setState, getState}) => {
       sendResponse: '',
       loading: false,
       showConfirmTransactionDialog: false,
-      showTransactionErrorModal: false,
+      // showTransactionErrorModal: false,
     })
   }
 
