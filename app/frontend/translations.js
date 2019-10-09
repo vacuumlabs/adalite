@@ -36,7 +36,6 @@ function getTranslation(code, params) {
   if (!translations[code]) {
     debugLog(`Translation for ${code} not found!`)
   }
-
   return translations[code] ? translations[code](params) : code
 }
 

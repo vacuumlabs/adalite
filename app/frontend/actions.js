@@ -498,7 +498,6 @@ module.exports = ({setState, getState}) => {
       // }
 
       sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
-
       if (address === ADA_DONATION_ADDRESS) {
         setState({showThanksForDonation: true})
       }
@@ -509,7 +508,7 @@ module.exports = ({setState, getState}) => {
         transactionSubmissionError: {
           code: e.name,
           message: e.message,
-          txHash: txSubmitResult.txHash,
+          txHash: txSubmitResult ? txSubmitResult.txHash : undefined,
         },
         showTransactionErrorModal: true,
       })

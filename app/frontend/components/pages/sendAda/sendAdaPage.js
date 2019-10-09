@@ -42,7 +42,8 @@ const SendValidation = ({
       h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
       h(AmountErrorMessage, {sendAmount, sendAmountValidationError})
     )
-    : sendResponse.success &&
+    : sendResponse &&
+      sendResponse.success &&
       h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
 
 const SendAdaPage = ({
@@ -184,7 +185,7 @@ const SendAdaPage = ({
     showTransactionErrorModal &&
       h(TransactionErrorModal, {
         closeHandler: closeTransactionErrorModal,
-        errorMessage: getTranslation(transactionSubmissionError.name, {transactionSubmissionError}),
+        errorMessage: getTranslation(transactionSubmissionError.code, {transactionSubmissionError}),
       }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
