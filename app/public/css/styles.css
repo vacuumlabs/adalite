@@ -3226,7 +3226,7 @@ button[data-balloon] {
     position: fixed;
     top: 90%;
     left: 50%;
-    /* transform: translateX(-50%); */
+    margin-left: -77px;
     bottom: unset;
   }
 
