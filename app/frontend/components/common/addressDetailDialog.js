@@ -46,7 +46,17 @@ class AddressDetailDialogClass extends Component {
             h(
               'div',
               {class: 'detail-input address'},
-              h('div', {class: 'detail-address'}, showDetail.address),
+              h(
+                CopyOnClick,
+                {
+                  value: showDetail.address,
+                  elementClass: 'address-link',
+                  // copiedCallback: this.toggleCopyMessage,
+                  copy: showDetail.enableTooltip,
+                  // enableTooltip: showDetail.enableTooltip,
+                },
+                h('div', {class: 'detail-address'}, showDetail.address)
+              ),
               h(
                 CopyOnClick,
                 {
