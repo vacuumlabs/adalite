@@ -68,6 +68,21 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const fetchConversionRates = async (state, conversionRates) => {
+    try {
+      setState({
+        conversionRates: await conversionRates,
+      })
+    } catch (e) {
+      debugLog('Could not fetch conversion rates.')
+      setState({
+        conversionRates: null,
+      })
+      throw NamedError('ConversionRatesError', 'Could not fetch conversion rates.')
+    }
+    return true
+  }
+
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
     loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined})
     try {
@@ -108,43 +123,18 @@ module.exports = ({setState, getState}) => {
         showDemoWalletWarningDialog: isDemoWallet,
         showGenerateMnemonicDialog: false,
       })
-      try {
-        setState({
-          conversionRates: await conversionRates,
-        })
-      } catch (e) {
-        debugLog('Could not fetch conversion rates.')
-        setState({
-          conversionRates: null,
-        })
-        throw NamedError('ConversionRatesError', 'Could not fetch conversion rates.')
-      }
+      await fetchConversionRates(state, conversionRates)
     } catch (e) {
       setState({
         loading: false,
       })
       debugLog(e)
       captureBySentry(e)
-      let message
-      switch (e.name) {
-        case 'NetworkError':
-          message = 'failed to fetch data from blockchain explorer'
-          break
-        case 'TransportOpenUserCancelled':
-        case 'TransportError':
-        case 'TransportStatusError':
-        case 'TrezorError':
-          message = e.message
-          break
-        default:
-          break
-      }
-
       setState({
         walletLoadingError: {
           code: 'WalletInitializationError',
           params: {
-            message,
+            message: e.message,
           },
         },
         showWalletLoadingErrorModal: true,
@@ -285,18 +275,7 @@ module.exports = ({setState, getState}) => {
         ownAddressesWithMeta,
         transactionHistory,
       })
-      try {
-        setState({
-          conversionRates: await conversionRates,
-        })
-      } catch (e) {
-        debugLog(`Could not fetch conversion rates: ${e}`)
-        setState({
-          conversionRates: null,
-          loading: false,
-        })
-        throw NamedError('ConversionRatesError', 'Could not fetch conversion rates.')
-      }
+      await fetchConversionRates(state, conversionRates)
     } catch (e) {
       setState({
         loading: false,
@@ -429,7 +408,6 @@ module.exports = ({setState, getState}) => {
       sendResponse: '',
       loading: false,
       showConfirmTransactionDialog: false,
-      // showTransactionErrorModal: false,
     })
   }
 
@@ -456,7 +434,6 @@ module.exports = ({setState, getState}) => {
         return {
           success: true,
           txHash,
-          // error: undefined,
         }
       } else if (pollingCounter < maxRetries - 1) {
         await sleep(pollingInterval)

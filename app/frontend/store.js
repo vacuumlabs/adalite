@@ -38,7 +38,6 @@ const initialState = {
   sendResponse: {},
   showUnexpectedErrorModal: false,
   sendSentry: {},
-  transactionSubmissionError: {},
 }
 
 const createStore = () =>
