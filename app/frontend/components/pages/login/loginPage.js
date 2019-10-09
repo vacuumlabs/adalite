@@ -168,6 +168,7 @@ class LoginPage extends Component {
         h(WalletLoadingErrorModal, {
           closeHandler: closeWalletLoadingErrorModal,
           errorMessage: getTranslation(walletLoadingError.code, walletLoadingError.params),
+          showHelp: walletLoadingError.params.showHelp,
         })
     )
   }

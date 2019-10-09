@@ -136,6 +136,7 @@ module.exports = ({setState, getState}) => {
           code: e.name,
           params: {
             message: e.message,
+            showHelp: e.showHelp || false,
           },
         },
         showWalletLoadingErrorModal: true,
@@ -483,6 +484,7 @@ module.exports = ({setState, getState}) => {
           params: {
             message: e.message,
             txHash: txSubmitResult ? txSubmitResult.txHash : undefined,
+            showHelp: e.showHelp || false,
           },
         },
         showTransactionErrorModal: true,

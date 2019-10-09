@@ -22,7 +22,8 @@ const SendValidation = ({sendFormValidationError, sendResponse}) =>
       {class: 'validation-message send error'},
       h(SendFormErrorMessage, {sendFormValidationError})
     )
-    : sendResponse.success &&
+    : sendResponse &&
+      sendResponse.success &&
       h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
 
 const SendAdaPage = ({
@@ -45,7 +46,6 @@ const SendAdaPage = ({
   showTransactionErrorModal,
   getRawTransaction,
   rawTransactionOpen,
-  setRawTransactionOpen,
   rawTransaction,
   coinsAmount,
 }) => {
@@ -58,7 +58,6 @@ const SendAdaPage = ({
 
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
-    // setRawTransactionOpen(true)
   }
 
   return h(
@@ -166,6 +165,7 @@ const SendAdaPage = ({
           transactionSubmissionError.code,
           transactionSubmissionError.params
         ),
+        showHelp: transactionSubmissionError.params.showHelp,
       }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
