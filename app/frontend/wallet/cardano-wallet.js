@@ -118,8 +118,10 @@ const CardanoWallet = async (options) => {
     const changeAmount = txInputsCoinsSum - coins - fee
 
     if (changeAmount < 0) {
-      throw Error(`
-        Transaction inputs (sum ${txInputsCoinsSum}) don't cover coins (${coins}) + fee (${fee})`)
+      throw NamedError(
+        'CoinFeeError',
+        `Transaction inputs (sum ${txInputsCoinsSum}) don't cover coins (${coins}) + fee (${fee})`
+      )
     }
 
     const txOutputs = [TxOutput(address, coins, false)]
@@ -194,7 +196,7 @@ const CardanoWallet = async (options) => {
 
   function computeTxFee(txInputs, address, coins) {
     if (coins > Number.MAX_SAFE_INTEGER) {
-      throw new Error(`Unsupported amount of coins: ${coins}`)
+      throw NamedError('CoinFeeError', `Unsupported amount of coins: ${coins}`)
     }
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins
@@ -306,7 +308,7 @@ const CardanoWallet = async (options) => {
 
   function verifyAddress(addr) {
     if (!cryptoProvider.displayAddressForPath) {
-      throw Error('unsupported operation: verifyAddress')
+      throw NamedError('NoSupportError', 'unsupported operation: verifyAddress')
     }
     const absDerivationPath = getAddressToAbsPathMapper()(addr)
     return cryptoProvider.displayAddressForPath(absDerivationPath)

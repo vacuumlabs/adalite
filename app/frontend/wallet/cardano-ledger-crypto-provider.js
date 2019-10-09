@@ -6,6 +6,7 @@ const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
 const debugLog = require('../helpers/debugLog')
 const {TxWitness, SignedTransactionStructured} = require('./transaction')
 const derivationSchemes = require('./derivation-schemes')
+const NamedError = require('../helpers/NamedError')
 
 const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   let transport
@@ -37,23 +38,23 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   })
 
   function deriveHdNode(childIndex) {
-    throw new Error('This operation is not supported on LedgerCryptoProvider!')
+    throw NamedError('NoSupportError', 'This operation is not supported on LedgerCryptoProvider!')
   }
 
   function sign(message, absDerivationPath) {
-    throw new Error('Not supported')
+    throw NamedError('NoSupportError', 'Not supported')
   }
 
   async function displayAddressForPath(absDerivationPath) {
     try {
       await ledger.showAddress(absDerivationPath)
     } catch (err) {
-      throw new Error('Ledger operation failed!')
+      throw NamedError('LedgerOperationError', 'Ledger operation failed!')
     }
   }
 
   function getWalletSecret() {
-    throw new Error('Unsupported operation!')
+    throw NamedError('NoSupportError', 'Unsupported operation!')
   }
 
   function getDerivationScheme() {
@@ -106,7 +107,10 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     const response = await ledger.signTransaction(inputs, outputs)
 
     if (response.txHashHex !== unsignedTx.getId()) {
-      throw new Error('Tx serialization mismatch between Ledger and Adalite')
+      throw NamedError(
+        'TxSerializationError',
+        'Tx serialization mismatch between Ledger and Adalite'
+      )
     }
 
     // serialize signed transaction for submission

@@ -3,7 +3,6 @@ const connect = require('unistore/preact').connect
 const actions = require('../../actions')
 const Modal = require('./modal')
 const Alert = require('./alert')
-// const {ADALITE_CONFIG} = require('../../config')
 
 class UnexpectedErrorModal extends Component {
   constructor(props) {
@@ -46,7 +45,8 @@ class UnexpectedErrorModal extends Component {
           {
             class: 'button primary send-error',
             onClick: () => {
-              sendSentry.resolve(true), this.closeUnexpectedErrorModal()
+              sendSentry.resolve(true)
+              this.closeUnexpectedErrorModal()
             },
           },
           'Send'

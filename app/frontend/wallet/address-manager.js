@@ -1,6 +1,7 @@
 const range = require('./helpers/range')
 const {toBip32StringPath} = require('./helpers/bip32')
 const {packAddress} = require('cardano-crypto.js')
+const NamedError = require('../helpers/NamedError')
 
 const AddressManager = ({
   accountIndex,
@@ -18,10 +19,13 @@ const AddressManager = ({
 
   function validateParams() {
     if (!gapLimit) {
-      throw Error(`Invalid gap limit: ${gapLimit}`)
+      throw NamedError('ParamsValidationError', `Invalid gap limit: ${gapLimit}`)
     }
     if (!defaultAddressCount) {
-      throw Error(`Invalid defaultAddressCount: ${defaultAddressCount}`)
+      throw NamedError(
+        'ParamsValidationError',
+        `Invalid defaultAddressCount: ${defaultAddressCount}`
+      )
     }
   }
 
@@ -32,7 +36,10 @@ const AddressManager = ({
       case 'v2':
         return await discoverAddressesV2()
       default:
-        throw new Error(`Unexpected derivation scheme: ${derivationScheme.type}`)
+        throw NamedError(
+          'DerivationSchemeError',
+          `Unexpected derivation scheme: ${derivationScheme.type}`
+        )
     }
   }
 

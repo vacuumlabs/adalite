@@ -1,4 +1,5 @@
 const {HARDENED_THRESHOLD} = require('../constants')
+const NamedError = require('../../helpers/NamedError')
 
 function toBip32Path(derivationPath) {
   // 44'/1815'
@@ -16,7 +17,7 @@ function fromBip32Path(bip32Path) {
     case 0:
       return []
     default:
-      throw Error(`Unsupported derivation path: ${bip32Path}`)
+      throw NamedError('NoSupportError', `Unsupported derivation path: ${bip32Path}`)
   }
 }
 
