@@ -302,7 +302,10 @@ module.exports = ({setState, getState}) => {
   const validateSendForm = (state) => {
     setState({
       sendAddressValidationError: sendAddressValidator(state.sendAddress.fieldValue),
-      sendAmountValidationError: sendAmountValidator(state.sendAmount.fieldValue),
+      sendAmountValidationError: sendAmountValidator(
+        state.sendAmount.fieldValue,
+        state.sendAmount.coins
+      ),
     })
   }
 
@@ -321,6 +324,7 @@ module.exports = ({setState, getState}) => {
 
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
+    // const transactionFee = computeTxFee(txInputs, address, coins)
     const transactionFee = await wallet.getTxFee(address, amount)
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
@@ -386,11 +390,12 @@ module.exports = ({setState, getState}) => {
     setState({calculatingFee: true})
 
     const maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
+    const fieldValue = printAda(maxAmount)
     setState({
       sendResponse: '',
       sendAmount: {
-        fieldValue: printAda(maxAmount),
-        coins: maxAmount,
+        fieldValue,
+        coins: maxAmount || null,
       },
     })
     validateSendFormAndCalculateFee()
@@ -460,10 +465,10 @@ module.exports = ({setState, getState}) => {
       }
       txSubmitResult = await wallet.submitTx(signedTx)
 
-      // if (!txSubmitResult) {
-      //   debugLog(txSubmitResult)
-      //   throw NamedError('TransactionRejectedByNetwork')
-      // }
+      if (!txSubmitResult) {
+        debugLog(txSubmitResult)
+        throw NamedError('TransactionRejectedByNetwork')
+      }
 
       sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
       if (address === ADA_DONATION_ADDRESS) {

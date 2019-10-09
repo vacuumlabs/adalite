@@ -10,14 +10,15 @@ const sendAddressValidator = (fieldValue) => {
     : null
 }
 
-const sendAmountValidator = (fieldValue) => {
-  const coins = parseCoins(fieldValue)
-
+const sendAmountValidator = (fieldValue, coins) => {
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
 
   if (fieldValue === '') {
     return null
+  }
+  if (coins === null) {
+    return {code: 'SendAmountCantSendMaxFunds'}
   }
   if (!floatRegex.test(fieldValue) || isNaN(coins)) {
     return {code: 'SendAmountIsNan'}
@@ -35,16 +36,17 @@ const sendAmountValidator = (fieldValue) => {
 }
 
 const feeValidator = (sendAmount, transactionFee, balance) => {
-  let validationError = null
-
+  if (transactionFee >= balance) {
+    return {code: 'SendAmountCantSendMaxFunds'}
+  }
   if (sendAmount + transactionFee > balance) {
-    validationError = {
+    return {
       code: 'SendAmountInsufficientFunds',
       params: {balance},
     }
   }
 
-  return validationError
+  return null
 }
 
 const mnemonicValidator = (mnemonic) => {
