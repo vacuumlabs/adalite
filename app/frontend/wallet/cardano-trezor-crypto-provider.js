@@ -41,7 +41,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   }
 
   function sign(message, absDerivationPath) {
-    throw NamedError('UnsupportedOperationError', 'Not supported')
+    throw NamedError('UnsupportedOperationError', 'Operation not supported')
   }
 
   async function displayAddressForPath(absDerivationPath) {
@@ -107,7 +107,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
 
     if (response.error || !response.success) {
       debugLog(response)
-      throw new NamedError('TrezorSignTxError', response.payload.error)
+      throw new NamedError('TrezorSignTxError', response.payload.error, true)
     }
 
     return {
@@ -127,11 +127,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   function throwIfNotSuccess(response) {
     if (response.error || !response.success) {
       debugLog(response)
-      throw new NamedError(
-        'TrezorError',
-        'Trezor operation failed, please make sure ad blockers are switched off for this site',
-        true
-      )
+      throw new NamedError('TrezorError', undefined, true)
     }
   }
 

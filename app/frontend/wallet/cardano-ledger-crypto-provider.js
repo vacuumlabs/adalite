@@ -45,14 +45,14 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   }
 
   function sign(message, absDerivationPath) {
-    throw NamedError('UnsupportedOperationError', 'Not supported')
+    throw NamedError('UnsupportedOperationError', 'Operation not supported')
   }
 
   async function displayAddressForPath(absDerivationPath) {
     try {
       await ledger.showAddress(absDerivationPath)
     } catch (err) {
-      throw NamedError('LedgerOperationError', 'Ledger operation failed!')
+      throw NamedError('LedgerOperationError', `${err.name}: ${err.message}`, true)
     }
   }
 
@@ -112,7 +112,8 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     if (response.txHashHex !== unsignedTx.getId()) {
       throw NamedError(
         'TxSerializationError',
-        'Tx serialization mismatch between Ledger and Adalite'
+        undefined, // add important info for the devs
+        true
       )
     }
 

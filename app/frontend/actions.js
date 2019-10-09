@@ -125,6 +125,7 @@ module.exports = ({setState, getState}) => {
         showGenerateMnemonicDialog: false,
       })
       await fetchConversionRates(state, conversionRates)
+      // throw NamedError('NetworkError', 'ahoj', true)
     } catch (e) {
       setState({
         loading: false,
@@ -135,7 +136,7 @@ module.exports = ({setState, getState}) => {
         walletLoadingError: {
           code: e.name,
           params: {
-            message: e.message,
+            message: e.message || undefined,
             showHelp: e.showHelp || false,
           },
         },
@@ -482,7 +483,7 @@ module.exports = ({setState, getState}) => {
         transactionSubmissionError: {
           code: e.name,
           params: {
-            message: e.message,
+            message: e.message || undefined,
             txHash: txSubmitResult ? txSubmitResult.txHash : undefined,
             showHelp: e.showHelp || false,
           },
