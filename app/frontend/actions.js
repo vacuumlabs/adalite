@@ -117,7 +117,7 @@ module.exports = ({setState, getState}) => {
         setState({
           conversionRates: null,
         })
-        throw NamedError('ConversationRatesError', 'Could not fetch conversion rates.')
+        throw NamedError('ConversionRatesError', 'Could not fetch conversion rates.')
       }
     } catch (e) {
       setState({
@@ -297,7 +297,7 @@ module.exports = ({setState, getState}) => {
           conversionRates: null,
           loading: false,
         })
-        throw NamedError('ConversationRatesError', 'Could not fetch conversion rates.')
+        throw NamedError('ConversionRatesError', 'Could not fetch conversion rates.')
       }
     } catch (e) {
       setState({

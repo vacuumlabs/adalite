@@ -1,5 +1,5 @@
 const expectedErrors = new Set([
-  'ConversationRatesError',
+  'ConversionRatesError',
   'TransactionCorrupted',
   'ParamsValidationError',
   'UnsupportedOperationError',
