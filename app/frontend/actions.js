@@ -19,9 +19,6 @@ const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
-const Sentry = require('@sentry/browser')
-
-Sentry.init({ dsn: 'https://d77d3bf9d9364597badab9c00fa59a31@sentry.io/1501383' });
 
 let wallet = null
 
@@ -88,6 +85,7 @@ module.exports = ({setState, getState}) => {
       const sendAmount = {fieldValue: ''}
       const sendAddress = {fieldValue: ''}
       const sendResponse = ''
+      const unexpectedError = undefined
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
       const demoRootSecret = (await mnemonicToWalletSecretDef(
@@ -101,6 +99,7 @@ module.exports = ({setState, getState}) => {
         sendAmount,
         sendAddress,
         sendResponse,
+        unexpectedError,
         transactionHistory,
         loading: false,
         mnemonicInputValue: '',
@@ -420,6 +419,7 @@ module.exports = ({setState, getState}) => {
       loading: false,
       showConfirmTransactionDialog: false,
       showTransactionErrorModal: false,
+      showUnexpectedErrorModal: false,
     })
   }
 
@@ -469,6 +469,7 @@ module.exports = ({setState, getState}) => {
       loadingAction(state, 'Submitting transaction...')
     }
     let sendResponse
+    let unexpectedError
 
     try {
       const address = state.sendAddress.fieldValue
@@ -499,13 +500,16 @@ module.exports = ({setState, getState}) => {
         error: e.name,
         message: e.message,
       }
+      unexpectedError = e
     } finally {
       resetSendFormState(state)
       wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,
         sendResponse,
+        unexpectedError,
         showTransactionErrorModal: !sendResponse.success,
+        showUnexpectedErrorModal: !sendResponse.success,
       })
     }
   }
@@ -519,6 +523,12 @@ module.exports = ({setState, getState}) => {
   const closeTransactionErrorModal = (state) => {
     setState({
       showTransactionErrorModal: false,
+    })
+  }
+
+  const closeUnexpectedErrorModal = (state) => {
+    setState({
+      showUnexpectedErrorModal: false,
     })
   }
 
@@ -600,6 +610,7 @@ module.exports = ({setState, getState}) => {
     getRawTransaction,
     closeTransactionErrorModal,
     closeWalletLoadingErrorModal,
+    closeUnexpectedErrorModal,
     showContactFormModal,
     closeContactFormModal,
   }

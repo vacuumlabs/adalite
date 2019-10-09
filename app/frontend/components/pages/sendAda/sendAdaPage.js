@@ -9,6 +9,7 @@ const ConfirmTransactionDialog = require('./confirmTransactionDialog')
 const RawTransactionModal = require('./rawTransactionModal')
 const DonateThanksModal = require('./donateThanksModal')
 const TransactionErrorModal = require('./transactionErrorModal')
+const UnexpectedErrorModal = require('../../common/unexpectedErrorModal')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
@@ -47,6 +48,7 @@ const SendValidation = ({
 
 const SendAdaPage = ({
   sendResponse,
+  unexpectedError,
   sendAddress,
   sendAddressValidationError,
   sendAmount,
@@ -61,7 +63,9 @@ const SendAdaPage = ({
   showThanksForDonation,
   closeThanksForDonationModal,
   closeTransactionErrorModal,
+  closeUnexpectedErrorModal,
   showTransactionErrorModal,
+  showUnexpectedErrorModal,
   getRawTransaction,
   rawTransactionOpen,
   setRawTransactionOpen,
@@ -167,6 +171,7 @@ const SendAdaPage = ({
           sendAddressValidationError,
           sendResponse,
           closeTransactionErrorModal,
+          closeUnexpectedErrorModal,
         })
     ),
     enableSubmit &&
@@ -180,10 +185,15 @@ const SendAdaPage = ({
         },
         'Raw unsigned transaction'
       ),
-    showTransactionErrorModal &&
-      h(TransactionErrorModal, {
-        closeHandler: closeTransactionErrorModal,
-        errorMessage: getTranslation(sendResponse.error, {sendResponse}),
+    // showTransactionErrorModal &&
+    //   h(TransactionErrorModal, {
+    //     closeHandler: closeTransactionErrorModal,
+    //     errorMessage: getTranslation(sendResponse.error, {sendResponse}),
+    //   }),
+    showUnexpectedErrorModal &&
+      h(UnexpectedErrorModal, {
+        closeHandler: closeUnexpectedErrorModal,
+        e: unexpectedError,
       }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog),
@@ -193,6 +203,7 @@ const SendAdaPage = ({
 
 module.exports = connect(
   (state) => ({
+    unexpectedError: state.unexpectedError,
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddress.validationError,
     sendAddress: state.sendAddress.fieldValue,
@@ -201,6 +212,7 @@ module.exports = connect(
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     showTransactionErrorModal: state.showTransactionErrorModal,
+    showUnexpectedErrorModal: state.showUnexpectedErrorModal,
     feeRecalculating: state.calculatingFee,
     showThanksForDonation: state.showThanksForDonation,
     rawTransaction: state.rawTransaction,
