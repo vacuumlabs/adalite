@@ -36,6 +36,8 @@ const initialState = {
   showMnemonicInfoAlert: false,
   transactionHistory: [],
   sendResponse: {},
+  showUnexpectedErrorModal: false,
+  sendSentry: {},
 }
 
 const createStore = () =>

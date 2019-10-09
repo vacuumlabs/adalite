@@ -11,6 +11,7 @@ const NavbarUnauth = require('./common/navbar/navbarUnauth')
 const AddressDetailDialog = require('./common/addressDetailDialog')
 const AutoLogout = require('./autoLogout')
 const ADALITE_LOGOUT_AFTER = require('../config').ADALITE_CONFIG.ADALITE_LOGOUT_AFTER
+const UnexpectedErrorModal = require('../components/common/unexpectedErrorModal')
 
 const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
   ({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth))
@@ -19,7 +20,8 @@ const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
 const App = connect((state) => ({
   displayWelcome: state.displayWelcome,
   showContactFormModal: state.showContactFormModal,
-}))(({displayWelcome, showContactFormModal}) =>
+  showUnexpectedErrorModal: state.showUnexpectedErrorModal,
+}))(({displayWelcome, showContactFormModal, showUnexpectedErrorModal}) =>
   h(
     'div',
     {class: 'wrap'},
@@ -30,7 +32,8 @@ const App = connect((state) => ({
     h(AddressDetailDialog),
     ADALITE_LOGOUT_AFTER > 0 && h(AutoLogout),
     displayWelcome && h(Welcome),
-    showContactFormModal && h(ContactForm)
+    showContactFormModal && h(ContactForm),
+    showUnexpectedErrorModal && h(UnexpectedErrorModal)
   )
 )
 
