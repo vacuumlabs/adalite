@@ -5,30 +5,28 @@ const {validateMnemonic} = require('../wallet/mnemonic')
 const parseCoins = (str) => Math.trunc(parseFloat(str) * 1000000)
 
 const sendAddressValidator = (fieldValue) => {
-  return {
-    fieldValue,
-    validationError: !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
-  }
+  return !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : undefined
 }
 
 const sendAmountValidator = (fieldValue) => {
-  let validationError = null
   const coins = parseCoins(fieldValue)
 
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
 
   if (!floatRegex.test(fieldValue) || isNaN(coins)) {
-    validationError = {code: 'SendAmountIsNan'}
-  } else if (fieldValue.split('.').length === 2 && fieldValue.split('.')[1].length > 6) {
-    validationError = {code: 'SendAmountPrecisionLimit'}
-  } else if (coins > maxAmount) {
-    validationError = {code: 'SendAmountIsTooBig'}
-  } else if (coins <= 0) {
-    validationError = {code: 'SendAmountIsNotPositive'}
+    return {code: 'SendAmountIsNan'}
   }
-
-  return {fieldValue, coins, validationError}
+  if (fieldValue.split('.').length === 2 && fieldValue.split('.')[1].length > 6) {
+    return {code: 'SendAmountPrecisionLimit'}
+  }
+  if (coins > maxAmount) {
+    return {code: 'SendAmountIsTooBig'}
+  }
+  if (coins <= 0) {
+    return {code: 'SendAmountIsNotPositive'}
+  }
+  return undefined
 }
 
 const feeValidator = (sendAmount, transactionFee, balance) => {

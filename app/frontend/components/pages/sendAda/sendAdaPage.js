@@ -14,19 +14,30 @@ const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calcu
 
 const AmountErrorMessage = ({sendAmount, sendAmountValidationError}) =>
   sendAmountValidationError &&
+  sendAmount !== '' &&
   h(
     'span',
     undefined,
-    sendAmountValidationError.code === 'SendAmountCantSendMaxFunds'
-      ? getTranslation(sendAmountValidationError.code, sendAmountValidationError.params)
-      : sendAmount !== '' &&
-        getTranslation(sendAmountValidationError.code, sendAmountValidationError.params)
+    getTranslation(sendAmountValidationError.code, sendAmountValidationError.params)
   )
 
 const AddressErrorMessage = ({sendAddress, sendAddressValidationError}) =>
   sendAddressValidationError &&
   sendAddress !== '' &&
   h('span', undefined, getTranslation(sendAddressValidationError.code))
+
+const AddressAndAmoutErrorMessage = ({
+  sendAddress,
+  sendAddressValidationError,
+  sendAmount,
+  sendAmountValidationError,
+}) => {
+  sendAddressValidationError &&
+    sendAmountValidationError &&
+    sendAddress !== '' &&
+    sendAmount !== '' &&
+    h('span', undefined, getTranslation('AddressAndAmountError'))
+}
 
 const SendValidation = ({
   sendAmount,
@@ -39,7 +50,14 @@ const SendValidation = ({
     ? h(
       'div',
       {class: 'validation-message send error'},
-      h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
+      sendAmountValidationError && sendAddressValidationError
+        ? h(AddressAndAmoutErrorMessage, {
+          sendAddress,
+          sendAddressValidationError,
+          sendAmount,
+          sendAmountValidationError,
+        })
+        : h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
       h(AmountErrorMessage, {sendAmount, sendAmountValidationError})
     )
     : sendResponse &&
@@ -77,7 +95,7 @@ const SendAdaPage = ({
 
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
-    setRawTransactionOpen(true)
+    // setRawTransactionOpen(true)
   }
 
   return h(

@@ -132,7 +132,7 @@ module.exports = ({setState, getState}) => {
       captureBySentry(e)
       setState({
         walletLoadingError: {
-          code: 'WalletInitializationError',
+          code: e.name,
           params: {
             message: e.message,
           },
@@ -299,9 +299,13 @@ module.exports = ({setState, getState}) => {
   }
 
   const validateSendForm = (state) => {
+    let sendFormValidationError
+    const addressError = sendAddressValidator(state.sendAddress.fieldValue)
+    const amountError = sendAmountValidator(state.sendAmount.fieldValue)
+
+    // 'SendAddressAndAmountError'
     setState({
-      sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
-      sendAmount: sendAmountValidator(state.sendAmount.fieldValue),
+      sendFormValidationError,
     })
   }
 
@@ -352,7 +356,12 @@ module.exports = ({setState, getState}) => {
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
-  const validateSendFormAndCalculateFee = () => {
+  const validateSendFormAndCalculateFee = (state) => {
+    setState({
+      sendAddress: Object.assign({}, state.sendAddress, {
+        coins: Math.trunc(parseFloat(state.sendAddress.fieldValue) * 1000000),
+      }),
+    })
     validateSendForm(getState())
     if (isSendFormFilledAndValid(getState())) {
       setState({calculatingFee: true})
@@ -386,21 +395,14 @@ module.exports = ({setState, getState}) => {
     setState({calculatingFee: true})
 
     const maxAmount = await wallet.getMaxSendableAmount(state.sendAddress.fieldValue)
-
-    if (maxAmount > 0) {
-      setState({
-        sendResponse: '',
-        sendAmount: sendAmountValidator(printAda(maxAmount)),
-      })
-      validateSendFormAndCalculateFee()
-    } else {
-      setState({
-        sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: {code: 'SendAmountCantSendMaxFunds'},
-        }),
-        calculatingFee: false,
-      })
-    }
+    setState({
+      sendResponse: '',
+      sendAmount: {
+        fieldValue: maxAmount,
+        coins: maxAmount,
+      },
+    })
+    validateSendFormAndCalculateFee()
   }
 
   const resetSendFormState = (state) => {
@@ -554,9 +556,8 @@ module.exports = ({setState, getState}) => {
   const getRawTransaction = async (state, address, coins) => {
     const txAux = await wallet.prepareTxAux(address, coins).catch((e) => {
       debugLog(e)
-      throw NamedError('TransactionCorrupted')
+      throw e
     })
-
     setState({
       rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
       rawTransactionOpen: true,

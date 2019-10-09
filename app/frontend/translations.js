@@ -3,6 +3,8 @@ const debugLog = require('./helpers/debugLog')
 const {ADALITE_SUPPORT_EMAIL} = require('./wallet/constants')
 
 const translations = {
+  AddressAndAmountError: () =>
+    'Invalid format of both, the address and the amount, amount has to be a number',
   SendAddressInvalidAddress: () => 'Invalid address',
   SendAmountIsNan: () => 'Invalid format: Amount has to be a number',
   SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
