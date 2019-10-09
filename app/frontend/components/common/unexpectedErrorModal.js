@@ -18,10 +18,13 @@ class UnexpectedErrorModal extends Component {
     return h(
       Modal,
       {
-        closeHandler: this.closeUnexpectedErrorModal,
+        closeHandler: () => {
+          sendSentry.resolve(false)
+          this.closeUnexpectedErrorModal()
+        },
         title: 'Something went wrong.',
       },
-      h('p', {class: 'modal-paragraph'}, 'Do you wanna inform Adalite about this error? '),
+      h('p', {class: 'modal-paragraph'}, 'Do you want to inform Adalite about this error? '),
       h(
         Alert,
         {
@@ -36,7 +39,10 @@ class UnexpectedErrorModal extends Component {
           'button',
           {
             class: 'button outline',
-            onClick: this.closeUnexpectedErrorModal,
+            onClick: () => {
+              sendSentry.resolve(false)
+              this.closeUnexpectedErrorModal()
+            },
           },
           'Cancel'
         ),

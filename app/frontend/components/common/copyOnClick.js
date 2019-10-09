@@ -1,6 +1,7 @@
 const {h, Component} = require('preact')
 
 const debugLog = require('../../helpers/debugLog')
+const captureBySentry = require('../../helpers/captureBySentry')
 const tooltip = require('./tooltip')
 
 class CopyOnClick extends Component {
@@ -40,6 +41,7 @@ class CopyOnClick extends Component {
         this.props.copiedCallback && this.props.copiedCallback(false)
       }, 3000)
     } catch (err) {
+      captureBySentry(err)
       debugLog('Could not copy text: ', err)
     }
   }
