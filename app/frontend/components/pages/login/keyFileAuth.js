@@ -38,11 +38,14 @@ class LoadKeyFileClass extends Component {
   }
 
   closePasswordModal() {
-    this.setState({encrypted: undefined, error: undefined})
+    this.setState({encrypted: undefined, passwordError: undefined})
   }
 
   updatePassword(e) {
-    this.setState({password: e.target.value})
+    this.setState({
+      password: e.target.value,
+      passwordError: undefined,
+    })
   }
 
   async unlockKeyfile() {
@@ -54,14 +57,14 @@ class LoadKeyFileClass extends Component {
         this.state.password
       )
 
-      this.setState({error: undefined})
+      this.setState({passwordError: undefined})
       this.props.loadWallet({
         cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
         walletSecretDef,
       })
     } catch (e) {
       this.props.stopLoadingAction()
-      this.setState({error: 'Password for provided key file is incorrect.'})
+      this.setState({passwordError: 'Password for provided key file is incorrect.'})
     }
   }
 
@@ -90,7 +93,8 @@ class LoadKeyFileClass extends Component {
     this.setState({
       fileName: file.name,
       keyFile: undefined,
-      error: undefined,
+      keyfileError: undefined,
+      passwordError: undefined,
     })
 
     const reader = new FileReader()
@@ -118,13 +122,13 @@ class LoadKeyFileClass extends Component {
               cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
               walletSecretDef,
             })
-            this.setState({error: undefined})
+            this.setState({keyfileError: undefined})
           }
         } catch (err) {
           debugLog(`Key file parsing failure: ${err}`)
           this.props.stopLoadingAction()
           this.setState({
-            error:
+            keyfileError:
               'Provided file is incorrect. To access your wallet, continue by selecting a valid JSON key file.',
           })
         }
@@ -133,7 +137,7 @@ class LoadKeyFileClass extends Component {
     })(file)
   }
 
-  render({loadingAction}, {fileName, error, encrypted, password}) {
+  render({loadingAction}, {fileName, keyfileError, passwordError, encrypted, password}) {
     const noFileContent = () =>
       h(
         'div',
@@ -163,6 +167,8 @@ class LoadKeyFileClass extends Component {
           'Select a different key file'
         )
       )
+
+    const error = keyfileError || passwordError
 
     return h(
       'div',
@@ -204,7 +210,7 @@ class LoadKeyFileClass extends Component {
         h(
           'button',
           {
-            disabled: !(password && fileName !== ''),
+            disabled: !(password && fileName !== '') || error,
             onClick: this.unlockKeyfile,
             class: 'button primary',
             ...tooltip(
