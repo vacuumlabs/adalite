@@ -25,6 +25,7 @@ const checkMap = check.map(process.env, {
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS: isBoolString,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS: isBoolString,
   ADALITE_SUPPORT_EMAIL: check.nonEmptyString,
+  ADALITE_ENV: check.nonEmptyString,
 })
 
 const {
@@ -44,6 +45,8 @@ const {
   ADALITE_TREZOR_CONNECT_URL,
   ADALITE_SUPPORT_EMAIL,
   ADALITE_GA_TRACKING_ID,
+  ADALITE_SENTRY_DSN,
+  ADALITE_ENV,
 } = process.env
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
@@ -81,6 +84,8 @@ const frontendConfig = {
   ADALITE_TREZOR_CONNECT_URL,
   ADALITE_SUPPORT_EMAIL,
   ADALITE_BACKEND_TOKEN,
+  ADALITE_SENTRY_DSN,
+  ADALITE_ENV,
 }
 
 const backendConfig = {
