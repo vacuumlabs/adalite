@@ -27,6 +27,8 @@ const checkMap = check.map(process.env, {
   ADALITE_SUPPORT_EMAIL: check.nonEmptyString,
   ADALITE_FIXED_DONATION_VALUE: isPositiveIntString,
   ADALITE_MIN_DONATION_VALUE: isPositiveIntString,
+  ADALITE_ENV: check.nonEmptyString,
+  SENTRY_DSN: check.nonEmptyString,
 })
 
 const {
@@ -50,6 +52,8 @@ const {
   ADALITE_MIN_DONATION_VALUE,
   ADALITE_MAILCHIMP_API_KEY,
   ADALITE_MAILCHIMP_LIST_ID,
+  ADALITE_ENV,
+  SENTRY_DSN,
 } = process.env
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
@@ -89,6 +93,8 @@ const frontendConfig = {
   ADALITE_BACKEND_TOKEN,
   ADALITE_FIXED_DONATION_VALUE,
   ADALITE_MIN_DONATION_VALUE,
+  ADALITE_ENV,
+  SENTRY_DSN,
 }
 
 const backendConfig = {

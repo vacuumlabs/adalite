@@ -3,6 +3,7 @@ const connect = require('unistore/preact').connect
 const actions = require('../../../actions')
 
 const {getTranslation} = require('../../../translations')
+const {errorHasHelp} = require('../../../helpers/errorsWithHelp')
 const printAda = require('../../../helpers/printAda')
 
 const ConfirmTransactionDialog = require('./confirmTransactionDialog')
@@ -12,52 +13,28 @@ const TransactionErrorModal = require('./transactionErrorModal')
 const DonationButtons = require('./donationButtons')
 const CustomDonationInput = require('./customDonationInput')
 const Conversions = require('../../common/conversions')
-const MouseOverTooltip = require('../../common/mouseOverTooltip')
 const {ADALITE_MIN_DONATION_VALUE} = require('../../../config').ADALITE_CONFIG
 const {toCoins} = require('../../../helpers/adaConverters')
+const tooltip = require('../../common/tooltip')
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
-const AmountErrorMessage = ({sendAmount, sendAmountValidationError}) =>
-  sendAmountValidationError &&
-  h(
-    'span',
-    undefined,
-    sendAmountValidationError.code === 'SendAmountCantSendMaxFunds'
-      ? getTranslation(sendAmountValidationError.code, sendAmountValidationError.params)
-      : sendAmount !== '' &&
-        getTranslation(sendAmountValidationError.code, sendAmountValidationError.params)
-  )
+const SendFormErrorMessage = ({sendFormValidationError}) =>
+  h('span', undefined, getTranslation(sendFormValidationError.code, sendFormValidationError.params))
 
-const AddressErrorMessage = ({sendAddress, sendAddressValidationError}) =>
-  sendAddressValidationError &&
-  sendAddress !== '' &&
-  h('span', undefined, getTranslation(sendAddressValidationError.code))
-
-const DonationErrorMessage = ({donationAmountValidationError}) =>
-  donationAmountValidationError &&
-  h('span', undefined, getTranslation(donationAmountValidationError.code))
-
-const SendValidation = ({
-  sendAmount,
-  sendAmountValidationError,
-  sendAddress,
-  sendAddressValidationError,
-  sendResponse,
-  donationAmountValidationError,
-}) =>
-  sendAmountValidationError || sendAddressValidationError || donationAmountValidationError
+const SendValidation = ({sendFormValidationError, sendResponse}) =>
+  sendFormValidationError
     ? h(
       'div',
       {class: 'validation-message send error'},
-      h(AddressErrorMessage, {sendAddress, sendAddressValidationError}),
-      h(AmountErrorMessage, {sendAmount, sendAmountValidationError}),
-      h(DonationErrorMessage, {donationAmountValidationError})
+      h(SendFormErrorMessage, {sendFormValidationError})
     )
-    : sendResponse.success &&
+    : sendResponse &&
+      sendResponse.success &&
       h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
 
 const SendAdaPage = ({
+  transactionSubmissionError,
   sendResponse,
   sendAddress,
   sendAddressValidationError,
@@ -78,29 +55,23 @@ const SendAdaPage = ({
   showTransactionErrorModal,
   getRawTransaction,
   rawTransactionOpen,
-  setRawTransactionOpen,
   rawTransaction,
   coinsAmount,
   showCustomDonationInput,
-  maxSendAmount,
   maxDonationAmount,
   conversionRates,
   donationAmountForTransactionFee,
 }) => {
-  const enableSubmit =
-    sendAmount &&
-    !sendAmountValidationError &&
-    sendAddress &&
-    !sendAddressValidationError &&
-    !donationAmountValidationError
-  const isDonationSufficient =
-    maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE) && coinsAmount <= maxSendAmount
+  const sendFormValidationError =
+    sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
+
+  const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
+  const isDonationSufficient = maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
   const total = sendAmountForTransactionFee + transactionFee + donationAmountForTransactionFee
 
   const rawTransactionHandler = async () => {
     await getRawTransaction(sendAddress, coinsAmount)
-    setRawTransactionOpen(true)
   }
 
   return h(
@@ -166,11 +137,16 @@ const SendAdaPage = ({
           for: 'donation-amount',
         },
         'Donate',
-        h(MouseOverTooltip, {
-          tooltipText:
-            'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
-          linkClass: 'show-info',
-        })
+        h(
+          'a',
+          {
+            ...tooltip(
+              'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
+              true
+            ),
+          },
+          h('span', {class: 'show-info'}, '')
+        )
       ),
       !isDonationSufficient &&
         h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),
@@ -224,13 +200,8 @@ const SendAdaPage = ({
       feeRecalculating
         ? h(CalculatingFee)
         : h(SendValidation, {
-          sendAmount,
-          sendAmountValidationError,
-          sendAddress,
-          sendAddressValidationError,
+          sendFormValidationError,
           sendResponse,
-          donationAmountValidationError,
-          closeTransactionErrorModal,
         })
     ),
     enableSubmit &&
@@ -247,7 +218,11 @@ const SendAdaPage = ({
     showTransactionErrorModal &&
       h(TransactionErrorModal, {
         closeHandler: closeTransactionErrorModal,
-        errorMessage: getTranslation(sendResponse.error, {sendResponse}),
+        errorMessage: getTranslation(
+          transactionSubmissionError.code,
+          transactionSubmissionError.params
+        ),
+        showHelp: errorHasHelp(transactionSubmissionError.code),
       }),
     rawTransactionOpen && h(RawTransactionModal),
     showConfirmTransactionDialog && h(ConfirmTransactionDialog, {total}),
@@ -257,13 +232,14 @@ const SendAdaPage = ({
 
 module.exports = connect(
   (state) => ({
+    transactionSubmissionError: state.transactionSubmissionError,
     sendResponse: state.sendResponse,
-    sendAddressValidationError: state.sendAddress.validationError,
+    sendAddressValidationError: state.sendAddressValidationError,
     sendAddress: state.sendAddress.fieldValue,
-    sendAmountValidationError: state.sendAmount.validationError,
+    sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount.fieldValue,
     sendAmountForTransactionFee: state.sendAmountForTransactionFee,
-    donationAmountValidationError: state.donationAmount.validationError,
+    donationAmountValidationError: state.donationAmountValidationError,
     donationAmountForTransactionFee: state.donationAmountForTransactionFee,
     transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
@@ -274,7 +250,6 @@ module.exports = connect(
     rawTransactionOpen: state.rawTransactionOpen,
     coinsAmount: state.sendAmount.coins,
     showCustomDonationInput: state.showCustomDonationInput,
-    maxSendAmount: state.maxSendAmount,
     maxDonationAmount: state.maxDonationAmount,
     conversionRates: state.conversionRates && state.conversionRates.data,
   }),

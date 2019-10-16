@@ -2,6 +2,7 @@ const {CRYPTO_PROVIDER_TYPES} = require('./constants')
 const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypto-provider')
 const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
 const CardanoLedgerCryptoProvider = require('./cardano-ledger-crypto-provider')
+const NamedError = require('../helpers/NamedError')
 
 const CryptoProviderFactory = (() => {
   const getCryptoProvider = (cryptoProviderType, config, state) => {
@@ -16,7 +17,10 @@ const CryptoProviderFactory = (() => {
         return CardanoWalletSecretCryptoProvider(config, state)
 
       default:
-        throw Error(`Unknown crypto provider type: ${cryptoProviderType}`)
+        throw NamedError(
+          'CryptoProviderError',
+          `Unknown crypto provider type: ${cryptoProviderType}`
+        )
     }
   }
 

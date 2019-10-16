@@ -5,6 +5,8 @@ const App = require('./components/app')
 const {createStore} = require('./store')
 const {ADALITE_CONFIG} = require('./config')
 
+const Sentry = require('@sentry/browser')
+
 if (ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL) {
   const url = new URL(ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL)
   window.__TREZOR_CONNECT_SRC = `${url.origin}/`
@@ -50,6 +52,25 @@ window.onhashchange = () =>
       hash: window.location.hash,
     },
   })
+
+Sentry.init({
+  dsn: ADALITE_CONFIG.SENTRY_DSN,
+  environment: ADALITE_CONFIG.ADALITE_ENV,
+  // debug: true,
+  beforeSend(event) {
+    return new Promise((resolve) => {
+      store.setState({
+        sendSentry: {
+          event,
+          resolve,
+        },
+        showUnexpectedErrorModal: true,
+      })
+    }).then((res) => {
+      return res === true ? event : null
+    })
+  },
+})
 
 const Wrapper = h(Provider, {store}, h(App))
 

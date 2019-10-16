@@ -5,73 +5,62 @@ const {validateMnemonic} = require('../wallet/mnemonic')
 
 const parseCoins = (str) => Math.trunc(toCoins(parseFloat(str)))
 
-const sendAddressValidator = (fieldValue) => {
-  return {
-    fieldValue,
-    validationError: !isValidAddress(fieldValue) ? {code: 'SendAddressInvalidAddress'} : null,
-  }
-}
+const sendAddressValidator = (fieldValue) =>
+  !isValidAddress(fieldValue) && fieldValue !== '' ? {code: 'SendAddressInvalidAddress'} : null
 
-const sendAmountValidator = (fieldValue) => {
-  let validationError = null
-  const coins = parseCoins(fieldValue)
-
+const sendAmountValidator = (fieldValue, coins) => {
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
 
+  if (fieldValue === '') {
+    return null
+  }
+  if (coins === null) {
+    return {code: 'SendAmountCantSendAnyFunds'} // TODO: never used, delete
+  }
   if (!floatRegex.test(fieldValue) || isNaN(coins)) {
-    validationError = {code: 'SendAmountIsNan'}
-  } else if (fieldValue.split('.').length === 2 && fieldValue.split('.')[1].length > 6) {
-    validationError = {code: 'SendAmountPrecisionLimit'}
-  } else if (coins > maxAmount) {
-    validationError = {code: 'SendAmountIsTooBig'}
-  } else if (coins <= 0) {
-    validationError = {code: 'SendAmountIsNotPositive'}
+    return {code: 'SendAmountIsNan'}
   }
-
-  return {
-    fieldValue,
-    coins: isNaN(coins) ? 0 : coins,
-    validationError,
+  if (fieldValue.split('.').length === 2 && fieldValue.split('.')[1].length > 6) {
+    return {code: 'SendAmountPrecisionLimit'}
   }
+  if (coins > maxAmount) {
+    return {code: 'SendAmountIsTooBig'}
+  }
+  if (coins <= 0) {
+    return {code: 'SendAmountIsNotPositive'}
+  }
+  return null
 }
 
-const donationAmountValidator = (fieldValue) => {
-  if (fieldValue === '') {
-    return {fieldValue, coins: 0, validationError: null}
+const donationAmountValidator = (fieldValue, coins) => {
+  const amountError = sendAmountValidator(fieldValue, coins)
+  if (amountError) {
+    return amountError
   }
-
-  const validatedObj = sendAmountValidator(fieldValue)
-  const isAmountNaN =
-    validatedObj.validationError && validatedObj.validationError.code === 'SendAmountIsNan'
-  if (
-    !isAmountNaN &&
-    validatedObj.coins >= 0 &&
-    validatedObj.coins < toCoins(ADALITE_MIN_DONATION_VALUE)
-  ) {
-    validatedObj.validationError = {code: 'DonationAmountTooLow'}
+  if (fieldValue !== '' && coins >= 0 && coins < toCoins(ADALITE_MIN_DONATION_VALUE)) {
+    return {code: 'DonationAmountTooLow'}
   }
-
-  return validatedObj
+  return null
 }
 
 const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
-  let validationError = null
-
-  if (sendAmount + transactionFee + donationAmount > balance) {
-    validationError = {
+  if (transactionFee >= balance) {
+    return {code: 'SendAmountCantSendAnyFunds'}
+  }
+  if (donationAmount > 0 && sendAmount + transactionFee + donationAmount > balance) {
+    return {
       code: 'DonationInsufficientBalance',
       params: {balance},
     }
   }
   if (sendAmount + transactionFee > balance) {
-    validationError = {
+    return {
       code: 'SendAmountInsufficientFunds',
       params: {balance},
     }
   }
-
-  return validationError
+  return null
 }
 
 const mnemonicValidator = (mnemonic) => {
@@ -82,11 +71,11 @@ const mnemonicValidator = (mnemonic) => {
       code: 'InvalidMnemonic',
     }
   }
-
   return validationError
 }
 
 module.exports = {
+  parseCoins,
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,

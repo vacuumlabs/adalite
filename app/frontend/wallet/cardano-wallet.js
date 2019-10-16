@@ -13,6 +13,7 @@ const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
 const CryptoProviderFactory = require('./crypto-provider-factory')
 const {roundWholeAdas} = require('../helpers/adaConverters')
+const {ADA_DONATION_ADDRESS} = require('./constants')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -71,7 +72,7 @@ const CardanoWallet = async (options) => {
     const {txBody, txHash} = signedTx
     const response = await blockchainExplorer.submitTxRaw(txHash, txBody).catch((e) => {
       debugLog(e)
-      throw NamedError('TransactionRejectedByNetwork')
+      throw e
     })
 
     return response
@@ -97,7 +98,7 @@ const CardanoWallet = async (options) => {
       .signTx(txAux, rawInputTxs, getAddressToAbsPathMapper())
       .catch((e) => {
         debugLog(e)
-        throw NamedError('TransactionRejected', e.message)
+        throw NamedError('TransactionRejectedWhileSigning', e.message)
       })
 
     return signedTx
@@ -119,21 +120,13 @@ const CardanoWallet = async (options) => {
     const changeAmount = txInputsCoinsSum - coins - fee - (hasDonation ? donationAmount : 0)
 
     if (changeAmount < 0) {
-      throw Error(`
-        Transaction inputs (sum ${txInputsCoinsSum}) don't cover coins (${coins}) + fee (${fee})`)
+      throw NamedError('SendAmountInsufficientFunds')
     }
 
     const txOutputs = [TxOutput(address, coins, false)]
 
     if (hasDonation) {
-      //const {ADA_DONATION_ADDRESS} = require('./constants') //TODO: use later
-      txOutputs.push(
-        TxOutput(
-          'DdzFFzCqrhsoarXqLakMBEiURCGPCUL7qRvPf2oGknKN2nNix5b9SQKj2YckgXZK6q1Ym7BNLxgEX3RQFjS2C41xt54yJHeE1hhMUfSG',
-          donationAmount,
-          false
-        )
-      )
+      txOutputs.push(TxOutput(ADA_DONATION_ADDRESS, donationAmount, false))
     }
 
     if (changeAmount > 0) {
@@ -144,7 +137,9 @@ const CardanoWallet = async (options) => {
   }
 
   async function getTxInputsAndCoins() {
-    const utxos = await getUnspentTxOutputs()
+    const utxos = await getUnspentTxOutputs().catch((e) => {
+      throw NamedError('NetworkError')
+    })
     const txInputs = []
     let coins = 0
     const profitableUtxos = utxos.filter(isUtxoProfitable)
@@ -230,7 +225,12 @@ const CardanoWallet = async (options) => {
   async function prepareTxInputs(address, coins, hasDonation, donationAmount) {
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
+    const utxos = shuffleArray(
+      await getUnspentTxOutputs().catch((e) => {
+        throw NamedError('NetworkError')
+      }),
+      randomGenerator
+    )
     const profitableUtxos = utxos.filter(isUtxoProfitable)
 
     const txInputs = []
@@ -252,7 +252,7 @@ const CardanoWallet = async (options) => {
   function computeTxFee(txInputs, address, coins, hasDonation, donationAmount) {
     const totalAmount = hasDonation ? coins + donationAmount : coins
     if (totalAmount > Number.MAX_SAFE_INTEGER) {
-      throw new Error(`Unsupported amount of coins: ${totalAmount}`)
+      throw NamedError('CoinAmountError')
     }
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins
@@ -285,9 +285,6 @@ const CardanoWallet = async (options) => {
 
     //size of addresses used by AdaLite
     const ownAddressSize = 76
-
-    //size of donation address TODO
-    const {ADA_DONATION_ADDRESS} = require('./constants')
     const donationAddressSize = base58.decode(ADA_DONATION_ADDRESS).length
 
     /*
@@ -371,7 +368,7 @@ const CardanoWallet = async (options) => {
 
   function verifyAddress(addr) {
     if (!cryptoProvider.displayAddressForPath) {
-      throw Error('unsupported operation: verifyAddress')
+      throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
     }
     const absDerivationPath = getAddressToAbsPathMapper()(addr)
     return cryptoProvider.displayAddressForPath(absDerivationPath)
