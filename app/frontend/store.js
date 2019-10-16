@@ -29,7 +29,6 @@ const initialState = {
     hash: window.location.hash,
   },
   mnemonicInputValue: '',
-  validationMsg: undefined,
   authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
   showDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
@@ -41,7 +40,6 @@ const initialState = {
   checkedDonationType: '',
   showCustomDonationInput: false,
   donationAmount: {fieldValue: 0, coins: 0},
-  maxSendAmount: Infinity,
   maxDonationAmount: Infinity,
   percentageDonationValue: 0,
   percentageDonationText: '0.2%',
@@ -49,6 +47,8 @@ const initialState = {
   highestAmountReached: 0,
   emailSubmitSuccess: false,
   emailSubmitMessage: '',
+  showUnexpectedErrorModal: false,
+  sendSentry: {},
 }
 
 const createStore = () =>

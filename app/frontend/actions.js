@@ -3,6 +3,7 @@ const {ADALITE_CONFIG} = require('./config')
 const FileSaver = require('file-saver')
 const cbor = require('borc')
 const {
+  parseCoins,
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,
@@ -22,6 +23,8 @@ const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
 const {toCoins, toAda, roundWholeAdas} = require('./helpers/adaConverters')
 const submitEmailRaw = require('./helpers/submitEmailRaw')
+const captureBySentry = require('./helpers/captureBySentry')
+const submitFeedbackToSentry = require('./helpers/submitFeedbackToSentry')
 
 let wallet = null
 
@@ -63,11 +66,47 @@ module.exports = ({setState, getState}) => {
     )
   }
 
+  const handleError = (errorName, e, options) => {
+    if (e && e.name) {
+      // is a error
+      debugLog(e)
+      captureBySentry(e)
+      setState({
+        [errorName]: {
+          code: e.name,
+          params: {
+            message: e.message,
+            ...options,
+          },
+        },
+        error: e,
+      })
+    } else {
+      setState({
+        [errorName]: e,
+      })
+    }
+  }
+
   const setAuthMethod = (state, option) => {
     setState({
       authMethod: option,
       showExportOption: option === 'mnemonic' || option === 'file',
     })
+  }
+
+  const fetchConversionRates = async (conversionRates) => {
+    try {
+      setState({
+        conversionRates: await conversionRates,
+      })
+    } catch (e) {
+      debugLog('Could not fetch conversion rates.')
+      setState({
+        conversionRates: null,
+      })
+      throw NamedError('ConversionRatesError', '`Could not fetch conversion rates.')
+    }
   }
 
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
@@ -112,42 +151,14 @@ module.exports = ({setState, getState}) => {
         showGenerateMnemonicDialog: false,
         donationAmount,
       })
-      try {
-        setState({
-          conversionRates: await conversionRates,
-        })
-      } catch (e) {
-        debugLog('Could not fetch conversion rates.')
-        setState({
-          conversionRates: null,
-        })
-      }
+      await fetchConversionRates(conversionRates)
     } catch (e) {
-      debugLog(e)
-      let message
-      switch (e.name) {
-        case 'NetworkError':
-          message = 'failed to fetch data from blockchain explorer'
-          break
-        case 'TransportOpenUserCancelled':
-        case 'TransportError':
-        case 'TransportStatusError':
-        case 'TrezorError':
-          message = e.message
-          break
-        default:
-          break
-      }
-
       setState({
-        walletLoadingError: {
-          code: 'WalletInitializationError',
-          params: {
-            message,
-          },
-        },
-        showWalletLoadingErrorModal: true,
         loading: false,
+      })
+      handleError('walletLoadingError', e)
+      setState({
+        showWalletLoadingErrorModal: true,
       })
       return false
     }
@@ -205,9 +216,12 @@ module.exports = ({setState, getState}) => {
     const mnemonicInputValue = e.target.value
     setState({
       mnemonicInputValue,
-      mnemonicValidationError: await mnemonicValidator(sanitizeMnemonic(mnemonicInputValue)),
       showMnemonicValidationError: false,
     })
+    handleError(
+      'mnemonicValidationError',
+      await mnemonicValidator(sanitizeMnemonic(mnemonicInputValue))
+    )
   }
 
   const checkForMnemonicValidationError = (state) => {
@@ -228,14 +242,14 @@ module.exports = ({setState, getState}) => {
         setState({waitingForHwWallet: false})
       } catch (e) {
         setState({
-          addressVerificationError: true,
           waitingForHwWallet: false,
         })
+        handleError('addressVerificationError', true)
       }
     }
   }
 
-  const openAddressDetail = (state, {address, bip32path}) => {
+  const openAddressDetail = (state, {address, bip32path}, copyOnClick) => {
     /*
     * because we don't want to trigger trezor address
     * verification for the  donation address
@@ -244,7 +258,7 @@ module.exports = ({setState, getState}) => {
 
     // trigger trezor address verification for the  donation address
     setState({
-      showAddressDetail: {address, bip32path},
+      showAddressDetail: {address, bip32path, copyOnClick},
       showAddressVerification,
     })
   }
@@ -271,28 +285,27 @@ module.exports = ({setState, getState}) => {
 
   const reloadWalletInfo = async (state) => {
     loadingAction(state, 'Reloading wallet info...')
-
-    const balance = await wallet.getBalance()
-    const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
-    const transactionHistory = await wallet.getHistory()
-    const conversionRates = getConversionRates(state)
-
-    // timeout setting loading state, so that loading shows even if everything was cached
-    setTimeout(() => setState({loading: false}), 500)
-    setState({
-      balance,
-      ownAddressesWithMeta,
-      transactionHistory,
-    })
     try {
+      const balance = await wallet.getBalance()
+      const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
+      const transactionHistory = await wallet.getHistory()
+      const conversionRates = getConversionRates(state)
+
+      // timeout setting loading state, so that loading shows even if everything was cached
+      setTimeout(() => setState({loading: false}), 500)
       setState({
-        conversionRates: await conversionRates,
+        balance,
+        ownAddressesWithMeta,
+        transactionHistory,
       })
+      await fetchConversionRates(conversionRates)
     } catch (e) {
-      debugLog(`Could not fetch conversion rates: ${e}`)
       setState({
-        conversionRates: null,
         loading: false,
+      })
+      handleError('walletLoadingError', e)
+      setState({
+        showWalletLoadingErrorModal: true,
       })
     }
   }
@@ -319,19 +332,23 @@ module.exports = ({setState, getState}) => {
   }
 
   const validateSendForm = (state) => {
-    setState({
-      sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
-      sendAmount: sendAmountValidator(state.sendAmount.fieldValue),
-      donationAmount: donationAmountValidator(state.donationAmount.fieldValue),
-    })
+    handleError('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
+    handleError(
+      'sendAmountValidationError',
+      sendAmountValidator(state.sendAmount.fieldValue, state.sendAmount.coins)
+    )
+    handleError(
+      'donationAmountValidationError',
+      donationAmountValidator(state.donationAmount.fieldValue, state.donationAmount.coins)
+    )
   }
 
   const isSendFormFilledAndValid = (state) =>
     state.sendAddress.fieldValue !== '' &&
     state.sendAmount.fieldValue !== '' &&
-    !state.sendAddress.validationError &&
-    !state.sendAmount.validationError &&
-    !state.donationAmount.validationError
+    !state.sendAddressValidationError &&
+    !state.sendAmountValidationError &&
+    !state.donationAmountValidationError
 
   const calculateFee = async () => {
     const state = getState()
@@ -340,11 +357,23 @@ module.exports = ({setState, getState}) => {
       return
     }
 
-    const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
-    const hasDonation = state.donationAmount.fieldValue !== ''
     const donationAmount = state.donationAmount.coins
-    const transactionFee = await wallet.getTxFee(address, amount, hasDonation, donationAmount)
+    let transactionFee
+    try {
+      transactionFee = await wallet.getTxFee(
+        state.sendAddress.fieldValue,
+        amount,
+        state.donationAmount.fieldValue !== '',
+        donationAmount
+      )
+    } catch (e) {
+      handleError('sendAmountValidationError', {code: e.name})
+      setState({
+        calculatingFee: false,
+      })
+      return
+    }
 
     // if we reverted value in the meanwhile, do nothing, otherwise update
     const newState = getState()
@@ -357,12 +386,12 @@ module.exports = ({setState, getState}) => {
         transactionFee,
         sendAmountForTransactionFee: amount,
         donationAmountForTransactionFee: donationAmount,
-        sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: feeValidator(amount, transactionFee, donationAmount, state.balance),
-        }),
       })
+      handleError(
+        'sendAmountValidationError',
+        feeValidator(amount, transactionFee, donationAmount, state.balance)
+      )
     }
-
     setState({
       calculatingFee: false,
     })
@@ -411,7 +440,6 @@ module.exports = ({setState, getState}) => {
       donationAmountForTransactionFee: 0,
       sendAmountForTransactionFee: 0,
       transactionFee: 0,
-      maxSendAmount: Infinity,
       maxDonationAmount: Infinity,
       checkedDonationType: '',
       showCustomDonationInput: false,
@@ -424,7 +452,6 @@ module.exports = ({setState, getState}) => {
       sendResponse: '',
       loading: false,
       showConfirmTransactionDialog: false,
-      showTransactionErrorModal: false,
     })
   }
 
@@ -443,10 +470,38 @@ module.exports = ({setState, getState}) => {
     })
   }
 
-  const isSendAmountNonPositive = (sendAmount) =>
-    sendAmount.validationError &&
-    (sendAmount.validationError.code === 'SendAmountIsNotPositive' ||
-      sendAmount.validationError.code === 'SendAmountIsNan')
+  const isSendAmountNonPositive = (fieldValue, validationError) =>
+    fieldValue === '' ||
+    (validationError &&
+      (validationError.code === 'SendAmountIsNotPositive' ||
+        validationError.code === 'SendAmountIsNan'))
+
+  const updateEmail = (state, e) => {
+    setState({
+      userEmail: e.target.value,
+    })
+  }
+
+  const updateName = (state, e) => {
+    setState({
+      userName: e.target.value,
+    })
+  }
+
+  const updateMessage = (state, e) => {
+    setState({
+      userComments: e.target.value,
+    })
+  }
+
+  const submitUserFeedbackToSentry = async (state) => {
+    await submitFeedbackToSentry(
+      state.userComments,
+      state.userEmail || 'user@email.com',
+      state.userName || 'user',
+      state.sendSentry.event.event_id
+    )
+  }
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
@@ -458,7 +513,7 @@ module.exports = ({setState, getState}) => {
       setState({calculatingFee: true})
       debouncedCalculateFee()
     } else {
-      if (isSendAmountNonPositive(state.sendAmount)) {
+      if (isSendAmountNonPositive(state.sendAmount.fieldValue, state.sendAmountValidationError)) {
         resetAmountFields()
       }
       setState({calculatingFee: false})
@@ -479,6 +534,7 @@ module.exports = ({setState, getState}) => {
     setState({
       donationAmount: Object.assign({}, state.donationAmount, {
         fieldValue: value.toString(),
+        coins: parseCoins(value.toString()) || 0,
       }),
     })
     validateSendFormAndCalculateFee()
@@ -532,7 +588,7 @@ module.exports = ({setState, getState}) => {
     )
     let newMaxDonationAmount
     if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
-      newMaxDonationAmount = sendAmountValidator(printAda(maxDonationAmount)).coins
+      newMaxDonationAmount = maxDonationAmount
     } else {
       newMaxDonationAmount = 0
       resetDonation()
@@ -548,6 +604,7 @@ module.exports = ({setState, getState}) => {
       sendResponse: '',
       sendAmount: Object.assign({}, state.sendAmount, {
         fieldValue: e.target.value,
+        coins: parseCoins(e.target.value) || 0,
       }),
     })
 
@@ -561,23 +618,25 @@ module.exports = ({setState, getState}) => {
   const validateAndSetMaxFunds = (state, maxAmounts) => {
     /* maxAmounts.donationAmount exists only if user triggers
       this function with percentage donation selected */
-    const validatedMaxAmount = sendAmountValidator(printAda(maxAmounts.sendAmount))
-    const validatedPercentageAmount = maxAmounts.donationAmount
-      ? donationAmountValidator(printAda(maxAmounts.donationAmount))
-      : undefined
 
     setState({
       sendResponse: '',
-      sendAmount: validatedMaxAmount,
+      sendAmount: {
+        fieldValue: printAda(maxAmounts.sendAmount),
+        coins: maxAmounts.sendAmount || 0,
+      },
       maxDonationAmount: maxAmounts.donationAmount || state.donationAmount.coins,
     })
     handleThresholdAmount() // because sendAmount might have reached threshold
 
     if (maxAmounts.donationAmount) {
       setState({
-        percentageDonationValue: parseInt(validatedPercentageAmount.fieldValue, 10),
+        percentageDonationValue: toAda(maxAmounts.donationAmount),
         percentageDonationText: '0.2%',
-        donationAmount: validatedPercentageAmount,
+        donationAmount: {
+          fieldValue: printAda(maxAmounts.donationAmount),
+          coins: maxAmounts.donationAmount || 0,
+        },
       })
     }
     validateSendFormAndCalculateFee()
@@ -585,23 +644,20 @@ module.exports = ({setState, getState}) => {
 
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
-    const maxAmounts = await wallet.getMaxSendableAmount(
-      state.sendAddress.fieldValue,
-      state.donationAmount.fieldValue !== '',
-      state.donationAmount.coins,
-      state.checkedDonationType
-    )
-
-    if (maxAmounts.sendAmount <= 0) {
-      setState({
-        sendAmount: Object.assign({}, state.sendAmount, {
-          validationError: {code: 'SendAmountCantSendMaxFunds'},
-        }),
-        calculatingFee: false,
+    const maxAmounts = await wallet
+      .getMaxSendableAmount(
+        state.sendAddress.fieldValue,
+        state.donationAmount.fieldValue !== '',
+        state.donationAmount.coins,
+        state.checkedDonationType
+      )
+      .catch((e) => {
+        setState({
+          calculatingFee: false,
+        })
+        handleError('sendAmountValidationError', {code: e.name})
+        return
       })
-      return
-    }
-
     validateAndSetMaxFunds(state, maxAmounts)
   }
 
@@ -620,22 +676,19 @@ module.exports = ({setState, getState}) => {
         return {
           success: true,
           txHash,
-          error: undefined,
         }
       } else if (pollingCounter < maxRetries - 1) {
         await sleep(pollingInterval)
       }
     }
 
-    return {
-      success: false,
-      txHash,
-      error: 'TransactionNotFoundInBlockchainAfterSubmission',
-    }
+    throw NamedError('TransactionNotFoundInBlockchainAfterSubmission')
   }
 
   const submitTransaction = async (state) => {
-    setState({showConfirmTransactionDialog: false})
+    setState({
+      showConfirmTransactionDialog: false,
+    })
     if (state.usingHwWallet) {
       setState({waitingForHwWallet: true})
       loadingAction(state, `Waiting for ${state.hwWalletName}...`)
@@ -643,6 +696,7 @@ module.exports = ({setState, getState}) => {
       loadingAction(state, 'Submitting transaction...')
     }
     let sendResponse
+    let txSubmitResult
 
     try {
       const address = state.sendAddress.fieldValue
@@ -654,7 +708,7 @@ module.exports = ({setState, getState}) => {
         setState({waitingForHwWallet: false})
         loadingAction(state, 'Submitting transaction...')
       }
-      const txSubmitResult = await wallet.submitTx(signedTx)
+      txSubmitResult = await wallet.submitTx(signedTx)
 
       if (!txSubmitResult) {
         debugLog(txSubmitResult)
@@ -666,22 +720,20 @@ module.exports = ({setState, getState}) => {
       if (address === ADA_DONATION_ADDRESS || hasDonation) {
         setState({showThanksForDonation: true})
       }
-
-      resetSendFormFields(state)
     } catch (e) {
-      debugLog(e)
-      sendResponse = {
-        success: false,
-        error: e.name,
-        message: e.message,
-      }
+      handleError('transactionSubmissionError', e, {
+        txHash: txSubmitResult && txSubmitResult.txHash,
+      })
+      setState({
+        showTransactionErrorModal: true,
+      })
     } finally {
+      resetSendFormFields(state)
       resetSendFormState(state)
       wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,
         sendResponse,
-        showTransactionErrorModal: !sendResponse.success,
       })
     }
   }
@@ -695,6 +747,12 @@ module.exports = ({setState, getState}) => {
   const closeTransactionErrorModal = (state) => {
     setState({
       showTransactionErrorModal: false,
+    })
+  }
+
+  const closeUnexpectedErrorModal = (state) => {
+    setState({
+      showUnexpectedErrorModal: false,
     })
   }
 
@@ -740,22 +798,17 @@ module.exports = ({setState, getState}) => {
         state.donationAmount.coins
       )
       .catch((e) => {
-        debugLog(e)
-        throw NamedError('TransactionCorrupted')
+        handleError('sendAmountValidationError', e, {
+          balance: state.balance,
+        })
       })
-
-    setState({
-      rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
-      rawTransactionOpen: true,
-    })
+    txAux &&
+      setState({
+        rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
+        rawTransactionOpen: true,
+      })
   }
 
-  const resetDonation = () => {
-    setState({
-      checkedDonationType: '',
-      donationAmount: {fieldValue: ''},
-    })
-  }
   const submitEmail = async (state, email) => {
     let didSucceed
     let message
@@ -795,6 +848,7 @@ module.exports = ({setState, getState}) => {
       setState({
         donationAmount: Object.assign({}, state.donationAmount, {
           fieldValue: e.target.value,
+          coins: parseCoins(e.target.value) || 0,
         }),
         checkedDonationType: e.target.id,
       })
@@ -824,6 +878,9 @@ module.exports = ({setState, getState}) => {
     confirmTransaction,
     cancelTransaction,
     submitTransaction,
+    updateName,
+    updateEmail,
+    updateMessage,
     updateAddress,
     updateAmount,
     loadDemoWallet,
@@ -843,11 +900,16 @@ module.exports = ({setState, getState}) => {
     getRawTransaction,
     closeTransactionErrorModal,
     closeWalletLoadingErrorModal,
+    closeUnexpectedErrorModal,
+    submitUserFeedbackToSentry,
     showContactFormModal,
     closeContactFormModal,
     updateDonation,
     toggleCustomDonation,
     setDonation,
     resetDonation,
+    closeStakingBanner,
+    submitEmail,
+    resetEmailSubmission,
   }
 }

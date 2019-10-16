@@ -14,6 +14,7 @@ const StakingBanner = require('./stakingBanner')
 const Tag = require('../../common/tag')
 const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
 const {getTranslation} = require('../../../translations')
+const {errorHasHelp} = require('../../../helpers/errorsWithHelp')
 
 const AUTH_METHOD_NAMES = {
   'mnemonic': 'Mnemonic',
@@ -179,6 +180,7 @@ class LoginPage extends Component {
           h(WalletLoadingErrorModal, {
             closeHandler: closeWalletLoadingErrorModal,
             errorMessage: getTranslation(walletLoadingError.code, walletLoadingError.params),
+            showHelp: errorHasHelp(walletLoadingError.code),
           })
       )
     )

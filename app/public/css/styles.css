@@ -217,51 +217,6 @@ p {
   text-decoration: none;
 }
 
-.radio-bar {
-  margin: 0px;
-}
-
-.radio-bar input[type="radio"] {
-  opacity: 0;
-  position: fixed;
-  width: 0;
-  padding: 0px 24px 0px 0px;
-}
-
-.radio-bar input[type="radio"]:checked + label {
-  background-color: var(--color-brand);
-  color: white;
-}
-
-.radio-bar input[type="radio"]:disabled + label {
-  border: 1px solid rgb(230, 230, 230);
-}
-
-.radio-bar label {
-  display: inline-block;
-  padding: 8px 16px;
-  border: 1px solid rgb(231, 32, 118);
-  border-radius: 4px;
-  margin-right: 24px;
-}
-
-.radio-bar label:hover {
-  background-color: var(--color-brand-light);
-  color: white;
-  cursor: pointer;
-}
-
-.total-row {
-  font-weight: bold;
-  border-top: 1px solid var(--color-border);
-  padding: 32px 0px 32px 0px;
-  display: grid;
-  grid-template-columns: 80px 80px 80px;
-  grid-row-gap: 20px;
-  grid-column-gap: 100px;
-  align-items: center;
-}
-
 .button:hover {
   cursor: pointer;
   text-decoration: none;
@@ -317,6 +272,7 @@ p {
 .button.navbar {
   margin-left: 16px;
   padding: 6px 24px;
+  width: 206px;
 }
 
 .button.refresh {
@@ -447,6 +403,11 @@ p {
   color: var(--color-grey-light);
 }
 
+.button.send-error {
+  position: absolute;
+  right: 0;
+}
+
 .button.donate {
   border: 1px solid var(--color-brand);
   font-size: 14px;
@@ -529,8 +490,12 @@ p {
 
 /* FORM GLOBAL */
 
+.form-message-field {
+  margin-top: 16px;
+  height: 24px;  
+}
+
 .form-alert {
-  margin: 15px 0;
   text-align: center;
 }
 
@@ -541,7 +506,6 @@ p {
 .form-alert.error {
   color: var(--color-error);
 }
-
 /* TOOLTIP */
 
 button[data-balloon] {
@@ -681,6 +645,10 @@ button[data-balloon] {
   background-image: url('../assets/alert_icon_danger.svg');
 }
 
+.alert.error.event {
+  margin-top: unset;
+}
+
 .alert.success {
   border-color: var(--color-success);
 }
@@ -707,6 +675,8 @@ button[data-balloon] {
 
 .alert-content {
   text-align: left;
+  max-height: 180px;
+  overflow: hidden;
 }
 
 .alert.sidebar {
@@ -921,6 +891,10 @@ button[data-balloon] {
   white-space: pre-wrap;
 }
 
+.modal-instructions {
+  margin: 20px 24px;
+}
+
 .modal-paragraph.bigger {
   font-size: 16px;
   line-height: 32px;
@@ -935,6 +909,12 @@ button[data-balloon] {
 
 .modal-footer .modal-paragraph {
   margin-top: 40px;
+}
+
+.modal-footer.send-error {
+  flex-direction: row;
+  position: relative;
+  align-items: normal;
 }
 
 .modal-body .alert {
@@ -1012,6 +992,10 @@ button[data-balloon] {
 
 .modal-body.centered .modal-footer {
   margin-top: 40px;
+}
+
+.modal-section {
+  margin-bottom: 16px;
 }
 
 /* MAIN PAGE */
@@ -2110,6 +2094,8 @@ button[data-balloon] {
 .copy-text {
   position: relative;
   padding-left: 21px;
+  color: var(--color-grey);
+
 }
 
 .copy-text::before {
@@ -2503,7 +2489,7 @@ button[data-balloon] {
 
 .send-total {
   border-top: 1px solid var(--color-border);
-  padding: 32px 0px 32px 0px;
+  padding: 32px 0;
   display: grid;
   grid-template-columns: 80px auto;
   grid-column-gap: 96px;
@@ -3051,8 +3037,7 @@ button[data-balloon] {
     background-color: transparent;
     position: static;
     margin-bottom: 0;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 0 16px;
   }
 
   .banner-text {
@@ -3095,6 +3080,10 @@ button[data-balloon] {
   }
 
   /* BUTTONS */
+
+  .button.navbar {
+    width: 187px;
+  }
 
   .button {
     font-size: 14px;
@@ -3585,13 +3574,30 @@ button[data-balloon] {
   }
 
   /* TOOLTIP */
+  
+  [data-balloon]::after {
+    position: fixed;
+    top: 90%;
+    left: 50%;
+    bottom: unset;
+  }
 
-  /* [data-balloon]:hover::after,
-  [data-balloon]:hover::before,
-  [data-balloon]::after,
   [data-balloon]::before {
     display: none;
-  } */
+  }
+
+  [data-balloon]::hover::after,
+  [data-ballon]::hover::before {
+    display: none;
+  }
+
+  [data-balloon]:not([data-balloon-visible]):hover::after,
+  [data-balloon][data-balloon-visible='true']::after {
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%)
+  }
 
   /* ADDRESSES */
 
@@ -3687,8 +3693,7 @@ button[data-balloon] {
   .send .button.primary {
     width: 100%;
   }
-==== BASE ====
-==== BASE ====
+  
 }
 
 /* TABLET MEDIA QUERIES */
@@ -4011,8 +4016,7 @@ button[data-balloon] {
   /* STAKING PAGE */
 
   .staking-wrapper {
-    padding-top: 120px;
-    padding-bottom: 120px;
+    padding: 120px 0;
   }
 }
 

@@ -34,11 +34,14 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   })
 
   function deriveHdNode(childIndex) {
-    throw new Error('This operation is not supported on TrezorCryptoProvider!')
+    throw NamedError(
+      'UnsupportedOperationError',
+      'This operation is not supported on TrezorCryptoProvider!'
+    )
   }
 
   function sign(message, absDerivationPath) {
-    throw new Error('Not supported')
+    throw NamedError('UnsupportedOperationError', 'Operation not supported')
   }
 
   async function displayAddressForPath(absDerivationPath) {
@@ -104,7 +107,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
 
     if (response.error || !response.success) {
       debugLog(response)
-      throw new NamedError('TrezorError', response.payload.error)
+      throw new NamedError('TrezorSignTxError', response.payload.error)
     }
 
     return {
@@ -114,7 +117,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   }
 
   function getWalletSecret() {
-    throw new Error('Unsupported operation!')
+    throw NamedError('UnsupportedOperationError', 'Unsupported operation!')
   }
 
   function getDerivationScheme() {

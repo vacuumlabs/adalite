@@ -81,7 +81,7 @@ const CardanoWalletSecretCryptoProvider = (
 
   async function signTx(txAux, rawInputTxs, addressToAbsPathMapper) {
     if (!checkTxInputsIntegrity(txAux.inputs, rawInputTxs)) {
-      throw NamedError('TransactionRejected')
+      throw NamedError('TransactionRejectedWhileSigning')
     }
 
     const signedTxStructured = await signTxGetStructured(txAux, addressToAbsPathMapper)
