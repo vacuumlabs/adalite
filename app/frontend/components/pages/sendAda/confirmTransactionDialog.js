@@ -9,8 +9,15 @@ class ConfirmTransactionDialogClass {
     this.cancelTx.focus()
   }
 
-  render({sendAddress, sendAmount, transactionFee, submitTransaction, cancelTransaction}) {
-    const total = sendAmount + transactionFee
+  render({
+    sendAddress,
+    sendAmount,
+    transactionFee,
+    submitTransaction,
+    cancelTransaction,
+    donationAmount,
+    total,
+  }) {
     return h(
       Modal,
       {
@@ -24,6 +31,8 @@ class ConfirmTransactionDialogClass {
         h('div', {class: 'review-address'}, sendAddress),
         h('div', {class: 'ada-label'}, 'Amount'),
         h('div', {class: 'review-amount'}, printAda(sendAmount)),
+        h('div', {class: 'ada-label'}, 'Donation'),
+        h('div', {class: 'review-amount'}, printAda(donationAmount)),
         h('div', {class: 'ada-label'}, 'Fee'),
         h('div', {class: 'review-fee'}, printAda(transactionFee)),
         h('div', {class: 'ada-label'}, 'Total'),
@@ -64,6 +73,7 @@ module.exports = connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmount: state.sendAmountForTransactionFee,
     transactionFee: state.transactionFee,
+    donationAmount: state.donationAmountForTransactionFee,
   }),
   actions
 )(ConfirmTransactionDialogClass)

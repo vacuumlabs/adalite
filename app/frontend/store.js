@@ -20,9 +20,10 @@ const initialState = {
   ownAddressesWithMeta: [],
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
-  sendAmount: {fieldValue: 0},
+  sendAmount: {fieldValue: 0, coins: 0},
   transactionFee: 0,
   sendAmountForTransactionFee: 0,
+  donationAmountForTransactionFee: 0,
   router: {
     pathname: window.location.pathname,
     hash: window.location.hash,
@@ -37,6 +38,15 @@ const initialState = {
   showMnemonicInfoAlert: false,
   transactionHistory: [],
   sendResponse: {},
+  checkedDonationType: '',
+  showCustomDonationInput: false,
+  donationAmount: {fieldValue: 0, coins: 0},
+  maxSendAmount: Infinity,
+  maxDonationAmount: Infinity,
+  percentageDonationValue: 0,
+  percentageDonationText: '0.2%',
+  thresholdAmountReached: false,
+  highestAmountReached: 0,
   emailSubmitSuccess: false,
   emailSubmitMessage: '',
 }
