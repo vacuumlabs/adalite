@@ -8,6 +8,10 @@ class ContactForm extends Component {
   constructor(props) {
     super(props)
     this.closeContactFormModal = this.closeContactFormModal.bind(this)
+
+    this.state = {
+      sumbitted: false,
+    }
   }
 
   closeContactFormModal() {
@@ -55,6 +59,13 @@ class ContactForm extends Component {
             method: 'POST',
             target: '_blank',
             action: `//formspree.io/${ADALITE_CONFIG.ADALITE_SUPPORT_EMAIL}`,
+            onSubmit: () => {
+              this.setState({sumbitted: true})
+              this.contactForm.reset()
+            },
+            ref: (element) => {
+              this.contactForm = element
+            },
           },
           h(
             'div',
@@ -85,6 +96,12 @@ class ContactForm extends Component {
             class: 'input fullwidth textarea',
             required: true,
           }),
+          this.state.sumbitted &&
+            h(
+              'div',
+              {class: 'form-alert success'},
+              'Thank you for your message. We will contact you shortly.'
+            ),
           h('input', {
             type: 'text',
             name: '_gotcha',
@@ -116,7 +133,7 @@ class ContactForm extends Component {
         ),
         h('button', {
           'onClick': this.closeContactFormModal,
-          'class': 'modal-close',
+          'class': 'button close modal-close',
           'aria-label': 'Close dialog',
           'onKeyDown': (e) => {
             e.key === 'Enter' && e.target.click()

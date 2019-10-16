@@ -1,6 +1,6 @@
 {
   "name": "cardano",
-  "version": "3.5.4",
+  "version": "3.5.7",
   "engines": {
     "node": "11.10"
   },
@@ -56,7 +56,8 @@
     "isomorphic-fetch": "^2.2.1",
     "normalize-url": "^4.0.0",
     "redis": "^2.8.0",
-    "redisscan": "^2.0.0"
+    "redisscan": "^2.0.0",
+    "universal-analytics": "^0.4.20"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.2",

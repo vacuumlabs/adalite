@@ -15,6 +15,9 @@ const getStats = async () => {
       'sentOut:total': [],
       'sentOut:monthly': [],
       'sentOut:daily': [],
+      'sentTotal:total': [],
+      'sentTotal:monthly': [],
+      'sentTotal:daily': [],
     },
     otherTxSubmissions: {
       'successful:total': [],
@@ -26,6 +29,9 @@ const getStats = async () => {
       'sentOut:total': [],
       'sentOut:monthly': [],
       'sentOut:daily': [],
+      'sentTotal:total': [],
+      'sentTotal:monthly': [],
+      'sentTotal:daily': [],
     },
   }
 
@@ -62,7 +68,7 @@ const getStats = async () => {
   return stats
 }
 
-const isAdaAmountKey = (key) => key.search('sentOut:') !== -1
+const isAdaAmountKey = (key) => key.search(/sentOut:|sentTotal:/) !== -1
 
 module.exports = function(app, env) {
   app.get('/usage_stats', async (req, res) => {
@@ -106,13 +112,10 @@ module.exports = function(app, env) {
             <title>AdaLite Wallet Stats</title>
             <link rel="icon" type="image/ico" href="assets/favicon.ico">
           </head>
-
           <body>
             Stats of transaction submissions and estimates of unique IPs visits per day, month and in total.
-
             <div>${statsHtml}</div>
           </body>
-
         </html>
       `)
     } catch (e) {

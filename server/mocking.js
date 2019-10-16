@@ -1,5 +1,4 @@
 require('isomorphic-fetch')
-
 const sleep = require('./helpers/sleep')
 
 /*
@@ -50,6 +49,24 @@ module.exports = function(app, env) {
     await sleep(1000)
 
     return res.json(response)
+  })
+
+  app.post('/api/emails/submit', async (req, res) => {
+    let email
+    try {
+      email = req.body.email
+      if (!email) throw new Error('bad format')
+    } catch (err) {
+      return res.json({
+        Left: 'Bad request body',
+      })
+    }
+
+    await sleep(600)
+
+    return res.json({
+      Right: 'Successfuly subscribed',
+    })
   })
 
   // the remaining requests are redirected to the actual blockchain explorer
