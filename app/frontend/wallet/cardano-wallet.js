@@ -12,6 +12,7 @@ const shuffleArray = require('./helpers/shuffleArray')
 const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
 const NamedError = require('../helpers/NamedError')
 const CryptoProviderFactory = require('./crypto-provider-factory')
+const {roundWholeAdas} = require('../helpers/adaConverters')
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -83,8 +84,8 @@ const CardanoWallet = async (options) => {
     }
   }
 
-  async function prepareSignedTx(address, coins) {
-    const txAux = await prepareTxAux(address, coins).catch((e) => {
+  async function prepareSignedTx(address, coins, hasDonation, donationAmount) {
+    const txAux = await prepareTxAux(address, coins, hasDonation, donationAmount).catch((e) => {
       debugLog(e)
       throw NamedError('TransactionCorrupted')
     })
@@ -111,11 +112,11 @@ const CardanoWallet = async (options) => {
     return (address) => mapping[address]
   }
 
-  async function prepareTxAux(address, coins) {
-    const txInputs = await prepareTxInputs(address, coins)
+  async function prepareTxAux(address, coins, hasDonation, donationAmount) {
+    const txInputs = await prepareTxInputs(address, coins, hasDonation, donationAmount)
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => acc + elem.coins, 0)
-    const fee = computeTxFee(txInputs, address, coins)
-    const changeAmount = txInputsCoinsSum - coins - fee
+    const fee = computeTxFee(txInputs, address, coins, hasDonation, donationAmount)
+    const changeAmount = txInputsCoinsSum - coins - fee - (hasDonation ? donationAmount : 0)
 
     if (changeAmount < 0) {
       throw Error(`
@@ -124,6 +125,17 @@ const CardanoWallet = async (options) => {
 
     const txOutputs = [TxOutput(address, coins, false)]
 
+    if (hasDonation) {
+      //const {ADA_DONATION_ADDRESS} = require('./constants') //TODO: use later
+      txOutputs.push(
+        TxOutput(
+          'DdzFFzCqrhsoarXqLakMBEiURCGPCUL7qRvPf2oGknKN2nNix5b9SQKj2YckgXZK6q1Ym7BNLxgEX3RQFjS2C41xt54yJHeE1hhMUfSG',
+          donationAmount,
+          false
+        )
+      )
+    }
+
     if (changeAmount > 0) {
       txOutputs.push(TxOutput(await getChangeAddress(), changeAmount, true))
     }
@@ -131,7 +143,7 @@ const CardanoWallet = async (options) => {
     return TxAux(txInputs, txOutputs, {})
   }
 
-  async function getMaxSendableAmount(address) {
+  async function getTxInputsAndCoins() {
     const utxos = await getUnspentTxOutputs()
     const txInputs = []
     let coins = 0
@@ -141,13 +153,56 @@ const CardanoWallet = async (options) => {
       txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
       coins += profitableUtxos[i].coins
     }
-    const txFee = computeTxFee(txInputs, address, coins)
-    return Math.max(coins - txFee, 0)
+
+    return {txInputs, coins}
   }
 
-  async function getTxFee(address, coins) {
-    const txInputs = await prepareTxInputs(address, coins)
-    return computeTxFee(txInputs, address, coins)
+  const getMaxSendableAmountWithDonation = (
+    address,
+    txInputs,
+    coins,
+    donationAmount,
+    donationType
+  ) => {
+    if (donationType === 'percentage') {
+      // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
+      const reducedAmount = coins / 1.002 //leave some for donation (0.2%)
+      const percentageDonation = reducedAmount * 0.002
+      // we show rounded % donations in the UI
+      const roundedDonation = roundWholeAdas(percentageDonation)
+      const diff = percentageDonation - roundedDonation
+      // add diff from rounding (can be negative)
+      const txFee = computeTxFee(txInputs, address, reducedAmount + diff, true, roundedDonation)
+      return {
+        sendAmount: reducedAmount + diff - txFee,
+        donationAmount: roundedDonation,
+      }
+    } else {
+      const txFee = computeTxFee(txInputs, address, coins - donationAmount, true, donationAmount)
+      return {sendAmount: Math.max(coins - donationAmount - txFee, 0)}
+    }
+  }
+
+  async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
+    const {txInputs, coins} = await getTxInputsAndCoins()
+
+    if (!hasDonation) {
+      const txFee = computeTxFee(txInputs, address, coins, false)
+      return {sendAmount: Math.max(coins - txFee, 0)}
+    }
+
+    return getMaxSendableAmountWithDonation(address, txInputs, coins, donationAmount, donationType)
+  }
+
+  async function getMaxDonationAmount(address, sendAmount) {
+    const {txInputs, coins} = await getTxInputsAndCoins()
+    const txFee = computeTxFee(txInputs, address, sendAmount, true, coins - sendAmount)
+    return Math.max(coins - txFee - sendAmount, 0)
+  }
+
+  async function getTxFee(address, coins, hasDonation, donationAmount) {
+    const txInputs = await prepareTxInputs(address, coins, hasDonation, donationAmount)
+    return computeTxFee(txInputs, address, coins, hasDonation, donationAmount)
   }
 
   async function getBalance() {
@@ -172,7 +227,7 @@ const CardanoWallet = async (options) => {
     return utxo.coins > addedCost
   }
 
-  async function prepareTxInputs(address, coins) {
+  async function prepareTxInputs(address, coins, hasDonation, donationAmount) {
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
@@ -180,66 +235,76 @@ const CardanoWallet = async (options) => {
 
     const txInputs = []
     let sumUtxos = 0
-    let totalCoins = coins
+    const totalAmount = hasDonation ? coins + donationAmount : coins
+    let totalCoins = totalAmount
 
     for (let i = 0; i < profitableUtxos.length && sumUtxos < totalCoins; i++) {
       txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
       sumUtxos += profitableUtxos[i].coins
 
-      totalCoins = coins + computeTxFee(txInputs, address, totalCoins)
+      totalCoins =
+        totalAmount + computeTxFee(txInputs, address, totalCoins, hasDonation, donationAmount)
     }
 
     return txInputs
   }
 
-  function computeTxFee(txInputs, address, coins) {
-    if (coins > Number.MAX_SAFE_INTEGER) {
-      throw new Error(`Unsupported amount of coins: ${coins}`)
+  function computeTxFee(txInputs, address, coins, hasDonation, donationAmount) {
+    const totalAmount = hasDonation ? coins + donationAmount : coins
+    if (totalAmount > Number.MAX_SAFE_INTEGER) {
+      throw new Error(`Unsupported amount of coins: ${totalAmount}`)
     }
     const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
       return acc + elem.coins
     }, 0)
-    const oneOutputFee = txFeeFunction(estimateTxSize(txInputs, address, coins, false))
+    const withoutChangeFee = txFeeFunction(estimateTxSize(txInputs, address, false, hasDonation))
 
     /*
-    * if (coins+oneOutputFee) is equal to (txInputsCoinsSum) it means there is no change necessary
-    * if (coins+oneOutputFee) is bigger the transaction is invalid even with higher fee
+    * if (totalAmount+withoutChangeFee) is equal to (txInputsCoinsSum),
+        it means there is no change necessary
+    * if (totalAmount+withoutChangeFee) is bigger the transaction is invalid even with higher fee
     * so we let caller handle it
     */
-    if (coins + oneOutputFee >= txInputsCoinsSum) {
-      return oneOutputFee
+    if (totalAmount + withoutChangeFee >= txInputsCoinsSum) {
+      return withoutChangeFee
     } else {
-      const twoOutputFee = txFeeFunction(estimateTxSize(txInputs, address, coins, true))
-      if (coins + twoOutputFee > txInputsCoinsSum) {
+      const withChangeFee = txFeeFunction(estimateTxSize(txInputs, address, true, hasDonation))
+      if (totalAmount + withChangeFee > txInputsCoinsSum) {
         //means one output transaction was possible, while 2 output is not
-        //so we return fee equal to inputs - coins which is guaranteed to pass
-        return txInputsCoinsSum - coins
+        //so we return fee equal to inputs - totalAmount which is guaranteed to pass
+        return txInputsCoinsSum - totalAmount
       } else {
-        return twoOutputFee
+        return withChangeFee
       }
     }
   }
 
-  function estimateTxSize(txInputs, outAddress, coins, hasChange) {
+  function estimateTxSize(txInputs, outAddress, hasChange, hasDonation) {
     const txInputsSize = cbor.encode(new CborIndefiniteLengthArray(txInputs)).length
     const outAddressSize = base58.decode(outAddress).length
 
     //size of addresses used by AdaLite
     const ownAddressSize = 76
 
+    //size of donation address TODO
+    const {ADA_DONATION_ADDRESS} = require('./constants')
+    const donationAddressSize = base58.decode(ADA_DONATION_ADDRESS).length
+
     /*
-    * we assume that at most two outputs (destination and change address) will be present
-    * encoded in an indefinite length array
+    * we assume that at most three outputs (destination, change and possibly donation address)
+    * will be present encoded in an indefinite length array
     */
     const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
     const txOutputsSize = hasChange
       ? outAddressSize + ownAddressSize + maxCborCoinsLen * 2 + 2
       : outAddressSize + maxCborCoinsLen + 2
 
+    const donationOutputSize = hasDonation ? donationAddressSize + maxCborCoinsLen : 0
+
     const txMetaSize = 1 // currently empty Map
 
-    // the 1 is there for the CBOR "tag" for an array of 3 elements
-    const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
+    // the 1 is there for the CBOR "tag" for an array of 4 elements
+    const txAuxSize = 1 + txInputsSize + txOutputsSize + donationOutputSize + txMetaSize
 
     const txWitnessesSize = txInputs.length * TX_WITNESS_SIZE_BYTES + 1
 
@@ -344,6 +409,7 @@ const CardanoWallet = async (options) => {
     getBalance,
     getChangeAddress,
     getMaxSendableAmount,
+    getMaxDonationAmount,
     getTxFee,
     getHistory,
     isOwnAddress,

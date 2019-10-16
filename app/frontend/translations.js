@@ -1,11 +1,14 @@
 const printAda = require('./helpers/printAda')
 const debugLog = require('./helpers/debugLog')
 const {ADALITE_SUPPORT_EMAIL} = require('./wallet/constants')
+const {ADALITE_MIN_DONATION_VALUE} = require('./config').ADALITE_CONFIG
 
 const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
   SendAmountIsNan: () => 'Invalid format: Amount has to be a number',
   SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
+  DonationAmountTooLow: () => `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
+  DonationInsufficientBalance: () => 'Insufficient balance for a donation.',
   SendAmountInsufficientFunds: ({balance}) =>
     `Insufficient funds for the transaction. Your balance is ${printAda(balance)} ADA.`,
   SendAmountCantSendMaxFunds: () =>
