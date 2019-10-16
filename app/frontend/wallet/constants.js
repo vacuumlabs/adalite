@@ -27,4 +27,6 @@ module.exports = {
     TREZOR: 'TREZOR',
     WALLET_SECRET: 'WALLET_SECRET',
   },
+  SENTRY_USER_FEEDBACK_API:
+    'https://sentry.io/api/0/projects/vacuumlabs-sro/adalite-frontend/user-feedback/',
 }

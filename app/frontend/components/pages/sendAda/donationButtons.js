@@ -4,6 +4,7 @@ const actions = require('../../../actions')
 const {AdaIcon} = require('../../common/svg')
 const {ADALITE_FIXED_DONATION_VALUE} = require('../../../config').ADALITE_CONFIG
 const {toCoins} = require('../../../helpers/adaConverters')
+const tooltip = require('../../common/tooltip')
 
 class DonationButtons extends Component {
   constructor(props) {
@@ -40,6 +41,8 @@ class DonationButtons extends Component {
     thresholdAmountReached,
   }) {
     const isFormValid = isSendAddressValid && sendAmount && !sendAmountValidationError
+    const isFixedInsufficient = this.isInsufficient(ADALITE_FIXED_DONATION_VALUE, 'fixed')
+    const isPercentageInsufficient = this.isInsufficient(percentageDonationValue, 'percentage')
 
     return h(
       'div',
@@ -53,8 +56,9 @@ class DonationButtons extends Component {
           'class': this.getButtonClass(ADALITE_FIXED_DONATION_VALUE, 'fixed'),
           'value': ADALITE_FIXED_DONATION_VALUE,
           'onClick': updateDonation,
-          'disabled': !isFormValid || this.isInsufficient(ADALITE_FIXED_DONATION_VALUE, 'fixed'),
+          'disabled': !isFormValid || isFixedInsufficient,
           'aria-label': 'Fixed amount',
+          ...tooltip('Insufficient funds', isFixedInsufficient),
         },
         `${ADALITE_FIXED_DONATION_VALUE} `,
         h(AdaIcon)
@@ -66,11 +70,9 @@ class DonationButtons extends Component {
           'class': this.getButtonClass(percentageDonationValue, 'percentage'),
           'value': percentageDonationValue,
           'onClick': updateDonation,
-          'disabled':
-            !isFormValid ||
-            !thresholdAmountReached ||
-            this.isInsufficient(percentageDonationValue, 'percentage'),
+          'disabled': !isFormValid || !thresholdAmountReached || isPercentageInsufficient,
           'aria-label': 'Percentage amount',
+          ...tooltip('Insufficient funds', isPercentageInsufficient),
         },
         `${percentageDonationText} (`,
         `${percentageDonationValue} `,
@@ -94,7 +96,7 @@ class DonationButtons extends Component {
 module.exports = connect(
   (state) => ({
     sendAmount: state.sendAmount.fieldValue,
-    sendAmountValidationError: state.sendAmount.validationError,
+    sendAmountValidationError: state.sendAmountValidationError,
     checkedDonationType: state.checkedDonationType,
     percentageDonationValue: state.percentageDonationValue,
     percentageDonationText: state.percentageDonationText,

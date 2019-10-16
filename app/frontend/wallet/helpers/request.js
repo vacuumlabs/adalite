@@ -15,6 +15,7 @@ const request = async function request(url, method = 'GET', body = null, headers
 
   try {
     const response = await fetch(url, requestParams)
+    if (!response) throw NamedError('NetworkError')
     if (response.status === 429) {
       await sleep(DELAY_AFTER_TOO_MANY_REQUESTS)
       return await request(url, method, body, headers)
@@ -24,7 +25,6 @@ const request = async function request(url, method = 'GET', body = null, headers
         `${url} returns error: ${response.status} on payload: ${JSON.stringify(requestParams)}`
       )
     }
-
     return response.json()
   } catch (e) {
     debugLog(e)

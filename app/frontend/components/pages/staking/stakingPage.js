@@ -83,11 +83,15 @@ class StakingPage extends Component {
             'Subscribe'
           )
         ),
-        !emailValid && h('div', {class: 'form-alert error'}, errorMessage),
-        emailSubmitSuccess && h('div', {class: 'form-alert success'}, emailSubmitMessage),
-        !emailSubmitSuccess &&
-          emailSubmitMessage &&
-          h('div', {class: 'form-alert error'}, emailSubmitMessage)
+        h(
+          'div',
+          {class: 'form-message-field'},
+          !emailValid && h('div', {class: 'form-alert error'}, errorMessage),
+          emailSubmitSuccess && h('div', {class: 'form-alert success'}, emailSubmitMessage),
+          !emailSubmitSuccess &&
+            emailSubmitMessage &&
+            h('div', {class: 'form-alert error'}, emailSubmitMessage)
+        )
       )
     )
   }
