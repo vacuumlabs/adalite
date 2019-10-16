@@ -41,6 +41,7 @@ if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./mocking')(app)
 } else {
   require('./transactionSubmitter')(app)
+  require('./emailSubmitter')(app)
 }
 
 app.get('*', (req, res) => {

@@ -6,9 +6,11 @@ const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSIO
 const isLeftClick = require('../../../helpers/isLeftClick')
 
 const NavbarUnauth = connect(
-  null,
+  (state) => ({
+    pathname: state.router.pathname,
+  }),
   actions
-)(({openGenerateMnemonicDialog, openWelcome}) =>
+)(({pathname, openGenerateMnemonicDialog, openWelcome}) =>
   h(
     'nav',
     {class: 'navbar'},
@@ -36,6 +38,18 @@ const NavbarUnauth = connect(
         h(
           'a',
           {
+            class: 'navbar-link primary',
+            href: '#',
+            onClick: (e) => {
+              e.preventDefault()
+              window.history.pushState({}, 'staking', 'staking')
+            },
+          },
+          'Staking'
+        ),
+        h(
+          'a',
+          {
             class: 'navbar-link',
             href: '#',
             onClick: (e) => {
@@ -56,18 +70,30 @@ const NavbarUnauth = connect(
           'Help'
         )
       ),
-      h(
-        'button',
-        {
-          class: 'button outline navbar',
-          /*
-          * onMouseDown to prevent onBlur before handling the click event
-          * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
-          */
-          onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
-        },
-        'Create New Wallet'
-      )
+      pathname === '/staking'
+        ? h(
+          'button',
+          {
+            class: 'button outline navbar',
+            onClick: (e) => {
+              e.preventDefault()
+              window.history.pushState({}, './', './')
+            },
+          },
+          'Access the Wallet'
+        )
+        : h(
+          'button',
+          {
+            class: 'button outline navbar',
+            /*
+            * onMouseDown to prevent onBlur before handling the click event
+            * https://stackoverflow.com/questions/17769005/onclick-and-onblur-ordering-issue
+            */
+            onMouseDown: (e) => isLeftClick(e, openGenerateMnemonicDialog),
+          },
+          'Create New Wallet'
+        )
     )
   )
 )

@@ -15,6 +15,7 @@ const initialState = {
   displayWelcome: !(window.localStorage.getItem('dontShowDisclaimer') === 'true'),
   currentTab: 'wallet-info',
   walletIsLoaded: false,
+  showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner') === 'true'),
   newWalletMnemonic: '',
   ownAddressesWithMeta: [],
   // todo - object (sub-state) from send-ada form
@@ -36,6 +37,8 @@ const initialState = {
   showMnemonicInfoAlert: false,
   transactionHistory: [],
   sendResponse: {},
+  emailSubmitSuccess: false,
+  emailSubmitMessage: '',
 }
 
 const createStore = () =>

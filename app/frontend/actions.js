@@ -19,6 +19,7 @@ const {CardanoWallet} = require('./wallet/cardano-wallet')
 const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
 const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
 const {initialState} = require('./store')
+const submitEmailRaw = require('./helpers/submitEmailRaw')
 
 let wallet = null
 
@@ -306,6 +307,13 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const closeStakingBanner = (state) => {
+    window.localStorage.setItem('dontShowStakingBanner', true)
+    setState({
+      showStakingBanner: false,
+    })
+  }
+
   const validateSendForm = (state) => {
     setState({
       sendAddress: sendAddressValidator(state.sendAddress.fieldValue),
@@ -564,6 +572,37 @@ module.exports = ({setState, getState}) => {
     })
   }
 
+  const submitEmail = async (state, email) => {
+    let didSucceed
+    let message
+    try {
+      const emailSubmitResult = await submitEmailRaw(email)
+
+      if (emailSubmitResult.Left) {
+        didSucceed = false
+        message = emailSubmitResult.Left
+        throw NamedError('EmailSubmissionRejected')
+      }
+
+      didSucceed = true
+      message = emailSubmitResult.Right
+    } catch (e) {
+      debugLog(e)
+    } finally {
+      setState({
+        emailSubmitSuccess: didSucceed,
+        emailSubmitMessage: message,
+      })
+    }
+  }
+
+  const resetEmailSubmission = (state) => {
+    setState({
+      emailSubmitSuccess: false,
+      emailSubmitMessage: '',
+    })
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -599,5 +638,8 @@ module.exports = ({setState, getState}) => {
     closeWalletLoadingErrorModal,
     showContactFormModal,
     closeContactFormModal,
+    closeStakingBanner,
+    submitEmail,
+    resetEmailSubmission,
   }
 }

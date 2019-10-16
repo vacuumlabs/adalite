@@ -10,6 +10,7 @@ const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
 const GenerateMnemonicDialog = require('./generateMnemonicDialog')
 const LogoutNotification = require('./logoutNotification')
 const LoginPageSidebar = require('./loginPageSidebar')
+const StakingBanner = require('./stakingBanner')
 const Tag = require('../../common/tag')
 const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
 const {getTranslation} = require('../../../translations')
@@ -29,6 +30,11 @@ class LoginPage extends Component {
       isDropdownOpen: false,
     }
     this.toggleDropdown = this.toggleDropdown.bind(this)
+    this.closeStakingBannerClick = this.closeStakingBannerClick.bind(this)
+  }
+
+  closeStakingBannerClick() {
+    this.props.closeStakingBanner()
   }
 
   toggleDropdown() {
@@ -48,6 +54,7 @@ class LoginPage extends Component {
       showGenerateMnemonicDialog,
       showWalletLoadingErrorModal,
       closeWalletLoadingErrorModal,
+      showStakingBanner,
     },
     {isDropdownOpen}
   ) {
@@ -142,33 +149,38 @@ class LoginPage extends Component {
     return h(
       'div',
       {class: 'page-wrapper'},
+      showStakingBanner && h(StakingBanner, {closeBanner: this.closeStakingBannerClick}),
       h(
-        'main',
-        {class: 'page-main'},
-        authMethod === '' ? h(authCardInitial) : h(authCard),
+        'div',
+        {class: 'page-inner'},
         h(
-          'div',
-          {class: 'page-demo'},
-          'Try the ',
+          'main',
+          {class: 'page-main'},
+          authMethod === '' ? h(authCardInitial) : h(authCard),
           h(
-            'a',
-            {
-              href: '#',
-              onMouseDown: (e) => isLeftClick(e, loadDemoWallet),
-            },
-            'demo wallet'
+            'div',
+            {class: 'page-demo'},
+            'Try the ',
+            h(
+              'a',
+              {
+                href: '#',
+                onMouseDown: (e) => isLeftClick(e, loadDemoWallet),
+              },
+              'demo wallet'
+            )
           )
-        )
-      ),
-      h(LoginPageSidebar),
-      showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
-      showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
-      logoutNotificationOpen && h(LogoutNotification),
-      showWalletLoadingErrorModal &&
-        h(WalletLoadingErrorModal, {
-          closeHandler: closeWalletLoadingErrorModal,
-          errorMessage: getTranslation(walletLoadingError.code, walletLoadingError.params),
-        })
+        ),
+        h(LoginPageSidebar),
+        showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
+        showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
+        logoutNotificationOpen && h(LogoutNotification),
+        showWalletLoadingErrorModal &&
+          h(WalletLoadingErrorModal, {
+            closeHandler: closeWalletLoadingErrorModal,
+            errorMessage: getTranslation(walletLoadingError.code, walletLoadingError.params),
+          })
+      )
     )
   }
 }
@@ -181,6 +193,7 @@ module.exports = connect(
     walletLoadingError: state.walletLoadingError,
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
     showWalletLoadingErrorModal: state.showWalletLoadingErrorModal,
+    showStakingBanner: state.showStakingBanner,
   }),
   actions
 )(LoginPage)
