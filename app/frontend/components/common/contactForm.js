@@ -15,6 +15,7 @@ class ContactForm extends Component {
   }
 
   closeContactFormModal() {
+    this.contactForm.reset()
     this.props.closeContactFormModal()
   }
 
@@ -61,7 +62,6 @@ class ContactForm extends Component {
             action: `//formspree.io/${ADALITE_CONFIG.ADALITE_SUPPORT_EMAIL}`,
             onSubmit: () => {
               this.setState({sumbitted: true})
-              this.contactForm.reset()
             },
             ref: (element) => {
               this.contactForm = element
