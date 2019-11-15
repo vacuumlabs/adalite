@@ -1270,6 +1270,13 @@ button[data-balloon] {
   max-height: 178px;
 }
 
+.authentication-image-container {
+  position: relative;
+  padding-bottom: calc(178px + 24px); 
+  height: 0;
+  overflow: hidden;
+}
+
 .authentication-wallet .authentication-image {
   margin-bottom: 24px;
 }
