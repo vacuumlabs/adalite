@@ -14,11 +14,15 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
     h(
       'div',
       {class: 'authentication-wallet'},
-      h('img', {
-        class: 'authentication-image',
-        src: 'assets/trezor.jpg',
-        alt: 'Trezor model T',
-      }),
+      h(
+        'div',
+        {class: 'authentication-image-container'},
+        h('img', {
+          class: 'authentication-image',
+          src: 'assets/trezor.jpg',
+          alt: 'Trezor model T',
+        })
+      ),
       h('div', {class: 'authentication-paragraph'}, 'Trezor model T'),
       h(
         'div',
@@ -42,11 +46,15 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
     h(
       'div',
       {class: 'authentication-wallet'},
-      h('img', {
-        class: 'authentication-image',
-        src: 'assets/ledger_nano_s_x.jpg',
-        alt: 'Ledger Nano S/X',
-      }),
+      h(
+        'div',
+        {class: 'authentication-image-container'},
+        h('img', {
+          class: 'authentication-image',
+          src: 'assets/ledger_nano_s_x.jpg',
+          alt: 'Ledger Nano S/X',
+        })
+      ),
       h('div', {class: 'authentication-paragraph'}, 'Ledger Nano S/X'),
       h('div', {class: 'authentication-paragraph small'}, 'also with Android device'),
       h(
