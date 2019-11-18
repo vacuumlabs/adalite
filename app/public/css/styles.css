@@ -1262,7 +1262,7 @@ button[data-balloon] {
 
 .authentication-image-container {
   position: relative;
-  padding-bottom: calc(178px + 24px); 
+  padding-bottom: 202px; 
   height: 0;
   overflow: hidden;
 }
