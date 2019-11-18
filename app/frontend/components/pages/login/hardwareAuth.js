@@ -1,8 +1,7 @@
 const {h} = require('preact')
 const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 
-const {TrezorLogoWhite} = require('../../common/svg')
-const {LedgerLogoWhite} = require('../../common/svg')
+const {TrezorLogoWhite, LedgerLogoWhite} = require('../../common/svg')
 
 const LoadByHardwareWalletSection = ({loadWallet}) => {
   const TrezorAffiliateLink = (title) =>
