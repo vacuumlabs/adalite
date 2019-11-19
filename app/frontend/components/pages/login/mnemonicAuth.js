@@ -36,6 +36,7 @@ class LoadByMenmonicSectionClass extends Component {
           {alertType: 'info auth'},
           'Here you can use your mnemonic to access your new wallet.'
         ),
+      h('h2', {class: 'authentication-title'}, 'Incentivized-Testnet Balance Check'),
       h(
         'label',
         {
@@ -87,7 +88,7 @@ class LoadByMenmonicSectionClass extends Component {
               this.goBtn = element
             },
           },
-          'Unlock'
+          'Check balance'
         ),
         mnemonicValidationError &&
           showMnemonicValidationError &&
@@ -96,17 +97,6 @@ class LoadByMenmonicSectionClass extends Component {
             {class: 'validation-message error'},
             getTranslation(mnemonicValidationError.code)
           )
-      ),
-      h(
-        'a',
-        {
-          class: 'authentication-link',
-          onClick: (e) => {
-            e.preventDefault()
-            openGenerateMnemonicDialog()
-          },
-        },
-        'Create New Wallet'
       )
     )
   }

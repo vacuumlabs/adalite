@@ -57,7 +57,7 @@ const TransactionHistory = ({transactionHistory}) =>
   h(
     'div',
     {class: 'transactions card'},
-    h('h2', {class: 'card-title'}, 'Transaction History'),
+    h('h2', {class: 'card-title'}, 'Address balance'),
     transactionHistory.length === 0
       ? h('div', {class: 'transactions-empty'}, 'No transactions found')
       : h(
@@ -67,10 +67,11 @@ const TransactionHistory = ({transactionHistory}) =>
           h(
             'li',
             {class: 'transaction-item'},
-            h('div', {class: 'transaction-date'}, formatDate(transaction.ctbTimeIssued)),
-            h(FormattedAmount, {amount: transaction.effect}),
-            h(TransactionAddress, {address: transaction.ctbId}),
-            h(FormattedFee, {fee: transaction.fee})
+            h('div', {class: 'transaction-date'}, transaction.ctbId),
+            h('div'),
+            h(FormattedAmount, {amount: transaction.effect})
+            //h(TransactionAddress, {address: transaction.ctbId}),
+            //h(FormattedFee, {fee: transaction.fee})
           )
         )
       )

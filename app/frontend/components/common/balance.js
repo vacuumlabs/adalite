@@ -24,7 +24,8 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
         'Refresh Balance'
       )
     ),
-    conversionRates && h(Conversions, {balance, conversionRates}),
+    conversionRates && h(Conversions, {balance, conversionRates})
+    /*
     h(
       'div',
       {class: 'buy-ada-partner-wrapper'},
@@ -50,6 +51,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
         })
       )
     )
+    */
   )
 
 module.exports = Balance

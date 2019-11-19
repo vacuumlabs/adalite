@@ -65,7 +65,8 @@ const TxHistoryPage = connect(
         {class: 'dashboard-column'},
         h(Balance, {balance, reloadWalletInfo, conversionRates}),
         h(TransactionHistory, {transactionHistory, conversionRates})
-      ),
+      )
+      /*
       h(
         'div',
         {class: 'dashboard-column'},
@@ -73,13 +74,15 @@ const TxHistoryPage = connect(
         h(MyAddresses),
         showExportOption && h(ExportCard)
       )
+      */
     ),
     h(
       'div',
       {class: 'dashboard mobile'},
       h(Balance, {balance, reloadWalletInfo, conversionRates}),
-      h(DashboardMobileContent, {balance, transactionHistory, reloadWalletInfo, conversionRates}),
-      showExportOption && h(ExportCard)
+      h(TransactionHistory, {transactionHistory, conversionRates})
+      //h(DashboardMobileContent, {balance, transactionHistory, reloadWalletInfo, conversionRates}),
+      //showExportOption && h(ExportCard)
     )
   )
 )
