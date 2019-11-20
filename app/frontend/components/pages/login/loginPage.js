@@ -124,15 +124,6 @@ class LoginPage extends Component {
       h(
         'div',
         {class: 'authentication card'},
-        /*
-        h(
-          'ul',
-          {class: 'auth-tabs'},
-          authTab('mnemonic'),
-          authTab('hw-wallet', true),
-          authTab('file')
-        ),
-        */
         h(
           'div',
           {class: `dropdown auth ${isDropdownOpen ? 'open' : ''}`},
@@ -174,7 +165,6 @@ class LoginPage extends Component {
             )
           )
         ),
-        //h(LoginPageSidebar),
         showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
         showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
         logoutNotificationOpen && h(LogoutNotification),
@@ -191,7 +181,7 @@ class LoginPage extends Component {
 
 module.exports = connect(
   (state) => ({
-    authMethod: 'mnemonic', //state.authMethod,
+    authMethod: 'mnemonic',
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
     logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,

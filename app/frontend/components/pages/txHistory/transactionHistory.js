@@ -70,8 +70,6 @@ const TransactionHistory = ({transactionHistory}) =>
             h('div', {class: 'transaction-date'}, transaction.ctbId),
             h('div'),
             h(FormattedAmount, {amount: transaction.effect})
-            //h(TransactionAddress, {address: transaction.ctbId}),
-            //h(FormattedFee, {fee: transaction.fee})
           )
         )
       )
