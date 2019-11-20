@@ -96,6 +96,11 @@ h3 {
   line-height: 24px;
 }
 
+.feature-explanation {
+  font-weight: normal;
+  margin-bottom: 40px;
+}
+
 a,
 a:hover {
   color: var(--color-brand);
@@ -1182,7 +1187,7 @@ button[data-balloon] {
   font-weight: normal;
   text-align: center;
   white-space: pre-wrap;
-  margin-bottom: 56px;
+  margin-bottom: 20px;
 }
 
 .authentication.initial {
@@ -3461,7 +3466,7 @@ button[data-balloon] {
   }
 
   .authentication-title {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
   }
 
   .auth-options {

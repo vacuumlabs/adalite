@@ -38,6 +38,20 @@ class LoadByMenmonicSectionClass extends Component {
         ),
       h('h2', {class: 'authentication-title'}, 'Incentivized-Testnet Balance Check'),
       h(
+        'h4',
+        {class: 'feature-explanation'},
+        'In order to take part in staking, it is necessary to hold your ADA on Adalite mnemonic (alternatively Yoroi or Daedalus) at the time of a "snapshot". ADA held in exchanges or on hardware wallets will not be included in the snapshot. The main role of the snapshot is to track your address balance at a certain time, so that you can work with the same amount later in the testnet environment. You can immediately move the ADA back after the snapshot. First testing snapshot occured on 12th of November and the "Official Snapshot" will roll out in the near future. Balance Check feature is a verification for the users whether the snapshot worked for their address. You can find more information about Incentivized Testnet in the official IOHK article ',
+        h(
+          'a',
+          {
+            href:
+              'https://iohk.io/en/blog/posts/2019/10/24/incentivized-testnet-what-is-it-and-how-to-get-involved/',
+            target: 'blank',
+          },
+          'here.'
+        )
+      ),
+      h(
         'label',
         {
           class: 'authentication-label',
