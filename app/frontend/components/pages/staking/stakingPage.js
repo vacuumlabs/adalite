@@ -53,7 +53,8 @@ class StakingPage extends Component {
         h(
           'p',
           {class: 'staking-text'},
-          'We are planing to implement staking delegation interface so our users can easily stake their ADA to any stakepool directly from AdaLite. We also plan to operate our own AdaLite stake pool with reasonable fees and we hope AdaLite users will be willing to stake with us.'
+          'We are currently implementing staking delegation interface so our users can easily stake their ADA to any stakepool directly from AdaLite. We also plan to operate our own AdaLite stake pool with reasonable fees and we hope AdaLite users will be willing to stake with us. You can check out the new balance check feature ',
+          h('a', {href: 'https://testnet.adalite.io/', target: '_blank'}, 'here.')
         ),
         h(
           'form',
