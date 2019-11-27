@@ -17,6 +17,7 @@ class LoadByMenmonicSectionClass extends Component {
     shouldFormFocus && this.mnemonicField.focus()
   }
 
+  // meant only for development in order to speed up the process of unlocking wallet
   async autoLogin() {
     const sanitizedMnemonic = sanitizeMnemonic(ADALITE_DEMO_WALLET_MNEMONIC)
     await this.props.loadWallet({
