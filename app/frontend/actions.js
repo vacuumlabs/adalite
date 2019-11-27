@@ -231,7 +231,7 @@ export default ({setState, getState}) => {
     })
   }
 
-  const verifyAddress = async (address) => {
+  const verifyAddress = async () => {
     const state = getState()
     if (state.usingHwWallet && state.showAddressDetail) {
       try {

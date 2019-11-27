@@ -1,4 +1,4 @@
-function HdNode({secret, secretKey, publicKey, chainCode}) {
+function _HdNode({secretKey, publicKey, chainCode}) {
   /**
    * HD node groups secretKey, publicKey and chainCode
    * can be initialized from Buffers or single string
@@ -6,14 +6,6 @@ function HdNode({secret, secretKey, publicKey, chainCode}) {
    * @param publicKey as Buffer
    * @param chainCode as Buffer
    */
-
-  if (secret) {
-    secretKey = secret.slice(0, 64)
-    publicKey = secret.slice(64, 96)
-    chainCode = secret.slice(96, 128)
-  } else {
-    secret = Buffer.concat([secretKey, publicKey, chainCode])
-  }
 
   const extendedPublicKey = Buffer.concat([publicKey, chainCode], 64)
 
@@ -33,6 +25,13 @@ function HdNode({secret, secretKey, publicKey, chainCode}) {
     toBuffer,
     toString,
   }
+}
+
+function HdNode(secret) {
+  const secretKey = secret.slice(0, 64)
+  const publicKey = secret.slice(64, 96)
+  const chainCode = secret.slice(96, 128)
+  return _HdNode({secretKey, publicKey, chainCode})
 }
 
 export default HdNode
