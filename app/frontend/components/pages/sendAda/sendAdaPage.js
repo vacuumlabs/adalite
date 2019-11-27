@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {h, Component} from 'preact'
 import {connect} from 'unistore/preact'
 import actions from '../../../actions'
 
@@ -36,201 +36,207 @@ const SendValidation = ({sendFormValidationError, sendResponse}) =>
       sendResponse.success &&
       h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
 
-const SendAdaPage = ({
-  transactionSubmissionError,
-  sendResponse,
-  sendAddress,
-  sendAddressValidationError,
-  sendAmount,
-  sendAmountValidationError,
-  sendAmountForTransactionFee,
-  donationAmountValidationError,
-  updateAddress,
-  updateAmount,
-  transactionFee,
-  confirmTransaction,
-  showConfirmTransactionDialog,
-  feeRecalculating,
-  sendMaxFunds,
-  showThanksForDonation,
-  closeThanksForDonationModal,
-  closeTransactionErrorModal,
-  showTransactionErrorModal,
-  getRawTransaction,
-  rawTransactionOpen,
-  rawTransaction,
-  coinsAmount,
-  showCustomDonationInput,
-  maxDonationAmount,
-  conversionRates,
-  donationAmountForTransactionFee,
-}) => {
-  const sendFormValidationError =
-    sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
+class SendAdaPage extends Component {
+  // Needs to be a component because we keep refs
 
-  const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
-  const isDonationSufficient = maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
-  const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-  const total = sendAmountForTransactionFee + transactionFee + donationAmountForTransactionFee
+  render({
+    transactionSubmissionError,
+    sendResponse,
+    sendAddress,
+    sendAddressValidationError,
+    sendAmount,
+    sendAmountValidationError,
+    sendAmountForTransactionFee,
+    donationAmountValidationError,
+    updateAddress,
+    updateAmount,
+    transactionFee,
+    confirmTransaction,
+    showConfirmTransactionDialog,
+    feeRecalculating,
+    sendMaxFunds,
+    showThanksForDonation,
+    closeThanksForDonationModal,
+    closeTransactionErrorModal,
+    showTransactionErrorModal,
+    getRawTransaction,
+    rawTransactionOpen,
+    rawTransaction,
+    coinsAmount,
+    showCustomDonationInput,
+    maxDonationAmount,
+    conversionRates,
+    donationAmountForTransactionFee,
+  }) {
+    const sendFormValidationError =
+      sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
 
-  const rawTransactionHandler = async () => {
-    await getRawTransaction(sendAddress, coinsAmount)
-  }
+    const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
+    const isDonationSufficient = maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
+    const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
+    const total = sendAmountForTransactionFee + transactionFee + donationAmountForTransactionFee
 
-  return h(
-    'div',
-    {class: 'send card'},
-    h('h2', {class: 'card-title'}, 'Send ADA'),
-    h('input', {
-      type: 'text',
-      id: 'send-address',
-      class: 'input send-address fullwidth',
-      name: 'send-address',
-      placeholder: 'Receiving address',
-      value: sendAddress,
-      onInput: updateAddress,
-      autocomplete: 'off',
-      onKeyDown: (e) => e.key === 'Enter' && this.amountField.focus(),
-    }),
-    h(
+    const rawTransactionHandler = async () => {
+      await getRawTransaction(sendAddress, coinsAmount)
+    }
+
+    return h(
       'div',
-      {class: 'send-values'},
-      h(
-        'label',
-        {
-          class: 'ada-label amount',
-          for: 'send-amount',
-        },
-        'Amount'
-      ),
+      {class: 'send card'},
+      h('h2', {class: 'card-title'}, 'Send ADA'),
+      h('input', {
+        type: 'text',
+        id: 'send-address',
+        class: 'input send-address fullwidth',
+        name: 'send-address',
+        placeholder: 'Receiving address',
+        value: sendAddress,
+        onInput: updateAddress,
+        autocomplete: 'off',
+        onKeyDown: (e) => e.key === 'Enter' && this.amountField.focus(),
+      }),
       h(
         'div',
-        {class: 'input-wrapper'},
-        h('input', {
-          class: 'input send-amount',
-          id: 'send-amount',
-          name: 'send-amount',
-          placeholder: '0.000000',
-          value: sendAmount,
-          onInput: updateAmount,
-          ref: (element) => {
-            this.amountField = element
-          },
-          onKeyDown: (e) => {
-            if (e.key === 'Enter' && this.submitTxBtn) {
-              this.submitTxBtn.click()
-              e.preventDefault()
-            }
-          },
-        }),
+        {class: 'send-values'},
         h(
-          'button',
+          'label',
           {
-            class: 'button send-max',
-            onClick: sendMaxFunds,
-            disabled: !isSendAddressValid,
+            class: 'ada-label amount',
+            for: 'send-amount',
           },
-          'Max'
-        )
-      ),
-      h(
-        'label',
-        {
-          class: 'ada-label amount donation',
-          for: 'donation-amount',
-        },
-        'Donate',
+          'Amount'
+        ),
         h(
-          'a',
+          'div',
+          {class: 'input-wrapper'},
+          h('input', {
+            class: 'input send-amount',
+            id: 'send-amount',
+            name: 'send-amount',
+            placeholder: '0.000000',
+            value: sendAmount,
+            onInput: updateAmount,
+            ref: (element) => {
+              this.amountField = element
+            },
+            onKeyDown: (e) => {
+              if (e.key === 'Enter' && this.submitTxBtn) {
+                this.submitTxBtn.click()
+                e.preventDefault()
+              }
+            },
+          }),
+          h(
+            'button',
+            {
+              class: 'button send-max',
+              onClick: sendMaxFunds,
+              disabled: !isSendAddressValid,
+            },
+            'Max'
+          )
+        ),
+        h(
+          'label',
           {
-            ...tooltip(
-              'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
-              true
-            ),
+            class: 'ada-label amount donation',
+            for: 'donation-amount',
           },
-          h('span', {class: 'show-info'}, '')
-        )
+          'Donate',
+          h(
+            'a',
+            {
+              ...tooltip(
+                'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
+                true
+              ),
+            },
+            h('span', {class: 'show-info'}, '')
+          )
+        ),
+        !isDonationSufficient &&
+          h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),
+        !showCustomDonationInput &&
+          isDonationSufficient &&
+          h(DonationButtons, {isSendAddressValid}),
+        showCustomDonationInput &&
+          isDonationSufficient &&
+          h(CustomDonationInput, {isSendAddressValid}),
+        h('div', {class: 'ada-label'}, 'Fee'),
+        h('div', {class: 'send-fee'}, printAda(transactionFee))
       ),
-      !isDonationSufficient &&
-        h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),
-      !showCustomDonationInput && isDonationSufficient && h(DonationButtons, {isSendAddressValid}),
-      showCustomDonationInput &&
-        isDonationSufficient &&
-        h(CustomDonationInput, {isSendAddressValid}),
-      h('div', {class: 'ada-label'}, 'Fee'),
-      h('div', {class: 'send-fee'}, printAda(transactionFee))
-    ),
-    h(
-      'div',
-      {
-        class: 'send-total',
-      },
       h(
         'div',
         {
-          class: 'send-total-title',
+          class: 'send-total',
         },
-        'Total'
-      ),
-      h(
-        'div',
-        {class: 'send-total-inner'},
         h(
           'div',
           {
-            class: 'send-total-ada',
+            class: 'send-total-title',
           },
-          printAda(total)
+          'Total'
         ),
-        conversionRates && h(Conversions, {balance: total, conversionRates})
-      )
-    ),
-    h(
-      'div',
-      {class: 'validation-row'},
+        h(
+          'div',
+          {class: 'send-total-inner'},
+          h(
+            'div',
+            {
+              class: 'send-total-ada',
+            },
+            printAda(total)
+          ),
+          conversionRates && h(Conversions, {balance: total, conversionRates})
+        )
+      ),
       h(
-        'button',
-        {
-          class: 'button primary',
-          disabled: !enableSubmit || feeRecalculating,
-          onClick: confirmTransaction,
-          ref: (element) => {
-            this.submitTxBtn = element
+        'div',
+        {class: 'validation-row'},
+        h(
+          'button',
+          {
+            class: 'button primary',
+            disabled: !enableSubmit || feeRecalculating,
+            onClick: confirmTransaction,
+            ref: (element) => {
+              this.submitTxBtn = element
+            },
           },
-        },
-        'Send ADA'
-      ),
-      feeRecalculating
-        ? h(CalculatingFee)
-        : h(SendValidation, {
-          sendFormValidationError,
-          sendResponse,
-        })
-    ),
-    enableSubmit &&
-      !feeRecalculating &&
-      h(
-        'a',
-        {
-          href: '#',
-          class: 'send-raw',
-          onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
-        },
-        'Raw unsigned transaction'
-      ),
-    showTransactionErrorModal &&
-      h(TransactionErrorModal, {
-        closeHandler: closeTransactionErrorModal,
-        errorMessage: getTranslation(
-          transactionSubmissionError.code,
-          transactionSubmissionError.params
+          'Send ADA'
         ),
-        showHelp: errorHasHelp(transactionSubmissionError.code),
-      }),
-    rawTransactionOpen && h(RawTransactionModal),
-    showConfirmTransactionDialog && h(ConfirmTransactionDialog, {total}),
-    showThanksForDonation && h(DonateThanksModal, {closeThanksForDonationModal})
-  )
+        feeRecalculating
+          ? h(CalculatingFee)
+          : h(SendValidation, {
+            sendFormValidationError,
+            sendResponse,
+          })
+      ),
+      enableSubmit &&
+        !feeRecalculating &&
+        h(
+          'a',
+          {
+            href: '#',
+            class: 'send-raw',
+            onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
+          },
+          'Raw unsigned transaction'
+        ),
+      showTransactionErrorModal &&
+        h(TransactionErrorModal, {
+          closeHandler: closeTransactionErrorModal,
+          errorMessage: getTranslation(
+            transactionSubmissionError.code,
+            transactionSubmissionError.params
+          ),
+          showHelp: errorHasHelp(transactionSubmissionError.code),
+        }),
+      rawTransactionOpen && h(RawTransactionModal),
+      showConfirmTransactionDialog && h(ConfirmTransactionDialog, {total}),
+      showThanksForDonation && h(DonateThanksModal, {closeThanksForDonationModal})
+    )
+  }
 }
 
 export default connect(
