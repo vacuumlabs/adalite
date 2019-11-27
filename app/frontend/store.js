@@ -14,7 +14,7 @@ const initialState = {
   },
   displayWelcome:
     !(window.localStorage.getItem('dontShowDisclaimer') === 'true') &&
-    ADALITE_CONFIG.ADALITE_ENABLE_AUTO_LOGIN !== 'true',
+    ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN !== 'true',
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner2') === 'true'),
@@ -51,7 +51,7 @@ const initialState = {
   emailSubmitMessage: '',
   showUnexpectedErrorModal: false,
   sendSentry: {},
-  autoLogin: ADALITE_CONFIG.ADALITE_ENABLE_AUTO_LOGIN === 'true',
+  autoLogin: ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 }
 
 const createStore = () =>
