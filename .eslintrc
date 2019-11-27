@@ -13,5 +13,6 @@
     "react": {
         "version": "16.8"
     }
-  }
+  },
+  "parser": "@typescript-eslint/typescript-estree"
 }

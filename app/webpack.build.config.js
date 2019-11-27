@@ -21,6 +21,15 @@ module.exports = {
   node: {
     fs: 'empty',
   },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
   resolve: {
     alias: {
       'babel-runtime': '@babel/runtime', // so both ledger and trezor-connect use the same library for babel runtime
@@ -28,5 +37,6 @@ module.exports = {
       'file-saver': `${__dirname}/frontend/libs/file-saver`,
       'qrious': `${__dirname}/frontend/libs/qrious`,
     },
+    extensions: ['.tsx', '.ts', '.js'],
   },
 }
