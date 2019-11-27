@@ -134,6 +134,7 @@ module.exports = ({setState, getState}) => {
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const donationAmount = {fieldValue: '', coins: 0}
+      const autoLogin = state.autoLogin
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
@@ -147,8 +148,7 @@ module.exports = ({setState, getState}) => {
         usingHwWallet,
         hwWalletName,
         isDemoWallet,
-        showDemoWalletWarningDialog:
-          ADALITE_CONFIG.ADALITE_ENABLE_AUTO_LOGIN === 'false' && isDemoWallet,
+        showDemoWalletWarningDialog: !autoLogin && isDemoWallet,
         showGenerateMnemonicDialog: false,
         donationAmount,
       })
@@ -278,6 +278,7 @@ module.exports = ({setState, getState}) => {
       {
         ...initialState,
         displayWelcome: false,
+        autoLogin: false,
       },
       true
     ) // force overwriting the state

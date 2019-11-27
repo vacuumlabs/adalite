@@ -15,8 +15,6 @@ const Tag = require('../../common/tag')
 const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
 const {getTranslation} = require('../../../translations')
 const {errorHasHelp} = require('../../../helpers/errorsWithHelp')
-const ADALITE_ENABLE_AUTO_LOGIN = require('../../../config').ADALITE_CONFIG
-  .ADALITE_ENABLE_AUTO_LOGIN
 
 const AUTH_METHOD_NAMES = {
   'mnemonic': 'Mnemonic',
@@ -37,7 +35,7 @@ class LoginPage extends Component {
   }
 
   componentDidMount() {
-    if (ADALITE_ENABLE_AUTO_LOGIN === 'true' && this.props.authMethod !== 'mnemonic') {
+    if (this.props.autoLogin && this.props.authMethod !== 'mnemonic') {
       this.props.setAuthMethod('mnemonic')
     }
   }
@@ -204,6 +202,7 @@ module.exports = connect(
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
     showWalletLoadingErrorModal: state.showWalletLoadingErrorModal,
     showStakingBanner: state.showStakingBanner,
+    autoLogin: state.autoLogin,
   }),
   actions
 )(LoginPage)
