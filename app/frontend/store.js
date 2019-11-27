@@ -12,7 +12,9 @@ const initialState = {
     title: 'Wrong mnemonic',
     hint: 'Hint: Ensure that your mnemonic is without mistake.',
   },
-  displayWelcome: !(window.localStorage.getItem('dontShowDisclaimer') === 'true'),
+  displayWelcome:
+    ADALITE_CONFIG.ADALITE_ENABLE_AUTO_LOGIN === 'false' &&
+    !(window.localStorage.getItem('dontShowDisclaimer') === 'true'),
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner') === 'true'),

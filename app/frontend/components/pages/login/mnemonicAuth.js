@@ -7,12 +7,30 @@ const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 const tooltip = require('../../common/tooltip')
 const Alert = require('../../common/alert')
 const sanitizeMnemonic = require('../../../helpers/sanitizeMnemonic')
+const ADALITE_DEMO_WALLET_MNEMONIC = require('../../../config').ADALITE_CONFIG
+  .ADALITE_DEMO_WALLET_MNEMONIC
+const ADALITE_ENABLE_AUTO_LOGIN = require('../../../config').ADALITE_CONFIG
+  .ADALITE_ENABLE_AUTO_LOGIN
 
 class LoadByMenmonicSectionClass extends Component {
   componentDidUpdate() {
     const shouldFormFocus =
       !this.props.mnemonic && !this.props.displayWelcome && !this.props.showDemoWalletWarningDialog
     shouldFormFocus && this.mnemonicField.focus()
+  }
+
+  async autoLogin() {
+    const sanitizedMnemonic = sanitizeMnemonic(ADALITE_DEMO_WALLET_MNEMONIC)
+    await this.props.loadWallet({
+      cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+      walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
+    })
+  }
+
+  componentDidMount() {
+    if (ADALITE_ENABLE_AUTO_LOGIN === 'true') {
+      this.autoLogin()
+    }
   }
 
   render({
