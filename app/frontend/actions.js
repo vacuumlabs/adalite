@@ -147,7 +147,8 @@ module.exports = ({setState, getState}) => {
         usingHwWallet,
         hwWalletName,
         isDemoWallet,
-        showDemoWalletWarningDialog: isDemoWallet,
+        showDemoWalletWarningDialog:
+          ADALITE_CONFIG.ADALITE_ENABLE_AUTO_LOGIN === 'false' && isDemoWallet,
         showGenerateMnemonicDialog: false,
         donationAmount,
       })
