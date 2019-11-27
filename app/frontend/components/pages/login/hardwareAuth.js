@@ -1,6 +1,8 @@
 const {h} = require('preact')
 const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 
+const {TrezorLogoWhite, LedgerLogoWhite} = require('../../common/svg')
+
 const LoadByHardwareWalletSection = ({loadWallet}) => {
   const TrezorAffiliateLink = (title) =>
     h('a', {href: 'https://shop.trezor.io/?offer_id=10&aff_id=1071', target: 'blank'}, title)
@@ -14,11 +16,15 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
     h(
       'div',
       {class: 'authentication-wallet'},
-      h('img', {
-        class: 'authentication-image',
-        src: 'assets/trezor.jpg',
-        alt: 'Trezor model T',
-      }),
+      h(
+        'div',
+        {class: 'authentication-image-container'},
+        h('img', {
+          class: 'authentication-image',
+          src: 'assets/trezor.jpg',
+          alt: 'Trezor model T',
+        })
+      ),
       h('div', {class: 'authentication-paragraph'}, 'Trezor model T'),
       h(
         'div',
@@ -36,17 +42,22 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
           class: 'button primary trezor',
           onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR}),
         },
-        'Unlock with'
+        'Unlock with',
+        h('div', {class: 'trezor-logo-container'}, h(TrezorLogoWhite))
       )
     ),
     h(
       'div',
       {class: 'authentication-wallet'},
-      h('img', {
-        class: 'authentication-image',
-        src: 'assets/ledger_nano_s_x.jpg',
-        alt: 'Ledger Nano S/X',
-      }),
+      h(
+        'div',
+        {class: 'authentication-image-container'},
+        h('img', {
+          class: 'authentication-image',
+          src: 'assets/ledger_nano_s_x.jpg',
+          alt: 'Ledger Nano S/X',
+        })
+      ),
       h('div', {class: 'authentication-paragraph'}, 'Ledger Nano S/X'),
       h('div', {class: 'authentication-paragraph small'}, 'also with Android device'),
       h(
@@ -60,7 +71,8 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
           class: 'button primary ledger',
           onClick: () => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER}),
         },
-        'Unlock with'
+        'Unlock with',
+        h('div', {class: 'ledger-logo-container'}, h(LedgerLogoWhite))
       )
     )
   )

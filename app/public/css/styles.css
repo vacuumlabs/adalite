@@ -348,17 +348,12 @@ p {
   padding-right: 119px;
 }
 
-.button.trezor::before {
-  content: '';
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  position: absolute;
-  right: 24px;
-  top: 16px;
-  width: 79px;
+.trezor-logo-container {
+  position: absolute; 
+  right: 24px; 
+  top: 16px; 
+  width: 79px; 
   height: 22px;
-  background-image: url('../assets/trezor_logo_white.svg');
 }
 
 .button.ledger {
@@ -366,17 +361,12 @@ p {
   padding-right: 119px;
 }
 
-.button.ledger::before {
-  content: '';
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  position: absolute;
-  right: 24px;
+.ledger-logo-container {
+  position: absolute; 
+  right: 24px; 
   top: 19px;
   width: 82px;
   height: 20px;
-  background-image: url('../assets/ledger_logo_white.svg');
 }
 
 .button.send-max {
@@ -1268,6 +1258,13 @@ button[data-balloon] {
 .authentication-image {
   max-width: 144px;
   max-height: 178px;
+}
+
+.authentication-image-container {
+  position: relative;
+  padding-bottom: 202px; 
+  height: 0;
+  overflow: hidden;
 }
 
 .authentication-wallet .authentication-image {
