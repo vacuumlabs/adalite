@@ -51,7 +51,8 @@ const initialState = {
   emailSubmitMessage: '',
   showUnexpectedErrorModal: false,
   sendSentry: {},
-  autoLogin: ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
+  autoLogin:
+    ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 }
 
 const createStore = () =>
