@@ -6,4 +6,4 @@ function NamedError(name, message, showHelp) {
   return e
 }
 
-module.exports = NamedError
+export default NamedError

@@ -1,4 +1,4 @@
-const {h} = require('preact')
+import {h} from 'preact'
 
 const Alert = ({children, alertType = 'success'}) =>
   h(
@@ -9,4 +9,4 @@ const Alert = ({children, alertType = 'success'}) =>
     h('div', {class: 'alert-content'}, children)
   )
 
-module.exports = Alert
+export default Alert

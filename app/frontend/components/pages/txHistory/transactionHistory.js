@@ -1,6 +1,6 @@
-const {h} = require('preact')
-const printAda = require('../../../helpers/printAda')
-const formatDate = require('../../../helpers/formatDate')
+import {h} from 'preact'
+import printAda from '../../../helpers/printAda'
+import formatDate from '../../../helpers/formatDate'
 
 const FormattedAmount = ({amount}) => {
   const value = printAda(Math.abs(amount))
@@ -76,4 +76,4 @@ const TransactionHistory = ({transactionHistory}) =>
       )
   )
 
-module.exports = TransactionHistory
+export default TransactionHistory

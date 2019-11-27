@@ -1,12 +1,12 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
 
-const TxHistoryPage = require('./pages/txHistory/txHistoryPage')
-const MyAddresses = require('./pages/receiveAda/myAddresses')
-const SendPage = require('./pages/sendAda/sendAdaPage')
-const LoginPage = require('./pages/login/loginPage')
-const ExportWalletPage = require('./pages/exportWallet/exportWalletPage')
-const StakingPage = require('./pages/staking/stakingPage')
+import TxHistoryPage from './pages/txHistory/txHistoryPage'
+import MyAddresses from './pages/receiveAda/myAddresses'
+import SendPage from './pages/sendAda/sendAdaPage'
+import LoginPage from './pages/login/loginPage'
+import ExportWalletPage from './pages/exportWallet/exportWalletPage'
+import StakingPage from './pages/staking/stakingPage'
 
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
@@ -44,6 +44,4 @@ const TopLevelRouter = connect((state) => ({
   return content
 })
 
-module.exports = {
-  TopLevelRouter,
-}
+export {TopLevelRouter}

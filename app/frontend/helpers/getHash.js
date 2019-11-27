@@ -9,4 +9,4 @@ const getHash = function(s) {
   return ((h ^ (h >>> 16)) >>> 0).toString(16)
 }
 
-module.exports = getHash
+export default getHash

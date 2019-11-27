@@ -1,6 +1,7 @@
-const printAda = require('./helpers/printAda')
-const debugLog = require('./helpers/debugLog')
-const {ADALITE_MIN_DONATION_VALUE} = require('./config').ADALITE_CONFIG
+import printAda from './helpers/printAda'
+import debugLog from './helpers/debugLog'
+import {ADALITE_CONFIG} from './config'
+const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
 const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
@@ -51,6 +52,4 @@ function getTranslation(code, params) {
   return params ? translations[code](params) : translations[code]({})
 }
 
-module.exports = {
-  getTranslation,
-}
+export {getTranslation}

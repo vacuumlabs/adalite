@@ -10,6 +10,4 @@ function errorHasHelp(code) {
   return errorsWithHelp.has(code)
 }
 
-module.exports = {
-  errorHasHelp,
-}
+export {errorHasHelp}

@@ -1,8 +1,8 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../actions')
-const Modal = require('./modal')
-const {ADALITE_CONFIG} = require('../../config')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../actions'
+import Modal from './modal'
+import {ADALITE_CONFIG} from '../../config'
 
 class ContactForm extends Component {
   constructor(props) {
@@ -144,7 +144,7 @@ class ContactForm extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   {},
   actions
 )(ContactForm)

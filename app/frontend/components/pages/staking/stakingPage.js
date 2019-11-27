@@ -1,6 +1,6 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
 
 class StakingPage extends Component {
   constructor(props) {
@@ -98,7 +98,7 @@ class StakingPage extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     email: state.email,
     emailSubmitSuccess: state.emailSubmitSuccess,

@@ -1,5 +1,5 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
 
 const LoadingOverlay = connect(['loadingMessage', 'loading'])(
   ({loading, loadingMessage}) =>
@@ -13,4 +13,4 @@ const LoadingOverlay = connect(['loadingMessage', 'loading'])(
       : null
 )
 
-module.exports = LoadingOverlay
+export default LoadingOverlay

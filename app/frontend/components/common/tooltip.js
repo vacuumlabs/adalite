@@ -9,4 +9,4 @@ const tooltip = (message, enabled, displayAlways) => {
     }
 }
 
-module.exports = tooltip
+export default tooltip

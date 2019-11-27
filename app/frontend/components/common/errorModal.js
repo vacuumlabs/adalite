@@ -1,8 +1,8 @@
-const {h} = require('preact')
+import {h} from 'preact'
 
-const Modal = require('./modal')
-const Alert = require('./alert')
-const HelpSection = require('./helpSection')
+import Modal from './modal'
+import Alert from './alert'
+import HelpSection from './helpSection'
 
 const ErrorModal = ({closeHandler, title, buttonTitle, errorMessage, showHelp = false}) =>
   h(
@@ -33,4 +33,4 @@ const ErrorModal = ({closeHandler, title, buttonTitle, errorMessage, showHelp = 
     )
   )
 
-module.exports = ErrorModal
+export default ErrorModal

@@ -1,9 +1,9 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../actions')
-const Modal = require('./modal')
-const Alert = require('./alert')
-const Branding = require('./branding')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../actions'
+import Modal from './modal'
+import Alert from './alert'
+import Branding from './branding'
 
 const Article = ({children, title, icon}) =>
   h(
@@ -150,7 +150,7 @@ class Welcome extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   {},
   actions
 )(Welcome)

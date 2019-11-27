@@ -1,19 +1,25 @@
-const cbor = require('borc')
-const {base58} = require('cardano-crypto.js')
+import {encode} from 'borc'
+import {base58} from 'cardano-crypto.js'
 
-const debugLog = require('../helpers/debugLog')
-const {generateMnemonic, validateMnemonic} = require('./mnemonic')
-const {TxInputFromUtxo, TxOutput, TxAux} = require('./transaction')
-const AddressManager = require('./address-manager')
-const BlockchainExplorer = require('./blockchain-explorer')
-const PseudoRandom = require('./helpers/PseudoRandom')
-const {HARDENED_THRESHOLD, MAX_INT32, TX_WITNESS_SIZE_BYTES} = require('./constants')
-const shuffleArray = require('./helpers/shuffleArray')
-const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
-const NamedError = require('../helpers/NamedError')
-const CryptoProviderFactory = require('./crypto-provider-factory')
-const {roundWholeAdas} = require('../helpers/adaConverters')
-const {ADA_DONATION_ADDRESS} = require('./constants')
+import debugLog from '../helpers/debugLog'
+import {generateMnemonic, validateMnemonic} from './mnemonic'
+
+import {TxInputFromUtxo, TxOutput, TxAux} from './transaction'
+
+import AddressManager from './address-manager'
+import BlockchainExplorer from './blockchain-explorer'
+import PseudoRandom from './helpers/PseudoRandom'
+import {
+  ADA_DONATION_ADDRESS,
+  HARDENED_THRESHOLD,
+  MAX_INT32,
+  TX_WITNESS_SIZE_BYTES,
+} from './constants'
+import shuffleArray from './helpers/shuffleArray'
+import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
+import NamedError from '../helpers/NamedError'
+import CryptoProviderFactory from './crypto-provider-factory'
+import {roundWholeAdas} from '../helpers/adaConverters'
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -216,7 +222,7 @@ const CardanoWallet = async (options) => {
   }
 
   function isUtxoProfitable(utxo) {
-    const inputSize = cbor.encode(TxInputFromUtxo(utxo)).length
+    const inputSize = encode(TxInputFromUtxo(utxo)).length
     const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZE_BYTES) - txFeeFunction(0)
 
     return utxo.coins > addedCost
@@ -280,7 +286,7 @@ const CardanoWallet = async (options) => {
   }
 
   function estimateTxSize(txInputs, outAddress, hasChange, hasDonation) {
-    const txInputsSize = cbor.encode(new CborIndefiniteLengthArray(txInputs)).length
+    const txInputsSize = encode(new CborIndefiniteLengthArray(txInputs)).length
     const outAddressSize = base58.decode(outAddress).length
 
     //size of addresses used by AdaLite
@@ -420,12 +426,7 @@ const CardanoWallet = async (options) => {
 }
 
 if (typeof window !== 'undefined') {
-  window.CardanoWallet = exports.CardanoWallet
+  window.CardanoWallet = CardanoWallet
 }
 
-module.exports = {
-  CardanoWallet,
-  generateMnemonic,
-  validateMnemonic,
-  txFeeFunction,
-}
+export {CardanoWallet, generateMnemonic, validateMnemonic, txFeeFunction}

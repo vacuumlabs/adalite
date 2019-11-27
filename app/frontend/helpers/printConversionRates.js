@@ -20,7 +20,4 @@ const printConversionRates = (amount, conversionRates, maxDigits) =>
     : `$\u00A0${formatFiat(conversionRates.USD * amount * 0.000001, maxDigits)},
        €\u00A0${formatFiat(conversionRates.EUR * amount * 0.000001, maxDigits)}`
 
-module.exports = {
-  printConversionRates,
-  printConversionRate,
-}
+export {printConversionRates, printConversionRate}

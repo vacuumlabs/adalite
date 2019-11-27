@@ -1,7 +1,9 @@
-const {Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../actions')
-const {ADALITE_LOGOUT_AFTER} = require('../config').ADALITE_CONFIG
+import {Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../actions'
+import {ADALITE_CONFIG} from '../config'
+
+const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
 class AutoLogout extends Component {
   constructor(props) {
@@ -64,7 +66,7 @@ class AutoLogout extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     walletIsLoaded: state.walletIsLoaded,
   }),

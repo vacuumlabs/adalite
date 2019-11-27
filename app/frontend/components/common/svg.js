@@ -1,4 +1,4 @@
-const h = require('preact').h
+import {h} from 'preact'
 
 const LedgerLogoWhite = () =>
   h(
@@ -410,7 +410,7 @@ const DownloadIcon = () =>
     })
   )
 
-module.exports = {
+export {
   LedgerLogoWhite,
   TrezorLogoWhite,
   AdaLiteLogo,

@@ -1,10 +1,12 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const {AdaIcon} = require('../../common/svg')
-const {ADALITE_FIXED_DONATION_VALUE} = require('../../../config').ADALITE_CONFIG
-const {toCoins} = require('../../../helpers/adaConverters')
-const tooltip = require('../../common/tooltip')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import {AdaIcon} from '../../common/svg'
+import {ADALITE_CONFIG} from '../../../config'
+import {toCoins} from '../../../helpers/adaConverters'
+import tooltip from '../../common/tooltip'
+
+const {ADALITE_FIXED_DONATION_VALUE} = ADALITE_CONFIG
 
 class DonationButtons extends Component {
   constructor(props) {
@@ -93,7 +95,7 @@ class DonationButtons extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     sendAmount: state.sendAmount.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,

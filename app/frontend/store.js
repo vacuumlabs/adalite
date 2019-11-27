@@ -1,7 +1,7 @@
-const createDefaultStore = require('unistore').default
-const devtools = require('unistore/devtools')
+import devtools from 'unistore/devtools'
 
-const ADALITE_CONFIG = require('./config').ADALITE_CONFIG
+import {ADALITE_CONFIG} from './config'
+const createDefaultStore = require('unistore').default
 
 const initialState = {
   loading: false,
@@ -60,7 +60,4 @@ const createStore = () =>
     ? devtools(createDefaultStore(initialState))
     : createDefaultStore(initialState)
 
-module.exports = {
-  createStore,
-  initialState,
-}
+export {createStore, initialState}

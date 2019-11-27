@@ -1,4 +1,4 @@
-const {h} = require('preact')
+import {h} from 'preact'
 
 const ExportCard = () =>
   h(
@@ -25,4 +25,4 @@ const ExportCard = () =>
     )
   )
 
-module.exports = ExportCard
+export default ExportCard

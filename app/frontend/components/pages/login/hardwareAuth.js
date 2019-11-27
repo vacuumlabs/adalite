@@ -1,5 +1,5 @@
-const {h} = require('preact')
-const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
+import {h} from 'preact'
+import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
 
 const {TrezorLogoWhite, LedgerLogoWhite} = require('../../common/svg')
 
@@ -78,4 +78,4 @@ const LoadByHardwareWalletSection = ({loadWallet}) => {
   )
 }
 
-module.exports = LoadByHardwareWalletSection
+export default LoadByHardwareWalletSection

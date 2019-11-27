@@ -1,8 +1,8 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const Modal = require('../../common/modal')
-const Alert = require('../../common/alert')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import Modal from '../../common/modal'
+import Alert from '../../common/alert'
 
 class DemoWalletWarningDialogClass {
   render({closeDemoWalletWarningDialog}) {
@@ -51,7 +51,7 @@ class DemoWalletWarningDialogClass {
   }
 }
 
-module.exports = connect(
+export default connect(
   {},
   actions
 )(DemoWalletWarningDialogClass)

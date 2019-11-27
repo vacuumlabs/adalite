@@ -1,11 +1,11 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const Balance = require('../../common/balance')
-const TransactionHistory = require('./transactionHistory')
-const ExportCard = require('../exportWallet/exportCard')
-const SendAdaPage = require('../sendAda/sendAdaPage')
-const MyAddresses = require('../receiveAda/myAddresses')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import Balance from '../../common/balance'
+import TransactionHistory from './transactionHistory'
+import ExportCard from '../exportWallet/exportCard'
+import SendAdaPage from '../sendAda/sendAdaPage'
+import MyAddresses from '../receiveAda/myAddresses'
 
 class DashboardMobileContent extends Component {
   constructor(props) {
@@ -84,4 +84,4 @@ const TxHistoryPage = connect(
   )
 )
 
-module.exports = TxHistoryPage
+export default TxHistoryPage

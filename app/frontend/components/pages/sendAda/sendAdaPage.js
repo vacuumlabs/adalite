@@ -1,21 +1,24 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
 
-const {getTranslation} = require('../../../translations')
-const {errorHasHelp} = require('../../../helpers/errorsWithHelp')
-const printAda = require('../../../helpers/printAda')
+import {getTranslation} from '../../../translations'
+import {errorHasHelp} from '../../../helpers/errorsWithHelp'
+import printAda from '../../../helpers/printAda'
 
-const ConfirmTransactionDialog = require('./confirmTransactionDialog')
-const RawTransactionModal = require('./rawTransactionModal')
-const DonateThanksModal = require('./donateThanksModal')
-const TransactionErrorModal = require('./transactionErrorModal')
-const DonationButtons = require('./donationButtons')
-const CustomDonationInput = require('./customDonationInput')
-const Conversions = require('../../common/conversions')
-const {ADALITE_MIN_DONATION_VALUE} = require('../../../config').ADALITE_CONFIG
-const {toCoins} = require('../../../helpers/adaConverters')
-const tooltip = require('../../common/tooltip')
+import ConfirmTransactionDialog from './confirmTransactionDialog'
+import RawTransactionModal from './rawTransactionModal'
+import DonateThanksModal from './donateThanksModal'
+import TransactionErrorModal from './transactionErrorModal'
+import DonationButtons from './donationButtons'
+import CustomDonationInput from './customDonationInput'
+import Conversions from '../../common/conversions'
+import {ADALITE_CONFIG} from '../../../config'
+import {toCoins} from '../../../helpers/adaConverters'
+
+import tooltip from '../../common/tooltip'
+
+const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
 const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
 
@@ -230,7 +233,7 @@ const SendAdaPage = ({
   )
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     transactionSubmissionError: state.transactionSubmissionError,
     sendResponse: state.sendResponse,

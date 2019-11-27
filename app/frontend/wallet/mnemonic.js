@@ -1,4 +1,8 @@
-const bip39 = require('bip39-light')
+import {
+  generateMnemonic as _generateMnemonic,
+  validateMnemonic as _validateMnemonic,
+  wordlists,
+} from 'bip39-light'
 
 function generateMnemonic(wordCount) {
   wordCount = wordCount || 12
@@ -7,19 +11,19 @@ function generateMnemonic(wordCount) {
     throw Error(`Invalid mnemonic word count supplied: ${wordCount}`)
   }
 
-  return bip39.generateMnemonic((32 * wordCount) / 3)
+  return _generateMnemonic((32 * wordCount) / 3)
 }
 
 function validateMnemonic(mnemonic) {
   try {
-    return !!mnemonic && (bip39.validateMnemonic(mnemonic) || validatePaperWalletMnemonic(mnemonic))
+    return !!mnemonic && (_validateMnemonic(mnemonic) || validatePaperWalletMnemonic(mnemonic))
   } catch (e) {
     return false
   }
 }
 
 function validateMnemonicWords(mnemonic) {
-  const wordlist = bip39.wordlists.EN
+  const wordlist = wordlists.EN
   const words = mnemonic.split(' ')
 
   return words.reduce((result, word) => {
@@ -39,7 +43,7 @@ function mnemonicToList(mnemonic) {
   return mnemonic.split(' ')
 }
 
-module.exports = {
+export {
   generateMnemonic,
   validateMnemonic,
   validatePaperWalletMnemonic,

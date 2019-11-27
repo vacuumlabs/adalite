@@ -1,30 +1,30 @@
-const {generateMnemonic} = require('./wallet/mnemonic')
-const {ADALITE_CONFIG} = require('./config')
-const FileSaver = require('file-saver')
-const cbor = require('borc')
-const {
+import {generateMnemonic} from './wallet/mnemonic'
+import {ADALITE_CONFIG} from './config'
+import {saveAs} from 'file-saver'
+import {encode} from 'borc'
+import {
   parseCoins,
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,
   mnemonicValidator,
   donationAmountValidator,
-} = require('./helpers/validators')
-const printAda = require('./helpers/printAda')
-const debugLog = require('./helpers/debugLog')
-const getConversionRates = require('./helpers/getConversionRates')
-const sleep = require('./helpers/sleep')
-const {ADA_DONATION_ADDRESS, NETWORKS} = require('./wallet/constants')
-const NamedError = require('./helpers/NamedError')
-const KeypassJson = require('./wallet/keypass-json')
-const {CardanoWallet} = require('./wallet/cardano-wallet')
-const mnemonicToWalletSecretDef = require('./wallet/helpers/mnemonicToWalletSecretDef')
-const sanitizeMnemonic = require('./helpers/sanitizeMnemonic')
-const {initialState} = require('./store')
-const {toCoins, toAda, roundWholeAdas} = require('./helpers/adaConverters')
-const submitEmailRaw = require('./helpers/submitEmailRaw')
-const captureBySentry = require('./helpers/captureBySentry')
-const submitFeedbackToSentry = require('./helpers/submitFeedbackToSentry')
+} from './helpers/validators'
+import printAda from './helpers/printAda'
+import debugLog from './helpers/debugLog'
+import getConversionRates from './helpers/getConversionRates'
+import sleep from './helpers/sleep'
+import {ADA_DONATION_ADDRESS, NETWORKS} from './wallet/constants'
+import NamedError from './helpers/NamedError'
+import {exportWalletSecretDef} from './wallet/keypass-json'
+import {CardanoWallet} from './wallet/cardano-wallet'
+import mnemonicToWalletSecretDef from './wallet/helpers/mnemonicToWalletSecretDef'
+import sanitizeMnemonic from './helpers/sanitizeMnemonic'
+import {initialState} from './store'
+import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
+import submitEmailRaw from './helpers/submitEmailRaw'
+import captureBySentry from './helpers/captureBySentry'
+import submitFeedbackToSentry from './helpers/submitFeedbackToSentry'
 
 let wallet = null
 
@@ -39,7 +39,7 @@ const debounceEvent = (callback, time) => {
   }
 }
 
-module.exports = ({setState, getState}) => {
+export default ({setState, getState}) => {
   const loadingAction = (state, message, optionalArgsObj) => {
     return setState(
       Object.assign(
@@ -772,11 +772,11 @@ module.exports = ({setState, getState}) => {
 
   const exportJsonWallet = async (state, password, walletName) => {
     const walletExport = JSON.stringify(
-      await KeypassJson.exportWalletSecretDef(wallet.getWalletSecretDef(), password, walletName)
+      await exportWalletSecretDef(wallet.getWalletSecretDef(), password, walletName)
     )
 
     const blob = new Blob([walletExport], {type: 'application/json;charset=utf-8'})
-    FileSaver.saveAs(blob, `${walletName}.json`)
+    saveAs(blob, `${walletName}.json`)
   }
 
   const setLogoutNotificationOpen = (state, open) => {
@@ -806,7 +806,7 @@ module.exports = ({setState, getState}) => {
       })
     txAux &&
       setState({
-        rawTransaction: Buffer.from(cbor.encode(txAux)).toString('hex'),
+        rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
         rawTransactionOpen: true,
       })
   }

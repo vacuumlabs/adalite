@@ -1,10 +1,10 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
 
-const actions = require('../../../actions')
-const debugLog = require('../../../helpers/debugLog')
+import actions from '../../../actions'
+import debugLog from '../../../helpers/debugLog'
 
-const Tag = require('../../common/tag')
+import Tag from '../../common/tag'
 
 const Hint = ({title, text, type}) =>
   h(
@@ -239,7 +239,7 @@ class ExportWalletDialog extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   undefined,
   actions
 )(ExportWalletDialog)

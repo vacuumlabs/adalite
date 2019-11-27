@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-unresolved
-const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
-const {ADALITE_SUPPORT_EMAIL} = require('./constants')
-const derivationSchemes = require('./derivation-schemes')
-const NamedError = require('../helpers/NamedError')
-const debugLog = require('../helpers/debugLog')
+import CachedDeriveXpubFactory from './helpers/CachedDeriveXpubFactory'
+import {ADALITE_SUPPORT_EMAIL} from './constants'
+import derivationSchemes from './derivation-schemes'
+import NamedError from '../helpers/NamedError'
+import debugLog from '../helpers/debugLog'
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -147,4 +147,4 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   }
 }
 
-module.exports = CardanoTrezorCryptoProvider
+export default CardanoTrezorCryptoProvider

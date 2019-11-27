@@ -1,5 +1,5 @@
-const {HARDENED_THRESHOLD} = require('../constants')
+import {HARDENED_THRESHOLD} from '../constants'
 
 const indexIsHardened = (index) => index >= HARDENED_THRESHOLD
 
-module.exports = indexIsHardened
+export default indexIsHardened

@@ -1,8 +1,8 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const {AdaIcon} = require('../../common/svg')
-const {toAda} = require('../../../helpers/adaConverters')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import {AdaIcon} from '../../common/svg'
+import {toAda} from '../../../helpers/adaConverters'
 
 const CustomInputButton = ({
   isSendAddressValid,
@@ -39,7 +39,7 @@ const CustomInputButton = ({
     )
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     donationAmount: state.donationAmount,
     maxDonationAmount: state.maxDonationAmount,
