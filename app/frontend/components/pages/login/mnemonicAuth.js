@@ -1,14 +1,14 @@
-const {h, Component} = require('preact')
-const {getTranslation} = require('../../../translations')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const mnemonicToWalletSecretDef = require('../../../wallet/helpers/mnemonicToWalletSecretDef')
-const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
-const tooltip = require('../../common/tooltip')
-const Alert = require('../../common/alert')
-const sanitizeMnemonic = require('../../../helpers/sanitizeMnemonic')
-const ADALITE_DEMO_WALLET_MNEMONIC = require('../../../config').ADALITE_CONFIG
-  .ADALITE_DEMO_WALLET_MNEMONIC
+import {h, Component} from 'preact'
+import {getTranslation} from '../../../translations'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import mnemonicToWalletSecretDef from '../../../wallet/helpers/mnemonicToWalletSecretDef'
+import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
+import tooltip from '../../common/tooltip'
+import Alert from '../../common/alert'
+import sanitizeMnemonic from '../../../helpers/sanitizeMnemonic'
+import {ADALITE_CONFIG} from '../../../config'
+const {ADALITE_DEMO_WALLET_MNEMONIC} = ADALITE_CONFIG
 
 class LoadByMenmonicSectionClass extends Component {
   componentDidUpdate() {
@@ -129,7 +129,7 @@ class LoadByMenmonicSectionClass extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     mnemonicInputValue: state.mnemonicInputValue,
     displayWelcome: state.displayWelcome,

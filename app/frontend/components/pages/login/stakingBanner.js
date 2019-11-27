@@ -1,4 +1,4 @@
-const {h} = require('preact')
+import {h} from 'preact'
 
 const StakingBanner = ({closeBanner}) =>
   h(
@@ -29,4 +29,4 @@ const StakingBanner = ({closeBanner}) =>
     })
   )
 
-module.exports = StakingBanner
+export default StakingBanner

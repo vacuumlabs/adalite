@@ -1,7 +1,7 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const CustomInputButton = require('./customInputButton')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import CustomInputButton from './customInputButton'
 
 const CustomDonationInput = ({
   donationAmount,
@@ -23,7 +23,7 @@ const CustomDonationInput = ({
     h(CustomInputButton, {isSendAddressValid})
   )
 
-module.exports = connect(
+export default connect(
   (state) => ({
     donationAmount: state.donationAmount,
   }),

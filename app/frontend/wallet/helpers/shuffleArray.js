@@ -5,4 +5,4 @@ const shuffleArray = function shuffleArray(arr, randomGenerator) {
     .map((a) => a[1])
 }
 
-module.exports = shuffleArray
+export default shuffleArray

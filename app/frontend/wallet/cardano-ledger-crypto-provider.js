@@ -1,12 +1,13 @@
-const LedgerTransportU2F = require('@ledgerhq/hw-transport-u2f').default
-const LedgerTransportWebusb = require('@ledgerhq/hw-transport-webusb').default
-const Ledger = require('@cardano-foundation/ledgerjs-hw-app-cardano').default
-const cbor = require('borc')
-const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
-const debugLog = require('../helpers/debugLog')
-const {TxWitness, SignedTransactionStructured} = require('./transaction')
-const derivationSchemes = require('./derivation-schemes')
-const NamedError = require('../helpers/NamedError')
+import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
+import LedgerTransportWebusb from '@ledgerhq/hw-transport-webusb'
+import Ledger from '@cardano-foundation/ledgerjs-hw-app-cardano'
+import {encode} from 'borc'
+import CachedDeriveXpubFactory from './helpers/CachedDeriveXpubFactory'
+import debugLog from '../helpers/debugLog'
+import {TxWitness, SignedTransactionStructured} from './transaction'
+
+import derivationSchemes from './derivation-schemes'
+import NamedError from '../helpers/NamedError'
 
 const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   let transport
@@ -92,7 +93,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   }
 
   function prepareBody(unsignedTx, txWitnesses) {
-    return cbor.encode(SignedTransactionStructured(unsignedTx, txWitnesses)).toString('hex')
+    return encode(SignedTransactionStructured(unsignedTx, txWitnesses)).toString('hex')
   }
 
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
@@ -139,4 +140,4 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   }
 }
 
-module.exports = CardanoLedgerCryptoProvider
+export default CardanoLedgerCryptoProvider

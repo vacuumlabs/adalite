@@ -1,4 +1,4 @@
-const {getTranslation} = require('../translations')
+import {getTranslation} from '../translations'
 
 function captureBySentry(e) {
   if (!getTranslation(e.name)) {
@@ -7,4 +7,4 @@ function captureBySentry(e) {
   return
 }
 
-module.exports = captureBySentry
+export default captureBySentry

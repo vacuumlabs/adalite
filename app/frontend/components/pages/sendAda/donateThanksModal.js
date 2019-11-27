@@ -1,6 +1,6 @@
-const {h} = require('preact')
+import {h} from 'preact'
 
-const Modal = require('../../common/modal')
+import Modal from '../../common/modal'
 
 const DonateThanksModal = ({closeThanksForDonationModal}) =>
   h(
@@ -29,4 +29,4 @@ const DonateThanksModal = ({closeThanksForDonationModal}) =>
     )
   )
 
-module.exports = DonateThanksModal
+export default DonateThanksModal

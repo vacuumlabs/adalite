@@ -1,7 +1,7 @@
-const {h, Component} = require('preact')
+import {h, Component} from 'preact'
 
-const debugLog = require('../../helpers/debugLog')
-const tooltip = require('./tooltip')
+import debugLog from '../../helpers/debugLog'
+import tooltip from './tooltip'
 
 class CopyOnClick extends Component {
   constructor(props) {
@@ -57,4 +57,4 @@ class CopyOnClick extends Component {
   }
 }
 
-module.exports = CopyOnClick
+export default CopyOnClick

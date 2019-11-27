@@ -1,7 +1,7 @@
-const {h} = require('preact')
-const Sentry = require('@sentry/browser')
-const actions = require('../../actions')
-const connect = require('unistore/preact').connect
+import {h} from 'preact'
+import {captureException} from '@sentry/browser'
+import actions from '../../actions'
+import {connect} from 'unistore/preact'
 
 const HelpSection = connect(
   (state) => ({
@@ -36,7 +36,7 @@ const HelpSection = connect(
         {
           onClick: () => {
             closeHandler()
-            Sentry.captureException(error)
+            captureException(error)
           },
         },
         'Send'
@@ -46,4 +46,4 @@ const HelpSection = connect(
   )
 )
 
-module.exports = HelpSection
+export default HelpSection

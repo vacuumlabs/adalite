@@ -1,6 +1,6 @@
 /* eslint-disable react/no-deprecated */
-const {h, Component} = require('preact')
-const Tag = require('./tag')
+import {h, Component} from 'preact'
+import Tag from './tag'
 
 class Modal extends Component {
   componentWillMount() {
@@ -54,4 +54,4 @@ class Modal extends Component {
   }
 }
 
-module.exports = Modal
+export default Modal

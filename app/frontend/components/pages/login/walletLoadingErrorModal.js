@@ -1,4 +1,4 @@
-const ErrorModal = require('../../common/errorModal')
+import ErrorModal from '../../common/errorModal'
 
 const WalletLoadingErrorModal = ({closeHandler, errorMessage, showHelp}) =>
   ErrorModal({
@@ -9,4 +9,4 @@ const WalletLoadingErrorModal = ({closeHandler, errorMessage, showHelp}) =>
     showHelp,
   })
 
-module.exports = WalletLoadingErrorModal
+export default WalletLoadingErrorModal

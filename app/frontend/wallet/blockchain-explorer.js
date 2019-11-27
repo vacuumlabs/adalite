@@ -1,8 +1,8 @@
-const request = require('./helpers/request')
-const range = require('./helpers/range')
-const NamedError = require('../helpers/NamedError')
-const debugLog = require('../helpers/debugLog')
-const getHash = require('../helpers/getHash')
+import request from './helpers/request'
+import range from './helpers/range'
+import NamedError from '../helpers/NamedError'
+import debugLog from '../helpers/debugLog'
+import getHash from '../helpers/getHash'
 
 const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {
@@ -171,4 +171,4 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
   }
 }
 
-module.exports = blockchainExplorer
+export default blockchainExplorer

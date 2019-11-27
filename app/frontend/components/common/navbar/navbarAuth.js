@@ -1,7 +1,8 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import {ADALITE_CONFIG} from '../../../config'
+const APP_VERSION = ADALITE_CONFIG.ADALITE_APP_VERSION
 
 class NavbarAuth extends Component {
   constructor(props) {
@@ -100,7 +101,7 @@ class NavbarAuth extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     isDemoWallet: state.isDemoWallet,
     router: state.router,

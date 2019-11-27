@@ -1,4 +1,4 @@
-const {h} = require('preact')
+import {h} from 'preact'
 
 const LOGO_PATH_WHITE = 'assets/vacuumlabs-logo_white.svg'
 const LOGO_PATH_DARK = 'assets/vacuumlabs-logo.svg'
@@ -17,4 +17,4 @@ const Branding = ({dark}) =>
     })
   )
 
-module.exports = Branding
+export default Branding

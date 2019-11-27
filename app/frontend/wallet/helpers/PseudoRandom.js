@@ -26,4 +26,4 @@ function PseudoRandom(seed) {
   }
 }
 
-module.exports = PseudoRandom
+export default PseudoRandom

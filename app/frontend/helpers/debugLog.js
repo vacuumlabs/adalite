@@ -1,4 +1,4 @@
-const ADALITE_CONFIG = require('../config').ADALITE_CONFIG
+import {ADALITE_CONFIG} from '../config'
 
 function debugLog(item) {
   // patched to work with tests, added `ADALITE_CONFIG &&`,
@@ -15,4 +15,4 @@ function debugLog(item) {
   }
 }
 
-module.exports = debugLog
+export default debugLog

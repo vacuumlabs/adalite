@@ -5,4 +5,4 @@ const isLeftClick = (e, action) => {
   }
 }
 
-module.exports = isLeftClick
+export default isLeftClick

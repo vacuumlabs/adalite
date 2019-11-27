@@ -1,8 +1,8 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const printAda = require('../../../helpers/printAda')
-const Modal = require('../../common/modal')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import printAda from '../../../helpers/printAda'
+import Modal from '../../common/modal'
 
 class ConfirmTransactionDialogClass {
   componentDidMount() {
@@ -68,7 +68,7 @@ class ConfirmTransactionDialogClass {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
     sendAmount: state.sendAmountForTransactionFee,

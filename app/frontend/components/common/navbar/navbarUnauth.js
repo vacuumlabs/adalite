@@ -1,9 +1,9 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const APP_VERSION = require('../../../config').ADALITE_CONFIG.ADALITE_APP_VERSION
-
-const isLeftClick = require('../../../helpers/isLeftClick')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import {ADALITE_CONFIG} from '../../../config'
+import isLeftClick from '../../../helpers/isLeftClick'
+const APP_VERSION = ADALITE_CONFIG.ADALITE_APP_VERSION
 
 const NavbarUnauth = connect(
   (state) => ({
@@ -98,4 +98,4 @@ const NavbarUnauth = connect(
   )
 )
 
-module.exports = NavbarUnauth
+export default NavbarUnauth

@@ -1,7 +1,7 @@
-const NamedError = require('../../helpers/NamedError')
-const debugLog = require('../../helpers/debugLog')
-const sleep = require('../../helpers/sleep')
-const {DELAY_AFTER_TOO_MANY_REQUESTS} = require('../constants')
+import NamedError from '../../helpers/NamedError'
+import debugLog from '../../helpers/debugLog'
+import sleep from '../../helpers/sleep'
+import {DELAY_AFTER_TOO_MANY_REQUESTS} from '../constants'
 
 const request = async function request(url, method = 'GET', body = null, headers = {}) {
   let requestParams = {
@@ -32,4 +32,4 @@ const request = async function request(url, method = 'GET', body = null, headers
   }
 }
 
-module.exports = request
+export default request

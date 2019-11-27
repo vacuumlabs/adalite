@@ -1,23 +1,23 @@
-const cbor = require('borc')
-const base58 = require('cardano-crypto.js').base58
+import {encode, decode} from 'borc'
+import {base58} from 'cardano-crypto.js'
 
-const {
+import {
   TxInputFromUtxo,
   TxOutput,
   TxAux,
   SignedTransactionStructured,
   TxWitness,
-} = require('../transaction')
+} from '../transaction'
 
 const parseTxHash = (val) => Buffer.from(val).toString('hex')
 
 const parseAddress = (val) => {
-  return base58.encode(cbor.encode(val))
+  return base58.encode(encode(val))
 }
 
 const parseTxInput = (val) => {
   const type = val[0]
-  const inputAttributes = cbor.decode(val[1].value)
+  const inputAttributes = decode(val[1].value)
   const txHash = parseTxHash(inputAttributes[0])
   const outputIndex = inputAttributes[1]
 
@@ -38,7 +38,7 @@ const parseTxOutput = (val) => {
 }
 
 const parseTxWitness = (val) => {
-  const witnessAttributes = cbor.decode(val[1].value)
+  const witnessAttributes = decode(val[1].value)
   const extendedPubicKey = witnessAttributes[0]
   const signature = witnessAttributes[1]
 
@@ -50,7 +50,7 @@ const parseTxWitness = (val) => {
  * since these are not present in serialised transaction
  */
 const parseTxAux = (txAuxRaw) => {
-  const decoded = cbor.decode(txAuxRaw)
+  const decoded = decode(txAuxRaw)
   const txInputsRaw = decoded[0]
   const txInputs = txInputsRaw.map(parseTxInput)
 
@@ -68,7 +68,7 @@ const parseTxAux = (txAuxRaw) => {
  * since these are not present in serialised transaction
  */
 const parseTx = (txRaw) => {
-  const decoded = cbor.decode(txRaw)
+  const decoded = decode(txRaw)
   const txAuxRaw = decoded[0]
   const txInputsRaw = txAuxRaw[0]
   const txInputs = txInputsRaw.map(parseTxInput)
@@ -84,7 +84,4 @@ const parseTx = (txRaw) => {
   return SignedTransactionStructured(TxAux(txInputs, txOutputs, txAttributes), txWitnesses)
 }
 
-module.exports = {
-  parseTxAux,
-  parseTx,
-}
+export {parseTxAux, parseTx}

@@ -1,5 +1,5 @@
-const indexIsHardened = require('./indexIsHardened')
-const {derivePublic: deriveChildXpub} = require('cardano-crypto.js')
+import indexIsHardened from './indexIsHardened'
+import {derivePublic as deriveChildXpub} from 'cardano-crypto.js'
 
 function CachedDeriveXpubFactory(derivationScheme, deriveXpubHardenedFn) {
   const derivedXpubs = {}
@@ -38,4 +38,4 @@ function CachedDeriveXpubFactory(derivationScheme, deriveXpubHardenedFn) {
   return deriveXpub
 }
 
-module.exports = CachedDeriveXpubFactory
+export default CachedDeriveXpubFactory

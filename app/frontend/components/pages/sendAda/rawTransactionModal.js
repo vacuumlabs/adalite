@@ -1,7 +1,7 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const Modal = require('../../common/modal')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import Modal from '../../common/modal'
 
 class RawTransactionModal {
   render({rawTransaction, setRawTransactionOpen}) {
@@ -21,7 +21,7 @@ class RawTransactionModal {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     rawTransaction: state.rawTransaction,
   }),
