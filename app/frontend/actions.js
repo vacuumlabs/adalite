@@ -148,7 +148,7 @@ module.exports = ({setState, getState}) => {
         usingHwWallet,
         hwWalletName,
         isDemoWallet,
-        showDemoWalletWarningDialog: !autoLogin && isDemoWallet,
+        showDemoWalletWarningDialog: isDemoWallet && !autoLogin,
         showGenerateMnemonicDialog: false,
         donationAmount,
       })
