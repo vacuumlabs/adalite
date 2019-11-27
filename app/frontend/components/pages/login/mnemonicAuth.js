@@ -9,8 +9,6 @@ const Alert = require('../../common/alert')
 const sanitizeMnemonic = require('../../../helpers/sanitizeMnemonic')
 const ADALITE_DEMO_WALLET_MNEMONIC = require('../../../config').ADALITE_CONFIG
   .ADALITE_DEMO_WALLET_MNEMONIC
-const ADALITE_ENABLE_AUTO_LOGIN = require('../../../config').ADALITE_CONFIG
-  .ADALITE_ENABLE_AUTO_LOGIN
 
 class LoadByMenmonicSectionClass extends Component {
   componentDidUpdate() {
@@ -28,7 +26,7 @@ class LoadByMenmonicSectionClass extends Component {
   }
 
   componentDidMount() {
-    if (ADALITE_ENABLE_AUTO_LOGIN === 'true') {
+    if (this.props.autoLogin) {
       this.autoLogin()
     }
   }
@@ -138,6 +136,7 @@ module.exports = connect(
     mnemonicValidationError: state.mnemonicValidationError,
     showMnemonicValidationError: state.showMnemonicValidationError,
     showMnemonicInfoAlert: state.showMnemonicInfoAlert,
+    autoLogin: state.autoLogin,
   }),
   actions
 )(LoadByMenmonicSectionClass)
