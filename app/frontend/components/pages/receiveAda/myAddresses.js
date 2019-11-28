@@ -1,6 +1,6 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const AddressItem = require('./addressItem')
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import AddressItem from './addressItem'
 
 const MyAddresses = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
   h(
@@ -17,4 +17,4 @@ const MyAddresses = connect('ownAddressesWithMeta')(({ownAddressesWithMeta}) =>
   )
 )
 
-module.exports = MyAddresses
+export default MyAddresses

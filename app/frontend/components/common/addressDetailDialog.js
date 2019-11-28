@@ -1,10 +1,10 @@
-const {h, Component} = require('preact')
-const QRious = require('qrious')
-const connect = require('unistore/preact').connect
-const actions = require('../../actions')
+import {h, Component} from 'preact'
+import QRious from 'qrious'
+import {connect} from 'unistore/preact'
+import actions from '../../actions'
 
-const Modal = require('./modal')
-const CopyOnClick = require('./copyOnClick')
+import Modal from './modal'
+import CopyOnClick from './copyOnClick'
 
 class AddressDetailDialogClass extends Component {
   constructor(props) {
@@ -129,7 +129,7 @@ class AddressDetailDialogClass extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     showDetail: state.showAddressDetail,
     verificationError: state.addressVerificationError,

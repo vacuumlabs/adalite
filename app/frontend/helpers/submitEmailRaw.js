@@ -1,5 +1,6 @@
-const {ADALITE_CONFIG} = require('../config')
-const request = require('../wallet/helpers/request')
+import {ADALITE_CONFIG} from '../config'
+
+import request from '../wallet/helpers/request'
 
 async function submitEmailRaw(email) {
   const response = await request(
@@ -14,4 +15,4 @@ async function submitEmailRaw(email) {
   return response
 }
 
-module.exports = submitEmailRaw
+export default submitEmailRaw

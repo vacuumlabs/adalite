@@ -1,5 +1,5 @@
-const {HARDENED_THRESHOLD} = require('../constants')
-const NamedError = require('../../helpers/NamedError')
+import {HARDENED_THRESHOLD} from '../constants'
+import NamedError from '../../helpers/NamedError'
 
 function toBip32Path(derivationPath) {
   // 44'/1815'
@@ -27,8 +27,4 @@ function toBip32StringPath(derivationPath) {
     .join('/')}`
 }
 
-module.exports = {
-  toBip32Path,
-  fromBip32Path,
-  toBip32StringPath,
-}
+export {toBip32Path, fromBip32Path, toBip32StringPath}

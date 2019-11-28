@@ -1,8 +1,8 @@
-const {CRYPTO_PROVIDER_TYPES} = require('./constants')
-const CardanoWalletSecretCryptoProvider = require('./cardano-wallet-secret-crypto-provider')
-const CardanoTrezorCryptoProvider = require('./cardano-trezor-crypto-provider')
-const CardanoLedgerCryptoProvider = require('./cardano-ledger-crypto-provider')
-const NamedError = require('../helpers/NamedError')
+import {CRYPTO_PROVIDER_TYPES} from './constants'
+import CardanoWalletSecretCryptoProvider from './cardano-wallet-secret-crypto-provider'
+import CardanoTrezorCryptoProvider from './cardano-trezor-crypto-provider'
+import CardanoLedgerCryptoProvider from './cardano-ledger-crypto-provider'
+import NamedError from '../helpers/NamedError'
 
 const CryptoProviderFactory = (() => {
   const getCryptoProvider = (cryptoProviderType, config, state) => {
@@ -29,4 +29,4 @@ const CryptoProviderFactory = (() => {
   }
 })()
 
-module.exports = CryptoProviderFactory
+export default CryptoProviderFactory

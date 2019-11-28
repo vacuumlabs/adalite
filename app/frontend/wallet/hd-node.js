@@ -35,4 +35,4 @@ function HdNode({secret, secretKey, publicKey, chainCode}) {
   }
 }
 
-module.exports = HdNode
+export default HdNode

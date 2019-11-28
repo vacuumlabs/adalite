@@ -1,11 +1,11 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const debugLog = require('../../../helpers/debugLog')
-const tooltip = require('../../common/tooltip')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import debugLog from '../../../helpers/debugLog'
+import tooltip from '../../common/tooltip'
 
-const KeypassJson = require('../../../wallet/keypass-json')
-const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
+import * as KeypassJson from '../../../wallet/keypass-json'
+import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
 
 class LoadKeyFileClass extends Component {
   constructor(props) {
@@ -233,7 +233,7 @@ class LoadKeyFileClass extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   undefined,
   actions
 )(LoadKeyFileClass)

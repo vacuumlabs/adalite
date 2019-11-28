@@ -1,14 +1,14 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../actions')
-const Branding = require('./branding')
-const {
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../actions'
+import Branding from './branding'
+import {
   BTC_BLOCKCHAIN_EXPLORER,
   BTC_DONATION_ADDRESS,
   ETH_BLOCKCHAIN_EXPLORER,
   ETH_DONATION_ADDRESS,
   ADA_DONATION_ADDRESS,
-} = require('../../wallet/constants')
+} from '../../wallet/constants'
 
 const showRatesOn = ['/txHistory', '/send']
 
@@ -130,4 +130,4 @@ const Footer = connect(
   )
 )
 
-module.exports = Footer
+export default Footer

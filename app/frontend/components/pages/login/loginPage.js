@@ -1,20 +1,20 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
-const isLeftClick = require('../../../helpers/isLeftClick')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
+import isLeftClick from '../../../helpers/isLeftClick'
 
-const KeyFileAuth = require('./keyFileAuth')
-const MnemonicAuth = require('./mnemonicAuth')
-const HardwareAuth = require('./hardwareAuth')
-const DemoWalletWarningDialog = require('./demoWalletWarningDialog')
-const GenerateMnemonicDialog = require('./generateMnemonicDialog')
-const LogoutNotification = require('./logoutNotification')
-const LoginPageSidebar = require('./loginPageSidebar')
-const StakingBanner = require('./stakingBanner')
-const Tag = require('../../common/tag')
-const WalletLoadingErrorModal = require('./walletLoadingErrorModal')
-const {getTranslation} = require('../../../translations')
-const {errorHasHelp} = require('../../../helpers/errorsWithHelp')
+import KeyFileAuth from './keyFileAuth'
+import MnemonicAuth from './mnemonicAuth'
+import HardwareAuth from './hardwareAuth'
+import DemoWalletWarningDialog from './demoWalletWarningDialog'
+import GenerateMnemonicDialog from './generateMnemonicDialog'
+import LogoutNotification from './logoutNotification'
+import LoginPageSidebar from './loginPageSidebar'
+import StakingBanner from './stakingBanner'
+import Tag from '../../common/tag'
+import WalletLoadingErrorModal from './walletLoadingErrorModal'
+import {getTranslation} from '../../../translations'
+import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 
 const AUTH_METHOD_NAMES = {
   'mnemonic': 'Mnemonic',
@@ -193,7 +193,7 @@ class LoginPage extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   (state) => ({
     authMethod: state.authMethod,
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,

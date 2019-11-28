@@ -1,6 +1,6 @@
-const {h} = require('preact')
-const printAda = require('../../helpers/printAda')
-const Conversions = require('./conversions')
+import {h} from 'preact'
+import printAda from '../../helpers/printAda'
+import Conversions from './conversions'
 
 const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
   h(
@@ -52,4 +52,4 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}) =>
     )
   )
 
-module.exports = Balance
+export default Balance

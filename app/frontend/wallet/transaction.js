@@ -1,11 +1,11 @@
-const cbor = require('borc')
-const {blake2b, base58} = require('cardano-crypto.js')
+import {encode, Tagged} from 'borc'
+import {blake2b, base58} from 'cardano-crypto.js'
 
-const CborIndefiniteLengthArray = require('./helpers/CborIndefiniteLengthArray')
+import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
 
 function TxAux(inputs, outputs, attributes) {
   function getId() {
-    return blake2b(cbor.encode(TxAux(inputs, outputs, attributes)), 32).toString('hex')
+    return blake2b(encode(TxAux(inputs, outputs, attributes)), 32).toString('hex')
   }
 
   function encodeCBOR(encoder) {
@@ -30,7 +30,7 @@ function TxWitness(extendedPublicKey, signature) {
   const type = 0
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny([type, new cbor.Tagged(24, cbor.encode([extendedPublicKey, signature]))])
+    return encoder.pushAny([type, new Tagged(24, encode([extendedPublicKey, signature]))])
   }
 
   return {
@@ -50,7 +50,7 @@ function TxInputFromUtxo(utxo) {
   function encodeCBOR(encoder) {
     return encoder.pushAny([
       type,
-      new cbor.Tagged(24, cbor.encode([Buffer.from(txHash, 'hex'), outputIndex])),
+      new Tagged(24, encode([Buffer.from(txHash, 'hex'), outputIndex])),
     ])
   }
 
@@ -67,7 +67,7 @@ function TxInput(type, txHash, outputIndex) {
   function encodeCBOR(encoder) {
     return encoder.pushAny([
       type,
-      new cbor.Tagged(24, cbor.encode([Buffer.from(txHash, 'hex'), outputIndex])),
+      new Tagged(24, encode([Buffer.from(txHash, 'hex'), outputIndex])),
     ])
   }
 
@@ -120,11 +120,4 @@ function SignedTransactionStructured(txAux, witnesses) {
   }
 }
 
-module.exports = {
-  TxInput,
-  TxInputFromUtxo,
-  TxOutput,
-  SignedTransactionStructured,
-  TxAux,
-  TxWitness,
-}
+export {TxInput, TxInputFromUtxo, TxOutput, SignedTransactionStructured, TxAux, TxWitness}

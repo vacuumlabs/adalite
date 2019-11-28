@@ -1,8 +1,8 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
-const actions = require('../../../actions')
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
+import actions from '../../../actions'
 
-const CopyOnClick = require('../../common/copyOnClick')
+import CopyOnClick from '../../common/copyOnClick'
 
 class AddressItem extends Component {
   constructor(props) {
@@ -102,7 +102,7 @@ class AddressItem extends Component {
   }
 }
 
-module.exports = connect(
+export default connect(
   {},
   actions
 )(AddressItem)

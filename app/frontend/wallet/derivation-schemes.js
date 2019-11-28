@@ -1,4 +1,4 @@
-const {HARDENED_THRESHOLD} = require('./constants')
+import {HARDENED_THRESHOLD} from './constants'
 
 const derivationSchemes = {
   v1: {
@@ -21,4 +21,4 @@ const derivationSchemes = {
   },
 }
 
-module.exports = derivationSchemes
+export default derivationSchemes

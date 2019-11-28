@@ -1,4 +1,4 @@
-const request = require('../wallet/helpers/request')
+import request from '../wallet/helpers/request'
 
 async function getConversionRates(state) {
   let conversionRates = state.conversionRates
@@ -17,4 +17,4 @@ async function fetchConversionRates() {
   return await request('https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR')
 }
 
-module.exports = getConversionRates
+export default getConversionRates

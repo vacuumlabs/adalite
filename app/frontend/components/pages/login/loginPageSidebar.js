@@ -1,7 +1,7 @@
-const {h, Component} = require('preact')
-const connect = require('unistore/preact').connect
+import {h, Component} from 'preact'
+import {connect} from 'unistore/preact'
 
-const Alert = require('../../common/alert')
+import Alert from '../../common/alert'
 
 const initialContent = () =>
   h(
@@ -240,6 +240,6 @@ class LoginPageSidebar extends Component {
   }
 }
 
-module.exports = connect((state) => ({
+export default connect((state) => ({
   authMethod: state.authMethod,
 }))(LoginPageSidebar)

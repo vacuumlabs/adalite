@@ -1,5 +1,5 @@
-const {h} = require('preact')
-const {printConversionRate} = require('../../helpers/printConversionRates')
+import {h} from 'preact'
+import {printConversionRate} from '../../helpers/printConversionRates'
 
 const Conversions = ({balance, conversionRates}) =>
   h(
@@ -17,4 +17,4 @@ const Conversions = ({balance, conversionRates}) =>
     )
   )
 
-module.exports = Conversions
+export default Conversions

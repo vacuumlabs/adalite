@@ -1,18 +1,17 @@
 /* based on https://github.com/input-output-hk/cardano-crypto/blob/master/cbits/encrypted_sign.c */
 
-const cbor = require('borc')
-const {cardanoMemoryCombine, blake2b, scrypt} = require('cardano-crypto.js')
-const derivationSchemes = require('./derivation-schemes')
+import {decode, encode} from 'borc'
+import {cardanoMemoryCombine, blake2b, scrypt} from 'cardano-crypto.js'
+import derivationSchemes from './derivation-schemes'
 
-const {HARDENED_THRESHOLD} = require('./constants')
+import {HARDENED_THRESHOLD} from './constants'
 
 function transformPassword(password) {
   return password ? blake2b(Buffer.from(password), 32) : Buffer.from([])
 }
 
 async function verifyPassword(passwordToVerify, passwordHash) {
-  const passwordHashSplit = cbor
-    .decode(passwordHash)
+  const passwordHashSplit = decode(passwordHash)
     .toString('ascii')
     .split('|')
 
@@ -24,7 +23,7 @@ async function verifyPassword(passwordToVerify, passwordHash) {
 
   const passwordToVerifyHash = await new Promise((resolve, reject) => {
     scrypt(
-      cbor.encode(transformPassword(passwordToVerify)),
+      encode(transformPassword(passwordToVerify)),
       salt,
       {
         N: n,
@@ -45,14 +44,14 @@ function getRandomSaltForPasswordHash() {
   const randBytes = Buffer.alloc(32)
   window.crypto.getRandomValues(randBytes)
 
-  return cbor.encode(randBytes)
+  return encode(randBytes)
 }
 
 async function hashPasswordAndPack(password, salt) {
   const [n, r, p, hashLen] = [14, 8, 1, 32]
   const hash = await new Promise((resolve, reject) => {
     scrypt(
-      cbor.encode(transformPassword(password)),
+      encode(transformPassword(password)),
       salt,
       {
         N: 1 << n,
@@ -93,7 +92,7 @@ function parseWalletExportObj(walletExportObj) {
   }
 
   const walletSecretDef = {
-    rootSecret: cbor.decode(Buffer.from(b64WalletSecret, 'base64')),
+    rootSecret: decode(Buffer.from(b64WalletSecret, 'base64')),
     derivationScheme,
   }
 
@@ -139,21 +138,17 @@ async function exportWalletSecretDef(walletSecretDef, password, walletName) {
           index: HARDENED_THRESHOLD,
         },
       ],
-      walletSecretKey: cbor.encode(encryptedWalletSecret).toString('base64'),
+      walletSecretKey: encode(encryptedWalletSecret).toString('base64'),
       walletMeta: {
         name: walletName,
         assurance: 'normal',
         unit: 'ADA',
       },
-      passwordHash: cbor.encode(Buffer.from(packedPasswordHash, 'ascii')).toString('base64'),
+      passwordHash: encode(Buffer.from(packedPasswordHash, 'ascii')).toString('base64'),
     },
     fileType: 'WALLETS_EXPORT',
     fileVersion: walletSecretDef.derivationScheme.keyfileVersion,
   }
 }
 
-module.exports = {
-  importWalletSecretDef,
-  exportWalletSecretDef,
-  isWalletExportEncrypted,
-}
+export {importWalletSecretDef, exportWalletSecretDef, isWalletExportEncrypted}

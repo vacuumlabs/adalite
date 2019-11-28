@@ -1,11 +1,12 @@
-const cbor = require('borc')
-const {blake2b, sign: signMsg, derivePrivate, xpubToHdPassphrase} = require('cardano-crypto.js')
+import {encode} from 'borc'
+import {blake2b, sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
 
-const {TxWitness, SignedTransactionStructured} = require('./transaction')
-const HdNode = require('./hd-node')
-const {parseTxAux} = require('./helpers/cbor-parsers')
-const NamedError = require('../helpers/NamedError')
-const CachedDeriveXpubFactory = require('./helpers/CachedDeriveXpubFactory')
+import {TxWitness, SignedTransactionStructured} from './transaction'
+
+import HdNode from './hd-node'
+import {parseTxAux} from './helpers/cbor-parsers'
+import NamedError from '../helpers/NamedError'
+import CachedDeriveXpubFactory from './helpers/CachedDeriveXpubFactory'
 
 const CardanoWalletSecretCryptoProvider = (
   {walletSecretDef: {rootSecret, derivationScheme}, network},
@@ -88,7 +89,7 @@ const CardanoWalletSecretCryptoProvider = (
 
     return {
       txHash: signedTxStructured.getId(),
-      txBody: cbor.encode(signedTxStructured).toString('hex'),
+      txBody: encode(signedTxStructured).toString('hex'),
     }
   }
 
@@ -106,7 +107,7 @@ const CardanoWalletSecretCryptoProvider = (
         */
         const txSignMessagePrefix = Buffer.concat([
           Buffer.from('01', 'hex'),
-          cbor.encode(protocolMagic),
+          encode(protocolMagic),
           Buffer.from('5820', 'hex'),
         ]).toString('hex')
 
@@ -134,4 +135,4 @@ const CardanoWalletSecretCryptoProvider = (
   }
 }
 
-module.exports = CardanoWalletSecretCryptoProvider
+export default CardanoWalletSecretCryptoProvider

@@ -1,7 +1,7 @@
-const sleep = require('../helpers/sleep')
-const debugLog = require('./debugLog')
-const {ADALITE_CONFIG} = require('../config')
-const {SENTRY_USER_FEEDBACK_API} = require('../wallet/constants')
+import sleep from '../helpers/sleep'
+import debugLog from './debugLog'
+import {ADALITE_CONFIG} from '../config'
+import {SENTRY_USER_FEEDBACK_API} from '../wallet/constants'
 
 async function sendFeedback(comments, email, name, eventId) {
   await sleep(5000) // to ensure the feedback gets send after the error
@@ -28,4 +28,4 @@ async function sendFeedback(comments, email, name, eventId) {
   }
 }
 
-module.exports = sendFeedback
+export default sendFeedback

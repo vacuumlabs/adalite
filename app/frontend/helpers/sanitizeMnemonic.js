@@ -9,4 +9,4 @@ const sanitizeMnemonic = (mnemonic) =>
     .replace(/\s+/g, ' ')
     .trim()
 
-module.exports = sanitizeMnemonic
+export default sanitizeMnemonic

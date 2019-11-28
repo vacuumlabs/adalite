@@ -1,7 +1,7 @@
-const fetchMock = require('fetch-mock')
-const singleAddressesMock = require('./singleAddressesMock')
-const bulkSummaryRequests = require('./bulkSummaryRequests')
-const utxoMock = require('./utxoMock')
+import fetchMock from 'fetch-mock'
+import singleAddressesMock from './singleAddressesMock'
+import bulkSummaryRequests from './bulkSummaryRequests'
+import utxoMock from './utxoMock'
 
 const mock = (ADALITE_CONFIG) => {
   function clean() {
@@ -158,4 +158,4 @@ const mock = (ADALITE_CONFIG) => {
   }
 }
 
-module.exports = mock
+export default mock

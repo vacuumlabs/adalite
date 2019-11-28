@@ -1,17 +1,19 @@
-const {h} = require('preact')
-const connect = require('unistore/preact').connect
+import {h} from 'preact'
+import {connect} from 'unistore/preact'
 
-const TopLevelRouter = require('./router').TopLevelRouter
-const Welcome = require('./common/welcome')
-const ContactForm = require('./common/contactForm')
-const Footer = require('./common/footer')
-const LoadingOverlay = require('./common/loadingOverlay')
-const NavbarAuth = require('./common/navbar/navbarAuth')
-const NavbarUnauth = require('./common/navbar/navbarUnauth')
-const AddressDetailDialog = require('./common/addressDetailDialog')
-const AutoLogout = require('./autoLogout')
-const ADALITE_LOGOUT_AFTER = require('../config').ADALITE_CONFIG.ADALITE_LOGOUT_AFTER
-const UnexpectedErrorModal = require('../components/common/unexpectedErrorModal')
+import {TopLevelRouter} from './router'
+import Welcome from './common/welcome'
+import ContactForm from './common/contactForm'
+import Footer from './common/footer'
+import LoadingOverlay from './common/loadingOverlay'
+import NavbarAuth from './common/navbar/navbarAuth'
+import NavbarUnauth from './common/navbar/navbarUnauth'
+import AddressDetailDialog from './common/addressDetailDialog'
+import AutoLogout from './autoLogout'
+import {ADALITE_CONFIG} from '../config'
+import UnexpectedErrorModal from '../components/common/unexpectedErrorModal'
+
+const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
 const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
   ({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth))
@@ -37,4 +39,4 @@ const App = connect((state) => ({
   )
 )
 
-module.exports = App
+export default App

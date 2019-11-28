@@ -1,8 +1,9 @@
-const {isValidAddress} = require('cardano-crypto.js')
-const {ADALITE_MIN_DONATION_VALUE} = require('../config').ADALITE_CONFIG
-const {toCoins} = require('../helpers/adaConverters')
-const {validateMnemonic} = require('../wallet/mnemonic')
+import {isValidAddress} from 'cardano-crypto.js'
+import {ADALITE_CONFIG} from '../config'
+import {toCoins} from '../helpers/adaConverters'
+import {validateMnemonic} from '../wallet/mnemonic'
 
+const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseCoins = (str) => Math.trunc(toCoins(parseFloat(str)))
 
 const sendAddressValidator = (fieldValue) =>
@@ -74,7 +75,7 @@ const mnemonicValidator = (mnemonic) => {
   return validationError
 }
 
-module.exports = {
+export {
   parseCoins,
   sendAddressValidator,
   sendAmountValidator,

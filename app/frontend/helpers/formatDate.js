@@ -9,4 +9,4 @@ const formatDate = (date) =>
     hour12: false,
   })
 
-module.exports = formatDate
+export default formatDate

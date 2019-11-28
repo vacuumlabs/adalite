@@ -1,7 +1,7 @@
-const range = require('./helpers/range')
-const {toBip32StringPath} = require('./helpers/bip32')
-const {packAddress} = require('cardano-crypto.js')
-const NamedError = require('../helpers/NamedError')
+import range from './helpers/range'
+import {toBip32StringPath} from './helpers/bip32'
+import {packAddress} from 'cardano-crypto.js'
+import NamedError from '../helpers/NamedError'
 
 const AddressManager = ({
   accountIndex,
@@ -152,4 +152,4 @@ const AddressManager = ({
   }
 }
 
-module.exports = AddressManager
+export default AddressManager
