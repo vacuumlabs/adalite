@@ -1,7 +1,7 @@
 import {h} from 'preact'
 import {captureException} from '@sentry/browser'
 import actions from '../../actions'
-import {connect} from 'unistore/preact'
+import {connect} from '../../libs/unistore/preact'
 
 const HelpSection = connect(
   (state) => ({

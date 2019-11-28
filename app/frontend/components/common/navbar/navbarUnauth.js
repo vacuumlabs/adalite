@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import {connect} from 'unistore/preact'
+import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import {ADALITE_CONFIG} from '../../../config'
 import isLeftClick from '../../../helpers/isLeftClick'

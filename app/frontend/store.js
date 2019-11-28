@@ -1,4 +1,4 @@
-import devtools from 'unistore/devtools'
+import devtools from './libs/unistore/devtools'
 
 import {ADALITE_CONFIG} from './config'
 const createDefaultStore = require('unistore').default

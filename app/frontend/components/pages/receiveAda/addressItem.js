@@ -1,5 +1,5 @@
 import {h, Component} from 'preact'
-import {connect} from 'unistore/preact'
+import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 
 import CopyOnClick from '../../common/copyOnClick'

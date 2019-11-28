@@ -1,6 +1,6 @@
 import {h, Component} from 'preact'
 import {getTranslation} from '../../../translations'
-import {connect} from 'unistore/preact'
+import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import mnemonicToWalletSecretDef from '../../../wallet/helpers/mnemonicToWalletSecretDef'
 import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'

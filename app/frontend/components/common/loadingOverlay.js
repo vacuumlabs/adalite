@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import {connect} from 'unistore/preact'
+import {connect} from '../../libs/unistore/preact'
 
 const LoadingOverlay = connect(['loadingMessage', 'loading'])(
   ({loading, loadingMessage}) =>

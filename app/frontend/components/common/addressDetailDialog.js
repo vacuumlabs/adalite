@@ -1,6 +1,6 @@
 import {h, Component} from 'preact'
-import QRious from 'qrious'
-import {connect} from 'unistore/preact'
+import QRious from '../../libs/qrious'
+import {connect} from '../../libs/unistore/preact'
 import actions from '../../actions'
 
 import Modal from './modal'
