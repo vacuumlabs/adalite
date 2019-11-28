@@ -34,6 +34,12 @@ class LoginPage extends Component {
     this.closeStakingBannerClick = this.closeStakingBannerClick.bind(this)
   }
 
+  componentDidMount() {
+    if (this.props.autoLogin && this.props.authMethod !== 'mnemonic') {
+      this.props.setAuthMethod('mnemonic')
+    }
+  }
+
   closeStakingBannerClick() {
     this.props.closeStakingBanner()
   }
@@ -196,6 +202,7 @@ module.exports = connect(
     showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
     showWalletLoadingErrorModal: state.showWalletLoadingErrorModal,
     showStakingBanner: state.showStakingBanner,
+    autoLogin: state.autoLogin,
   }),
   actions
 )(LoginPage)

@@ -7,12 +7,29 @@ const {CRYPTO_PROVIDER_TYPES} = require('../../../wallet/constants')
 const tooltip = require('../../common/tooltip')
 const Alert = require('../../common/alert')
 const sanitizeMnemonic = require('../../../helpers/sanitizeMnemonic')
+const ADALITE_DEMO_WALLET_MNEMONIC = require('../../../config').ADALITE_CONFIG
+  .ADALITE_DEMO_WALLET_MNEMONIC
 
 class LoadByMenmonicSectionClass extends Component {
   componentDidUpdate() {
     const shouldFormFocus =
       !this.props.mnemonic && !this.props.displayWelcome && !this.props.showDemoWalletWarningDialog
     shouldFormFocus && this.mnemonicField.focus()
+  }
+
+  // meant only for development in order to speed up the process of unlocking wallet
+  async autoLogin() {
+    const sanitizedMnemonic = sanitizeMnemonic(ADALITE_DEMO_WALLET_MNEMONIC)
+    await this.props.loadWallet({
+      cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+      walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
+    })
+  }
+
+  componentDidMount() {
+    if (this.props.autoLogin) {
+      this.autoLogin()
+    }
   }
 
   render({
@@ -120,6 +137,7 @@ module.exports = connect(
     mnemonicValidationError: state.mnemonicValidationError,
     showMnemonicValidationError: state.showMnemonicValidationError,
     showMnemonicInfoAlert: state.showMnemonicInfoAlert,
+    autoLogin: state.autoLogin,
   }),
   actions
 )(LoadByMenmonicSectionClass)

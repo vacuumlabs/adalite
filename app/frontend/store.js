@@ -12,7 +12,9 @@ const initialState = {
     title: 'Wrong mnemonic',
     hint: 'Hint: Ensure that your mnemonic is without mistake.',
   },
-  displayWelcome: !(window.localStorage.getItem('dontShowDisclaimer') === 'true'),
+  displayWelcome:
+    !(window.localStorage.getItem('dontShowDisclaimer') === 'true') &&
+    ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN !== 'true',
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner') === 'true'),
@@ -49,6 +51,8 @@ const initialState = {
   emailSubmitMessage: '',
   showUnexpectedErrorModal: false,
   sendSentry: {},
+  autoLogin:
+    ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 }
 
 const createStore = () =>
