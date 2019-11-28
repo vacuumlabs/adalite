@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import {connect} from 'unistore/preact'
+import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'

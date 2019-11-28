@@ -1,4 +1,4 @@
-import sleep from '../helpers/sleep'
+import sleep from './sleep'
 import debugLog from './debugLog'
 import {ADALITE_CONFIG} from '../config'
 import {SENTRY_USER_FEEDBACK_API} from '../wallet/constants'

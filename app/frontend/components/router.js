@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import {connect} from 'unistore/preact'
+import {connect} from '../libs/unistore/preact'
 
 import TxHistoryPage from './pages/txHistory/txHistoryPage'
 import MyAddresses from './pages/receiveAda/myAddresses'

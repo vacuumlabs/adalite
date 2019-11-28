@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import {connect} from 'unistore/preact'
+import {connect} from '../libs/unistore/preact'
 
 import {TopLevelRouter} from './router'
 import Welcome from './common/welcome'
@@ -11,7 +11,7 @@ import NavbarUnauth from './common/navbar/navbarUnauth'
 import AddressDetailDialog from './common/addressDetailDialog'
 import AutoLogout from './autoLogout'
 import {ADALITE_CONFIG} from '../config'
-import UnexpectedErrorModal from '../components/common/unexpectedErrorModal'
+import UnexpectedErrorModal from './common/unexpectedErrorModal'
 
 const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
