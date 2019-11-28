@@ -2500,4 +2500,4 @@ const singleAddressesMock = {
   '*': {},
 }
 
-module.exports = singleAddressesMock
+export default singleAddressesMock

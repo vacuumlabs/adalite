@@ -1,11 +1,11 @@
-const assert = require('assert')
-const cbor = require('borc')
+import assert from 'assert'
+import cbor from 'borc'
 
-const {CardanoWallet, txFeeFunction} = require('../../frontend/wallet/cardano-wallet')
-const mockNetwork = require('./common/mock')
-const {TxAux} = require('../../frontend/wallet/transaction')
-const mnemonicToWalletSecretDef = require('../../frontend/wallet/helpers/mnemonicToWalletSecretDef')
-const {CRYPTO_PROVIDER_TYPES, NETWORKS} = require('../../frontend/wallet/constants')
+import {CardanoWallet, txFeeFunction} from '../../frontend/wallet/cardano-wallet'
+import mockNetwork from './common/mock'
+import {TxAux} from '../../frontend/wallet/transaction'
+import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
+import {CRYPTO_PROVIDER_TYPES, NETWORKS} from '../../frontend/wallet/constants'
 
 const testSeed = 39
 
