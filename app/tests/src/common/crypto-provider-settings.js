@@ -1,4 +1,4 @@
-const {NETWORKS} = require('../../../frontend/wallet/constants')
+import {NETWORKS} from '../../../frontend/wallet/constants'
 
 const cryptoProviderSettings = [
   {
@@ -26,4 +26,4 @@ const cryptoProviderSettings = [
   },
 ]
 
-module.exports = cryptoProviderSettings
+export default cryptoProviderSettings

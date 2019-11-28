@@ -1,13 +1,15 @@
-const assert = require('assert')
+import assert from 'assert'
 
-const {HARDENED_THRESHOLD} = require('../../frontend/wallet/constants')
-const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
-const CardanoWalletSecretCryptoProvider = require('../../frontend/wallet/cardano-wallet-secret-crypto-provider')
-const AddressManager = require('../../frontend/wallet/address-manager')
-const range = require('../../frontend/wallet/helpers/range')
-const mnemonicToWalletSecretDef = require('../../frontend/wallet/helpers/mnemonicToWalletSecretDef')
-const cryptoProviderSettings = require('./common/crypto-provider-settings')
-const BlockchainExplorer = require('../../frontend/wallet/blockchain-explorer')
+import {HARDENED_THRESHOLD} from '../../frontend/wallet/constants'
+import derivationSchemes from '../../frontend/wallet/derivation-schemes'
+import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/cardano-wallet-secret-crypto-provider'
+import AddressManager from '../../frontend/wallet/address-manager'
+import range from '../../frontend/wallet/helpers/range'
+import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
+import cryptoProviderSettings from './common/crypto-provider-settings'
+import BlockchainExplorer from '../../frontend/wallet/blockchain-explorer'
+
+import mockNetwork from './common/mock'
 
 const mockConfig = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
@@ -15,8 +17,6 @@ const mockConfig = {
   ADALITE_DEFAULT_ADDRESS_COUNT: 10,
   ADALITE_GAP_LIMIT: 10,
 }
-
-const mockNetwork = require('./common/mock')
 
 const blockchainExplorer = BlockchainExplorer(mockConfig, {})
 

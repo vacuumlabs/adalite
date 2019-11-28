@@ -85,4 +85,4 @@ const utxoMock = {
   },
 }
 
-module.exports = utxoMock
+export default utxoMock

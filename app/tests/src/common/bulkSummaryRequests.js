@@ -286,4 +286,4 @@ const bulkSummaryRequests = [
   ],
 ]
 
-module.exports = bulkSummaryRequests
+export default bulkSummaryRequests
