@@ -10,7 +10,7 @@ class ContactForm extends Component {
     this.closeContactFormModal = this.closeContactFormModal.bind(this)
 
     this.state = {
-      sumbitted: false,
+      submitted: false,
     }
   }
 
@@ -61,7 +61,7 @@ class ContactForm extends Component {
             target: '_blank',
             action: `//formspree.io/${ADALITE_CONFIG.ADALITE_SUPPORT_EMAIL}`,
             onSubmit: () => {
-              this.setState({sumbitted: true})
+              this.setState({submitted: true})
             },
             ref: (element) => {
               this.contactForm = element
@@ -96,7 +96,7 @@ class ContactForm extends Component {
             class: 'input fullwidth textarea',
             required: true,
           }),
-          this.state.sumbitted &&
+          this.state.submitted &&
             h(
               'div',
               {class: 'form-alert success'},
