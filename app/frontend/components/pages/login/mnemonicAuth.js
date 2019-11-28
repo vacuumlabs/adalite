@@ -49,7 +49,17 @@ class LoadByMenmonicSectionClass extends Component {
             target: 'blank',
           },
           'here.'
-        )
+        ),
+        ' Please refer to this ',
+        h(
+          'a',
+          {
+            href: 'https://staking.cardano.org/',
+            target: 'blank',
+          },
+          'link'
+        ),
+        ' for additional information about shelley, delegating stake, running a stake pool and staying in touch.'
       ),
       h(
         'label',
