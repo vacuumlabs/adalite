@@ -232,10 +232,10 @@ class LoginPageSidebar extends Component {
     return h(
       'aside',
       {class: 'sidebar'},
-      authMethod === '' && h(initialContent),
-      authMethod === 'mnemonic' && h(mnemonicContent),
-      authMethod === 'hw-wallet' && h(walletContent),
-      authMethod === 'file' && h(fileContent)
+      authMethod === '' && h(initialContent, {}),
+      authMethod === 'mnemonic' && h(mnemonicContent, {}),
+      authMethod === 'hw-wallet' && h(walletContent, {}),
+      authMethod === 'file' && h(fileContent, {})
     )
   }
 }

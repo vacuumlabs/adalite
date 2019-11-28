@@ -16,7 +16,7 @@ import UnexpectedErrorModal from '../components/common/unexpectedErrorModal'
 const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
 const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
-  ({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth) : h(NavbarUnauth))
+  ({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth, {}) : h(NavbarUnauth, {}))
 )
 
 const App = connect((state) => ({
@@ -27,15 +27,15 @@ const App = connect((state) => ({
   h(
     'div',
     {class: 'wrap'},
-    h(LoadingOverlay),
-    h(Navbar),
-    h(TopLevelRouter),
-    h(Footer),
-    h(AddressDetailDialog),
-    ADALITE_LOGOUT_AFTER > 0 && h(AutoLogout),
-    displayWelcome && h(Welcome),
-    showContactFormModal && h(ContactForm),
-    showUnexpectedErrorModal && h(UnexpectedErrorModal)
+    h(LoadingOverlay, {}),
+    h(Navbar, {}),
+    h(TopLevelRouter, {}),
+    h(Footer, {}),
+    h(AddressDetailDialog, {}),
+    ADALITE_LOGOUT_AFTER > 0 && h(AutoLogout, {}),
+    displayWelcome && h(Welcome, {}),
+    showContactFormModal && h(ContactForm, {}),
+    showUnexpectedErrorModal && h(UnexpectedErrorModal, {})
   )
 )
 

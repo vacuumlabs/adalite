@@ -149,9 +149,9 @@ class LoginPage extends Component {
             dropdownItem('file')
           )
         ),
-        authMethod === 'mnemonic' && h(MnemonicAuth),
+        authMethod === 'mnemonic' && h(MnemonicAuth, {}),
         authMethod === 'hw-wallet' && h(HardwareAuth, {loadWallet}),
-        authMethod === 'file' && h(KeyFileAuth)
+        authMethod === 'file' && h(KeyFileAuth, {})
       )
     return h(
       'div',
@@ -163,7 +163,7 @@ class LoginPage extends Component {
         h(
           'main',
           {class: 'page-main'},
-          authMethod === '' ? h(authCardInitial) : h(authCard),
+          authMethod === '' ? h(authCardInitial, {}) : h(authCard, {}),
           h(
             'div',
             {class: 'page-demo'},
@@ -178,10 +178,10 @@ class LoginPage extends Component {
             )
           )
         ),
-        h(LoginPageSidebar),
-        showDemoWalletWarningDialog && h(DemoWalletWarningDialog),
-        showGenerateMnemonicDialog && h(GenerateMnemonicDialog),
-        logoutNotificationOpen && h(LogoutNotification),
+        h(LoginPageSidebar, {}),
+        showDemoWalletWarningDialog && h(DemoWalletWarningDialog, {}),
+        showGenerateMnemonicDialog && h(GenerateMnemonicDialog, {}),
+        logoutNotificationOpen && h(LogoutNotification, {}),
         showWalletLoadingErrorModal &&
           h(WalletLoadingErrorModal, {
             closeHandler: closeWalletLoadingErrorModal,

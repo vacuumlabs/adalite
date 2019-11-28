@@ -116,7 +116,7 @@ class Welcome extends Component {
               )
             )
           ),
-          h(Credits)
+          h(Credits, {})
         ),
         h(
           'div',

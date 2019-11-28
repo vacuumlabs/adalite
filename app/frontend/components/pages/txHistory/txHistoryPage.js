@@ -37,10 +37,10 @@ class DashboardMobileContent extends Component {
         dashboardTab('send', 'Send ADA'),
         dashboardTab('receive', 'Receive ADA')
       ),
-      selectedTab === 'send' && h(SendAdaPage),
+      selectedTab === 'send' && h(SendAdaPage, {}),
       selectedTab === 'transactions' &&
         h(TransactionHistory, {transactionHistory, conversionRates}),
-      selectedTab === 'receive' && h(MyAddresses)
+      selectedTab === 'receive' && h(MyAddresses, {})
     )
   }
 }
@@ -69,9 +69,9 @@ const TxHistoryPage = connect(
       h(
         'div',
         {class: 'dashboard-column'},
-        h(SendAdaPage),
-        h(MyAddresses),
-        showExportOption && h(ExportCard)
+        h(SendAdaPage, {}),
+        h(MyAddresses, {}),
+        showExportOption && h(ExportCard, {})
       )
     ),
     h(
@@ -79,7 +79,7 @@ const TxHistoryPage = connect(
       {class: 'dashboard mobile'},
       h(Balance, {balance, reloadWalletInfo, conversionRates}),
       h(DashboardMobileContent, {balance, transactionHistory, reloadWalletInfo, conversionRates}),
-      showExportOption && h(ExportCard)
+      showExportOption && h(ExportCard, {})
     )
   )
 )
