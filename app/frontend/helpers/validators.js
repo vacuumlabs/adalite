@@ -1,6 +1,6 @@
 import {isValidAddress} from 'cardano-crypto.js'
 import {ADALITE_CONFIG} from '../config'
-import {toCoins} from '../helpers/adaConverters'
+import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
