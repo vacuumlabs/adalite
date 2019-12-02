@@ -206,7 +206,7 @@ class SendAdaPage extends Component {
           'Send ADA'
         ),
         feeRecalculating
-          ? h(CalculatingFee)
+          ? h(CalculatingFee, {})
           : h(SendValidation, {
             sendFormValidationError,
             sendResponse,
@@ -232,7 +232,7 @@ class SendAdaPage extends Component {
           ),
           showHelp: errorHasHelp(transactionSubmissionError.code),
         }),
-      rawTransactionOpen && h(RawTransactionModal),
+      rawTransactionOpen && h(RawTransactionModal, {}),
       showConfirmTransactionDialog && h(ConfirmTransactionDialog, {total}),
       showThanksForDonation && h(DonateThanksModal, {closeThanksForDonationModal})
     )
