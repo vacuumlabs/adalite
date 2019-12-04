@@ -37,6 +37,7 @@ class LoadByMenmonicSectionClass extends Component {
           'Here you can use your mnemonic to access your new wallet.'
         ),
       h('h2', {class: 'authentication-title'}, 'Incentivized-Testnet Balance Check'),
+      h('h3', {class: 'testnet-subtitle'}, 'Balance check for 29th of November 2019'),
       h(
         'h4',
         {class: 'feature-explanation'},
