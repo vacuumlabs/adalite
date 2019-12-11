@@ -32,12 +32,12 @@ function connect(mapStateToProps, actions) {
         for (let i in mapped)
           if (mapped[i] !== state[i]) {
             state = mapped
-            return this.setState(null)
+            return this.setState({})
           }
         for (let i in state)
           if (!(i in mapped)) {
             state = mapped
-            return this.setState(null)
+            return this.setState({})
           }
       }
       this.componentDidMount = () => {
@@ -64,7 +64,8 @@ function connect(mapStateToProps, actions) {
 function Provider(props) {
   this.getChildContext = () => ({store: props.store})
 }
-Provider.prototype.render = (props) => props.children[0]
+Provider.prototype.render = (props) => props.children
+
 module.exports = {
   connect,
   Provider,
