@@ -25,6 +25,7 @@ import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import submitEmailRaw from './helpers/submitEmailRaw'
 import captureBySentry from './helpers/captureBySentry'
 import submitFeedbackToSentry from './helpers/submitFeedbackToSentry'
+import {State} from './state'
 
 let wallet = null
 
@@ -39,7 +40,9 @@ const debounceEvent = (callback, time) => {
   }
 }
 
-export default ({setState, getState}) => {
+type SetStateFn = (newState: Partial<State>) => void
+type GetStateFn = () => State
+export default ({setState, getState}: {setState: SetStateFn, getState: GetStateFn}) => {
   const loadingAction = (state, message: string, optionalArgsObj?: any) => {
     return setState(
       Object.assign(
@@ -282,6 +285,7 @@ export default ({setState, getState}) => {
         displayWelcome: false,
         autoLogin: false,
       },
+      // @ts-ignore (we don't have types for forced state overwrite)
       true
     ) // force overwriting the state
     window.history.pushState({}, '/', '/')
