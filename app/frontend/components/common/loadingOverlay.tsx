@@ -1,13 +1,12 @@
 import {h} from 'preact'
-import {connect} from '../../libs/unistore/preact'
+import {connect} from '../../helpers/connect'
 
 interface Props {
   loading: boolean
   loadingMessage: string
 }
 
-const LoadingOverlay = connect(['loadingMessage', 'loading'])(
-  ({loading, loadingMessage}: Props) =>
+const _LoadingOverlay = ({loading, loadingMessage}: Props) =>
     loading ? (
       <div className="loading">
         <div className="spinner">
@@ -16,6 +15,7 @@ const LoadingOverlay = connect(['loadingMessage', 'loading'])(
         {loadingMessage ? <p className="loading-message">{loadingMessage}</p> : ''}
       </div>
     ) : null
-)
+
+const LoadingOverlay = connect((state) => ({loadingMessage: state.loadingMessage, loading: state.loading}))(_LoadingOverlay)
 
 export default LoadingOverlay

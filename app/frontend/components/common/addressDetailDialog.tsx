@@ -1,6 +1,6 @@
 import {h, Component} from 'preact'
 import * as QRious from '../../libs/qrious'
-import {connect} from '../../libs/unistore/preact'
+import {connect} from '../../helpers/connect'
 import actions from '../../actions'
 
 import Modal from './modal'

@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
+import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Modal from '../../common/modal'
 import Alert from '../../common/alert'
@@ -43,6 +43,6 @@ class DemoWalletWarningDialogClass {
 }
 
 export default connect(
-  {},
+  null,
   actions
 )(DemoWalletWarningDialogClass)
