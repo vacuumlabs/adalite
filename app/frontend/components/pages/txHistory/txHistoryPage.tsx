@@ -42,7 +42,6 @@ class DashboardMobileContent extends Component<Props> {
         {selectedTab === 'transactions' && (
           <TransactionHistory
             transactionHistory={transactionHistory}
-            conversionRates={conversionRates}
           />
         )}
         {selectedTab === 'receive' && <MyAddresses />}
@@ -70,7 +69,6 @@ const TxHistoryPage = connect(
         />
         <TransactionHistory
           transactionHistory={transactionHistory}
-          conversionRates={conversionRates}
         />
       </div>
       <div className="dashboard-column">
@@ -86,9 +84,7 @@ const TxHistoryPage = connect(
         conversionRates={conversionRates}
       />
       <DashboardMobileContent
-        balance={balance}
         transactionHistory={transactionHistory}
-        reloadWalletInfo={reloadWalletInfo}
         conversionRates={conversionRates}
       />
       {showExportOption && <ExportCard />}

@@ -49,8 +49,8 @@ const AdaLiteLogo = () => (
     <style>{'.cls-1{fill:#e72076}'}</style>
     <style>{'.cls-2{fill:#20323f}'}</style>
     <title>Adalite logo</title>
-    <g id="Layer_2" dataName="Layer 2">
-      <g id="Layer_1-2" dataName="Layer 1">
+    <g id="Layer_2">
+      <g id="Layer_1-2">
         <path
           className="cls-1"
           d="M26.87,2.69a5.37,5.37,0,1,1-7.34-2A5.37,5.37,0,0,1,26.87,2.69Z"

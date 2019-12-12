@@ -3,7 +3,7 @@ import {h, Component} from 'preact'
 import Tag from './tag'
 
 interface Props {
-  closeHandler: () => void
+  closeHandler?: () => void
   children?: any
   bodyClass?: string
   title?: string
@@ -34,7 +34,7 @@ class Modal extends Component<Props, {}> {
               <button
                 className="button close modal-close"
                 onClick={closeHandler}
-                ariaLabel="Close dialog"
+                {...{ariaLabel:"Close dialog"} /* fix ts error*/}
               />
             )}
             {title && (

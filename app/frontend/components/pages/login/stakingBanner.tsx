@@ -20,8 +20,8 @@ const StakingBanner = ({closeBanner}: Props) => (
     </div>
     <button
       className="button close banner-close"
-      ariaLabel="Close banner"
-      onclick={(e) => {
+      {...{ariaLabel: "Close banner"} /* silence ts*/}
+      onClick={(e) => {
         closeBanner()
       }}
     />

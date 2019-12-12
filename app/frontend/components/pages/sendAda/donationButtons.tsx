@@ -67,7 +67,7 @@ class DonationButtons extends Component<Props> {
           value={ADALITE_FIXED_DONATION_VALUE}
           onClick={updateDonation}
           disabled={!isFormValid || isFixedInsufficient}
-          ariaLabel="Fixed amount"
+          {...{ariaLabel: "Fixed amount"} /* ignore ts error */}
           {...tooltip('Insufficient funds', isFixedInsufficient)}
         >
           {`${ADALITE_FIXED_DONATION_VALUE} `}
@@ -79,7 +79,7 @@ class DonationButtons extends Component<Props> {
           value={percentageDonationValue}
           onClick={updateDonation}
           disabled={!isFormValid || !thresholdAmountReached || isPercentageInsufficient}
-          ariaLabel="Percentage amount"
+          {...{ariaLabel: "Percentage amount"} /* ignore ts error */}
           {...tooltip('Insufficient funds', isPercentageInsufficient)}
         >
           {`${percentageDonationText} (`}

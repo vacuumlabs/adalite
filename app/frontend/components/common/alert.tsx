@@ -8,7 +8,7 @@ interface Props {
     | 'warning sidebar'
     | 'success sidebar'
     | 'warning'
-    | 'error_event'
+    | 'error event'
     | 'info auth'
   children: ComponentChildren
 }

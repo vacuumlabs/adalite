@@ -110,7 +110,7 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
           <button
             onClick={this.closeContactFormModal}
             className="button close modal-close"
-            ariaLabel="Close dialog"
+            {...{ariaLabel: "Close dialog"} /* to mute ts error */}
             onKeyDown={(e) => {
               e.key === 'Enter' && (e.target as HTMLButtonElement).click()
             }}

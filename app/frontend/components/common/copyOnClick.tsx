@@ -5,8 +5,8 @@ import tooltip from './tooltip'
 
 interface Props {
   value: any
-  copiedCallback: (copied: boolean) => any
-  elementClass: string
+  copiedCallback?: (copied: boolean) => any
+  elementClass?: string
   copy?: boolean
   enableTooltip?: boolean
   children: ComponentChildren
@@ -53,10 +53,10 @@ class CopyOnClick extends Component<Props, {copied: boolean}> {
     }
   }
 
-  render({children, elementClass, copy = true, enableTooltip = true}, {copied}) {
+  render({children, elementClass = '', copy = true, enableTooltip = true}, {copied}) {
     return (
       <p
-        className={`${elementClass}`}
+        className={elementClass}
         onClick={copy && this.copyTextToClipboard}
         {...tooltip('Copied to clipboard', true, copied && enableTooltip)}
       >
