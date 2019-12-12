@@ -14,7 +14,8 @@ import StakingBalances from '../../common/stakingBalances'
 
 interface Props {
   transactionHistory: any
-  conversionRates: any
+  delegationHistory: any
+  displayStakingPage: any
 }
 
 class DashboardMobileContent extends Component<Props> {
@@ -27,7 +28,7 @@ class DashboardMobileContent extends Component<Props> {
     this.setState({selectedTab: tabName})
   }
   render(
-    {transactionHistory, delegationHistory, conversionRates, displayStakingPage},
+    {transactionHistory, delegationHistory, displayStakingPage},
     {selectedTab}
   ) {
     const dashboardTab = (tabName, tabText) => (
@@ -161,13 +162,9 @@ const TxHistoryPage = connect(
           />
         )}
         <DashboardMobileContent
-          balance={balance}
-          rewards={rewards}
           transactionHistory={transactionHistory}
           delegationHistory={delegationHistory}
           displayStakingPage={displayStakingPage}
-          reloadWalletInfo={reloadWalletInfo}
-          conversionRates={conversionRates}
         />
         {!displayStakingPage && showExportOption && <ExportCard />}
       </div>

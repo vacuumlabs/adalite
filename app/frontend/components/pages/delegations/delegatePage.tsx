@@ -69,7 +69,7 @@ const DelegatePage = ({
                   type="number"
                   min="0"
                   max={pool.percent + undelegatedPercent}
-                  accuracy="1"
+                  {...{accuracy:"1"}}
                   className="input stake-pool-percent"
                   name={`${i}`}
                   value={pool.percent}
