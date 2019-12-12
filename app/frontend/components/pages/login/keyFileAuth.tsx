@@ -161,97 +161,79 @@ class LoadKeyFileClass extends Component<Props, State> {
   }
 
   render({loadingAction}, {fileName, keyfileError, passwordError, encrypted, password}) {
-    const NoFileContent = () =>
-      h(
-        'div',
-        {class: 'dropzone-content'},
-        h('p', {class: 'dropzone-paragraph'}, 'Drop a key file here'),
-        h(
-          'label',
-          {
-            class: 'button primary small',
-            for: 'loadFile',
-          },
-          'Select a key file'
-        )
-      )
+    const NoFileContent = () => (
+      <div className="dropzone-content">
+        <p className="dropzone-paragraph">Drop a key file here</p>
+        <label className="button primary small" for="loadFile">
+          Select a key file
+        </label>
+      </div>
+    )
 
-    const SelectedFileContent = () =>
-      h(
-        'div',
-        {class: 'dropzone-content has-file'},
-        h('div', {class: 'dropzone-filename'}, fileName),
-        h(
-          'label',
-          {
-            class: 'dropzone-link',
-            for: 'loadFile',
-          },
-          'Select a different key file'
-        )
-      )
+    const SelectedFileContent = () => (
+      <div className="dropzone-content has-file">
+        <div className="dropzone-filename">{fileName}</div>
+        <label className="dropzone-link" for="loadFile">
+          Select a different key file
+        </label>
+      </div>
+    )
 
     const error = keyfileError || passwordError
 
-    return h(
-      'div',
-      {class: 'authentication-content key-file'},
-      h(
-        'div',
-        {
-          class: `dropzone ${error ? 'error' : ''}`,
-          onDragOver: this.dragOver,
-          onDrop: this.drop,
-        },
-        h('input', {
-          class: 'dropzone-file-input',
-          type: 'file',
-          id: 'loadFile',
-          accept: 'application/json,.json',
-          multiple: false,
-          onChange: this.selectFile,
-        }),
-        fileName === '' ? h(NoFileContent, {}) : h(SelectedFileContent, {})
-      ),
-      h('input', {
-        type: 'password',
-        class: 'input fullwidth auth',
-        id: 'keyfile-password',
-        name: 'keyfile-password',
-        placeholder: 'Enter the password',
-        value: password,
-        onInput: this.updatePassword,
-        ref: (element) => {
-          this.filePasswordField = element
-        },
-        onKeyDown: (e) => e.key === 'Enter' && this.unlockKeyfile(),
-        autocomplete: 'off',
-      }),
-      h(
-        'div',
-        {class: 'validation-row'},
-        h(
-          'button',
-          {
-            disabled: !(password && fileName !== '') || error,
-            onClick: this.unlockKeyfile,
-            class: 'button primary',
-            ...tooltip(
+    return (
+      <div className="authentication-content key-file">
+        <div
+          className={`dropzone ${error ? 'error' : ''}`}
+          onDragOver={this.dragOver}
+          onDrop={this.drop}
+        >
+          <input
+            className="dropzone-file-input"
+            type="file"
+            id="loadFile"
+            accept="application/json,.json"
+            multiple={false}
+            onChange={this.selectFile}
+          />
+          {fileName === '' ? <NoFileContent /> : <SelectedFileContent />}
+        </div>
+        <input
+          type="password"
+          className="input fullwidth auth"
+          id="keyfile-password"
+          name="keyfile-password"
+          placeholder="Enter the password"
+          value={password}
+          onInput={this.updatePassword}
+          ref={(element) => {
+            this.filePasswordField = element
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && this.unlockKeyfile()}
+          autocomplete="off"
+        />
+        <div className="validation-row">
+          <button
+            disabled={!(password && fileName !== '') || error}
+            onClick={this.unlockKeyfile}
+            className="button primary"
+            {...tooltip(
               'Please fill in the password for the\nselected key file before proceeding.',
               !password && fileName !== ''
-            ),
-            onKeyDown: (e) => {
+            )}
+            onKeyDown={(e) => {
               e.key === 'Enter' && (e.target as HTMLButtonElement).click()
               if (e.key === 'Tab') {
                 this.filePasswordField.focus(e)
                 e.preventDefault()
               }
-            },
-          },
-          'Unlock'
-        ),
-        error && h('div', {class: 'validation-message error'}, error)
-      )
+            }}
+          >
+            Unlock
+          </button>
+          {error && <div className="validation-message error">{error}</div>}
+        </div>
+      </div>
     )
   }
 }

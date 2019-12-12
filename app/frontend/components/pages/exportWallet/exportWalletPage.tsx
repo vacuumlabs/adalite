@@ -6,13 +6,12 @@ import debugLog from '../../../helpers/debugLog'
 
 import Tag from '../../common/tag'
 
-const Hint = ({title, text, type}) =>
-  h(
-    'div',
-    {class: `hint ${type}`},
-    h('h3', {class: 'hint-title'}, title),
-    h('p', {class: 'hint-paragraph'}, text)
-  )
+const Hint = ({title, text, type}) => (
+  <div className={`hint ${type}`}>
+    <h3 className="hint-title">{title}</h3>
+    <p className="hint-paragraph">{text}</p>
+  </div>
+)
 
 interface Props {
   exportJsonWallet: (password: string, name: string) => void
@@ -150,108 +149,80 @@ class ExportWalletDialog extends Component<Props, State> {
       walletNameValid,
     }
   ) {
-    return h(
-      'div',
-      {class: 'page-wrapper'},
-      h(
-        'main',
-        {class: 'page-main'},
-        h(
-          'div',
-          {class: 'export download card'},
-          h(
-            'div',
-            {class: 'export-content'},
-            h(
-              'h2',
-              {class: 'export-title'},
-              'Export Key File ',
-              h('span', {class: 'export-subtitle'}, '(Encrypted JSON)')
-            ),
-            h('input', {
-              type: 'text',
-              class: 'input fullwidth export',
-              id: 'keyfile-name',
-              name: 'keyfile-name',
-              placeholder: 'Wallet name',
-              value: walletName,
-              onInput: this.updateWalletName,
-              autocomplete: 'off',
-            }),
-            h('input', {
-              type: 'password',
-              class: 'input fullwidth export',
-              id: 'keyfile-password',
-              name: 'keyfile-password',
-              placeholder: 'Choose a password (optional)',
-              value: password,
-              onInput: this.updatePassword,
-              onBlur: this.touchPassword,
-              autocomplete: 'off',
-            }),
-            h('input', {
-              type: 'password',
-              class: 'input fullwidth export',
-              id: 'keyfile-password-confirmation',
-              name: 'keyfile-password-confirmation',
-              placeholder: 'Repeat the password',
-              value: confirmation,
-              onInput: this.updateConfirmation,
-              onBlur: this.touchConfirmation,
-              autocomplete: 'off',
-            }),
-            (showError || warningMessage.length > 0) &&
-              h(
-                'div',
-                {class: 'validation-error-field'},
-                showError && h('div', {class: 'validation-message error'}, errorMessage),
-                warningMessage.length > 0 &&
-                  h('div', {class: 'validation-message warning'}, warningMessage)
-              ),
-            h(
-              'div',
-              {class: 'export-content-bottom'},
-              h(
-                'button',
-                {
-                  class: 'button secondary',
-                  onClick: () => window.history.back(),
-                },
-                'Back'
-              ),
-              h(
-                'button',
-                {
-                  class: 'button primary',
-                  disabled: showError || !isPasswordValid || !walletNameValid,
-                  onClick: this.exportJsonWallet,
-                },
-                'Download the key file'
-              )
-            )
-          ),
-          h(Tag, {type: 'warning big', text: 'PROCEED WITH CAUTION'})
-        )
-      ),
-      h(
-        'aside',
-        {class: 'sidebar export'},
-        h(Hint, {
-          type: 'lose',
-          title: 'Do not lose it',
-          text: 'Key file cannot be recovered.',
-        }),
-        h(Hint, {
-          type: 'share',
-          title: 'Do not Share it',
-          text: 'Use it in the official AdaLite only.',
-        }),
-        h(Hint, {
-          type: 'backup',
-          title: 'Make multiple backups',
-          text: 'Store it safely in multiple places.',
-        })
-      )
+    return (
+      <div className="page-wrapper">
+        <main className="page-main">
+          <div className="export download card">
+            <div className="export-content">
+              <h2 className="export-title">
+                Export Key File <span className="export-subtitle">(Encrypted JSON)</span>
+              </h2>
+              <input
+                type="text"
+                className="input fullwidth export"
+                id="keyfile-name"
+                name="keyfile-name"
+                placeholder="Wallet name"
+                value={walletName}
+                onInput={this.updateWalletName}
+                autocomplete="off"
+              />
+              <input
+                type="password"
+                className="input fullwidth export"
+                id="keyfile-password"
+                name="keyfile-password"
+                placeholder="Choose a password (optional)"
+                value={password}
+                onInput={this.updatePassword}
+                onBlur={this.touchPassword}
+                autocomplete="off"
+              />
+              <input
+                type="password"
+                className="input fullwidth export"
+                id="keyfile-password-confirmation"
+                name="keyfile-password-confirmation"
+                placeholder="Repeat the password"
+                value={confirmation}
+                onInput={this.updateConfirmation}
+                onBlur={this.touchConfirmation}
+                autocomplete="off"
+              />
+              {(showError || warningMessage.length > 0) && (
+                <div className="validation-error-field">
+                  {showError && <div className="validation-message error">{errorMessage}</div>}
+                  {warningMessage.length > 0 && (
+                    <div className="validation-message warning">{warningMessage}</div>
+                  )}
+                </div>
+              )}
+              <div className="export-content-bottom">
+                <button className="button secondary" onClick={() => window.history.back()}>
+                  Back
+                </button>
+                <button
+                  className="button primary"
+                  disabled={showError || !isPasswordValid || !walletNameValid}
+                  onClick={this.exportJsonWallet}
+                >
+                  Download the key file
+                </button>
+              </div>
+            </div>
+            <Tag type="warning big" text="PROCEED WITH CAUTION" />
+          </div>
+        </main>
+        <aside className="sidebar export">
+          <Hint type="lose" title="Do not lose it" text="Key file cannot be recovered." />
+          <Hint type="share" title="Do not Share it" text="Use it in the official AdaLite only." />
+          <Hint
+            type="backup"
+            title="Make multiple backups"
+            text="Store it safely in multiple places."
+          />
+        </aside>
+      </div>
     )
   }
 }

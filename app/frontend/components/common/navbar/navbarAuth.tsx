@@ -42,74 +42,57 @@ class NavbarAuth extends Component<Props, {}> {
   }
 
   render({isDemoWallet, logout, openWelcome}) {
-    return h(
-      'nav',
-      {
-        class: `navbar authed ${isDemoWallet ? 'demo' : ''}`,
-        ref: (element) => {
+    return (
+      <nav
+        className={`navbar authed ${isDemoWallet ? 'demo' : ''}`}
+        ref={(element) => {
           this.scrollDestination = element
-        },
-      },
-      h(
-        'div',
-        {class: 'navbar-wrapper'},
-        h(
-          'h1',
-          {class: 'navbar-heading'},
-          h('span', {class: 'navbar-title'}, 'AdaLite - Cardano Wallet'),
-          h(
-            'a',
-            {
-              href: '#',
-              onClick: (e) => {
+        }}
+      >
+        <div className="navbar-wrapper">
+          <h1 className="navbar-heading">
+            <span className="navbar-title">AdaLite - Cardano Wallet</span>
+            <a
+              href="#"
+              onClick={(e) => {
                 e.preventDefault()
                 window.history.pushState({}, 'txHistory', 'txHistory')
-              },
-            },
-            h('img', {
-              src: 'assets/adalite-logo.svg',
-              alt: 'AdaLite - Cardano Wallet',
-              class: 'navbar-logo',
-            })
-          )
-        ),
-        isDemoWallet && h('div', {class: 'navbar-demo'}, 'Accessing demo wallet'),
-        h('div', {class: 'navbar-version'}, `Ver. ${APP_VERSION}`),
-        h(
-          'div',
-          {class: 'navbar-content'},
-          h(
-            'a',
-            {
-              class: 'navbar-link',
-              href: '#',
-              onClick: (e) => {
+              }}
+            >
+              <img
+                src="assets/adalite-logo.svg"
+                alt="AdaLite - Cardano Wallet"
+                className="navbar-logo"
+              />
+            </a>
+          </h1>
+          {isDemoWallet && <div className="navbar-demo">Accessing demo wallet</div>}
+          <div className="navbar-version">{`Ver. ${APP_VERSION}`}</div>
+          <div className="navbar-content">
+            <a
+              className="navbar-link"
+              href="#"
+              onClick={(e) => {
                 e.preventDefault()
                 openWelcome()
-              },
-            },
-            'About'
-          ),
-          h(
-            'a',
-            {
-              class: 'navbar-link',
-              href: 'https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ',
-              target: '_blank',
-              rel: 'noopener',
-            },
-            'Help'
-          )
-        ),
-        h(
-          'button',
-          {
-            class: 'button logout',
-            onClick: () => setTimeout(logout, 100),
-          },
-          'Logout'
-        )
-      )
+              }}
+            >
+              About
+            </a>
+            <a
+              className="navbar-link"
+              href="https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ"
+              target="_blank"
+              rel="noopener"
+            >
+              Help
+            </a>
+          </div>
+          <button className="button logout" onClick={() => setTimeout(logout, 100)}>
+            Logout
+          </button>
+        </div>
+      </nav>
     )
   }
 }

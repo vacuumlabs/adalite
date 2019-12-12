@@ -13,13 +13,10 @@ interface Props {
   children: ComponentChildren
 }
 
-const Alert = ({children, alertType = 'success'}: Props) =>
-  h(
-    'div',
-    {
-      class: `alert ${alertType}`,
-    },
-    h('div', {class: 'alert-content'}, children)
-  )
+const Alert = ({children, alertType = 'success'}: Props) => (
+  <div className={`alert ${alertType}`}>
+    <div className="alert-content">{children}</div>
+  </div>
+)
 
 export default Alert

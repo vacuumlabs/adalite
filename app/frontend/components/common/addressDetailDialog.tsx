@@ -40,100 +40,74 @@ class AddressDetailDialogClass extends Component<Props, {showCopyMessage: boolea
     {showCopyMessage}
   ) {
     return (
-      showDetail &&
-      h(
-        Modal,
-        {
-          closeHandler: closeAddressDetail,
-        },
-        h(
-          'div',
-          {class: 'detail'},
-          h(
-            'div',
-            {class: 'detail-content'},
-            h('div', {class: 'detail-label'}, 'Address'),
-            h(
-              'div',
-              {class: 'detail-input address'},
-              h(
-                CopyOnClick,
-                {
-                  value: showDetail.address,
-                  copy: showDetail.copyOnClick,
-                },
-                h('div', {class: 'detail-address'}, showDetail.address)
-              ),
-              h(
-                CopyOnClick,
-                {
-                  value: showDetail.address,
-                  elementClass: 'address-copy copy',
-                  copiedCallback: this.toggleCopyMessage,
-                  enableTooltip: false,
-                },
-                h('span', {class: 'copy-text'}, '')
-              ),
-              showCopyMessage && h('span', {class: 'detail-copy-message'}, 'Copied to clipboard')
-            ),
-            h('div', {class: 'detail-label'}, 'Derivation path'),
-            h(
-              'div',
-              {class: 'detail-row'},
-              h(
-                'div',
-                {class: 'detail-input'},
-                h('div', {class: 'detail-derivation'}, showDetail.bip32path)
-              ),
-              showVerification &&
-                (verificationError
-                  ? h(
-                    'div',
-                    {class: 'detail-error'},
-                    h(
-                      'div',
-                      undefined,
-                      'Verification failed. ',
-                      h(
-                        'a',
-                        {
-                          href: '#',
-                          class: 'detail-verify',
-                          onClick: (e) => {
+      showDetail && (
+        <Modal closeHandler={closeAddressDetail}>
+          <div className="detail">
+            <div className="detail-content">
+              <div className="detail-label">Address</div>
+              <div className="detail-input address">
+                <CopyOnClick value={showDetail.address} copy={showDetail.copyOnClick}>
+                  <div className="detail-address">{showDetail.address}</div>
+                </CopyOnClick>
+                <CopyOnClick
+                  value={showDetail.address}
+                  elementClass="address-copy copy"
+                  copiedCallback={this.toggleCopyMessage}
+                  enableTooltip={false}
+                >
+                  <span className="copy-text">{''}</span>
+                </CopyOnClick>
+                {showCopyMessage && (
+                  <span className="detail-copy-message">Copied to clipboard</span>
+                )}
+              </div>
+              <div className="detail-label">Derivation path</div>
+              <div className="detail-row">
+                <div className="detail-input">
+                  <div className="detail-derivation">{showDetail.bip32path}</div>
+                </div>
+                {showVerification &&
+                  (verificationError ? (
+                    <div className="detail-error">
+                      <div>
+                        Verification failed.{' '}
+                        <a
+                          href="#"
+                          className="detail-verify"
+                          onClick={(e) => {
                             e.preventDefault()
                             verifyAddress()
-                          },
-                        },
-                        'Try again'
-                      )
-                    )
-                  )
-                  : h(
-                    'a',
-                    {
-                      href: '#',
-                      class: 'detail-verify',
-                      onClick: (e) => {
+                          }}
+                        >
+                          Try again
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <a
+                      href="#"
+                      className="detail-verify"
+                      onClick={(e) => {
                         e.preventDefault()
                         !waitingForHwWallet && verifyAddress()
-                      },
-                    },
-                    waitingForHwWallet ? 'Verifying address..' : `Verify on ${hwWalletName}`
-                  ))
-            )
-          ),
-          h(
-            'div',
-            {class: 'detail-qr'},
-            h('img', {
-              src: new QRious({
-                value: showDetail.address,
-                level: 'M',
-                size: 200,
-              }).toDataURL(),
-            })
-          )
-        )
+                      }}
+                    >
+                      {waitingForHwWallet ? 'Verifying address..' : `Verify on ${hwWalletName}`}
+                    </a>
+                  ))}
+              </div>
+            </div>
+            <div className="detail-qr">
+              <img
+                src={new QRious({
+                  value: showDetail.address,
+                  level: 'M',
+                  size: 200,
+                }).toDataURL()}
+              />
+            </div>
+          </div>
+        </Modal>
       )
     )
   }

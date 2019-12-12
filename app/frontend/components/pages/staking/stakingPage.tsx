@@ -51,62 +51,51 @@ class StakingPage extends Component<Props, State> {
   }
 
   render({emailSubmitSuccess, emailSubmitMessage}, {email, emailValid, errorMessage}) {
-    return h(
-      'div',
-      {class: 'staking-wrapper'},
-      h(
-        'div',
-        {class: 'staking-inner'},
-        h('div', {class: 'staking-label'}, 'Upcoming'),
-        h(
-          'h2',
-          {class: 'staking-title'},
-          'Staking delegation and staking pool is coming to AdaLite'
-        ),
-        h(
-          'p',
-          {class: 'staking-text'},
-          'We are currently implementing staking delegation interface so our users can easily stake their ADA to any stakepool directly from AdaLite. We also plan to operate our own AdaLite stake pool with reasonable fees and we hope AdaLite users will be willing to stake with us. You can check out the new balance check feature ',
-          h('a', {href: 'https://testnet.adalite.io/', target: '_blank'}, 'here.')
-        ),
-        h(
-          'form',
-          {
-            class: 'staking-form',
-            id: 'stakingForm',
-          },
-          h('input', {
-            class: 'input',
-            type: 'email',
-            placeholder: 'Enter your email to get notified',
-            value: email,
-            required: true,
-            onInput: this.updateEmail,
-          }),
-          h(
-            'button',
-            {
-              onClick: this.handleSubmit,
-              class: 'button primary wide',
-              disabled: !emailValid,
-              type: 'submit',
-              onKeyDown: (e) => {
+    return (
+      <div className="staking-wrapper">
+        <div className="staking-inner">
+          <div className="staking-label">Upcoming</div>
+          <h2 className="staking-title">
+            Staking delegation and staking pool is coming to AdaLite
+          </h2>
+          <p className="staking-text">
+            We are currently implementing staking delegation interface so our users can easily stake
+            their ADA to any stakepool directly from AdaLite. We also plan to operate our own
+            AdaLite stake pool with reasonable fees and we hope AdaLite users will be willing to
+            stake with us. You can check out the new balance check feature{' '}
+            <a href="https://testnet.adalite.io/" target="_blank">
+              here.
+            </a>
+          </p>
+          <form className="staking-form" id="stakingForm">
+            <input
+              className="input"
+              type="email"
+              placeholder="Enter your email to get notified"
+              value={email}
+              required={true}
+              onInput={this.updateEmail}
+            />
+            <button
+              onClick={this.handleSubmit}
+              className="button primary wide"
+              disabled={!emailValid}
+              type="submit"
+              onKeyDown={(e) => {
                 e.key === 'Enter' && (e.target as HTMLButtonElement).click()
-              },
-            },
-            'Subscribe'
-          )
-        ),
-        h(
-          'div',
-          {class: 'form-message-field'},
-          !emailValid && h('div', {class: 'form-alert error'}, errorMessage),
-          emailSubmitSuccess && h('div', {class: 'form-alert success'}, emailSubmitMessage),
-          !emailSubmitSuccess &&
-            emailSubmitMessage &&
-            h('div', {class: 'form-alert error'}, emailSubmitMessage)
-        )
-      )
+              }}
+            >
+              Subscribe
+            </button>
+          </form>
+          <div className="form-message-field">
+            {!emailValid && <div className="form-alert error">{errorMessage}</div>}
+            {emailSubmitSuccess && <div className="form-alert success">{emailSubmitMessage}</div>}
+            {!emailSubmitSuccess &&
+              emailSubmitMessage && <div className="form-alert error">{emailSubmitMessage}</div>}
+          </div>
+        </div>
+      </div>
     )
   }
 }

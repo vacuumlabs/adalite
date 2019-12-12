@@ -4,33 +4,28 @@ interface Props {
   closeBanner: () => void
 }
 
-const StakingBanner = ({closeBanner}: Props) =>
-  h(
-    'div',
-    {class: 'banner'},
-    h(
-      'div',
-      {class: 'banner-text'},
-      "AdaLite will support staking. We've just released balance check for incentivized testnet. ",
-      h(
-        'a',
-        {
-          href: '#',
-          onClick: (e) => {
-            e.preventDefault()
-            window.history.pushState({}, 'staking', 'staking')
-          },
-        },
-        'Read more'
-      )
-    ),
-    h('button', {
-      'class': 'button close banner-close',
-      'aria-label': 'Close banner',
-      'onclick': (e) => {
+const StakingBanner = ({closeBanner}: Props) => (
+  <div className="banner">
+    <div className="banner-text">
+      AdaLite will support staking. We've just released balance check for incentivized testnet.{' '}
+      <a
+        href="#"
+        onClick={(e) => {
+          e.preventDefault()
+          window.history.pushState({}, 'staking', 'staking')
+        }}
+      >
+        Read more
+      </a>
+    </div>
+    <button
+      className="button close banner-close"
+      ariaLabel="Close banner"
+      onclick={(e) => {
         closeBanner()
-      },
-    })
-  )
+      }}
+    />
+  </div>
+)
 
 export default StakingBanner

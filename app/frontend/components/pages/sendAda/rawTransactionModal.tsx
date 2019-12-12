@@ -5,18 +5,13 @@ import Modal from '../../common/modal'
 
 class RawTransactionModal {
   render({rawTransaction, setRawTransactionOpen}) {
-    return h(
-      Modal,
-      {
-        closeHandler: () => setRawTransactionOpen(false),
-        bodyClass: 'width-auto',
-      },
-      h(
-        'div',
-        {class: 'width-auto'},
-        h('h4', undefined, 'Raw unsigned transaction'),
-        h('div', {class: 'raw-transaction one-click-select'}, rawTransaction)
-      )
+    return (
+      <Modal closeHandler={() => setRawTransactionOpen(false)} bodyClass="width-auto">
+        <div className="width-auto">
+          <h4>Raw unsigned transaction</h4>
+          <div className="raw-transaction one-click-select">{rawTransaction}</div>
+        </div>
+      </Modal>
     )
   }
 }

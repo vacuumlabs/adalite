@@ -20,44 +20,33 @@ class Modal extends Component<Props, {}> {
   }
 
   render({children, closeHandler, bodyClass = '', title = '', showWarning = false}) {
-    return h(
-      'div',
-      {
-        class: 'modal',
-      },
-      h('div', {
-        class: 'modal-overlay',
-        onClick: closeHandler,
-      }),
-      h(
-        'div',
-        {
-          class: `modal-body ${bodyClass}`,
-          onKeyDown: (e) => {
+    return (
+      <div className="modal">
+        <div className="modal-overlay" onClick={closeHandler} />
+        <div
+          className={`modal-body ${bodyClass}`}
+          onKeyDown={(e) => {
             e.key === 'Escape' && closeHandler()
-          },
-        },
-        h(
-          'div',
-          {
-            class: 'modal-content',
-          },
-          closeHandler &&
-            h('button', {
-              'class': 'button close modal-close',
-              'onClick': closeHandler,
-              'aria-label': 'Close dialog',
-            }),
-          title &&
-            h(
-              'div',
-              {class: 'modal-head'},
-              title && h('h2', {class: 'modal-title'}, title),
-              showWarning && h(Tag, {type: 'big warning', text: 'Proceed with caution'})
-            ),
-          children
-        )
-      )
+          }}
+        >
+          <div className="modal-content">
+            {closeHandler && (
+              <button
+                className="button close modal-close"
+                onClick={closeHandler}
+                ariaLabel="Close dialog"
+              />
+            )}
+            {title && (
+              <div className="modal-head">
+                {title && <h2 className="modal-title">{title}</h2>}
+                {showWarning && <Tag type="big warning" text="Proceed with caution" />}
+              </div>
+            )}
+            {children}
+          </div>
+        </div>
+      </div>
     )
   }
 }

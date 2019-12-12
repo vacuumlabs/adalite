@@ -59,51 +59,42 @@ class DonationButtons extends Component<Props> {
     const isFormValid = isSendAddressValid && sendAmount && !sendAmountValidationError
     const isFixedInsufficient = this.isInsufficient(ADALITE_FIXED_DONATION_VALUE, 'fixed')
     const isPercentageInsufficient = this.isInsufficient(percentageDonationValue, 'percentage')
-    return h(
-      'div',
-      {
-        class: 'send-donate',
-      },
-      h(
-        'button',
-        {
-          'id': 'fixed',
-          'class': this.getButtonClass(ADALITE_FIXED_DONATION_VALUE, 'fixed'),
-          'value': ADALITE_FIXED_DONATION_VALUE,
-          'onClick': updateDonation,
-          'disabled': !isFormValid || isFixedInsufficient,
-          'aria-label': 'Fixed amount',
-          ...tooltip('Insufficient funds', isFixedInsufficient),
-        },
-        `${ADALITE_FIXED_DONATION_VALUE} `,
-        h(AdaIcon, {})
-      ),
-      h(
-        'button',
-        {
-          'id': 'percentage',
-          'class': this.getButtonClass(percentageDonationValue, 'percentage'),
-          'value': percentageDonationValue,
-          'onClick': updateDonation,
-          'disabled': !isFormValid || !thresholdAmountReached || isPercentageInsufficient,
-          'aria-label': 'Percentage amount',
-          ...tooltip('Insufficient funds', isPercentageInsufficient),
-        },
-        `${percentageDonationText} (`,
-        `${percentageDonationValue} `,
-        h(AdaIcon, {}),
-        ')'
-      ),
-      h(
-        'button',
-        {
-          class: 'button donate',
-          id: 'custom',
-          onClick: toggleCustomDonation,
-          disabled: !isFormValid,
-        },
-        'Custom'
-      )
+    return (
+      <div className="send-donate">
+        <button
+          id="fixed"
+          className={this.getButtonClass(ADALITE_FIXED_DONATION_VALUE, 'fixed')}
+          value={ADALITE_FIXED_DONATION_VALUE}
+          onClick={updateDonation}
+          disabled={!isFormValid || isFixedInsufficient}
+          ariaLabel="Fixed amount"
+          {...tooltip('Insufficient funds', isFixedInsufficient)}
+        >
+          {`${ADALITE_FIXED_DONATION_VALUE} `}
+          <AdaIcon />
+        </button>
+        <button
+          id="percentage"
+          className={this.getButtonClass(percentageDonationValue, 'percentage')}
+          value={percentageDonationValue}
+          onClick={updateDonation}
+          disabled={!isFormValid || !thresholdAmountReached || isPercentageInsufficient}
+          ariaLabel="Percentage amount"
+          {...tooltip('Insufficient funds', isPercentageInsufficient)}
+        >
+          {`${percentageDonationText} (`}
+          {`${percentageDonationValue} `}
+          <AdaIcon />)
+        </button>
+        <button
+          className="button donate"
+          id="custom"
+          onClick={toggleCustomDonation}
+          disabled={!isFormValid}
+        >
+          Custom
+        </button>
+      </div>
     )
   }
 }

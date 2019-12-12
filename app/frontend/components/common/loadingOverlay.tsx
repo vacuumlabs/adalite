@@ -8,14 +8,14 @@ interface Props {
 
 const LoadingOverlay = connect(['loadingMessage', 'loading'])(
   ({loading, loadingMessage}: Props) =>
-    loading
-      ? h(
-        'div',
-        {class: 'loading'},
-        h('div', {class: 'spinner'}, h('span', undefined)),
-        loadingMessage ? h('p', {class: 'loading-message'}, loadingMessage) : ''
-      )
-      : null
+    loading ? (
+      <div className="loading">
+        <div className="spinner">
+          <span />
+        </div>
+        {loadingMessage ? <p className="loading-message">{loadingMessage}</p> : ''}
+      </div>
+    ) : null
 )
 
 export default LoadingOverlay

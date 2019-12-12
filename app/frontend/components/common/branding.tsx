@@ -7,18 +7,15 @@ interface Props {
   dark: boolean
 }
 
-const Branding = ({dark}: Props) =>
-  h(
-    'div',
-    {
-      class: 'branding',
-    },
-    h('p', {class: `branding-label ${dark ? 'dark' : ''}`}, 'Developed by'),
-    h('img', {
-      class: 'branding-logo',
-      src: dark ? LOGO_PATH_DARK : LOGO_PATH_WHITE,
-      alt: 'Vacuumlabs logo',
-    })
-  )
+const Branding = ({dark}: Props) => (
+  <div className="branding">
+    <p className={`branding-label ${dark ? 'dark' : ''}`}>Developed by</p>
+    <img
+      className="branding-logo"
+      src={dark ? LOGO_PATH_DARK : LOGO_PATH_WHITE}
+      alt="Vacuumlabs logo"
+    />
+  </div>
+)
 
 export default Branding
