@@ -17,7 +17,10 @@
 /* VARIABLES */
 
 :root {
-  --width: 1320px;
+  --width: 1320px;  
+  --color-staking: #6495ed;
+  --color-staking-dark: #2e73ee;
+  --color-staking-light: #80a9f2;
   --color-pink: #e72076;
   --color-grey: #606a71;
   --color-grey-dark: #20323f;
@@ -102,6 +105,10 @@ a:hover {
 
 p {
   margin: 0;
+}
+
+p.hey {
+  width:100%,
 }
 
 /* SELECTABILITY */
@@ -199,6 +206,20 @@ p {
   padding-right: 126px;
 }
 
+.input-wrapper-percent {
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  margin-left: 12px;
+  position: relative;
+  height: 58px;
+}
+
+.input-wrapper-percent .percent {
+  position: absolute;
+  top: 16px;
+  right: 40px;
+}
+
 .textarea {
   font-family: JTMarnie, Arial, Helvetica, sans-serif;
 }
@@ -235,6 +256,20 @@ p {
   background-color: var(--color-brand-light);
   color: white;
 }
+
+.button.primary.staking {
+  background-color: var(--color-staking);
+}
+
+.button.primary.staking:hover {
+  background-color: var(--color-staking-dark);
+}
+
+.button.primary.staking:disabled {
+  background-color: var(--color-staking-light);
+  color: white;
+}
+
 
 .button.secondary {
   padding: 10px 24px;
@@ -1068,6 +1103,7 @@ button[data-balloon] {
 
 .dashboard.desktop {
   display: flex;
+  width: 100%;
 }
 
 .dashboard.mobile {
@@ -1827,6 +1863,59 @@ button[data-balloon] {
   margin-bottom: 64px;
 }
 
+/* STAKING BALANCES */
+
+.staking-balances-title {
+  margin-bottom: 0;
+}
+
+.staking-balances-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.staking-balances-amount {
+  margin-left: 16px;
+  font-size: 20px;
+  line-height: 48px;
+  color: var(--color-staking);
+  padding-right: 20px;
+  position: relative;
+}
+
+.staking-balances-amount svg {
+  margin-left: 12px;
+  width: 12px;
+} 
+
+.staking-balances-amount svg path {
+  fill: var(--color-staking);
+}
+
+.balance-amount-staking {
+  font-size: 32px;
+  line-height: 48px;
+  color: var(--color-staking);
+  padding-right: 34px;
+  position: relative;
+}
+
+.balance-amount-staking svg {
+  margin-left: 12px;
+  width: 18px;
+} 
+
+.balance-amount-staking svg path {
+  fill: var(--color-staking);
+}
+
+.total-balance-wrapper {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
 /* BALANCE */
 
 .balance-title {
@@ -1847,18 +1936,13 @@ button[data-balloon] {
   position: relative;
 }
 
-.balance-amount::after {
-  content: '';
-  position: absolute;
+.balance-amount svg {
+  margin-left: 12px;
   width: 18px;
-  height: 22px;
-  right: 0;
-  top: 12px;
-  margin: auto;
-  background-image: url('../assets/ada_symbol_balance.svg');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
+} 
+
+.balance-amount svg path {
+  fill: var(--color-brand);
 }
 
 .conversions {
@@ -1973,6 +2057,14 @@ button[data-balloon] {
 
 .address-link:hover {
   color: var(--color-brand);
+}
+
+.address-link.seiza {
+  margin-right: 0;
+}
+
+.address-link.adascan {
+  margin-right: 24px;
 }
 
 .address:hover .address-value {
@@ -2242,7 +2334,7 @@ button[data-balloon] {
   font-size: 11px;
   text-transform: uppercase;
   font-weight: bold;
-  color: var(--color-brand);
+  color: var(--color-staking);
   position: relative;
   display: inline-block;
   line-height: 1;
@@ -2303,6 +2395,324 @@ button[data-balloon] {
 
 .contact-form .form-alert {
   margin-top: -15px;
+}
+
+/* SENDING-STAKING TOGGLE */
+
+.staking-page-toggle-wrapper {
+  display: flex;
+  padding: 20px 0 0 40px;
+}
+
+.toggle-title {
+  font-size: 14px;
+  line-height: 28px;
+  font-weight: bold;
+}
+
+.staking-page-toggle-switch {
+  position: relative;
+  display: inline-block;
+  margin: 0 4px 12px 4px;
+  width: 56px;
+  height: 28px;
+}
+
+.staking-page-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-grey-light);
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 28px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--color-brand);
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+  background-color: var(--color-staking)
+}
+
+/* DELEGATIONS */
+
+.delegation-fee {
+  padding-left: 16px;
+  color: var(--color-text);
+}
+
+.delegation-percent {
+  padding-left: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-grey);
+}
+
+.delegation-percent.valid {
+  color: var(--color-green);
+}
+
+.delegation-info-row {
+  margin-bottom: 32px;
+  padding-top: 32px;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  grid-row-gap: 16px;
+  grid-column-gap: 96px;
+  align-items: center;
+  color: var(--color-grey);
+  border-top: 1px solid var(--color-border);
+}
+
+.delegation-info-row .fee-label {
+  justify-self: end;
+  align-self: start;
+}
+
+.delegation-info-row .delegated-percent-label {
+  justify-self: end;
+  align-self: start;
+}
+
+.delegation-info-row svg {
+  margin-left: 8px;
+  width: 8px;
+} 
+
+.delegation-info-row svg path {
+  fill: var(--color-grey-medium);
+}
+
+.stake-pool-info {
+  margin-left: 12px;
+  height: 16px;
+}
+
+.stake-pool-info.valid {
+  color: var(--color-green)
+}
+
+.stake-pool-info.valid.warning {
+  color: var(--color-grey)
+}
+
+.stake-pool-info.invalid {
+  color: var(--color-red)
+}
+
+.input.stake-pool-percent {
+  border: none;
+  display: block;
+  width: 100%;
+}
+
+.input.stake-pool-percent:focus {
+  box-shadow: none;
+}
+
+.input.stake-pool-id {
+  margin-bottom: 12px;
+}
+
+.button.stake-pool {
+  padding: 0;
+  background: none;
+  font-size: 14px;
+  color: var(--color-staking);
+  text-decoration: none;
+  margin-left: 16px;
+  font-weight: normal;
+  text-decoration: underline;
+}
+
+.button.stake-pool svg path {
+  fill: var(--color-staking);
+}
+
+.button.add-stake-pool {
+  float: right;
+  border: 1px solid var(--color-staking);
+  margin-right: 16px;
+  font-size: 14px;
+  font-weight: 400;
+  background-color: transparent;
+  padding: 6px 10px;
+  color: var(--color-staking);
+  white-space: nowrap;
+}
+
+.button.add-stake-pool svg path {
+  fill: var(--color-staking);
+}
+
+.button.add-stake-pool.active,
+.button.add-stake-pool:hover {
+  background-color: var(--color-staking);
+  color: #fff;
+}
+
+.button.add-stake-pool.active svg path,
+.button.add-stake-pool:hover svg path {
+  fill: #fff;
+}
+
+.button.add-stake-pool:disabled {
+  border-color: var(--color-border);
+  color: var(--color-placeholder);
+}
+
+.button.add-stake-pool:disabled svg path {
+  fill: var(--color-placeholder);
+}
+
+.button.add-stake-pool:disabled:hover {
+  background-color: var(--color-staking-light);
+  color: #fff;
+}
+
+.button.add-stake-pool:disabled:hover svg path {
+  fill: #fff;
+}
+
+.button.revoke-delegation {
+  background-color: var(--color-staking);
+  font-size: 14px;
+  line-height: 16px;
+  margin-top: 16px
+}
+
+.button.revoke-delegation:hover {
+  background-color: var(--color-staking-dark);
+}
+
+.stake-pool-list {
+  padding: 0 0 8px 0;
+  margin: 0;
+}
+
+.stake-pool-item {
+  display: grid;
+  grid-template-columns: 76% 24%;
+  padding: 24px 16px 24px 0;
+  color: var(--color-grey);
+}
+
+.add-stake-pool-wrapper {
+  margin-left: 12px;
+  display: block;
+  height: 80px;
+}
+
+.current-delegation-wrapper {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.delegation-history {
+  position: relative;
+  padding-right: 28px;
+}
+
+.delegation-history::before {
+  position: absolute;
+  content: '';
+  left: 56px;
+  right: 40px;
+  bottom: 40px;
+  height: 40px;
+  background-image: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0)
+  );
+  z-index: 2;
+}
+
+.delegation-history-content {
+  padding: 0;
+  margin: 0;
+  max-height: 680px;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.delegation-history-item {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  padding: 24px 16px 24px 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-grey);
+}
+
+.delegation-history-item:last-child {
+  margin-bottom: 8px;
+}
+
+.delegation-history-title {
+  margin-bottom: 8px;
+  text-transform: capitalize;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.delegation-history-title.reward {
+  color: var(--color-green)
+}
+
+.delegation-history-time {
+  margin-bottom: 8px;
+  align-self: center;
+}
+
+.delegation-history-percent {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: right;
+}
+
+.delegation-history-amount {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: right;
+  color: var(--color-green)
+}
+
+.delegation-history-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 12px;
+  justify-self: start;
+}
+
+.delegation-history-id {
+  margin-left: 12px;
+  margin-bottom: 4px;
+  justify-self: start;
+  color: rgba(96, 106, 113, 0.64);
 }
 
 /* TRANSACTIONS */

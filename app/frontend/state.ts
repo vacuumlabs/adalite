@@ -76,6 +76,8 @@ export interface State {
   isDemoWallet?: boolean
   error?: any
   showAddressVerification?: boolean
+
+  stakePools: any
 }
 
 const initialState: State = {
@@ -128,6 +130,15 @@ const initialState: State = {
   sendSentry: {},
   autoLogin:
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
+
+  stakePools: [
+    {
+      id: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
+      percent: 100,
+      name: 'AdaLite Stake Pool',
+      valid: true,
+    },
+  ],
 }
 
 export {initialState}

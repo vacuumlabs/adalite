@@ -217,6 +217,125 @@ const CardanoWallet = async (options) => {
     return blockchainExplorer.getTxHistory(addresses)
   }
 
+  // DUMMY
+  function getStakingBalance() {
+    return 4141
+  }
+
+  function getNonStakingBalance() {
+    return 4040
+  }
+
+  // DUMMY
+  function getRewards() {
+    return 4242
+  }
+
+  // DUMMY
+  function getDelegationHistory() {
+    return [
+      {
+        timeIssued: '06/12/2019, 11:01:22',
+        entryType: 'delegation',
+        stakePools: [
+          {
+            name: 'Stake Pool Uno',
+            id: 'stake-pool-numero-uno-id',
+            percent: 33,
+          },
+          {
+            name: 'Stake Pool Dos',
+            id: 'stake-pool-numero-dos-id',
+            percent: 33,
+          },
+          {
+            name: 'Stake Pool Tres',
+            id: 'stake-pool-numero-tres-id',
+            percent: 34,
+          },
+        ],
+      },
+      {
+        timeIssued: '06/14/2019, 11:01:24',
+        entryType: 'reward',
+        info: 'reward-information',
+        amount: 3421,
+      },
+      {
+        timeIssued: '06/14/2019, 11:01:23',
+        entryType: 'delegation',
+        stakePools: [
+          {
+            name: 'Stake Pool All In',
+            id: 'stake-pool-all-in-id',
+            percent: 100,
+          },
+        ],
+      },
+      {
+        timeIssued: '06/16/2019, 11:01:26',
+        entryType: 'delegation',
+        stakePools: [
+          {
+            name: 'Stake Pool A',
+            id: 'stake-pool-a-id',
+            percent: 50,
+          },
+          {
+            name: 'Stake Pool B',
+            id: 'stake-pool-b-id',
+            percent: 10,
+          },
+          {
+            name: 'Stake Pool C',
+            id: 'stake-pool-c-id',
+            percent: 10,
+          },
+          {
+            name: 'Stake Pool D',
+            id: 'stake-pool-a-id',
+            percent: 10,
+          },
+          {
+            name: 'Stake Pool E',
+            id: 'stake-pool-b-id',
+            percent: 10,
+          },
+          {
+            name: 'Stake Pool F',
+            id: 'stake-pool-c-id',
+            percent: 10,
+          },
+        ],
+      },
+    ]
+  }
+
+  // DUMMY
+  function getCurrentDelegation() {
+    // return null
+    return {
+      timeIssued: '06/12/2019, 11:01:22',
+      stakePools: [
+        {
+          name: 'Stake Pool Uno',
+          id: 'stake-pool-numero-uno-id',
+          percent: 33,
+        },
+        {
+          name: 'Stake Pool Dos',
+          id: 'stake-pool-numero-dos-id',
+          percent: 33,
+        },
+        {
+          name: 'Stake Pool Tres',
+          id: 'stake-pool-numero-tres-id',
+          percent: 34,
+        },
+      ],
+    }
+  }
+
   function fetchTxInfo(txHash) {
     return blockchainExplorer.fetchTxInfo(txHash)
   }
@@ -410,11 +529,16 @@ const CardanoWallet = async (options) => {
     submitTx,
     prepareSignedTx,
     getBalance,
+    getRewards,
+    getStakingBalance,
+    getNonStakingBalance,
     getChangeAddress,
     getMaxSendableAmount,
     getMaxDonationAmount,
     getTxFee,
     getHistory,
+    getDelegationHistory,
+    getCurrentDelegation,
     isOwnAddress,
     getFilteredVisibleAddressesWithMeta,
     prepareTxAux,

@@ -56,9 +56,8 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
           <div>
             <span>View on </span>
             <a
-              className="address-link"
+              className="address-link seiza"
               href={`https://seiza.com/blockchain/address/${address}`}
-              style="margin-right:0"
               target="_blank"
               rel="noopener"
             >
@@ -66,9 +65,8 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
             </a>
             <span> | </span>
             <a
-              className="address-link"
+              className="address-link adascan"
               href={`https://adascan.net/address/${address}`}
-              style="margin-right:24px"
               target="_blank"
               rel="noopener"
             >

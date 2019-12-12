@@ -112,6 +112,57 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  const calculateDelegatedPercent = (pools) => {
+    return pools.map((pool) => pool.percent).reduce((x, y) => x + y, 0)
+  }
+
+  // DUMMY
+  const fetchPoolInfo = (poolId) => {
+    return poolId === ADALITE_CONFIG.ADALITE_STAKE_POOL_ID
+      ? {
+        name: 'AdaLite Stake Pool',
+        valid: true,
+      }
+      : ['a', 'b', 'c'].includes(poolId)
+        ? {
+          name: `Stake Pool ${poolId}`,
+          valid: true,
+        }
+        : {
+          name: '',
+          valid: false,
+        }
+  }
+
+  // DUMMY
+  const calculateDelegationFee = () => {
+    const state = getState()
+    setState({
+      delegationFee: state.stakePools.length,
+    })
+    setState({
+      calculatingDelegationFee: false,
+    })
+  }
+
+  const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 2000)
+
+  // DUMMY
+  const validateDelegationAndCalculateDelegationFee = () => {
+    const state = getState()
+    const isValid =
+      state.stakePools.every((pool) => pool.valid && pool.percent > 0) &&
+      calculateDelegatedPercent(state.stakePools) === 100
+
+    setState({isDelegationValid: isValid})
+    if (isValid) {
+      setState({calculatingDelegationFee: true})
+      debouncedCalculateDelegationFee()
+    } else {
+      setState({delegationFee: 0})
+    }
+  }
+
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
@@ -127,10 +178,27 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const walletIsLoaded = true
       const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
       const transactionHistory = await wallet.getHistory()
+      const delegationHistory = await wallet.getDelegationHistory()
+      const stakingBalance = await wallet.getStakingBalance()
+      const nonStakingBalance = await wallet.getNonStakingBalance()
       const balance = await wallet.getBalance()
+      const rewards = await wallet.getRewards()
       const conversionRates = getConversionRates(state)
       const sendAmount = {fieldValue: '', coins: 0}
       const sendAddress = {fieldValue: ''}
+      const displayStakingPage = true
+      const stakePools = [
+        {
+          id: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
+          percent: 100,
+          name: 'AdaLite Stake Pool',
+          valid: true,
+        },
+      ]
+      const calculatingDelegationFee = false
+      const delegationFee = 0
+      const isDelegationValid = true
+      const currentDelegation = await wallet.getCurrentDelegation()
       const sendResponse = ''
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
@@ -143,11 +211,21 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         walletIsLoaded,
         ownAddressesWithMeta,
+        stakingBalance,
+        nonStakingBalance,
         balance,
+        rewards,
         sendAmount,
         sendAddress,
+        displayStakingPage,
+        stakePools,
+        calculatingDelegationFee,
+        delegationFee,
+        isDelegationValid,
+        currentDelegation,
         sendResponse,
         transactionHistory,
+        delegationHistory,
         loading: false,
         mnemonicInputValue: '',
         usingHwWallet,
@@ -157,6 +235,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         showGenerateMnemonicDialog: false,
         donationAmount,
       })
+      calculateDelegationFee()
       await fetchConversionRates(conversionRates)
     } catch (e) {
       setState({
@@ -257,9 +336,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const openAddressDetail = (state, {address, bip32path}, copyOnClick) => {
     /*
-    * because we don't want to trigger trezor address
-    * verification for the  donation address
-    */
+     * because we don't want to trigger trezor address
+     * verification for the  donation address
+     */
     const showAddressVerification = state.usingHwWallet && bip32path
 
     // trigger trezor address verification for the  donation address
@@ -675,11 +754,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     for (let pollingCounter = 0; pollingCounter < maxRetries; pollingCounter++) {
       if ((await wallet.fetchTxInfo(txHash)) !== undefined) {
         /*
-        * theoretically we should clear the request cache of the wallet
-        * to be sure that we fetch the current wallet state
-        * but submitting the transaction and syncing of the explorer
-        * should take enough time to invalidate the request cache anyway
-        */
+         * theoretically we should clear the request cache of the wallet
+         * to be sure that we fetch the current wallet state
+         * but submitting the transaction and syncing of the explorer
+         * should take enough time to invalidate the request cache anyway
+         */
         await reloadWalletInfo(state)
         return {
           success: true,
@@ -874,6 +953,67 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
+  const updateStakePoolId = (state, e) => {
+    setState({
+      stakePools: state.stakePools.map((pool, i) => {
+        return Object.assign(
+          {},
+          pool,
+          i === parseInt(e.target.name, 10)
+            ? {
+              id: e.target.value,
+              ...fetchPoolInfo(e.target.value),
+            }
+            : {}
+        )
+      }),
+    })
+    validateDelegationAndCalculateDelegationFee()
+  }
+
+  const updateStakePoolPercent = (state, e) => {
+    const index = parseInt(e.target.name, 10)
+    const delegatedPercent = calculateDelegatedPercent(state.stakePools)
+    const oldPercent = state.stakePools
+      .map((pool, i) => (i === index ? pool.percent : 0))
+      .reduce((x, y) => x + y, 0)
+    const nextPercent = Math.min(
+      100 - delegatedPercent + oldPercent,
+      parseInt(e.target.value ? e.target.value : 0, 10)
+    )
+
+    setState({
+      stakePools: state.stakePools.map((pool, i) => {
+        return Object.assign({}, pool, i === index ? {percent: nextPercent} : {})
+      }),
+    })
+    validateDelegationAndCalculateDelegationFee()
+  }
+
+  const addStakePool = (state, e) => {
+    setState({
+      stakePools: state.stakePools.concat({
+        id: '',
+        percent: 0,
+        name: '',
+        valid: false,
+      }),
+    })
+    validateDelegationAndCalculateDelegationFee()
+  }
+
+  const removeStakePool = (state, e) => {
+    const index = parseInt(e.target.name, 10)
+    setState({
+      stakePools: state.stakePools.filter((pool, i) => i !== index),
+    })
+    validateDelegationAndCalculateDelegationFee()
+  }
+
+  const toggleDisplayStakingPage = (state, e) => {
+    setState({displayStakingPage: !state.displayStakingPage})
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -921,5 +1061,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     closeStakingBanner,
     submitEmail,
     resetEmailSubmission,
+    updateStakePoolId,
+    updateStakePoolPercent,
+    addStakePool,
+    removeStakePool,
+    toggleDisplayStakingPage,
   }
 }

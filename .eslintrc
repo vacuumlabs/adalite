@@ -3,12 +3,14 @@
   "env": {
     "browser": true,
     "node": true,
-    "mocha": true
+    "mocha": true,
+    "es6": true
   },
   "rules": {
     "no-bitwise": "off",
     "guard-for-in": "off",
     "react/react-in-jsx-scope": "off",
+    "no-restricted-modules": ["error", "foo-module", "bar-module"],
     "no-undef": "off"
   },
   "settings": {
