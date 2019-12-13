@@ -1,5 +1,5 @@
 import {h, Component} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
+import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 
 import CopyOnClick from '../../common/copyOnClick'
@@ -88,6 +88,6 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
 }
 
 export default connect(
-  {},
+  null,
   actions
 )(AddressItem)

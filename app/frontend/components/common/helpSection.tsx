@@ -1,7 +1,7 @@
 import {h} from 'preact'
 import {captureException} from '@sentry/browser'
 import actions from '../../actions'
-import {connect} from '../../libs/unistore/preact'
+import {connect} from '../../helpers/connect'
 
 interface Props {
   closeHandler: () => void

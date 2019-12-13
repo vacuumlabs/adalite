@@ -1,5 +1,5 @@
 import {h, Component} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
+import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import debugLog from '../../../helpers/debugLog'
 import tooltip from '../../common/tooltip'

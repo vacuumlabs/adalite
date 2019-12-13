@@ -1,5 +1,5 @@
 import {h, Component} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
+import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'
 import TransactionHistory from './transactionHistory'

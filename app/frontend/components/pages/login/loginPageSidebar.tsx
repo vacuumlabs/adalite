@@ -1,5 +1,5 @@
 import {h, Component} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
+import {connect} from '../../../helpers/connect'
 
 import Alert from '../../common/alert'
 
