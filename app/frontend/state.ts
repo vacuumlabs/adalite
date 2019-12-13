@@ -78,6 +78,15 @@ export interface State {
   showAddressVerification?: boolean
 
   stakePools: any
+  delegationFee?: any
+  calculatingDelegationFee?: any
+  isDelegationValid?: any
+  stakingBalance?: any
+  nonStakingBalance?: any
+  rewards?: any
+  displayStakingPage?: boolean
+  currentDelegation?: any
+  delegationHistory?: any
 }
 
 const initialState: State = {
