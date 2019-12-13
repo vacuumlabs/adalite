@@ -1,4 +1,3 @@
-import {generateMnemonic} from './wallet/mnemonic'
 import {ADALITE_CONFIG} from './config'
 import {saveAs} from './libs/file-saver'
 import {encode} from 'borc'
@@ -22,9 +21,7 @@ import mnemonicToWalletSecretDef from './wallet/helpers/mnemonicToWalletSecretDe
 import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
-import submitEmailRaw from './helpers/submitEmailRaw'
 import captureBySentry from './helpers/captureBySentry'
-import submitFeedbackToSentry from './helpers/submitFeedbackToSentry'
 import {State} from './state'
 
 type ThenArg<T> = T extends Promise<infer U> ? U : never
@@ -193,7 +190,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const openGenerateMnemonicDialog = (state) => {
     setState({
-      newWalletMnemonic: generateMnemonic(15),
       mnemonicAuthForm: {
         mnemonicInputValue: '',
         mnemonicInputError: null,
@@ -207,7 +203,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const closeGenerateMnemonicDialog = (state) => {
     setState({
-      newWalletMnemonic: '',
       showGenerateMnemonicDialog: false,
     })
   }
@@ -221,13 +216,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const closeWalletLoadingErrorModal = (state) => {
     setState({
       showWalletLoadingErrorModal: false,
-    })
-  }
-
-  const confirmGenerateMnemonicDialog = (state) => {
-    setState({
-      newWalletMnemonic: '',
-      showGenerateMnemonicDialog: false,
     })
   }
 
@@ -511,33 +499,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     (validationError &&
       (validationError.code === 'SendAmountIsNotPositive' ||
         validationError.code === 'SendAmountIsNan'))
-
-  const updateEmail = (state, e) => {
-    setState({
-      userEmail: e.target.value,
-    })
-  }
-
-  const updateName = (state, e) => {
-    setState({
-      userName: e.target.value,
-    })
-  }
-
-  const updateMessage = (state, e) => {
-    setState({
-      userComments: e.target.value,
-    })
-  }
-
-  const submitUserFeedbackToSentry = async (state) => {
-    await submitFeedbackToSentry(
-      state.userComments,
-      state.userEmail || 'user@email.com',
-      state.userName || 'user',
-      state.sendSentry.event.event_id
-    )
-  }
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
@@ -847,37 +808,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
   }
 
-  const submitEmail = async (state, email) => {
-    let didSucceed
-    let message
-    try {
-      const emailSubmitResult = await submitEmailRaw(email)
-
-      if (emailSubmitResult.Left) {
-        didSucceed = false
-        message = emailSubmitResult.Left
-        throw NamedError('EmailSubmissionRejected')
-      }
-
-      didSucceed = true
-      message = emailSubmitResult.Right
-    } catch (e) {
-      debugLog(e)
-    } finally {
-      setState({
-        emailSubmitSuccess: didSucceed,
-        emailSubmitMessage: message,
-      })
-    }
-  }
-
-  const resetEmailSubmission = (state) => {
-    setState({
-      emailSubmitSuccess: false,
-      emailSubmitMessage: '',
-    })
-  }
-
   const updateDonation = (state, e) => {
     if (state.checkedDonationType === e.target.id && e.target.id !== 'custom') {
       // when clicking already selected button
@@ -916,9 +846,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     confirmTransaction,
     cancelTransaction,
     submitTransaction,
-    updateName,
-    updateEmail,
-    updateMessage,
     updateAddress,
     updateAmount,
     loadDemoWallet,
@@ -931,7 +858,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,
-    confirmGenerateMnemonicDialog,
     closeThanksForDonationModal,
     setLogoutNotificationOpen,
     setRawTransactionOpen,
@@ -939,7 +865,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     closeTransactionErrorModal,
     closeWalletLoadingErrorModal,
     closeUnexpectedErrorModal,
-    submitUserFeedbackToSentry,
     showContactFormModal,
     closeContactFormModal,
     updateDonation,
@@ -947,7 +872,5 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setDonation,
     resetDonation,
     closeStakingBanner,
-    submitEmail,
-    resetEmailSubmission,
   }
 }
