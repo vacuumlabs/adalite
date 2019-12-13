@@ -7,12 +7,18 @@
   },
   "rules": {
     "no-bitwise": "off",
-    "guard-for-in": "off"
+    "guard-for-in": "off",
+    "react/react-in-jsx-scope": "off",
+    "no-undef": "off"
   },
   "settings": {
     "react": {
-        "version": "16.8"
+        "version": "16.8",
+        "pragma": "h"
     }
   },
-  "parser": "@typescript-eslint/typescript-estree"
+  "parser": "@typescript-eslint/typescript-estree",
+  "parserOptions": {
+    "jsx": true
+  }
 }

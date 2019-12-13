@@ -35,7 +35,7 @@ class UnexpectedErrorModal extends Component<Props, {}> {
           <div className="form-row">
             <input
               type="text"
-              autocomplete="off"
+              autoComplete="off"
               placeholder="Your name"
               className="input fullwidth"
               onBlur={(e) => {
@@ -44,7 +44,7 @@ class UnexpectedErrorModal extends Component<Props, {}> {
             />
             <input
               type="email"
-              autocomplete="off"
+              autoComplete="off"
               placeholder="Your email"
               className="input fullwidth"
               onBlur={(e) => {
@@ -54,7 +54,7 @@ class UnexpectedErrorModal extends Component<Props, {}> {
           </div>
           <textarea
             placeholder="Your message"
-            autocomplete="off"
+            autoComplete="off"
             className="input fullwidth textarea"
             onBlur={(e) => {
               this.props.updateMessage(e)

@@ -137,7 +137,7 @@ class ExportWalletDialog extends Component<Props, State> {
   }
 
   render(
-    {},
+    props,
     {
       confirmation,
       password,
@@ -165,7 +165,7 @@ class ExportWalletDialog extends Component<Props, State> {
                 placeholder="Wallet name"
                 value={walletName}
                 onInput={this.updateWalletName}
-                autocomplete="off"
+                autoComplete="off"
               />
               <input
                 type="password"
@@ -176,7 +176,7 @@ class ExportWalletDialog extends Component<Props, State> {
                 value={password}
                 onInput={this.updatePassword}
                 onBlur={this.touchPassword}
-                autocomplete="off"
+                autoComplete="off"
               />
               <input
                 type="password"
@@ -187,7 +187,7 @@ class ExportWalletDialog extends Component<Props, State> {
                 value={confirmation}
                 onInput={this.updateConfirmation}
                 onBlur={this.touchConfirmation}
-                autocomplete="off"
+                autoComplete="off"
               />
               {(showError || warningMessage.length > 0) && (
                 <div className="validation-error-field">

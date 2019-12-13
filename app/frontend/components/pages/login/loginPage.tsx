@@ -17,9 +17,9 @@ import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 
 const AUTH_METHOD_NAMES = {
-  mnemonic: 'Mnemonic',
+  'mnemonic': 'Mnemonic',
   'hw-wallet': 'Hardware Wallet',
-  file: 'Key file',
+  'file': 'Key file',
 }
 
 const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
@@ -117,7 +117,11 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
       <div className={`auth-option ${type}`} onClick={() => setAuthMethod(type)}>
         {tag && <Tag type={`auth ${tag}`} text={tag} />}
         <h3 className="auth-option-title">{getAuthMethodName(type)}</h3>
-        {texts.map((text) => <p className="auth-option-text">{text}</p>)}
+        {texts.map((text, i) => (
+          <p key={i} className="auth-option-text">
+            {text}
+          </p>
+        ))}
       </div>
     )
     const AuthCardInitial = () => (

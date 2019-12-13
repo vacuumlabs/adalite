@@ -164,7 +164,7 @@ class LoadKeyFileClass extends Component<Props, State> {
     const NoFileContent = () => (
       <div className="dropzone-content">
         <p className="dropzone-paragraph">Drop a key file here</p>
-        <label className="button primary small" for="loadFile">
+        <label className="button primary small" htmlFor="loadFile">
           Select a key file
         </label>
       </div>
@@ -173,7 +173,7 @@ class LoadKeyFileClass extends Component<Props, State> {
     const SelectedFileContent = () => (
       <div className="dropzone-content has-file">
         <div className="dropzone-filename">{fileName}</div>
-        <label className="dropzone-link" for="loadFile">
+        <label className="dropzone-link" htmlFor="loadFile">
           Select a different key file
         </label>
       </div>
@@ -210,7 +210,7 @@ class LoadKeyFileClass extends Component<Props, State> {
             this.filePasswordField = element
           }}
           onKeyDown={(e) => e.key === 'Enter' && this.unlockKeyfile()}
-          autocomplete="off"
+          autoComplete="off"
         />
         <div className="validation-row">
           <button

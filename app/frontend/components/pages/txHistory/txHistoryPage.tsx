@@ -40,9 +40,7 @@ class DashboardMobileContent extends Component<Props> {
         </ul>
         {selectedTab === 'send' && <SendAdaPage />}
         {selectedTab === 'transactions' && (
-          <TransactionHistory
-            transactionHistory={transactionHistory}
-          />
+          <TransactionHistory transactionHistory={transactionHistory} />
         )}
         {selectedTab === 'receive' && <MyAddresses />}
       </div>
@@ -67,9 +65,7 @@ const TxHistoryPage = connect(
           reloadWalletInfo={reloadWalletInfo}
           conversionRates={conversionRates}
         />
-        <TransactionHistory
-          transactionHistory={transactionHistory}
-        />
+        <TransactionHistory transactionHistory={transactionHistory} />
       </div>
       <div className="dashboard-column">
         <SendAdaPage />

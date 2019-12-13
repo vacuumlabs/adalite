@@ -73,7 +73,7 @@ class StakingPage extends Component<Props, State> {
               type="email"
               placeholder="Enter your email to get notified"
               value={email}
-              required={true}
+              required
               onInput={this.updateEmail}
             />
             <button

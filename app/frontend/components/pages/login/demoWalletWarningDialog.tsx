@@ -13,7 +13,7 @@ class DemoWalletWarningDialogClass {
       <Modal
         closeHandler={closeDemoWalletWarningDialog}
         title="Accessing the demo wallet"
-        showWarning={true}
+        showWarning
       >
         <p className="modal-paragraph">
           You are about to access a publicly available wallet intended to show the public how

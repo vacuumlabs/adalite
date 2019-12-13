@@ -42,7 +42,7 @@ const debounceEvent = (callback, time) => {
 
 type SetStateFn = (newState: Partial<State>) => void
 type GetStateFn = () => State
-export default ({setState, getState}: {setState: SetStateFn, getState: GetStateFn}) => {
+export default ({setState, getState}: {setState: SetStateFn; getState: GetStateFn}) => {
   const loadingAction = (state, message: string, optionalArgsObj?: any) => {
     return setState(
       Object.assign(

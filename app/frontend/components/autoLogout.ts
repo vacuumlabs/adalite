@@ -7,7 +7,7 @@ const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
 interface Props {
   logout: () => void
-  setLogoutNotificationOpen: (no_idea_what: boolean) => void
+  setLogoutNotificationOpen: (noIdeaWhat: boolean) => void
   walletIsLoaded: boolean
 }
 
