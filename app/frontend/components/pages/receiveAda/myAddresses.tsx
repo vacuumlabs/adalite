@@ -7,13 +7,14 @@ const _MyAddresses = ({ownAddressesWithMeta}) => (
     <h2 className="card-title">My Addresses</h2>
     <div className="addresses-content">
       {ownAddressesWithMeta.map((adr) => (
-        <AddressItem address={adr.address} bip32path={adr.bip32StringPath} />
+        <AddressItem key={adr.address} address={adr.address} bip32path={adr.bip32StringPath} />
       ))}
     </div>
   </div>
 )
 
-
-const MyAddresses = connect((state) => ({ownAddressesWithMeta: state.ownAddressesWithMeta}))(_MyAddresses)
+const MyAddresses = connect((state) => ({ownAddressesWithMeta: state.ownAddressesWithMeta}))(
+  _MyAddresses
+)
 
 export default MyAddresses

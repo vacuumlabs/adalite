@@ -48,7 +48,7 @@ const TransactionHistory = ({transactionHistory}) => (
     ) : (
       <ul className="transactions-content">
         {transactionHistory.map((transaction) => (
-          <li className="transaction-item">
+          <li key={transaction.ctbId} className="transaction-item">
             <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
             <FormattedAmount amount={transaction.effect} />
             <TransactionAddress address={transaction.ctbId} />

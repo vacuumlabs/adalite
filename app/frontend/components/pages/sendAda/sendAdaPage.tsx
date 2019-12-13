@@ -124,11 +124,11 @@ class SendAdaPage extends Component<Props> {
           placeholder="Receiving address"
           value={sendAddress}
           onInput={updateAddress}
-          autocomplete="off"
+          autoComplete="off"
           onKeyDown={(e) => e.key === 'Enter' && this.amountField.focus()}
         />
         <div className="send-values">
-          <label className="ada-label amount" for="send-amount">
+          <label className="ada-label amount" htmlFor="send-amount">
             Amount
           </label>
           <div className="input-wrapper">
@@ -157,7 +157,7 @@ class SendAdaPage extends Component<Props> {
               Max
             </button>
           </div>
-          <label className="ada-label amount donation" for="donation-amount">
+          <label className="ada-label amount donation" htmlFor="donation-amount">
             Donate<a
               {...tooltip(
                 'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
@@ -206,14 +206,14 @@ class SendAdaPage extends Component<Props> {
         </div>
         {enableSubmit &&
           !feeRecalculating && (
-            <a
-              href="#"
-              className="send-raw"
-              onClick={enableSubmit && !feeRecalculating && rawTransactionHandler}
-            >
+          <a
+            href="#"
+            className="send-raw"
+            onClick={enableSubmit && !feeRecalculating && rawTransactionHandler}
+          >
               Raw unsigned transaction
-            </a>
-          )}
+          </a>
+        )}
         {showTransactionErrorModal && (
           <TransactionErrorModal
             closeHandler={closeTransactionErrorModal}

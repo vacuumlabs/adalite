@@ -27,7 +27,7 @@
     "test": "cd app && yarn install && yarn test",
     "test-chrome-headless": "cd app && yarn install && yarn test-chrome-headless",
     "mocha": "cd app && mocha-chrome --help",
-    "eslint": "eslint . --max-warnings=0",
+    "eslint": "eslint . --max-warnings=0 --ext .ts,.tsx,.js,.jsx",
     "fix": "prettier-eslint --write \"{app/frontend,app/tests/src,server}/**/*.{ts,tsx,js,jsx,json,css}\"",
     "heroku-postbuild": "cd app && yarn install && yarn build",
     "generate-cert": "test -e server.cert && echo \"certificate already exists\" || openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj \"/C=US\""

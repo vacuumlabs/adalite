@@ -1,83 +1,81 @@
 import {ADALITE_CONFIG} from './config'
 
-interface Transaction {
-
-}
+interface Transaction {}
 
 type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
 
 export interface State {
-    loading: boolean
-    loadingMessage: string
-    alert: any // TODO
-    displayWelcome: boolean
-    currentTab: 'wallet-info',
-    walletIsLoaded: boolean
-    showStakingBanner: boolean,
-    newWalletMnemonic: string,
-    ownAddressesWithMeta: any, // TODO
-    sendAddress: any // TODO
-    sendAmount: any // TODO
-    transactionFee: number
-    sendAmountForTransactionFee: number
-    donationAmountForTransactionFee: number
-    router: {
-        pathname: string
-        hash: string
-    }
-    mnemonicInputValue: string
-    authMethod: AuthMethodEnum
-    showDemoWalletWarningDialog: boolean
-    logoutNotificationOpen: boolean
-    rawTransactionOpen: boolean
-    rawTransaction: string
-    showMnemonicInfoAlert: boolean
-    transactionHistory: Array<Transaction>
-    sendResponse: any // TODO
-    checkedDonationType: string // TODO: enum
-    showCustomDonationInput: boolean
-    donationAmount: any // TODO
-    maxDonationAmount: number
-    percentageDonationValue: number
-    percentageDonationText: string 
-    thresholdAmountReached: boolean
-    highestAmountReached: number // TODO: why?
-    emailSubmitSuccess: boolean
-    emailSubmitMessage: string
-    showUnexpectedErrorModal: boolean
-    sendSentry: any //
-    autoLogin: boolean
+  loading: boolean
+  loadingMessage: string
+  alert: any // TODO
+  displayWelcome: boolean
+  currentTab: 'wallet-info'
+  walletIsLoaded: boolean
+  showStakingBanner: boolean
+  newWalletMnemonic: string
+  ownAddressesWithMeta: any // TODO
+  sendAddress: any // TODO
+  sendAmount: any // TODO
+  transactionFee: number
+  sendAmountForTransactionFee: number
+  donationAmountForTransactionFee: number
+  router: {
+    pathname: string
+    hash: string
+  }
+  mnemonicInputValue: string
+  authMethod: AuthMethodEnum
+  showDemoWalletWarningDialog: boolean
+  logoutNotificationOpen: boolean
+  rawTransactionOpen: boolean
+  rawTransaction: string
+  showMnemonicInfoAlert: boolean
+  transactionHistory: Array<Transaction>
+  sendResponse: any // TODO
+  checkedDonationType: string // TODO: enum
+  showCustomDonationInput: boolean
+  donationAmount: any // TODO
+  maxDonationAmount: number
+  percentageDonationValue: number
+  percentageDonationText: string
+  thresholdAmountReached: boolean
+  highestAmountReached: number // TODO: why?
+  emailSubmitSuccess: boolean
+  emailSubmitMessage: string
+  showUnexpectedErrorModal: boolean
+  sendSentry: any //
+  autoLogin: boolean
 
-    // TODO
-    waitingForHwWallet?: boolean
-    showConfirmTransactionDialog?: boolean
-    showTransactionErrorModal?: boolean
-    showThanksForDonation?: boolean
-    showContactFormModal?: boolean
+  // TODO
+  waitingForHwWallet?: boolean
+  showConfirmTransactionDialog?: boolean
+  showTransactionErrorModal?: boolean
+  showThanksForDonation?: boolean
+  showContactFormModal?: boolean
 
-    calculatingFee?: boolean
+  calculatingFee?: boolean
 
-    userEmail?: string
-    userComments?: string
-    userName?: string
+  userEmail?: string
+  userComments?: string
+  userName?: string
 
-    sendAmountValidationError?: any
-    showExportOption?: boolean
+  sendAmountValidationError?: any
+  showExportOption?: boolean
 
-    conversionRates?: {USD: number, EUR: number}
-    balance?: number
-    showGenerateMnemonicDialog?: boolean
-    mnemonicValidationError?: any
-    walletLoadingError?: any
-    showWalletLoadingErrorModal?: boolean
-    showMnemonicValidationError?: boolean
-    usingHwWallet?: boolean
-    addressVerificationError?: boolean
-    showAddressDetail?: {address: string, bip32path: string, copyOnClick: boolean}
-    hwWalletName?: string
-    isDemoWallet?: boolean
-    error?: any
-    showAddressVerification?: boolean
+  conversionRates?: {USD: number; EUR: number}
+  balance?: number
+  showGenerateMnemonicDialog?: boolean
+  mnemonicValidationError?: any
+  walletLoadingError?: any
+  showWalletLoadingErrorModal?: boolean
+  showMnemonicValidationError?: boolean
+  usingHwWallet?: boolean
+  addressVerificationError?: boolean
+  showAddressDetail?: {address: string; bip32path: string; copyOnClick: boolean}
+  hwWalletName?: string
+  isDemoWallet?: boolean
+  error?: any
+  showAddressVerification?: boolean
 }
 
 const initialState: State = {

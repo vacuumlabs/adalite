@@ -61,27 +61,27 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
             <div className="form-row">
               <input
                 type="text"
-                autocomplete="off"
+                autoComplete="off"
                 placeholder="Your name"
                 name="name"
                 className="input fullwidth"
-                required={true}
+                required
               />
               <input
                 type="email"
-                autocomplete="off"
+                autoComplete="off"
                 placeholder="Your email"
                 name="_replyto"
                 className="input fullwidth"
-                required={true}
+                required
               />
             </div>
             <textarea
               placeholder="Your message"
-              autocomplete="off"
+              autoComplete="off"
               name="message"
               className="input fullwidth textarea"
-              required={true}
+              required
             />
             {this.state.submitted && (
               <div className="form-alert success">
@@ -110,7 +110,9 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
           <button
             onClick={this.closeContactFormModal}
             className="button close modal-close"
-            {...{ariaLabel: "Close dialog"} /* to mute ts error */}
+            {
+            ...{ariaLabel: 'Close dialog'} /* to mute ts error */
+            }
             onKeyDown={(e) => {
               e.key === 'Enter' && (e.target as HTMLButtonElement).click()
             }}

@@ -34,7 +34,9 @@ class Modal extends Component<Props, {}> {
               <button
                 className="button close modal-close"
                 onClick={closeHandler}
-                {...{ariaLabel:"Close dialog"} /* fix ts error*/}
+                {
+                ...{ariaLabel: 'Close dialog'} /* fix ts error*/
+                }
               />
             )}
             {title && (

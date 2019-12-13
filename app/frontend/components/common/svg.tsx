@@ -1,3 +1,5 @@
+// (eslint is confused with typescript generic)
+// eslint-disable-next-line no-unused-vars
 import {h, ComponentFactory} from 'preact'
 
 const LedgerLogoWhite = () => (
