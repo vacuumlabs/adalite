@@ -6,20 +6,19 @@ interface Props {
   conversionRates: any
 }
 
-const Conversions = ({balance, conversionRates}: Props) =>
-  h(
-    'div',
-    {class: 'conversions'},
-    h(
-      'div',
-      {class: 'conversions-item'},
-      `$ ${printConversionRate(balance, conversionRates, 'USD')}`
-    ),
-    h(
-      'div',
-      {class: 'conversions-item'},
-      `€ ${printConversionRate(balance, conversionRates, 'EUR')}`
-    )
-  )
+const Conversions = ({balance, conversionRates}: Props) => (
+  <div className="conversions">
+    <div className="conversions-item">{`$ ${printConversionRate(
+      balance,
+      conversionRates,
+      'USD'
+    )}`}</div>
+    <div className="conversions-item">{`€ ${printConversionRate(
+      balance,
+      conversionRates,
+      'EUR'
+    )}`}</div>
+  </div>
+)
 
 export default Conversions

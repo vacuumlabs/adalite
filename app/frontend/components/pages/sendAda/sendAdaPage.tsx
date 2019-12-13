@@ -20,21 +20,23 @@ import tooltip from '../../common/tooltip'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
-const CalculatingFee = () => h('div', {class: 'validation-message send'}, 'Calculating fee...')
+const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
-const SendFormErrorMessage = ({sendFormValidationError}) =>
-  h('span', undefined, getTranslation(sendFormValidationError.code, sendFormValidationError.params))
+const SendFormErrorMessage = ({sendFormValidationError}) => (
+  <span>{getTranslation(sendFormValidationError.code, sendFormValidationError.params)}</span>
+)
 
 const SendValidation = ({sendFormValidationError, sendResponse}) =>
-  sendFormValidationError
-    ? h(
-      'div',
-      {class: 'validation-message send error'},
-      h(SendFormErrorMessage, {sendFormValidationError})
+  sendFormValidationError ? (
+    <div className="validation-message send error">
+      <SendFormErrorMessage sendFormValidationError={sendFormValidationError} />
+    </div>
+  ) : (
+    sendResponse &&
+    sendResponse.success && (
+      <div className="validation-message transaction-success">Transaction successful!</div>
     )
-    : sendResponse &&
-      sendResponse.success &&
-      h('div', {class: 'validation-message transaction-success'}, 'Transaction successful!')
+  )
 
 interface Props {
   transactionSubmissionError: any
@@ -111,161 +113,123 @@ class SendAdaPage extends Component<Props> {
       await getRawTransaction(sendAddress, coinsAmount)
     }
 
-    return h(
-      'div',
-      {class: 'send card'},
-      h('h2', {class: 'card-title'}, 'Send ADA'),
-      h('input', {
-        type: 'text',
-        id: 'send-address',
-        class: 'input send-address fullwidth',
-        name: 'send-address',
-        placeholder: 'Receiving address',
-        value: sendAddress,
-        onInput: updateAddress,
-        autocomplete: 'off',
-        onKeyDown: (e) => e.key === 'Enter' && this.amountField.focus(),
-      }),
-      h(
-        'div',
-        {class: 'send-values'},
-        h(
-          'label',
-          {
-            class: 'ada-label amount',
-            for: 'send-amount',
-          },
-          'Amount'
-        ),
-        h(
-          'div',
-          {class: 'input-wrapper'},
-          h('input', {
-            class: 'input send-amount',
-            id: 'send-amount',
-            name: 'send-amount',
-            placeholder: '0.000000',
-            value: sendAmount,
-            onInput: updateAmount,
-            ref: (element) => {
-              this.amountField = element
-            },
-            onKeyDown: (e) => {
-              if (e.key === 'Enter' && this.submitTxBtn) {
-                this.submitTxBtn.click()
-                e.preventDefault()
-              }
-            },
-          }),
-          h(
-            'button',
-            {
-              class: 'button send-max',
-              onClick: sendMaxFunds,
-              disabled: !isSendAddressValid,
-            },
-            'Max'
-          )
-        ),
-        h(
-          'label',
-          {
-            class: 'ada-label amount donation',
-            for: 'donation-amount',
-          },
-          'Donate',
-          h(
-            'a',
-            {
-              ...tooltip(
+    return (
+      <div className="send card">
+        <h2 className="card-title">Send ADA</h2>
+        <input
+          type="text"
+          id="send-address"
+          className="input send-address fullwidth"
+          name="send-address"
+          placeholder="Receiving address"
+          value={sendAddress}
+          onInput={updateAddress}
+          autocomplete="off"
+          onKeyDown={(e) => e.key === 'Enter' && this.amountField.focus()}
+        />
+        <div className="send-values">
+          <label className="ada-label amount" for="send-amount">
+            Amount
+          </label>
+          <div className="input-wrapper">
+            <input
+              className="input send-amount"
+              id="send-amount"
+              name="send-amount"
+              placeholder="0.000000"
+              value={sendAmount}
+              onInput={updateAmount}
+              ref={(element) => {
+                this.amountField = element
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && this.submitTxBtn) {
+                  this.submitTxBtn.click()
+                  e.preventDefault()
+                }
+              }}
+            />
+            <button
+              className="button send-max"
+              onClick={sendMaxFunds}
+              disabled={!isSendAddressValid}
+            >
+              Max
+            </button>
+          </div>
+          <label className="ada-label amount donation" for="donation-amount">
+            Donate<a
+              {...tooltip(
                 'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
                 true
-              ),
-            },
-            h('span', {class: 'show-info'}, '')
-          )
-        ),
-        !isDonationSufficient &&
-          h('div', {class: 'send-donate-msg'}, 'Insufficient balance for a donation.'),
-        !showCustomDonationInput &&
-          isDonationSufficient &&
-          h(DonationButtons, {isSendAddressValid}),
-        showCustomDonationInput &&
-          isDonationSufficient &&
-          h(CustomDonationInput, {isSendAddressValid}),
-        h('div', {class: 'ada-label'}, 'Fee'),
-        h('div', {class: 'send-fee'}, printAda(transactionFee))
-      ),
-      h(
-        'div',
-        {
-          class: 'send-total',
-        },
-        h(
-          'div',
-          {
-            class: 'send-total-title',
-          },
-          'Total'
-        ),
-        h(
-          'div',
-          {class: 'send-total-inner'},
-          h(
-            'div',
-            {
-              class: 'send-total-ada',
-            },
-            printAda(total)
-          ),
-          conversionRates && h(Conversions, {balance: total, conversionRates})
-        )
-      ),
-      h(
-        'div',
-        {class: 'validation-row'},
-        h(
-          'button',
-          {
-            class: 'button primary',
-            disabled: !enableSubmit || feeRecalculating,
-            onClick: confirmTransaction,
-            ref: (element) => {
+              )}
+            >
+              <span className="show-info">{''}</span>
+            </a>
+          </label>
+          {!isDonationSufficient && (
+            <div className="send-donate-msg">Insufficient balance for a donation.</div>
+          )}
+          {!showCustomDonationInput &&
+            isDonationSufficient && <DonationButtons isSendAddressValid={isSendAddressValid} />}
+          {showCustomDonationInput &&
+            isDonationSufficient && <CustomDonationInput isSendAddressValid={isSendAddressValid} />}
+          <div className="ada-label">Fee</div>
+          <div className="send-fee">{printAda(transactionFee)}</div>
+        </div>
+        <div className="send-total">
+          <div className="send-total-title">Total</div>
+          <div className="send-total-inner">
+            <div className="send-total-ada">{printAda(total)}</div>
+            {conversionRates && <Conversions balance={total} conversionRates={conversionRates} />}
+          </div>
+        </div>
+        <div className="validation-row">
+          <button
+            className="button primary"
+            disabled={!enableSubmit || feeRecalculating}
+            onClick={confirmTransaction}
+            ref={(element) => {
               this.submitTxBtn = element
-            },
-          },
-          'Send ADA'
-        ),
-        feeRecalculating
-          ? h(CalculatingFee, {})
-          : h(SendValidation, {
-            sendFormValidationError,
-            sendResponse,
-          })
-      ),
-      enableSubmit &&
-        !feeRecalculating &&
-        h(
-          'a',
-          {
-            href: '#',
-            class: 'send-raw',
-            onClick: enableSubmit && !feeRecalculating && rawTransactionHandler,
-          },
-          'Raw unsigned transaction'
-        ),
-      showTransactionErrorModal &&
-        h(TransactionErrorModal, {
-          closeHandler: closeTransactionErrorModal,
-          errorMessage: getTranslation(
-            transactionSubmissionError.code,
-            transactionSubmissionError.params
-          ),
-          showHelp: errorHasHelp(transactionSubmissionError.code),
-        }),
-      rawTransactionOpen && h(RawTransactionModal, {}),
-      showConfirmTransactionDialog && h(ConfirmTransactionDialog, {total}),
-      showThanksForDonation && h(DonateThanksModal, {closeThanksForDonationModal})
+            }}
+          >
+            Send ADA
+          </button>
+          {feeRecalculating ? (
+            <CalculatingFee />
+          ) : (
+            <SendValidation
+              sendFormValidationError={sendFormValidationError}
+              sendResponse={sendResponse}
+            />
+          )}
+        </div>
+        {enableSubmit &&
+          !feeRecalculating && (
+            <a
+              href="#"
+              className="send-raw"
+              onClick={enableSubmit && !feeRecalculating && rawTransactionHandler}
+            >
+              Raw unsigned transaction
+            </a>
+          )}
+        {showTransactionErrorModal && (
+          <TransactionErrorModal
+            closeHandler={closeTransactionErrorModal}
+            errorMessage={getTranslation(
+              transactionSubmissionError.code,
+              transactionSubmissionError.params
+            )}
+            showHelp={errorHasHelp(transactionSubmissionError.code)}
+          />
+        )}
+        {rawTransactionOpen && <RawTransactionModal />}
+        {showConfirmTransactionDialog && <ConfirmTransactionDialog total={total} />}
+        {showThanksForDonation && (
+          <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
+        )}
+      </div>
     )
   }
 }

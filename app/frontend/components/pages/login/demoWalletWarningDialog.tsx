@@ -9,47 +9,35 @@ interface Props {
 }
 class DemoWalletWarningDialogClass {
   render({closeDemoWalletWarningDialog}: Props) {
-    return h(
-      Modal,
-      {
-        closeHandler: closeDemoWalletWarningDialog,
-        title: 'Accessing the demo wallet',
-        showWarning: true,
-      },
-      h(
-        'p',
-        {class: 'modal-paragraph'},
-        'You are about to access a publicly available wallet intended to show the public how AdaLite looks and works. ',
-        h('strong', undefined, 'Your funds will not be safe here.')
-      ),
-      h(
-        Alert,
-        {alertType: 'error'},
-        'All funds you will store to the demo wallet will be accessible to all AdaLite users. ',
-        h('strong', undefined, 'Don’t store your ADA to the demo wallet!')
-      ),
-      h(
-        'div',
-        {class: 'modal-footer'},
-        h(
-          'button',
-          {
-            class: 'button primary',
-            onClick: closeDemoWalletWarningDialog,
-            onKeyDown: (e) => {
+    return (
+      <Modal
+        closeHandler={closeDemoWalletWarningDialog}
+        title="Accessing the demo wallet"
+        showWarning={true}
+      >
+        <p className="modal-paragraph">
+          You are about to access a publicly available wallet intended to show the public how
+          AdaLite looks and works. <strong>Your funds will not be safe here.</strong>
+        </p>
+        <Alert alertType="error">
+          All funds you will store to the demo wallet will be accessible to all AdaLite users.{' '}
+          <strong>Don’t store your ADA to the demo wallet!</strong>
+        </Alert>
+        <div className="modal-footer">
+          <button
+            className="button primary"
+            onClick={closeDemoWalletWarningDialog}
+            onKeyDown={(e) => {
               ;['Enter', 'Escape'].includes(e.key) && (e.target as HTMLButtonElement).click()
-            },
-          },
-          'Continue to the demo wallet'
-        ),
-        /* TODO: connect link click to creating new wallet action */
-        h(
-          'p',
-          {class: 'modal-paragraph'},
-          'To securely store ADA, ',
-          h('a', {href: '/'}, 'create your new wallet')
-        )
-      )
+            }}
+          >
+            Continue to the demo wallet
+          </button>
+          <p className="modal-paragraph">
+            To securely store ADA, <a href="/">create your new wallet</a>
+          </p>
+        </div>
+      </Modal>
     )
   }
 }

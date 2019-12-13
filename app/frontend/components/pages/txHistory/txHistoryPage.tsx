@@ -22,30 +22,30 @@ class DashboardMobileContent extends Component<Props> {
     this.setState({selectedTab: tabName})
   }
   render({transactionHistory, conversionRates}, {selectedTab}) {
-    const dashboardTab = (tabName, tabText) =>
-      h(
-        'li',
-        {
-          class: `dashboard-tab ${tabName === selectedTab ? 'selected' : ''}`,
-          onClick: () => this.changeTab(tabName),
-        },
-        tabText
-      )
+    const dashboardTab = (tabName, tabText) => (
+      <li
+        className={`dashboard-tab ${tabName === selectedTab ? 'selected' : ''}`}
+        onClick={() => this.changeTab(tabName)}
+      >
+        {tabText}
+      </li>
+    )
 
-    return h(
-      'div',
-      {class: 'dashboard-content'},
-      h(
-        'ul',
-        {class: 'dashboard-tabs'},
-        dashboardTab('transactions', 'Transactions'),
-        dashboardTab('send', 'Send ADA'),
-        dashboardTab('receive', 'Receive ADA')
-      ),
-      selectedTab === 'send' && h(SendAdaPage, {}),
-      selectedTab === 'transactions' &&
-        h(TransactionHistory, {transactionHistory, conversionRates}),
-      selectedTab === 'receive' && h(MyAddresses, {})
+    return (
+      <div className="dashboard-content">
+        <ul className="dashboard-tabs">
+          {dashboardTab('transactions', 'Transactions')}
+          {dashboardTab('send', 'Send ADA')}
+          {dashboardTab('receive', 'Receive ADA')}
+        </ul>
+        {selectedTab === 'send' && <SendAdaPage />}
+        {selectedTab === 'transactions' && (
+          <TransactionHistory
+            transactionHistory={transactionHistory}
+          />
+        )}
+        {selectedTab === 'receive' && <MyAddresses />}
+      </div>
     )
   }
 }
@@ -58,35 +58,38 @@ const TxHistoryPage = connect(
     showExportOption: state.showExportOption,
   }),
   actions
-)(({balance, transactionHistory, reloadWalletInfo, conversionRates, showExportOption}) =>
-  h(
-    'div',
-    {class: 'page-wrapper'},
-    h(
-      'div',
-      {class: 'dashboard desktop'},
-      h(
-        'div',
-        {class: 'dashboard-column'},
-        h(Balance, {balance, reloadWalletInfo, conversionRates}),
-        h(TransactionHistory, {transactionHistory, conversionRates})
-      ),
-      h(
-        'div',
-        {class: 'dashboard-column'},
-        h(SendAdaPage, {}),
-        h(MyAddresses, {}),
-        showExportOption && h(ExportCard, {})
-      )
-    ),
-    h(
-      'div',
-      {class: 'dashboard mobile'},
-      h(Balance, {balance, reloadWalletInfo, conversionRates}),
-      h(DashboardMobileContent, {balance, transactionHistory, reloadWalletInfo, conversionRates}),
-      showExportOption && h(ExportCard, {})
-    )
-  )
-)
+)(({balance, transactionHistory, reloadWalletInfo, conversionRates, showExportOption}) => (
+  <div className="page-wrapper">
+    <div className="dashboard desktop">
+      <div className="dashboard-column">
+        <Balance
+          balance={balance}
+          reloadWalletInfo={reloadWalletInfo}
+          conversionRates={conversionRates}
+        />
+        <TransactionHistory
+          transactionHistory={transactionHistory}
+        />
+      </div>
+      <div className="dashboard-column">
+        <SendAdaPage />
+        <MyAddresses />
+        {showExportOption && <ExportCard />}
+      </div>
+    </div>
+    <div className="dashboard mobile">
+      <Balance
+        balance={balance}
+        reloadWalletInfo={reloadWalletInfo}
+        conversionRates={conversionRates}
+      />
+      <DashboardMobileContent
+        transactionHistory={transactionHistory}
+        conversionRates={conversionRates}
+      />
+      {showExportOption && <ExportCard />}
+    </div>
+  </div>
+))
 
 export default TxHistoryPage

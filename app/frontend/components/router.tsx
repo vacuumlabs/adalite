@@ -17,28 +17,28 @@ const TopLevelRouter = connect((state) => ({
   const currentTab = pathname.split('/')[1]
   if ((!walletIsLoaded || showDemoWalletWarningDialog) && currentTab !== 'staking') {
     window.history.pushState({}, '/', '/')
-    return h(LoginPage, {})
+    return <LoginPage />
   }
   let content
   switch (currentTab) {
     case 'txHistory':
-      content = h(TxHistoryPage, {})
+      content = <TxHistoryPage />
       break
     case 'receive':
-      content = h(MyAddresses, {})
+      content = <MyAddresses />
       break
     case 'send':
-      content = h(SendPage, {})
+      content = <SendPage />
       break
     case 'exportWallet':
-      content = h(ExportWalletPage, {})
+      content = <ExportWalletPage />
       break
     case 'staking':
-      content = h(StakingPage, {})
+      content = <StakingPage />
       break
     default:
       window.history.pushState({}, 'txHistory', 'txHistory')
-      content = h(TxHistoryPage, {})
+      content = <TxHistoryPage />
   }
   // TODO is Alert used anywhere? if so add here
   return content

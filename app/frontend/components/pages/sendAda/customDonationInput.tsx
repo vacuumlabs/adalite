@@ -8,20 +8,19 @@ const CustomDonationInput = ({
   updateDonation,
   isSendAddressValid,
   toggleCustomDonation,
-}) =>
-  h(
-    'div',
-    {class: 'input-wrapper donation'},
-    h('input', {
-      class: 'input send-amount',
-      id: 'custom',
-      name: 'donation-amount',
-      placeholder: '0.000000',
-      value: donationAmount.fieldValue,
-      onInput: updateDonation,
-    }),
-    h(CustomInputButton, {isSendAddressValid})
-  )
+}) => (
+  <div className="input-wrapper donation">
+    <input
+      className="input send-amount"
+      id="custom"
+      name="donation-amount"
+      placeholder="0.000000"
+      value={donationAmount.fieldValue}
+      onInput={updateDonation}
+    />
+    <CustomInputButton isSendAddressValid={isSendAddressValid} />
+  </div>
+)
 
 export default connect(
   (state) => ({

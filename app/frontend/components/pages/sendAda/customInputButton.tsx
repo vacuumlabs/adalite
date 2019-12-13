@@ -13,30 +13,23 @@ const CustomInputButton = ({
 }) => {
   const maxDonationAmountInAda = Math.floor(toAda(maxDonationAmount))
 
-  return donationAmount.coins > maxDonationAmount
-    ? h(
-      'button',
-      {
-        class: 'button send-max',
-        onClick: (e) => {
-          e.preventDefault()
-          setDonation(maxDonationAmountInAda)
-        },
-        disabled: !isSendAddressValid,
-      },
-      'Max (',
-      `${maxDonationAmountInAda} `,
-      h(AdaIcon, {}),
-      ')'
-    )
-    : h(
-      'button',
-      {
-        class: 'button send-max',
-        onClick: toggleCustomDonation,
-      },
-      'Back'
-    )
+  return donationAmount.coins > maxDonationAmount ? (
+    <button
+      className="button send-max"
+      onClick={(e) => {
+        e.preventDefault()
+        setDonation(maxDonationAmountInAda)
+      }}
+      disabled={!isSendAddressValid}
+    >
+      Max ({`${maxDonationAmountInAda} `}
+      <AdaIcon />)
+    </button>
+  ) : (
+    <button className="button send-max" onClick={toggleCustomDonation}>
+      Back
+    </button>
+  )
 }
 
 export default connect(

@@ -1,0 +1,18 @@
+{
+  "extends": "vacuumlabs",
+  "env": {
+    "browser": true,
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "no-bitwise": "off",
+    "guard-for-in": "off",
+    "camelcase": "off"
+  },
+  "settings": {
+    "react": {
+        "version": "16.8"
+    }
+  }
+}

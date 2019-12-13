@@ -5,75 +5,59 @@ import formatDate from '../../../helpers/formatDate'
 const FormattedAmount = ({amount}) => {
   const value = printAda(Math.abs(amount))
   const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
-  return h(
-    'div',
-    {
-      class: `transaction-amount ${amount > 0 ? 'credit' : 'debit'}`,
-    },
-    `${number}`.padEnd(10)
+  return (
+    <div className={`transaction-amount ${amount > 0 ? 'credit' : 'debit'}`}>
+      {`${number}`.padEnd(10)}
+    </div>
   )
 }
 
 const FormattedFee = ({fee}) => {
   const value = printAda(fee)
-  return h(
-    'div',
-    {
-      class: 'transaction-fee',
-    },
-    `Fee: ${value}`
-  )
+  return <div className="transaction-fee">{`Fee: ${value}`}</div>
 }
 
-const TransactionAddress = ({address}) =>
-  h(
-    'div',
-    {class: 'blockexplorer-link'},
-    h('span', {}, 'View on '),
-    h(
-      'a',
-      {
-        class: 'transaction-address',
-        href: `https://seiza.com/blockchain/transaction/${address}`,
-        target: '_blank',
-        rel: 'noopener',
-      },
-      'Seiza'
-    ),
-    h('span', {}, ' | '),
-    h(
-      'a',
-      {
-        class: 'transaction-address',
-        href: `https://adascan.net/transaction/${address}`,
-        target: '_blank',
-        rel: 'noopener',
-      },
-      'AdaScan'
-    )
-  )
+const TransactionAddress = ({address}) => (
+  <div className="blockexplorer-link">
+    <span>View on </span>
+    <a
+      className="transaction-address"
+      href={`https://seiza.com/blockchain/transaction/${address}`}
+      target="_blank"
+      rel="noopener"
+    >
+      Seiza
+    </a>
+    <span> | </span>
+    <a
+      className="transaction-address"
+      href={`https://adascan.net/transaction/${address}`}
+      target="_blank"
+      rel="noopener"
+    >
+      AdaScan
+    </a>
+  </div>
+)
 
-const TransactionHistory = ({transactionHistory}) =>
-  h(
-    'div',
-    {class: 'transactions card'},
-    h('h2', {class: 'card-title'}, 'Transaction History'),
-    transactionHistory.length === 0
-      ? h('div', {class: 'transactions-empty'}, 'No transactions found')
-      : h(
-        'ul',
-        {class: 'transactions-content'},
-        ...transactionHistory.map((transaction) =>
-          h(
-            'li',
-            {class: 'transaction-item'},
-            h('div', {class: 'transaction-date'}, formatDate(transaction.ctbTimeIssued)),
-            h(FormattedAmount, {amount: transaction.effect}),
-            h(TransactionAddress, {address: transaction.ctbId}),
-            h(FormattedFee, {fee: transaction.fee})
-          )
-        )
-      )
-  )
+const TransactionHistory = ({transactionHistory}) => (
+  <div className="transactions card">
+    <h2 className="card-title">Transaction History</h2>
+    {transactionHistory.length === 0 ? (
+      <div className="transactions-empty">No transactions found</div>
+    ) : (
+      <ul className="transactions-content">
+        {transactionHistory.map((transaction) => (
+          <li className="transaction-item">
+            <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
+            <FormattedAmount amount={transaction.effect} />
+            <TransactionAddress address={transaction.ctbId} />
+            <FormattedFee fee={transaction.fee} />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+)
 
 export default TransactionHistory

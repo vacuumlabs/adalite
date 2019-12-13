@@ -20,52 +20,38 @@ class ConfirmTransactionDialogClass {
     donationAmount,
     total,
   }) {
-    return h(
-      Modal,
-      {
-        closeHandler: cancelTransaction,
-        title: 'Transaction review',
-      },
-      h(
-        'div',
-        {class: 'review'},
-        h('div', {class: 'review-label'}, 'Address'),
-        h('div', {class: 'review-address'}, sendAddress),
-        h('div', {class: 'ada-label'}, 'Amount'),
-        h('div', {class: 'review-amount'}, printAda(sendAmount)),
-        h('div', {class: 'ada-label'}, 'Donation'),
-        h('div', {class: 'review-amount'}, printAda(donationAmount)),
-        h('div', {class: 'ada-label'}, 'Fee'),
-        h('div', {class: 'review-fee'}, printAda(transactionFee)),
-        h('div', {class: 'ada-label'}, 'Total'),
-        h('div', {class: 'review-total'}, printAda(total))
-      ),
-      h(
-        'div',
-        {class: 'review-bottom'},
-        h(
-          'button',
-          {
-            class: 'button primary',
-            onClick: submitTransaction,
-          },
-          'Confirm Transaction'
-        ),
-        h(
-          'a',
-          {
-            class: 'review-cancel',
-            onClick: cancelTransaction,
-            ref: (element) => {
+    return (
+      <Modal closeHandler={cancelTransaction} title="Transaction review">
+        <div className="review">
+          <div className="review-label">Address</div>
+          <div className="review-address">{sendAddress}</div>
+          <div className="ada-label">Amount</div>
+          <div className="review-amount">{printAda(sendAmount)}</div>
+          <div className="ada-label">Donation</div>
+          <div className="review-amount">{printAda(donationAmount)}</div>
+          <div className="ada-label">Fee</div>
+          <div className="review-fee">{printAda(transactionFee)}</div>
+          <div className="ada-label">Total</div>
+          <div className="review-total">{printAda(total)}</div>
+        </div>
+        <div className="review-bottom">
+          <button className="button primary" onClick={submitTransaction}>
+            Confirm Transaction
+          </button>
+          <a
+            className="review-cancel"
+            onClick={cancelTransaction}
+            ref={(element) => {
               this.cancelTx = element
-            },
-            onKeyDown: (e) => {
+            }}
+            onKeyDown={(e) => {
               e.key === 'Enter' && (e.target as HTMLAnchorElement).click()
-            },
-          },
-          'Cancel Transaction'
-        )
-      )
+            }}
+          >
+            Cancel Transaction
+          </a>
+        </div>
+      </Modal>
     )
   }
 }

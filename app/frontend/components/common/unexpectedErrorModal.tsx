@@ -25,88 +25,58 @@ class UnexpectedErrorModal extends Component<Props, {}> {
   }
 
   render({sendSentry}) {
-    return h(
-      Modal,
-      {
-        closeHandler: () => this.closeAndResolve(false),
-        title: 'Something went wrong.',
-      },
-      h(
-        'div',
-        {
-          class: 'modal-section',
-        },
-        h('p', {class: 'instruction'}, 'Do you want to inform Adalite about this error?'),
-        h('p', {class: 'instruction'}, 'Tell us what happened!')
-      ),
-      h(
-        'div',
-        {
-          class: 'contact-form',
-        },
-        h(
-          'div',
-          {
-            class: 'form-row',
-          },
-          h('input', {
-            type: 'text',
-            autocomplete: 'off',
-            placeholder: 'Your name',
-            class: 'input fullwidth',
-            onBlur: (e) => {
-              this.props.updateName(e)
-            },
-          }),
-          h('input', {
-            type: 'email',
-            autocomplete: 'off',
-            placeholder: 'Your email',
-            class: 'input fullwidth',
-            onBlur: (e) => {
-              this.props.updateEmail(e)
-            },
-          })
-        ),
-        h('textarea', {
-          placeholder: 'Your message',
-          autocomplete: 'off',
-          class: 'input fullwidth textarea',
-          onBlur: (e) => {
-            this.props.updateMessage(e)
-          },
-        })
-      ),
-      h(
-        Alert,
-        {
-          alertType: 'error event',
-        },
-        JSON.stringify(sendSentry.event)
-      ),
-      h(
-        'div',
-        {class: 'modal-footer send-error'},
-        h(
-          'button',
-          {
-            class: 'button outline',
-            onClick: () => this.closeAndResolve(false),
-          },
-          'Cancel'
-        ),
-        h(
-          'button',
-          {
-            class: 'button primary send-error',
-            onClick: () => {
+    return (
+      <Modal closeHandler={() => this.closeAndResolve(false)} title="Something went wrong.">
+        <div className="modal-section">
+          <p className="instruction">Do you want to inform Adalite about this error?</p>
+          <p className="instruction">Tell us what happened!</p>
+        </div>
+        <div className="contact-form">
+          <div className="form-row">
+            <input
+              type="text"
+              autocomplete="off"
+              placeholder="Your name"
+              className="input fullwidth"
+              onBlur={(e) => {
+                this.props.updateName(e)
+              }}
+            />
+            <input
+              type="email"
+              autocomplete="off"
+              placeholder="Your email"
+              className="input fullwidth"
+              onBlur={(e) => {
+                this.props.updateEmail(e)
+              }}
+            />
+          </div>
+          <textarea
+            placeholder="Your message"
+            autocomplete="off"
+            className="input fullwidth textarea"
+            onBlur={(e) => {
+              this.props.updateMessage(e)
+            }}
+          />
+        </div>
+        <Alert alertType="error event">{JSON.stringify(sendSentry.event)}</Alert>
+        <div className="modal-footer send-error">
+          <button className="button outline" onClick={() => this.closeAndResolve(false)}>
+            Cancel
+          </button>
+          <button
+            className="button primary send-error"
+            onClick={() => {
               this.closeAndResolve(true)
               this.props.submitUserFeedbackToSentry()
-            },
-          },
-          'Send'
-        )
-      )
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </Modal>
     )
   }
 }

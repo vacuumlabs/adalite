@@ -16,27 +16,25 @@ import UnexpectedErrorModal from './common/unexpectedErrorModal'
 const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
 const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
-  ({walletIsLoaded}) => (walletIsLoaded ? h(NavbarAuth, {}) : h(NavbarUnauth, {}))
+  ({walletIsLoaded}) => (walletIsLoaded ? <NavbarAuth /> : <NavbarUnauth />)
 )
 
 const App = connect((state) => ({
   displayWelcome: state.displayWelcome,
   showContactFormModal: state.showContactFormModal,
   showUnexpectedErrorModal: state.showUnexpectedErrorModal,
-}))(({displayWelcome, showContactFormModal, showUnexpectedErrorModal}) =>
-  h(
-    'div',
-    {class: 'wrap'},
-    h(LoadingOverlay, {}),
-    h(Navbar, {}),
-    h(TopLevelRouter, {}),
-    h(Footer, {}),
-    h(AddressDetailDialog, {}),
-    ADALITE_LOGOUT_AFTER > 0 && h(AutoLogout, {}),
-    displayWelcome && h(Welcome, {}),
-    showContactFormModal && h(ContactForm, {}),
-    showUnexpectedErrorModal && h(UnexpectedErrorModal, {})
-  )
-)
+}))(({displayWelcome, showContactFormModal, showUnexpectedErrorModal}) => (
+  <div className="wrap">
+    <LoadingOverlay />
+    <Navbar />
+    <TopLevelRouter />
+    <Footer />
+    <AddressDetailDialog />
+    {ADALITE_LOGOUT_AFTER > 0 && <AutoLogout />}
+    {displayWelcome && <Welcome />}
+    {showContactFormModal && <ContactForm />}
+    {showUnexpectedErrorModal && <UnexpectedErrorModal />}
+  </div>
+))
 
 export default App

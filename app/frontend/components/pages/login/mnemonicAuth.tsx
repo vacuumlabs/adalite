@@ -62,87 +62,75 @@ class LoadByMnemonicSectionClass extends Component<Props> {
   }) {
     const sanitizedMnemonic = sanitizeMnemonic(mnemonicInputValue)
 
-    return h(
-      'div',
-      {class: `authentication-content ${showMnemonicInfoAlert ? '' : 'centered'}`},
-      showMnemonicInfoAlert &&
-        h(
-          Alert,
-          {alertType: 'info auth'},
-          'Here you can use your mnemonic to access your new wallet.'
-        ),
-      h(
-        'label',
-        {
-          class: 'authentication-label',
-          for: 'mnemonic-submitted',
-        },
-        'Enter the 12 or 15-word wallet mnemonic or 27-word Daedalus-type paper wallet mnemonic'
-      ),
-      h('input', {
-        type: 'text',
-        class: 'input fullwidth auth',
-        id: 'mnemonic-submitted',
-        name: 'mnemonic-submitted',
-        placeholder: 'Enter your wallet mnemonic',
-        value: mnemonicInputValue,
-        onInput: updateMnemonic,
-        onBlur: checkForMnemonicValidationError,
-        autocomplete: 'off',
-        ref: (element) => {
-          this.mnemonicField = element
-        },
-        onKeyDown: (e) => e.key === 'Enter' && this.goBtn.click(),
-      }),
-      h(
-        'div',
-        {class: 'validation-row'},
-        h(
-          'button',
-          {
-            class: 'button primary',
-            disabled: !sanitizedMnemonic || mnemonicValidationError,
-            onClick: async () =>
+    return (
+      <div className={`authentication-content ${showMnemonicInfoAlert ? '' : 'centered'}`}>
+        {showMnemonicInfoAlert && (
+          <Alert alertType="info auth">
+            Here you can use your mnemonic to access your new wallet.
+          </Alert>
+        )}
+        <label className="authentication-label" for="mnemonic-submitted">
+          Enter the 12 or 15-word wallet mnemonic or 27-word Daedalus-type paper wallet mnemonic
+        </label>
+        <input
+          type="text"
+          className="input fullwidth auth"
+          id="mnemonic-submitted"
+          name="mnemonic-submitted"
+          placeholder="Enter your wallet mnemonic"
+          value={mnemonicInputValue}
+          onInput={updateMnemonic}
+          onBlur={checkForMnemonicValidationError}
+          autocomplete="off"
+          ref={(element) => {
+            this.mnemonicField = element
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && this.goBtn.click()}
+        />
+        <div className="validation-row">
+          <button
+            className="button primary"
+            disabled={!sanitizedMnemonic || mnemonicValidationError}
+            onClick={async () =>
               loadWallet({
                 cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
                 walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
-              }),
-            ...tooltip(
+              })
+            }
+            {...tooltip(
               'Your input appears to be incorrect.\nCheck for the typos and try again.',
               showMnemonicValidationError && sanitizedMnemonic && mnemonicValidationError
-            ),
-            onKeyDown: (e) => {
+            )}
+            onKeyDown={(e) => {
               e.key === 'Enter' && (e.target as HTMLButtonElement).click()
               if (e.key === 'Tab') {
                 this.mnemonicField.focus()
                 e.preventDefault()
               }
-            },
-            ref: (element) => {
+            }}
+            ref={(element) => {
               this.goBtn = element
-            },
-          },
-          'Unlock'
-        ),
-        mnemonicValidationError &&
-          showMnemonicValidationError &&
-          h(
-            'div',
-            {class: 'validation-message error'},
-            getTranslation(mnemonicValidationError.code)
-          )
-      ),
-      h(
-        'a',
-        {
-          class: 'authentication-link',
-          onClick: (e) => {
+            }}
+          >
+            Unlock
+          </button>
+          {mnemonicValidationError &&
+            showMnemonicValidationError && (
+              <div className="validation-message error">
+                {getTranslation(mnemonicValidationError.code)}
+              </div>
+            )}
+        </div>
+        <a
+          className="authentication-link"
+          onClick={(e) => {
             e.preventDefault()
             openGenerateMnemonicDialog()
-          },
-        },
-        'Create New Wallet'
-      )
+          }}
+        >
+          Create New Wallet
+        </a>
+      </div>
     )
   }
 }

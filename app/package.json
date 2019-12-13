@@ -31,7 +31,7 @@
     "bip39-light": "^1.0.7",
     "borc": "^2.1.0",
     "cardano-crypto.js": "5.2.0",
-    "preact": "^8.2.7",
+    "preact": "^10.1.0",
     "trezor-connect": "7",
     "webpack": "^4.1.1",
     "webpack-cli": "^3.3.6",
