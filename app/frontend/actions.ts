@@ -1,6 +1,6 @@
 import {generateMnemonic} from './wallet/mnemonic'
 import {ADALITE_CONFIG} from './config'
-import {saveAs} from 'file-saver'
+import {saveAs} from './libs/file-saver'
 import {encode} from 'borc'
 import {
   parseCoins,
@@ -25,6 +25,7 @@ import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import submitEmailRaw from './helpers/submitEmailRaw'
 import captureBySentry from './helpers/captureBySentry'
 import submitFeedbackToSentry from './helpers/submitFeedbackToSentry'
+import {State} from './state'
 
 let wallet = null
 
@@ -39,8 +40,10 @@ const debounceEvent = (callback, time) => {
   }
 }
 
-export default ({setState, getState}) => {
-  const loadingAction = (state, message, optionalArgsObj) => {
+type SetStateFn = (newState: Partial<State>) => void
+type GetStateFn = () => State
+export default ({setState, getState}: {setState: SetStateFn, getState: GetStateFn}) => {
+  const loadingAction = (state, message: string, optionalArgsObj?: any) => {
     return setState(
       Object.assign(
         {},
@@ -66,7 +69,7 @@ export default ({setState, getState}) => {
     )
   }
 
-  const handleError = (errorName, e, options) => {
+  const handleError = (errorName: string, e: any, options?: any) => {
     if (e && e.name) {
       // is a error
       debugLog(e)
@@ -110,7 +113,9 @@ export default ({setState, getState}) => {
   }
 
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
-    loadingAction(state, 'Loading wallet data...', {walletLoadingError: undefined})
+    loadingAction(state, 'Loading wallet data...', {
+      walletLoadingError: undefined,
+    })
     try {
       wallet = await CardanoWallet({
         cryptoProviderType,
@@ -280,6 +285,7 @@ export default ({setState, getState}) => {
         displayWelcome: false,
         autoLogin: false,
       },
+      // @ts-ignore (we don't have types for forced state overwrite)
       true
     ) // force overwriting the state
     window.history.pushState({}, '/', '/')
@@ -327,7 +333,7 @@ export default ({setState, getState}) => {
   }
 
   const closeStakingBanner = (state) => {
-    window.localStorage.setItem('dontShowStakingBanner2', true)
+    window.localStorage.setItem('dontShowStakingBanner2', 'true')
     setState({
       showStakingBanner: false,
     })
@@ -462,7 +468,7 @@ export default ({setState, getState}) => {
       sendAmount: {fieldValue: '', coins: 0},
       sendAddress: {fieldValue: ''},
     })
-    resetAmountFields()
+    resetAmountFields(state)
   }
 
   const resetDonation = () => {
@@ -516,7 +522,7 @@ export default ({setState, getState}) => {
       debouncedCalculateFee()
     } else {
       if (isSendAmountNonPositive(state.sendAmount.fieldValue, state.sendAmountValidationError)) {
-        resetAmountFields()
+        resetAmountFields(state)
       }
       setState({calculatingFee: false})
     }
@@ -775,7 +781,9 @@ export default ({setState, getState}) => {
       await exportWalletSecretDef(wallet.getWalletSecretDef(), password, walletName)
     )
 
-    const blob = new Blob([walletExport], {type: 'application/json;charset=utf-8'})
+    const blob = new Blob([walletExport], {
+      type: 'application/json;charset=utf-8',
+    })
     saveAs(blob, `${walletName}.json`)
   }
 
