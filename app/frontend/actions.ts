@@ -27,7 +27,9 @@ import captureBySentry from './helpers/captureBySentry'
 import submitFeedbackToSentry from './helpers/submitFeedbackToSentry'
 import {State} from './state'
 
-let wallet = null
+type ThenArg<T> = T extends Promise<infer U> ? U : never
+
+let wallet: ThenArg<ReturnType<typeof CardanoWallet>> = null
 
 const debounceEvent = (callback, time) => {
   let interval
