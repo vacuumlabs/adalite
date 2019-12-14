@@ -45,11 +45,9 @@ interface Props {
   sendAddressValidationError: any
   sendAmount: any
   sendAmountValidationError: any
-  sendAmountForTransactionFee: any
   donationAmountValidationError: any
   updateAddress: any
   updateAmount: any
-  transactionFee: any
   confirmTransaction: any
   showConfirmTransactionDialog: any
   feeRecalculating: any
@@ -65,7 +63,7 @@ interface Props {
   showCustomDonationInput: any
   maxDonationAmount: any
   conversionRates: any
-  donationAmountForTransactionFee: any
+  sendTransactionSummary: any
 }
 
 class SendAdaPage extends Component<Props> {
@@ -79,11 +77,9 @@ class SendAdaPage extends Component<Props> {
     sendAddressValidationError,
     sendAmount,
     sendAmountValidationError,
-    sendAmountForTransactionFee,
     donationAmountValidationError,
     updateAddress,
     updateAmount,
-    transactionFee,
     confirmTransaction,
     showConfirmTransactionDialog,
     feeRecalculating,
@@ -99,7 +95,7 @@ class SendAdaPage extends Component<Props> {
     showCustomDonationInput,
     maxDonationAmount,
     conversionRates,
-    donationAmountForTransactionFee,
+    sendTransactionSummary: summary,
   }) {
     const sendFormValidationError =
       sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
@@ -107,7 +103,7 @@ class SendAdaPage extends Component<Props> {
     const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
     const isDonationSufficient = maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
     const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-    const total = sendAmountForTransactionFee + transactionFee + donationAmountForTransactionFee
+    const total = summary.amount + summary.fee + summary.donation
 
     const rawTransactionHandler = async () => {
       await getRawTransaction(sendAddress, coinsAmount)
@@ -175,7 +171,7 @@ class SendAdaPage extends Component<Props> {
           {showCustomDonationInput &&
             isDonationSufficient && <CustomDonationInput isSendAddressValid={isSendAddressValid} />}
           <div className="ada-label">Fee</div>
-          <div className="send-fee">{printAda(transactionFee)}</div>
+          <div className="send-fee">{printAda(summary.fee)}</div>
         </div>
         <div className="send-total">
           <div className="send-total-title">Total</div>
@@ -225,7 +221,7 @@ class SendAdaPage extends Component<Props> {
           />
         )}
         {rawTransactionOpen && <RawTransactionModal />}
-        {showConfirmTransactionDialog && <ConfirmTransactionDialog total={total} />}
+        {showConfirmTransactionDialog && <ConfirmTransactionDialog />}
         {showThanksForDonation && (
           <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
         )}
@@ -242,10 +238,7 @@ export default connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount.fieldValue,
-    sendAmountForTransactionFee: state.sendAmountForTransactionFee,
     donationAmountValidationError: state.donationAmountValidationError,
-    donationAmountForTransactionFee: state.donationAmountForTransactionFee,
-    transactionFee: state.transactionFee,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
     showTransactionErrorModal: state.showTransactionErrorModal,
     feeRecalculating: state.calculatingFee,
@@ -256,6 +249,7 @@ export default connect(
     showCustomDonationInput: state.showCustomDonationInput,
     maxDonationAmount: state.maxDonationAmount,
     conversionRates: state.conversionRates && state.conversionRates.data,
+    sendTransactionSummary: state.sendTransactionSummary,
   }),
   actions
 )(SendAdaPage)

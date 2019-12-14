@@ -16,9 +16,13 @@ export interface State {
   ownAddressesWithMeta: any // TODO
   sendAddress: any // TODO
   sendAmount: any // TODO
-  transactionFee: number
-  sendAmountForTransactionFee: number
-  donationAmountForTransactionFee: number
+
+  sendTransactionSummary: {
+    amount: number
+    donation: number
+    fee: number
+  }
+
   router: {
     pathname: string
     hash: string
@@ -102,9 +106,11 @@ const initialState: State = {
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0, coins: 0},
-  transactionFee: 0,
-  sendAmountForTransactionFee: 0,
-  donationAmountForTransactionFee: 0,
+  sendTransactionSummary: {
+    amount: 0,
+    fee: 0,
+    donation: 0,
+  },
   router: {
     pathname: window.location.pathname,
     hash: window.location.hash,
