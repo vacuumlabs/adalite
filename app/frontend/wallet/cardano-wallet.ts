@@ -20,6 +20,7 @@ import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
 import NamedError from '../helpers/NamedError'
 import CryptoProviderFactory from './crypto-provider-factory'
 import {roundWholeAdas} from '../helpers/adaConverters'
+import {Lovelace} from '../state'
 
 function txFeeFunction(txSizeInBytes) {
   const a = 155381
@@ -84,15 +85,15 @@ function computeTxFee(txInputs, address, coins, hasDonation, donationAmount?) {
   * so we let caller handle it
   */
   if (totalAmount + withoutChangeFee >= txInputsCoinsSum) {
-    return withoutChangeFee
+    return withoutChangeFee as Lovelace
   } else {
     const withChangeFee = txFeeFunction(estimateTxSize(txInputs, address, true, hasDonation))
     if (totalAmount + withChangeFee > txInputsCoinsSum) {
       //means one output transaction was possible, while 2 output is not
       //so we return fee equal to inputs - totalAmount which is guaranteed to pass
-      return txInputsCoinsSum - totalAmount
+      return (txInputsCoinsSum - totalAmount) as Lovelace
     } else {
-      return withChangeFee
+      return withChangeFee as Lovelace
     }
   }
 }
@@ -224,31 +225,41 @@ const CardanoWallet = async (options) => {
       coins += profitableUtxos[i].coins
     }
 
-    return {txInputs, coins}
+    return {txInputs, coins: coins as Lovelace}
   }
 
   const getMaxSendableAmountWithDonation = (
     address,
     txInputs,
-    coins,
+    coins: Lovelace,
     donationAmount,
     donationType
   ) => {
     if (donationType === 'percentage') {
       // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
-      const reducedAmount = coins / 1.002 //leave some for donation (0.2%)
-      const percentageDonation = reducedAmount * 0.002
+      const reducedAmount: Lovelace = (coins / 1.002) as Lovelace //leave some for donation (0.2%)
+      const percentageDonation: Lovelace = (reducedAmount * 0.002) as Lovelace
       // we show rounded % donations in the UI
       const roundedDonation = roundWholeAdas(percentageDonation)
       const diff = percentageDonation - roundedDonation
       // add diff from rounding (can be negative)
-      const txFee = computeTxFee(txInputs, address, reducedAmount + diff, true, roundedDonation)
+      const txFee = computeTxFee(
+        txInputs,
+        address,
+        (reducedAmount + diff) as Lovelace,
+        roundedDonation
+      )
       return {
         sendAmount: reducedAmount + diff - txFee,
         donationAmount: roundedDonation,
       }
     } else {
-      const txFee = computeTxFee(txInputs, address, coins - donationAmount, true, donationAmount)
+      const txFee = computeTxFee(
+        txInputs,
+        address,
+        (coins - donationAmount) as Lovelace,
+        donationAmount
+      )
       return {sendAmount: Math.max(coins - donationAmount - txFee, 0)}
     }
   }

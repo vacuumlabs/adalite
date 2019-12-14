@@ -1,9 +1,10 @@
 import {h} from 'preact'
 import printAda from '../../helpers/printAda'
 import Conversions from './conversions'
+import {Lovelace} from '../../state'
 
 interface Props {
-  balance: number
+  balance: Lovelace
   reloadWalletInfo: (state: any) => void
   conversionRates: any
 }

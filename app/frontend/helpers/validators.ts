@@ -2,9 +2,10 @@ import {isValidAddress} from 'cardano-crypto.js'
 import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
+import {Lovelace, Ada} from '../state'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
-const parseCoins = (str) => Math.trunc(toCoins(parseFloat(str)))
+const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace
 
 const sendAddressValidator = (fieldValue) =>
   !isValidAddress(fieldValue) && fieldValue !== '' ? {code: 'SendAddressInvalidAddress'} : null
@@ -74,7 +75,7 @@ const mnemonicValidator = (mnemonic) => {
 }
 
 export {
-  parseCoins,
+  parseToLovelace as parseCoins,
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,

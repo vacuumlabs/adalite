@@ -4,6 +4,15 @@ interface Transaction {}
 
 type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
 
+export type Ada = number & {__typeAda: any}
+export type Lovelace = number & {__typeLovelace: any}
+
+export interface SendTransactionSummary {
+  amount: Lovelace
+  donation: Lovelace
+  fee: Lovelace
+}
+
 export interface State {
   loading: boolean
   loadingMessage: string
@@ -16,11 +25,7 @@ export interface State {
   sendAddress: any // TODO
   sendAmount: any // TODO
 
-  sendTransactionSummary: {
-    amount: number
-    donation: number
-    fee: number
-  }
+  sendTransactionSummary: SendTransactionSummary
 
   router: {
     pathname: string
@@ -107,9 +112,9 @@ const initialState: State = {
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0, coins: 0},
   sendTransactionSummary: {
-    amount: 0,
-    fee: 0,
-    donation: 0,
+    amount: 0 as Lovelace,
+    fee: 0 as Lovelace,
+    donation: 0 as Lovelace,
   },
   router: {
     pathname: window.location.pathname,

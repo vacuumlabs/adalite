@@ -1,9 +1,10 @@
 import {h} from 'preact'
 import printAda from '../../../helpers/printAda'
 import formatDate from '../../../helpers/formatDate'
+import {Lovelace} from '../../../state'
 
-const FormattedAmount = ({amount}) => {
-  const value = printAda(Math.abs(amount))
+const FormattedAmount = ({amount}: {amount: Lovelace}) => {
+  const value = printAda(Math.abs(amount) as Lovelace)
   const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
   return (
     <div className={`transaction-amount ${amount > 0 ? 'credit' : 'debit'}`}>
@@ -12,7 +13,7 @@ const FormattedAmount = ({amount}) => {
   )
 }
 
-const FormattedFee = ({fee}) => {
+const FormattedFee = ({fee}: {fee: Lovelace}) => {
   const value = printAda(fee)
   return <div className="transaction-fee">{`Fee: ${value}`}</div>
 }
