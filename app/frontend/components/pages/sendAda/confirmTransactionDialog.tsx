@@ -31,7 +31,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     total,
   }) {
     return (
-      <Modal closeHandler={cancelTransaction} title="Transaction review">
+      <Modal onRequestClose={cancelTransaction} title="Transaction review">
         <div className="review">
           <div className="review-label">Address</div>
           <div className="review-address">{sendAddress}</div>

@@ -13,7 +13,7 @@ class LogoutNotification {
   render({setLogoutNotificationOpen}) {
     return (
       <Modal
-        closeHandler={() => setLogoutNotificationOpen(false)}
+        onRequestClose={() => setLogoutNotificationOpen(false)}
         title="You’ve been logged out"
         bodyClass="centered"
       >

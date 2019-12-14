@@ -26,7 +26,7 @@ class UnexpectedErrorModal extends Component<Props, {}> {
 
   render({sendSentry}) {
     return (
-      <Modal closeHandler={() => this.closeAndResolve(false)} title="Something went wrong.">
+      <Modal onRequestClose={() => this.closeAndResolve(false)} title="Something went wrong.">
         <div className="modal-section">
           <p className="instruction">Do you want to inform Adalite about this error?</p>
           <p className="instruction">Tell us what happened!</p>

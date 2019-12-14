@@ -1,14 +1,14 @@
 import ErrorModal from '../../common/errorModal'
 
 interface Props {
-  closeHandler: () => void
+  onRequestClose: () => void
   errorMessage: string
   showHelp?: boolean
 }
 
-const WalletLoadingErrorModal = ({closeHandler, errorMessage, showHelp}: Props) =>
+const WalletLoadingErrorModal = ({onRequestClose, errorMessage, showHelp}: Props) =>
   ErrorModal({
-    closeHandler,
+    onRequestClose,
     errorMessage,
     title: 'Error loading wallet',
     buttonTitle: 'OK',

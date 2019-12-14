@@ -41,7 +41,7 @@ class AddressDetailDialogClass extends Component<Props, {showCopyMessage: boolea
   ) {
     return (
       showDetail && (
-        <Modal closeHandler={closeAddressDetail}>
+        <Modal onRequestClose={closeAddressDetail}>
           <div className="detail">
             <div className="detail-content">
               <div className="detail-label">Address</div>

@@ -27,7 +27,7 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
 
   render() {
     return (
-      <Modal closeHandler={this.closeContactFormModal}>
+      <Modal onRequestClose={this.closeContactFormModal}>
         <main className="contact-modal">
           <h2 className="export-title">Contact Us</h2>
           <p className="instructions">

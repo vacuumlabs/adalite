@@ -11,7 +11,7 @@ class DemoWalletWarningDialogClass {
   render({closeDemoWalletWarningDialog}: Props) {
     return (
       <Modal
-        closeHandler={closeDemoWalletWarningDialog}
+        onRequestClose={closeDemoWalletWarningDialog}
         title="Accessing the demo wallet"
         showWarning
       >
