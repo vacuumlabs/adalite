@@ -5,7 +5,7 @@ import actions from '../../../actions'
 interface Props {
   resetEmailSubmission: () => void
   submitEmail: (email: string) => void
-  emailSubmitSuccess: string
+  emailSubmitSuccess: boolean
   emailSubmitMessage: string
 }
 
@@ -102,7 +102,6 @@ class StakingPage extends Component<Props, State> {
 
 export default connect(
   (state) => ({
-    email: state.email,
     emailSubmitSuccess: state.emailSubmitSuccess,
     emailSubmitMessage: state.emailSubmitMessage,
   }),
