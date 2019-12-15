@@ -12,7 +12,6 @@ export interface State {
   currentTab: 'wallet-info'
   walletIsLoaded: boolean
   showStakingBanner: boolean
-  newWalletMnemonic: string
   ownAddressesWithMeta: any // TODO
   sendAddress: any // TODO
   sendAmount: any // TODO
@@ -49,10 +48,12 @@ export interface State {
   percentageDonationText: string
   thresholdAmountReached: boolean
   highestAmountReached: number // TODO: why?
-  emailSubmitSuccess: boolean
-  emailSubmitMessage: string
+
   showUnexpectedErrorModal: boolean
-  sendSentry: any //
+  sendSentry: {
+    event?: any
+    resolve?: (shouldSend: boolean) => void
+  }
   autoLogin: boolean
 
   // TODO
@@ -63,10 +64,6 @@ export interface State {
   showContactFormModal?: boolean
 
   calculatingFee?: boolean
-
-  userEmail?: string
-  userComments?: string
-  userName?: string
 
   sendAmountValidationError?: any
   showExportOption?: boolean
@@ -105,7 +102,6 @@ const initialState: State = {
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner2') === 'true'),
-  newWalletMnemonic: '',
   ownAddressesWithMeta: [],
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
@@ -140,8 +136,7 @@ const initialState: State = {
   percentageDonationText: '0.2%', // What is this and why it isn't in config?
   thresholdAmountReached: false,
   highestAmountReached: 0,
-  emailSubmitSuccess: false,
-  emailSubmitMessage: '',
+
   showUnexpectedErrorModal: false,
   sendSentry: {},
   autoLogin:
