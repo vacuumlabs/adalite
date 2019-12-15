@@ -382,22 +382,6 @@ const CardanoWallet = async (options) => {
     return cryptoProvider.displayAddressForPath(absDerivationPath)
   }
 
-  async function getNewUtxosFromTxAux(txAux) {
-    const result = []
-    for (let i = 0; i < txAux.outputs.length; i++) {
-      if (await isOwnAddress(txAux.outputs[i].address)) {
-        result.push({
-          address: txAux.outputs[i].address,
-          coins: txAux.outputs[i].coins,
-          txHash: txAux.getId(),
-          outputIndex: i,
-        })
-      }
-    }
-
-    return result
-  }
-
   function generateNewSeeds() {
     seeds = Object.assign({}, seeds, {
       randomInputSeed: randomInputSeed || Math.floor(Math.random() * MAX_INT32),
@@ -422,7 +406,6 @@ const CardanoWallet = async (options) => {
     prepareTxAux,
     verifyAddress,
     fetchTxInfo,
-    _getNewUtxosFromTxAux: getNewUtxosFromTxAux,
     generateNewSeeds,
   }
 }
