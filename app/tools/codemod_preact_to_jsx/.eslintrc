@@ -8,17 +8,11 @@
   "rules": {
     "no-bitwise": "off",
     "guard-for-in": "off",
-    "react/react-in-jsx-scope": "off",
-    "no-undef": "off"
+    "camelcase": "off"
   },
   "settings": {
     "react": {
-        "version": "16.8",
-        "pragma": "h"
+        "version": "16.8"
     }
-  },
-  "parser": "@typescript-eslint/typescript-estree",
-  "parserOptions": {
-    "jsx": true
   }
 }
