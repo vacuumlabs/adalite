@@ -38,7 +38,7 @@
     }
   },
   "lint-staged": {
-    "{{app/frontend,app/tests,server}/**/*.{js,jsx,json,css},package.json}": [
+    "{{app/frontend,app/tests,server}/**/*.{ts,tsx,js,jsx,json,css},package.json}": [
       "prettier-eslint --write",
       "git add"
     ]
