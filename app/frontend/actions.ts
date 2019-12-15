@@ -388,20 +388,24 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     // if we reverted value in the meanwhile, do nothing, otherwise update
     const newState = getState()
     if (
-      newState.sendAmount.fieldValue === state.sendAmount.fieldValue &&
-      newState.sendAddress.fieldValue === state.sendAddress.fieldValue &&
-      newState.donationAmount.fieldValue === state.donationAmount.fieldValue
+      newState.sendAmount.fieldValue !== state.sendAmount.fieldValue ||
+      newState.sendAddress.fieldValue !== state.sendAddress.fieldValue ||
+      newState.donationAmount.fieldValue !== state.donationAmount.fieldValue
     ) {
-      setState({
-        transactionFee,
-        sendAmountForTransactionFee: amount,
-        donationAmountForTransactionFee: donationAmount,
-      })
-      handleError(
-        'sendAmountValidationError',
-        feeValidator(amount, transactionFee, donationAmount, state.balance)
-      )
+      return
     }
+
+    setState({
+      sendTransactionSummary: {
+        amount,
+        donation: donationAmount,
+        fee: transactionFee,
+      },
+    })
+    handleError(
+      'sendAmountValidationError',
+      feeValidator(amount, transactionFee, donationAmount, state.balance)
+    )
     setState({
       calculatingFee: false,
     })
@@ -447,9 +451,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const resetAmountFields = (state) => {
     setState({
       donationAmount: {fieldValue: '', coins: 0},
-      donationAmountForTransactionFee: 0,
-      sendAmountForTransactionFee: 0,
-      transactionFee: 0,
+      sendTransactionSummary: {
+        amount: 0,
+        donation: 0,
+        fee: 0,
+      },
       maxDonationAmount: Infinity,
       checkedDonationType: '',
       showCustomDonationInput: false,

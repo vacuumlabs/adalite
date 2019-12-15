@@ -6,12 +6,8 @@ import Modal from '../../common/modal'
 
 interface Props {
   sendAddress: any
-  sendAmount: number
-  transactionFee: any
   submitTransaction: any
   cancelTransaction: any
-  donationAmount: any
-  total: any
 }
 
 class ConfirmTransactionDialogClass extends Component<Props, {}> {
@@ -21,26 +17,20 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     this.cancelTx.focus()
   }
 
-  render({
-    sendAddress,
-    sendAmount,
-    transactionFee,
-    submitTransaction,
-    cancelTransaction,
-    donationAmount,
-    total,
-  }) {
+  render({sendAddress, summary, submitTransaction, cancelTransaction}) {
+    const total = summary.amount + summary.donation + summary.fee
+
     return (
       <Modal onRequestClose={cancelTransaction} title="Transaction review">
         <div className="review">
           <div className="review-label">Address</div>
           <div className="review-address">{sendAddress}</div>
           <div className="ada-label">Amount</div>
-          <div className="review-amount">{printAda(sendAmount)}</div>
+          <div className="review-amount">{printAda(summary.amount)}</div>
           <div className="ada-label">Donation</div>
-          <div className="review-amount">{printAda(donationAmount)}</div>
+          <div className="review-amount">{printAda(summary.donation)}</div>
           <div className="ada-label">Fee</div>
-          <div className="review-fee">{printAda(transactionFee)}</div>
+          <div className="review-fee">{printAda(summary.fee)}</div>
           <div className="ada-label">Total</div>
           <div className="review-total">{printAda(total)}</div>
         </div>
@@ -69,9 +59,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
 export default connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
-    sendAmount: state.sendAmountForTransactionFee,
-    transactionFee: state.transactionFee,
-    donationAmount: state.donationAmountForTransactionFee,
+    summary: state.sendTransactionSummary,
   }),
   actions
 )(ConfirmTransactionDialogClass)
