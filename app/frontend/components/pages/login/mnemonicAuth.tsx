@@ -20,7 +20,6 @@ interface Props {
   showMnemonicInfoAlert: boolean
   openGenerateMnemonicDialog: () => void
   autoLogin: boolean
-  mnemonic: boolean
   displayWelcome: boolean
   showDemoWalletWarningDialog: boolean
 }
@@ -31,7 +30,9 @@ class LoadByMnemonicSectionClass extends Component<Props> {
 
   componentDidUpdate() {
     const shouldFormFocus =
-      !this.props.mnemonic && !this.props.displayWelcome && !this.props.showDemoWalletWarningDialog
+      !this.props.mnemonicInputValue &&
+      !this.props.displayWelcome &&
+      !this.props.showDemoWalletWarningDialog
     shouldFormFocus && this.mnemonicField.focus()
   }
 

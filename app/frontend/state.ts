@@ -62,7 +62,7 @@ export interface State {
   sendAmountValidationError?: any
   showExportOption?: boolean
 
-  conversionRates?: {USD: number; EUR: number}
+  conversionRates?: {data: {USD: number; EUR: number}}
   balance?: number
   showGenerateMnemonicDialog?: boolean
   mnemonicValidationError?: any
@@ -76,6 +76,10 @@ export interface State {
   isDemoWallet?: boolean
   error?: any
   showAddressVerification?: boolean
+
+  donationAmountValidationError?: any
+  sendAddressValidationError?: any
+  transactionSubmissionError?: any
 }
 
 const initialState: State = {

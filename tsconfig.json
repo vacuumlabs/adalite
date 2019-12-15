@@ -12,7 +12,8 @@
       "preact": [
         "app/node_modules/preact/dist/preact.d.ts"
       ]
-    }
+    },
+    "noErrorTruncation": true
   },
   "include": [
     "app/**/*"

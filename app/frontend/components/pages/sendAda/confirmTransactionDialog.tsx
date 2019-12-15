@@ -1,10 +1,20 @@
-import {h} from 'preact'
+import {h, Component} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 
-class ConfirmTransactionDialogClass {
+interface Props {
+  sendAddress: any
+  sendAmount: number
+  transactionFee: any
+  submitTransaction: any
+  cancelTransaction: any
+  donationAmount: any
+  total: any
+}
+
+class ConfirmTransactionDialogClass extends Component<Props, {}> {
   cancelTx: HTMLAnchorElement
 
   componentDidMount() {
