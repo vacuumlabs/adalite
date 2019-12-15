@@ -3,7 +3,7 @@ import {h, Component} from 'preact'
 import Tag from './tag'
 
 interface Props {
-  closeHandler?: () => void
+  onRequestClose?: () => void
   children?: any
   bodyClass?: string
   title?: string
@@ -19,21 +19,21 @@ class Modal extends Component<Props, {}> {
     document.body.classList.remove('no-scroll')
   }
 
-  render({children, closeHandler, bodyClass = '', title = '', showWarning = false}) {
+  render({children, onRequestClose, bodyClass = '', title = '', showWarning = false}) {
     return (
       <div className="modal">
-        <div className="modal-overlay" onClick={closeHandler} />
+        <div className="modal-overlay" onClick={onRequestClose} />
         <div
           className={`modal-body ${bodyClass}`}
           onKeyDown={(e) => {
-            e.key === 'Escape' && closeHandler()
+            e.key === 'Escape' && onRequestClose()
           }}
         >
           <div className="modal-content">
-            {closeHandler && (
+            {onRequestClose && (
               <button
                 className="button close modal-close"
-                onClick={closeHandler}
+                onClick={onRequestClose}
                 {
                 ...{ariaLabel: 'Close dialog'} /* fix ts error*/
                 }

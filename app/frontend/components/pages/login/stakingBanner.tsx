@@ -1,10 +1,10 @@
 import {h} from 'preact'
 
 interface Props {
-  closeBanner: () => void
+  onRequestClose: () => void
 }
 
-const StakingBanner = ({closeBanner}: Props) => (
+const StakingBanner = ({onRequestClose}: Props) => (
   <div className="banner">
     <div className="banner-text">
       AdaLite will support staking. We've just released balance check for incentivized testnet.{' '}
@@ -24,7 +24,7 @@ const StakingBanner = ({closeBanner}: Props) => (
       ...{ariaLabel: 'Close banner'} /* silence ts*/
       }
       onClick={(e) => {
-        closeBanner()
+        onRequestClose()
       }}
     />
   </div>

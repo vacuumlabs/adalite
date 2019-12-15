@@ -160,7 +160,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
     )
     return (
       <div className="page-wrapper">
-        {showStakingBanner && <StakingBanner closeBanner={this.closeStakingBannerClick} />}
+        {showStakingBanner && <StakingBanner onRequestClose={this.closeStakingBannerClick} />}
         <div className="page-inner">
           <main className="page-main">
             {authMethod === '' ? <AuthCardInitial /> : <AuthCard />}
@@ -177,7 +177,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
           {logoutNotificationOpen && <LogoutNotification />}
           {showWalletLoadingErrorModal && (
             <WalletLoadingErrorModal
-              closeHandler={closeWalletLoadingErrorModal}
+              onRequestClose={closeWalletLoadingErrorModal}
               errorMessage={getTranslation(walletLoadingError.code, walletLoadingError.params)}
               showHelp={errorHasHelp(walletLoadingError.code)}
             />

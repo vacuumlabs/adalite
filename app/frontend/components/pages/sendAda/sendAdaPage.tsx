@@ -216,7 +216,7 @@ class SendAdaPage extends Component<Props> {
         )}
         {showTransactionErrorModal && (
           <TransactionErrorModal
-            closeHandler={closeTransactionErrorModal}
+            onRequestClose={closeTransactionErrorModal}
             errorMessage={getTranslation(
               transactionSubmissionError.code,
               transactionSubmissionError.params

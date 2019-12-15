@@ -5,19 +5,25 @@ import Alert from './alert'
 import HelpSection from './helpSection'
 
 interface Props {
-  closeHandler: () => void
+  onRequestClose: () => void
   title: string
   buttonTitle: string
   errorMessage: string
   showHelp?: boolean
 }
 
-const ErrorModal = ({closeHandler, title, buttonTitle, errorMessage, showHelp = false}: Props) => (
-  <Modal closeHandler={closeHandler} title={title} showWarning={false} bodyClass="">
+const ErrorModal = ({
+  onRequestClose,
+  title,
+  buttonTitle,
+  errorMessage,
+  showHelp = false,
+}: Props) => (
+  <Modal onRequestClose={onRequestClose} title={title} showWarning={false} bodyClass="">
     <Alert alertType="error">{errorMessage}</Alert>
-    {showHelp && <HelpSection closeHandler={closeHandler} />}
+    {showHelp && <HelpSection closeHandler={onRequestClose} />}
     <div className="modal-footer">
-      <button className="button primary" onClick={closeHandler}>
+      <button className="button primary" onClick={onRequestClose}>
         {buttonTitle}
       </button>
     </div>

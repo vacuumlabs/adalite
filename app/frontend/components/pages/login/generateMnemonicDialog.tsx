@@ -11,7 +11,7 @@ interface Props {
 class GenerateMnemonicDialogClass {
   render({confirmGenerateMnemonicDialog, newWalletMnemonic, closeGenerateMnemonicDialog}: Props) {
     return (
-      <Modal closeHandler={closeGenerateMnemonicDialog} title="Create a New Wallet" showWarning>
+      <Modal onRequestClose={closeGenerateMnemonicDialog} title="Create a New Wallet" showWarning>
         <p className="modal-paragraph">
           The new wallet is created together with a mnemonic phrase. Write the mnemonic phrase down,
           you will need it to access your wallet.{' '}
