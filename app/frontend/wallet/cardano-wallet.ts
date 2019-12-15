@@ -55,6 +55,7 @@ const CardanoWallet = async (options) => {
     cryptoProvider,
     isChange: false,
     blockchainExplorer,
+    disableCaching: false,
   })
 
   const changeAddressManager = AddressManager({
@@ -64,6 +65,7 @@ const CardanoWallet = async (options) => {
     cryptoProvider,
     isChange: true,
     blockchainExplorer,
+    disableCaching: false,
   })
 
   function isHwWallet() {
@@ -255,7 +257,7 @@ const CardanoWallet = async (options) => {
     return txInputs
   }
 
-  function computeTxFee(txInputs, address, coins, hasDonation, donationAmount) {
+  function computeTxFee(txInputs, address, coins, hasDonation, donationAmount?) {
     const totalAmount = hasDonation ? coins + donationAmount : coins
     if (totalAmount > Number.MAX_SAFE_INTEGER) {
       throw NamedError('CoinAmountError')
@@ -334,7 +336,7 @@ const CardanoWallet = async (options) => {
       await visibleAddressManager.discoverAddressesWithMeta()
     ).map((addrWithMeta) => addrWithMeta.address)
 
-    const randomSeedGenerator = new PseudoRandom(seeds.randomChangeSeed)
+    const randomSeedGenerator = PseudoRandom(seeds.randomChangeSeed)
     const result = addresses[randomSeedGenerator.nextInt() % addresses.length]
     return result
   }
@@ -426,6 +428,7 @@ const CardanoWallet = async (options) => {
 }
 
 if (typeof window !== 'undefined') {
+  // @ts-ignore
   window.CardanoWallet = CardanoWallet
 }
 
