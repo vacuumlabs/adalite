@@ -151,7 +151,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         sendResponse,
         transactionHistory,
         loading: false,
-        mnemonicInputValue: '',
+        mnemonicAuthForm: {
+          mnemonicInputValue: '',
+          mnemonicInputError: null,
+          formIsValid: false,
+        },
         usingHwWallet,
         hwWalletName,
         isDemoWallet,
@@ -175,8 +179,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const loadDemoWallet = (state) => {
     setState({
-      mnemonicInputValue: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
-      mnemonicValidationError: undefined,
+      mnemonicAuthForm: {
+        mnemonicInputValue: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
+        mnemonicInputError: null,
+        formIsValid: true,
+      },
       walletLoadingError: undefined,
       showWalletLoadingErrorModal: false,
       authMethod: 'mnemonic',
@@ -187,7 +194,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const openGenerateMnemonicDialog = (state) => {
     setState({
       newWalletMnemonic: generateMnemonic(15),
-      mnemonicInputValue: '',
+      mnemonicAuthForm: {
+        mnemonicInputValue: '',
+        mnemonicInputError: null,
+        formIsValid: false,
+      },
       showGenerateMnemonicDialog: true,
       authMethod: 'mnemonic',
       showMnemonicInfoAlert: true,
@@ -220,21 +231,30 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const updateMnemonic = async (state, e) => {
+  const updateMnemonic = (state: State, e) => {
     const mnemonicInputValue = e.target.value
+    const sanitizedMnemonic = sanitizeMnemonic(mnemonicInputValue)
+    const formIsValid = sanitizedMnemonic && mnemonicValidator(sanitizedMnemonic) === null
+
     setState({
-      mnemonicInputValue,
-      showMnemonicValidationError: false,
+      ...state,
+      mnemonicAuthForm: {
+        mnemonicInputValue,
+        mnemonicInputError: null,
+        formIsValid,
+      },
     })
-    handleError(
-      'mnemonicValidationError',
-      await mnemonicValidator(sanitizeMnemonic(mnemonicInputValue))
-    )
   }
 
-  const checkForMnemonicValidationError = (state) => {
+  const updateMnemonicValidationError = (state: State) => {
     setState({
-      showMnemonicValidationError: !!state.mnemonicValidationError,
+      ...state,
+      mnemonicAuthForm: {
+        ...state.mnemonicAuthForm,
+        mnemonicInputError: mnemonicValidator(
+          sanitizeMnemonic(state.mnemonicAuthForm.mnemonicInputValue)
+        ),
+      },
     })
   }
 
@@ -903,7 +923,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     updateAmount,
     loadDemoWallet,
     updateMnemonic,
-    checkForMnemonicValidationError,
+    updateMnemonicValidationError,
     openAddressDetail,
     closeAddressDetail,
     verifyAddress,

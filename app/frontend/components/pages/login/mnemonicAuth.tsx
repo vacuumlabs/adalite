@@ -8,15 +8,15 @@ import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import sanitizeMnemonic from '../../../helpers/sanitizeMnemonic'
 import {ADALITE_CONFIG} from '../../../config'
+
 const {ADALITE_DEMO_WALLET_MNEMONIC} = ADALITE_CONFIG
 
 interface Props {
-  mnemonicInputValue: string
-  mnemonicValidationError: any
+  formData: any
   updateMnemonic: (e: any) => void
-  checkForMnemonicValidationError: () => void
+  updateMnemonicValidationError: () => void
+  //
   loadWallet: any
-  showMnemonicValidationError: boolean
   showMnemonicInfoAlert: boolean
   openGenerateMnemonicDialog: () => void
   autoLogin: boolean
@@ -30,7 +30,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
 
   componentDidUpdate() {
     const shouldFormFocus =
-      !this.props.mnemonicInputValue &&
+      !this.props.formData.mnemonicInputValue &&
       !this.props.displayWelcome &&
       !this.props.showDemoWalletWarningDialog
     shouldFormFocus && this.mnemonicField.focus()
@@ -52,16 +52,14 @@ class LoadByMnemonicSectionClass extends Component<Props> {
   }
 
   render({
-    mnemonicInputValue,
-    mnemonicValidationError,
+    formData,
     updateMnemonic,
-    checkForMnemonicValidationError,
+    updateMnemonicValidationError,
     loadWallet,
-    showMnemonicValidationError,
     showMnemonicInfoAlert,
     openGenerateMnemonicDialog,
   }) {
-    const sanitizedMnemonic = sanitizeMnemonic(mnemonicInputValue)
+    const sanitizedMnemonic = sanitizeMnemonic(formData.mnemonicInputValue)
 
     return (
       <div className={`authentication-content ${showMnemonicInfoAlert ? '' : 'centered'}`}>
@@ -79,9 +77,9 @@ class LoadByMnemonicSectionClass extends Component<Props> {
           id="mnemonic-submitted"
           name="mnemonic-submitted"
           placeholder="Enter your wallet mnemonic"
-          value={mnemonicInputValue}
+          value={formData.mnemonicInputValue}
           onInput={updateMnemonic}
-          onBlur={checkForMnemonicValidationError}
+          onBlur={updateMnemonicValidationError}
           autoComplete="off"
           ref={(element) => {
             this.mnemonicField = element
@@ -91,16 +89,17 @@ class LoadByMnemonicSectionClass extends Component<Props> {
         <div className="validation-row">
           <button
             className="button primary"
-            disabled={!sanitizedMnemonic || mnemonicValidationError}
+            disabled={!formData.formIsValid}
             onClick={async () =>
               loadWallet({
                 cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+                // TODO(ppershing): get rid of mnemonic sanitization in this component
                 walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
               })
             }
             {...tooltip(
               'Your input appears to be incorrect.\nCheck for the typos and try again.',
-              showMnemonicValidationError && sanitizedMnemonic && mnemonicValidationError
+              formData.mnemonicInputError
             )}
             onKeyDown={(e) => {
               e.key === 'Enter' && (e.target as HTMLButtonElement).click()
@@ -115,10 +114,9 @@ class LoadByMnemonicSectionClass extends Component<Props> {
           >
             Unlock
           </button>
-          {mnemonicValidationError &&
-            showMnemonicValidationError && (
+          {formData.mnemonicInputError && (
             <div className="validation-message error">
-              {getTranslation(mnemonicValidationError.code)}
+              {getTranslation(formData.mnemonicInputError.code)}
             </div>
           )}
         </div>
@@ -138,11 +136,9 @@ class LoadByMnemonicSectionClass extends Component<Props> {
 
 export default connect(
   (state) => ({
-    mnemonicInputValue: state.mnemonicInputValue,
+    formData: state.mnemonicAuthForm,
     displayWelcome: state.displayWelcome,
     showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
-    mnemonicValidationError: state.mnemonicValidationError,
-    showMnemonicValidationError: state.showMnemonicValidationError,
     showMnemonicInfoAlert: state.showMnemonicInfoAlert,
     autoLogin: state.autoLogin,
   }),

@@ -27,7 +27,12 @@ export interface State {
     pathname: string
     hash: string
   }
-  mnemonicInputValue: string
+  mnemonicAuthForm: {
+    mnemonicInputValue: string
+    mnemonicInputError: {code: string}
+    formIsValid: boolean
+  }
+
   authMethod: AuthMethodEnum
   showDemoWalletWarningDialog: boolean
   logoutNotificationOpen: boolean
@@ -69,10 +74,9 @@ export interface State {
   conversionRates?: {data: {USD: number; EUR: number}}
   balance?: number
   showGenerateMnemonicDialog?: boolean
-  mnemonicValidationError?: any
+
   walletLoadingError?: any
   showWalletLoadingErrorModal?: boolean
-  showMnemonicValidationError?: boolean
   usingHwWallet?: boolean
   addressVerificationError?: boolean
   showAddressDetail?: {address: string; bip32path: string; copyOnClick: boolean}
@@ -115,7 +119,11 @@ const initialState: State = {
     pathname: window.location.pathname,
     hash: window.location.hash,
   },
-  mnemonicInputValue: '',
+  mnemonicAuthForm: {
+    mnemonicInputValue: '',
+    mnemonicInputError: null,
+    formIsValid: false,
+  },
   authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
   showDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,

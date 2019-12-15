@@ -65,14 +65,12 @@ const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
 }
 
 const mnemonicValidator = (mnemonic) => {
-  let validationError = null
-
   if (!validateMnemonic(mnemonic)) {
-    validationError = {
+    return {
       code: 'InvalidMnemonic',
     }
   }
-  return validationError
+  return null
 }
 
 export {
