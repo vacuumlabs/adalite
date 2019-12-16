@@ -1,6 +1,8 @@
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
+import {Lovelace} from './state'
+
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
 const translations = {
@@ -13,7 +15,7 @@ const translations = {
     'Sending funds is not possible since there is not enough balance to pay the transaction fee',
   SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
-    `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,
+    `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER as Lovelace)}`,
   DonationAmountTooLow: () => `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
   DonationInsufficientBalance: () => 'Insufficient balance for the donation.',
 

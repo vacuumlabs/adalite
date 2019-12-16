@@ -22,7 +22,7 @@ import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
-import {State} from './state'
+import {State, Ada, Lovelace} from './state'
 
 type ThenArg<T> = T extends Promise<infer U> ? U : never
 
@@ -429,7 +429,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const getPercentageDonationProperties = async () => {
     const state = getState()
-    const percentageDonation = roundWholeAdas(state.sendAmount.coins * 0.002)
+    const percentageDonation: Lovelace = roundWholeAdas((state.sendAmount.coins *
+      0.002) as Lovelace)
     const address = state.sendAddress.fieldValue
     const amount = state.sendAmount.coins
     const transactionFee = await wallet.getTxFee(address, amount, true, percentageDonation)
@@ -442,9 +443,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       : {
         text: '0.1%', // exceeded balance, lower to 1% or MIN
         value: Math.max(
-          Math.round(toAda(percentageDonation / 2)),
+          Math.round(toAda((percentageDonation / 2) as Lovelace)),
           ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE
-        ),
+        ) as Ada,
       }
   }
 
@@ -460,9 +461,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       donationAmount: {fieldValue: '', coins: 0},
       sendTransactionSummary: {
-        amount: 0,
-        donation: 0,
-        fee: 0,
+        amount: 0 as Lovelace,
+        donation: 0 as Lovelace,
+        fee: 0 as Lovelace,
       },
       maxDonationAmount: Infinity,
       checkedDonationType: '',
@@ -538,7 +539,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const getProperTextAndVal = async (coins) => {
-    if (coins < toCoins(500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
+    if (coins < toCoins((500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE) as Ada)) {
       //because 0.2%
       return {
         text: 'Min',
