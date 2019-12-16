@@ -22,80 +22,148 @@ import CryptoProviderFactory from './crypto-provider-factory'
 import {roundWholeAdas} from '../helpers/adaConverters'
 import {Lovelace} from '../state'
 
-function txFeeFunction(txSizeInBytes) {
+function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
   const b = 43.946
 
-  return Math.ceil(a + txSizeInBytes * b)
+  return Math.ceil(a + txSizeInBytes * b) as Lovelace
 }
 
-function estimateTxSize(txInputs, outAddress, hasChange, hasDonation) {
-  const txInputsSize = encode(new CborIndefiniteLengthArray(txInputs)).length
-  const outAddressSize = base58.decode(outAddress).length
+type UTxO = {
+  txHash: string
+  address: string
+  coins: Lovelace
+  outputIndex: number
+}
 
-  //size of addresses used by AdaLite
-  const ownAddressSize = 76
-  const donationAddressSize = base58.decode(ADA_DONATION_ADDRESS).length
+type Input = UTxO
 
-  /*
-  * we assume that at most three outputs (destination, change and possibly donation address)
-  * will be present encoded in an indefinite length array
-  */
+type Output = {
+  address: string
+  coins: Lovelace
+}
+
+// Estimates size of final transaction in bytes.
+// Note(ppershing): can overshoot a bit
+function estimateTxSize(inputs: Array<Input>, outputs: Array<Output>): Lovelace {
+  // exact size for inputs
+  const preparedInputs = inputs.map(TxInputFromUtxo)
+  const txInputsSize = encode(new CborIndefiniteLengthArray(preparedInputs)).length
+
   const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
-  const txOutputsSize = hasChange
-    ? outAddressSize + ownAddressSize + maxCborCoinsLen * 2 + 2
-    : outAddressSize + maxCborCoinsLen + 2
 
-  const donationOutputSize = hasDonation ? donationAddressSize + maxCborCoinsLen : 0
+  const txOutputsSizes = outputs.map(
+    // Note(ppershing): we are conservative here
+    // FIXME(ppershing): shouldn't there be some +1 for the array encoding?
+    // Is it in maxCborCoinsLen?
+    ({address, coins}) => base58.decode(address).length + maxCborCoinsLen
+  )
+
+  // +2 for indef array start & end
+  const txOutputsSize = txOutputsSizes.reduce((acc, x) => acc + x, 0) + 2
 
   const txMetaSize = 1 // currently empty Map
 
   // the 1 is there for the CBOR "tag" for an array of 4 elements
-  const txAuxSize = 1 + txInputsSize + txOutputsSize + donationOutputSize + txMetaSize
+  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
 
-  const txWitnessesSize = txInputs.length * TX_WITNESS_SIZE_BYTES + 1
+  const txWitnessesSize = inputs.length * TX_WITNESS_SIZE_BYTES + 1
 
   // the 1 is there for the CBOR "tag" for an array of 2 elements
   const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
 
   /*
-  * the deviation is there for the array of tx witnesses
+  * the slack is there for the array of tx witnesses
   * because it may have more than 1 byte of overhead
   * if more than 16 elements are present
   */
-  const deviation = 4
+  const slack = 4
 
-  return txSizeInBytes + deviation
+  return txSizeInBytes + slack
 }
 
-function computeTxFee(txInputs, address, coins, hasDonation, donationAmount?) {
-  const totalAmount = hasDonation ? coins + donationAmount : coins
-  if (totalAmount > Number.MAX_SAFE_INTEGER) {
+function computeRequiredTxFee(inputs: Array<Input>, outputs: Array<Output>): Lovelace {
+  const fee = txFeeFunction(estimateTxSize(inputs, outputs))
+  return fee
+}
+
+interface TxPlan {
+  inputs: Array<Input>
+  outputs: Array<Output>
+  change: Output | null
+  fee: Lovelace
+}
+
+interface NoTxPlan {
+  estimatedFee: Lovelace
+}
+
+function computeTxPlan(
+  inputs: Array<Input>,
+  outputs: Array<Output>,
+  possibleChange: Output
+): TxPlan | null {
+  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0)
+  const totalOutput = outputs.reduce((acc, output) => acc + output.coins, 0)
+
+  if (totalOutput > Number.MAX_SAFE_INTEGER) {
     throw NamedError('CoinAmountError')
   }
-  const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
-    return acc + elem.coins
-  }, 0)
-  const withoutChangeFee = txFeeFunction(estimateTxSize(txInputs, address, false, hasDonation))
 
-  /*
-  * if (totalAmount+withoutChangeFee) is equal to (txInputsCoinsSum),
-      it means there is no change necessary
-  * if (totalAmount+withoutChangeFee) is bigger the transaction is invalid even with higher fee
-  * so we let caller handle it
-  */
-  if (totalAmount + withoutChangeFee >= txInputsCoinsSum) {
-    return withoutChangeFee as Lovelace
-  } else {
-    const withChangeFee = txFeeFunction(estimateTxSize(txInputs, address, true, hasDonation))
-    if (totalAmount + withChangeFee > txInputsCoinsSum) {
-      //means one output transaction was possible, while 2 output is not
-      //so we return fee equal to inputs - totalAmount which is guaranteed to pass
-      return (txInputsCoinsSum - totalAmount) as Lovelace
-    } else {
-      return withChangeFee as Lovelace
+  const feeWithoutChange = computeRequiredTxFee(inputs, outputs)
+
+  // Cannot construct transaction plan
+  if (totalOutput + feeWithoutChange > totalInput) return null
+
+  // No change necessary, perfect fit
+  if (totalOutput + feeWithoutChange === totalInput) {
+    return {inputs, outputs, change: null, fee: feeWithoutChange as Lovelace}
+  }
+
+  const feeWithChange = computeRequiredTxFee(inputs, [...outputs, possibleChange])
+
+  if (totalOutput + feeWithChange > totalInput) {
+    // We cannot fit the change output into the transaction
+    // Instead, just increase the fee
+    return {
+      inputs,
+      outputs,
+      change: null,
+      fee: (totalOutput - totalInput) as Lovelace,
     }
   }
+
+  return {
+    inputs,
+    outputs,
+    change: {
+      address: possibleChange.address,
+      coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
+    },
+    fee: feeWithChange as Lovelace,
+  }
+}
+
+function getAvailableBalance(utxos: Array<UTxO>): Lovelace {
+  return utxos.reduce((acc, utxo) => acc + utxo.coins, 0) as Lovelace
+}
+
+function isUtxoProfitable(utxo: UTxO) {
+  const inputSize = encode(TxInputFromUtxo(utxo)).length
+  const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZE_BYTES) - txFeeFunction(0)
+
+  return utxo.coins > addedCost
+}
+
+function prepareTxAux(plan: TxPlan) {
+  const txInputs = plan.inputs.map(TxInputFromUtxo)
+  const txOutputs = plan.outputs.map(({address, coins}) => TxOutput(address, coins, false))
+
+  if (plan.change) {
+    const {address, coins} = plan.change
+    txOutputs.push(TxOutput(address, coins, true))
+  }
+  return TxAux(txInputs, txOutputs, {})
 }
 
 const CardanoWallet = async (options) => {
@@ -163,12 +231,7 @@ const CardanoWallet = async (options) => {
     }
   }
 
-  async function prepareSignedTx(address, coins, hasDonation, donationAmount) {
-    const txAux = await prepareTxAux(address, coins, hasDonation, donationAmount).catch((e) => {
-      debugLog(e)
-      throw NamedError('TransactionCorrupted')
-    })
-
+  async function signTxAux(txAux: any) {
     const rawInputTxs = await Promise.all(
       txAux.inputs.map(({txHash}) => blockchainExplorer.fetchTxRaw(txHash))
     )
@@ -191,99 +254,63 @@ const CardanoWallet = async (options) => {
     return (address) => mapping[address]
   }
 
-  async function prepareTxAux(address, coins, hasDonation, donationAmount) {
-    const txInputs = await prepareTxInputs(address, coins, hasDonation, donationAmount)
-    const txInputsCoinsSum = txInputs.reduce((acc, elem) => acc + elem.coins, 0)
-    const fee = computeTxFee(txInputs, address, coins, hasDonation, donationAmount)
-    const changeAmount = txInputsCoinsSum - coins - fee - (hasDonation ? donationAmount : 0)
-
-    if (changeAmount < 0) {
-      throw NamedError('SendAmountInsufficientFunds')
-    }
-
-    const txOutputs = [TxOutput(address, coins, false)]
-
-    if (hasDonation) {
-      txOutputs.push(TxOutput(ADA_DONATION_ADDRESS, donationAmount, false))
-    }
-
-    if (changeAmount > 0) {
-      txOutputs.push(TxOutput(await getChangeAddress(), changeAmount, true))
-    }
-
-    return TxAux(txInputs, txOutputs, {})
-  }
-
-  async function getTxInputsAndCoins() {
-    const utxos = await getUTxOs()
-    const txInputs = []
-    let coins = 0
-    const profitableUtxos = utxos.filter(isUtxoProfitable)
-
-    for (let i = 0; i < profitableUtxos.length; i++) {
-      txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
-      coins += profitableUtxos[i].coins
-    }
-
-    return {txInputs, coins: coins as Lovelace}
-  }
-
-  const getMaxSendableAmountWithDonation = (
-    address,
-    txInputs,
-    coins: Lovelace,
-    donationAmount,
-    donationType
-  ) => {
-    if (donationType === 'percentage') {
-      // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
-      const reducedAmount: Lovelace = (coins / 1.002) as Lovelace //leave some for donation (0.2%)
-      const percentageDonation: Lovelace = (reducedAmount * 0.002) as Lovelace
-      // we show rounded % donations in the UI
-      const roundedDonation = roundWholeAdas(percentageDonation)
-      const diff = percentageDonation - roundedDonation
-      // add diff from rounding (can be negative)
-      const txFee = computeTxFee(
-        txInputs,
-        address,
-        (reducedAmount + diff) as Lovelace,
-        roundedDonation
-      )
-      return {
-        sendAmount: reducedAmount + diff - txFee,
-        donationAmount: roundedDonation,
-      }
-    } else {
-      const txFee = computeTxFee(
-        txInputs,
-        address,
-        (coins - donationAmount) as Lovelace,
-        donationAmount
-      )
-      return {sendAmount: Math.max(coins - donationAmount - txFee, 0)}
-    }
-  }
-
   async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
-    const {txInputs, coins} = await getTxInputsAndCoins()
+    const utxos = await getUTxOs()
+    const profitableUtxos = utxos.filter(isUtxoProfitable)
+    const coins = getAvailableBalance(profitableUtxos)
 
     if (!hasDonation) {
-      const txFee = computeTxFee(txInputs, address, coins, false)
-      return {sendAmount: Math.max(coins - txFee, 0)}
-    }
+      const inputs = profitableUtxos
+      const outputs = [{address, coins: 0 as Lovelace}]
 
-    return getMaxSendableAmountWithDonation(address, txInputs, coins, donationAmount, donationType)
+      const txFee = computeRequiredTxFee(inputs, outputs)
+      return {sendAmount: Math.max(coins - txFee, 0)}
+    } else {
+      const inputs = profitableUtxos
+      const outputs = [
+        {address, coins: 0 as Lovelace},
+        {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
+      ]
+      const txFee = computeRequiredTxFee(inputs, outputs)
+
+      if (donationType === 'percentage') {
+        // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
+        const percent = 0.2
+
+        const reducedAmount: Lovelace = Math.floor(coins / (1 + percent / 100)) as Lovelace
+        const roundedDonation = roundWholeAdas(((reducedAmount * percent) / 100) as Lovelace)
+
+        return {
+          sendAmount: coins - txFee - roundedDonation,
+          donationAmount: roundedDonation,
+        }
+      } else {
+        return {sendAmount: Math.max(coins - donationAmount - txFee, 0)}
+      }
+    }
   }
 
-  async function getMaxDonationAmount(address, sendAmount) {
-    const {txInputs, coins} = await getTxInputsAndCoins()
-    const txFee = computeTxFee(txInputs, address, sendAmount, true, coins - sendAmount)
+  async function getMaxDonationAmount(address, sendAmount: Lovelace) {
+    const utxos = await getUTxOs()
+    const profitableUtxos = utxos.filter(isUtxoProfitable)
+    const coins = getAvailableBalance(profitableUtxos)
+
+    const inputs = profitableUtxos
+    const outputs = [
+      {address, coins: 0 as Lovelace},
+      {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
+    ]
+
+    const txFee = computeRequiredTxFee(inputs, outputs)
     return Math.max(coins - txFee - sendAmount, 0)
   }
 
-  async function getTxFee(address, coins, hasDonation, donationAmount) {
-    const txInputs = await prepareTxInputs(address, coins, hasDonation, donationAmount)
-    return computeTxFee(txInputs, address, coins, hasDonation, donationAmount)
+  async function getTxPlan(address, coins: Lovelace, donationAmount: Lovelace) {
+    const allUtxos = await getUTxOs()
+    const changeAddress = await getChangeAddress()
+    const plan = selectMinimalTxPlan(allUtxos, address, coins, donationAmount, changeAddress)
+
+    return plan
   }
 
   async function getBalance() {
@@ -301,33 +328,33 @@ const CardanoWallet = async (options) => {
     return blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  function isUtxoProfitable(utxo) {
-    const inputSize = encode(TxInputFromUtxo(utxo)).length
-    const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZE_BYTES) - txFeeFunction(0)
-
-    return utxo.coins > addedCost
-  }
-
-  async function prepareTxInputs(address, coins, hasDonation, donationAmount) {
+  function selectMinimalTxPlan(
+    availableUtxos: Array<UTxO>,
+    address,
+    coins,
+    donationAmount,
+    changeAddress
+  ): TxPlan | NoTxPlan {
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    const utxos = shuffleArray(await getUTxOs(), randomGenerator)
+    const utxos = shuffleArray(availableUtxos, randomGenerator)
+
     const profitableUtxos = utxos.filter(isUtxoProfitable)
 
-    const txInputs = []
-    let sumUtxos = 0
-    const totalAmount = hasDonation ? coins + donationAmount : coins
-    let totalCoins = totalAmount
+    const inputs = []
 
-    for (let i = 0; i < profitableUtxos.length && sumUtxos < totalCoins; i++) {
-      txInputs.push(TxInputFromUtxo(profitableUtxos[i]))
-      sumUtxos += profitableUtxos[i].coins
+    const outputs = [{address, coins}]
+    if (donationAmount > 0) outputs.push({address: ADA_DONATION_ADDRESS, coins: donationAmount})
 
-      totalCoins =
-        totalAmount + computeTxFee(txInputs, address, totalCoins, hasDonation, donationAmount)
+    const change = {address: changeAddress, coins: 0 as Lovelace}
+
+    for (let i = 0; i < profitableUtxos.length; i++) {
+      inputs.push(profitableUtxos[i])
+      const plan = computeTxPlan(inputs, outputs, change)
+      if (plan) return plan
     }
 
-    return txInputs
+    return {estimatedFee: computeRequiredTxFee(inputs, outputs)}
   }
 
   async function getChangeAddress() {
@@ -345,7 +372,7 @@ const CardanoWallet = async (options) => {
     return result
   }
 
-  async function getUTxOs() {
+  async function getUTxOs(): Promise<Array<UTxO>> {
     try {
       const addresses = await discoverAllAddresses()
       return await blockchainExplorer.fetchUnspentTxOutputs(addresses)
@@ -402,12 +429,12 @@ const CardanoWallet = async (options) => {
     getHwWalletName,
     getWalletSecretDef,
     submitTx,
-    prepareSignedTx,
+    signTxAux,
     getBalance,
     getChangeAddress,
     getMaxSendableAmount,
     getMaxDonationAmount,
-    getTxFee,
+    getTxPlan,
     getHistory,
     isOwnAddress,
     getFilteredVisibleAddressesWithMeta,
