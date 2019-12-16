@@ -1,4 +1,9 @@
 import {connect as _connect} from '../libs/unistore/preact'
+import {
+  useStore as _useStore,
+  useSelector as _useSelector,
+  useAction as _useAction,
+} from '../libs/preact-hooks-unistore'
 // (eslint is confused with types)
 // eslint-disable-next-line
 import {State} from '../state'
@@ -11,7 +16,7 @@ type ComponentType<P> = ComponentClass<P, any> | FunctionComponent<P>
 type ComponentToProps<C> = C extends ComponentType<infer P> ? P : never
 
 type StripStateArg<Fn> = Fn extends (state: State, ...rest: infer T) => any
-  ? (...rest: T) => any
+  ? (...rest: T) => ReturnType<Fn>
   : never
 
 type BindActions<UnboundActions> = {[K in keyof UnboundActions]: StripStateArg<UnboundActions[K]>}
@@ -43,4 +48,12 @@ type CheckPropsCompatibility<Obj1, Obj2> = (
 
 const connect: Connect = _connect
 
-export {connect}
+const useStore: any = _useStore
+
+type UseSelector = <T>(selector: (state: State) => T) => T
+const useSelector: UseSelector = _useSelector
+
+type UseActions = <T>(actions: (store: any) => T) => BindActions<T>
+const useActions: UseActions = _useAction
+
+export {connect, useStore, useSelector, useActions}

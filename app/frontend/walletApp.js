@@ -1,5 +1,6 @@
 import {h, render} from 'preact'
-import {Provider} from './libs/unistore/preact'
+import {Provider as UnistoreStoreProvider} from './libs/unistore/preact'
+import {StoreProvider as HooksStoreProvider} from './libs/preact-hooks-unistore'
 import App from './components/app'
 
 import {createStore} from './store'
@@ -72,6 +73,6 @@ init({
   },
 })
 
-const Wrapper = h(Provider, {store}, h(App))
+const Wrapper = h(HooksStoreProvider, {value: store}, h(UnistoreStoreProvider, {store}, h(App)))
 
 render(Wrapper, document.getElementById('root'))
