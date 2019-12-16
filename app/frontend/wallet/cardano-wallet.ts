@@ -28,6 +28,75 @@ function txFeeFunction(txSizeInBytes) {
   return Math.ceil(a + txSizeInBytes * b)
 }
 
+function estimateTxSize(txInputs, outAddress, hasChange, hasDonation) {
+  const txInputsSize = encode(new CborIndefiniteLengthArray(txInputs)).length
+  const outAddressSize = base58.decode(outAddress).length
+
+  //size of addresses used by AdaLite
+  const ownAddressSize = 76
+  const donationAddressSize = base58.decode(ADA_DONATION_ADDRESS).length
+
+  /*
+  * we assume that at most three outputs (destination, change and possibly donation address)
+  * will be present encoded in an indefinite length array
+  */
+  const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
+  const txOutputsSize = hasChange
+    ? outAddressSize + ownAddressSize + maxCborCoinsLen * 2 + 2
+    : outAddressSize + maxCborCoinsLen + 2
+
+  const donationOutputSize = hasDonation ? donationAddressSize + maxCborCoinsLen : 0
+
+  const txMetaSize = 1 // currently empty Map
+
+  // the 1 is there for the CBOR "tag" for an array of 4 elements
+  const txAuxSize = 1 + txInputsSize + txOutputsSize + donationOutputSize + txMetaSize
+
+  const txWitnessesSize = txInputs.length * TX_WITNESS_SIZE_BYTES + 1
+
+  // the 1 is there for the CBOR "tag" for an array of 2 elements
+  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
+
+  /*
+  * the deviation is there for the array of tx witnesses
+  * because it may have more than 1 byte of overhead
+  * if more than 16 elements are present
+  */
+  const deviation = 4
+
+  return txSizeInBytes + deviation
+}
+
+function computeTxFee(txInputs, address, coins, hasDonation, donationAmount?) {
+  const totalAmount = hasDonation ? coins + donationAmount : coins
+  if (totalAmount > Number.MAX_SAFE_INTEGER) {
+    throw NamedError('CoinAmountError')
+  }
+  const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
+    return acc + elem.coins
+  }, 0)
+  const withoutChangeFee = txFeeFunction(estimateTxSize(txInputs, address, false, hasDonation))
+
+  /*
+  * if (totalAmount+withoutChangeFee) is equal to (txInputsCoinsSum),
+      it means there is no change necessary
+  * if (totalAmount+withoutChangeFee) is bigger the transaction is invalid even with higher fee
+  * so we let caller handle it
+  */
+  if (totalAmount + withoutChangeFee >= txInputsCoinsSum) {
+    return withoutChangeFee
+  } else {
+    const withChangeFee = txFeeFunction(estimateTxSize(txInputs, address, true, hasDonation))
+    if (totalAmount + withChangeFee > txInputsCoinsSum) {
+      //means one output transaction was possible, while 2 output is not
+      //so we return fee equal to inputs - totalAmount which is guaranteed to pass
+      return txInputsCoinsSum - totalAmount
+    } else {
+      return withChangeFee
+    }
+  }
+}
+
 const CardanoWallet = async (options) => {
   const {walletSecretDef, config, randomInputSeed, randomChangeSeed, network} = options
   const state = {
@@ -248,75 +317,6 @@ const CardanoWallet = async (options) => {
     }
 
     return txInputs
-  }
-
-  function computeTxFee(txInputs, address, coins, hasDonation, donationAmount?) {
-    const totalAmount = hasDonation ? coins + donationAmount : coins
-    if (totalAmount > Number.MAX_SAFE_INTEGER) {
-      throw NamedError('CoinAmountError')
-    }
-    const txInputsCoinsSum = txInputs.reduce((acc, elem) => {
-      return acc + elem.coins
-    }, 0)
-    const withoutChangeFee = txFeeFunction(estimateTxSize(txInputs, address, false, hasDonation))
-
-    /*
-    * if (totalAmount+withoutChangeFee) is equal to (txInputsCoinsSum),
-        it means there is no change necessary
-    * if (totalAmount+withoutChangeFee) is bigger the transaction is invalid even with higher fee
-    * so we let caller handle it
-    */
-    if (totalAmount + withoutChangeFee >= txInputsCoinsSum) {
-      return withoutChangeFee
-    } else {
-      const withChangeFee = txFeeFunction(estimateTxSize(txInputs, address, true, hasDonation))
-      if (totalAmount + withChangeFee > txInputsCoinsSum) {
-        //means one output transaction was possible, while 2 output is not
-        //so we return fee equal to inputs - totalAmount which is guaranteed to pass
-        return txInputsCoinsSum - totalAmount
-      } else {
-        return withChangeFee
-      }
-    }
-  }
-
-  function estimateTxSize(txInputs, outAddress, hasChange, hasDonation) {
-    const txInputsSize = encode(new CborIndefiniteLengthArray(txInputs)).length
-    const outAddressSize = base58.decode(outAddress).length
-
-    //size of addresses used by AdaLite
-    const ownAddressSize = 76
-    const donationAddressSize = base58.decode(ADA_DONATION_ADDRESS).length
-
-    /*
-    * we assume that at most three outputs (destination, change and possibly donation address)
-    * will be present encoded in an indefinite length array
-    */
-    const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
-    const txOutputsSize = hasChange
-      ? outAddressSize + ownAddressSize + maxCborCoinsLen * 2 + 2
-      : outAddressSize + maxCborCoinsLen + 2
-
-    const donationOutputSize = hasDonation ? donationAddressSize + maxCborCoinsLen : 0
-
-    const txMetaSize = 1 // currently empty Map
-
-    // the 1 is there for the CBOR "tag" for an array of 4 elements
-    const txAuxSize = 1 + txInputsSize + txOutputsSize + donationOutputSize + txMetaSize
-
-    const txWitnessesSize = txInputs.length * TX_WITNESS_SIZE_BYTES + 1
-
-    // the 1 is there for the CBOR "tag" for an array of 2 elements
-    const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
-
-    /*
-    * the deviation is there for the array of tx witnesses
-    * because it may have more than 1 byte of overhead
-    * if more than 16 elements are present
-    */
-    const deviation = 4
-
-    return txSizeInBytes + deviation
   }
 
   async function getChangeAddress() {
