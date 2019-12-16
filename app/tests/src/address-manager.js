@@ -4,7 +4,6 @@ import {HARDENED_THRESHOLD} from '../../frontend/wallet/constants'
 import derivationSchemes from '../../frontend/wallet/derivation-schemes'
 import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/cardano-wallet-secret-crypto-provider'
 import AddressManager from '../../frontend/wallet/address-manager'
-import range from '../../frontend/wallet/helpers/range'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import cryptoProviderSettings from './common/crypto-provider-settings'
 import BlockchainExplorer from '../../frontend/wallet/blockchain-explorer'
@@ -80,48 +79,6 @@ const initAddressManager = async (settings, i) => {
 
 before(async () => await Promise.all(addressManagerSettings.map(initAddressManager)))
 
-const childIndex2 = 0xf9745151
-const childIndex3 = 0x10000323
-
-describe('address generation from secret key', () => {
-  const expectedAddress1 = 'Ae2tdPwUPEZLdysXE34s6xRCpqSHvy5mRbrQiegSVQGQFBvkXf5pvseKuzH'
-  it("should properly generate root public address (the one used as 'wallet id' in Daedalus)", async () => {
-    const derivedAddress1 = await addressManagers[2]._deriveAddress([], 'hardened')
-    assert.equal(derivedAddress1, expectedAddress1)
-
-    const derivedAddress2 = await addressManagers[2]._deriveAddress([], 'nonhardened')
-    assert.equal(derivedAddress2, expectedAddress1)
-  })
-
-  const expectedAddress2 =
-    'DdzFFzCqrht5AaL5KGUxfD7sSNiGNmz6DaUmmRAmXApD6yjNy6xLNq1KsXcMAaQipKENnxYLy317KZzSBorB2dEMuQcS5z8AU9akLaMm'
-  it('should properly generate some address from hardened key - child index starts with 1 in binary', async () => {
-    const derivedAddress2 = await addressManagers[2]._deriveAddress(
-      [HARDENED_THRESHOLD, childIndex2],
-      'hardened'
-    )
-    assert.equal(derivedAddress2, expectedAddress2)
-  })
-
-  const expectedAddress3 =
-    'DdzFFzCqrhsf6sUbywd6FfZHfvmkT7drL7MLzs5KkvfSpTNLExLHhhwmuKdAajnHE3cebNPPkfyUYpoqgEV7ktDLUHF5dV41eWSMh6VU'
-  it('should properly generate some address from nonhardened key in hardened mode - child index starts with 0 in binary', async () => {
-    const derivedAddress3 = await addressManagers[2]._deriveAddress(
-      [HARDENED_THRESHOLD, childIndex3],
-      'hardened'
-    )
-    assert.equal(derivedAddress3, expectedAddress3)
-  })
-
-  it('should properly generate some address from nonhardened key in nonhardened mode - child index starts with 0 in binary', async () => {
-    const derivedAddress4 = await addressManagers[2]._deriveAddress(
-      [HARDENED_THRESHOLD, childIndex3],
-      'nonhardened'
-    )
-    assert.equal(derivedAddress4, expectedAddress3)
-  })
-})
-
 describe('wallet addresses derivation scheme V1', () => {
   const expectedWalletAddresses = [
     'DdzFFzCqrhsgeBwYfYqJojCSPquZVLVoqAWjoBXsxCE9gJ44881GzVXMverRYLBU5KeArqW3EPThfeucWj1UzBU49c2e87dkdVaVSZ3s',
@@ -147,10 +104,7 @@ describe('wallet addresses derivation scheme V1', () => {
   ]
 
   it('should derive the right sequence of addresses from the root secret key', async () => {
-    const derivationPaths = range(HARDENED_THRESHOLD + 1, HARDENED_THRESHOLD + 21)
-      .map((i) => [HARDENED_THRESHOLD, 0, i])
-      .map(derivationSchemes.v1.toAbsoluteDerivationPath)
-    const walletAddresses = await addressManagers[2]._deriveAddresses(derivationPaths)
+    const walletAddresses = await addressManagers[2]._deriveAddresses(1, 21)
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
   })
 })
@@ -170,10 +124,7 @@ describe('wallet addresses derivation scheme V2', () => {
   ]
 
   it('should derive the right sequence of addresses from the root secret key', async () => {
-    const derivationPaths = range(0, 10)
-      .map((i) => [HARDENED_THRESHOLD, 0, i])
-      .map(derivationSchemes.v2.toAbsoluteDerivationPath)
-    const walletAddresses = await addressManagers[3]._deriveAddresses(derivationPaths)
+    const walletAddresses = await addressManagers[3]._deriveAddresses(0, 10)
     assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedWalletAddresses))
   })
 })
