@@ -16,7 +16,7 @@ type ComponentType<P> = ComponentClass<P, any> | FunctionComponent<P>
 type ComponentToProps<C> = C extends ComponentType<infer P> ? P : never
 
 type StripStateArg<Fn> = Fn extends (state: State, ...rest: infer T) => any
-  ? (...rest: T) => any
+  ? (...rest: T) => ReturnType<Fn>
   : never
 
 type BindActions<UnboundActions> = {[K in keyof UnboundActions]: StripStateArg<UnboundActions[K]>}
