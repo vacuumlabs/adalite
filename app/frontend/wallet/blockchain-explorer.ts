@@ -72,6 +72,23 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     return (await getAddressInfos(addresses)).caTxNum > 0
   }
 
+  // TODO: we should have an endpoint for this
+  async function filterUsedAddresses(addresses: Array<String>) {
+    const txHistory = await getTxHistory(addresses)
+    const usedAddresses = new Set()
+
+    txHistory.forEach((trx) => {
+      trx.ctbOutputs.forEach((output) => {
+        usedAddresses.add(output[0])
+      })
+      trx.ctbInputs.forEach((input) => {
+        usedAddresses.add(input[0])
+      })
+    })
+
+    return usedAddresses
+  }
+
   async function getAddressInfos(addresses) {
     const hash = getHash(JSON.stringify(addresses))
     const addressInfos = state.addressInfos[hash]
@@ -168,6 +185,7 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     submitTxRaw,
     getBalance,
     fetchTxInfo,
+    filterUsedAddresses,
   }
 }
 
