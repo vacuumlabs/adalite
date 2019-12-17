@@ -1,9 +1,6 @@
 import {connect as _connect} from '../libs/unistore/preact'
-import {
-  useStore as _useStore,
-  useSelector as _useSelector,
-  useAction as _useAction,
-} from '../libs/preact-hooks-unistore'
+import {useStore as _useStore, useSelector as _useSelector} from '../libs/preact-hooks-unistore'
+import {mapActions} from '../libs/unistore/util'
 // (eslint is confused with types)
 // eslint-disable-next-line
 import {State} from '../state'
@@ -54,6 +51,6 @@ type UseSelector = <T>(selector: (state: State) => T) => T
 const useSelector: UseSelector = _useSelector
 
 type UseActions = <T>(actions: (store: any) => T) => BindActions<T>
-const useActions: UseActions = _useAction
+const useActions: UseActions = (actions) => mapActions(actions, useStore())
 
 export {connect, useStore, useSelector, useActions}
