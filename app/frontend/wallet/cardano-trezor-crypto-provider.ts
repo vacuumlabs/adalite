@@ -70,11 +70,15 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     return data
   }
 
+  interface TrezorOutput {
+    amount: string
+    address?: string
+    path?: Array<number>
+  }
+
   function prepareOutput(output, addressToAbsPathMapper) {
-    const data = {
+    const data: TrezorOutput = {
       amount: `${output.coins}`,
-      path: undefined,
-      address: undefined,
     }
 
     if (output.isChange) {
