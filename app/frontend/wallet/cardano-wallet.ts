@@ -370,7 +370,7 @@ const CardanoWallet = async (options) => {
   function filterUnusedEndAddresses(addressesWithMeta) {
     const defaultAddressCount = config.ADALITE_DEFAULT_ADDRESS_COUNT
     for (let i = addressesWithMeta.length - 1; i >= defaultAddressCount; --i) {
-      if (addressesWithMeta[i].isUsedAsOutput || addressesWithMeta[i].isUsedAsInput) {
+      if (addressesWithMeta[i].isUsed) {
         return addressesWithMeta.slice(0, i + 1)
       }
     }
