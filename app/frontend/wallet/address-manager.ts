@@ -32,9 +32,9 @@ const AddressManager = ({
   async function discoverAddresses() {
     switch (derivationScheme.type) {
       case 'v1':
-        return await discoverAddressesV1()
+        return await discoverAddressesWithGapLimit()
       case 'v2':
-        return await discoverAddressesV2()
+        return await discoverAddressesWithGapLimit()
       default:
         throw NamedError(
           'DerivationSchemeError',
@@ -43,13 +43,7 @@ const AddressManager = ({
     }
   }
 
-  function discoverAddressesV1() {
-    const childIndexBegin = derivationScheme.startAddressIndex
-    const childIndexEnd = childIndexBegin + defaultAddressCount
-    return deriveAddressesBlock(childIndexBegin, childIndexEnd)
-  }
-
-  async function discoverAddressesV2() {
+  async function discoverAddressesWithGapLimit() {
     let addresses = []
     let childIndexBegin = derivationScheme.startAddressIndex
     let isGapBlock = false
