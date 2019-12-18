@@ -1,6 +1,5 @@
 import fetchMock from 'fetch-mock'
 import singleAddressesMock from './singleAddressesMock'
-import bulkSummaryRequests from './bulkSummaryRequests'
 import utxoMock from './utxoMock'
 
 const mock = (ADALITE_CONFIG) => {
@@ -11,55 +10,38 @@ const mock = (ADALITE_CONFIG) => {
   function mockBulkAddressSummaryEndpoint() {
     fetchMock.config.overwriteRoutes = true
 
-    const requestsAndResponses = {}
-
-    bulkSummaryRequests.forEach((request) => {
-      const response = {
-        Right: {
+    fetchMock.post({
+      name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
+      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
+      response: (url, options) => {
+        const summary = {
           caAddresses: [],
           caTxNum: 0,
           caBalance: {getCoin: 0},
           caTxList: [],
-        },
-      }
-      request.forEach((address) => {
-        const singleResponse = singleAddressesMock[address]
-        if (singleResponse) {
-          response.Right.caAddresses.push(address)
-          //eslint-disable-next-line max-len
-          response.Right.caBalance.getCoin = (
-            parseInt(response.Right.caBalance.getCoin, 10) +
-            parseInt(singleResponse.Right.caBalance.getCoin, 10)
-          ).toString()
-          response.Right.caTxNum = response.Right.caTxNum + singleResponse.Right.caTxNum
-          response.Right.caTxList = [...response.Right.caTxList, ...singleResponse.Right.caTxList]
-        } else {
-          throw Error(`Address missing in singleAddressesMock: ${address}`)
         }
-      })
-      requestsAndResponses[JSON.stringify(request)] = response
-    })
+        JSON.parse(options.body).forEach((address) => {
+          const singleResponse = singleAddressesMock[address]
+          summary.caAddresses.push(address)
 
-    for (const request in requestsAndResponses) {
-      fetchMock.post({
-        name: `${
-          ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-        }/api/bulk/addresses/summary${request}`,
-        matcher: (url, opts) => {
-          return (
-            url ===
-              `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary` &&
-            opts &&
-            opts.body === request
-          )
-        },
-        response: {
+          if (singleResponse) {
+            //eslint-disable-next-line max-len
+            summary.caBalance.getCoin = (
+              parseInt(summary.caBalance.getCoin, 10) +
+              parseInt(singleResponse.Right.caBalance.getCoin, 10)
+            ).toString()
+            summary.caTxNum = summary.caTxNum + singleResponse.Right.caTxNum
+            summary.caTxList = [...summary.caTxList, ...singleResponse.Right.caTxList]
+          }
+        })
+
+        return {
           status: 200,
-          body: requestsAndResponses[request],
+          body: {Right: summary},
           sendAsJson: true,
-        },
-      })
-    }
+        }
+      },
+    })
   }
 
   function mockRawTxEndpoint() {
@@ -127,26 +109,21 @@ const mock = (ADALITE_CONFIG) => {
   function mockUtxoEndpoint() {
     fetchMock.config.overwriteRoutes = true
 
-    const requestsAndResponses = utxoMock
-
-    // eslint-disable-next-line guard-for-in
-    for (const request in requestsAndResponses) {
-      fetchMock.post({
-        name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo${request}`,
-        matcher: (url, opts) => {
-          return (
-            url === `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo` &&
-            opts &&
-            opts.body === request
-          )
-        },
-        response: {
+    fetchMock.post({
+      name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
+      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
+      response: (url, options) => {
+        let utxos = []
+        JSON.parse(options.body).forEach((addr) => {
+          if (utxoMock[addr]) utxos = utxos.concat(utxoMock[addr])
+        })
+        return {
           status: 200,
-          body: requestsAndResponses[request],
+          body: {Right: utxos},
           sendAsJson: true,
-        },
-      })
-    }
+        }
+      },
+    })
   }
 
   return {
