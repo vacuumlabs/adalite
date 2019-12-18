@@ -1,6 +1,5 @@
 import fetchMock from 'fetch-mock'
 import singleAddressesMock from './singleAddressesMock'
-import bulkSummaryRequests from './bulkSummaryRequests'
 import utxoMock from './utxoMock'
 
 const mock = (ADALITE_CONFIG) => {
@@ -11,55 +10,38 @@ const mock = (ADALITE_CONFIG) => {
   function mockBulkAddressSummaryEndpoint() {
     fetchMock.config.overwriteRoutes = true
 
-    const requestsAndResponses = {}
-
-    bulkSummaryRequests.forEach((request) => {
-      const response = {
-        Right: {
+    fetchMock.post({
+      name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
+      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
+      response: (url, options) => {
+        const summary = {
           caAddresses: [],
           caTxNum: 0,
           caBalance: {getCoin: 0},
           caTxList: [],
-        },
-      }
-      request.forEach((address) => {
-        const singleResponse = singleAddressesMock[address]
-        if (singleResponse) {
-          response.Right.caAddresses.push(address)
-          //eslint-disable-next-line max-len
-          response.Right.caBalance.getCoin = (
-            parseInt(response.Right.caBalance.getCoin, 10) +
-            parseInt(singleResponse.Right.caBalance.getCoin, 10)
-          ).toString()
-          response.Right.caTxNum = response.Right.caTxNum + singleResponse.Right.caTxNum
-          response.Right.caTxList = [...response.Right.caTxList, ...singleResponse.Right.caTxList]
-        } else {
-          throw Error(`Address missing in singleAddressesMock: ${address}`)
         }
-      })
-      requestsAndResponses[JSON.stringify(request)] = response
-    })
+        JSON.parse(options.body).forEach((address) => {
+          const singleResponse = singleAddressesMock[address]
+          summary.caAddresses.push(address)
 
-    for (const request in requestsAndResponses) {
-      fetchMock.post({
-        name: `${
-          ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-        }/api/bulk/addresses/summary${request}`,
-        matcher: (url, opts) => {
-          return (
-            url ===
-              `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary` &&
-            opts &&
-            opts.body === request
-          )
-        },
-        response: {
+          if (singleResponse) {
+            //eslint-disable-next-line max-len
+            summary.caBalance.getCoin = (
+              parseInt(summary.caBalance.getCoin, 10) +
+              parseInt(singleResponse.Right.caBalance.getCoin, 10)
+            ).toString()
+            summary.caTxNum = summary.caTxNum + singleResponse.Right.caTxNum
+            summary.caTxList = [...summary.caTxList, ...singleResponse.Right.caTxList]
+          }
+        })
+
+        return {
           status: 200,
-          body: requestsAndResponses[request],
+          body: {Right: summary},
           sendAsJson: true,
-        },
-      })
-    }
+        }
+      },
+    })
   }
 
   function mockRawTxEndpoint() {
@@ -87,9 +69,9 @@ const mock = (ADALITE_CONFIG) => {
     fetchMock.config.overwriteRoutes = true
 
     const requestsAndResponses = {
-      '{"txHash":"73131c773879e7e634022f8e0175399b7e7814c42684377cf6f8c7a1adb23112","txBody":"82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cab41e66f954dd7f1c16081755eb02ee61dc720bd9e05790f9de649b7a101581e581c140539c64edded60a7f2d169cb4da86a47bccc6a92e4130754fd0f36001a306ccb8f1a002a8c6cffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840951e97f421d44345f260f5d84070c93a0dbc7dfa883a2cbedb1cedee22cb86b459450d615d580d9a3bd49cf09f2848447287cf306f09115d831276cac42919088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840f44da425f699c39ca539c6e2e2262ed4a4b977dd8bdbb4450d40ab7503dc9b4ebca68a8f819d1f92bfdd2af2825b26bb07ef1f586c1135a88b1cdc8520142208"}': {
+      '{"txHash":"5e3c57744fb9b134589cb006db3d6536cd6471a2bde542149326dd92859f0a93","txBody":"82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cf9a5257f805a1d378c87b0bfb09232c10d9098bc56fd21d9a6a4072aa101581e581c140539c64edded60a7f2c4692c460a154cbdd06088333fd7f75ea7e7001a0ff80ab91a002a8c6cffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840337f577d102af20120ade17d54821b1e40a218ddf9ca29dd4fd46f7394b0c7d9abc6c4d9ac46d592c83dea1d31465665614b7198c4ceef00632e6b48e13490088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840982ffc1339a390bbd26948ab64fd6510f557e9c7cb04e665dd168797822e156335affdce50e08831b6532304450e4e490d805b9ed184b7f6ce64107b0b16c102"}': {
         Right: {
-          txHash: '73131c773879e7e634022f8e0175399b7e7814c42684377cf6f8c7a1adb23112',
+          txHash: '5e3c57744fb9b134589cb006db3d6536cd6471a2bde542149326dd92859f0a93',
         },
       },
     }
@@ -127,26 +109,21 @@ const mock = (ADALITE_CONFIG) => {
   function mockUtxoEndpoint() {
     fetchMock.config.overwriteRoutes = true
 
-    const requestsAndResponses = utxoMock
-
-    // eslint-disable-next-line guard-for-in
-    for (const request in requestsAndResponses) {
-      fetchMock.post({
-        name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo${request}`,
-        matcher: (url, opts) => {
-          return (
-            url === `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo` &&
-            opts &&
-            opts.body === request
-          )
-        },
-        response: {
+    fetchMock.post({
+      name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
+      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
+      response: (url, options) => {
+        let utxos = []
+        JSON.parse(options.body).forEach((addr) => {
+          if (utxoMock[addr]) utxos = utxos.concat(utxoMock[addr])
+        })
+        return {
           status: 200,
-          body: requestsAndResponses[request],
+          body: {Right: utxos},
           sendAsJson: true,
-        },
-      })
-    }
+        }
+      },
+    })
   }
 
   return {
