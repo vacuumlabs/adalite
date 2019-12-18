@@ -115,10 +115,15 @@ describe('wallet balance computation', () => {
 
 describe('wallet change address computation', () => {
   it('should properly compute change address for unused wallet', async () => {
+    const mockNet = mockNetwork(mockConfig2)
+    mockNet.mockBulkAddressSummaryEndpoint()
+
     assert.equal(
       await wallets.unused.getChangeAddress(),
       'DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ'
     )
+
+    mockNet.clean()
   })
 
   it('should properly compute change address', async () => {

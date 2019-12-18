@@ -3,73 +3,71 @@ import {toBip32StringPath} from './helpers/bip32'
 import {packAddress} from 'cardano-crypto.js'
 import NamedError from '../helpers/NamedError'
 
-const AddressManager = ({
-  accountIndex,
-  defaultAddressCount,
+const ByronAddressGenerator = (cryptoProvider, accountIndex: number, isChange: boolean) => async (
+  i: number
+) => {
+  const scheme = cryptoProvider.getDerivationScheme()
+
+  const path = scheme.toAbsoluteDerivationPath([
+    accountIndex,
+    isChange ? 1 : 0,
+    i + scheme.startAddressIndex,
+  ])
+  const xpub = await cryptoProvider.deriveXpub(path)
+  const hdPassphrase = scheme.type === 'v1' ? await cryptoProvider.getHdPassphrase() : undefined
+
+  return {
+    path,
+    address: packAddress(path, xpub, hdPassphrase, scheme.number),
+  }
+}
+
+const _AddressManager = ({
+  addrGen,
   gapLimit,
-  cryptoProvider,
   disableCaching, // good for tests
-  isChange,
   blockchainExplorer,
 }) => {
+  if (!gapLimit) {
+    throw NamedError('ParamsValidationError', `Invalid gap limit: ${gapLimit}`)
+  }
+
   const deriveAddressMemo = {}
-  const derivationScheme = cryptoProvider.getDerivationScheme()
 
-  validateParams()
+  async function cachedDeriveAddress(index: number) {
+    const memoKey = index
 
-  function validateParams() {
-    if (!gapLimit) {
-      throw NamedError('ParamsValidationError', `Invalid gap limit: ${gapLimit}`)
+    if (!deriveAddressMemo[memoKey] || disableCaching) {
+      deriveAddressMemo[memoKey] = await addrGen(index)
     }
-    if (!defaultAddressCount) {
-      throw NamedError(
-        'ParamsValidationError',
-        `Invalid defaultAddressCount: ${defaultAddressCount}`
-      )
-    }
+
+    return deriveAddressMemo[memoKey].address
+  }
+
+  async function deriveAddressesBlock(beginIndex: number, endIndex: number) {
+    return await Promise.all(range(beginIndex, endIndex).map(cachedDeriveAddress))
   }
 
   async function discoverAddresses() {
-    switch (derivationScheme.type) {
-      case 'v1':
-        return await discoverAddressesWithGapLimit()
-      case 'v2':
-        return await discoverAddressesWithGapLimit()
-      default:
-        throw NamedError(
-          'DerivationSchemeError',
-          `Unexpected derivation scheme: ${derivationScheme.type}`
-        )
-    }
-  }
-
-  async function discoverAddressesWithGapLimit() {
     let addresses = []
-    let childIndexBegin = derivationScheme.startAddressIndex
+    let from = 0
     let isGapBlock = false
 
     while (!isGapBlock) {
-      const currentAddressBlock = await deriveAddressesBlock(
-        childIndexBegin,
-        childIndexBegin + gapLimit
-      )
+      const currentAddressBlock = await deriveAddressesBlock(from, from + gapLimit)
+
       isGapBlock = !(await blockchainExplorer.isSomeAddressUsed(currentAddressBlock))
+
       addresses =
         isGapBlock && addresses.length > 0 ? addresses : addresses.concat(currentAddressBlock)
-      childIndexBegin += gapLimit
+      from += gapLimit
     }
 
     return addresses
   }
 
-  function deriveAddressesBlock(childIndexBegin, childIndexEnd) {
-    const absDerivationPaths = range(childIndexBegin, childIndexEnd)
-      .map((i) => [accountIndex, isChange ? 1 : 0, i])
-      .map(derivationScheme.toAbsoluteDerivationPath)
-
-    return deriveAddresses(absDerivationPaths)
-  }
-
+  // TODO(ppershing): we can probably get this info more easily
+  // just by testing filterUnusedAddresses() backend call
   async function discoverAddressesWithMeta() {
     const addresses = await discoverAddresses()
     const usedAddresses = await blockchainExplorer.filterUsedAddresses(addresses)
@@ -83,34 +81,11 @@ const AddressManager = ({
     })
   }
 
-  function deriveAddresses(absDerivationPaths) {
-    return Promise.all(absDerivationPaths.map(deriveAddress))
-  }
-
-  async function deriveAddress(absDerivationPath) {
-    // in derivation scheme 1, the middle part of the derivation path is skipped
-    const memoKey = JSON.stringify(absDerivationPath)
-
-    if (!deriveAddressMemo[memoKey] || disableCaching) {
-      const xpub = await cryptoProvider.deriveXpub(absDerivationPath)
-      const hdPassphrase =
-        derivationScheme.type === 'v1' ? await cryptoProvider.getHdPassphrase() : undefined
-
-      deriveAddressMemo[memoKey] = packAddress(
-        absDerivationPath,
-        xpub,
-        hdPassphrase,
-        derivationScheme.number
-      )
-    }
-
-    return deriveAddressMemo[memoKey]
-  }
-
   function getAddressToAbsPathMapping() {
     const result = {}
     Object.keys(deriveAddressMemo).map((key) => {
-      result[deriveAddressMemo[key]] = JSON.parse(key)
+      const value = deriveAddressMemo[key]
+      result[value.address] = value.path
     })
 
     return result
@@ -120,9 +95,32 @@ const AddressManager = ({
     discoverAddresses,
     discoverAddressesWithMeta,
     getAddressToAbsPathMapping,
-    _deriveAddress: deriveAddress,
-    _deriveAddresses: deriveAddresses,
+    _deriveAddress: cachedDeriveAddress,
+    _deriveAddresses: deriveAddressesBlock,
   }
+}
+
+const AddressManager = ({
+  accountIndex,
+  gapLimit,
+  defaultAddressCount,
+  cryptoProvider,
+  disableCaching, // good for tests
+  isChange,
+  blockchainExplorer,
+}) => {
+  // for scheme.v1 we used to derive first defaultAddressCount addresses,
+  // make sure we can re-discover them now
+  if (defaultAddressCount > gapLimit) {
+    throw NamedError('ParamsValidationError', 'Invalid default address count')
+  }
+
+  return _AddressManager({
+    addrGen: ByronAddressGenerator(cryptoProvider, accountIndex, isChange),
+    gapLimit,
+    disableCaching, // good for tests
+    blockchainExplorer,
+  })
 }
 
 export default AddressManager
