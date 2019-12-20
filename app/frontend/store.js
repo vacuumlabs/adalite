@@ -15,7 +15,7 @@ const initialState = {
   displayWelcome: !(window.localStorage.getItem('dontShowDisclaimer') === 'true'),
   currentTab: 'wallet-info',
   walletIsLoaded: false,
-  showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner') === 'true'),
+  showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner3') === 'true'),
   newWalletMnemonic: '',
   ownAddressesWithMeta: [],
   // todo - object (sub-state) from send-ada form

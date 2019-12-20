@@ -2276,7 +2276,12 @@ button[data-balloon] {
 }
 
 .staking-text {
-  margin-bottom: 48px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.stakepool-info {
+  margin-bottom: 24px;
 }
 
 .staking-form input {
