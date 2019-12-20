@@ -71,7 +71,6 @@ const initAddressManager = async (settings, i) => {
     defaultAddressCount: mockConfig.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: mockConfig.ADALITE_GAP_LIMIT,
     cryptoProvider: cryptoProviders[i],
-    disableCaching: true,
     isChange,
     blockchainExplorer,
   })

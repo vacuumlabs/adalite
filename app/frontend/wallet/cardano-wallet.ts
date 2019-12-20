@@ -193,7 +193,6 @@ const CardanoWallet = async (options) => {
     cryptoProvider,
     isChange: false,
     blockchainExplorer,
-    disableCaching: false,
   })
 
   const changeAddressManager = AddressManager({
@@ -203,7 +202,6 @@ const CardanoWallet = async (options) => {
     cryptoProvider,
     isChange: true,
     blockchainExplorer,
-    disableCaching: false,
   })
 
   function isHwWallet() {
