@@ -88,10 +88,6 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return Buffer.from(result.Right, 'hex')
   }
 
-  async function getOverallTxCount(addresses) {
-    return (await getTxHistory(addresses)).length
-  }
-
   async function isSomeAddressUsed(addresses) {
     return (await getAddressInfos(addresses)).caTxNum > 0
   }
@@ -179,7 +175,6 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   return {
     getTxHistory,
     fetchTxRaw,
-    getOverallTxCount,
     fetchUnspentTxOutputs,
     isSomeAddressUsed,
     submitTxRaw,
