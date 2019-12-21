@@ -20,7 +20,7 @@ export interface State {
   currentTab: 'wallet-info'
   walletIsLoaded: boolean
   showStakingBanner: boolean
-  ownAddressesWithMeta: any // TODO
+  visibleAddresses: Array<any> // TODO
   sendAddress: any // TODO
   sendAmount: any // TODO
 
@@ -105,7 +105,7 @@ const initialState: State = {
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner2') === 'true'),
-  ownAddressesWithMeta: [],
+  visibleAddresses: [],
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0, coins: 0},
