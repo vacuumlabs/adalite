@@ -22,12 +22,7 @@ const ByronAddressGenerator = (cryptoProvider, accountIndex: number, isChange: b
   }
 }
 
-const _AddressManager = ({
-  addrGen,
-  gapLimit,
-  disableCaching, // good for tests
-  blockchainExplorer,
-}) => {
+const _AddressManager = ({addrGen, gapLimit, blockchainExplorer}) => {
   if (!gapLimit) {
     throw NamedError('ParamsValidationError', `Invalid gap limit: ${gapLimit}`)
   }
@@ -37,7 +32,7 @@ const _AddressManager = ({
   async function cachedDeriveAddress(index: number) {
     const memoKey = index
 
-    if (!deriveAddressMemo[memoKey] || disableCaching) {
+    if (!deriveAddressMemo[memoKey]) {
       deriveAddressMemo[memoKey] = await addrGen(index)
     }
 
@@ -105,7 +100,6 @@ const AddressManager = ({
   gapLimit,
   defaultAddressCount,
   cryptoProvider,
-  disableCaching, // good for tests
   isChange,
   blockchainExplorer,
 }) => {
@@ -118,7 +112,6 @@ const AddressManager = ({
   return _AddressManager({
     addrGen: ByronAddressGenerator(cryptoProvider, accountIndex, isChange),
     gapLimit,
-    disableCaching, // good for tests
     blockchainExplorer,
   })
 }
