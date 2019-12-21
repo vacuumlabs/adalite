@@ -17,7 +17,7 @@ const mnemonicToWalletSecretDef = async (mnemonic) => {
   }
 
   const derivationScheme = guessDerivationSchemeFromMnemonic(mnemonic)
-  const rootSecret = await mnemonicToRootKeypair(mnemonic, derivationScheme.number)
+  const rootSecret = await mnemonicToRootKeypair(mnemonic, derivationScheme.ed25519Mode)
 
   return {
     rootSecret,
