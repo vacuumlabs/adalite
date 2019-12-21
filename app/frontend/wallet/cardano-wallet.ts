@@ -176,7 +176,7 @@ const CardanoWallet = async (options) => {
   let seeds
   generateNewSeeds()
 
-  const blockchainExplorer = BlockchainExplorer(config, state)
+  const blockchainExplorer = BlockchainExplorer(config)
   const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(
     options.cryptoProviderType,
     Object.assign({}, config, {

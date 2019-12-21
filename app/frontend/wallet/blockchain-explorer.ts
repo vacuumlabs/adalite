@@ -4,11 +4,35 @@ import NamedError from '../helpers/NamedError'
 import debugLog from '../helpers/debugLog'
 import getHash from '../helpers/getHash'
 
-const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
-  const state = Object.assign(walletState, {
-    addressInfos: {},
-  })
+const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
+  const wrapped = (...args) => {
+    const hash = getHash(JSON.stringify(args))
+
+    if (!cache_obj[hash] || cache_obj[hash].timestamp + maxAge < Date.now()) {
+      cache_obj[hash] = {
+        timestamp: Date.now(),
+        data: fn(...args),
+      }
+    }
+    return cache_obj[hash].data
+  }
+
+  return (wrapped as any) as T
+}
+
+const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
+
+  async function _fetchBulkAddressInfo(addresses) {
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`
+    const result = await request(url, 'POST', JSON.stringify(addresses), {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    })
+    return result.Right
+  }
+
+  const getAddressInfos = cacheResults(15000)(_fetchBulkAddressInfo)
 
   async function getTxHistory(addresses) {
     const transactions = []
@@ -64,10 +88,6 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     return Buffer.from(result.Right, 'hex')
   }
 
-  async function getOverallTxCount(addresses) {
-    return (await getTxHistory(addresses)).length
-  }
-
   async function isSomeAddressUsed(addresses) {
     return (await getAddressInfos(addresses)).caTxNum > 0
   }
@@ -87,21 +107,6 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     })
 
     return usedAddresses
-  }
-
-  async function getAddressInfos(addresses) {
-    const hash = getHash(JSON.stringify(addresses))
-    const addressInfos = state.addressInfos[hash]
-    const maxAddressInfoAge = 15000
-
-    if (!addressInfos || Date.now() - addressInfos.timestamp > maxAddressInfoAge) {
-      state.addressInfos[hash] = {
-        timestamp: Date.now(),
-        data: fetchBulkAddressInfo(addresses),
-      }
-    }
-
-    return await state.addressInfos[hash].data
   }
 
   async function getBalance(addresses) {
@@ -167,19 +172,9 @@ const blockchainExplorer = (ADALITE_CONFIG, walletState) => {
     })
   }
 
-  async function fetchBulkAddressInfo(addresses) {
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`
-    const result = await request(url, 'POST', JSON.stringify(addresses), {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    })
-    return result.Right
-  }
-
   return {
     getTxHistory,
     fetchTxRaw,
-    getOverallTxCount,
     fetchUnspentTxOutputs,
     isSomeAddressUsed,
     submitTxRaw,
