@@ -7,7 +7,7 @@ import {
   TxAux,
   SignedTransactionStructured,
   TxWitness,
-} from '../transaction'
+} from '../byron-transaction'
 
 const parseTxHash = (val) => Buffer.from(val).toString('hex')
 

@@ -4,7 +4,7 @@ import Ledger from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import {encode} from 'borc'
 import CachedDeriveXpubFactory from './CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
-import {TxWitness, SignedTransactionStructured} from '../transaction'
+import {TxWitness, SignedTransactionStructured} from '../byron-transaction'
 
 import derivationSchemes from './derivation-schemes'
 import NamedError from '../../helpers/NamedError'

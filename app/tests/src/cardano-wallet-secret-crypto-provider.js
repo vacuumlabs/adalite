@@ -4,7 +4,7 @@ import cbor from 'borc'
 import {HARDENED_THRESHOLD} from '../../frontend/wallet/constants'
 import derivationSchemes from '../../frontend/wallet/crypto-providers/derivation-schemes'
 import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/crypto-providers/cardano-wallet-secret-crypto-provider'
-import {TxInputFromUtxo, TxOutput, TxAux} from '../../frontend/wallet/transaction'
+import {TxInputFromUtxo, TxOutput, TxAux} from '../../frontend/wallet/byron-transaction'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import cryptoProviderSettings from './common/crypto-provider-settings'
 
