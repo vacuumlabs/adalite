@@ -4,7 +4,7 @@ import {base58} from 'cardano-crypto.js'
 import debugLog from '../helpers/debugLog'
 import {generateMnemonic, validateMnemonic} from './mnemonic'
 
-import {TxInputFromUtxo, TxOutput, TxAux} from './transaction'
+import {TxInputFromUtxo, TxOutput, TxAux} from './byron-transaction'
 
 import AddressManager from './address-manager'
 import BlockchainExplorer from './blockchain-explorer'
