@@ -1,4 +1,4 @@
-import {HARDENED_THRESHOLD} from './constants'
+import {HARDENED_THRESHOLD} from '../constants'
 
 const derivationSchemes = {
   v1: {

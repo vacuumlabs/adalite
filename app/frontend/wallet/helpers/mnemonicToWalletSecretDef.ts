@@ -2,7 +2,7 @@ import {decodePaperWalletMnemonic, mnemonicToRootKeypair} from 'cardano-crypto.j
 
 import {validateMnemonic, isMnemonicInPaperWalletFormat} from '../mnemonic'
 
-import derivationSchemes from '../derivation-schemes'
+import derivationSchemes from '../crypto-providers/derivation-schemes'
 
 const guessDerivationSchemeFromMnemonic = (mnemonic) => {
   return mnemonic.split(' ').length === 12 ? derivationSchemes.v1 : derivationSchemes.v2

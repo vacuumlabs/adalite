@@ -4,7 +4,7 @@ import {
   exportWalletSecretDef,
   isWalletExportEncrypted,
 } from '../../frontend/wallet/keypass-json'
-import derivationSchemes from '../../frontend/wallet/derivation-schemes'
+import derivationSchemes from '../../frontend/wallet/crypto-providers/derivation-schemes'
 
 const walletSecretObj1 = {
   wallet: {

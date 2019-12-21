@@ -1,12 +1,12 @@
 import {encode} from 'borc'
 import {blake2b, sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
 
-import {TxWitness, SignedTransactionStructured} from './transaction'
+import {TxWitness, SignedTransactionStructured} from '../transaction'
 
 import HdNode from './hd-node'
-import {parseTxAux} from './helpers/cbor-parsers'
-import NamedError from '../helpers/NamedError'
-import CachedDeriveXpubFactory from './helpers/CachedDeriveXpubFactory'
+import {parseTxAux} from '../helpers/cbor-parsers'
+import NamedError from '../../helpers/NamedError'
+import CachedDeriveXpubFactory from './CachedDeriveXpubFactory'
 
 const CardanoWalletSecretCryptoProvider = (
   {walletSecretDef: {rootSecret, derivationScheme}, network},

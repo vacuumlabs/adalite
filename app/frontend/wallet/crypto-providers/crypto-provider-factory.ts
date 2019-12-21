@@ -1,8 +1,8 @@
-import {CRYPTO_PROVIDER_TYPES} from './constants'
+import {CRYPTO_PROVIDER_TYPES} from '../constants'
 import CardanoWalletSecretCryptoProvider from './cardano-wallet-secret-crypto-provider'
 import CardanoTrezorCryptoProvider from './cardano-trezor-crypto-provider'
 import CardanoLedgerCryptoProvider from './cardano-ledger-crypto-provider'
-import NamedError from '../helpers/NamedError'
+import NamedError from '../../helpers/NamedError'
 
 const CryptoProviderFactory = (() => {
   const getCryptoProvider = (cryptoProviderType, config, state) => {
