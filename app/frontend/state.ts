@@ -3,14 +3,13 @@ import {ADALITE_CONFIG} from './config'
 interface Transaction {}
 
 type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
-
 export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
-
 export interface SendTransactionSummary {
   amount: Lovelace
   donation: Lovelace
   fee: Lovelace
+  plan: any
 }
 
 export interface State {
@@ -52,7 +51,6 @@ export interface State {
   percentageDonationValue: number
   percentageDonationText: string
   thresholdAmountReached: boolean
-  highestAmountReached: number // TODO: why?
 
   showUnexpectedErrorModal: boolean
   sendSentry: {
@@ -115,6 +113,7 @@ const initialState: State = {
     amount: 0 as Lovelace,
     fee: 0 as Lovelace,
     donation: 0 as Lovelace,
+    plan: null,
   },
   router: {
     pathname: window.location.pathname,
@@ -140,7 +139,6 @@ const initialState: State = {
   percentageDonationValue: 0,
   percentageDonationText: '0.2%', // What is this and why it isn't in config?
   thresholdAmountReached: false,
-  highestAmountReached: 0,
 
   showUnexpectedErrorModal: false,
   sendSentry: {},

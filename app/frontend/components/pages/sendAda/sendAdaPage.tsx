@@ -7,7 +7,6 @@ import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import printAda from '../../../helpers/printAda'
 
 import ConfirmTransactionDialog from './confirmTransactionDialog'
-import RawTransactionModal from './rawTransactionModal'
 import DonateThanksModal from './donateThanksModal'
 import TransactionErrorModal from './transactionErrorModal'
 import DonationButtons from './donationButtons'
@@ -56,9 +55,6 @@ interface Props {
   closeThanksForDonationModal: any
   closeTransactionErrorModal: any
   showTransactionErrorModal: any
-  getRawTransaction: any
-  rawTransactionOpen: any
-  rawTransaction: any
   coinsAmount: any
   showCustomDonationInput: any
   maxDonationAmount: any
@@ -88,9 +84,6 @@ class SendAdaPage extends Component<Props> {
     closeThanksForDonationModal,
     closeTransactionErrorModal,
     showTransactionErrorModal,
-    getRawTransaction,
-    rawTransactionOpen,
-    rawTransaction,
     coinsAmount,
     showCustomDonationInput,
     maxDonationAmount,
@@ -105,8 +98,8 @@ class SendAdaPage extends Component<Props> {
     const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
     const total = summary.amount + summary.fee + summary.donation
 
-    const rawTransactionHandler = async () => {
-      await getRawTransaction(sendAddress, coinsAmount)
+    const submitHandler = async () => {
+      await confirmTransaction(sendAddress, coinsAmount)
     }
 
     return (
@@ -184,7 +177,7 @@ class SendAdaPage extends Component<Props> {
           <button
             className="button primary"
             disabled={!enableSubmit || feeRecalculating}
-            onClick={confirmTransaction}
+            onClick={submitHandler}
             ref={(element) => {
               this.submitTxBtn = element
             }}
@@ -200,16 +193,6 @@ class SendAdaPage extends Component<Props> {
             />
           )}
         </div>
-        {enableSubmit &&
-          !feeRecalculating && (
-          <a
-            href="#"
-            className="send-raw"
-            onClick={enableSubmit && !feeRecalculating && rawTransactionHandler}
-          >
-              Raw unsigned transaction
-          </a>
-        )}
         {showTransactionErrorModal && (
           <TransactionErrorModal
             onRequestClose={closeTransactionErrorModal}
@@ -220,7 +203,6 @@ class SendAdaPage extends Component<Props> {
             showHelp={errorHasHelp(transactionSubmissionError.code)}
           />
         )}
-        {rawTransactionOpen && <RawTransactionModal />}
         {showConfirmTransactionDialog && <ConfirmTransactionDialog />}
         {showThanksForDonation && (
           <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
@@ -243,8 +225,6 @@ export default connect(
     showTransactionErrorModal: state.showTransactionErrorModal,
     feeRecalculating: state.calculatingFee,
     showThanksForDonation: state.showThanksForDonation,
-    rawTransaction: state.rawTransaction,
-    rawTransactionOpen: state.rawTransactionOpen,
     coinsAmount: state.sendAmount.coins,
     showCustomDonationInput: state.showCustomDonationInput,
     maxDonationAmount: state.maxDonationAmount,

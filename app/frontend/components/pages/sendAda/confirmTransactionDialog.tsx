@@ -3,11 +3,14 @@ import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
+import RawTransactionModal from './rawTransactionModal'
 
 interface Props {
   sendAddress: any
   submitTransaction: any
   cancelTransaction: any
+  setRawTransactionOpen: any
+  rawTransactionOpen: boolean
 }
 
 class ConfirmTransactionDialogClass extends Component<Props, {}> {
@@ -17,7 +20,14 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     this.cancelTx.focus()
   }
 
-  render({sendAddress, summary, submitTransaction, cancelTransaction}) {
+  render({
+    sendAddress,
+    summary,
+    submitTransaction,
+    cancelTransaction,
+    setRawTransactionOpen,
+    rawTransactionOpen,
+  }) {
     const total = summary.amount + summary.donation + summary.fee
 
     return (
@@ -51,6 +61,10 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             Cancel Transaction
           </a>
         </div>
+        <a href="#" className="send-raw" onClick={setRawTransactionOpen}>
+          Raw unsigned transaction
+        </a>
+        {rawTransactionOpen && <RawTransactionModal />}
       </Modal>
     )
   }
@@ -60,6 +74,7 @@ export default connect(
   (state) => ({
     sendAddress: state.sendAddress.fieldValue,
     summary: state.sendTransactionSummary,
+    rawTransactionOpen: state.rawTransactionOpen,
   }),
   actions
 )(ConfirmTransactionDialogClass)
