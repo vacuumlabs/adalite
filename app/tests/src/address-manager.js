@@ -1,8 +1,8 @@
 import assert from 'assert'
 
 import {HARDENED_THRESHOLD} from '../../frontend/wallet/constants'
-import derivationSchemes from '../../frontend/wallet/derivation-schemes'
-import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/cardano-wallet-secret-crypto-provider'
+import derivationSchemes from '../../frontend/wallet/crypto-providers/derivation-schemes'
+import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/crypto-providers/cardano-wallet-secret-crypto-provider'
 import AddressManager from '../../frontend/wallet/address-manager'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import cryptoProviderSettings from './common/crypto-provider-settings'

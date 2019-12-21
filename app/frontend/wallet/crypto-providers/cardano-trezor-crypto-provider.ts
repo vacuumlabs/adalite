@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-unresolved
-import CachedDeriveXpubFactory from './helpers/CachedDeriveXpubFactory'
-import {ADALITE_SUPPORT_EMAIL} from './constants'
+import CachedDeriveXpubFactory from './CachedDeriveXpubFactory'
+import {ADALITE_SUPPORT_EMAIL} from '../constants'
 import derivationSchemes from './derivation-schemes'
-import NamedError from '../helpers/NamedError'
-import debugLog from '../helpers/debugLog'
+import NamedError from '../../helpers/NamedError'
+import debugLog from '../../helpers/debugLog'
 
 const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   const state = Object.assign(walletState, {

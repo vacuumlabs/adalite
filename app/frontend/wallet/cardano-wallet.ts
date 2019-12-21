@@ -18,7 +18,7 @@ import {
 import shuffleArray from './helpers/shuffleArray'
 import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
 import NamedError from '../helpers/NamedError'
-import CryptoProviderFactory from './crypto-provider-factory'
+import CryptoProviderFactory from './crypto-providers/crypto-provider-factory'
 import {roundWholeAdas} from '../helpers/adaConverters'
 import {Lovelace} from '../state'
 
