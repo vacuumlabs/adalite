@@ -123,29 +123,21 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         network: NETWORKS.MAINNET,
       })
 
-      const walletIsLoaded = true
       const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
-      const conversionRates = getConversionRates(state)
-      const sendAmount = {fieldValue: '', coins: 0}
-      const sendAddress = {fieldValue: ''}
-      const sendResponse = ''
+      const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
-      const donationAmount = {fieldValue: '', coins: 0}
       const autoLogin = state.autoLogin
       setState({
-        walletIsLoaded,
+        walletIsLoaded: true,
         ownAddressesWithMeta,
         balance,
-        sendAmount,
-        sendAddress,
-        sendResponse,
         transactionHistory,
         loading: false,
         mnemonicAuthForm: {
@@ -158,9 +150,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         isDemoWallet,
         showDemoWalletWarningDialog: isDemoWallet && !autoLogin,
         showGenerateMnemonicDialog: false,
-        donationAmount,
+        // send form
+        sendAmount: {fieldValue: '', coins: 0},
+        sendAddress: {fieldValue: ''},
+        donationAmount: {fieldValue: '', coins: 0},
+        sendResponse: '',
       })
-      await fetchConversionRates(conversionRates)
+      await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
       setState({
         loading: false,
