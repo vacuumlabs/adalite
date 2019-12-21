@@ -209,7 +209,7 @@ const CardanoWallet = async (options) => {
   }
 
   function getHwWalletName() {
-    return isHwWallet ? cryptoProvider.getHwWalletName() : undefined
+    return isHwWallet ? (cryptoProvider as any).getHwWalletName() : undefined
   }
 
   async function submitTx(signedTx) {
@@ -408,7 +408,7 @@ const CardanoWallet = async (options) => {
   }
 
   function verifyAddress(addr) {
-    if (!cryptoProvider.displayAddressForPath) {
+    if (!('displayAddressForPath' in cryptoProvider)) {
       throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
     }
     const absDerivationPath = getAddressToAbsPathMapper()(addr)
