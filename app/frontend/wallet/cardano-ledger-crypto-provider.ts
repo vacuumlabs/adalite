@@ -73,8 +73,14 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
     }
   }
 
+  interface LedgerOutput {
+    amountStr: string
+    address58?: string
+    path?: Array<number>
+  }
+
   function prepareOutput(output, addressToAbsPathMapper) {
-    const result = {
+    const result: LedgerOutput = {
       amountStr: `${output.coins}`,
     }
 
