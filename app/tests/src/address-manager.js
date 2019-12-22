@@ -1,6 +1,5 @@
 import assert from 'assert'
 
-import {HARDENED_THRESHOLD} from '../../frontend/wallet/constants'
 import derivationSchemes from '../../frontend/wallet/crypto-providers/derivation-schemes'
 import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/crypto-providers/cardano-wallet-secret-crypto-provider'
 import AddressManager from '../../frontend/wallet/address-manager'
@@ -67,7 +66,7 @@ const initAddressManager = async (settings, i) => {
   )
 
   addressManagers[i] = AddressManager({
-    accountIndex: HARDENED_THRESHOLD,
+    accountIndex: 0,
     defaultAddressCount: mockConfig.ADALITE_DEFAULT_ADDRESS_COUNT,
     gapLimit: mockConfig.ADALITE_GAP_LIMIT,
     cryptoProvider: cryptoProviders[i],

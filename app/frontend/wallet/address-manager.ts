@@ -1,26 +1,7 @@
 import range from './helpers/range'
 import {toBip32StringPath} from './helpers/bip32'
-import {packAddress} from 'cardano-crypto.js'
 import NamedError from '../helpers/NamedError'
-
-const ByronAddressGenerator = (cryptoProvider, accountIndex: number, isChange: boolean) => async (
-  i: number
-) => {
-  const scheme = cryptoProvider.getDerivationScheme()
-
-  const path = scheme.toAbsoluteDerivationPath([
-    accountIndex,
-    isChange ? 1 : 0,
-    i + scheme.startAddressIndex,
-  ])
-  const xpub = await cryptoProvider.deriveXpub(path)
-  const hdPassphrase = scheme.type === 'v1' ? await cryptoProvider.getHdPassphrase() : undefined
-
-  return {
-    path,
-    address: packAddress(path, xpub, hdPassphrase, scheme.number),
-  }
-}
+import {ByronAddressProvider} from './byron-address-provider'
 
 const _AddressManager = ({addrGen, gapLimit, blockchainExplorer}) => {
   if (!gapLimit) {
@@ -110,7 +91,7 @@ const AddressManager = ({
   }
 
   return _AddressManager({
-    addrGen: ByronAddressGenerator(cryptoProvider, accountIndex, isChange),
+    addrGen: ByronAddressProvider(cryptoProvider, accountIndex, isChange),
     gapLimit,
     blockchainExplorer,
   })

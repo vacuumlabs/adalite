@@ -1,22 +1,12 @@
-import {HARDENED_THRESHOLD} from '../constants'
-
 const derivationSchemes = {
   v1: {
     type: 'v1',
-    number: 1,
-    startAddressIndex: HARDENED_THRESHOLD,
-    toAbsoluteDerivationPath: (derivationPath) => [derivationPath[0], derivationPath[2]],
+    ed25519Mode: 1,
     keyfileVersion: '1.0.0',
   },
   v2: {
     type: 'v2',
-    number: 2,
-    startAddressIndex: 0,
-    toAbsoluteDerivationPath: (derivationPath) =>
-      [
-        HARDENED_THRESHOLD + 44, // 44'
-        HARDENED_THRESHOLD + 1815, // 1815'
-      ].concat(derivationPath),
+    ed25519Mode: 2,
     keyfileVersion: '2.0.0',
   },
 }

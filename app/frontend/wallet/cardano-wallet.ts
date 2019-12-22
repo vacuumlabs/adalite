@@ -9,12 +9,7 @@ import {TxInputFromUtxo, TxOutput, TxAux} from './byron-transaction'
 import AddressManager from './address-manager'
 import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
-import {
-  ADA_DONATION_ADDRESS,
-  HARDENED_THRESHOLD,
-  MAX_INT32,
-  TX_WITNESS_SIZE_BYTES,
-} from './constants'
+import {ADA_DONATION_ADDRESS, MAX_INT32, TX_WITNESS_SIZE_BYTES} from './constants'
 import shuffleArray from './helpers/shuffleArray'
 import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
 import NamedError from '../helpers/NamedError'
@@ -261,7 +256,7 @@ function selectMinimalTxPlan(
 const CardanoWallet = async (options) => {
   const {walletSecretDef, config, randomInputSeed, randomChangeSeed, network} = options
   const state = {
-    accountIndex: HARDENED_THRESHOLD,
+    accountIndex: 0,
     network,
   }
 

@@ -49,7 +49,7 @@ const CardanoWalletSecretCryptoProvider = (
   }
 
   function deriveChildHdNode(hdNode, childIndex) {
-    const result = derivePrivate(hdNode.toBuffer(), childIndex, state.derivationScheme.number)
+    const result = derivePrivate(hdNode.toBuffer(), childIndex, state.derivationScheme.ed25519Mode)
 
     return HdNode(result)
   }

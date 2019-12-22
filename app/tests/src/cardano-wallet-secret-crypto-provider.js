@@ -138,13 +138,15 @@ describe('transaction signing', () => {
     const addressToAbsPathMapper = (addr) => {
       const mapping = {
         // eslint-disable-next-line max-len
-        DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5: derivationSchemes.v1.toAbsoluteDerivationPath(
-          [2147483648, 0, 2147483655]
-        ),
+        DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5: [
+          2147483648,
+          2147483655,
+        ],
         // eslint-disable-next-line max-len
-        DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz: derivationSchemes.v1.toAbsoluteDerivationPath(
-          [2147483648, 0, 2147483658]
-        ),
+        DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz: [
+          2147483648,
+          2147483658,
+        ],
       }
 
       return mapping[addr]
