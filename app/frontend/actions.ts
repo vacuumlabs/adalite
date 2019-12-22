@@ -123,7 +123,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         network: NETWORKS.MAINNET,
       })
 
-      const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
+      const visibleAddresses = await wallet.getVisibleAddresses()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
       const conversionRatesPromise = getConversionRates(state)
@@ -136,7 +136,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const autoLogin = state.autoLogin
       setState({
         walletIsLoaded: true,
-        ownAddressesWithMeta,
+        visibleAddresses,
         balance,
         transactionHistory,
         loading: false,
@@ -301,7 +301,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, 'Reloading wallet info...')
     try {
       const balance = await wallet.getBalance()
-      const ownAddressesWithMeta = await wallet.getFilteredVisibleAddressesWithMeta()
+      const visibleAddresses = await wallet.getVisibleAddresses()
       const transactionHistory = await wallet.getHistory()
       const conversionRates = getConversionRates(state)
 
@@ -309,7 +309,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setTimeout(() => setState({loading: false}), 500)
       setState({
         balance,
-        ownAddressesWithMeta,
+        visibleAddresses,
         transactionHistory,
       })
       await fetchConversionRates(conversionRates)

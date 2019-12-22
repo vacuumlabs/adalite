@@ -144,7 +144,7 @@ function computeTxPlan(
   }
 }
 
-function getAvailableBalance(utxos: Array<UTxO>): Lovelace {
+function getUtxoBalance(utxos: Array<UTxO>): Lovelace {
   return utxos.reduce((acc, utxo) => acc + utxo.coins, 0) as Lovelace
 }
 
@@ -164,6 +164,98 @@ function prepareTxAux(plan: TxPlan) {
     txOutputs.push(TxOutput(address, coins, true))
   }
   return TxAux(txInputs, txOutputs, {})
+}
+
+interface AddressInfo {
+  address: string
+  bip32StringPath: string
+  isUsed: boolean
+}
+
+function filterUnusedEndAddresses(
+  addressesWithMeta: Array<AddressInfo>,
+  minCount: number
+): Array<AddressInfo> {
+  for (let i = addressesWithMeta.length - 1; i >= minCount; --i) {
+    if (addressesWithMeta[i].isUsed) {
+      return addressesWithMeta.slice(0, i + 1)
+    }
+  }
+  return addressesWithMeta.slice(0, minCount)
+}
+
+function _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType) {
+  const profitableUtxos = utxos.filter(isUtxoProfitable)
+  const coins = getUtxoBalance(profitableUtxos)
+
+  if (!hasDonation) {
+    const inputs = profitableUtxos
+    const outputs = [{address, coins: 0 as Lovelace}]
+
+    const txFee = computeRequiredTxFee(inputs, outputs)
+    return {sendAmount: Math.max(coins - txFee, 0)}
+  } else {
+    const inputs = profitableUtxos
+    const outputs = [
+      {address, coins: 0 as Lovelace},
+      {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
+    ]
+    const txFee = computeRequiredTxFee(inputs, outputs)
+
+    if (donationType === 'percentage') {
+      // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
+      const percent = 0.2
+
+      const reducedAmount: Lovelace = Math.floor(coins / (1 + percent / 100)) as Lovelace
+      const roundedDonation = roundWholeAdas(((reducedAmount * percent) / 100) as Lovelace)
+
+      return {
+        sendAmount: coins - txFee - roundedDonation,
+        donationAmount: roundedDonation,
+      }
+    } else {
+      return {sendAmount: Math.max(coins - donationAmount - txFee, 0)}
+    }
+  }
+}
+
+function _getMaxDonationAmount(utxos, address, sendAmount: Lovelace) {
+  const profitableUtxos = utxos.filter(isUtxoProfitable)
+  const coins = getUtxoBalance(profitableUtxos)
+
+  const inputs = profitableUtxos
+  const outputs = [
+    {address, coins: 0 as Lovelace},
+    {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
+  ]
+
+  const txFee = computeRequiredTxFee(inputs, outputs)
+  return Math.max(coins - txFee - sendAmount, 0)
+}
+
+function selectMinimalTxPlan(
+  utxos: Array<UTxO>,
+  address,
+  coins,
+  donationAmount,
+  changeAddress
+): TxPlan | NoTxPlan {
+  const profitableUtxos = utxos.filter(isUtxoProfitable)
+
+  const inputs = []
+
+  const outputs = [{address, coins}]
+  if (donationAmount > 0) outputs.push({address: ADA_DONATION_ADDRESS, coins: donationAmount})
+
+  const change = {address: changeAddress, coins: 0 as Lovelace}
+
+  for (let i = 0; i < profitableUtxos.length; i++) {
+    inputs.push(profitableUtxos[i])
+    const plan = computeTxPlan(inputs, outputs, change)
+    if (plan) return plan
+  }
+
+  return {estimatedFee: computeRequiredTxFee(inputs, outputs)}
 }
 
 const CardanoWallet = async (options) => {
@@ -254,59 +346,22 @@ const CardanoWallet = async (options) => {
 
   async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
     const utxos = await getUTxOs()
-    const profitableUtxos = utxos.filter(isUtxoProfitable)
-    const coins = getAvailableBalance(profitableUtxos)
-
-    if (!hasDonation) {
-      const inputs = profitableUtxos
-      const outputs = [{address, coins: 0 as Lovelace}]
-
-      const txFee = computeRequiredTxFee(inputs, outputs)
-      return {sendAmount: Math.max(coins - txFee, 0)}
-    } else {
-      const inputs = profitableUtxos
-      const outputs = [
-        {address, coins: 0 as Lovelace},
-        {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
-      ]
-      const txFee = computeRequiredTxFee(inputs, outputs)
-
-      if (donationType === 'percentage') {
-        // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
-        const percent = 0.2
-
-        const reducedAmount: Lovelace = Math.floor(coins / (1 + percent / 100)) as Lovelace
-        const roundedDonation = roundWholeAdas(((reducedAmount * percent) / 100) as Lovelace)
-
-        return {
-          sendAmount: coins - txFee - roundedDonation,
-          donationAmount: roundedDonation,
-        }
-      } else {
-        return {sendAmount: Math.max(coins - donationAmount - txFee, 0)}
-      }
-    }
+    return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
   }
 
   async function getMaxDonationAmount(address, sendAmount: Lovelace) {
     const utxos = await getUTxOs()
-    const profitableUtxos = utxos.filter(isUtxoProfitable)
-    const coins = getAvailableBalance(profitableUtxos)
-
-    const inputs = profitableUtxos
-    const outputs = [
-      {address, coins: 0 as Lovelace},
-      {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
-    ]
-
-    const txFee = computeRequiredTxFee(inputs, outputs)
-    return Math.max(coins - txFee - sendAmount, 0)
+    return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
   async function getTxPlan(address, coins: Lovelace, donationAmount: Lovelace) {
-    const allUtxos = await getUTxOs()
+    const availableUtxos = await getUTxOs()
     const changeAddress = await getChangeAddress()
-    const plan = selectMinimalTxPlan(allUtxos, address, coins, donationAmount, changeAddress)
+
+    // we do it pseudorandomly to guarantee fee computation stability
+    const randomGenerator = PseudoRandom(seeds.randomInputSeed)
+    const shuffledUtxos = shuffleArray(availableUtxos, randomGenerator)
+    const plan = selectMinimalTxPlan(shuffledUtxos, address, coins, donationAmount, changeAddress)
 
     return plan
   }
@@ -322,37 +377,8 @@ const CardanoWallet = async (options) => {
     return blockchainExplorer.getTxHistory(addresses)
   }
 
-  function fetchTxInfo(txHash) {
-    return blockchainExplorer.fetchTxInfo(txHash)
-  }
-
-  function selectMinimalTxPlan(
-    availableUtxos: Array<UTxO>,
-    address,
-    coins,
-    donationAmount,
-    changeAddress
-  ): TxPlan | NoTxPlan {
-    // we do it pseudorandomly to guarantee fee computation stability
-    const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    const utxos = shuffleArray(availableUtxos, randomGenerator)
-
-    const profitableUtxos = utxos.filter(isUtxoProfitable)
-
-    const inputs = []
-
-    const outputs = [{address, coins}]
-    if (donationAmount > 0) outputs.push({address: ADA_DONATION_ADDRESS, coins: donationAmount})
-
-    const change = {address: changeAddress, coins: 0 as Lovelace}
-
-    for (let i = 0; i < profitableUtxos.length; i++) {
-      inputs.push(profitableUtxos[i])
-      const plan = computeTxPlan(inputs, outputs, change)
-      if (plan) return plan
-    }
-
-    return {estimatedFee: computeRequiredTxFee(inputs, outputs)}
+  async function fetchTxInfo(txHash) {
+    return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
   async function getChangeAddress() {
@@ -361,13 +387,11 @@ const CardanoWallet = async (options) => {
     * AdaLite original functionality which did not consider change addresses.
     * This is an intermediate step between legacy mode and full Yoroi compatibility.
     */
-    const addresses = filterUnusedEndAddresses(
-      await visibleAddressManager.discoverAddressesWithMeta()
-    ).map((addrWithMeta) => addrWithMeta.address)
+    const candidates = await getVisibleAddresses()
 
     const randomSeedGenerator = PseudoRandom(seeds.randomChangeSeed)
-    const result = addresses[randomSeedGenerator.nextInt() % addresses.length]
-    return result
+    const choice = candidates[randomSeedGenerator.nextInt() % candidates.length]
+    return choice.address
   }
 
   async function getUTxOs(): Promise<Array<UTxO>> {
@@ -388,31 +412,17 @@ const CardanoWallet = async (options) => {
       : visibleAddresses.concat(changeAddresses)
   }
 
-  async function getFilteredVisibleAddressesWithMeta() {
-    return filterUnusedEndAddresses(await visibleAddressManager.discoverAddressesWithMeta())
+  async function getVisibleAddresses() {
+    const addresses = await visibleAddressManager.discoverAddressesWithMeta()
+    return filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 
-  function filterUnusedEndAddresses(addressesWithMeta) {
-    const defaultAddressCount = config.ADALITE_DEFAULT_ADDRESS_COUNT
-    for (let i = addressesWithMeta.length - 1; i >= defaultAddressCount; --i) {
-      if (addressesWithMeta[i].isUsed) {
-        return addressesWithMeta.slice(0, i + 1)
-      }
-    }
-    return addressesWithMeta.slice(0, defaultAddressCount)
-  }
-
-  async function isOwnAddress(addr) {
-    const addresses = await discoverAllAddresses()
-    return addresses.find((address) => address === addr) !== undefined
-  }
-
-  function verifyAddress(addr) {
+  async function verifyAddress(addr: string) {
     if (!('displayAddressForPath' in cryptoProvider)) {
       throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
     }
     const absDerivationPath = getAddressToAbsPathMapper()(addr)
-    return cryptoProvider.displayAddressForPath(absDerivationPath)
+    return await cryptoProvider.displayAddressForPath(absDerivationPath)
   }
 
   function generateNewSeeds() {
@@ -434,8 +444,7 @@ const CardanoWallet = async (options) => {
     getMaxDonationAmount,
     getTxPlan,
     getHistory,
-    isOwnAddress,
-    getFilteredVisibleAddressesWithMeta,
+    getVisibleAddresses,
     prepareTxAux,
     verifyAddress,
     fetchTxInfo,
