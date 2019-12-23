@@ -23,7 +23,7 @@ import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace} from './state'
-import CryptoProviderFactory from './wallet/crypto-providers/crypto-provider-factory'
+import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 
 let wallet: ReturnType<typeof CardanoWallet>
 

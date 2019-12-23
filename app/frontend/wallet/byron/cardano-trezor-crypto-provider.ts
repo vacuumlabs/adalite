@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
-import CachedDeriveXpubFactory from './CachedDeriveXpubFactory'
+import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {ADALITE_SUPPORT_EMAIL} from '../constants'
-import derivationSchemes from './derivation-schemes'
+import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
 

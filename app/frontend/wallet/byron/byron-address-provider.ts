@@ -1,5 +1,5 @@
 import {packAddress} from 'cardano-crypto.js'
-import {HARDENED_THRESHOLD} from './constants'
+import {HARDENED_THRESHOLD} from '../constants'
 
 const v1Path = (account: number, isChange: boolean, addrIdx: number) => {
   return [

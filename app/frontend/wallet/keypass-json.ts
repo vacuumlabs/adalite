@@ -2,7 +2,7 @@
 
 import {decode, encode} from 'borc'
 import {cardanoMemoryCombine, blake2b, scrypt} from 'cardano-crypto.js'
-import derivationSchemes from './crypto-providers/derivation-schemes'
+import derivationSchemes from './helpers/derivation-schemes'
 
 import {HARDENED_THRESHOLD} from './constants'
 

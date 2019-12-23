@@ -2,11 +2,11 @@ import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
 import LedgerTransportWebusb from '@ledgerhq/hw-transport-webusb'
 import Ledger from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import {encode} from 'borc'
-import CachedDeriveXpubFactory from './CachedDeriveXpubFactory'
+import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
-import {TxWitness, SignedTransactionStructured} from '../byron-transaction'
+import {TxWitness, SignedTransactionStructured} from './byron-transaction'
 
-import derivationSchemes from './derivation-schemes'
+import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 
 const CardanoLedgerCryptoProvider = async ({config}) => {
