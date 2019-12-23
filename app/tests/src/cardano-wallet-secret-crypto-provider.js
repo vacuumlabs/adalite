@@ -20,13 +20,10 @@ const initCryptoProvider = async (settings, i) => {
   } else {
     walletSecretDef = await mnemonicToWalletSecretDef(settings.secret)
   }
-  cryptoProviders[i] = CardanoWalletSecretCryptoProvider(
-    {
-      walletSecretDef,
-      network: settings.network,
-    },
-    true
-  )
+  cryptoProviders[i] = CardanoWalletSecretCryptoProvider({
+    walletSecretDef,
+    network: settings.network,
+  })
 }
 
 before(async () => await Promise.all(cryptoProviderSettings.map(initCryptoProvider)))

@@ -9,15 +9,18 @@ export const ADA_DONATION_ADDRESS =
   'DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5'
 export const TX_WITNESS_SIZE_BYTES = 139
 export const NETWORKS = {
-  MAINNET: {
-    name: 'mainnet',
-    protocolMagic: 764824073,
-  },
-  TESTNET: {
-    name: 'testnet',
-    protocolMagic: 1097911063,
+  BYRON: {
+    MAINNET: {
+      name: 'mainnet',
+      protocolMagic: 764824073,
+    },
+    TESTNET: {
+      name: 'testnet',
+      protocolMagic: 1097911063,
+    },
   },
 }
+
 export const DELAY_AFTER_TOO_MANY_REQUESTS = 2000
 export const ADALITE_SUPPORT_EMAIL = 'adalite@vacuumlabs.com'
 export const CRYPTO_PROVIDER_TYPES = {

@@ -8,48 +8,37 @@ import {parseTxAux} from '../helpers/cbor-parsers'
 import NamedError from '../../helpers/NamedError'
 import CachedDeriveXpubFactory from './CachedDeriveXpubFactory'
 
-const CardanoWalletSecretCryptoProvider = (
-  {walletSecretDef: {rootSecret, derivationScheme}, network},
-  walletState,
-  disableCaching = false
-) => {
-  const state = Object.assign(walletState, {
-    masterHdNode: HdNode(rootSecret),
-    derivedHdNodes: {},
-    network,
-    derivationScheme,
-  })
+const CardanoWalletSecretCryptoProvider = ({
+  walletSecretDef: {rootSecret, derivationScheme},
+  network,
+}) => {
+  const masterHdNode = HdNode(rootSecret)
 
   const isHwWallet = () => false
 
   function getWalletSecret() {
-    return state.masterHdNode.toBuffer()
+    return masterHdNode.toBuffer()
   }
 
   function getDerivationScheme() {
-    return state.derivationScheme
+    return derivationScheme
   }
 
   const deriveXpub = CachedDeriveXpubFactory(
-    state.derivationScheme,
+    derivationScheme,
     (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
   )
 
   function getHdPassphrase() {
-    return xpubToHdPassphrase(state.masterHdNode.extendedPublicKey)
+    return xpubToHdPassphrase(masterHdNode.extendedPublicKey)
   }
 
   function deriveHdNode(derivationPath) {
-    const memoKey = JSON.stringify(derivationPath)
-    if (disableCaching || !state.derivedHdNodes[memoKey]) {
-      state.derivedHdNodes[memoKey] = derivationPath.reduce(deriveChildHdNode, state.masterHdNode)
-    }
-
-    return state.derivedHdNodes[memoKey]
+    return derivationPath.reduce(deriveChildHdNode, masterHdNode)
   }
 
   function deriveChildHdNode(hdNode, childIndex) {
-    const result = derivePrivate(hdNode.toBuffer(), childIndex, state.derivationScheme.ed25519Mode)
+    const result = derivePrivate(hdNode.toBuffer(), childIndex, derivationScheme.ed25519Mode)
 
     return HdNode(result)
   }
@@ -95,7 +84,7 @@ const CardanoWalletSecretCryptoProvider = (
       txAux.inputs.map(async (input) => {
         const absoluteDerivationPath = addressToAbsPathMapper(input.utxo.address)
         const xpub = await deriveXpub(absoluteDerivationPath)
-        const protocolMagic = state.network.protocolMagic
+        const protocolMagic = network.protocolMagic
 
         /*
         * the "01" byte is a constant to denote signatures of transactions

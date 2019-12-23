@@ -1,9 +1,8 @@
 import range from './helpers/range'
 import {toBip32StringPath} from './helpers/bip32'
 import NamedError from '../helpers/NamedError'
-import {ByronAddressProvider} from './byron-address-provider'
 
-const _AddressManager = ({addrGen, gapLimit, blockchainExplorer}) => {
+const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}) => {
   if (!gapLimit) {
     throw NamedError('ParamsValidationError', `Invalid gap limit: ${gapLimit}`)
   }
@@ -14,7 +13,7 @@ const _AddressManager = ({addrGen, gapLimit, blockchainExplorer}) => {
     const memoKey = index
 
     if (!deriveAddressMemo[memoKey]) {
-      deriveAddressMemo[memoKey] = await addrGen(index)
+      deriveAddressMemo[memoKey] = await addressProvider(index)
     }
 
     return deriveAddressMemo[memoKey].address
@@ -74,27 +73,6 @@ const _AddressManager = ({addrGen, gapLimit, blockchainExplorer}) => {
     _deriveAddress: cachedDeriveAddress,
     _deriveAddresses: deriveAddressesBlock,
   }
-}
-
-const AddressManager = ({
-  accountIndex,
-  gapLimit,
-  defaultAddressCount,
-  cryptoProvider,
-  isChange,
-  blockchainExplorer,
-}) => {
-  // for scheme.v1 we used to derive first defaultAddressCount addresses,
-  // make sure we can re-discover them now
-  if (defaultAddressCount > gapLimit) {
-    throw NamedError('ParamsValidationError', 'Invalid default address count')
-  }
-
-  return _AddressManager({
-    addrGen: ByronAddressProvider(cryptoProvider, accountIndex, isChange),
-    gapLimit,
-    blockchainExplorer,
-  })
 }
 
 export default AddressManager

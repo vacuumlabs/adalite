@@ -5,26 +5,22 @@ import derivationSchemes from './derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
 
-const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
-  const state = Object.assign(walletState, {
-    rootHdPassphrase: null,
-    derivedAddresses: {},
-    derivationScheme: derivationSchemes.v2,
-  })
+const CardanoTrezorCryptoProvider = ({network, config}) => {
+  const derivationScheme = derivationSchemes.v2
 
-  const TrezorConnect = ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL
+  const TrezorConnect = config.ADALITE_TREZOR_CONNECT_URL
     ? (window as any).TrezorConnect
     : require('trezor-connect').default
 
   TrezorConnect.manifest({
     email: ADALITE_SUPPORT_EMAIL,
-    appUrl: ADALITE_CONFIG.ADALITE_SERVER_URL,
+    appUrl: config.ADALITE_SERVER_URL,
   })
 
   const isHwWallet = () => true
   const getHwWalletName = () => 'Trezor'
 
-  const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
+  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
     const response = await TrezorConnect.cardanoGetPublicKey({
       path: absDerivationPath,
       showOnTrezor: false,
@@ -51,12 +47,6 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
     })
 
     throwIfNotSuccess(response)
-
-    state.derivedAddresses[JSON.stringify(absDerivationPath)] = {
-      derivationPath: absDerivationPath,
-      address: response.payload.address,
-    }
-    return response.payload.address
   }
 
   function prepareInput(input, addressToAbsPathMapper) {
@@ -108,7 +98,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
       inputs,
       outputs,
       transactions,
-      protocol_magic: state.network.protocolMagic,
+      protocol_magic: network.protocolMagic,
     })
 
     if (response.error || !response.success) {
@@ -127,7 +117,7 @@ const CardanoTrezorCryptoProvider = (ADALITE_CONFIG, walletState) => {
   }
 
   function getDerivationScheme() {
-    return state.derivationScheme
+    return derivationScheme
   }
 
   function throwIfNotSuccess(response) {

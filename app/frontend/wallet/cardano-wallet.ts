@@ -7,13 +7,13 @@ import {generateMnemonic, validateMnemonic} from './mnemonic'
 import {TxInputFromUtxo, TxOutput, TxAux} from './byron-transaction'
 
 import AddressManager from './address-manager'
+import {ByronAddressProvider} from './byron-address-provider'
 import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
 import {ADA_DONATION_ADDRESS, MAX_INT32, TX_WITNESS_SIZE_BYTES} from './constants'
 import shuffleArray from './helpers/shuffleArray'
 import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
 import NamedError from '../helpers/NamedError'
-import CryptoProviderFactory from './crypto-providers/crypto-provider-factory'
 import {roundWholeAdas} from '../helpers/adaConverters'
 import {Lovelace} from '../state'
 
@@ -253,41 +253,24 @@ function selectMinimalTxPlan(
   return {estimatedFee: computeRequiredTxFee(inputs, outputs)}
 }
 
-const CardanoWallet = async (options) => {
-  const {walletSecretDef, config, randomInputSeed, randomChangeSeed, network} = options
-  const state = {
-    accountIndex: 0,
-    network,
-  }
+const CardanoWallet = (options) => {
+  const {cryptoProvider, config, randomInputSeed, randomChangeSeed} = options
+  const accountIndex = 0
 
   let seeds
   generateNewSeeds()
 
   const blockchainExplorer = BlockchainExplorer(config)
-  const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(
-    options.cryptoProviderType,
-    Object.assign({}, config, {
-      walletSecretDef,
-      network,
-    }),
-    state
-  )
 
   const visibleAddressManager = AddressManager({
-    accountIndex: state.accountIndex,
-    defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
+    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
     gapLimit: config.ADALITE_GAP_LIMIT,
-    cryptoProvider,
-    isChange: false,
     blockchainExplorer,
   })
 
   const changeAddressManager = AddressManager({
-    accountIndex: state.accountIndex,
-    defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
+    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
     gapLimit: config.ADALITE_GAP_LIMIT,
-    cryptoProvider,
-    isChange: true,
     blockchainExplorer,
   })
 

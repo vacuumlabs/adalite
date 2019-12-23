@@ -9,7 +9,7 @@ import {TxWitness, SignedTransactionStructured} from '../byron-transaction'
 import derivationSchemes from './derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 
-const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
+const CardanoLedgerCryptoProvider = async ({config}) => {
   let transport
   try {
     transport = await LedgerTransportU2F.create()
@@ -21,18 +21,14 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
       throw u2fError
     }
   }
-  transport.setExchangeTimeout(ADALITE_CONFIG.ADALITE_LOGOUT_AFTER * 1000)
+  transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
-  const state = Object.assign(walletState, {
-    derivationScheme: derivationSchemes.v2,
-    rootHdPassphrase: null,
-    derivedAddresses: {},
-  })
+  const derivationScheme = derivationSchemes.v2
 
   const isHwWallet = () => true
   const getHwWalletName = () => 'Ledger'
 
-  const deriveXpub = CachedDeriveXpubFactory(state.derivationScheme, async (absDerivationPath) => {
+  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
     const response = await ledger.getExtendedPublicKey(absDerivationPath)
     const xpubHex = response.publicKeyHex + response.chainCodeHex
     return Buffer.from(xpubHex, 'hex')
@@ -62,7 +58,7 @@ const CardanoLedgerCryptoProvider = async (ADALITE_CONFIG, walletState) => {
   }
 
   function getDerivationScheme() {
-    return state.derivationScheme
+    return derivationScheme
   }
 
   function prepareInput(input, addressToAbsPathMapper, txDataHex) {
