@@ -250,10 +250,10 @@ const CardanoWallet = (options) => {
   }
 
   function generateNewSeeds() {
-    seeds = Object.assign({}, seeds, {
+    seeds = {
       randomInputSeed: randomInputSeed || Math.floor(Math.random() * MAX_INT32),
       randomChangeSeed: randomChangeSeed || Math.floor(Math.random() * MAX_INT32),
-    })
+    }
   }
 
   return {
