@@ -78,27 +78,30 @@ const CardanoWalletSecretCryptoProvider = ({
     }
   }
 
+  async function getWitness(txAuxHash, absPath) {
+    const xpub = await deriveXpub(absPath)
+
+    /*
+    * the "01" byte is a constant to denote signatures of transactions
+    * the "5820" part is the CBOR prefix for a hex string
+    */
+    const txSignMessagePrefix = Buffer.concat([
+      Buffer.from('01', 'hex'),
+      encode(network.protocolMagic),
+      Buffer.from('5820', 'hex'),
+    ]).toString('hex')
+
+    const signature = await sign(`${txSignMessagePrefix}${txAuxHash}`, absPath)
+
+    return TxWitness(xpub, signature)
+  }
+
   async function signTxGetStructured(txAux, addressToAbsPathMapper) {
     const txHash = txAux.getId()
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
-        const absoluteDerivationPath = addressToAbsPathMapper(input.utxo.address)
-        const xpub = await deriveXpub(absoluteDerivationPath)
-        const protocolMagic = network.protocolMagic
-
-        /*
-        * the "01" byte is a constant to denote signatures of transactions
-        * the "5820" part is the CBOR prefix for a hex string
-        */
-        const txSignMessagePrefix = Buffer.concat([
-          Buffer.from('01', 'hex'),
-          encode(protocolMagic),
-          Buffer.from('5820', 'hex'),
-        ]).toString('hex')
-
-        const signature = await sign(`${txSignMessagePrefix}${txHash}`, absoluteDerivationPath)
-
-        return TxWitness(xpub, signature)
+        const absPath = addressToAbsPathMapper(input.utxo.address)
+        return getWitness(txHash, absPath)
       })
     )
 
