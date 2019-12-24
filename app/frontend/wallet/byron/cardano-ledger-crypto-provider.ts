@@ -61,7 +61,7 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
     return derivationScheme
   }
 
-  function prepareInput(input, addressToAbsPathMapper, txDataHex) {
+  function _prepareInput(input, addressToAbsPathMapper, txDataHex) {
     return {
       txDataHex,
       outputIndex: input.outputIndex,
@@ -75,7 +75,7 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
     path?: Array<number>
   }
 
-  function prepareOutput(output, addressToAbsPathMapper) {
+  function _prepareOutput(output, addressToAbsPathMapper) {
     const result: LedgerOutput = {
       amountStr: `${output.coins}`,
     }
@@ -101,13 +101,12 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
     const transactions = rawInputTxs.map((tx) => tx.toString('hex'))
 
-    const inputs = await Promise.all(
-      unsignedTx.inputs.map((input, i) =>
-        prepareInput(input, addressToAbsPathMapper, transactions[i])
-      )
+    const inputs = unsignedTx.inputs.map((input, i) =>
+      _prepareInput(input, addressToAbsPathMapper, transactions[i])
     )
-    const outputs = await Promise.all(
-      unsignedTx.outputs.map((output) => prepareOutput(output, addressToAbsPathMapper))
+
+    const outputs = unsignedTx.outputs.map((output) =>
+      _prepareOutput(output, addressToAbsPathMapper)
     )
 
     const response = await ledger.signTransaction(inputs, outputs)
@@ -123,6 +122,7 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
     const txWitnesses = await Promise.all(
       response.witnesses.map((witness) => prepareWitness(witness))
     )
+
     return {
       txHash: response.txHashHex,
       txBody: prepareBody(unsignedTx, txWitnesses),
