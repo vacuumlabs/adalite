@@ -103,7 +103,7 @@ const CardanoWalletSecretCryptoProvider = ({
     const witnesses = await Promise.all(
       txAux.inputs.map(async (input) => {
         const absPath = addressToAbsPathMapper(input.utxo.address)
-        return getWitness(txHash, absPath)
+        return await getWitness(txHash, absPath)
       })
     )
 
