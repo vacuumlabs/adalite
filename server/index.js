@@ -7,6 +7,8 @@ const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
 
 let app = express()
 
+express.static.mime.types.wasm = 'application/wasm'
+
 app.use(bodyParser.json())
 app.use(compression())
 

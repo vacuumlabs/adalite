@@ -20,14 +20,17 @@
     "build": "webpack --progress --config webpack.build.config.js",
     "dev": "webpack --watch --config webpack.build.config.js",
     "test": "webpack --config webpack.test.config.js ",
-    "test-chrome-headless": "yarn test && node node_modules/.bin/mocha-headless-chrome -f tests/index.html"
+    "test-chrome-headless": "yarn test && node node_modules/.bin/mocha-headless-chrome -f tests/index.html -a disable-web-security -a user-data-dir=tests/.chrome -a disable-site-isolation-trials",
+    "postinstall": "node ./helpers/removeChainLibsWasmImport"
   },
   "dependencies": {
     "@cardano-foundation/ledgerjs-hw-app-cardano": "^1.0.7",
+    "@emurgo/js-chain-libs": "https://github.com/SebastienGllmt/js-chain-libs-pkg",
     "@ledgerhq/hw-transport": "^4.68.0",
     "@ledgerhq/hw-transport-u2f": "^4.68.0",
     "@ledgerhq/hw-transport-webusb": "^4.68.0",
     "babel-regenerator-runtime": "^6.5.0",
+    "bech32": "^1.1.3",
     "bip39-light": "^1.0.7",
     "borc": "^2.1.0",
     "cardano-crypto.js": "5.2.0",
@@ -39,6 +42,7 @@
   },
   "devDependencies": {
     "fetch-mock": "^6.5.1",
+    "fetch-readablestream": "^0.2.0",
     "mocha": "^5.0.1",
     "mocha-headless-chrome": "^2.0.3",
     "sinon": "^7.3.2"

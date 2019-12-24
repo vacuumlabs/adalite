@@ -25,7 +25,10 @@ import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace} from './state'
 import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 
-let wallet: ReturnType<typeof CardanoWallet>
+import {ShelleyWallet} from './wallet/shelley-wallet'
+import ShelleyJsCryptoProvider from './wallet/shelley/shelley-js-crypto-provider'
+import loadWasmModule from './helpers/wasmLoader'
+let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
 
 const debounceEvent = (callback, time) => {
   let interval
@@ -115,16 +118,36 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       walletLoadingError: undefined,
     })
     try {
-      const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(cryptoProviderType, {
-        walletSecretDef,
-        network: NETWORKS.BYRON.MAINNET,
-        config: ADALITE_CONFIG,
-      })
+      switch (ADALITE_CONFIG.ADALITE_CARDANO_VERSION) {
+        case 'byron': {
+          const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(cryptoProviderType, {
+            walletSecretDef,
+            network: NETWORKS.BYRON.MAINNET,
+            config: ADALITE_CONFIG,
+          })
 
-      wallet = CardanoWallet({
-        cryptoProvider,
-        config: ADALITE_CONFIG,
-      })
+          wallet = CardanoWallet({
+            cryptoProvider,
+            config: ADALITE_CONFIG,
+          })
+          break
+        }
+        case 'shelley': {
+          await loadWasmModule()
+          const cryptoProvider = ShelleyJsCryptoProvider({
+            walletSecretDef,
+            network: NETWORKS.SHELLEY.INCENTIVIZED_TESTNET,
+          })
+
+          wallet = await ShelleyWallet({
+            config: ADALITE_CONFIG,
+            cryptoProvider,
+          })
+          break
+        }
+        default:
+          throw Error('bad cardano version')
+      }
 
       const visibleAddresses = await wallet.getVisibleAddresses()
       const transactionHistory = await wallet.getHistory()

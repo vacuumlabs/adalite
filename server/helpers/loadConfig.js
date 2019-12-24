@@ -56,6 +56,7 @@ const {
   ADALITE_MAILCHIMP_LIST_ID,
   ADALITE_ENV,
   SENTRY_DSN,
+  ADALITE_CARDANO_VERSION,
 } = process.env
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
@@ -98,6 +99,7 @@ const frontendConfig = {
   ADALITE_ENV,
   SENTRY_DSN,
   ADALITE_DEVEL_AUTO_LOGIN,
+  ADALITE_CARDANO_VERSION,
 }
 
 const backendConfig = {

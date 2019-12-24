@@ -58,12 +58,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
     for (const t of Object.values(transactions)) {
       let effect = 0 //effect on wallet balance accumulated
-      for (const input of t.ctbInputs) {
+      for (const input of t.ctbInputs || []) {
         if (addresses.includes(input[0])) {
           effect -= +input[1].getCoin
         }
       }
-      for (const output of t.ctbOutputs) {
+      for (const output of t.ctbOutputs || []) {
         if (addresses.includes(output[0])) {
           effect += +output[1].getCoin
         }
@@ -96,12 +96,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   async function filterUsedAddresses(addresses: Array<String>) {
     const txHistory = await getTxHistory(addresses)
     const usedAddresses = new Set()
-
     txHistory.forEach((trx) => {
-      trx.ctbOutputs.forEach((output) => {
+      ;(trx.ctbOutputs || []).forEach((output) => {
         usedAddresses.add(output[0])
       })
-      trx.ctbInputs.forEach((input) => {
+      ;(trx.ctbInputs || []).forEach((input) => {
         usedAddresses.add(input[0])
       })
     })
