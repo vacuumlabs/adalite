@@ -74,24 +74,68 @@ function filterUnusedEndAddresses(
   return addressesWithMeta.slice(0, minCount)
 }
 
+const MyAddresses = ({
+  cryptoProvider,
+  accountIndex,
+  gapLimit,
+  blockchainExplorer,
+  defaultAddressCount,
+}) => {
+  const visibleAddressManager = AddressManager({
+    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
+    gapLimit,
+    blockchainExplorer,
+  })
+
+  const changeAddressManager = AddressManager({
+    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
+    gapLimit,
+    blockchainExplorer,
+  })
+
+  function getAddressToAbsPathMapper() {
+    const mapping = Object.assign(
+      visibleAddressManager.getAddressToAbsPathMapping(),
+      changeAddressManager.getAddressToAbsPathMapping()
+    )
+
+    return (address) => mapping[address]
+  }
+
+  async function discoverAllAddresses() {
+    const visibleAddresses = await visibleAddressManager.discoverAddresses()
+    const changeAddresses = await changeAddressManager.discoverAddresses()
+
+    return visibleAddresses[0] === changeAddresses[0]
+      ? visibleAddresses
+      : visibleAddresses.concat(changeAddresses)
+  }
+
+  async function getVisibleAddresses() {
+    const addresses = await visibleAddressManager.discoverAddressesWithMeta()
+    return filterUnusedEndAddresses(addresses, defaultAddressCount)
+  }
+
+  return {
+    getAddressToAbsPathMapper,
+    discoverAllAddresses,
+    getVisibleAddresses,
+  }
+}
+
 const CardanoWallet = (options) => {
   const {cryptoProvider, config, randomInputSeed, randomChangeSeed} = options
-  const accountIndex = 0
 
   let seeds
   generateNewSeeds()
 
   const blockchainExplorer = BlockchainExplorer(config)
 
-  const visibleAddressManager = AddressManager({
-    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
+  const myAddresses = MyAddresses({
+    accountIndex: 0,
+    cryptoProvider,
     gapLimit: config.ADALITE_GAP_LIMIT,
-    blockchainExplorer,
-  })
-
-  const changeAddressManager = AddressManager({
-    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
-    gapLimit: config.ADALITE_GAP_LIMIT,
+    defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
     blockchainExplorer,
   })
 
@@ -125,7 +169,7 @@ const CardanoWallet = (options) => {
       txAux.inputs.map(({txHash}) => blockchainExplorer.fetchTxRaw(txHash))
     )
     const signedTx = await cryptoProvider
-      .signTx(txAux, rawInputTxs, getAddressToAbsPathMapper())
+      .signTx(txAux, rawInputTxs, myAddresses.getAddressToAbsPathMapper())
       .catch((e) => {
         debugLog(e)
         throw NamedError('TransactionRejectedWhileSigning', e.message)
@@ -134,27 +178,18 @@ const CardanoWallet = (options) => {
     return signedTx
   }
 
-  function getAddressToAbsPathMapper() {
-    const mapping = Object.assign(
-      visibleAddressManager.getAddressToAbsPathMapping(),
-      changeAddressManager.getAddressToAbsPathMapping()
-    )
-
-    return (address) => mapping[address]
-  }
-
   async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
-    const utxos = await getUTxOs()
+    const utxos = (await getUTxOs()).filter(isUtxoProfitable)
     return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
   }
 
   async function getMaxDonationAmount(address, sendAmount: Lovelace) {
-    const utxos = await getUTxOs()
+    const utxos = (await getUTxOs()).filter(isUtxoProfitable)
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
   async function getTxPlan(address, coins: Lovelace, donationAmount: Lovelace) {
-    const availableUtxos = await getUTxOs()
+    const availableUtxos = (await getUTxOs()).filter(isUtxoProfitable)
     const changeAddress = await getChangeAddress()
 
     // we do it pseudorandomly to guarantee fee computation stability
@@ -166,12 +201,12 @@ const CardanoWallet = (options) => {
   }
 
   async function getBalance() {
-    const addresses = await discoverAllAddresses()
+    const addresses = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getBalance(addresses)
   }
 
   async function getHistory() {
-    const addresses = await discoverAllAddresses()
+    const addresses = await myAddresses.discoverAllAddresses()
 
     return blockchainExplorer.getTxHistory(addresses)
   }
@@ -195,32 +230,22 @@ const CardanoWallet = (options) => {
 
   async function getUTxOs(): Promise<Array<UTxO>> {
     try {
-      const addresses = await discoverAllAddresses()
+      const addresses = await myAddresses.discoverAllAddresses()
       return await blockchainExplorer.fetchUnspentTxOutputs(addresses)
     } catch (e) {
       throw NamedError('NetworkError')
     }
   }
 
-  async function discoverAllAddresses() {
-    const visibleAddresses = await visibleAddressManager.discoverAddresses()
-    const changeAddresses = await changeAddressManager.discoverAddresses()
-
-    return visibleAddresses[0] === changeAddresses[0]
-      ? visibleAddresses
-      : visibleAddresses.concat(changeAddresses)
-  }
-
   async function getVisibleAddresses() {
-    const addresses = await visibleAddressManager.discoverAddressesWithMeta()
-    return filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
+    return myAddresses.getVisibleAddresses()
   }
 
   async function verifyAddress(addr: string) {
     if (!('displayAddressForPath' in cryptoProvider)) {
       throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
     }
-    const absDerivationPath = getAddressToAbsPathMapper()(addr)
+    const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(addr)
     return await cryptoProvider.displayAddressForPath(absDerivationPath)
   }
 
