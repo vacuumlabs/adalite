@@ -8,6 +8,8 @@ import {parseTxAux} from './helpers/cbor-parsers'
 import NamedError from '../../helpers/NamedError'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 
+import {DerivationScheme} from '../helpers/derivation-schemes'
+
 const CardanoWalletSecretCryptoProvider = ({
   walletSecretDef: {rootSecret, derivationScheme},
   network,
@@ -20,7 +22,7 @@ const CardanoWalletSecretCryptoProvider = ({
     return masterHdNode.toBuffer()
   }
 
-  function getDerivationScheme() {
+  function getDerivationScheme(): DerivationScheme {
     return derivationScheme
   }
 

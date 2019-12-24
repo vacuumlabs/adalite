@@ -1,4 +1,10 @@
-const derivationSchemes = {
+export interface DerivationScheme {
+  type: 'v1' | 'v2'
+  ed25519Mode: number
+  keyfileVersion: string
+}
+
+const derivationSchemes: {[key: string]: DerivationScheme} = {
   v1: {
     type: 'v1',
     ed25519Mode: 1,
