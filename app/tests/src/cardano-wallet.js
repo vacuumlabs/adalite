@@ -1,8 +1,9 @@
 import assert from 'assert'
 import cbor from 'borc'
 
-import {CardanoWallet, txFeeFunction} from '../../frontend/wallet/cardano-wallet'
+import {CardanoWallet} from '../../frontend/wallet/cardano-wallet'
 import CryptoProviderFactory from '../../frontend/wallet/byron/crypto-provider-factory'
+import {txFeeFunction} from '../../frontend/wallet/byron-tx-planner'
 
 import mockNetwork from './common/mock'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
