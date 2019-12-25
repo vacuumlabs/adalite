@@ -43,7 +43,8 @@ const translations = {
 
   CoinAmountError: () => 'CoinAmounError: Unsupported amount of coins.',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
-  NetworkError: () => 'NetworkError: nection failed. Please check your network connection.',
+  NetworkError: ({message}) =>
+    `NetworkError: connection failed. Please check your network connection. ${message}`,
 }
 
 function getTranslation(code, params = {}) {
