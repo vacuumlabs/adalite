@@ -2,6 +2,7 @@ import {h} from 'preact'
 import printAda from '../../../helpers/printAda'
 import formatDate from '../../../helpers/formatDate'
 import {Lovelace} from '../../../state'
+import {ADALITE_CONFIG} from '../../../config'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {
   const value = printAda(Math.abs(amount) as Lovelace)
@@ -18,26 +19,42 @@ const FormattedFee = ({fee}: {fee: Lovelace}) => {
   return <div className="transaction-fee">{`Fee: ${value}`}</div>
 }
 
-const TransactionAddress = ({address}) => (
+const Transaction = ({txid}) => (
   <div className="blockexplorer-link">
     <span>View on </span>
-    <a
-      className="transaction-address"
-      href={`https://seiza.com/blockchain/transaction/${address}`}
-      target="_blank"
-      rel="noopener"
-    >
-      Seiza
-    </a>
-    <span> | </span>
-    <a
-      className="transaction-address"
-      href={`https://adascan.net/transaction/${address}`}
-      target="_blank"
-      rel="noopener"
-    >
-      AdaScan
-    </a>
+    {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
+      <span>
+        <a
+          className="transaction-address"
+          href={`https://seiza.com/blockchain/transaction/${txid}`}
+          target="_blank"
+          rel="noopener"
+        >
+          Seiza
+        </a>
+        <span> | </span>
+        <a
+          className="transaction-address"
+          href={`https://adascan.net/transaction/${txid}`}
+          target="_blank"
+          rel="noopener"
+        >
+          AdaScan
+        </a>
+      </span>
+    )}
+    {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
+      <span>
+        <a
+          className="transaction-address"
+          href={`https://shelleyexplorer.cardano.org/en/transaction/${txid}`}
+          target="_blank"
+          rel="noopener"
+        >
+          Shelley explorer
+        </a>
+      </span>
+    )}
   </div>
 )
 
@@ -52,7 +69,7 @@ const TransactionHistory = ({transactionHistory}) => (
           <li key={transaction.ctbId} className="transaction-item">
             <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
             <FormattedAmount amount={transaction.effect} />
-            <TransactionAddress address={transaction.ctbId} />
+            <Transaction txid={transaction.ctbId} />
             <FormattedFee fee={transaction.fee} />
           </li>
         ))}

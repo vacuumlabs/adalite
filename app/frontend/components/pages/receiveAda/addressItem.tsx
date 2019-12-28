@@ -1,7 +1,7 @@
 import {h, Component} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
-
+import {ADALITE_CONFIG} from '../../../config'
 import CopyOnClick from '../../common/copyOnClick'
 
 interface Props {
@@ -53,27 +53,41 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
           <CopyOnClick value={address} elementClass="address-link copy">
             <a className="copy-text">Copy Address</a>
           </CopyOnClick>
-          <div>
+          <div style="margin-right:24px">
             <span>View on </span>
-            <a
-              className="address-link"
-              href={`https://seiza.com/blockchain/address/${address}`}
-              style="margin-right:0"
-              target="_blank"
-              rel="noopener"
-            >
-              Seiza
-            </a>
-            <span> | </span>
-            <a
-              className="address-link"
-              href={`https://adascan.net/address/${address}`}
-              style="margin-right:24px"
-              target="_blank"
-              rel="noopener"
-            >
-              AdaScan
-            </a>
+            {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
+              <span>
+                <a
+                  className="address-link"
+                  href={`https://seiza.com/blockchain/address/${address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Seiza
+                </a>
+                <span> | </span>
+                <a
+                  className="address-link"
+                  href={`https://adascan.net/address/${address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  AdaScan
+                </a>
+              </span>
+            )}
+            {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
+              <span>
+                <a
+                  className="address-link"
+                  href={`https://shelleyexplorer.cardano.org/en/address/${address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Shelley explorer
+                </a>
+              </span>
+            )}
           </div>
           <a
             className="address-link more"
