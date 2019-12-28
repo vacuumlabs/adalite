@@ -23,10 +23,9 @@ import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace} from './state'
+import CryptoProviderFactory from './wallet/crypto-providers/crypto-provider-factory'
 
-type ThenArg<T> = T extends Promise<infer U> ? U : never
-
-let wallet: ThenArg<ReturnType<typeof CardanoWallet>> = null
+let wallet: ReturnType<typeof CardanoWallet>
 
 const debounceEvent = (callback, time) => {
   let interval
@@ -116,11 +115,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       walletLoadingError: undefined,
     })
     try {
-      wallet = await CardanoWallet({
-        cryptoProviderType,
+      const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(cryptoProviderType, {
         walletSecretDef,
+        network: NETWORKS.BYRON.MAINNET,
         config: ADALITE_CONFIG,
-        network: NETWORKS.MAINNET,
+      })
+
+      wallet = CardanoWallet({
+        cryptoProvider,
+        config: ADALITE_CONFIG,
       })
 
       const visibleAddresses = await wallet.getVisibleAddresses()

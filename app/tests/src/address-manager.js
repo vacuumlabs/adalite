@@ -8,6 +8,7 @@ import cryptoProviderSettings from './common/crypto-provider-settings'
 import BlockchainExplorer from '../../frontend/wallet/blockchain-explorer'
 
 import mockNetwork from './common/mock'
+import {ByronAddressProvider} from '../../frontend/wallet/byron-address-provider'
 
 const mockConfig = {
   ADALITE_BLOCKCHAIN_EXPLORER_URL: 'https://explorer.adalite.io',
@@ -65,12 +66,11 @@ const initAddressManager = async (settings, i) => {
     true
   )
 
+  const addressProvider = ByronAddressProvider(cryptoProviders[i], 0, isChange)
+
   addressManagers[i] = AddressManager({
-    accountIndex: 0,
-    defaultAddressCount: mockConfig.ADALITE_DEFAULT_ADDRESS_COUNT,
+    addressProvider,
     gapLimit: mockConfig.ADALITE_GAP_LIMIT,
-    cryptoProvider: cryptoProviders[i],
-    isChange,
     blockchainExplorer,
   })
 }

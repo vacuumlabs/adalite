@@ -5,16 +5,16 @@ import CardanoLedgerCryptoProvider from './cardano-ledger-crypto-provider'
 import NamedError from '../../helpers/NamedError'
 
 const CryptoProviderFactory = (() => {
-  const getCryptoProvider = (cryptoProviderType, config, state) => {
+  const getCryptoProvider = (cryptoProviderType, options) => {
     switch (cryptoProviderType) {
       case CRYPTO_PROVIDER_TYPES.TREZOR:
-        return CardanoTrezorCryptoProvider(config, state)
+        return CardanoTrezorCryptoProvider(options)
 
       case CRYPTO_PROVIDER_TYPES.LEDGER:
-        return CardanoLedgerCryptoProvider(config, state)
+        return CardanoLedgerCryptoProvider(options)
 
       case CRYPTO_PROVIDER_TYPES.WALLET_SECRET:
-        return CardanoWalletSecretCryptoProvider(config, state)
+        return CardanoWalletSecretCryptoProvider(options)
 
       default:
         throw NamedError(

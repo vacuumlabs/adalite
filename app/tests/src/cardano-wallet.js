@@ -2,6 +2,8 @@ import assert from 'assert'
 import cbor from 'borc'
 
 import {CardanoWallet, txFeeFunction} from '../../frontend/wallet/cardano-wallet'
+import CryptoProviderFactory from '../../frontend/wallet/crypto-providers/crypto-provider-factory'
+
 import mockNetwork from './common/mock'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import {CRYPTO_PROVIDER_TYPES, NETWORKS} from '../../frontend/wallet/constants'
@@ -28,7 +30,7 @@ const unusedWalletConfig = {
   config: mockConfig1,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.MAINNET,
+  network: NETWORKS.BYRON.MAINNET,
 }
 
 const usedWalletConfig = {
@@ -37,7 +39,7 @@ const usedWalletConfig = {
   config: mockConfig2,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.MAINNET,
+  network: NETWORKS.BYRON.MAINNET,
 }
 
 const smallUtxosWalletConfig = {
@@ -46,7 +48,7 @@ const smallUtxosWalletConfig = {
   config: mockConfig1,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.MAINNET,
+  network: NETWORKS.BYRON.MAINNET,
 }
 
 const usedV2WalletConfig = {
@@ -56,14 +58,27 @@ const usedV2WalletConfig = {
   config: mockConfig1,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.MAINNET,
+  network: NETWORKS.BYRON.MAINNET,
 }
 
 const wallets = {}
 
 const initWallet = async (id, config) => {
-  config.walletSecretDef = await mnemonicToWalletSecretDef(config.mnemonic)
-  wallets[id] = await CardanoWallet(config)
+  const walletSecretDef = await mnemonicToWalletSecretDef(config.mnemonic)
+
+  const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(config.cryptoProviderType, {
+    walletSecretDef,
+    network: config.network,
+  })
+
+  const wallet = await CardanoWallet({
+    cryptoProvider,
+    config: config.config,
+    randomInputSeed: config.randomInputSeed,
+    randomChangeSeed: config.randomChangeSeed,
+  })
+
+  wallets[id] = wallet
 }
 
 before(() =>
