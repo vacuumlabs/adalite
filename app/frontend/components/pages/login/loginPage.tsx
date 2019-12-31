@@ -129,11 +129,11 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
         <h2 className="authentication-title">How do you want to access your Cardano Wallet?</h2>
         <div className="auth-options">
           {AuthOption('mnemonic', ['12, 15 or 27 word passphrase'], 'fastest')}
-          {AuthOption(
+          {/* {AuthOption(
             'hw-wallet',
             ['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger'],
             'recommended'
-          )}
+          )} */}
           {AuthOption('file', ['Encrypted .JSON file'], '')}
         </div>
       </div>
@@ -142,19 +142,19 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
       <div className="authentication card">
         <ul className="auth-tabs">
           {AuthTab('mnemonic')}
-          {AuthTab('hw-wallet', true)}
+          {/* {AuthTab('hw-wallet', true)} */}
           {AuthTab('file')}
         </ul>
         <div className={`dropdown auth ${isDropdownOpen ? 'open' : ''}`}>
           {CurrentDropdownItem(authMethod)}
           <ul className="dropdown-items">
             {DropdownItem('mnemonic')}
-            {DropdownItem('hw-wallet', true)}
+            {/* {DropdownItem('hw-wallet', true)} */}
             {DropdownItem('file')}
           </ul>
         </div>
         {authMethod === 'mnemonic' && <MnemonicAuth />}
-        {authMethod === 'hw-wallet' && <HardwareAuth loadWallet={loadWallet} />}
+        {/* {authMethod === 'hw-wallet' && <HardwareAuth loadWallet={loadWallet} />} */}
         {authMethod === 'file' && <KeyFileAuth />}
       </div>
     )

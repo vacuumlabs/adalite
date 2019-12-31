@@ -28,6 +28,10 @@ module.exports = {
         loader: 'ts-loader',
         exclude: /node_modules/,
       },
+      // {
+      //   test: /\.wasm$/,
+      //   type: 'webassembly/experimental',
+      // },
     ],
   },
   resolve: {
@@ -37,6 +41,6 @@ module.exports = {
       'file-saver': `${__dirname}/frontend/libs/file-saver`,
       'qrious': `${__dirname}/frontend/libs/qrious`,
     },
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.tsx', '.ts', '.js', '.wasm'],
   },
 }

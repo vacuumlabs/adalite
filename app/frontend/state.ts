@@ -88,6 +88,29 @@ export interface State {
   donationAmountValidationError?: any
   sendAddressValidationError?: any
   transactionSubmissionError?: any
+
+  // stakePools: any
+  delegationFee?: any
+  calculatingDelegationFee?: any
+  isDelegationValid?: any
+
+  testnetBalances?: {
+    stakingBalance?: number
+    nonStakingBalance?: number
+    rewards?: number
+  }
+  testnetDelegation?: {
+    counter?: number
+    amount?: number
+    selectedPools?: any
+  }
+  displayStakingPage?: boolean
+  currentDelegation?: {
+    stakePools?: any
+  }
+  delegationHistory?: any
+  validStakepools?: any
+  delegationValidationError?: any
 }
 
 const initialState: State = {
@@ -144,6 +167,30 @@ const initialState: State = {
   sendSentry: {},
   autoLogin:
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
+
+  testnetDelegation: {
+    counter: 0,
+    amount: 0,
+    selectedPools: [
+      {
+        id: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
+        percent: 100,
+        name: 'AdaLite Stake Pool',
+        valid: true, // TODO remove this
+      },
+    ],
+  },
+  testnetBalances: {
+    nonStakingBalance: 0,
+    stakingBalance: 0,
+    rewards: 0,
+  },
+  // currentDelegation: {
+  //   stakePools: undefined,
+  // }
+  // delegationHistory: {
+
+  // }
 }
 
 export {initialState}

@@ -8,20 +8,21 @@ import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import sanitizeMnemonic from '../../../helpers/sanitizeMnemonic'
 import {ADALITE_CONFIG} from '../../../config'
+import testnetActions from '../../../testnet/testnet-actions'
 
 const {ADALITE_DEMO_WALLET_MNEMONIC} = ADALITE_CONFIG
 
 interface Props {
-  formData: any
-  updateMnemonic: (e: any) => void
-  updateMnemonicValidationError: () => void
+  formData?: any
+  updateMnemonic?: (e: any) => void
+  updateMnemonicValidationError?: () => void
   //
   loadWallet: any
-  showMnemonicInfoAlert: boolean
-  openGenerateMnemonicDialog: () => void
-  autoLogin: boolean
-  displayWelcome: boolean
-  showDemoWalletWarningDialog: boolean
+  showMnemonicInfoAlert?: boolean
+  openGenerateMnemonicDialog?: () => void
+  autoLogin?: boolean
+  displayWelcome?: boolean
+  showDemoWalletWarningDialog?: boolean
 }
 
 class LoadByMnemonicSectionClass extends Component<Props> {
@@ -89,7 +90,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
         <div className="validation-row">
           <button
             className="button primary"
-            disabled={!formData.formIsValid}
+            // disabled={!formData.formIsValid}
             onClick={async () =>
               loadWallet({
                 cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
@@ -142,5 +143,5 @@ export default connect(
     showMnemonicInfoAlert: state.showMnemonicInfoAlert,
     autoLogin: state.autoLogin,
   }),
-  actions
+  testnetActions
 )(LoadByMnemonicSectionClass)

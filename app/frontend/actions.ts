@@ -289,9 +289,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const openAddressDetail = (state, {address, bip32path}, copyOnClick) => {
     /*
-    * because we don't want to trigger trezor address
-    * verification for the  donation address
-    */
+     * because we don't want to trigger trezor address
+     * verification for the  donation address
+     */
     const showAddressVerification = state.usingHwWallet && bip32path
 
     // trigger trezor address verification for the  donation address
@@ -350,7 +350,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const openWelcome = (state) => {
+  const openWelcome = async (state) => {
     setState({
       displayWelcome: true,
     })
@@ -699,11 +699,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     for (let pollingCounter = 0; pollingCounter < maxRetries; pollingCounter++) {
       if ((await wallet.fetchTxInfo(txHash)) !== undefined) {
         /*
-        * theoretically we should clear the request cache of the wallet
-        * to be sure that we fetch the current wallet state
-        * but submitting the transaction and syncing of the explorer
-        * should take enough time to invalidate the request cache anyway
-        */
+         * theoretically we should clear the request cache of the wallet
+         * to be sure that we fetch the current wallet state
+         * but submitting the transaction and syncing of the explorer
+         * should take enough time to invalidate the request cache anyway
+         */
         await reloadWalletInfo(state)
         return {
           success: true,
@@ -791,7 +791,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const showContactFormModal = (state) => {
+  const showContactFormModal = async (state) => {
     setState({
       showContactFormModal: true,
     })

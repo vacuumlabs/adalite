@@ -2,6 +2,7 @@ import {h} from 'preact'
 import printAda from '../../helpers/printAda'
 import Conversions from './conversions'
 import {Lovelace} from '../../state'
+import {AdaIcon} from './svg'
 
 interface Props {
   balance: Lovelace
@@ -15,6 +16,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
     <div className="balance-row">
       <div className="balance-amount">
         {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
+        <AdaIcon />
       </div>
       <button className="button refresh" onClick={reloadWalletInfo}>
         Refresh Balance
