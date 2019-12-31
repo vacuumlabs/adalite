@@ -1,23 +1,23 @@
 import request from './../wallet/helpers/request'
 import {ADALITE_CONFIG} from './../config'
-import  {buf2hex} from './libs/bech32'
+// import  {buf2hex} from './libs/bech32'
 import blockchainExplorer from '../wallet/blockchain-explorer'
 
 const tangataManuPKprefix = '85'
 
 const TestnetBlockchainExplorer = () => {
-
   async function submitRaw(dataRaw) {
-    const hexData = buf2hex(dataRaw)
+    // const hexData = buf2hex(dataRaw)
+    const hexData = null
     const response = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/txs/signed`,
       'POST',
       JSON.stringify({
-        hexData
+        hexData,
       }),
       {
         'content-Type': 'application/json',
-      },
+      }
     )
     console.log(response)
     return response
@@ -28,11 +28,11 @@ const TestnetBlockchainExplorer = () => {
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/account/info`,
       'POST',
       JSON.stringify({
-        accountPubkeyHex
+        accountPubkeyHex,
       }),
       {
         'content-Type': 'application/json',
-      },
+      }
     )
     return response.Right
   }
@@ -43,12 +43,12 @@ const TestnetBlockchainExplorer = () => {
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/account/delegationHistory`,
       'POST',
       JSON.stringify({
-        extendedPubKey, 
-        limit
+        extendedPubKey,
+        limit,
       }),
       {
         'content-Type': 'application/json',
-      },
+      }
     )
     return [
       {
@@ -77,21 +77,16 @@ const TestnetBlockchainExplorer = () => {
   }
 
   async function getRunningStakePools() {
-    const response = await fetch(
-      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/pools`, {
-        method: 'POST',
-        body: null,
-        headers: {
-          'content-Type': 'application/json',
-        },
-      }
-      )
+    const response = await fetch(`${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/pools`, {
+      method: 'POST',
+      body: null,
+      headers: {
+        'content-Type': 'application/json',
+      },
+    })
     console.log('ahoj')
     const poolArray = JSON.parse(await response.text()).Right
-    const poolDict = poolArray.reduce(
-      (dict, el) => (dict[el.pool_id] = {...el}, dict),
-      {}
-  );
+    const poolDict = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
     return poolDict
   }
 
@@ -101,9 +96,6 @@ const TestnetBlockchainExplorer = () => {
     getDelegationHistory,
     getRunningStakePools,
   }
-
 }
 
-export {
-  TestnetBlockchainExplorer,
-}
+export {TestnetBlockchainExplorer}

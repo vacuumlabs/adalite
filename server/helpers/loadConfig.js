@@ -31,7 +31,6 @@ const checkMap = check.map(process.env, {
   ADALITE_STAKE_POOL_ID: check.nonEmptyString,
   ADALITE_ENV: check.nonEmptyString,
   SENTRY_DSN: check.nonEmptyString,
-  ADALITE_JORMUNGANDR_NODE_URL: check.nonEmptyString,
 })
 
 const {
@@ -120,7 +119,6 @@ const backendConfig = {
   ADALITE_GA_TRACKING_ID,
   ADALITE_MAILCHIMP_API_KEY,
   ADALITE_MAILCHIMP_LIST_ID,
-  ADALITE_JORMUNGANDR_NODE_URL,
 }
 
 module.exports = {

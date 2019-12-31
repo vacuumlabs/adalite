@@ -1,11 +1,7 @@
-import {TestnetBlockchainExplorer}  from './blockchain-testnet-explorer'
+import {TestnetBlockchainExplorer} from './blockchain-testnet-explorer'
 import loadWasm from '../helpers/wasmLoader'
 
-const {
-  privkey_hex,
-  dst_account,
-  stake_pool_ids_5100,
-} = require('./constants')
+const {privkey_hex, dst_account, stake_pool_ids_5100} = require('./constants')
 
 const pools = stake_pool_ids_5100
 
@@ -22,38 +18,40 @@ const TestnetWallet = async (options) => {
   const blockchainExplorer = TestnetBlockchainExplorer()
 
   async function submitTxFromAccount() {
-    const {
-      buildTransactionFromAccount,
-    } = require('./transaction')
-    const txData = buildTransactionFromAccount(
-      {
-        address: dst_account,
-        counter,
-        value,
-        privkey_hex: privkey_hex
-      },
-      {
-        address: dst_account,
-        value: 1000000
-      }
-    );
-    // console.log(txData.fragment_id)
-    return await blockchainExplorer.submitRaw(txData.transaction)
+    return null
+    // const {
+    //   buildTransactionFromAccount,
+    // } = require('./transaction')
+    // const txData = buildTransactionFromAccount(
+    //   {
+    //     address: dst_account,
+    //     counter,
+    //     value,
+    //     privkey_hex: privkey_hex
+    //   },
+    //   {
+    //     address: dst_account,
+    //     value: 1000000
+    //   }
+    // );
+    // // console.log(txData.fragment_id)
+    // return await blockchainExplorer.submitRaw(txData.transaction)
   }
 
   async function submitDelegationCert() {
-    const {
-      buildTransactionDelegatingStake,
-    } = require('./delegation')
-    const delgData = buildTransactionDelegatingStake({
-      value,
-      address: dst_account,
-      counter,
-      privkey_hex,
-      pools,
-    });
-    //console.log(delgData.fragment_id)
-    return await blockchainExplorer.submitRaw(delgData.transaction)
+    return null
+    // const {
+    //   buildTransactionDelegatingStake,
+    // } = require('./delegation')
+    // const delgData = buildTransactionDelegatingStake({
+    //   value,
+    //   address: dst_account,
+    //   counter,
+    //   privkey_hex,
+    //   pools,
+    // });
+    // //console.log(delgData.fragment_id)
+    // return await blockchainExplorer.submitRaw(delgData.transaction)
   }
 
   async function getAccountStatus(accountPubkeyHex) {
@@ -64,10 +62,10 @@ const TestnetWallet = async (options) => {
     })
     const currentDelegation = accountInfo.delegation.map((pool) => {
       return {
-          ...pool,
-          ratio: Math.round(pool.ratio * (100/delegationRatioSum))
+        ...pool,
+        ratio: Math.round(pool.ratio * (100 / delegationRatioSum)),
       }
-  })
+    })
 
     return {
       shelleyBalances: {
@@ -86,9 +84,9 @@ const TestnetWallet = async (options) => {
   }
 
   async function getDelegationHistory(accountPubkeyHex, limit) {
-      const delegationHistory = await blockchainExplorer.getDelegationHistory(accountPubkeyHex, limit)
-      
-      return delegationHistory
+    const delegationHistory = await blockchainExplorer.getDelegationHistory(accountPubkeyHex, limit)
+
+    return delegationHistory
   }
 
   return {
@@ -96,10 +94,9 @@ const TestnetWallet = async (options) => {
     submitDelegationCert,
     getAccountStatus,
     getDelegationHistory,
-    getValidStakePools
+    getValidStakePools,
   }
 }
-
 
 // function submitTransactionFromUtxo() {
 //   const txData = buildTransactionFromUtxos(
