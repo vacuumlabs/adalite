@@ -29,16 +29,16 @@ const shelleyBalances = ({
         Convert to stakable
       </button>
     </div>
-    {/* <h2 className="card-title staking-balances-title">Rewards</h2>
+    <h2 className="card-title staking-balances-title">Last rewards</h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
         {isNaN(Number(rewards)) ? rewards : `${printAda(rewards)}`}
         <AdaIcon />
       </div>
-      <button className="button stake-pool" onClick={null}>
+      {/* <button className="button stake-pool" onClick={null}>
         Redeem
-      </button>
-    </div> */}
+      </button> */}
+    </div>
     <div className="total-balance-wrapper">
       <h2 className="card-title staking-balances-title">Balance</h2>
       <div className="balance-row">

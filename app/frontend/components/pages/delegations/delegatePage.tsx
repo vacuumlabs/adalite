@@ -5,44 +5,76 @@ import tooltip from '../../common/tooltip'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 
-const formatStakePoolInfo = (info) => {
-  return <div className={`stake-pool-info ${info.class}`}>{info.message}</div>
-}
+// const formatStakePoolInfo = (info) => {
+//   return <div className={`stake-pool-info ${info.class}`}>
+//     <div>
+//       {info.message}
+//     </div>
+//     <div>
+//       {info.message}
+//     </div>
+
+//   </div>
+// }
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
-const getStakePoolValidationMessage = (stakePools, stakePool) => {
-  const poolIdUsages = stakePools.filter((pool) => pool.pool_id === stakePool.pool_id)
-  const isDuplicate = poolIdUsages.length > 1
+// const getStakePoolValidationMessage = (stakePools, stakePool) => {
+//   const poolIdUsages = stakePools.filter((pool) => pool.pool_id === stakePool.pool_id)
+//   const isDuplicate = poolIdUsages.length > 1
 
-  if (!stakePool.valid) {
-    return {
-      class: 'invalid',
-      message: stakePool.id === '' ? '' : 'Invalid stakepool ID',
-    }
+//   if (!stakePool.valid) {
+//     return {
+//       class: 'invalid',
+//       message: stakePool.id === '' ? '' : 'Invalid stakepool ID',
+//     }
+//   }
+//   if (isDuplicate) {
+//     return {
+//       class: 'invalid',
+//       message: 'Duplicate stake pool',
+//     }
+//   }
+//   if (stakePool.percent === 0) {
+//     return {
+//       class: 'valid warning',
+//       message: `${stakePool.name} | Delegate a non-zero amount`,
+//     }
+//   }
+//   return {
+//     class: 'valid',
+//     message: stakePool.name,
+//   }
+// }
+
+const StakePoolInfo = ({pool}) => {
+  const parseTax = (ratio) => {
+    return (ratio[0] * 100) / ratio[1]
   }
-  if (isDuplicate) {
-    return {
-      class: 'invalid',
-      message: 'Duplicate stake pool',
-    }
-  }
-  if (stakePool.percent === 0) {
-    return {
-      class: 'valid warning',
-      message: `${stakePool.name} | Delegate a non-zero amount`,
-    }
-  }
-  return {
-    class: 'valid',
-    message: stakePool.name,
-  }
+  const invalid = !pool.valid && pool.id !== ''
+  return (
+    <div className={`stake-pool-info ${invalid ? 'invalid' : 'valid'}`}>
+      {invalid ? (
+        <div>Invalid stakepool ID</div>
+      ) : (
+        <div>
+          <div>{`Name: ${pool.name}`}</div>
+          <div>{`Ticker: ${pool.ticker}`}</div>
+          <div>{`Tax: ${parseTax(JSON.parse(pool.ratio))}%`}</div>
+          <div>
+            {'Homepage: '}
+            <a href={pool.homepage}>{pool.homepage}</a>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 const DelegatePage = ({
   updateStakePoolId,
-  updateStakePoolPercent,
-  addStakePool,
+  // updateStakePoolPercent,
+  // addStakePool,
   removeStakePool,
   stakePools,
   delegationFee,
@@ -51,7 +83,7 @@ const DelegatePage = ({
   changeDelegation,
 }) => {
   const delegatedPercent = stakePools.map((pool) => pool.percent).reduce((x, y) => x + y, 0)
-  const undelegatedPercent = 100 - delegatedPercent
+  // const undelegatedPercent = 100 - delegatedPercent
 
   return (
     <div className="delegate card">
@@ -84,7 +116,8 @@ const DelegatePage = ({
                 />
                 <div className="percent">%</div>
               </div> */}
-              {formatStakePoolInfo(getStakePoolValidationMessage(stakePools, pool))}
+              {/* {formatStakePoolInfo(getStakePoolValidationMessage(stakePools, pool))} */}
+              <StakePoolInfo pool={pool} />
               {stakePools.length <= 1 || i === 0 ? (
                 <div />
               ) : (

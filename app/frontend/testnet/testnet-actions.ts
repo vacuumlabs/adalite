@@ -163,6 +163,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           return i === index
             ? {
               ...pool,
+              pool_id: poolId,
               valid: !!state.validStakepools[poolId],
               ...getPoolInfo(state, poolId),
             }

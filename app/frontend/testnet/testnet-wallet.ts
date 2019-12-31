@@ -59,21 +59,21 @@ const TestnetWallet = async (options) => {
   async function getAccountStatus(accountPubkeyHex) {
     const accountInfo = await blockchainExplorer.getAccountStatus(accountPubkeyHex)
     let delegationRatioSum = 0
-    accountInfo.delegation.pools.map((pool) => {
-      delegationRatioSum += pool[1]
+    accountInfo.delegation.map((pool) => {
+      delegationRatioSum += pool.ratio
     })
-    const currentDelegation = accountInfo.delegation.pools.map((pool) => {
+    const currentDelegation = accountInfo.delegation.map((pool) => {
       return {
-        id: pool[0],
-        ratio: Math.round(pool[1] * (100/delegationRatioSum)),
+          ...pool,
+          ratio: Math.round(pool.ratio * (100/delegationRatioSum))
       }
-    })
+  })
 
     return {
       shelleyBalances: {
         stakingBalance: 20000,
         nonStakingBalance: 30000,
-        rewards: 15000,
+        rewards: accountInfo.last_rewards.reward,
         balance: accountInfo.value,
       },
       txCounter: accountInfo.counter,

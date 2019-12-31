@@ -2512,7 +2512,7 @@ input:checked + .slider:before {
 }
 
 .stake-pool-info.valid {
-  color: var(--color-green)
+  color: var(--color-black)
 }
 
 .stake-pool-info.valid.warning {

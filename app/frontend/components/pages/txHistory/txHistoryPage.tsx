@@ -8,7 +8,7 @@ import SendAdaPage from '../sendAda/sendAdaPage'
 import MyAddresses from '../receiveAda/myAddresses'
 import DelegatePage from '../delegations/delegatePage'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
-import DelegationHistory from '../delegations/delegationHistory'
+// import DelegationHistory from '../delegations/delegationHistory'
 import StakingPageToggle from '../../common/stakingPageToggle'
 import ShelleyBalances from '../delegations/shelleyBalances'
 
@@ -65,7 +65,7 @@ class DashboardMobileContent extends Component<Props> {
         {displayStakingPage
           ? [
             selectedTab === 'delegate' && <DelegatePage />,
-            selectedTab === 'delegation-history' && <DelegationHistory />,
+            // selectedTab === 'delegation-history' && <DelegationHistory />,
             selectedTab === 'current-delegation' && <CurrentDelegationPage />,
           ]
           : [
@@ -115,7 +115,10 @@ const TxHistoryPage = connect(
         </div>
         <div className="dashboard-column">
           {displayStakingPage
-            ? [<DelegatePage />, <DelegationHistory />]
+            ? [
+              <DelegatePage />,
+              // <DelegationHistory />
+            ]
             : [<SendAdaPage />, <MyAddresses />, showExportOption && <ExportCard />]}
         </div>
       </div>
