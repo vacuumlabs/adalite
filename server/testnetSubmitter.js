@@ -2,18 +2,20 @@ require('isomorphic-fetch')
 
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
-  app.post('/api/testnet/txs/submit', async (req, res) => {
+  app.post('/api/testnet/txs/signed', async (req, res) => {
     const tx = req.body.hexData
     const buff = Buffer.from(tx, 'hex')
     try {
-      const response = await fetch(`${process.env.ADALITE_JORMUNGANDR_NODE_URL}/api/v0/message`, {
-        method: 'POST',
-        body: buff,
-        headers: {
-          'content-Type': 'application/octet-stream',
-        },
-      })
-      console.log(response.status)
+      const response = await fetch(
+        `${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/txs/signed`,
+        {
+          method: 'POST',
+          body: buff,
+          headers: {
+            'content-Type': 'application/octet-stream',
+          },
+        }
+      )
       if (response.status === 200) {
         return res.json({
           Right: response.status,
@@ -29,14 +31,21 @@ module.exports = function(app, env) {
     }
   })
 
-  app.post('/api/testnet/account/status', async (req, res) => {
-    const accountPubkeyHex = req.body.accountPubkeyHex
+  app.post('/api/testnet/account/info', async (req, res) => {
+    const account = req.body.accountPubkeyHex
     try {
       const response = await fetch(
-        `${process.env.ADALITE_JORMUNGANDR_NODE_URL}/api/v0/account/${accountPubkeyHex}`
+        `${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            account,
+          }),
+          headers: {
+            'content-Type': 'application/json',
+          },
+        }
       )
-      // console.log(res)
-      // console.log(await res.json())
       const responseJson = await response.json()
       if (response.status === 200) {
         return res.json({
@@ -44,7 +53,7 @@ module.exports = function(app, env) {
         })
       }
       return res.json({
-        Left: response.status,
+        Left: responseJson,
       })
     } catch (err) {
       return res.json({
@@ -53,13 +62,28 @@ module.exports = function(app, env) {
     }
   })
 
-  app.post('/api/testnet/node/settings', async (req, res) => {
+  app.post('/api/testnet/account/delegationHistory', async (req, res) => {
+    const account = req.body.extendedPubKey
+    const limit = req.body.limit
+    console.log(account)
+    console.log(limit)
     try {
-      const response = await fetch(`${process.env.ADALITE_JORMUNGANDR_NODE_URL}/api/v0/settings`)
-      // console.log(res)
-      // console.log(await res.json())
-      const responseJson = await response.json()
-
+      const response = await fetch(
+        `${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/delegationHistory`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            limit,
+            account,
+          }),
+          headers: {
+            'content-Type': 'application/json',
+          },
+        }
+      )
+      let responseJson = await response.text()
+      responseJson = JSON.parse(responseJson)
+      console.log(responseJson)
       if (response.status === 200) {
         return res.json({
           Right: responseJson,
@@ -74,17 +98,34 @@ module.exports = function(app, env) {
       })
     }
   })
+
+  // app.post('/api/testnet/node/settings', async (req, res) => {
+  //   try {
+  //     const response = await fetch(`${process.env.ADALITE_JORMUNGANDR_NODE_URL}/api/v0/settings`)
+  //     const responseJson = await response.json()
+
+  //     if (response.status === 200) {
+  //       return res.json({
+  //         Right: responseJson,
+  //       })
+  //     }
+  //     return res.json({
+  //       Left: response.status,
+  //     })
+  //   } catch (err) {
+  //     return res.json({
+  //       Left: err,
+  //     })
+  //   }
+  // })
 
   app.post('/api/testnet/pools', async (req, res) => {
     try {
       const response = await fetch(
         `${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
       )
-      // console.log(response)
-      // console.log()
       let responseJson = await response.text()
       responseJson = JSON.parse(responseJson)
-      // console.log(responseJson)
       if (response.status === 200) {
         return res.json({
           Right: responseJson,

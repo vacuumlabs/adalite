@@ -83,6 +83,7 @@ const DelegatePage = ({
                   placeholder={pool.percent}
                   onInput={updateStakePoolPercent}
                   autoComplete="off"
+                  disabled
                 />
                 <div className="percent">%</div>
               </div>

@@ -13,4 +13,4 @@ app/tests/dist/
 app/dist/
 server.cert
 server.key
-
+walletKeys.js

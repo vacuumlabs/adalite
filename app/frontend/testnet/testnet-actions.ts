@@ -54,7 +54,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       {walletSecretDef}
     )
     const accountInfo = await wallet.getAccountStatus(walletSecretDef.rootSecret.pubkeyHex)
-    const delegationHistory = await wallet.getDelegationHistory()
+    const delegationHistory = await wallet.getDelegationHistory(
+      walletSecretDef.rootSecret.pubkeyHex,
+      5,
+    )
     const validStakepools = await wallet.getValidStakePools()
     const displayStakingPage = true
     setState({

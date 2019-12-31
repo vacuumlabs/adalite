@@ -85,8 +85,10 @@ const TestnetWallet = async (options) => {
     return await blockchainExplorer.getRunningStakePools()
   }
 
-  async function getDelegationHistory() {
-    return await blockchainExplorer.getDelegationHistory()
+  async function getDelegationHistory(accountPubkeyHex, limit) {
+      const delegationHistory = await blockchainExplorer.getDelegationHistory(accountPubkeyHex, limit)
+      
+      return delegationHistory
   }
 
   return {
