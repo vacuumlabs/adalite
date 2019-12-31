@@ -90,19 +90,19 @@ export interface State {
   transactionSubmissionError?: any
 
   // stakePools: any
-  delegationFee?: any
   calculatingDelegationFee?: any
   isDelegationValid?: any
 
-  testnetBalances?: {
+  shelleyBalances?: {
     stakingBalance?: number
     nonStakingBalance?: number
     rewards?: number
   }
-  testnetDelegation?: {
+  shelleyDelegation?: {
     counter?: number
     amount?: number
     selectedPools?: any
+    delegationFee?: any
   }
   displayStakingPage?: boolean
   currentDelegation?: {
@@ -168,22 +168,17 @@ const initialState: State = {
   autoLogin:
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 
-  testnetDelegation: {
+  shelleyDelegation: {
     counter: 0,
     amount: 0,
-    selectedPools: [
-      {
-        id: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
-        percent: 100,
-      },
-    ],
+    selectedPools: [],
+    delegationFee: 0.0,
   },
-  testnetBalances: {
+  shelleyBalances: {
     nonStakingBalance: 0,
     stakingBalance: 0,
     rewards: 0,
   },
-  delegationFee: 0.0,
   // currentDelegation: {
   //   stakePools: undefined,
   // }

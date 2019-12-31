@@ -12,8 +12,6 @@ const formatStakePoolInfo = (info) => {
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
 const getStakePoolValidationMessage = (stakePools, stakePool) => {
-  console.log(stakePool)
-  console.log(stakePools)
   const poolIdUsages = stakePools.filter((pool) => pool.pool_id === stakePool.pool_id)
   const isDuplicate = poolIdUsages.length > 1
 
@@ -140,9 +138,9 @@ const DelegatePage = ({
 
 export default connect(
   (state) => ({
-    stakePools: state.testnetDelegation.selectedPools,
+    stakePools: state.shelleyDelegation.selectedPools,
     calculatingDelegationFee: state.calculatingDelegationFee,
-    delegationFee: state.delegationFee,
+    delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
   }),
   testnetActions

@@ -2,7 +2,8 @@ import { initialState } from '../store'
 import {State, Ada, Lovelace} from '../state'
 import TestnetWallet from './testnet-wallet'
 import sleep from '../helpers/sleep'
-import testnetBalances from '../components/pages/delegations/testnetBalances'
+import shelleyBalances from '../components/pages/delegations/shelleyBalances'
+import {ADALITE_CONFIG} from '../config'
 
 const debounceEvent = (callback, time) => {
   let interval
@@ -64,14 +65,31 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       loading: false,
       validStakepools,
       walletIsLoaded: true,
-      testnetBalances: accountInfo.testnetBalances,
-      testnetDelegation: {
-        ...state.testnetDelegation,
+      shelleyBalances: accountInfo.shelleyBalances,
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
         counter: accountInfo.counter
       },
       currentDelegation: accountInfo.currentDelegation,
       delegationHistory,
       displayStakingPage,
+    })
+    getAdalitePoolInfo()
+  }
+
+  const getAdalitePoolInfo = () => {
+    const state = getState()
+    const poolInfo = getPoolInfo(state, ADALITE_CONFIG.ADALITE_STAKE_POOL_ID)
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        selectedPools: [
+          {
+            valid: !!poolInfo,
+            ...poolInfo,
+          }
+        ]
+      }
     })
   }
 
@@ -97,9 +115,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   // DUMMY
-  const calculateDelegationFee = () => {
+  const calculateDelegationFee = (state) => {
     setState({
-      delegationFee: 0,
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        delegationFee: 0,
+      }
     })
     setState({
       calculatingDelegationFee: false,
@@ -112,8 +133,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const validateDelegationAndCalculateDelegationFee = () => {
     const state = getState()
     const delegationValidationError =
-      !state.testnetDelegation.selectedPools.every((pool) => pool.valid && pool.percent) ||
-      calculateDelegatedPercent(state.testnetDelegation.selectedPools) !== 100
+      !state.shelleyDelegation.selectedPools.every((pool) => pool.valid && pool.percent) ||
+      calculateDelegatedPercent(state.shelleyDelegation.selectedPools) !== 100
 
     setState({
       delegationValidationError,
@@ -122,16 +143,21 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({ calculatingDelegationFee: true })
       debouncedCalculateDelegationFee()
     } else {
-      setState({ delegationFee: 0 })
+      setState({
+        shelleyDelegation: {
+          ...state.shelleyDelegation,
+          delegationFee: 0,
+        }
+      })
     }
   }
 
   const updateStakePoolId = (state, e) => {
     const poolId = e.target.value
-    const selectedPools = state.testnetDelegation.selectedPools
+    const selectedPools = state.shelleyDelegation.selectedPools
     setState({
-      testnetDelegation: {
-        ...state.testnetDelegation,
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
         selectedPools: selectedPools.map((pool, i) => {
           const index = parseInt(e.target.name, 10) 
           return i === index
@@ -152,15 +178,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const updateStakePoolPercent = (state, e) => {
     const index = parseInt(e.target.name, 10)
-    const selectedPools = state.testnetDelegation.selectedPools
+    const selectedPools = state.shelleyDelegation.selectedPools
     const delegatedPercent = calculateDelegatedPercent(selectedPools)
     const newPercent = parseInt(e.target.value ? e.target.value : 0, 10) 
     // if (delegatedPercent + newPercent > 100) {
     //   return
     // }
     setState({
-      testnetDelegation: {
-        ...state.testnetDelegation,
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
         selectedPools: selectedPools.map((pool, i) => {
           return i === index 
           ? {
@@ -175,10 +201,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const addStakePool = (state) => {
-    const selectedPools = state.testnetDelegation.selectedPools
+    const selectedPools = state.shelleyDelegation.selectedPools
     setState({
-      testnetDelegation: {
-        ...state.testnetDelegation,
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
         selectedPools: [
           ...selectedPools,
           {
@@ -195,10 +221,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const removeStakePool = (state, e) => {
     const index = parseInt(e.target.name, 10)
-    const selectedPools = state.testnetDelegation.selectedPools
+    const selectedPools = state.shelleyDelegation.selectedPools
     setState({
-      testnetDelegation: {
-        ...state.testnetDelegation,
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
         selectedPools: selectedPools.filter((pool, i) => i !== index),
       }
     })

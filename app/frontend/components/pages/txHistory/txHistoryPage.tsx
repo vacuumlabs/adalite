@@ -10,7 +10,7 @@ import DelegatePage from '../delegations/delegatePage'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
 import DelegationHistory from '../delegations/delegationHistory'
 import StakingPageToggle from '../../common/stakingPageToggle'
-import TestnetBalances from '../delegations/testnetBalances'
+import ShelleyBalances from '../delegations/shelleyBalances'
 
 interface Props {
   transactionHistory: any
@@ -103,7 +103,7 @@ const TxHistoryPage = connect(
       <div className="dashboard desktop">
         <div className="dashboard-column">
           {displayStakingPage
-            ? [<TestnetBalances />, <CurrentDelegationPage />]
+            ? [<ShelleyBalances />, <CurrentDelegationPage />]
             : [
               <Balance
                 balance={balance}
@@ -121,7 +121,7 @@ const TxHistoryPage = connect(
       </div>
       <div className="dashboard mobile">
         {displayStakingPage ? (
-          <TestnetBalances />
+          <ShelleyBalances />
         ) : (
           <Balance
             balance={balance}

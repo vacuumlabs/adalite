@@ -4,7 +4,7 @@ import {AdaIcon} from '../../common/svg'
 import testnetActions from '../../../testnet/testnet-actions'
 import {connect} from '../../../libs/unistore/preact'
 
-const TestnetBalances = ({
+const shelleyBalances = ({
   stakingBalance,
   nonStakingBalance,
   rewards,
@@ -29,7 +29,7 @@ const TestnetBalances = ({
         Convert to stakable
       </button>
     </div>
-    <h2 className="card-title staking-balances-title">Rewards</h2>
+    {/* <h2 className="card-title staking-balances-title">Rewards</h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
         {isNaN(Number(rewards)) ? rewards : `${printAda(rewards)}`}
@@ -38,7 +38,7 @@ const TestnetBalances = ({
       <button className="button stake-pool" onClick={null}>
         Redeem
       </button>
-    </div>
+    </div> */}
     <div className="total-balance-wrapper">
       <h2 className="card-title staking-balances-title">Balance</h2>
       <div className="balance-row">
@@ -56,10 +56,10 @@ const TestnetBalances = ({
 
 export default connect(
   (state) => ({
-    stakingBalance: state.testnetBalances.stakingBalance,
-    nonStakingBalance: state.testnetBalances.nonStakingBalance,
-    rewards: state.testnetBalances.rewards,
-    balance: state.testnetBalances.balance,
+    stakingBalance: state.shelleyBalances.stakingBalance,
+    nonStakingBalance: state.shelleyBalances.nonStakingBalance,
+    rewards: state.shelleyBalances.rewards,
+    balance: state.shelleyBalances.balance,
   }),
   testnetActions
-)(TestnetBalances)
+)(shelleyBalances)

@@ -70,7 +70,7 @@ const TestnetWallet = async (options) => {
     })
 
     return {
-      testnetBalances: {
+      shelleyBalances: {
         stakingBalance: 20000,
         nonStakingBalance: 30000,
         rewards: 15000,
