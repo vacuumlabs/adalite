@@ -71,7 +71,7 @@ const DelegatePage = ({
                 onInput={updateStakePoolId}
                 autoComplete="off"
               />
-              <div className="input-wrapper-percent">
+              {/* <div className="input-wrapper-percent">
                 <input
                   type="number"
                   min="0"
@@ -83,10 +83,9 @@ const DelegatePage = ({
                   placeholder={pool.percent}
                   onInput={updateStakePoolPercent}
                   autoComplete="off"
-                  disabled
                 />
                 <div className="percent">%</div>
-              </div>
+              </div> */}
               {formatStakePoolInfo(getStakePoolValidationMessage(stakePools, pool))}
               {stakePools.length <= 1 || i === 0 ? (
                 <div />
@@ -100,20 +99,21 @@ const DelegatePage = ({
         </ul>
       </div>
       <div className="add-stake-pool-wrapper">
-        <button
+        {/* <button
           className="button add-stake-pool"
           id="add-stake-pool"
           onClick={addStakePool}
           disabled={false}
         >
           Add Another Stake Pool
-        </button>
+        </button> */}
       </div>
       <div className="delegation-info-row">
-        <label className="fee-label">Delegated</label>
+        {/* <label className="fee-label">Delegated</label>
         <div
           className={`delegation-percent${!delegationValidationError ? ' valid' : ''}`}
-        >{`${delegatedPercent} %`}</div>
+        >{`${delegatedPercent} %`}
+        </div> */}
         <label className="fee-label">
           Fee<AdaIcon />
         </label>

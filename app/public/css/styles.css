@@ -2615,7 +2615,7 @@ input:checked + .slider:before {
 
 .stake-pool-item {
   display: grid;
-  grid-template-columns: 76% 24%;
+  /* grid-template-columns: 76% 24%; */
   padding: 24px 16px 24px 0;
   color: var(--color-grey);
 }

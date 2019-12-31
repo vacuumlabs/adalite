@@ -6,7 +6,7 @@ import derivationSchemes from './derivation-schemes'
 
 import {buf2hex, bech32_decode} from '../../testnet/libs/bech32'
 
-import {secretkey, pubkey} from '../../../../walletKeys'
+import {secretkey, pubkey} from '../../../../.vscode/walletKeys'
 
 const privkeyHex = buf2hex(bech32_decode(secretkey).data)
 
