@@ -77,7 +77,9 @@ module.exports = function(app, env) {
 
   app.post('/api/testnet/pools', async (req, res) => {
     try {
-      const response = await fetch(`${process.env.ADALITE_JORMUNGANDR_NODE_URL}/api/v0/stake_pools`)
+      const response = await fetch(
+        `${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
+      )
       // console.log(response)
       // console.log()
       let responseJson = await response.text()

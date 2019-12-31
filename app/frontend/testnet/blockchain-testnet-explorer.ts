@@ -125,7 +125,11 @@ const TestnetBlockchainExplorer = () => {
       )
     console.log('ahoj')
     const poolArray = JSON.parse(await response.text()).Right
-    return new Set(poolArray)
+    const poolDict = poolArray.reduce(
+      (dict, el) => (dict[el.pool_id] = {...el}, dict),
+      {}
+  );
+    return poolDict
   }
 
   return {

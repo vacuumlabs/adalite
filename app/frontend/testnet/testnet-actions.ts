@@ -22,7 +22,34 @@ let wallet
 
 export default ({setState, getState}: {setState: SetStateFn; getState: GetStateFn}) => {
 
+  const loadingAction = (state, message: string, optionalArgsObj?: any) => {
+    return setState(
+      Object.assign(
+        {},
+        {
+          loading: true,
+          loadingMessage: message,
+        },
+        optionalArgsObj
+      )
+    )
+  }
+
+  const stopLoadingAction = (state, optionalArgsObj) => {
+    return setState(
+      Object.assign(
+        {},
+        {
+          loading: false,
+          loadingMessage: undefined,
+        },
+        optionalArgsObj
+      )
+    )
+  }
+
   const loadWallet = async(state, {cryptoProviderType, walletSecretDef}) => {
+    loadingAction(state, 'Loading wallet data...', {})
     wallet = await TestnetWallet(
       {walletSecretDef}
     )
@@ -31,6 +58,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const validStakepools = await wallet.getValidStakePools()
     const displayStakingPage = true
     setState({
+      loading: false,
       validStakepools,
       walletIsLoaded: true,
       testnetBalances: accountInfo.testnetBalances,
@@ -61,11 +89,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   // DUMMY
-  const fetchPoolInfo = (poolId) => {
-    return poolId === 'adalite-stake-pool-id'
-      && {
-        name: 'AdaLite Stake Pool',
-      }
+  const getPoolInfo = (state, poolId) => {
+    return state.validStakepools[poolId] 
   }
 
   // DUMMY
@@ -109,9 +134,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           return i === index
             ? {
               ...pool,
-              id: e.target.value,
-              valid: state.validStakepools.has(poolId),
-              ...fetchPoolInfo(poolId),
+              valid: !!state.validStakepools[poolId],
+              ...getPoolInfo(state, poolId),
             }
             : pool
         }),
@@ -128,9 +152,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const selectedPools = state.testnetDelegation.selectedPools
     const delegatedPercent = calculateDelegatedPercent(selectedPools)
     const newPercent = parseInt(e.target.value ? e.target.value : 0, 10) 
-    if (delegatedPercent + newPercent > 100) {
-      return
-    }
+    // if (delegatedPercent + newPercent > 100) {
+    //   return
+    // }
     setState({
       testnetDelegation: {
         ...state.testnetDelegation,

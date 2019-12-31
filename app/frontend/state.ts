@@ -175,8 +175,6 @@ const initialState: State = {
       {
         id: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
         percent: 100,
-        name: 'AdaLite Stake Pool',
-        valid: true, // TODO remove this
       },
     ],
   },
@@ -185,6 +183,7 @@ const initialState: State = {
     stakingBalance: 0,
     rewards: 0,
   },
+  delegationFee: 0.0,
   // currentDelegation: {
   //   stakePools: undefined,
   // }

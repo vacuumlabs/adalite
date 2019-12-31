@@ -12,7 +12,9 @@ const formatStakePoolInfo = (info) => {
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
 const getStakePoolValidationMessage = (stakePools, stakePool) => {
-  const poolIdUsages = stakePools.filter((pool) => pool.id === stakePool.id)
+  console.log(stakePool)
+  console.log(stakePools)
+  const poolIdUsages = stakePools.filter((pool) => pool.pool_id === stakePool.pool_id)
   const isDuplicate = poolIdUsages.length > 1
 
   if (!stakePool.valid) {
@@ -35,7 +37,7 @@ const getStakePoolValidationMessage = (stakePools, stakePool) => {
   }
   return {
     class: 'valid',
-    message: 'StakepoolInfo',
+    message: stakePool.name,
   }
 }
 
@@ -65,7 +67,7 @@ const DelegatePage = ({
                 className="input stake-pool-id"
                 name={`${i}`}
                 placeholder="Stake Pool ID"
-                value={pool.id}
+                value={pool.pool_id}
                 onInput={updateStakePoolId}
                 autoComplete="off"
               />
