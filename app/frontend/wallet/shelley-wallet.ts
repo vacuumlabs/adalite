@@ -14,6 +14,8 @@ import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
 import {isShelleyAddress, bechAddressToHex, groupToSingle} from './shelley/helpers/addresses'
+import request from './helpers/request'
+import {ADALITE_CONFIG} from '../config'
 
 const isUtxoProfitable = () => true
 
@@ -122,6 +124,20 @@ const ShelleyBlockchainExplorer = (config) => {
     return addresses.map(fixAddress)
   }
 
+  async function getAccountInfo() {
+    const response = await request(
+      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/account/info`,
+      'POST',
+      JSON.stringify({
+        // accountPubkeyHex,
+      }),
+      {
+        'content-Type': 'application/json',
+      }
+    )
+    return response.Right
+  }
+
   return {
     getTxHistory: (addresses) => {
       console.log('getTxHistory', fix(addresses))
@@ -137,6 +153,7 @@ const ShelleyBlockchainExplorer = (config) => {
     },
     fetchTxInfo: be.fetchTxInfo,
     filterUsedAddresses: (addresses) => be.filterUsedAddresses(fix(addresses)),
+    getAccountInfo,
   }
 }
 const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvider}: any) => {
@@ -232,14 +249,18 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getBalance() {
+    console.log(cryptoProvider.getMasterPubkey().toString('hex'))
     const addresses = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getBalance(addresses)
   }
 
   async function getHistory() {
     const addresses = await myAddresses.discoverAllAddresses()
-
     return blockchainExplorer.getTxHistory(addresses)
+  }
+
+  async function getAccountInfo() {
+    const accountInfo = await blockchainExplorer.getAccountInfo()
   }
 
   async function fetchTxInfo(txHash) {
@@ -292,6 +313,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     verifyAddress,
     fetchTxInfo,
     generateNewSeeds,
+    getAccountInfo,
   }
 }
 

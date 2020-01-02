@@ -59,7 +59,7 @@ export default connect(
     stakingBalance: state.shelleyBalances.stakingBalance,
     nonStakingBalance: state.shelleyBalances.nonStakingBalance,
     rewards: state.shelleyBalances.rewards,
-    balance: state.shelleyBalances.balance,
+    balance: state.balance,
   }),
   testnetActions
 )(shelleyBalances)

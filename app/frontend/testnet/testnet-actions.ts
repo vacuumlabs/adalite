@@ -1,4 +1,4 @@
-import { initialState } from '../store'
+import {initialState} from '../store'
 import {State, Ada, Lovelace} from '../state'
 import TestnetWallet from './testnet-wallet'
 import sleep from '../helpers/sleep'
@@ -22,7 +22,6 @@ type GetStateFn = () => State
 let wallet
 
 export default ({setState, getState}: {setState: SetStateFn; getState: GetStateFn}) => {
-
   const loadingAction = (state, message: string, optionalArgsObj?: any) => {
     return setState(
       Object.assign(
@@ -49,15 +48,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     )
   }
 
-  const loadWallet = async(state, {cryptoProviderType, walletSecretDef}) => {
+  const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
     loadingAction(state, 'Loading wallet data...', {})
-    wallet = await TestnetWallet(
-      {walletSecretDef}
-    )
+    wallet = await TestnetWallet({walletSecretDef})
     const accountInfo = await wallet.getAccountStatus(walletSecretDef.rootSecret.pubkeyHex)
     const delegationHistory = await wallet.getDelegationHistory(
       walletSecretDef.rootSecret.pubkeyHex,
-      5,
+      5
     )
     const validStakepools = await wallet.getValidStakePools()
     const displayStakingPage = true
@@ -68,7 +65,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       shelleyBalances: accountInfo.shelleyBalances,
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        counter: accountInfo.counter
+        counter: accountInfo.counter,
       },
       currentDelegation: accountInfo.currentDelegation,
       delegationHistory,
@@ -87,9 +84,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           {
             valid: !!poolInfo,
             ...poolInfo,
-          }
-        ]
-      }
+          },
+        ],
+      },
     })
   }
 
@@ -111,7 +108,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   // DUMMY
   const getPoolInfo = (state, poolId) => {
-    return state.validStakepools[poolId] 
+    return state.validStakepools[poolId]
   }
 
   // DUMMY
@@ -120,7 +117,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       shelleyDelegation: {
         ...state.shelleyDelegation,
         delegationFee: 0,
-      }
+      },
     })
     setState({
       calculatingDelegationFee: false,
@@ -140,14 +137,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       delegationValidationError,
     })
     if (!delegationValidationError) {
-      setState({ calculatingDelegationFee: true })
+      setState({calculatingDelegationFee: true})
       debouncedCalculateDelegationFee()
     } else {
       setState({
         shelleyDelegation: {
           ...state.shelleyDelegation,
           delegationFee: 0,
-        }
+        },
       })
     }
   }
@@ -159,7 +156,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPools: selectedPools.map((pool, i) => {
-          const index = parseInt(e.target.name, 10) 
+          const index = parseInt(e.target.name, 10)
           return i === index
             ? {
               ...pool,
@@ -169,34 +166,31 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
             }
             : pool
         }),
-      }
+      },
     })
     validateDelegationAndCalculateDelegationFee()
   }
   /*
-  
+
   */
 
   const updateStakePoolPercent = (state, e) => {
     const index = parseInt(e.target.name, 10)
     const selectedPools = state.shelleyDelegation.selectedPools
-    const delegatedPercent = calculateDelegatedPercent(selectedPools)
-    const newPercent = parseInt(e.target.value ? e.target.value : 0, 10) 
-    // if (delegatedPercent + newPercent > 100) {
-    //   return
-    // }
+    // const delegatedPercent = calculateDelegatedPercent(selectedPools)
+    const newPercent = parseInt(e.target.value ? e.target.value : 0, 10)
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPools: selectedPools.map((pool, i) => {
-          return i === index 
-          ? {
-            ...pool,
-            percent: newPercent,
-          }
-          : pool
+          return i === index
+            ? {
+              ...pool,
+              percent: newPercent,
+            }
+            : pool
         }),
-      }
+      },
     })
     validateDelegationAndCalculateDelegationFee()
   }
@@ -213,9 +207,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
             percent: 0,
             name: '',
             valid: false,
-          }
-        ]
-      }
+          },
+        ],
+      },
     })
     validateDelegationAndCalculateDelegationFee()
   }
@@ -227,13 +221,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPools: selectedPools.filter((pool, i) => i !== index),
-      }
+      },
     })
     validateDelegationAndCalculateDelegationFee()
   }
 
   const toggleDisplayStakingPage = (state, e) => {
-    setState({ displayStakingPage: !state.displayStakingPage })
+    setState({displayStakingPage: !state.displayStakingPage})
   }
 
   return {

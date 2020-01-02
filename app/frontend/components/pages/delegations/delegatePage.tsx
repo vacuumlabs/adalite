@@ -82,9 +82,8 @@ const DelegatePage = ({
   delegationValidationError,
   changeDelegation,
 }) => {
-  const delegatedPercent = stakePools.map((pool) => pool.percent).reduce((x, y) => x + y, 0)
+  // const delegatedPercent = stakePools.map((pool) => pool.percent).reduce((x, y) => x + y, 0)
   // const undelegatedPercent = 100 - delegatedPercent
-
   return (
     <div className="delegate card">
       <h2 className="card-title">Delegate Stake</h2>

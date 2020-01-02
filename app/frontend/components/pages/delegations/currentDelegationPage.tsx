@@ -4,7 +4,6 @@ import testnetActions from '../../../testnet/testnet-actions'
 import formatDelegationDate from '../../../helpers/formatDelegationDate'
 
 const CurrentDelegationPage = ({currentDelegation, changeDelegation}) => {
-  console.log(currentDelegation[0])
   return (
     <div className="current-delegation card">
       <h2 className="card-title">Current delegation</h2>

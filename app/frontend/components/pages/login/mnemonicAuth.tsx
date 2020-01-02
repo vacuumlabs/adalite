@@ -8,7 +8,6 @@ import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import sanitizeMnemonic from '../../../helpers/sanitizeMnemonic'
 import {ADALITE_CONFIG} from '../../../config'
-import testnetActions from '../../../testnet/testnet-actions'
 
 const {ADALITE_DEMO_WALLET_MNEMONIC} = ADALITE_CONFIG
 

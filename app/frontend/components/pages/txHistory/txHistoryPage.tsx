@@ -85,7 +85,7 @@ const TxHistoryPage = connect(
     transactionHistory: state.transactionHistory,
     conversionRates: state.conversionRates && state.conversionRates.data,
     showExportOption: state.showExportOption,
-    displayStakingPage: false,
+    displayStakingPage: state.displayStakingPage,
     balance: state.balance,
   }),
   actions

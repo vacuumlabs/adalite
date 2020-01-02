@@ -211,6 +211,10 @@ const CardanoWallet = (options) => {
     return blockchainExplorer.getTxHistory(addresses)
   }
 
+  async function getAccountInfo() {
+    return null
+  }
+
   async function fetchTxInfo(txHash) {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
@@ -273,6 +277,7 @@ const CardanoWallet = (options) => {
     verifyAddress,
     fetchTxInfo,
     generateNewSeeds,
+    getAccountInfo,
   }
 }
 

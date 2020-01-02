@@ -69,7 +69,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )
     )
   }
-
+  // TODO rename to setErrorState
   const handleError = (errorName: string, e: any, options?: any) => {
     if (e && e.name) {
       // is a error
@@ -117,6 +117,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
     })
+    console.log(walletSecretDef)
     try {
       switch (ADALITE_CONFIG.ADALITE_CARDANO_VERSION) {
         case 'byron': {
@@ -148,7 +149,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         default:
           throw Error('bad cardano version')
       }
-
       const visibleAddresses = await wallet.getVisibleAddresses()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
