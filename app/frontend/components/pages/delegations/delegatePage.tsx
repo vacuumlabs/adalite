@@ -1,21 +1,9 @@
 import {h} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
-import testnetActions from '../../../testnet/testnet-actions'
+import actions from '../../../actions'
 import tooltip from '../../common/tooltip'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
-
-// const formatStakePoolInfo = (info) => {
-//   return <div className={`stake-pool-info ${info.class}`}>
-//     <div>
-//       {info.message}
-//     </div>
-//     <div>
-//       {info.message}
-//     </div>
-
-//   </div>
-// }
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -175,5 +163,5 @@ export default connect(
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
   }),
-  testnetActions
+  actions
 )(DelegatePage)

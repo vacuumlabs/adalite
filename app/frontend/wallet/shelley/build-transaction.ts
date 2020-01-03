@@ -81,6 +81,25 @@ export function selectMinimalTxPlan(
   return {estimatedFee: computeRequiredTxFee(chainConfig)(inputs, outputs, null)}
 }
 
+export function computeDelegationTxPlan(chainConfig, pools, accountCounter, privkey): any {
+  // inputs: [
+  //   {
+  //     type: 'account',
+  //     address,
+  //     privkey,
+  //     accountCounter: counter,
+  //     value: computedFee,
+  //   },
+  // ],
+  const extra = {
+    type: 'stake_delegation',
+    pools,
+    privkey,
+  }
+  const inputs = []
+  const outputs = []
+  computeTxPlan(chainConfig, inputs, outputs, extra)
+}
 /*
 export function buildTransactionFromAccount(account, destination) {
   const computedFee = calculateFee({

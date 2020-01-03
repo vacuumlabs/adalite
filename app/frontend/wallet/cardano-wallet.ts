@@ -188,7 +188,8 @@ const CardanoWallet = (options) => {
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
-  async function getTxPlan(address, coins: Lovelace, donationAmount: Lovelace) {
+  async function getTxPlan(args) {
+    const {address, coins, donationAmount} = args
     const availableUtxos = (await getUTxOs()).filter(isUtxoProfitable)
     const changeAddress = await getChangeAddress()
 

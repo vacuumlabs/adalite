@@ -162,7 +162,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       // shelley
       const shelleyAccountInfo = await wallet.getAccountInfo()
       const validStakepools = await wallet.getValidStakepools()
-      getAdalitePoolInfo(validStakepools)
       setState({
         walletIsLoaded: true,
         visibleAddresses,
@@ -188,6 +187,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         shelleyAccountInfo,
         validStakepools,
       })
+      getAdalitePoolInfo(validStakepools)
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
       setState({
@@ -422,9 +422,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const amount = state.sendAmount.coins as Lovelace
     const donationAmount = state.donationAmount.coins as Lovelace
     let plan
-
+    const address = state.sendAddress.fieldValue
     try {
-      plan = await wallet.getTxPlan(state.sendAddress.fieldValue, amount, donationAmount)
+      plan = await wallet.getTxPlan({address, coins: amount, donationAmount}, 'send')
     } catch (e) {
       handleError('sendAmountValidationError', {code: e.name})
       setState({
@@ -463,6 +463,75 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       calculatingFee: false,
     })
+  }
+
+  const calculateDelegationFee = () => {
+    const state = getState()
+    const pools = state.shelleyDelegation.selectedPools.map((pool) => {
+      return {
+        id: pool.pool_id,
+        ratio: pool.percent,
+      }
+    })
+    const counter = state.shelleyAccountInfo.counter
+    const plan = wallet.getTxPlan({pools, counter}, 'delegate')
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        delegationFee: 0,
+      },
+    })
+    setState({
+      calculatingDelegationFee: false,
+    })
+  }
+
+  const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 2000)
+
+  // DUMMY
+  const validateDelegationAndCalculateDelegationFee = () => {
+    const state = getState()
+    const delegationValidationError = !state.shelleyDelegation.selectedPools.every(
+      (pool) => pool.valid && pool.percent
+    )
+
+    setState({
+      delegationValidationError,
+    })
+    if (!delegationValidationError) {
+      setState({calculatingDelegationFee: true})
+      debouncedCalculateDelegationFee()
+    } else {
+      setState({
+        shelleyDelegation: {
+          ...state.shelleyDelegation,
+          delegationFee: 0,
+        },
+      })
+    }
+  }
+
+  const updateStakePoolId = (state, e) => {
+    const poolId = e.target.value
+    const selectedPools = state.shelleyDelegation.selectedPools
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        selectedPools: selectedPools.map((pool, i) => {
+          const index = parseInt(e.target.name, 10)
+          return i === index
+            ? {
+              ...pool,
+              pool_id: poolId,
+              valid: !!state.validStakepools[poolId],
+              percent: 100,
+              ...state.validStakepools[poolId],
+            }
+            : pool
+        }),
+      },
+    })
+    validateDelegationAndCalculateDelegationFee()
   }
 
   const confirmTransaction = (state, address, coins) => {
@@ -911,5 +980,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setDonation,
     resetDonation,
     closeStakingBanner,
+    updateStakePoolId,
   }
 }
