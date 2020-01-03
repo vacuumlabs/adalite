@@ -30,11 +30,20 @@ const _validateScheme = (cryptoProvider) => {
   //if (scheme.type !== 'v2') throw new Error('Invalid mnemonic scheme')
 }
 
+export const stakeAccountPubkeyHex = async (cryptoProvider, accountIndex: number) => {
+  const pathStake = shelleyStakeAccountPath(accountIndex)
+  return await cryptoProvider
+    .deriveXpub(pathStake)
+    .slice(0, 32)
+    .toString('hex')
+}
+
 export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => async () => {
   _validateScheme(cryptoProvider)
 
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
+  console.log(stakeXpub)
 
   return {
     path: pathStake,

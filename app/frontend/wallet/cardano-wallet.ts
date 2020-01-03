@@ -212,7 +212,7 @@ const CardanoWallet = (options) => {
   }
 
   async function getAccountInfo() {
-    return null
+    return undefined
   }
 
   async function fetchTxInfo(txHash) {

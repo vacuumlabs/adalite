@@ -117,7 +117,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
     })
-    console.log(walletSecretDef)
     try {
       switch (ADALITE_CONFIG.ADALITE_CARDANO_VERSION) {
         case 'byron': {
@@ -152,6 +151,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const visibleAddresses = await wallet.getVisibleAddresses()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
+      const shelleyAccountInfo = await wallet.getAccountInfo()
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
@@ -181,6 +181,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         sendAddress: {fieldValue: ''},
         donationAmount: {fieldValue: '', coins: 0},
         sendResponse: '',
+        // shelley
+        shelleyAccountInfo,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {

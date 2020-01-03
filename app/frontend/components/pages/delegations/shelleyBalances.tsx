@@ -56,9 +56,9 @@ const shelleyBalances = ({
 
 export default connect(
   (state) => ({
-    stakingBalance: state.shelleyBalances.stakingBalance,
-    nonStakingBalance: state.shelleyBalances.nonStakingBalance,
-    rewards: state.shelleyBalances.rewards,
+    stakingBalance: state.shelleyAccountInfo.value + state.balance,
+    nonStakingBalance: 0,
+    rewards: state.shelleyAccountInfo.last_rewards.reward,
     balance: state.balance,
   }),
   testnetActions

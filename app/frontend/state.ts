@@ -111,6 +111,15 @@ export interface State {
   delegationHistory?: any
   validStakepools?: any
   delegationValidationError?: any
+  shelleyAccountInfo?: {
+    delegation: any
+    value: number
+    counter: number
+    last_rewards: {
+      epoch: number
+      reward: number
+    }
+  }
 }
 
 const initialState: State = {
@@ -178,6 +187,15 @@ const initialState: State = {
     nonStakingBalance: 0,
     stakingBalance: 0,
     rewards: 0,
+  },
+  shelleyAccountInfo: {
+    delegation: [],
+    value: 0,
+    counter: 0,
+    last_rewards: {
+      epoch: 0,
+      reward: 0,
+    },
   },
   // currentDelegation: {
   //   stakePools: undefined,

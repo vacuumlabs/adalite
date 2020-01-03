@@ -41,7 +41,7 @@ const CurrentDelegationPage = ({currentDelegation, changeDelegation}) => {
 
 export default connect(
   (state) => ({
-    currentDelegation: state.currentDelegation,
+    currentDelegation: state.shelleyAccountInfo.delegation,
   }),
   testnetActions
 )(CurrentDelegationPage)

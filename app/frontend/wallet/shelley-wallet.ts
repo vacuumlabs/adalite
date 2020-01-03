@@ -6,7 +6,10 @@ import PseudoRandom from './helpers/PseudoRandom'
 import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
-import {ShelleyGroupAddressProvider} from './shelley/shelley-address-provider'
+import {
+  ShelleyGroupAddressProvider,
+  stakeAccountPubkeyHex,
+} from './shelley/shelley-address-provider'
 
 import {computeRequiredTxFee} from './shelley/helpers/chainlib-wrapper'
 import {selectMinimalTxPlan} from './shelley/build-transaction'
@@ -124,12 +127,12 @@ const ShelleyBlockchainExplorer = (config) => {
     return addresses.map(fixAddress)
   }
 
-  async function getAccountInfo() {
+  async function getAccountInfo(accountPubkeyHex) {
     const response = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/account/info`,
       'POST',
       JSON.stringify({
-        // accountPubkeyHex,
+        accountPubkeyHex,
       }),
       {
         'content-Type': 'application/json',
@@ -249,7 +252,6 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getBalance() {
-    console.log(cryptoProvider.getMasterPubkey().toString('hex'))
     const addresses = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getBalance(addresses)
   }
@@ -260,7 +262,22 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getAccountInfo() {
-    const accountInfo = await blockchainExplorer.getAccountInfo()
+    const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, 0)
+    const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
+    let delegationRatioSum = 0
+    accountInfo.delegation.map((pool) => {
+      delegationRatioSum += pool.ratio
+    })
+    const delegation = accountInfo.delegation.map((pool) => {
+      return {
+        ...pool,
+        ratio: Math.round(pool.ratio * (100 / delegationRatioSum)),
+      }
+    })
+    return {
+      ...accountInfo,
+      delegation,
+    }
   }
 
   async function fetchTxInfo(txHash) {
