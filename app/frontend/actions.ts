@@ -151,7 +151,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const visibleAddresses = await wallet.getVisibleAddresses()
       const transactionHistory = await wallet.getHistory()
       const balance = await wallet.getBalance()
-      const shelleyAccountInfo = await wallet.getAccountInfo()
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
@@ -160,6 +159,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
+      // shelley
+      const shelleyAccountInfo = await wallet.getAccountInfo()
+      const validStakepools = await wallet.getValidStakepools()
+      getAdalitePoolInfo(validStakepools)
       setState({
         walletIsLoaded: true,
         visibleAddresses,
@@ -183,6 +186,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         sendResponse: '',
         // shelley
         shelleyAccountInfo,
+        validStakepools,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
@@ -196,6 +200,22 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       return false
     }
     return true
+  }
+
+  const getAdalitePoolInfo = (validStakepools) => {
+    const state = getState()
+    const poolInfo = validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        selectedPools: [
+          {
+            valid: !!poolInfo,
+            ...poolInfo,
+          },
+        ],
+      },
+    })
   }
 
   const loadDemoWallet = (state) => {

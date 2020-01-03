@@ -141,6 +141,19 @@ const ShelleyBlockchainExplorer = (config) => {
     return response.Right
   }
 
+  async function getRunningStakePools() {
+    const response = await fetch(`${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/pools`, {
+      method: 'POST',
+      body: null,
+      headers: {
+        'content-Type': 'application/json',
+      },
+    })
+    const poolArray = JSON.parse(await response.text()).Right
+    const poolDict = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
+    return poolDict
+  }
+
   return {
     getTxHistory: (addresses) => {
       console.log('getTxHistory', fix(addresses))
@@ -157,6 +170,7 @@ const ShelleyBlockchainExplorer = (config) => {
     fetchTxInfo: be.fetchTxInfo,
     filterUsedAddresses: (addresses) => be.filterUsedAddresses(fix(addresses)),
     getAccountInfo,
+    getRunningStakePools,
   }
 }
 const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvider}: any) => {
@@ -280,6 +294,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     }
   }
 
+  async function getValidStakepools() {
+    return blockchainExplorer.getRunningStakePools()
+  }
+
   async function fetchTxInfo(txHash) {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
@@ -331,6 +349,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     fetchTxInfo,
     generateNewSeeds,
     getAccountInfo,
+    getValidStakepools,
   }
 }
 

@@ -215,6 +215,10 @@ const CardanoWallet = (options) => {
     return undefined
   }
 
+  async function getValidStakepools() {
+    return undefined
+  }
+
   async function fetchTxInfo(txHash) {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
@@ -278,6 +282,7 @@ const CardanoWallet = (options) => {
     fetchTxInfo,
     generateNewSeeds,
     getAccountInfo,
+    getValidStakepools,
   }
 }
 
