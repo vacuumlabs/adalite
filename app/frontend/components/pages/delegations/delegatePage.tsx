@@ -69,6 +69,7 @@ const DelegatePage = ({
   calculatingDelegationFee,
   delegationValidationError,
   changeDelegation,
+  submitTransaction,
 }) => {
   // const delegatedPercent = stakePools.map((pool) => pool.percent).reduce((x, y) => x + y, 0)
   // const undelegatedPercent = 100 - delegatedPercent
@@ -141,7 +142,7 @@ const DelegatePage = ({
         <button
           className="button primary staking"
           disabled={delegationValidationError || calculatingDelegationFee}
-          onClick={changeDelegation}
+          onClick={submitTransaction}
           {...tooltip('100% of funds must be delegated to valid stake pools', false)}
         >
           Delegate

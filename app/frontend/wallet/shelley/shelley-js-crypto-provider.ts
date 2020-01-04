@@ -49,14 +49,14 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const prepareAccountInput = (input) => {
-      const path = addressToAbsPathMapper(input.address)
-      const hdnode = deriveHdNode(path)
+      // const path = addressToAbsPathMapper(input.address)
+      // const hdnode = deriveHdNode(path)
       return {
         type: 'account',
         address: input.address,
-        privkey: Buffer.from(hdnode.secretKey).toString('hex'),
+        privkey: '',
         accountCounter: input.counter,
-        value: input.value,
+        value: input.coins,
       }
     }
 
@@ -73,19 +73,21 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const prepareCert = (input) => {
-      const path = addressToAbsPathMapper(input.address)
-      const hdnode = deriveHdNode(path)
-      return txAux.cert && input.counter
+      // const path = addressToAbsPathMapper(input.address)
+      // const hdnode = deriveHdNode(path)
+      return txAux.cert
         ? {
           type: 'stake_delegation',
-          privkey: Buffer.from(hdnode.secretKey).toString('hex') as HexString,
+          privkey: '' as HexString,
           pools: txAux.cert.pools,
         }
         : null
     }
 
-    const inputs = txAux.inputs.map((input) => prepareInput.utxo(input))
-    const outputs = [...txAux.outputs, txAux.change].map(prepareOutput)
+    const inputs = txAux.inputs.map((input) => prepareInput.account(input))
+    const outputs = txAux.outputs.length
+      ? [...txAux.outputs, txAux.change].map(prepareOutput)
+      : []
     const cert = prepareCert(txAux.inputs[0])
 
     const tx = buildTransaction({

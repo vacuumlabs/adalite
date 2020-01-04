@@ -55,7 +55,8 @@ export function computeTxPlan(
   if (totalOutput + feeWithoutChange > totalInput) return null
 
   // No change necessary, perfect fit or a account tx
-  if (totalOutput + feeWithoutChange === totalInput) {
+  if (totalOutput + feeWithoutChange === totalInput || true) {
+    // TODO return if a account tx
     return {inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
   }
 

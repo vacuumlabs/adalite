@@ -1,5 +1,6 @@
 import * as lib from '@emurgo/js-chain-libs'
 import * as _ from 'lodash'
+import {Buffer} from 'buffer'
 
 // Note(ppershing): cannot be imported directly via destructuring :-(
 const {

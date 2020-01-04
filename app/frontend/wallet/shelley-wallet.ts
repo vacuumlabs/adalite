@@ -90,7 +90,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       fixedShelley[bechAddressToHex(key)] = mappingShelley[key]
     }
 
-    return (address) => mappingLegacy[address] || fixedShelley[address]
+    return (address) => mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
   }
 
   async function getVisibleAddressesWithMeta() {
