@@ -15,6 +15,8 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
 
   const deriveXpub = (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
 
+  const deriveXpriv = (derivationPath) => deriveHdNode(derivationPath).secretKey
+
   function deriveHdNode(derivationPath) {
     return derivationPath.reduce(deriveChildHdNode, masterHdNode)
   }
@@ -57,7 +59,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
         address: input.address,
         privkey,
         accountCounter: input.counter,
-        value: input.coins,
+        value: input.value,
       }
     }
 
@@ -85,7 +87,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
         : null
     }
 
-    const inputs = txAux.inputs.map((input) => prepareInput.utxo(input))
+    const inputs = txAux.inputs.map((input) => prepareInput.account(input))
     const outputs = txAux.outputs.length ? [...txAux.outputs, txAux.change].map(prepareOutput) : []
     const cert = prepareCert(txAux.inputs[0])
 
@@ -114,6 +116,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     _sign: sign,
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
+    deriveXpriv,
   }
 }
 

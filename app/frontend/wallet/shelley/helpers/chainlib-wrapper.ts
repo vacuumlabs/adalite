@@ -79,7 +79,7 @@ export const computeRequiredTxFee = (chainConfig: ChainConfig) => (
   return (
     fees.constant +
     fees.coefficient * (inputs.length + outputs.length) +
-    (extra ? fees.certificate : 0)
+    (extra ? fees.per_certificate_fees.certificate_stake_delegation : 0)
   )
 }
 

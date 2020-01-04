@@ -32,7 +32,7 @@ export const NETWORKS = {
         currSlotStartTime: '2019-12-22T10:31:36+00:00',
         epochStabilityDepth: 10,
         fees: {
-          certificate: 10000,
+          certificate: 100000,
           coefficient: 100000,
           constant: 200000,
           per_certificate_fees: {

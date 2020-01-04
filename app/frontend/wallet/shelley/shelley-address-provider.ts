@@ -79,6 +79,9 @@ export const ShelleyGroupAddressProvider = (
 
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
+  const stakeXpriv = await cryptoProvider.deriveXpriv(pathStake)
+  console.log(stakeXpub)
+  console.log(stakeXpriv)
 
   return {
     path: pathSpend,

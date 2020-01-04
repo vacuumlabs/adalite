@@ -12,6 +12,7 @@ type UTxOInput = {
   address: string
   coins: Lovelace
   outputIndex: number
+  counter?: number
 }
 
 type AccountInput = {
@@ -50,6 +51,16 @@ export function computeTxPlan(
   }
 
   const feeWithoutChange = computeRequiredTxFee(chainConfig)(inputs, outputs, cert)
+
+  if (cert) {
+    const input = {
+      ...inputs[0],
+      value: feeWithoutChange,
+      coins: undefined,
+    }
+    inputs[0] = input
+    return {inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
+  }
 
   // Cannot construct transaction plan
   if (totalOutput + feeWithoutChange > totalInput) return null
