@@ -48,13 +48,20 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     blockchainExplorer,
   })
 
-  const accountAddress = ShelleyStakingAccountProvider(cryptoProvider, 0)
+  // const shelleyAccountAddressManager = AddressManager({
+  //   addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
+  //   gapLimit,
+  //   blockchainExplorer,
+  // })
+
+  const accountAddress = ShelleyStakingAccountProvider(cryptoProvider, accountIndex)
 
   async function discoverAllAddresses() {
     const a1 = await legacyInternal.discoverAddresses()
     const a2 = await legacyExternal.discoverAddresses()
     const a3 = await shelleyInternal.discoverAddresses()
     const a4 = await shelleyExternal.discoverAddresses()
+    // await shelleyAccountAddressManager.discoverAddresses()
 
     if (cryptoProvider.getDerivationScheme().type === 'v1') {
       return [...a1, ...a3, ...a4]
@@ -70,6 +77,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       legacyExternal.getAddressToAbsPathMapping(),
       shelleyInternal.getAddressToAbsPathMapping(),
       shelleyExternal.getAddressToAbsPathMapping()
+      // shelleyAccountAddressManager.getAddressToAbsPathMapping()
     )
     console.log(mapping)
     return (address) => mapping[address]
@@ -90,7 +98,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       fixedShelley[bechAddressToHex(key)] = mappingShelley[key]
     }
 
-    return (address) => mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
+    return (address) => mappingLegacy[address] || fixedShelley[address]
   }
 
   async function getVisibleAddressesWithMeta() {

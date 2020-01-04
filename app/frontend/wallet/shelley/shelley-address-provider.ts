@@ -43,7 +43,7 @@ export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => a
 
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
-  console.log(stakeXpub)
+  // console.log(stakeXpub)
 
   return {
     path: pathStake,

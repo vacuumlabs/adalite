@@ -194,7 +194,7 @@ const _getCert = (extra) => {
     const payloadAuth = (data) =>
       PayloadAuthData.for_stake_delegation(
         StakeDelegationAuthData.new(
-          AccountBindingSignature.new_single(makePrivateKey(extra.privkey_hex), data)
+          AccountBindingSignature.new_single(makePrivateKey(extra.privkey), data)
         )
       )
     return {
@@ -247,7 +247,7 @@ export const verifyFee = ({inputs, outputs, cert, chainConfig}) => {
   const amountOut = _.sumBy(outputs, (out) => out.value)
   const fee = computeRequiredTxFee(chainConfig)(inputs, outputs, cert)
 
-  if (amountIn !== amountOut + fee) throw new Error('Unbalanced tx')
+  // if (amountIn !== amountOut + fee) throw new Error('Unbalanced tx')
 }
 
 export const buildTransaction = ({inputs, outputs, cert, chainConfig}: BuildTransactionParams) => {

@@ -2,6 +2,7 @@ import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto
 
 import HdNode from '../helpers/hd-node'
 import {buildTransaction} from './helpers/chainlib-wrapper'
+import {privkey} from '../../../../.vscode/walletKeys'
 
 type HexString = string & {__typeHexString: any}
 
@@ -54,7 +55,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       return {
         type: 'account',
         address: input.address,
-        privkey: '',
+        privkey,
         accountCounter: input.counter,
         value: input.coins,
       }
@@ -78,16 +79,14 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       return txAux.cert
         ? {
           type: 'stake_delegation',
-          privkey: '' as HexString,
+          privkey: privkey as HexString,
           pools: txAux.cert.pools,
         }
         : null
     }
 
-    const inputs = txAux.inputs.map((input) => prepareInput.account(input))
-    const outputs = txAux.outputs.length
-      ? [...txAux.outputs, txAux.change].map(prepareOutput)
-      : []
+    const inputs = txAux.inputs.map((input) => prepareInput.utxo(input))
+    const outputs = txAux.outputs.length ? [...txAux.outputs, txAux.change].map(prepareOutput) : []
     const cert = prepareCert(txAux.inputs[0])
 
     const tx = buildTransaction({
