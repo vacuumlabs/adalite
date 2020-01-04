@@ -46,8 +46,6 @@ if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./emailSubmitter')(app)
 }
 
-require('./testnetSubmitter')(app)
-
 app.get('*', (req, res) => {
   const serverUrl = backendConfig.ADALITE_SERVER_URL
   return res.status(200).send(`

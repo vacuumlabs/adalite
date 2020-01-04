@@ -140,28 +140,30 @@ const ShelleyBlockchainExplorer = (config) => {
   }
 
   async function getAccountInfo(accountPubkeyHex) {
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`
     const response = await request(
-      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/account/info`,
+      url,
       'POST',
       JSON.stringify({
-        accountPubkeyHex,
+        account: accountPubkeyHex,
       }),
       {
         'content-Type': 'application/json',
       }
     )
-    return response.Right
+    return response
   }
 
   async function getRunningStakePools() {
-    const response = await fetch(`${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/testnet/pools`, {
-      method: 'POST',
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
+    const response = await fetch(url, {
+      method: 'GET',
       body: null,
       headers: {
         'content-Type': 'application/json',
       },
     })
-    const poolArray = JSON.parse(await response.text()).Right
+    const poolArray = JSON.parse(await response.text())
     const poolDict = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
     return poolDict
   }
