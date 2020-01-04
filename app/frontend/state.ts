@@ -6,8 +6,8 @@ type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
 export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
 export interface SendTransactionSummary {
-  amount: Lovelace
-  donation: Lovelace
+  amount?: Lovelace
+  donation?: Lovelace
   fee: Lovelace
   plan: any
 }

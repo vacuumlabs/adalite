@@ -27,7 +27,14 @@ type UTxO = {
   outputIndex: number
 }
 
-export type Input = UTxO
+type AccountInput = {
+  address: string
+  coins: Lovelace
+  counter: number
+  type: string
+}
+
+export type Input = UTxO | any
 
 export type Output = {
   address: string
@@ -38,6 +45,7 @@ export interface TxPlan {
   inputs: Array<Input>
   outputs: Array<Output>
   change: Output | null
+  cert?: any
   fee: Lovelace
 }
 

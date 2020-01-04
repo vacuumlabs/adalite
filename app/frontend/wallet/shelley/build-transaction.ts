@@ -11,7 +11,8 @@ export function computeTxPlan(
   chainConfig,
   inputs: Array<Input>,
   outputs: Array<Output>,
-  possibleChange: Output
+  possibleChange?: Output,
+  cert?: any
 ): TxPlan | null {
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0)
   const totalOutput = outputs.reduce((acc, output) => acc + output.coins, 0)
@@ -20,20 +21,20 @@ export function computeTxPlan(
     throw NamedError('CoinAmountError')
   }
 
-  const feeWithoutChange = computeRequiredTxFee(chainConfig)(inputs, outputs, null)
+  const feeWithoutChange = computeRequiredTxFee(chainConfig)(inputs, outputs, cert)
 
   // Cannot construct transaction plan
   if (totalOutput + feeWithoutChange > totalInput) return null
 
-  // No change necessary, perfect fit
-  if (totalOutput + feeWithoutChange === totalInput) {
-    return {inputs, outputs, change: null, fee: feeWithoutChange as Lovelace}
+  // No change necessary, perfect fit or a account tx
+  if (totalOutput + feeWithoutChange === totalInput || inputs[0].type) {
+    return {inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
   }
 
   const feeWithChange = computeRequiredTxFee(chainConfig)(
     inputs,
     [...outputs, possibleChange],
-    null
+    cert
   )
 
   if (totalOutput + feeWithChange > totalInput) {
@@ -49,6 +50,7 @@ export function computeTxPlan(
       address: possibleChange.address,
       coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
     },
+    cert,
     fee: feeWithChange as Lovelace,
   }
 }
@@ -74,31 +76,28 @@ export function selectMinimalTxPlan(
 
   for (let i = 0; i < profitableUtxos.length; i++) {
     inputs.push(profitableUtxos[i])
-    const plan = computeTxPlan(chainConfig, inputs, outputs, change)
+    const plan = computeTxPlan(chainConfig, inputs, outputs, change, null)
     if (plan) return plan
   }
 
   return {estimatedFee: computeRequiredTxFee(chainConfig)(inputs, outputs, null)}
 }
 
-export function computeDelegationTxPlan(chainConfig, pools, accountCounter, privkey): any {
-  // inputs: [
-  //   {
-  //     type: 'account',
-  //     address,
-  //     privkey,
-  //     accountCounter: counter,
-  //     value: computedFee,
-  //   },
-  // ],
-  const extra = {
+export function computeDelegationTxPlan(chainConfig, address, pools, counter, value): any {
+  const cert = {
     type: 'stake_delegation',
     pools,
-    privkey,
   }
-  const inputs = []
+  const inputs = [
+    {
+      type: 'account',
+      address,
+      counter,
+      coins: value,
+    },
+  ]
   const outputs = []
-  computeTxPlan(chainConfig, inputs, outputs, extra)
+  return computeTxPlan(chainConfig, inputs, outputs, null, cert)
 }
 /*
 export function buildTransactionFromAccount(account, destination) {

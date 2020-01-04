@@ -9,10 +9,11 @@ import {Lovelace} from '../state'
 import {
   ShelleyGroupAddressProvider,
   stakeAccountPubkeyHex,
+  ShelleyStakingAccountProvider,
 } from './shelley/shelley-address-provider'
 
 import {computeRequiredTxFee} from './shelley/helpers/chainlib-wrapper'
-import {selectMinimalTxPlan} from './shelley/build-transaction'
+import {selectMinimalTxPlan, computeDelegationTxPlan} from './shelley/build-transaction'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
@@ -46,6 +47,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     gapLimit,
     blockchainExplorer,
   })
+
+  const accountAddress = ShelleyStakingAccountProvider(cryptoProvider, 0)
 
   async function discoverAllAddresses() {
     const a1 = await legacyInternal.discoverAddresses()
@@ -116,6 +119,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     shelleyExternal,
     getChangeAddress,
     getVisibleAddressesWithMeta,
+    accountAddress,
   }
 }
 
@@ -267,7 +271,17 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   const delegateTxPlanner = async (args) => {
-    const {pools, counter} = args
+    const address = (await myAddresses.accountAddress()).address
+    const {pools, accountCounter, accountBalance} = args
+    const plan = computeDelegationTxPlan(
+      cryptoProvider.network.chainConfig,
+      address,
+      pools,
+      accountCounter,
+      accountBalance
+    )
+    console.log(plan)
+    return plan
   }
 
   const txPlaner = {

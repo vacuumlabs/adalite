@@ -465,7 +465,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const calculateDelegationFee = () => {
+  const calculateDelegationFee = async () => {
     const state = getState()
     const pools = state.shelleyDelegation.selectedPools.map((pool) => {
       return {
@@ -473,12 +473,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         ratio: pool.percent,
       }
     })
-    const counter = state.shelleyAccountInfo.counter
-    const plan = wallet.getTxPlan({pools, counter}, 'delegate')
+    const accountBalance = state.shelleyAccountInfo.value + state.balance
+    const accountCounter = state.shelleyAccountInfo.counter
+    const plan = await wallet.getTxPlan({pools, accountCounter, accountBalance}, 'delegate')
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        delegationFee: 0,
+        delegationFee: plan.fee,
+      },
+      sendTransactionSummary: {
+        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+        plan: plan.fee != null ? plan : null,
       },
     })
     setState({

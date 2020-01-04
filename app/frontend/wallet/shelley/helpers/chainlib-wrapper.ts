@@ -205,7 +205,7 @@ const _getCert = (extra) => {
   throw Error('unknown cert type')
 }
 
-type Input = AccountInput | UTxOInput | StakeDelegation
+type Input = AccountInput | UTxOInput
 
 interface AccountInput {
   type: 'account'
@@ -232,7 +232,6 @@ interface StakeDelegation {
   type: 'stake_delegation'
   privkey: HexString
   pools: Array<{id: HexString; ratio: number}>
-  // accountCounter?
 }
 
 interface BuildTransactionParams {
