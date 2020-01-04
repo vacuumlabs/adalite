@@ -14,6 +14,7 @@ import {Lovelace} from '../state'
 import {computeRequiredTxFee, selectMinimalTxPlan, isUtxoProfitable} from './byron-tx-planner'
 
 import {MaxAmountCalculator} from './max-amount-calculator'
+import {TxPlan} from './shelley/build-transaction'
 
 const {
   getMaxDonationAmount: _getMaxDonationAmount,
@@ -27,27 +28,27 @@ type UTxO = {
   outputIndex: number
 }
 
-type AccountInput = {
-  address: string
-  coins: Lovelace
-  counter: number
-  type: string
-}
+// type AccountInput = {
+//   address: string
+//   coins: Lovelace
+//   counter: number
+//   type: string
+// }
 
-export type Input = UTxO | any
+// export type Input = UTxO | any
 
-export type Output = {
-  address: string
-  coins: Lovelace
-}
+// export type Output = {
+//   address: string
+//   coins: Lovelace
+// }
 
-export interface TxPlan {
-  inputs: Array<Input>
-  outputs: Array<Output>
-  change: Output | null
-  cert?: any
-  fee: Lovelace
-}
+// export interface TxPlan {
+//   inputs: Array<Input>
+//   outputs: Array<Output>
+//   change: Output | null
+//   cert?: any
+//   fee: Lovelace
+// }
 
 interface NoTxPlan {
   estimatedFee: Lovelace

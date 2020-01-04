@@ -3,6 +3,8 @@ import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto
 import HdNode from '../helpers/hd-node'
 import {buildTransaction} from './helpers/chainlib-wrapper'
 
+type HexString = string & {__typeHexString: any}
+
 const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme}, network}) => {
   const masterHdNode = HdNode(rootSecret)
 
@@ -30,7 +32,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
   }
 
   async function signTx(txAux, addressToAbsPathMapper) {
-    const prepareInput = (utxo) => {
+    const prepareUtxoInput = (utxo) => {
       const path = addressToAbsPathMapper(utxo.address)
       const hdnode = deriveHdNode(path)
       console.log('path', path, 'hd', hdnode.secretKey)
@@ -46,6 +48,23 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       }
     }
 
+    const prepareAccountInput = (input) => {
+      const path = addressToAbsPathMapper(input.address)
+      const hdnode = deriveHdNode(path)
+      return {
+        type: 'account',
+        address: input.address,
+        privkey: Buffer.from(hdnode.secretKey).toString('hex'),
+        accountCounter: input.counter,
+        value: input.value,
+      }
+    }
+
+    const prepareInput = {
+      utxo: prepareUtxoInput,
+      account: prepareAccountInput,
+    }
+
     const prepareOutput = (output) => {
       return {
         address: output.address,
@@ -53,14 +72,27 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       }
     }
 
-    const inputs = txAux.inputs.map(prepareInput)
+    const prepareCert = (input) => {
+      const path = addressToAbsPathMapper(input.address)
+      const hdnode = deriveHdNode(path)
+      return txAux.cert && input.counter
+        ? {
+          type: 'stake_delegation',
+          privkey: Buffer.from(hdnode.secretKey).toString('hex') as HexString,
+          pools: txAux.cert.pools,
+        }
+        : null
+    }
+
+    const inputs = txAux.inputs.map((input) => prepareInput.utxo(input))
     const outputs = [...txAux.outputs, txAux.change].map(prepareOutput)
+    const cert = prepareCert(txAux.inputs[0])
 
     const tx = buildTransaction({
       inputs,
       outputs,
 
-      cert: null,
+      cert,
       chainConfig: network.chainConfig,
     })
     console.log(tx)

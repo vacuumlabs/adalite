@@ -1,11 +1,39 @@
 import {computeRequiredTxFee} from './helpers/chainlib-wrapper'
 import _ from 'lodash'
-import {Input, Output, TxPlan} from '../cardano-wallet'
+// import {Input, Output, TxPlan} from '../cardano-wallet'
 import {Lovelace} from '../../state'
 
 import NamedError from '../../helpers/NamedError'
 
 import {ADALITE_CONFIG} from '../../config'
+
+type UTxOInput = {
+  txHash: string
+  address: string
+  coins: Lovelace
+  outputIndex: number
+}
+
+type AccountInput = {
+  address: string
+  coins: Lovelace
+  counter: number
+}
+
+export type Input = UTxOInput | AccountInput
+
+export type Output = {
+  address: string
+  coins: Lovelace
+}
+
+export interface TxPlan {
+  inputs: Array<Input>
+  outputs: Array<Output>
+  change: Output | null
+  cert?: Array<{id: string; ratio: number}>
+  fee: Lovelace
+}
 
 export function computeTxPlan(
   chainConfig,
@@ -27,7 +55,7 @@ export function computeTxPlan(
   if (totalOutput + feeWithoutChange > totalInput) return null
 
   // No change necessary, perfect fit or a account tx
-  if (totalOutput + feeWithoutChange === totalInput || inputs[0].type) {
+  if (totalOutput + feeWithoutChange === totalInput) {
     return {inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
   }
 
@@ -85,12 +113,10 @@ export function selectMinimalTxPlan(
 
 export function computeDelegationTxPlan(chainConfig, address, pools, counter, value): any {
   const cert = {
-    type: 'stake_delegation',
     pools,
   }
   const inputs = [
     {
-      type: 'account',
       address,
       counter,
       coins: value,

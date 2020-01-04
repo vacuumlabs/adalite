@@ -229,7 +229,7 @@ interface Output {
 }
 
 interface StakeDelegation {
-  type: 'stake_delegation'
+  type: 'stake_delegation' | string
   privkey: HexString
   pools: Array<{id: HexString; ratio: number}>
 }
