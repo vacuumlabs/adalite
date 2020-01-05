@@ -148,9 +148,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         default:
           throw Error('bad cardano version')
       }
-      const visibleAddresses = await wallet.getVisibleAddresses()
-      const transactionHistory = await wallet.getHistory()
-      const balance = await wallet.getBalance()
+      const walletInfo = await wallet.getWalletInfo()
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
@@ -159,14 +157,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
-      // shelley
-      const shelleyAccountInfo = await wallet.getAccountInfo()
       const validStakepools = await wallet.getValidStakepools()
       setState({
         walletIsLoaded: true,
-        visibleAddresses,
-        balance,
-        transactionHistory,
+        ...walletInfo,
         loading: false,
         mnemonicAuthForm: {
           mnemonicInputValue: '',
@@ -184,10 +178,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         donationAmount: {fieldValue: '', coins: 0},
         sendResponse: '',
         // shelley
-        shelleyAccountInfo,
         validStakepools,
       })
-      getAdalitePoolInfo(validStakepools)
+      getAdalitePoolInfo(validStakepools) // TODO rename to selectAdalitePool
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
       setState({

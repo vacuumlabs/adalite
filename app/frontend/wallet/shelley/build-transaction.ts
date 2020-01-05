@@ -125,6 +125,7 @@ export function selectMinimalTxPlan(
 
 export function computeDelegationTxPlan(chainConfig, address, pools, counter, value): any {
   const cert = {
+    // TODO add type, and then pass it to feeCalculation
     pools,
   }
   const inputs = [

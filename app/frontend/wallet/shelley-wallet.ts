@@ -155,6 +155,7 @@ const ShelleyBlockchainExplorer = (config) => {
   }
 
   async function getRunningStakePools() {
+    // TODO .catch
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
     const response = await fetch(url, {
       method: 'GET',
@@ -261,6 +262,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   const sendTxPlanner = async (args) => {
+    // TODO utxo planner?
     const {address, coins, donationAmount} = args
     const availableUtxos = await getUTxOs()
     const changeAddress = await getChangeAddress()
@@ -269,6 +271,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     const shuffledUtxos = shuffleArray(availableUtxos, randomGenerator)
     const plan = selectMinimalTxPlan(
+      // TODO insert a type here
       cryptoProvider.network.chainConfig,
       shuffledUtxos,
       address,
@@ -281,6 +284,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   const delegateTxPlanner = async (args) => {
+    // account planenr with delegation?
     const address = (await myAddresses.accountAddress()).address
     const {pools, accountCounter, accountBalance} = args
     const plan = computeDelegationTxPlan(
@@ -304,12 +308,27 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return plan
   }
 
+  async function getWalletInfo() {
+    const balance = await getBalance()
+    const shelleyAccountInfo = await getAccountInfo()
+    const transactionHistory = await getHistory()
+    const visibleAddresses = await getVisibleAddresses()
+    // getDelegationHistory
+    return {
+      balance,
+      shelleyAccountInfo,
+      transactionHistory,
+      visibleAddresses,
+    }
+  }
+
   async function getBalance() {
     const addresses = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getBalance(addresses)
   }
 
   async function getHistory() {
+    // ? getTxHistory?
     const addresses = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getTxHistory(addresses)
   }
@@ -389,6 +408,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     generateNewSeeds,
     getAccountInfo,
     getValidStakepools,
+    getWalletInfo,
   }
 }
 

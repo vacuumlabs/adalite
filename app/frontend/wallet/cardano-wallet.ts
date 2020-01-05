@@ -210,6 +210,17 @@ const CardanoWallet = (options) => {
     return plan
   }
 
+  async function getWalletInfo() {
+    const balance = await getBalance()
+    const transactionHistory = await getHistory()
+    const visibleAddresses = await getVisibleAddresses()
+    return {
+      balance,
+      transactionHistory,
+      visibleAddresses,
+    }
+  }
+
   async function getBalance() {
     const addresses = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getBalance(addresses)
@@ -293,6 +304,7 @@ const CardanoWallet = (options) => {
     generateNewSeeds,
     getAccountInfo,
     getValidStakepools,
+    getWalletInfo,
   }
 }
 
