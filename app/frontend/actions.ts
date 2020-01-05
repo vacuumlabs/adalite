@@ -197,7 +197,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const getAdalitePoolInfo = (validStakepools) => {
     const state = getState()
-    const poolInfo = validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
+    const poolInfo = validStakepools && validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -209,6 +209,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         ],
       },
     })
+    // TODO calculate delegation fee if poolInfo
   }
 
   const loadDemoWallet = (state) => {

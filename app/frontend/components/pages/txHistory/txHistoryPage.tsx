@@ -11,6 +11,7 @@ import CurrentDelegationPage from '../delegations/currentDelegationPage'
 // import DelegationHistory from '../delegations/delegationHistory'
 import StakingPageToggle from '../../common/stakingPageToggle'
 import ShelleyBalances from '../delegations/shelleyBalances'
+import {ADALITE_CONFIG} from '.././../../config'
 
 interface Props {
   transactionHistory: any
@@ -100,7 +101,7 @@ const TxHistoryPage = connect(
     displayStakingPage,
   }) => (
     <div className="page-wrapper">
-      <StakingPageToggle />
+      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && <StakingPageToggle />}
       <div className="dashboard desktop">
         <div className="dashboard-column">
           {displayStakingPage

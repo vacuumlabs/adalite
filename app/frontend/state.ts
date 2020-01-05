@@ -177,6 +177,8 @@ const initialState: State = {
   autoLogin:
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 
+  // shelley
+  displayStakingPage: ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley',
   shelleyDelegation: {
     counter: 0,
     amount: 0,
@@ -197,12 +199,6 @@ const initialState: State = {
       reward: 0,
     },
   },
-  // currentDelegation: {
-  //   stakePools: undefined,
-  // }
-  // delegationHistory: {
-
-  // }
 }
 
 export {initialState}
