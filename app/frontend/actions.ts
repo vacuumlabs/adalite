@@ -205,10 +205,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           {
             valid: !!poolInfo,
             ...poolInfo,
+            percent: 100,
           },
         ],
       },
     })
+    validateDelegationAndCalculateDelegationFee()
     // TODO calculate delegation fee if poolInfo
   }
 
@@ -342,17 +344,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const reloadWalletInfo = async (state) => {
     loadingAction(state, 'Reloading wallet info...')
     try {
-      const balance = await wallet.getBalance()
-      const visibleAddresses = await wallet.getVisibleAddresses()
-      const transactionHistory = await wallet.getHistory()
+      const walletInfo = await wallet.getWalletInfo()
       const conversionRates = getConversionRates(state)
 
       // timeout setting loading state, so that loading shows even if everything was cached
       setTimeout(() => setState({loading: false}), 500)
       setState({
-        balance,
-        visibleAddresses,
-        transactionHistory,
+        ...walletInfo,
       })
       await fetchConversionRates(conversionRates)
     } catch (e) {
