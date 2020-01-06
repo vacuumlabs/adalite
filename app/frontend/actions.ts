@@ -456,6 +456,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const revokeDelegation = async (state) => {
+    await calculateDelegationFee()
+    await submitTransaction(state)
+  }
+
   const calculateDelegationFee = async () => {
     const state = getState()
     const pools = state.shelleyDelegation.selectedPools.map((pool) => {

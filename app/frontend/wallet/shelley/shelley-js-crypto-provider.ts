@@ -2,8 +2,6 @@ import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto
 
 import HdNode from '../helpers/hd-node'
 import {buildTransaction} from './helpers/chainlib-wrapper'
-import {privkey} from '../../../../.vscode/walletKeys'
-import {bechAddressToHex} from '../shelley/helpers/addresses'
 
 type HexString = string & {__typeHexString: any}
 
@@ -36,37 +34,36 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
   }
 
   async function signTx(txAux, addressToAbsPathMapper) {
-    const prepareUtxoInput = (utxo) => {
-      const path = addressToAbsPathMapper(utxo.address)
-      const hdnode = deriveHdNode(path)
-      console.log('path', path, 'hd', hdnode.secretKey)
-
+    const prepareUtxoInput = (input, hdnode) => {
       return {
         type: 'utxo',
-        txid: utxo.txHash,
-        value: utxo.coins,
-        outputNo: utxo.outputIndex,
-        address: utxo.address,
+        txid: input.txHash,
+        value: input.coins,
+        outputNo: input.outputIndex,
+        address: input.address,
         privkey: Buffer.from(hdnode.secretKey).toString('hex'),
         chaincode: Buffer.from(hdnode.chainCode).toString('hex'),
       }
     }
 
-    const prepareAccountInput = (input) => {
-      const path = addressToAbsPathMapper(bechAddressToHex(input.address))
-      const hdnode = deriveHdNode(path)
+    const prepareAccountInput = (input, hdnode) => {
       return {
         type: 'account',
         address: input.address,
-        privkey,
+        privkey: Buffer.from(hdnode.secretKey).toString('hex'),
         accountCounter: input.counter,
-        value: input.value,
+        value: input.coins,
       }
     }
 
-    const prepareInput = {
-      utxo: prepareUtxoInput,
-      account: prepareAccountInput,
+    const prepareInput = (type, input) => {
+      const path = addressToAbsPathMapper(input.address)
+      const hdnode = deriveHdNode(path)
+      const inputPreparator = {
+        utxo: prepareUtxoInput,
+        account: prepareAccountInput,
+      }
+      return inputPreparator[type](input, hdnode)
     }
 
     const prepareOutput = (output) => {
@@ -77,25 +74,22 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const prepareCert = (input) => {
-      // const path = addressToAbsPathMapper(input.address)
-      // const hdnode = deriveHdNode(path)
       return txAux.cert
         ? {
           type: 'stake_delegation',
-          privkey: privkey as HexString,
+          privkey: input.privkey,
           pools: txAux.cert.pools,
         }
         : null
     }
 
-    const inputs = txAux.inputs.map((input) => prepareInput.account(input))
+    const inputs = txAux.inputs.map((input) => prepareInput(txAux.type, input))
     const outputs = txAux.outputs.length ? [...txAux.outputs, txAux.change].map(prepareOutput) : []
-    const cert = prepareCert(txAux.inputs[0])
+    const cert = prepareCert(inputs[0])
 
     const tx = buildTransaction({
       inputs,
       outputs,
-
       cert,
       chainConfig: network.chainConfig,
     })

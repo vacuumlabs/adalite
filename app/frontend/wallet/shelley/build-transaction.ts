@@ -12,7 +12,6 @@ type UTxOInput = {
   address: string
   coins: Lovelace
   outputIndex: number
-  counter?: number
 }
 
 type AccountInput = {
@@ -29,6 +28,7 @@ export type Output = {
 }
 
 export interface TxPlan {
+  type: string
   inputs: Array<Input>
   outputs: Array<Output>
   change: Output | null
@@ -37,6 +37,7 @@ export interface TxPlan {
 }
 
 export function computeTxPlan(
+  type,
   chainConfig,
   inputs: Array<Input>,
   outputs: Array<Output>,
@@ -52,23 +53,21 @@ export function computeTxPlan(
 
   const feeWithoutChange = computeRequiredTxFee(chainConfig)(inputs, outputs, cert)
 
-  if (cert) {
-    const input = {
-      ...inputs[0],
-      value: feeWithoutChange,
-      coins: undefined,
-    }
-    inputs[0] = input
-    return {inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
-  }
-
   // Cannot construct transaction plan
   if (totalOutput + feeWithoutChange > totalInput) return null
 
+  if (type === 'account') {
+    const input = {
+      ...inputs[0],
+      coins: feeWithoutChange as Lovelace,
+    }
+    inputs[0] = input
+    return {type, inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
+  }
+
   // No change necessary, perfect fit or a account tx
   if (totalOutput + feeWithoutChange === totalInput) {
-    // TODO return if a account tx
-    return {inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
+    return {type, inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
   }
 
   const feeWithChange = computeRequiredTxFee(chainConfig)(
@@ -84,6 +83,7 @@ export function computeTxPlan(
   }
 
   return {
+    type,
     inputs,
     outputs,
     change: {
@@ -116,7 +116,7 @@ export function selectMinimalTxPlan(
 
   for (let i = 0; i < profitableUtxos.length; i++) {
     inputs.push(profitableUtxos[i])
-    const plan = computeTxPlan(chainConfig, inputs, outputs, change, null)
+    const plan = computeTxPlan('utxo', chainConfig, inputs, outputs, change, null)
     if (plan) return plan
   }
 
@@ -125,7 +125,7 @@ export function selectMinimalTxPlan(
 
 export function computeDelegationTxPlan(chainConfig, address, pools, counter, value): any {
   const cert = {
-    // TODO add type, and then pass it to feeCalculation
+    type: 'stake_delegation',
     pools,
   }
   const inputs = [
@@ -136,7 +136,7 @@ export function computeDelegationTxPlan(chainConfig, address, pools, counter, va
     },
   ]
   const outputs = []
-  return computeTxPlan(chainConfig, inputs, outputs, null, cert)
+  return computeTxPlan('account', chainConfig, inputs, outputs, null, cert)
 }
 /*
 export function buildTransactionFromAccount(account, destination) {

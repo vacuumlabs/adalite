@@ -115,7 +115,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       fixedShelley[bechAddressToHex(key)] = mappingShelley[key]
     }
 
-    return (address) => mappingLegacy[address] || fixedShelley[address]
+    return (address) => mappingLegacy[address] || mappingShelley[address] || fixedShelley[address]
   }
 
   async function getVisibleAddressesWithMeta() {
@@ -288,7 +288,6 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     const shuffledUtxos = shuffleArray(availableUtxos, randomGenerator)
     const plan = selectMinimalTxPlan(
-      // TODO insert a type here
       cryptoProvider.network.chainConfig,
       shuffledUtxos,
       address,
