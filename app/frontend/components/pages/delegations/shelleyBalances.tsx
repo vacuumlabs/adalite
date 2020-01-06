@@ -1,7 +1,7 @@
 import {h} from 'preact'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
-import testnetActions from '../../../testnet/testnet-actions'
+import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 
 const shelleyBalances = ({
@@ -61,5 +61,5 @@ export default connect(
     rewards: state.shelleyAccountInfo.last_rewards.reward,
     balance: state.balance,
   }),
-  testnetActions
+  actions
 )(shelleyBalances)

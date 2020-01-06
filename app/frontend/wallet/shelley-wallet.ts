@@ -9,6 +9,7 @@ import {Lovelace} from '../state'
 import {
   ShelleyGroupAddressProvider,
   stakeAccountPubkeyHex,
+  ShelleySingleAddressProvider,
   ShelleyStakingAccountProvider,
 } from './shelley/shelley-address-provider'
 
@@ -36,6 +37,18 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     blockchainExplorer,
   })
 
+  const singleExternal = AddressManager({
+    addressProvider: ShelleySingleAddressProvider(cryptoProvider, accountIndex, false),
+    gapLimit,
+    blockchainExplorer,
+  })
+
+  const singleInternal = AddressManager({
+    addressProvider: ShelleySingleAddressProvider(cryptoProvider, accountIndex, true),
+    gapLimit,
+    blockchainExplorer,
+  })
+
   const shelleyExternal = AddressManager({
     addressProvider: ShelleyGroupAddressProvider(cryptoProvider, accountIndex, false),
     gapLimit,
@@ -48,11 +61,11 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     blockchainExplorer,
   })
 
-  // const shelleyAccountAddressManager = AddressManager({
-  //   addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
-  //   gapLimit,
-  //   blockchainExplorer,
-  // })
+  const shelleyAccountAddressManager = AddressManager({
+    addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
+    gapLimit: 1,
+    blockchainExplorer,
+  })
 
   const accountAddress = ShelleyStakingAccountProvider(cryptoProvider, accountIndex)
 
@@ -61,7 +74,10 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     const a2 = await legacyExternal.discoverAddresses()
     const a3 = await shelleyInternal.discoverAddresses()
     const a4 = await shelleyExternal.discoverAddresses()
-    // await shelleyAccountAddressManager.discoverAddresses()
+
+    const a5 = await singleInternal.discoverAddresses()
+    const a6 = await singleExternal.discoverAddresses()
+    const a7 = await shelleyAccountAddressManager._deriveAddress(accountIndex)
 
     if (cryptoProvider.getDerivationScheme().type === 'v1') {
       return [...a1, ...a3, ...a4]
@@ -76,8 +92,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       legacyInternal.getAddressToAbsPathMapping(),
       legacyExternal.getAddressToAbsPathMapping(),
       shelleyInternal.getAddressToAbsPathMapping(),
-      shelleyExternal.getAddressToAbsPathMapping()
-      // shelleyAccountAddressManager.getAddressToAbsPathMapping()
+      shelleyExternal.getAddressToAbsPathMapping(),
+      shelleyAccountAddressManager.getAddressToAbsPathMapping()
     )
     console.log(mapping)
     return (address) => mapping[address]
@@ -91,6 +107,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     const mappingShelley = {
       ...shelleyInternal.getAddressToAbsPathMapping(),
       ...shelleyExternal.getAddressToAbsPathMapping(),
+      ...shelleyAccountAddressManager.getAddressToAbsPathMapping(),
     }
 
     const fixedShelley = {}

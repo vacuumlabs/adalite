@@ -51,7 +51,7 @@ export const accountAddressFromXpub = (stakeXpub: Xpub, network: Network) => {
 
 export const singleAddressFromXpub = (spendXpub: Xpub, network: Network) => {
   const _addr = Address.single_from_public_key(
-    PublicKey.from_bytes(spendXpub),
+    PublicKey.from_bytes(xpub2pub(spendXpub)),
     getDiscriminator(network)
   )
   return _addr.to_string('addr')

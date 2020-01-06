@@ -3,6 +3,7 @@ import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto
 import HdNode from '../helpers/hd-node'
 import {buildTransaction} from './helpers/chainlib-wrapper'
 import {privkey} from '../../../../.vscode/walletKeys'
+import {bechAddressToHex} from '../shelley/helpers/addresses'
 
 type HexString = string & {__typeHexString: any}
 
@@ -52,8 +53,8 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const prepareAccountInput = (input) => {
-      // const path = addressToAbsPathMapper(input.address)
-      // const hdnode = deriveHdNode(path)
+      const path = addressToAbsPathMapper(bechAddressToHex(input.address))
+      const hdnode = deriveHdNode(path)
       return {
         type: 'account',
         address: input.address,

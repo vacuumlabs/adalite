@@ -211,7 +211,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       },
     })
     validateDelegationAndCalculateDelegationFee()
-    // TODO calculate delegation fee if poolInfo
   }
 
   const loadDemoWallet = (state) => {
