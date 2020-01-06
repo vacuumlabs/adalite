@@ -105,7 +105,6 @@ export default ({setState, getState}) => {
       setState({
         conversionRates: null,
       })
-      throw NamedError('ConversionRatesError', '`Could not fetch conversion rates.')
     }
   }
 
