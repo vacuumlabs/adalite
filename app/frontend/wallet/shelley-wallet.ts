@@ -67,8 +67,6 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     blockchainExplorer,
   })
 
-  const accountAddress = ShelleyStakingAccountProvider(cryptoProvider, accountIndex)
-
   async function discoverAllAddresses() {
     const a1 = await legacyInternal.discoverAddresses()
     const a2 = await legacyExternal.discoverAddresses()
@@ -142,9 +140,9 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     discoverAllAddresses,
     // TODO(refactor)
     shelleyExternal,
+    shelleyAccountAddressManager,
     getChangeAddress,
     getVisibleAddressesWithMeta,
-    accountAddress,
   }
 }
 
@@ -172,15 +170,22 @@ const ShelleyBlockchainExplorer = (config) => {
   }
 
   async function getRunningStakePools() {
-    // TODO .catch
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-    const response = await fetch(url, {
-      method: 'GET',
-      body: null,
-      headers: {
-        'content-Type': 'application/json',
-      },
-    })
+    let response
+    try {
+      response = await fetch(url, {
+        method: 'GET',
+        body: null,
+        headers: {
+          'content-Type': 'application/json',
+        },
+      })
+      if (response.status >= 400) {
+        throw NamedError('NetworkError', 'Unable to fetch running stakepools.')
+      }
+    } catch (e) {
+      throw NamedError('NetworkError', e.message)
+    }
     const poolArray = JSON.parse(await response.text())
     const poolDict = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
     return poolDict
@@ -294,12 +299,11 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       donationAmount,
       changeAddress
     )
-    console.log(plan)
     return plan
   }
 
   const accountTxPlanner = async (args) => {
-    const address = (await myAddresses.accountAddress()).address
+    const address = myAddresses.shelleyAccountAddressManager._deriveAddress(0)
     const {pools, accountCounter, accountBalance} = args
     const plan = computeDelegationTxPlan(
       cryptoProvider.network.chainConfig,
@@ -308,17 +312,16 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       accountCounter,
       accountBalance
     )
-    console.log(plan)
     return plan
   }
 
-  const txPlaner = {
-    utxo: uTxOTxPlanner,
-    account: accountTxPlanner,
-  }
-
   async function getTxPlan(args, txType) {
+    const txPlaner = {
+      utxo: uTxOTxPlanner,
+      account: accountTxPlanner,
+    }
     const plan = txPlaner[txType](args)
+    console.log(plan)
     return plan
   }
 

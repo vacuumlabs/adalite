@@ -43,7 +43,6 @@ export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => a
 
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
-  // console.log(stakeXpub)
 
   return {
     path: pathStake,
@@ -79,9 +78,6 @@ export const ShelleyGroupAddressProvider = (
 
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
-  // const stakeXpriv = await cryptoProvider.deriveXpriv(pathStake)
-  // console.log(stakeXpub)
-  // console.log(stakeXpriv)
 
   return {
     path: pathSpend,
