@@ -252,7 +252,7 @@ export const verifyFee = ({inputs, outputs, cert, chainConfig}) => {
 
 export const buildTransaction = ({inputs, outputs, cert, chainConfig}: BuildTransactionParams) => {
   console.log('BUILD TX')
-  console.log({inputs, outputs, cert, chainConfig})
+  console.log(JSON.stringify({inputs, outputs, cert, chainConfig}))
   const {certificate, payloadAuth} = _getCert(cert)
 
   const txbuilder = new TransactionBuilder()

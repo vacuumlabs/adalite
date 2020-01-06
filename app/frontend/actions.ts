@@ -415,7 +415,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     let plan
     const address = state.sendAddress.fieldValue
     try {
-      plan = await wallet.getTxPlan({address, coins: amount, donationAmount}, 'send')
+      plan = await wallet.getTxPlan({address, coins: amount, donationAmount}, 'utxo')
     } catch (e) {
       handleError('sendAmountValidationError', {code: e.name})
       setState({
@@ -456,6 +456,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  //TODO connect to tab, rework
   const revokeDelegation = async (state) => {
     await calculateDelegationFee()
     await submitTransaction(state)
@@ -471,7 +472,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
     const accountBalance = state.shelleyAccountInfo.value + state.balance
     const accountCounter = state.shelleyAccountInfo.counter
-    const plan = await wallet.getTxPlan({pools, accountCounter, accountBalance}, 'delegate')
+    const plan = await wallet.getTxPlan({pools, accountCounter, accountBalance}, 'account')
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,

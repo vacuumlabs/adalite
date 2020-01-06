@@ -278,8 +278,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
-  const sendTxPlanner = async (args) => {
-    // TODO utxo planner?
+  const uTxOTxPlanner = async (args) => {
     const {address, coins, donationAmount} = args
     const availableUtxos = await getUTxOs()
     const changeAddress = await getChangeAddress()
@@ -299,8 +298,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return plan
   }
 
-  const delegateTxPlanner = async (args) => {
-    // account planenr with delegation?
+  const accountTxPlanner = async (args) => {
     const address = (await myAddresses.accountAddress()).address
     const {pools, accountCounter, accountBalance} = args
     const plan = computeDelegationTxPlan(
@@ -315,8 +313,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   const txPlaner = {
-    send: sendTxPlanner,
-    delegate: delegateTxPlanner,
+    utxo: uTxOTxPlanner,
+    account: accountTxPlanner,
   }
 
   async function getTxPlan(args, txType) {
