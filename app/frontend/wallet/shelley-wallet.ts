@@ -77,15 +77,13 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     const a5 = await singleInternal.discoverAddresses()
     const a6 = await singleExternal.discoverAddresses()
     const a7 = await shelleyAccountAddressManager._deriveAddress(accountIndex)
-    // return {
-    //   legacy: [...a1, ...a2],
-    //   group: [...a3, ...a4],
-    //   single: [...a5, ...a6]
-    // }
-    if (cryptoProvider.getDerivationScheme().type === 'v1') {
-      return [...a1, ...a3, ...a4]
-    } else {
-      return [...a1, ...a2, ...a3, ...a4]
+
+    const isV1scheme = cryptoProvider.getDerivationScheme().type === 'v1'
+    return {
+      legacy: isV1scheme ? [...a1] : [...a1, ...a2],
+      group: [...a3, ...a4],
+      single: [...a5, ...a6],
+      account: a7,
     }
   }
 
@@ -94,6 +92,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       {},
       legacyInternal.getAddressToAbsPathMapping(),
       legacyExternal.getAddressToAbsPathMapping(),
+      singleInternal.getAddressToAbsPathMapping(),
+      singleExternal.getAddressToAbsPathMapping(),
       groupInternal.getAddressToAbsPathMapping(),
       groupExternal.getAddressToAbsPathMapping(),
       shelleyAccountAddressManager.getAddressToAbsPathMapping()
@@ -108,6 +108,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       ...legacyExternal.getAddressToAbsPathMapping(),
     }
     const mappingShelley = {
+      ...singleInternal.getAddressToAbsPathMapping(),
+      ...singleExternal.getAddressToAbsPathMapping(),
       ...groupInternal.getAddressToAbsPathMapping(),
       ...groupExternal.getAddressToAbsPathMapping(),
       ...shelleyAccountAddressManager.getAddressToAbsPathMapping(),
@@ -333,13 +335,18 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getWalletInfo() {
-    const balance = await getBalance()
+    const {stakingBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getAccountInfo()
     const transactionHistory = await getHistory()
     const visibleAddresses = await getVisibleAddresses()
     // getDelegationHistory
     return {
       balance,
+      shelleyBalances: {
+        nonStakingBalance,
+        stakingBalance: stakingBalance + shelleyAccountInfo.value,
+        rewards: shelleyAccountInfo.last_rewards.reward,
+      },
       shelleyAccountInfo,
       transactionHistory,
       visibleAddresses,
@@ -347,17 +354,23 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getBalance() {
-    const addresses = await myAddresses.discoverAllAddresses()
-    // const legacyBalance = await blockchainExplorer.getBalance(addresses.legacy)
-    // const groupBalance = await blockchainExplorer.getBalance(addresses.group)
-    // const singleBalance = await blockchainExplorer.getBalance(addresses.single)
-    return await blockchainExplorer.getBalance(addresses)
+    const {legacy, group, single} = await myAddresses.discoverAllAddresses()
+    const legacyBalance = await blockchainExplorer.getBalance(legacy)
+    const groupBalance = await blockchainExplorer.getBalance(group)
+    const singleBalance = await blockchainExplorer.getBalance(single)
+    const nonStakingBalance = legacyBalance + singleBalance
+    const balance = legacyBalance + singleBalance + groupBalance
+    return {
+      stakingBalance: groupBalance,
+      nonStakingBalance,
+      balance,
+    }
   }
 
   async function getHistory() {
     // ? getTxHistory?
-    const addresses = await myAddresses.discoverAllAddresses()
-    return blockchainExplorer.getTxHistory(addresses)
+    const {legacy, group, single, account} = await myAddresses.discoverAllAddresses()
+    return blockchainExplorer.getTxHistory([...single, ...group, ...legacy, account])
   }
 
   async function getAccountInfo() {
@@ -394,8 +407,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getUTxOs(): Promise<Array<any>> {
     try {
-      const addresses = await myAddresses.discoverAllAddresses()
-      return await blockchainExplorer.fetchUnspentTxOutputs(addresses)
+      const {legacy, group, single} = await myAddresses.discoverAllAddresses()
+      return await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...group, ...single])
     } catch (e) {
       throw NamedError('NetworkError')
     }
