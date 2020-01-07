@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import testnetActions from '../../testnet/testnet-actions'
+import actions from '../../actions'
 import {connect} from '../../libs/unistore/preact'
 
 const StakingPageToggle = ({displayStakingPage, toggleDisplayStakingPage}) => {
@@ -19,5 +19,5 @@ export default connect(
   (state) => ({
     displayStakingPage: state.displayStakingPage,
   }),
-  testnetActions
+  actions
 )(StakingPageToggle)

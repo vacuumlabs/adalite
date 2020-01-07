@@ -123,75 +123,29 @@ export function selectMinimalTxPlan(
   return {estimatedFee: computeRequiredTxFee(chainConfig)(inputs, outputs, null)}
 }
 
-export function computeDelegationTxPlan(chainConfig, address, pools, counter, value): any {
-  const cert = {
-    type: 'stake_delegation',
-    pools,
-  }
+export function computeAccountTxPlan(
+  chainConfig,
+  dstAddress,
+  amount,
+  srcAddress,
+  pools,
+  counter,
+  value
+): any {
   const inputs = [
     {
-      address,
+      address: srcAddress,
       counter,
       coins: value,
     },
   ]
-  const outputs = []
+  const outputs = amount ? [{address: dstAddress, coins: amount}] : []
+
+  const cert = pools
+    ? {
+      type: 'stake_delegation',
+      pools,
+    }
+    : null
   return computeTxPlan('account', chainConfig, inputs, outputs, null, cert)
 }
-/*
-export function buildTransactionFromAccount(account, destination) {
-  const computedFee = calculateFee({
-    chainConfig,
-    inputCount: 1,
-    outputCount: 1,
-    certCount: 0,
-  })
-  const requiredAmount = destination.value + computedFee
-  if (account.value < requiredAmount) {
-    throw Error('Insufficient funds')
-  }
-  return buildTransaction({
-    inputs: [
-      {
-        type: 'account',
-        address: account.address,
-        privkey: account.privkey_hex,
-        accountCounter: account.counter,
-        value: requiredAmount,
-      },
-    ],
-    outputs: [destination],
-    cert: null,
-    chainConfig,
-  })
-}
-
-export function buildTransactionFromUtxos(utxos, output, changeAddress) {
-  // TODO: drop change if not needed
-  const computedFee = calculateFee({
-    chainConfig,
-    inputCount: 1,
-    outputCount: 2,
-    certCount: 0,
-  })
-  const outputAmount = output.value
-  const requiredAmount = outputAmount + computedFee
-
-  const inputs = utxos.map((utxo) => ({type: 'utxo', ...utxo}))
-  const selectedInputs = selectInputs(inputs, requiredAmount)
-  const inputAmount = _.sumBy(selectedInputs, (inp) => inp.value)
-
-  return buildTransaction({
-    inputs: selectedInputs,
-    outputs: [
-      output,
-      {
-        address: changeAddress,
-        value: inputAmount - outputAmount - computedFee,
-      },
-    ],
-    cert: null,
-    chainConfig,
-  })
-}
-*/

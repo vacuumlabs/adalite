@@ -14,13 +14,14 @@ import {
 } from './shelley/shelley-address-provider'
 
 import {computeRequiredTxFee} from './shelley/helpers/chainlib-wrapper'
-import {selectMinimalTxPlan, computeDelegationTxPlan} from './shelley/build-transaction'
+import {selectMinimalTxPlan, computeAccountTxPlan} from './shelley/build-transaction'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
 import {isShelleyAddress, bechAddressToHex, groupToSingle} from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
+import addressItem from '../components/pages/receiveAda/addressItem'
 
 const isUtxoProfitable = () => true
 
@@ -49,13 +50,13 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     blockchainExplorer,
   })
 
-  const shelleyExternal = AddressManager({
+  const groupExternal = AddressManager({
     addressProvider: ShelleyGroupAddressProvider(cryptoProvider, accountIndex, false),
     gapLimit,
     blockchainExplorer,
   })
 
-  const shelleyInternal = AddressManager({
+  const groupInternal = AddressManager({
     addressProvider: ShelleyGroupAddressProvider(cryptoProvider, accountIndex, true),
     gapLimit,
     blockchainExplorer,
@@ -70,13 +71,17 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   async function discoverAllAddresses() {
     const a1 = await legacyInternal.discoverAddresses()
     const a2 = await legacyExternal.discoverAddresses()
-    const a3 = await shelleyInternal.discoverAddresses()
-    const a4 = await shelleyExternal.discoverAddresses()
+    const a3 = await groupInternal.discoverAddresses()
+    const a4 = await groupExternal.discoverAddresses()
 
     const a5 = await singleInternal.discoverAddresses()
     const a6 = await singleExternal.discoverAddresses()
     const a7 = await shelleyAccountAddressManager._deriveAddress(accountIndex)
-
+    // return {
+    //   legacy: [...a1, ...a2],
+    //   group: [...a3, ...a4],
+    //   single: [...a5, ...a6]
+    // }
     if (cryptoProvider.getDerivationScheme().type === 'v1') {
       return [...a1, ...a3, ...a4]
     } else {
@@ -89,8 +94,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       {},
       legacyInternal.getAddressToAbsPathMapping(),
       legacyExternal.getAddressToAbsPathMapping(),
-      shelleyInternal.getAddressToAbsPathMapping(),
-      shelleyExternal.getAddressToAbsPathMapping(),
+      groupInternal.getAddressToAbsPathMapping(),
+      groupExternal.getAddressToAbsPathMapping(),
       shelleyAccountAddressManager.getAddressToAbsPathMapping()
     )
     console.log(mapping)
@@ -103,8 +108,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       ...legacyExternal.getAddressToAbsPathMapping(),
     }
     const mappingShelley = {
-      ...shelleyInternal.getAddressToAbsPathMapping(),
-      ...shelleyExternal.getAddressToAbsPathMapping(),
+      ...groupInternal.getAddressToAbsPathMapping(),
+      ...groupExternal.getAddressToAbsPathMapping(),
       ...shelleyAccountAddressManager.getAddressToAbsPathMapping(),
     }
 
@@ -117,7 +122,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   }
 
   async function getVisibleAddressesWithMeta() {
-    const addresses = await shelleyExternal.discoverAddressesWithMeta()
+    const addresses = await groupExternal.discoverAddressesWithMeta()
     return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 
@@ -139,7 +144,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     fixedPathMapper,
     discoverAllAddresses,
     // TODO(refactor)
-    shelleyExternal,
+    groupExternal,
     shelleyAccountAddressManager,
     getChangeAddress,
     getVisibleAddressesWithMeta,
@@ -169,7 +174,7 @@ const ShelleyBlockchainExplorer = (config) => {
     return response
   }
 
-  async function getRunningStakePools() {
+  async function getValidStakepools() {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
     let response
     try {
@@ -207,7 +212,7 @@ const ShelleyBlockchainExplorer = (config) => {
     fetchTxInfo: be.fetchTxInfo,
     filterUsedAddresses: (addresses) => be.filterUsedAddresses(fix(addresses)),
     getAccountInfo,
-    getRunningStakePools,
+    getValidStakepools,
   }
 }
 const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvider}: any) => {
@@ -303,11 +308,13 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   const accountTxPlanner = async (args) => {
-    const address = myAddresses.shelleyAccountAddressManager._deriveAddress(0)
-    const {pools, accountCounter, accountBalance} = args
-    const plan = computeDelegationTxPlan(
+    const srcAddress = await myAddresses.shelleyAccountAddressManager._deriveAddress(0)
+    const {dstAddress, amount, pools, accountCounter, accountBalance} = args
+    const plan = computeAccountTxPlan(
       cryptoProvider.network.chainConfig,
-      address,
+      dstAddress,
+      amount,
+      srcAddress,
       pools,
       accountCounter,
       accountBalance
@@ -341,7 +348,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getBalance() {
     const addresses = await myAddresses.discoverAllAddresses()
-    return blockchainExplorer.getBalance(addresses)
+    // const legacyBalance = await blockchainExplorer.getBalance(addresses.legacy)
+    // const groupBalance = await blockchainExplorer.getBalance(addresses.group)
+    // const singleBalance = await blockchainExplorer.getBalance(addresses.single)
+    return await blockchainExplorer.getBalance(addresses)
   }
 
   async function getHistory() {
@@ -355,6 +365,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     let delegationRatioSum = 0
     accountInfo.delegation.map((pool) => {
+      //reduce
       delegationRatioSum += pool.ratio
     })
     const delegation = accountInfo.delegation.map((pool) => {
@@ -370,7 +381,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getValidStakepools() {
-    return blockchainExplorer.getRunningStakePools()
+    return blockchainExplorer.getValidStakepools()
   }
 
   async function fetchTxInfo(txHash) {
@@ -391,7 +402,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getVisibleAddresses() {
-    const addresses = await myAddresses.shelleyExternal.discoverAddressesWithMeta()
+    const addresses = await myAddresses.groupExternal.discoverAddressesWithMeta()
     return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 

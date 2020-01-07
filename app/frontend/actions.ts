@@ -404,6 +404,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     !state.donationAmountValidationError
 
   const calculateFee = async () => {
+    // calculateTxFee
     const state = getState()
     if (!isSendFormFilledAndValid(state)) {
       setState({calculatingFee: false})
@@ -458,21 +459,26 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   //TODO connect to tab, rework
   const revokeDelegation = async (state) => {
-    await calculateDelegationFee()
+    await calculateDelegationFee(true)
     await submitTransaction(state)
   }
 
-  const calculateDelegationFee = async () => {
+  const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
-    const pools = state.shelleyDelegation.selectedPools.map((pool) => {
-      return {
-        id: pool.pool_id,
-        ratio: pool.percent,
-      }
-    })
+    const pools = !revoke
+      ? state.shelleyDelegation.selectedPools.map((pool) => {
+        return {
+          id: pool.pool_id,
+          ratio: pool.percent,
+        }
+      })
+      : []
     const accountBalance = state.shelleyAccountInfo.value + state.balance
     const accountCounter = state.shelleyAccountInfo.counter
-    const plan = await wallet.getTxPlan({pools, accountCounter, accountBalance}, 'account')
+    const plan = await wallet.getTxPlan(
+      {amount: null, pools, accountCounter, accountBalance},
+      'account'
+    )
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -525,8 +531,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
             ? {
               ...pool,
               pool_id: poolId,
+              // TODO this should be rathet a validationError
+              // either a false or error message from validator
               valid: !!state.validStakepools[poolId],
-              percent: 100,
+              percent: 100, // TODO refactor to ratio
               ...state.validStakepools[poolId],
             }
             : pool
@@ -858,6 +866,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     } finally {
       resetSendFormFields(state)
       resetSendFormState(state)
+      resetAmountFields(state)
       wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,
@@ -943,6 +952,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
+  const toggleDisplayStakingPage = (state, e) => {
+    setState({displayStakingPage: !state.displayStakingPage})
+    resetAmountFields(state)
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -983,5 +997,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetDonation,
     closeStakingBanner,
     updateStakePoolId,
+    toggleDisplayStakingPage,
+    revokeDelegation,
   }
 }

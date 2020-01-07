@@ -4,6 +4,9 @@ import actions from '../../../actions'
 import tooltip from '../../common/tooltip'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
+import TransactionErrorModal from '../../pages/sendAda/transactionErrorModal'
+import {getTranslation} from '../../../translations'
+import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -70,6 +73,9 @@ const DelegatePage = ({
   delegationValidationError,
   changeDelegation,
   submitTransaction,
+  closeTransactionErrorModal,
+  transactionSubmissionError,
+  showTransactionErrorModal,
 }) => {
   // const delegatedPercent = stakePools.map((pool) => pool.percent).reduce((x, y) => x + y, 0)
   // const undelegatedPercent = 100 - delegatedPercent
@@ -153,6 +159,16 @@ const DelegatePage = ({
         // })
           calculatingDelegationFee ? <CalculatingFee /> : <div />}
       </div>
+      {showTransactionErrorModal && (
+        <TransactionErrorModal
+          onRequestClose={closeTransactionErrorModal}
+          errorMessage={getTranslation(
+            transactionSubmissionError.code,
+            transactionSubmissionError.params
+          )}
+          showHelp={errorHasHelp(transactionSubmissionError.code)}
+        />
+      )}
     </div>
   )
 }
@@ -163,6 +179,8 @@ export default connect(
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
+    showTransactionErrorModal: state.showTransactionErrorModal,
+    transactionSubmissionError: state.transactionSubmissionError,
   }),
   actions
 )(DelegatePage)
