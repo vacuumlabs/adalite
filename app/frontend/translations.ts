@@ -19,6 +19,9 @@ const translations = {
   DonationAmountTooLow: () => `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
   DonationInsufficientBalance: () => 'Insufficient balance for the donation.',
 
+  InvalidStakepoolId: () => 'Stakepool id is invalid.',
+  RudundantStakePool: () => 'This stake pool is already chosen.',
+
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
 
   TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,

@@ -84,6 +84,24 @@ const mnemonicValidator = (mnemonic) => {
   return null
 }
 
+const poolIdValidator = (poolId, selectedPools, validStakepools) => {
+  if (poolId === '') {
+    return null
+  }
+  if (!validStakepools[poolId]) {
+    return {
+      code: 'InvalidStakepoolId',
+    }
+  }
+  const selectedPoolsIds = selectedPools.map((pool) => pool.pool_id)
+  if (selectedPoolsIds.includes(poolId)) {
+    return {
+      code: 'RudundantStakePool',
+    }
+  }
+  return null
+}
+
 export {
   parseToLovelace as parseCoins,
   sendAddressValidator,
@@ -91,4 +109,5 @@ export {
   feeValidator,
   mnemonicValidator,
   donationAmountValidator,
+  poolIdValidator,
 }

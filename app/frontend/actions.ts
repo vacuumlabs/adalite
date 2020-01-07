@@ -8,6 +8,7 @@ import {
   feeValidator,
   mnemonicValidator,
   donationAmountValidator,
+  poolIdValidator,
 } from './helpers/validators'
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
@@ -180,7 +181,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         // shelley
         validStakepools,
       })
-      getAdalitePoolInfo(validStakepools) // TODO rename to selectAdalitePool
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
       setState({
@@ -195,15 +195,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     return true
   }
 
-  const getAdalitePoolInfo = (validStakepools) => {
+  const selectAdaliteStakepool = () => {
     const state = getState()
-    const poolInfo = validStakepools && validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
+    const poolInfo =
+      state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPools: [
           {
-            valid: !!poolInfo,
+            validationError: !poolInfo,
             ...poolInfo,
             percent: 100,
           },
@@ -466,10 +467,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
     const pools = !revoke
-      ? state.shelleyDelegation.selectedPools.map((pool) => {
+      ? state.shelleyDelegation.selectedPools.map(({pool_id, percent}) => {
         return {
-          id: pool.pool_id,
-          ratio: pool.percent,
+          id: pool_id,
+          ratio: percent,
         }
       })
       : []
@@ -496,11 +497,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 2000)
 
-  // DUMMY
   const validateDelegationAndCalculateDelegationFee = () => {
     const state = getState()
-    const delegationValidationError = !state.shelleyDelegation.selectedPools.every(
-      (pool) => pool.valid && pool.percent
+    const delegationValidationError = state.shelleyDelegation.selectedPools.every(
+      (pool) => pool.validationError || pool.pool_id === ''
     )
 
     setState({
@@ -527,14 +527,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         ...state.shelleyDelegation,
         selectedPools: selectedPools.map((pool, i) => {
           const index = parseInt(e.target.name, 10)
+          const validationError = poolIdValidator(poolId, selectedPools, state.validStakepools)
           return i === index
             ? {
-              ...pool,
               pool_id: poolId,
-              // TODO this should be rathet a validationError
-              // either a false or error message from validator
-              valid: !!state.validStakepools[poolId],
-              percent: 100, // TODO refactor to ratio
+              validationError,
+              // just while multiple delegation isnt supported
+              percent: 100, // TODO refactor to 'ratio' when not duplicate with tax
               ...state.validStakepools[poolId],
             }
             : pool
@@ -999,5 +998,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     updateStakePoolId,
     toggleDisplayStakingPage,
     revokeDelegation,
+    selectAdaliteStakepool,
   }
 }
