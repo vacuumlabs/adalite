@@ -458,11 +458,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  //TODO connect to tab, rework
   const revokeDelegation = async (state) => {
     await calculateDelegationFee(true)
     await submitTransaction(getState())
   }
+
+  // const convertNonStakingUtxos = (state) => {
+  //   wallet.getMaxNonStakingAmount(address)
+  // }
 
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()

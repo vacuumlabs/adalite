@@ -286,6 +286,11 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
+  async function getMaxNonStakingAmount(address) {
+    const utxos = await getUTxOs(true)
+    return _getMaxSendableAmount(utxos, address, false, 0, false)
+  }
+
   const uTxOTxPlanner = async (args) => {
     const {address, coins, donationAmount} = args
     const availableUtxos = await getUTxOs()
@@ -350,15 +355,12 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getBalance() {
     const {legacy, group, single} = await myAddresses.discoverAllAddresses()
-    const legacyBalance = await blockchainExplorer.getBalance(legacy)
-    const groupBalance = await blockchainExplorer.getBalance(group)
-    const singleBalance = await blockchainExplorer.getBalance(single)
-    const nonStakingBalance = legacyBalance + singleBalance
-    const balance = legacyBalance + singleBalance + groupBalance
+    const nonStakingBalance = await blockchainExplorer.getBalance([...legacy, ...single])
+    const stakingBalance = await blockchainExplorer.getBalance(group)
     return {
-      stakingBalance: groupBalance,
+      stakingBalance,
       nonStakingBalance,
-      balance,
+      balance: nonStakingBalance + stakingBalance,
     }
   }
 
@@ -400,10 +402,12 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
-  async function getUTxOs(): Promise<Array<any>> {
+  async function getUTxOs(nonStaking?: boolean): Promise<Array<any>> {
     try {
       const {legacy, group, single} = await myAddresses.discoverAllAddresses()
-      return await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...group, ...single])
+      return await blockchainExplorer.fetchUnspentTxOutputs(
+        !nonStaking ? [...legacy, ...group, ...single] : [...legacy, ...single]
+      )
     } catch (e) {
       throw NamedError('NetworkError')
     }
@@ -435,6 +439,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     getChangeAddress,
     getMaxSendableAmount,
     getMaxDonationAmount,
+    getMaxNonStakingAmount,
     getTxPlan,
     getHistory,
     getVisibleAddresses,
