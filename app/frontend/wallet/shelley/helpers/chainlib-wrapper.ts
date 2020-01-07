@@ -75,11 +75,10 @@ export const computeRequiredTxFee = (chainConfig: ChainConfig) => (
   extra?: any
 ) => {
   const fees = chainConfig.fees
-
   return (
     fees.constant +
     fees.coefficient * (inputs.length + outputs.length) +
-    (extra ? fees.per_certificate_fees.certificate_stake_delegation : 0)
+    (extra ? fees.per_certificate_fees[extra.type] : 0)
   )
 }
 
@@ -252,7 +251,7 @@ export const verifyFee = ({inputs, outputs, cert, chainConfig}) => {
 
 export const buildTransaction = ({inputs, outputs, cert, chainConfig}: BuildTransactionParams) => {
   console.log('BUILD TX')
-  console.log(JSON.stringify({inputs, outputs, cert, chainConfig}))
+  console.log({inputs, outputs, cert, chainConfig})
   const {certificate, payloadAuth} = _getCert(cert)
 
   const txbuilder = new TransactionBuilder()

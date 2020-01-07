@@ -19,7 +19,7 @@ const TestnetBlockchainExplorer = () => {
         'content-Type': 'application/json',
       }
     )
-    console.log(response)
+    // console.log(response)
     return response
   }
 
@@ -84,7 +84,6 @@ const TestnetBlockchainExplorer = () => {
         'content-Type': 'application/json',
       },
     })
-    console.log('ahoj')
     const poolArray = JSON.parse(await response.text()).Right
     const poolDict = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
     return poolDict

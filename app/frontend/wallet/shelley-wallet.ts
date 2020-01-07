@@ -98,7 +98,6 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       groupExternal.getAddressToAbsPathMapping(),
       shelleyAccountAddressManager.getAddressToAbsPathMapping()
     )
-    console.log(mapping)
     return (address) => mapping[address]
   }
 
@@ -200,7 +199,6 @@ const ShelleyBlockchainExplorer = (config) => {
 
   return {
     getTxHistory: (addresses) => {
-      console.log('getTxHistory', fix(addresses))
       return be.getTxHistory(fix(addresses))
     },
     fetchTxRaw: be.fetchTxRaw,
@@ -208,7 +206,6 @@ const ShelleyBlockchainExplorer = (config) => {
     isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(fix(addresses)),
     submitTxRaw: be.submitTxRaw,
     getBalance: (addresses) => {
-      console.log('getBalance', fix(addresses))
       return be.getBalance(fix(addresses))
     },
     fetchTxInfo: be.fetchTxInfo,
@@ -248,7 +245,6 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function submitTx(signedTx) {
-    console.log('wallet.submitTx', signedTx)
     const {transaction, fragmentId} = signedTx
     const response = await blockchainExplorer.submitTxRaw(fragmentId, transaction).catch((e) => {
       debugLog(e)
@@ -330,7 +326,6 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       account: accountTxPlanner,
     }
     const plan = txPlaner[txType](args)
-    console.log(plan)
     return plan
   }
 

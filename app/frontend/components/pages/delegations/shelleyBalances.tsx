@@ -25,9 +25,11 @@ const shelleyBalances = ({
         {isNaN(Number(nonStakingBalance)) ? nonStakingBalance : `${printAda(nonStakingBalance)}`}
         <AdaIcon />
       </div>
-      <button className="button stake-pool" onClick={null}>
-        Convert to stakable
-      </button>
+      {nonStakingBalance && (
+        <button className="button stake-pool" onClick={null}>
+          Convert to stakable
+        </button>
+      )}
     </div>
     <h2 className="card-title staking-balances-title">Last rewards</h2>
     <div className="staking-balances-row">

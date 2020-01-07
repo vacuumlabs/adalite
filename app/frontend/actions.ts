@@ -461,7 +461,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   //TODO connect to tab, rework
   const revokeDelegation = async (state) => {
     await calculateDelegationFee(true)
-    await submitTransaction(state)
+    await submitTransaction(getState())
   }
 
   const calculateDelegationFee = async (revoke?: boolean) => {

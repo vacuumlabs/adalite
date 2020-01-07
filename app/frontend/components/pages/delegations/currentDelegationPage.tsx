@@ -1,9 +1,9 @@
 import {h, Fragment} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
-import testnetActions from '../../../testnet/testnet-actions'
+import actions from '../../../actions'
 import formatDelegationDate from '../../../helpers/formatDelegationDate'
 
-const CurrentDelegationPage = ({currentDelegation, changeDelegation}) => {
+const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
   return (
     <div className="current-delegation card">
       <h2 className="card-title">Current delegation</h2>
@@ -32,7 +32,7 @@ const CurrentDelegationPage = ({currentDelegation, changeDelegation}) => {
           The funds are currently undelegated. Delegate now.
         </button>
       )}
-      <button className="button primary revoke-delegation" onClick={() => changeDelegation()}>
+      <button className="button primary revoke-delegation" onClick={revokeDelegation}>
         Revoke current delegation
       </button>
     </div>
@@ -43,5 +43,5 @@ export default connect(
   (state) => ({
     currentDelegation: state.shelleyAccountInfo.delegation,
   }),
-  testnetActions
+  actions
 )(CurrentDelegationPage)

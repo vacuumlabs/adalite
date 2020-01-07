@@ -143,7 +143,7 @@ export function computeAccountTxPlan(
 
   const cert = pools
     ? {
-      type: 'stake_delegation',
+      type: 'certificate_stake_delegation',
       pools,
     }
     : null
