@@ -463,9 +463,27 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     await submitTransaction(getState())
   }
 
-  // const convertNonStakingUtxos = (state) => {
-  //   wallet.getMaxNonStakingAmount(address)
-  // }
+  const convertNonStakingUtxos = async (state) => {
+    const address = await wallet.getChangeAddress()
+    const {amount} = wallet.getMaxNonStakingAmount(address)
+    const plan = await wallet.getTxPlan(
+      {
+        address,
+        coins: amount,
+        donationAmoun: null,
+        nonStaking: true,
+      },
+      'utxo'
+    )
+    setState({
+      sendTransactionSummary: {
+        amount,
+        donation: 0 as Lovelace,
+        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+        plan: plan.fee != null ? plan : null,
+      },
+    })
+  }
 
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()

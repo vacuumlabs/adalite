@@ -1,6 +1,6 @@
 import * as lib from '@emurgo/js-chain-libs'
 import bech32 from './bech32'
-const {Address, Account, AddressDiscrimination, PublicKey} = lib
+const {Address, Account, AddressDiscrimination, PublicKey, AddressKind} = lib
 
 const getDiscriminator = (network) => {
   const discriminator = {
@@ -68,4 +68,9 @@ export const groupAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, network: 
 
 export const isShelleyAddress = (address: string): boolean => {
   return address.startsWith('addr1')
+}
+
+export const isGroup = (address: string): boolean => {
+  const wasmAddr = Address.from_bytes(Buffer.from(address, 'hex'))
+  return wasmAddr.get_kind() === AddressKind.Group
 }

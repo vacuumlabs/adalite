@@ -18,12 +18,14 @@ import {selectMinimalTxPlan, computeAccountTxPlan} from './shelley/build-transac
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
-import {isShelleyAddress, bechAddressToHex, groupToSingle} from './shelley/helpers/addresses'
+import {isShelleyAddress, bechAddressToHex, isGroup} from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
 import addressItem from '../components/pages/receiveAda/addressItem'
 
 const isUtxoProfitable = () => true
+
+const isUtxoNonStaking = ({address}) => !isGroup(address)
 
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExternal = AddressManager({
@@ -287,15 +289,16 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getMaxNonStakingAmount(address) {
-    const utxos = await getUTxOs(true)
+    const utxos = (await getUTxOs()).filter(isUtxoNonStaking)
     return _getMaxSendableAmount(utxos, address, false, 0, false)
   }
 
   const uTxOTxPlanner = async (args) => {
-    const {address, coins, donationAmount} = args
-    const availableUtxos = await getUTxOs()
+    const {address, coins, donationAmount, nonStaking} = args
+    const availableUtxos = nonStaking
+      ? (await getUTxOs()).filter(isUtxoNonStaking)
+      : await getUTxOs()
     const changeAddress = await getChangeAddress()
-
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     const shuffledUtxos = shuffleArray(availableUtxos, randomGenerator)
@@ -402,11 +405,14 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
-  async function getUTxOs(nonStaking?: boolean): Promise<Array<any>> {
+  async function getUTxOs(): Promise<Array<any>> {
     try {
       const {legacy, group, single} = await myAddresses.discoverAllAddresses()
-      return await blockchainExplorer.fetchUnspentTxOutputs(
-        !nonStaking ? [...legacy, ...group, ...single] : [...legacy, ...single]
+      const utxos = await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...group, ...single])
+      // filter out duplicate utxos, out of duplicates keep group address utxos
+      return utxos.filter(
+        (utxo, index, self) =>
+          index === self.findIndex((t) => t.address === utxo.address || isGroup(utxo.address))
       )
     } catch (e) {
       throw NamedError('NetworkError')

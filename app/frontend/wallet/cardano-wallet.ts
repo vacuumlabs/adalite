@@ -240,6 +240,10 @@ const CardanoWallet = (options) => {
     return undefined
   }
 
+  function getMaxNonStakingAmount(address) {
+    return undefined
+  }
+
   async function fetchTxInfo(txHash) {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
@@ -305,6 +309,7 @@ const CardanoWallet = (options) => {
     getAccountInfo,
     getValidStakepools,
     getWalletInfo,
+    getMaxNonStakingAmount,
   }
 }
 
