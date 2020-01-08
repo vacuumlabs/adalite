@@ -121,7 +121,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       fixedShelley[bechAddressToHex(key)] = mappingShelley[key]
     }
 
-    return (address) => mappingLegacy[address] || mappingShelley[address] || fixedShelley[address]
+    return (address) => mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
   }
 
   async function getVisibleAddressesWithMeta() {
@@ -348,7 +348,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       shelleyBalances: {
         nonStakingBalance,
         stakingBalance: stakingBalance + shelleyAccountInfo.value,
-        rewards: shelleyAccountInfo.last_rewards.reward,
+        rewardsAccountBalance: shelleyAccountInfo.value,
       },
       shelleyAccountInfo,
       transactionHistory,

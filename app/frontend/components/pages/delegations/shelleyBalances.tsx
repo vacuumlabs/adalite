@@ -7,9 +7,10 @@ import {connect} from '../../../libs/unistore/preact'
 const shelleyBalances = ({
   stakingBalance,
   nonStakingBalance,
-  rewards,
+  rewardsAccountBalance,
   balance,
   reloadWalletInfo,
+  convertNonStakingUtxos,
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">Staking balance</h2>
@@ -26,15 +27,17 @@ const shelleyBalances = ({
         <AdaIcon />
       </div>
       {nonStakingBalance && (
-        <button className="button stake-pool" onClick={null}>
+        <button className="button stake-pool" onClick={convertNonStakingUtxos}>
           Convert to stakable
         </button>
       )}
     </div>
-    <h2 className="card-title staking-balances-title">Last rewards</h2>
+    <h2 className="card-title staking-balances-title">Rewards account balance</h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
-        {isNaN(Number(rewards)) ? rewards : `${printAda(rewards)}`}
+        {isNaN(Number(rewardsAccountBalance))
+          ? rewardsAccountBalance
+          : `${printAda(rewardsAccountBalance)}`}
         <AdaIcon />
       </div>
       {/* <button className="button stake-pool" onClick={null}>
@@ -60,7 +63,7 @@ export default connect(
   (state) => ({
     stakingBalance: state.shelleyBalances.stakingBalance,
     nonStakingBalance: state.shelleyBalances.nonStakingBalance,
-    rewards: state.shelleyBalances.rewards,
+    rewardsAccountBalance: state.shelleyBalances.rewardsAccountBalance,
     balance: state.balance,
   }),
   actions

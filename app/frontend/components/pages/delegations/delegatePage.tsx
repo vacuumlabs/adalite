@@ -7,6 +7,7 @@ import {AdaIcon} from '../../common/svg'
 import TransactionErrorModal from '../../pages/sendAda/transactionErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
+import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -48,6 +49,7 @@ interface Props {
   transactionSubmissionError: any
   showTransactionErrorModal: any
   selectAdaliteStakepool: any
+  showConfirmTransactionDialog: any
 }
 
 class Delegate extends Component<Props> {
@@ -74,6 +76,7 @@ class Delegate extends Component<Props> {
     closeTransactionErrorModal,
     transactionSubmissionError,
     showTransactionErrorModal,
+    showConfirmTransactionDialog,
   }) {
     return (
       <div className="delegate card">
@@ -165,6 +168,7 @@ class Delegate extends Component<Props> {
             showHelp={errorHasHelp(transactionSubmissionError.code)}
           />
         )}
+        {showConfirmTransactionDialog && <ConfirmTransactionDialog />}
       </div>
     )
   }
@@ -178,6 +182,7 @@ export default connect(
     delegationValidationError: state.delegationValidationError,
     showTransactionErrorModal: state.showTransactionErrorModal,
     transactionSubmissionError: state.transactionSubmissionError,
+    showConfirmTransactionDialog: state.showConfirmTransactionDialog,
   }),
   actions
 )(Delegate)

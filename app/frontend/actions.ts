@@ -464,25 +464,28 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const convertNonStakingUtxos = async (state) => {
+    loadingAction(state, 'Preparing transaction...')
     const address = await wallet.getChangeAddress()
-    const {amount} = wallet.getMaxNonStakingAmount(address)
+    const {sendAmount} = await wallet.getMaxNonStakingAmount(address)
     const plan = await wallet.getTxPlan(
       {
         address,
-        coins: amount,
-        donationAmoun: null,
+        coins: sendAmount,
+        donationAmount: null,
         nonStaking: true,
       },
       'utxo'
     )
     setState({
       sendTransactionSummary: {
-        amount,
+        amount: sendAmount,
         donation: 0 as Lovelace,
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
       },
     })
+    stopLoadingAction(state, {})
+    confirmTransaction(getState(), address, sendAmount)
   }
 
   const calculateDelegationFee = async (revoke?: boolean) => {
@@ -1020,5 +1023,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     toggleDisplayStakingPage,
     revokeDelegation,
     selectAdaliteStakepool,
+    convertNonStakingUtxos,
   }
 }

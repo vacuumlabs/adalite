@@ -74,18 +74,17 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const prepareCert = (input) => {
-      return txAux.cert
-        ? {
-          type: 'stake_delegation',
-          privkey: input.privkey,
-          pools: txAux.cert.pools,
-        }
-        : null
+      return {
+        type: 'stake_delegation',
+        privkey: input.privkey,
+        pools: txAux.cert.pools,
+      }
     }
 
     const inputs = txAux.inputs.map((input) => prepareInput(txAux.type, input))
-    const outputs = txAux.outputs.length ? [...txAux.outputs, txAux.change].map(prepareOutput) : []
-    const cert = prepareCert(inputs[0])
+    const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
+    const outputs = txAux.outputs.length ? [...outpustAndChange].map(prepareOutput) : []
+    const cert = txAux.cert ? prepareCert(inputs[0]) : null
 
     const tx = buildTransaction({
       inputs,

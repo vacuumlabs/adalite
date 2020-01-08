@@ -96,7 +96,7 @@ export interface State {
   shelleyBalances?: {
     stakingBalance?: number
     nonStakingBalance?: number
-    rewards?: number
+    rewardsAccountBalance?: number
   }
   shelleyDelegation?: {
     counter?: number
@@ -188,7 +188,7 @@ const initialState: State = {
   shelleyBalances: {
     nonStakingBalance: 0,
     stakingBalance: 0,
-    rewards: 0,
+    rewardsAccountBalance: 0,
   },
   shelleyAccountInfo: {
     delegation: [],
