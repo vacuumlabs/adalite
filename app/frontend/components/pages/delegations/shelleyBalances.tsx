@@ -3,6 +3,7 @@ import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
+import tooltip from '../../common/tooltip'
 
 const shelleyBalances = ({
   stakingBalance,
@@ -13,14 +14,34 @@ const shelleyBalances = ({
   convertNonStakingUtxos,
 }) => (
   <div className="rewards card">
-    <h2 className="card-title staking-balances-title">Staking balance</h2>
+    <h2 className="card-title staking-balances-title">
+      Staking balance
+      <a
+        {...tooltip(
+          'Staking balance represents amount of coins you are able to delegate to a pool.',
+          true
+        )}
+      >
+        <span className="show-info">{''}</span>
+      </a>
+    </h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
         {isNaN(Number(stakingBalance)) ? stakingBalance : `${printAda(stakingBalance)}`}
         <AdaIcon />
       </div>
     </div>
-    <h2 className="card-title staking-balances-title">Non-staking balance</h2>
+    <label className="card-title staking-balances-title">
+      Non-staking balance
+      <a
+        {...tooltip(
+          'Non-staking balance represent amount of coins you re NOT able to delegate to any pool.',
+          true
+        )}
+      >
+        <span className="show-info">{''}</span>
+      </a>
+    </label>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
         {isNaN(Number(nonStakingBalance)) ? nonStakingBalance : `${printAda(nonStakingBalance)}`}
@@ -32,7 +53,17 @@ const shelleyBalances = ({
         </button>
       )}
     </div>
-    <h2 className="card-title staking-balances-title">Rewards account balance</h2>
+    <label className="card-title staking-balances-title">
+      Rewards account balance
+      <a
+        {...tooltip(
+          'This value represents balance on your staking account. It contains all recieved rewards from staking or recieved ADA',
+          true
+        )}
+      >
+        <span className="show-info">{''}</span>
+      </a>
+    </label>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
         {isNaN(Number(rewardsAccountBalance))

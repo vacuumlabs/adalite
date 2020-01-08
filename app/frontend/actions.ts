@@ -632,6 +632,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetPercentageDonation()
   }
 
+  const resetDelegationField = () => {
+    selectAdaliteStakepool()
+  }
+
   const resetSendFormState = (state) => {
     setState({
       sendResponse: '',
@@ -890,6 +894,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetSendFormFields(state)
       resetSendFormState(state)
       resetAmountFields(state)
+      resetDelegationField()
       wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,

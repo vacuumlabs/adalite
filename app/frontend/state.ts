@@ -99,8 +99,6 @@ export interface State {
     rewardsAccountBalance?: number
   }
   shelleyDelegation?: {
-    counter?: number
-    amount?: number
     selectedPools?: any
     delegationFee?: any
   }
@@ -180,8 +178,6 @@ const initialState: State = {
   // shelley
   displayStakingPage: ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley',
   shelleyDelegation: {
-    counter: 0,
-    amount: 0,
     selectedPools: [],
     delegationFee: 0.0,
   },

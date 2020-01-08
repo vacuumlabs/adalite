@@ -1,6 +1,6 @@
 import {h} from 'preact'
 import printAda from '../../../helpers/printAda'
-import testnetActions from '../../../testnet/testnet-actions'
+import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 
 const DelegationHistory = ({delegationHistory}) => {
@@ -42,5 +42,5 @@ export default connect(
   (state) => ({
     delegationHistory: state.delegationHistory,
   }),
-  testnetActions
+  actions
 )(DelegationHistory)
