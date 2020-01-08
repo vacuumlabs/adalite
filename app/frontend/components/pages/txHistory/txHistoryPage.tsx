@@ -55,7 +55,7 @@ class DashboardMobileContent extends Component<Props> {
             ? [
               dashboardTab('delegate', 'Delegate ADA'),
               dashboardTab('current-delegation', 'Current Delegation'),
-              dashboardTab('delegation-history', 'Delegation History'),
+              // dashboardTab('delegation-history', 'Delegation History'),
             ]
             : [
               dashboardTab('transactions', 'Transactions'),
