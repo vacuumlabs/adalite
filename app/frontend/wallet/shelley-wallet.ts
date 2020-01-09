@@ -148,6 +148,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     discoverAllAddresses,
     // TODO(refactor)
     groupExternal,
+    singleExternal,
     shelleyAccountAddressManager,
     getChangeAddress,
     getVisibleAddressesWithMeta,
@@ -340,8 +341,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getWalletInfo() {
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getAccountInfo()
-    const transactionHistory = await getHistory()
     const visibleAddresses = await getVisibleAddresses()
+    const transactionHistory = await getHistory()
     // getDelegationHistory
     return {
       balance,
@@ -420,8 +421,9 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getVisibleAddresses() {
-    const addresses = await myAddresses.groupExternal.discoverAddressesWithMeta()
-    return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
+    const single = await myAddresses.singleExternal.discoverAddressesWithMeta()
+    const group = await myAddresses.groupExternal.discoverAddressesWithMeta()
+    return [...single, ...group] //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 
   async function verifyAddress(addr: string) {

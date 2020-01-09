@@ -7,7 +7,6 @@ import getHash from '../helpers/getHash'
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
     const hash = getHash(JSON.stringify(args))
-
     if (!cache_obj[hash] || cache_obj[hash].timestamp + maxAge < Date.now()) {
       cache_obj[hash] = {
         timestamp: Date.now(),
@@ -51,12 +50,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       },
       {caTxList: []}
     )
-
     addressInfos.caTxList.forEach((tx) => {
       transactions[tx.ctbId] = tx
     })
 
-    for (const t of Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)) {
+    for (const t of Object.values(transactions)) {
       let effect = 0 //effect on wallet balance accumulated
       for (const input of t.ctbInputs || []) {
         if (addresses.includes(input[0])) {
@@ -69,7 +67,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         }
       }
       t.effect = effect
-      t.fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin || t.ctbInputSum.getCoin
+      t.fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin || parseInt(t.ctbInputSum.getCoin)
     }
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }

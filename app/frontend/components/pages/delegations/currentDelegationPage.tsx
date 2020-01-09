@@ -14,18 +14,18 @@ const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
           </div>
           <div /> */}
           {currentDelegation.map((pool) => [
-            <div className="delegation-history-name">{pool.info.name}</div>,
+            <div className="delegation-history-name">{pool.name}</div>,
             <div className="delegation-history-percent">{`${pool.ratio} %`}</div>,
             <div className="delegation-history-id">{pool.pool_id}</div>,
             <div />,
-            <div className="delegation-history-id">{`Ticker: ${pool.info.ticker}`}</div>,
+            <div className="delegation-history-id">{`Ticker: ${pool.ticker}`}</div>,
             <div />,
             <div className="delegation-history-id">{`Tax: ${(pool.rewards.ratio[0] * 100) /
               pool.rewards.ratio[1]}%`}</div>,
             <div />,
             <div className="delegation-history-id">
               {'Homepage: '}
-              <a href={pool.info.homepage}>{pool.info.homepage}</a>
+              <a href={pool.homepage}>{pool.homepage}</a>
             </div>,
             <div />,
           ])}

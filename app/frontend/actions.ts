@@ -490,6 +490,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
+    if (!state.calculatingDelegationFee) {
+      // TODO
+      // in case tab was changed, thus
+      return
+    }
     const pools = !revoke
       ? state.shelleyDelegation.selectedPools.map(({pool_id, percent}) => {
         return {
@@ -513,8 +518,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
       },
-    })
-    setState({
       calculatingDelegationFee: false,
     })
   }
@@ -980,7 +983,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
-  const toggleDisplayStakingPage = (state, e) => {
+  const toggleDisplayStakingPage = async (state, e) => {
+    setState({
+      calculatingDelegationFee: false,
+      calculatingFee: false,
+    })
     setState({displayStakingPage: !state.displayStakingPage})
     resetAmountFields(state)
   }
