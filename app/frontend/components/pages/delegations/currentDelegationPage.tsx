@@ -9,16 +9,19 @@ const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
       <h2 className="card-title">Current delegation</h2>
       {currentDelegation ? (
         <div className="current-delegation-wrapper">
-          <div className="delegation-history-time">
+          {/* <div className="delegation-history-time">
             {formatDelegationDate(currentDelegation[0].time)}
           </div>
-          <div />
+          <div /> */}
           {currentDelegation.map((pool) => [
             <div className="delegation-history-name">{pool.info.name}</div>,
             <div className="delegation-history-percent">{`${pool.ratio} %`}</div>,
             <div className="delegation-history-id">{pool.pool_id}</div>,
             <div />,
             <div className="delegation-history-id">{`Ticker: ${pool.info.ticker}`}</div>,
+            <div />,
+            <div className="delegation-history-id">{`Tax: ${(pool.rewards.ratio[0] * 100) /
+              pool.rewards.ratio[1]}%`}</div>,
             <div />,
             <div className="delegation-history-id">
               {'Homepage: '}
