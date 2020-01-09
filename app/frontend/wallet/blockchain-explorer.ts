@@ -56,7 +56,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       transactions[tx.ctbId] = tx
     })
 
-    for (const t of Object.values(transactions)) {
+    for (const t of Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)) {
       let effect = 0 //effect on wallet balance accumulated
       for (const input of t.ctbInputs || []) {
         if (addresses.includes(input[0])) {
@@ -69,7 +69,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         }
       }
       t.effect = effect
-      t.fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin
+      t.fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin || t.ctbInputSum.getCoin
     }
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
