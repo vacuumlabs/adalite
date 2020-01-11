@@ -21,11 +21,12 @@ import {ByronAddressProvider} from './byron/byron-address-provider'
 import {isShelleyAddress, bechAddressToHex, isGroup} from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
-import addressItem from '../components/pages/receiveAda/addressItem'
 
 const isUtxoProfitable = () => true
 
 const isUtxoNonStaking = ({address}) => !isGroup(address)
+
+const isAddressGroupType = ({address}) => isGroup(address)
 
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExternal = AddressManager({
@@ -125,6 +126,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   }
 
   async function getVisibleAddressesWithMeta() {
+    // TODO : only group?
     const addresses = await groupExternal.discoverAddressesWithMeta()
     return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
@@ -135,7 +137,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     * AdaLite original functionality which did not consider change addresses.
     * This is an intermediate step between legacy mode and full Yoroi compatibility.
     */
-    const candidates = await getVisibleAddressesWithMeta()
+    const candidates = (await getVisibleAddressesWithMeta()).filter(isAddressGroupType)
 
     const randomSeedGenerator = PseudoRandom(rngSeed)
     const choice = candidates[randomSeedGenerator.nextInt() % candidates.length]

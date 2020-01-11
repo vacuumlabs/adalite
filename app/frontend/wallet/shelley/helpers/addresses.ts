@@ -71,6 +71,8 @@ export const isShelleyAddress = (address: string): boolean => {
 }
 
 export const isGroup = (address: string): boolean => {
-  const wasmAddr = Address.from_bytes(Buffer.from(address, 'hex'))
+  const wasmAddr = isShelleyAddress(address)
+    ? Address.from_string(address)
+    : Address.from_bytes(Buffer.from(address, 'hex'))
   return wasmAddr.get_kind() === AddressKind.Group
 }
