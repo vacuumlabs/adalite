@@ -1,8 +1,7 @@
-function NamedError(name, message, showHelp) {
-  const e = new Error(message || name || showHelp)
+function NamedError(name, message = '') {
+  const e = new Error(message || name)
   e.name = name
   e.message = message
-  e.showHelp = showHelp
   return e
 }
 
