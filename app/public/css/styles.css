@@ -1177,6 +1177,95 @@ button[data-balloon] {
   cursor: pointer;
 }
 
+/* .tabinator {
+  background: #fff;
+  padding: 40px;
+  font-family: Open Sans;
+} */
+
+/* staking/sending tabs */
+
+.tabinator input {
+  display: none;
+}
+.tabinator label {
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 15px 25px;
+  color: #000;
+  /* margin-bottom: 20px; */
+  /* margin-left: -1px; */
+  width: 50%;
+  text-align: center;
+  /* left: 1px; */
+}
+
+.tabinator {
+  /* left: 10px;
+   */
+   padding-bottom: 2px;
+   /* margin-bottom: 20px; */
+   /* border-bottom: 1px solid var(--color-border); */
+  /* border-left: 1px solid rgb(5, 3, 3); */
+  /* box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+  width: 100%; */
+  /* z-index: 50; */
+}
+
+/* .tabinator::before {
+  content: '';
+  height: 10px;
+  width: 10px;
+  left: -1px;
+  box-shadow: 0 0 5px -5px #939393;
+} */
+
+.tabinator label:before {
+  content:'';
+  display:block;
+  width:100%;
+  height:24px;
+  background-color:#fff;
+  position:absolute;
+  bottom:-4px;
+  left:0;
+  z-index:1;  
+}
+
+.tabinator input:checked::before {
+  content:'';
+  display:block;
+  width:100%;
+  height:15px;
+  background-color:#fff;
+  position:absolute;
+  bottom:-11px;
+  left:0;
+  z-index:1;
+}
+
+.tabinator label:hover {
+  color: #888;
+  cursor: pointer;
+}
+.tabinator input:checked + label {
+  position: relative;
+  color: #000;
+  background: #fff;
+  /* border: 1px solid #bbb; */
+  /* border-bottom: 1px solid #000; */
+  border-radius: 5px 5px 0 0;
+}
+.tabinator input:checked + label:after {
+  display: block;
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
+  /* box-shadow: ; */
+  /* border: 1px solid #fff; */
+}
+
 /* CARD */
 
 .card {
@@ -4355,6 +4444,53 @@ input:checked + .slider:before {
 
   .dashboard.mobile .card {
     margin-bottom: 48px;
+  }
+
+  /* tabs */
+
+  .tabinator {
+    padding-bottom: 1px;
+    /* border-bottom: 2px black; */
+  }
+
+  .tabinator label:before {
+    display: none;
+  }
+  
+  /* .tabinator input:checked::before {
+    content:'';
+    display:block;
+    width:100%;
+    height:15px;
+    background-color:#fff;
+    position:absolute;
+    bottom:-11px;
+    left:0;
+    z-index:1;
+  }
+  
+  .tabinator label:hover {
+    color: #888;
+    cursor: pointer;
+  } */
+  .tabinator input:checked + label {
+    position: relative;
+    color: #000;
+    background: #fff;
+    /* border: 1px solid #000; */
+    /* border-bottom: 1px solid #000; */
+    border-radius: 5px 5px 0 0;
+  }
+  .tabinator input:checked + label:after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    box-shadow: unset;
+    /* box-shadow: ; */
+    /* border-top: 1px solid #000;
+    border-right: 1px solid #000;
+    border-left: 1px solid #000; */
   }
 
   /* TRANSACTIONS */

@@ -73,6 +73,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   // TODO rename to setErrorState
   const handleError = (errorName: string, e: any, options?: any) => {
     if (e && e.name) {
+      // TODO find a better way to distict
       // is a error
       debugLog(e)
       captureBySentry(e)
@@ -983,12 +984,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
-  const toggleDisplayStakingPage = async (state, e) => {
+  const toggleDisplayStakingPage = async (state, value) => {
     setState({
       calculatingDelegationFee: false,
       calculatingFee: false,
     })
-    setState({displayStakingPage: !state.displayStakingPage})
+    setState({displayStakingPage: value})
     resetAmountFields(state)
   }
 
