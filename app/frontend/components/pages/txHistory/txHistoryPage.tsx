@@ -12,13 +12,26 @@ import CurrentDelegationPage from '../delegations/currentDelegationPage'
 import StakingPageToggle from '../../common/stakingPageToggle'
 import ShelleyBalances from '../delegations/shelleyBalances'
 import {ADALITE_CONFIG} from '.././../../config'
-import Tabs from './tabs'
+import MainTab from './mainTab'
 
 interface Props {
   transactionHistory: any
   // delegationHistory: any
   displayStakingPage: any
 }
+
+// const MainTab = ({name, checked}) => {
+//   return <li>
+//     <input
+//       type="radio"
+//       id={name}
+//       name="tabs"
+//       checked={checked}
+//       onClick={() => toggleDisplayStakingPage(false)}
+//     />
+//     <label htmlFor={name}>{name}</label>
+//   </li>
+// }
 
 // TODO make dict of tabs for mobile n stakin/send
 
@@ -40,11 +53,9 @@ const StakingTab = () => {
 const SendAdaTab = ({
   balance,
   transactionHistory,
-  // delegationHistory,
   reloadWalletInfo,
   conversionRates,
   // showExportOption,
-  // displayStakingPage,
 }) => {
   return (
     <div className="dashboard desktop">
@@ -79,6 +90,11 @@ class TxHistoryPage extends Component<Props> {
     // this.changeTab = this.changeTab.bind(this)
   }
 
+  /*
+    li display unset
+    tabinator padding inline start margin block start a margin block end unset
+  */
+
   render({
     balance,
     transactionHistory,
@@ -91,10 +107,13 @@ class TxHistoryPage extends Component<Props> {
     return (
       <div className="page-wrapper">
         {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
-          // <ul>
-          // <DashboardTab tabName="ahoj" tabText="seruz"/>
-          // </ul>
-          <Tabs />
+          <div>
+            {/* <Tabs/> */}
+            <ul className="tabinator">
+              <MainTab caption="Sending" name="sending" />
+              <MainTab caption="Staking" name="staking" checked />
+            </ul>
+          </div>
         )}
         <div className="dashboard desktop">
           {!displayStakingPage ? (
@@ -107,27 +126,8 @@ class TxHistoryPage extends Component<Props> {
           ) : (
             <StakingTab />
           )}
-          {/* <div className="dashboard-column">
-          {displayStakingPage
-            ? [<ShelleyBalances />, <CurrentDelegationPage />]
-            : [
-              <Balance
-                balance={balance}
-                reloadWalletInfo={reloadWalletInfo}
-                conversionRates={conversionRates}
-              />,
-              <TransactionHistory transactionHistory={transactionHistory} />,
-            ]}
         </div>
-        <div className="dashboard-column">
-          {displayStakingPage
-            ? [
-              <DelegatePage />,
-              // <DelegationHistory />
-            ]
-            : [<SendAdaPage />, <MyAddresses />, showExportOption && <ExportCard />]}
-        </div> */}
-        </div>
+
         <div className="dashboard mobile">
           {displayStakingPage ? (
             <ShelleyBalances />

@@ -1188,6 +1188,10 @@ button[data-balloon] {
 .tabinator input {
   display: none;
 }
+
+.tabinator li {
+  display: unset;
+}
 .tabinator label {
   box-sizing: border-box;
   display: inline-block;
@@ -1200,16 +1204,24 @@ button[data-balloon] {
   /* left: 1px; */
 }
 
+/* ul.tabinator {
+  ul: unset;
+}
+
+li input {
+  all: unset;
+}
+
+li label {
+  all: unset;
+} */
+
 .tabinator {
-  /* left: 10px;
-   */
-   padding-bottom: 2px;
-   /* margin-bottom: 20px; */
-   /* border-bottom: 1px solid var(--color-border); */
-  /* border-left: 1px solid rgb(5, 3, 3); */
-  /* box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
-  width: 100%; */
-  /* z-index: 50; */
+  padding-bottom: 2px;
+  padding-inline-start: unset;
+  padding-inline-end: unset;
+  margin-block-start: unset;
+  margin-block-end: unset;
 }
 
 /* .tabinator::before {
@@ -1248,7 +1260,7 @@ button[data-balloon] {
   color: #888;
   cursor: pointer;
 }
-.tabinator input:checked + label {
+.tabinator input.selected + label {
   position: relative;
   color: #000;
   background: #fff;
@@ -1256,7 +1268,7 @@ button[data-balloon] {
   /* border-bottom: 1px solid #000; */
   border-radius: 5px 5px 0 0;
 }
-.tabinator input:checked + label:after {
+.tabinator input.selected + label:after {
   display: block;
   content: '';
   position: absolute;
