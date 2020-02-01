@@ -51,7 +51,7 @@ const SendingTab = ({
           reloadWalletInfo={reloadWalletInfo}
           conversionRates={conversionRates}
         />,
-        <TransactionHistory transactionHistory={transactionHistory} />,
+        <TransactionHistory />,
       </div>
       <div className="dashboard-column">
         <SendAdaPage />,
@@ -63,11 +63,10 @@ const SendingTab = ({
 }
 
 class TxHistoryPage extends Component<Props> {
-  //TODO rename to wallet or dashboard
+  //TODO rename to walletpage or dashboard
   constructor(props) {
     super(props)
     this.state = {
-      selectedTab: 'transactions',
       mainTabSelected: 'Staking',
     }
     this.selectMainTab = this.selectMainTab.bind(this)
@@ -92,7 +91,6 @@ class TxHistoryPage extends Component<Props> {
     },
     {mainTabSelected}
   ) {
-    // maybe a constant for list of maintabs and map over them
     const mainTabs = ['Sending', 'Staking']
     return (
       <div className="page-wrapper">
@@ -139,63 +137,52 @@ class TxHistoryPage extends Component<Props> {
   }
 }
 
+const DashboardTab = ({name, selectedTab, selectTab}) => (
+  <li
+    className={`dashboard-tab ${name === selectedTab ? 'selected' : ''}`}
+    onClick={() => selectTab(name)}
+  >
+    {name}
+  </li>
+)
+
 class DashboardMobileContent extends Component<Props> {
   constructor(props) {
     super(props)
-    this.state = {selectedTab: 'transactions'}
-    this.changeTab = this.changeTab.bind(this)
+    this.state = {
+      selectedTab: !this.props.displayStakingPage ? 'Transactions' : 'Delegate ADA',
+    }
+    this.selectSubTab = this.selectSubTab.bind(this)
   }
-  changeTab(tabName) {
+  selectSubTab(tabName) {
     this.setState({selectedTab: tabName})
   }
   render({transactionHistory, delegationHistory, displayStakingPage}, {selectedTab}) {
-    const dashboardTab = (tabName, tabText) => (
-      <li
-        className={`dashboard-tab ${tabName === selectedTab ? 'selected' : ''}`}
-        onClick={() => this.changeTab(tabName)}
-      >
-        {tabText}
-      </li>
-    )
-
-    const stakingTabs = ['delegate', 'delegation-histor', 'ycurrent -delegation']
-    const sendingTabs = ['send', 'transactions', 'receive']
-
+    const stakingTabs = ['Delegate ADA', 'Current Delegation']
+    const sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
+    const displayingTabs = displayStakingPage ? stakingTabs : sendingTabs
     if (displayStakingPage && sendingTabs.includes(selectedTab)) {
-      this.changeTab('delegate')
+      this.selectSubTab('Delegate ADA')
     }
     if (!displayStakingPage && stakingTabs.includes(selectedTab)) {
-      this.changeTab('transactions')
+      this.selectSubTab('Transactions')
     }
-
+    const tabs = {
+      'Delegate ADA': DelegatePage,
+      'Current Delegation': CurrentDelegationPage,
+      'Send ADA': SendAdaPage,
+      'Transactions': TransactionHistory,
+      'Recieve ADA': MyAddresses,
+    }
+    const Tab = tabs[selectedTab]
     return (
       <div className="dashboard-content">
         <ul className="dashboard-tabs">
-          {displayStakingPage
-            ? [
-              dashboardTab('delegate', 'Delegate ADA'),
-              dashboardTab('current-delegation', 'Current Delegation'),
-              // dashboardTab('delegation-history', 'Delegation History'),
-            ]
-            : [
-              dashboardTab('transactions', 'Transactions'),
-              dashboardTab('send', 'Send ADA'),
-              dashboardTab('receive', 'Receive ADA'),
-            ]}
+          {displayingTabs.map((name) => (
+            <DashboardTab name={name} selectedTab={selectedTab} selectTab={this.selectSubTab} />
+          ))}
         </ul>
-        {displayStakingPage
-          ? [
-            selectedTab === 'delegate' && <DelegatePage />,
-            // selectedTab === 'delegation-history' && <DelegationHistory />,
-            selectedTab === 'current-delegation' && <CurrentDelegationPage />,
-          ]
-          : [
-            selectedTab === 'send' && <SendAdaPage />,
-            selectedTab === 'transactions' && (
-              <TransactionHistory transactionHistory={transactionHistory} />
-            ),
-            selectedTab === 'receive' && <MyAddresses />,
-          ]}
+        <Tab />
       </div>
     )
   }

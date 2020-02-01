@@ -3,6 +3,8 @@ import printAda from '../../../helpers/printAda'
 import formatDate from '../../../helpers/formatDate'
 import {Lovelace} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
+import actions from '../../../actions'
+import {connect} from '../../../libs/unistore/preact'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {
   const value = printAda(Math.abs(amount) as Lovelace)
@@ -78,4 +80,9 @@ const TransactionHistory = ({transactionHistory}) => (
   </div>
 )
 
-export default TransactionHistory
+export default connect(
+  (state) => ({
+    transactionHistory: state.transactionHistory,
+  }),
+  actions
+)(TransactionHistory)
