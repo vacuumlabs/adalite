@@ -2,7 +2,7 @@ import {h, Component} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 
-const MainTab = ({name, selectedTab, selectTab}) => {
+export const MainTab = ({name, selectedTab, selectTab}) => {
   return (
     <li>
       <input
@@ -17,9 +17,11 @@ const MainTab = ({name, selectedTab, selectTab}) => {
   )
 }
 
-export default connect(
-  (state) => ({
-    displayStakingPage: state.displayStakingPage,
-  }),
-  actions
-)(MainTab)
+export const SubTab = ({name, selectedTab, selectTab}) => (
+  <li
+    className={`dashboard-tab ${name === selectedTab ? 'selected' : ''}`}
+    onClick={() => selectTab(name)}
+  >
+    {name}
+  </li>
+)

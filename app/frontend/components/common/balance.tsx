@@ -3,6 +3,8 @@ import printAda from '../../helpers/printAda'
 import Conversions from './conversions'
 import {Lovelace} from '../../state'
 import {AdaIcon} from './svg'
+import actions from '../../actions'
+import {connect} from '../../libs/unistore/preact'
 
 interface Props {
   balance: Lovelace
@@ -42,4 +44,10 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
   </div>
 )
 
-export default Balance
+export default connect(
+  (state) => ({
+    conversionRates: state.conversionRates && state.conversionRates.data,
+    balance: state.balance,
+  }),
+  actions
+)(Balance)

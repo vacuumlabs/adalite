@@ -1,7 +1,7 @@
 import {h} from 'preact'
 import {connect} from '../helpers/connect'
 
-import TxHistoryPage from './pages/txHistory/txHistoryPage'
+import DashboardPage from './pages/dashboard/dashboardPage'
 import MyAddresses from './pages/receiveAda/myAddresses'
 import SendPage from './pages/sendAda/sendAdaPage'
 import LoginPage from './pages/login/loginPage'
@@ -22,7 +22,7 @@ const TopLevelRouter = connect((state) => ({
   let content
   switch (currentTab) {
     case 'txHistory':
-      content = <TxHistoryPage />
+      content = <DashboardPage />
       break
     case 'receive':
       content = <MyAddresses />
@@ -38,7 +38,7 @@ const TopLevelRouter = connect((state) => ({
       break
     default:
       window.history.pushState({}, 'txHistory', 'txHistory')
-      content = <TxHistoryPage />
+      content = <DashboardPage />
   }
   // TODO is Alert used anywhere? if so add here
   return content

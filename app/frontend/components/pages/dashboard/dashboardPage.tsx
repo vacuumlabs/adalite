@@ -2,26 +2,24 @@ import {h, Component} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'
-import TransactionHistory from './transactionHistory'
+import TransactionHistory from '../txHistory/transactionHistory'
 import ExportCard from '../exportWallet/exportCard'
 import SendAdaPage from '../sendAda/sendAdaPage'
 import MyAddresses from '../receiveAda/myAddresses'
 import DelegatePage from '../delegations/delegatePage'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
 // import DelegationHistory from '../delegations/delegationHistory'
-import StakingPageToggle from '../../common/stakingPageToggle'
+// import StakingPageToggle from '../../common/stakingPageToggle'
 import ShelleyBalances from '../delegations/shelleyBalances'
 import {ADALITE_CONFIG} from '.././../../config'
-import MainTab from './mainTab'
+import {MainTab, SubTab} from './tabs'
 
 interface Props {
-  transactionHistory: any
-  // delegationHistory: any
   displayStakingPage: any
   toggleDisplayStakingPage?: (value: boolean) => void
 }
 
-const StakingTab = () => {
+const StakingPage = () => {
   return (
     <div className="dashboard desktop">
       <div className="dashboard-column">
@@ -36,21 +34,13 @@ const StakingTab = () => {
   )
 }
 
-const SendingTab = ({
-  balance,
-  transactionHistory,
-  reloadWalletInfo,
-  conversionRates,
+const SendingPage = ({
   showExportOption,
 }) => {
   return (
     <div className="dashboard desktop">
       <div className="dashboard-column">
-        <Balance
-          balance={balance}
-          reloadWalletInfo={reloadWalletInfo}
-          conversionRates={conversionRates}
-        />,
+        <Balance/>,
         <TransactionHistory />,
       </div>
       <div className="dashboard-column">
@@ -62,34 +52,24 @@ const SendingTab = ({
   )
 }
 
-class TxHistoryPage extends Component<Props> {
-  //TODO rename to walletpage or dashboard
+class DashboardPage extends Component<Props> {
   constructor(props) {
     super(props)
     this.state = {
-      mainTabSelected: 'Staking',
+      selectedMainTab: 'Staking',
     }
     this.selectMainTab = this.selectMainTab.bind(this)
   }
 
   selectMainTab(name) {
     this.setState({
-      mainTabSelected: name,
+      selectedMainTab: name,
     })
     this.props.toggleDisplayStakingPage(name === 'Staking')
   }
 
-  render(
-    {
-      balance,
-      transactionHistory,
-      // delegationHistory,
-      reloadWalletInfo,
-      conversionRates,
-      showExportOption,
-      displayStakingPage,
-    },
-    {mainTabSelected}
+  render({showExportOption, displayStakingPage},
+    {selectedMainTab}
   ) {
     const mainTabs = ['Sending', 'Staking']
     return (
@@ -97,21 +77,17 @@ class TxHistoryPage extends Component<Props> {
         {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
           <ul className="tabinator">
             {mainTabs.map((name) => (
-              <MainTab name={name} selectedTab={mainTabSelected} selectTab={this.selectMainTab} />
+              <MainTab name={name} selectedTab={selectedMainTab} selectTab={this.selectMainTab} />
             ))}
           </ul>
         )}
         <div className="dashboard desktop">
           {!displayStakingPage ? (
-            <SendingTab
-              balance={balance}
-              transactionHistory={transactionHistory}
-              reloadWalletInfo={reloadWalletInfo}
-              conversionRates={conversionRates}
-              showExportOption
+            <SendingPage
+              showExportOption={showExportOption}
             />
           ) : (
-            <StakingTab />
+            <StakingPage />
           )}
         </div>
 
@@ -119,15 +95,9 @@ class TxHistoryPage extends Component<Props> {
           {displayStakingPage ? (
             <ShelleyBalances />
           ) : (
-            <Balance
-              balance={balance}
-              reloadWalletInfo={reloadWalletInfo}
-              conversionRates={conversionRates}
-            />
+            <Balance/>
           )}
           <DashboardMobileContent
-            transactionHistory={transactionHistory}
-            // delegationHistory={delegationHistory}
             displayStakingPage={displayStakingPage}
           />
           {!displayStakingPage && showExportOption && <ExportCard />}
@@ -137,52 +107,42 @@ class TxHistoryPage extends Component<Props> {
   }
 }
 
-const DashboardTab = ({name, selectedTab, selectTab}) => (
-  <li
-    className={`dashboard-tab ${name === selectedTab ? 'selected' : ''}`}
-    onClick={() => selectTab(name)}
-  >
-    {name}
-  </li>
-)
-
 class DashboardMobileContent extends Component<Props> {
   constructor(props) {
     super(props)
     this.state = {
-      selectedTab: !this.props.displayStakingPage ? 'Transactions' : 'Delegate ADA',
+      selectedSubTab: !this.props.displayStakingPage ? 'Transactions' : 'Delegate ADA',
     }
     this.selectSubTab = this.selectSubTab.bind(this)
   }
-  selectSubTab(tabName) {
-    this.setState({selectedTab: tabName})
+  selectSubTab(name) {
+    this.setState({selectedSubTab: name})
   }
-  render({transactionHistory, delegationHistory, displayStakingPage}, {selectedTab}) {
+  pages = {
+    'Delegate ADA': DelegatePage,
+    'Current Delegation': CurrentDelegationPage,
+    'Send ADA': SendAdaPage,
+    'Transactions': TransactionHistory,
+    'Recieve ADA': MyAddresses,
+  }
+  render({displayStakingPage}, {selectedSubTab}) {
     const stakingTabs = ['Delegate ADA', 'Current Delegation']
     const sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
-    const displayingTabs = displayStakingPage ? stakingTabs : sendingTabs
-    if (displayStakingPage && sendingTabs.includes(selectedTab)) {
+    if (displayStakingPage && sendingTabs.includes(selectedSubTab)) {
       this.selectSubTab('Delegate ADA')
     }
-    if (!displayStakingPage && stakingTabs.includes(selectedTab)) {
+    if (!displayStakingPage && stakingTabs.includes(selectedSubTab)) {
       this.selectSubTab('Transactions')
     }
-    const tabs = {
-      'Delegate ADA': DelegatePage,
-      'Current Delegation': CurrentDelegationPage,
-      'Send ADA': SendAdaPage,
-      'Transactions': TransactionHistory,
-      'Recieve ADA': MyAddresses,
-    }
-    const Tab = tabs[selectedTab]
+    const Page = this.pages[selectedSubTab]
     return (
       <div className="dashboard-content">
         <ul className="dashboard-tabs">
-          {displayingTabs.map((name) => (
-            <DashboardTab name={name} selectedTab={selectedTab} selectTab={this.selectSubTab} />
+          {(displayStakingPage ? stakingTabs : sendingTabs).map((name) => (
+            <SubTab name={name} selectedTab={selectedSubTab} selectTab={this.selectSubTab} />
           ))}
         </ul>
-        <Tab />
+        <Page />
       </div>
     )
   }
@@ -190,11 +150,8 @@ class DashboardMobileContent extends Component<Props> {
 
 export default connect(
   (state) => ({
-    transactionHistory: state.transactionHistory,
-    conversionRates: state.conversionRates && state.conversionRates.data,
     showExportOption: state.showExportOption,
     displayStakingPage: state.displayStakingPage,
-    balance: state.balance,
   }),
   actions
-)(TxHistoryPage)
+)(DashboardPage)
