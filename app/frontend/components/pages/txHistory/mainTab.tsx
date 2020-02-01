@@ -2,23 +2,17 @@ import {h, Component} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 
-const MainTab = ({
-  caption,
-  name,
-  displayStakingPage,
-  toggleDisplayStakingPage,
-  checked = false,
-}) => {
+const MainTab = ({name, selectedTab, selectTab}) => {
   return (
     <li>
       <input
-        className={checked === displayStakingPage ? 'selected' : ''}
+        className={name === selectedTab ? 'selected' : ''}
         type="radio"
         id={name}
         name="tabs"
-        onClick={() => toggleDisplayStakingPage(checked)}
+        onClick={() => selectTab(name)}
       />
-      <label htmlFor={name}>{caption}</label>
+      <label htmlFor={name}>{name}</label>
     </li>
   )
 }

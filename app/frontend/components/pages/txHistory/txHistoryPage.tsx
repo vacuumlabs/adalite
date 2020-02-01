@@ -18,22 +18,8 @@ interface Props {
   transactionHistory: any
   // delegationHistory: any
   displayStakingPage: any
+  toggleDisplayStakingPage?: (value: boolean) => void
 }
-
-// const MainTab = ({name, checked}) => {
-//   return <li>
-//     <input
-//       type="radio"
-//       id={name}
-//       name="tabs"
-//       checked={checked}
-//       onClick={() => toggleDisplayStakingPage(false)}
-//     />
-//     <label htmlFor={name}>{name}</label>
-//   </li>
-// }
-
-// TODO make dict of tabs for mobile n stakin/send
 
 const StakingTab = () => {
   return (
@@ -50,12 +36,12 @@ const StakingTab = () => {
   )
 }
 
-const SendAdaTab = ({
+const SendingTab = ({
   balance,
   transactionHistory,
   reloadWalletInfo,
   conversionRates,
-  // showExportOption,
+  showExportOption,
 }) => {
   return (
     <div className="dashboard desktop">
@@ -70,58 +56,61 @@ const SendAdaTab = ({
       <div className="dashboard-column">
         <SendAdaPage />,
         <MyAddresses />,
-        <ExportCard />
+        {showExportOption && <ExportCard />}
       </div>
     </div>
   )
 }
 
-const DashboardTab = (tabName, tabText) => (
-  <li className={`dashboard-tab ${'selected'}`} onClick={() => this.changeTab(tabName)}>
-    {tabText}
-  </li>
-)
-
 class TxHistoryPage extends Component<Props> {
   //TODO rename to wallet or dashboard
   constructor(props) {
     super(props)
-    this.state = {selectedTab: 'transactions'}
-    // this.changeTab = this.changeTab.bind(this)
+    this.state = {
+      selectedTab: 'transactions',
+      mainTabSelected: 'Staking',
+    }
+    this.selectMainTab = this.selectMainTab.bind(this)
   }
 
-  /*
-    li display unset
-    tabinator padding inline start margin block start a margin block end unset
-  */
+  selectMainTab(name) {
+    this.setState({
+      mainTabSelected: name,
+    })
+    this.props.toggleDisplayStakingPage(name === 'Staking')
+  }
 
-  render({
-    balance,
-    transactionHistory,
-    // delegationHistory,
-    reloadWalletInfo,
-    conversionRates,
-    showExportOption,
-    displayStakingPage,
-  }) {
+  render(
+    {
+      balance,
+      transactionHistory,
+      // delegationHistory,
+      reloadWalletInfo,
+      conversionRates,
+      showExportOption,
+      displayStakingPage,
+    },
+    {mainTabSelected}
+  ) {
+    // maybe a constant for list of maintabs and map over them
+    const mainTabs = ['Sending', 'Staking']
     return (
       <div className="page-wrapper">
         {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
-          <div>
-            {/* <Tabs/> */}
-            <ul className="tabinator">
-              <MainTab caption="Sending" name="sending" />
-              <MainTab caption="Staking" name="staking" checked />
-            </ul>
-          </div>
+          <ul className="tabinator">
+            {mainTabs.map((name) => (
+              <MainTab name={name} selectedTab={mainTabSelected} selectTab={this.selectMainTab} />
+            ))}
+          </ul>
         )}
         <div className="dashboard desktop">
           {!displayStakingPage ? (
-            <SendAdaTab
+            <SendingTab
               balance={balance}
               transactionHistory={transactionHistory}
               reloadWalletInfo={reloadWalletInfo}
               conversionRates={conversionRates}
+              showExportOption
             />
           ) : (
             <StakingTab />
@@ -169,7 +158,7 @@ class DashboardMobileContent extends Component<Props> {
       </li>
     )
 
-    const stakingTabs = ['delegate', 'delegation-history', 'current-delegation']
+    const stakingTabs = ['delegate', 'delegation-histor', 'ycurrent -delegation']
     const sendingTabs = ['send', 'transactions', 'receive']
 
     if (displayStakingPage && sendingTabs.includes(selectedTab)) {
@@ -211,70 +200,6 @@ class DashboardMobileContent extends Component<Props> {
     )
   }
 }
-
-const TxHistoryPage2 = connect(
-  (state) => ({
-    transactionHistory: state.transactionHistory,
-    conversionRates: state.conversionRates && state.conversionRates.data,
-    showExportOption: state.showExportOption,
-    displayStakingPage: state.displayStakingPage,
-    balance: state.balance,
-  }),
-  actions
-)(
-  ({
-    balance,
-    transactionHistory,
-    delegationHistory,
-    reloadWalletInfo,
-    conversionRates,
-    showExportOption,
-    displayStakingPage,
-  }) => (
-    <div className="page-wrapper">
-      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && <StakingPageToggle />}
-      <div className="dashboard desktop">
-        <div className="dashboard-column">
-          {displayStakingPage
-            ? [<ShelleyBalances />, <CurrentDelegationPage />]
-            : [
-              <Balance
-                balance={balance}
-                reloadWalletInfo={reloadWalletInfo}
-                conversionRates={conversionRates}
-              />,
-              <TransactionHistory transactionHistory={transactionHistory} />,
-            ]}
-        </div>
-        <div className="dashboard-column">
-          {displayStakingPage
-            ? [
-              <DelegatePage />,
-              // <DelegationHistory />
-            ]
-            : [<SendAdaPage />, <MyAddresses />, showExportOption && <ExportCard />]}
-        </div>
-      </div>
-      <div className="dashboard mobile">
-        {displayStakingPage ? (
-          <ShelleyBalances />
-        ) : (
-          <Balance
-            balance={balance}
-            reloadWalletInfo={reloadWalletInfo}
-            conversionRates={conversionRates}
-          />
-        )}
-        <DashboardMobileContent
-          transactionHistory={transactionHistory}
-          // delegationHistory={delegationHistory}
-          displayStakingPage={displayStakingPage}
-        />
-        {!displayStakingPage && showExportOption && <ExportCard />}
-      </div>
-    </div>
-  )
-)
 
 export default connect(
   (state) => ({
