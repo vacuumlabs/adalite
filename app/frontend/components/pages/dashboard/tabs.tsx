@@ -4,15 +4,11 @@ import actions from '../../../actions'
 
 export const MainTab = ({name, selectedTab, selectTab}) => {
   return (
-    <li>
-      <input
-        className={name === selectedTab ? 'selected' : ''}
-        type="radio"
-        id={name}
-        name="tabs"
-        onClick={() => selectTab(name)}
-      />
-      <label htmlFor={name}>{name}</label>
+    <li className="main-tab">
+      <input type="radio" id={name} name="tabs" onClick={() => selectTab(name)} />
+      <label className={name === selectedTab ? 'selected' : ''} htmlFor={name}>
+        {name}
+      </label>
     </li>
   )
 }

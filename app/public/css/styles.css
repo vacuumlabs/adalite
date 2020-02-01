@@ -1177,43 +1177,10 @@ button[data-balloon] {
   cursor: pointer;
 }
 
-/* .tabinator {
-  background: #fff;
-  padding: 40px;
-  font-family: Open Sans;
-} */
-
 /* staking/sending tabs */
 
-.tabinator input {
+/* .tabinator input {
   display: none;
-}
-
-.tabinator li {
-  display: unset;
-}
-.tabinator label {
-  box-sizing: border-box;
-  display: inline-block;
-  padding: 15px 25px;
-  color: #000;
-  /* margin-bottom: 20px; */
-  /* margin-left: -1px; */
-  width: 50%;
-  text-align: center;
-  /* left: 1px; */
-}
-
-/* ul.tabinator {
-  ul: unset;
-}
-
-li input {
-  all: unset;
-}
-
-li label {
-  all: unset;
 } */
 
 .tabinator {
@@ -1224,15 +1191,24 @@ li label {
   margin-block-end: unset;
 }
 
-/* .tabinator::before {
-  content: '';
-  height: 10px;
-  width: 10px;
-  left: -1px;
-  box-shadow: 0 0 5px -5px #939393;
-} */
+.tabinator li {
+  display: unset;
+}
 
-.tabinator label:before {
+li.main-tab input {
+  display: none;
+}
+
+li.main-tab label {
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 15px 25px;
+  color: #000;
+  width: 50%;
+  text-align: center;
+}
+
+li.main-tab label:before {
   content:'';
   display:block;
   width:100%;
@@ -1244,7 +1220,7 @@ li label {
   z-index:1;  
 }
 
-.tabinator input:checked::before {
+li.main-tab input::before label.selected {
   content:'';
   display:block;
   width:100%;
@@ -1256,26 +1232,22 @@ li label {
   z-index:1;
 }
 
-.tabinator label:hover {
+li.main-tab label:hover {
   color: #888;
   cursor: pointer;
 }
-.tabinator input.selected + label {
+li.main-tab input + label.selected {
   position: relative;
   color: #000;
   background: #fff;
-  /* border: 1px solid #bbb; */
-  /* border-bottom: 1px solid #000; */
   border-radius: 5px 5px 0 0;
 }
-.tabinator input.selected + label:after {
+li.main-tab input + label.selected:after {
   display: block;
   content: '';
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
-  /* box-shadow: ; */
-  /* border: 1px solid #fff; */
 }
 
 /* CARD */
@@ -4485,25 +4457,81 @@ input:checked + .slider:before {
     color: #888;
     cursor: pointer;
   } */
-  .tabinator input:checked + label {
-    position: relative;
-    color: #000;
-    background: #fff;
-    /* border: 1px solid #000; */
-    /* border-bottom: 1px solid #000; */
-    border-radius: 5px 5px 0 0;
+
+  /* .tabinaror label {
+    border: 1px solid;
+  } */
+
+
+
+  /* li.main-tab:last-child input + label {
+    border-left: 1px transparent;
+  } */
+
+  li.main-tab:first-child input + label {
+    border-right: 1px transparent;
   }
-  .tabinator input:checked + label:after {
+
+  li.main-tab input + label {
+    border: 1px solid var(--color-border);
+    /* border-top: transparent; */
+    box-shadow: unset;
+    border-radius: unset;
+  }
+
+  li.main-tab input + label.selected::after {
     display: block;
     content: '';
     position: absolute;
     top: 0; right: 0; bottom: 0; left: 0;
     box-shadow: unset;
-    /* box-shadow: ; */
-    /* border-top: 1px solid #000;
-    border-right: 1px solid #000;
-    border-left: 1px solid #000; */
+    border-radius: unset;
+    /* border: 1px solid */
   }
+
+  li.main-tab input + label.selected::before {
+    display: none;
+  }
+
+  li.main-tab input + label.selected {
+    /* border-bottom: 1px var(--color-border); */
+    border-radius: unset;
+    position: relative;
+    color: #000;
+    background: #fff;
+    box-shadow: unset;
+  }
+
+
+  /* .tabinator label.selected {
+    position: relative;
+    color: #000;
+    background: #fff;
+    /* border: 1px solid #000; */
+    /* border-bottom: 1px solid #000; */
+    /* border-radius: unset */
+  /* } */ 
+
+  /* .tabinator:first-child.selected {
+    border-left-color: transparent;
+  }
+  
+  .tabinaror:last-child.selected {
+    border-right-color: transparent;
+  } */
+
+  /* #root > div > div > ul > li:nth-child(2) > label */
+
+  .tabinator + label.selected:after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    box-shadow: unset;
+    border-radius: unset;
+    /* border-bottom: unset; */
+  }
+
 
   /* TRANSACTIONS */
 
