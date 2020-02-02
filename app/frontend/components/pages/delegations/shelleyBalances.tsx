@@ -31,7 +31,7 @@ const shelleyBalances = ({
         <AdaIcon />
       </div>
     </div>
-    <label className="card-title staking-balances-title">
+    <h2 className="card-title staking-balances-title">
       Non-staking balance
       <a
         {...tooltip(
@@ -41,19 +41,19 @@ const shelleyBalances = ({
       >
         <span className="show-info">{''}</span>
       </a>
-    </label>
+    </h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
         {isNaN(Number(nonStakingBalance)) ? nonStakingBalance : `${printAda(nonStakingBalance)}`}
         <AdaIcon />
       </div>
-      {nonStakingBalance && (
+      {!!nonStakingBalance && (
         <button className="button stake-pool" onClick={convertNonStakingUtxos}>
           Convert to stakable
         </button>
       )}
     </div>
-    <label className="card-title staking-balances-title">
+    <h2 className="card-title staking-balances-title">
       Rewards account balance
       <a
         {...tooltip(
@@ -63,7 +63,7 @@ const shelleyBalances = ({
       >
         <span className="show-info">{''}</span>
       </a>
-    </label>
+    </h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
         {isNaN(Number(rewardsAccountBalance))

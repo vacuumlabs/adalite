@@ -842,6 +842,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           txHash,
         }
       } else if (pollingCounter < maxRetries - 1) {
+        if (pollingCounter === 21) {
+          loadingAction(state, 'This might take a while...')
+        }
         await sleep(pollingInterval)
       }
     }
@@ -878,7 +881,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         throw NamedError('TransactionRejectedByNetwork')
       }
 
-      sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 20)
+      sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 40)
 
       const address = state.sendAddress.fieldValue
       const donationAmount = state.donationAmount.coins

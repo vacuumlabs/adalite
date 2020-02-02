@@ -9,7 +9,6 @@ import MyAddresses from '../receiveAda/myAddresses'
 import DelegatePage from '../delegations/delegatePage'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
 // import DelegationHistory from '../delegations/delegationHistory'
-// import StakingPageToggle from '../../common/stakingPageToggle'
 import ShelleyBalances from '../delegations/shelleyBalances'
 import {ADALITE_CONFIG} from '.././../../config'
 import {MainTab, SubTab} from './tabs'
@@ -34,13 +33,11 @@ const StakingPage = () => {
   )
 }
 
-const SendingPage = ({
-  showExportOption,
-}) => {
+const SendingPage = ({showExportOption}) => {
   return (
     <div className="dashboard desktop">
       <div className="dashboard-column">
-        <Balance/>,
+        <Balance />,
         <TransactionHistory />,
       </div>
       <div className="dashboard-column">
@@ -68,9 +65,7 @@ class DashboardPage extends Component<Props> {
     this.props.toggleDisplayStakingPage(name === 'Staking')
   }
 
-  render({showExportOption, displayStakingPage},
-    {selectedMainTab}
-  ) {
+  render({showExportOption, displayStakingPage}, {selectedMainTab}) {
     const mainTabs = ['Sending', 'Staking']
     return (
       <div className="page-wrapper">
@@ -83,23 +78,15 @@ class DashboardPage extends Component<Props> {
         )}
         <div className="dashboard desktop">
           {!displayStakingPage ? (
-            <SendingPage
-              showExportOption={showExportOption}
-            />
+            <SendingPage showExportOption={showExportOption} />
           ) : (
             <StakingPage />
           )}
         </div>
 
         <div className="dashboard mobile">
-          {displayStakingPage ? (
-            <ShelleyBalances />
-          ) : (
-            <Balance/>
-          )}
-          <DashboardMobileContent
-            displayStakingPage={displayStakingPage}
-          />
+          {displayStakingPage ? <ShelleyBalances /> : <Balance />}
+          <DashboardMobileContent displayStakingPage={displayStakingPage} />
           {!displayStakingPage && showExportOption && <ExportCard />}
         </div>
       </div>

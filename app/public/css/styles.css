@@ -4473,7 +4473,7 @@ input:checked + .slider:before {
   .tabinator {
     padding-bottom: unset;
     margin: 32px 0 -12px 0;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
   }
 
   .tabinator label:before {
