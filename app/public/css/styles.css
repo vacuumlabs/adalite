@@ -1177,11 +1177,8 @@ button[data-balloon] {
   cursor: pointer;
 }
 
-/* staking/sending tabs */
+/* MAIN TABS */
 
-/* .tabinator input {
-  display: none;
-} */
 
 .tabinator {
   padding-bottom: 2px;
@@ -1208,7 +1205,7 @@ li.main-tab label {
   text-align: center;
 }
 
-li.main-tab label:before {
+li.main-tab > input+label.selected:before {
   content:'';
   display:block;
   width:100%;
@@ -1216,18 +1213,6 @@ li.main-tab label:before {
   background-color:#fff;
   position:absolute;
   bottom:-4px;
-  left:0;
-  z-index:1;  
-}
-
-li.main-tab input::before label.selected {
-  content:'';
-  display:block;
-  width:100%;
-  height:15px;
-  background-color:#fff;
-  position:absolute;
-  bottom:-11px;
   left:0;
   z-index:1;
 }
@@ -3592,6 +3577,7 @@ input:checked + .slider:before {
 
   .navbar.authed {
     padding-bottom: 0;
+    box-shadow: unset;
   }
 
   .navbar.demo::before {
@@ -4158,6 +4144,58 @@ input:checked + .slider:before {
     display: block;
   }
 
+  /* MAIN TABS */
+
+  .tabinator {
+    padding-bottom: unset;
+    /* margin: 32px 0 -12px 0; */
+    box-shadow: unset;
+  }
+
+  .tabinator label:before {
+    display: none;
+  }
+
+  li.main-tab:first-child input + label {
+    border-right: 1px transparent;
+  }
+
+  li.main-tab:last-child input + label {
+    border-right: 1px transparent;
+  }
+
+  li.main-tab input + label {
+    border: 1px solid var(--color-border);
+    box-shadow: unset;
+    border-radius: unset;
+  }
+
+  li.main-tab label.selected {
+    border-bottom-color: transparent;
+  }
+
+  li.main-tab input + label.selected::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    box-shadow: unset;
+    border-radius: unset;
+    border-bottom: 1px transparent;
+  }
+
+  li.main-tab input + label.selected::before {
+    display: none;
+  }
+
+  li.main-tab input + label.selected {
+    border-radius: unset;
+    position: relative;
+    color: #000;
+    background: #fff;
+    box-shadow: unset;
+  }
+
   /* SEND ADA */
 
   .send .card-title {
@@ -4430,51 +4468,28 @@ input:checked + .slider:before {
     margin-bottom: 48px;
   }
 
-  /* tabs */
+  /* MAIN TABS */
 
   .tabinator {
-    padding-bottom: 1px;
-    /* border-bottom: 2px black; */
+    padding-bottom: unset;
+    margin: 32px 0 -12px 0;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
   }
 
   .tabinator label:before {
     display: none;
   }
-  
-  /* .tabinator input:checked::before {
-    content:'';
-    display:block;
-    width:100%;
-    height:15px;
-    background-color:#fff;
-    position:absolute;
-    bottom:-11px;
-    left:0;
-    z-index:1;
-  }
-  
-  .tabinator label:hover {
-    color: #888;
-    cursor: pointer;
-  } */
-
-  /* .tabinaror label {
-    border: 1px solid;
-  } */
-
-
-
-  /* li.main-tab:last-child input + label {
-    border-left: 1px transparent;
-  } */
 
   li.main-tab:first-child input + label {
     border-right: 1px transparent;
   }
 
+  li.main-tab:last-child input + label {
+    border-right: 1px transparent;
+  }
+
   li.main-tab input + label {
     border: 1px solid var(--color-border);
-    /* border-top: transparent; */
     box-shadow: unset;
     border-radius: unset;
   }
@@ -4486,7 +4501,6 @@ input:checked + .slider:before {
     top: 0; right: 0; bottom: 0; left: 0;
     box-shadow: unset;
     border-radius: unset;
-    /* border: 1px solid */
   }
 
   li.main-tab input + label.selected::before {
@@ -4494,44 +4508,12 @@ input:checked + .slider:before {
   }
 
   li.main-tab input + label.selected {
-    /* border-bottom: 1px var(--color-border); */
     border-radius: unset;
     position: relative;
     color: #000;
     background: #fff;
     box-shadow: unset;
   }
-
-
-  /* .tabinator label.selected {
-    position: relative;
-    color: #000;
-    background: #fff;
-    /* border: 1px solid #000; */
-    /* border-bottom: 1px solid #000; */
-    /* border-radius: unset */
-  /* } */ 
-
-  /* .tabinator:first-child.selected {
-    border-left-color: transparent;
-  }
-  
-  .tabinaror:last-child.selected {
-    border-right-color: transparent;
-  } */
-
-  /* #root > div > div > ul > li:nth-child(2) > label */
-
-  .tabinator + label.selected:after {
-    display: block;
-    content: '';
-    position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    box-shadow: unset;
-    border-radius: unset;
-    /* border-bottom: unset; */
-  }
-
 
   /* TRANSACTIONS */
 
