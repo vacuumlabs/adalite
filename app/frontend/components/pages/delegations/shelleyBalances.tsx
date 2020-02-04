@@ -35,7 +35,7 @@ const shelleyBalances = ({
       Non-staking balance
       <a
         {...tooltip(
-          'Non-staking balance represent amount of coins you re NOT able to delegate to any pool.',
+          'Non-staking balance represents amount of coins you are NOT able to delegate to any pool. (funds located on legacy or non-staking addresses)',
           true
         )}
       >
@@ -57,7 +57,7 @@ const shelleyBalances = ({
       Rewards account balance
       <a
         {...tooltip(
-          'This value represents balance on your staking account. It contains all recieved rewards from staking or recieved ADA',
+          'This value represents balance on your rewards account. It contains all received rewards from delegation and ADA potentially sent to the rewards address.',
           true
         )}
       >

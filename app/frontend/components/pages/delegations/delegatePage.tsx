@@ -87,7 +87,7 @@ class Delegate extends Component<Props> {
                   type="text"
                   className="input stake-pool-id"
                   name={`${i}`}
-                  placeholder="Stake Pool ID"
+                  placeholder="Ticker or Stake Pool ID"
                   value={pool.poolIdentifier}
                   onInput={updateStakePoolIdentifier}
                   autoComplete="off"
