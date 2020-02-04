@@ -159,7 +159,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
-      const validStakepools = await wallet.getValidStakepools()
+      const {validStakepools, ticker2Id} = await wallet.getValidStakepools()
       setState({
         walletIsLoaded: true,
         ...walletInfo,
@@ -181,6 +181,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         sendResponse: '',
         // shelley
         validStakepools,
+        ticker2Id,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
@@ -208,6 +209,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
             validationError: !poolInfo,
             ...poolInfo,
             percent: 100,
+            poolIdentifier: poolInfo.pool_id,
           },
         ],
       },
@@ -499,7 +501,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const pools = !revoke
       ? state.shelleyDelegation.selectedPools.map(({pool_id, percent}) => {
         return {
-          id: pool_id,
+          id: pool_id, //TODO refactor so both are pool_ids
           ratio: percent,
         }
       })
@@ -528,7 +530,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const validateDelegationAndCalculateDelegationFee = () => {
     const state = getState()
     const delegationValidationError = state.shelleyDelegation.selectedPools.every(
-      (pool) => pool.validationError || pool.pool_id === ''
+      (pool) => pool.validationError || pool.poolIdentifier === ''
     )
 
     setState({
@@ -547,8 +549,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const updateStakePoolId = (state, e) => {
-    const poolId = e.target.value
+  const updateStakePoolIdentifier = (state, e) => {
+    const poolIdentifier = e.target.value
+    const poolId = state.ticker2Id[poolIdentifier] || poolIdentifier
     const selectedPools = state.shelleyDelegation.selectedPools
     setState({
       shelleyDelegation: {
@@ -558,11 +561,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           const validationError = poolIdValidator(poolId, selectedPools, state.validStakepools)
           return i === index
             ? {
-              pool_id: poolId,
               validationError,
-              // just while multiple delegation isnt supported
+              // 100 just while multiple delegation isnt supported
               percent: 100, // TODO refactor to 'ratio' when not duplicate with tax
               ...state.validStakepools[poolId],
+              poolIdentifier,
             }
             : pool
         }),
@@ -1035,7 +1038,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setDonation,
     resetDonation,
     closeStakingBanner,
-    updateStakePoolId,
+    updateStakePoolIdentifier,
     toggleDisplayStakingPage,
     revokeDelegation,
     selectAdaliteStakepool,

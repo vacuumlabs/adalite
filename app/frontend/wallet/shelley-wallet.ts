@@ -198,8 +198,9 @@ const ShelleyBlockchainExplorer = (config) => {
       throw NamedError('NetworkError', e.message)
     }
     const poolArray = JSON.parse(await response.text())
-    const poolDict = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
-    return poolDict
+    const validStakepools = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
+    const ticker2Id = poolArray.reduce((dict, el) => ((dict[el.ticker] = el.pool_id), dict), {})
+    return {validStakepools, ticker2Id}
   }
 
   return {

@@ -33,7 +33,7 @@ const StakePoolInfo = ({pool}) => {
 }
 
 interface Props {
-  updateStakePoolId: any
+  updateStakePoolIdentifier: any
   // updateStakePoolPercent,
   // addStakePool,
   removeStakePool: any
@@ -61,7 +61,7 @@ class Delegate extends Component<Props> {
   }
 
   render({
-    updateStakePoolId,
+    updateStakePoolIdentifier,
     // updateStakePoolPercent,
     // addStakePool,
     removeStakePool,
@@ -88,8 +88,8 @@ class Delegate extends Component<Props> {
                   className="input stake-pool-id"
                   name={`${i}`}
                   placeholder="Stake Pool ID"
-                  value={pool.pool_id}
-                  onInput={updateStakePoolId}
+                  value={pool.poolIdentifier}
+                  onInput={updateStakePoolIdentifier}
                   autoComplete="off"
                 />
                 {/* <div className="input-wrapper-percent">

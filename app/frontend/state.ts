@@ -108,6 +108,7 @@ export interface State {
   }
   delegationHistory?: any
   validStakepools?: any
+  ticker2Id?: any
   delegationValidationError?: any
   shelleyAccountInfo?: {
     delegation: any
