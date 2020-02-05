@@ -1,7 +1,7 @@
 import {h, Fragment} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
-import formatDelegationDate from '../../../helpers/formatDelegationDate'
+import printAda from '../../../helpers/printAda'
 
 const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
   return (
@@ -23,8 +23,8 @@ const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
             <div className="delegation-history-id">
               {`
               Tax: ${(pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1] || ''}%
-              ${pool.rewards.fixed ? ` , ${`Fixed: ${pool.rewards.fixed}`}` : ''}
-              ${pool.rewards.limit ? ` , ${`Limit: ${pool.rewards.limit}`}` : ''}
+              ${pool.rewards.fixed ? ` , ${`Fixed: ${printAda(pool.rewards.fixed)}`}` : ''}
+              ${pool.rewards.limit ? ` , ${`Limit: ${printAda(pool.rewards.limit)}`}` : ''}
             `}
             </div>,
             <div />,

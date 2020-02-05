@@ -12,9 +12,10 @@ import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDial
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
 const StakePoolInfo = ({pool}) => {
+  // TODO refactor
   const tax = pool.rewards && (pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]
-  const fixed = pool.rewards && pool.rewards.fixed
-  const limit = pool.rewards && pool.rewards.limit
+  const fixed = pool.rewards && pool.rewards.fixed && printAda(pool.rewards.fixed)
+  const limit = pool.rewards && pool.rewards.limit && printAda(pool.rewards.limit)
   return (
     <div className={`stake-pool-info ${pool.validationError ? 'invalid' : 'valid'}`}>
       {pool.validationError ? (
