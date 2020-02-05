@@ -512,6 +512,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       {amount: null, pools, accountCounter, accountBalance},
       'account'
     )
+    handleError(
+      'delegationValidationError',
+      accountBalance >= plan.fee ? {code: 'DelegationAccountBalanceError'} : null
+    )
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -532,6 +536,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const delegationValidationError = state.shelleyDelegation.selectedPools.every(
       (pool) => pool.validationError || pool.poolIdentifier === ''
     )
+
+    handleError('delegationValidationError', delegationValidationError)
 
     setState({
       delegationValidationError,

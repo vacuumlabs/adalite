@@ -128,6 +128,7 @@ class Delegate extends Component<Props> {
             ))}
           </ul>
         </div>
+
         <div className="add-stake-pool-wrapper">
           {/* <button
             className="button add-stake-pool"
@@ -138,6 +139,9 @@ class Delegate extends Component<Props> {
             Add Another Stake Pool
           </button> */}
         </div>
+        {/* <div className='stake-pool-info'>
+          nvsd
+        </div> */}
         <div className="delegation-info-row">
           {/* <label className="fee-label">Delegated</label>
           <div
@@ -158,11 +162,14 @@ class Delegate extends Component<Props> {
           >
             Delegate
           </button>
-          {// : h(SendValidation, {
-          //   sendFormValidationError,
-          //   sendResponse,
-          // })
-            calculatingDelegationFee ? <CalculatingFee /> : <div />}
+          {[
+            delegationValidationError && (
+              <div className="validation-message error">
+                {getTranslation(delegationValidationError.code)}
+              </div>
+            ), // TODO refactor
+            calculatingDelegationFee && <CalculatingFee />,
+          ]}
         </div>
         {showTransactionErrorModal && (
           <TransactionErrorModal

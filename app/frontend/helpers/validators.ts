@@ -90,7 +90,7 @@ const poolIdValidator = (poolId, selectedPools, validStakepools) => {
   }
   if (!validStakepools[poolId]) {
     return {
-      code: 'InvalidStakepoolId',
+      code: 'InvalidStakepoolIdentifier',
     }
   }
   const selectedPoolsIds = selectedPools.map((pool) => pool.pool_id)
