@@ -1,5 +1,4 @@
 import debugLog from '../helpers/debugLog'
-
 import AddressManager from './address-manager'
 import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
@@ -26,95 +25,93 @@ const isUtxoProfitable = () => true
 
 const isUtxoNonStaking = ({address}) => !isGroup(address)
 
-const isAddressGroupType = ({address}) => isGroup(address)
-
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
-  const legacyExternal = AddressManager({
+  const legacyExtManager = AddressManager({
     addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
     gapLimit,
     blockchainExplorer,
   })
 
-  const legacyInternal = AddressManager({
+  const legacyIntManager = AddressManager({
     addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
     gapLimit,
     blockchainExplorer,
   })
 
-  const singleExternal = AddressManager({
+  const singleExtManager = AddressManager({
     addressProvider: ShelleySingleAddressProvider(cryptoProvider, accountIndex, false),
     gapLimit,
     blockchainExplorer,
   })
 
-  const singleInternal = AddressManager({
+  const singleIntManager = AddressManager({
     addressProvider: ShelleySingleAddressProvider(cryptoProvider, accountIndex, true),
     gapLimit,
     blockchainExplorer,
   })
 
-  const groupExternal = AddressManager({
+  const groupExtManager = AddressManager({
     addressProvider: ShelleyGroupAddressProvider(cryptoProvider, accountIndex, false),
     gapLimit,
     blockchainExplorer,
   })
 
-  const groupInternal = AddressManager({
+  const groupIntManager = AddressManager({
     addressProvider: ShelleyGroupAddressProvider(cryptoProvider, accountIndex, true),
     gapLimit,
     blockchainExplorer,
   })
 
-  const shelleyAccountAddressManager = AddressManager({
+  const accountAddrManager = AddressManager({
     addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
     gapLimit: 1,
     blockchainExplorer,
   })
 
   async function discoverAllAddresses() {
-    const a1 = await legacyInternal.discoverAddresses()
-    const a2 = await legacyExternal.discoverAddresses()
-    const a3 = await groupInternal.discoverAddresses()
-    const a4 = await groupExternal.discoverAddresses()
+    const legacyInt = await legacyIntManager.discoverAddresses()
+    const legacyExt = await legacyExtManager.discoverAddresses()
+    const groupInt = await groupIntManager.discoverAddresses()
+    const groupExt = await groupExtManager.discoverAddresses()
 
-    const a5 = await singleInternal.discoverAddresses()
-    const a6 = await singleExternal.discoverAddresses()
-    const a7 = await shelleyAccountAddressManager._deriveAddress(accountIndex)
+    const singleInt = await singleIntManager.discoverAddresses()
+    const singleExt = await singleExtManager.discoverAddresses()
+    const accountAddr = await accountAddrManager._deriveAddress(accountIndex)
 
     const isV1scheme = cryptoProvider.getDerivationScheme().type === 'v1'
     return {
-      legacy: isV1scheme ? [...a1] : [...a1, ...a2],
-      group: [...a3, ...a4],
-      single: [...a5, ...a6],
-      account: a7,
+      legacy: isV1scheme ? [...legacyInt] : [...legacyInt, ...legacyExt],
+      group: [...groupInt, ...groupExt],
+      single: [...singleInt, ...singleExt],
+      account: accountAddr,
     }
   }
 
   function getAddressToAbsPathMapper() {
     const mapping = Object.assign(
       {},
-      legacyInternal.getAddressToAbsPathMapping(),
-      legacyExternal.getAddressToAbsPathMapping(),
-      singleInternal.getAddressToAbsPathMapping(),
-      singleExternal.getAddressToAbsPathMapping(),
-      groupInternal.getAddressToAbsPathMapping(),
-      groupExternal.getAddressToAbsPathMapping(),
-      shelleyAccountAddressManager.getAddressToAbsPathMapping()
+      legacyIntManager.getAddressToAbsPathMapping(),
+      legacyExtManager.getAddressToAbsPathMapping(),
+      singleIntManager.getAddressToAbsPathMapping(),
+      singleExtManager.getAddressToAbsPathMapping(),
+      groupIntManager.getAddressToAbsPathMapping(),
+      groupExtManager.getAddressToAbsPathMapping(),
+      accountAddrManager.getAddressToAbsPathMapping()
     )
     return (address) => mapping[address]
   }
 
   function fixedPathMapper() {
     const mappingLegacy = {
-      ...legacyInternal.getAddressToAbsPathMapping(),
-      ...legacyExternal.getAddressToAbsPathMapping(),
+      ...legacyIntManager.getAddressToAbsPathMapping(),
+      ...legacyExtManager.getAddressToAbsPathMapping(),
     }
     const mappingShelley = {
-      ...singleInternal.getAddressToAbsPathMapping(),
-      ...singleExternal.getAddressToAbsPathMapping(),
-      ...groupInternal.getAddressToAbsPathMapping(),
-      ...groupExternal.getAddressToAbsPathMapping(),
-      ...shelleyAccountAddressManager.getAddressToAbsPathMapping(),
+      ...singleIntManager.getAddressToAbsPathMapping(),
+      ...singleExtManager.getAddressToAbsPathMapping(),
+      ...groupIntManager.getAddressToAbsPathMapping(),
+      ...groupExtManager.getAddressToAbsPathMapping(),
+      ...accountAddrManager.getAddressToAbsPathMapping(),
     }
 
     const fixedShelley = {}
@@ -127,7 +124,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
 
   async function getVisibleAddressesWithMeta() {
     // TODO : only group?
-    const addresses = await groupExternal.discoverAddressesWithMeta()
+    const addresses = await groupExtManager.discoverAddressesWithMeta()
     return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 
@@ -150,9 +147,9 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     fixedPathMapper,
     discoverAllAddresses,
     // TODO(refactor)
-    groupExternal,
-    singleExternal,
-    shelleyAccountAddressManager,
+    groupExtManager,
+    singleExtManager,
+    accountAddrManager,
     getChangeAddress,
     getVisibleAddressesWithMeta,
   }
@@ -319,7 +316,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   const accountTxPlanner = async (args) => {
-    const srcAddress = await myAddresses.shelleyAccountAddressManager._deriveAddress(0)
+    const srcAddress = await myAddresses.accountAddrManager._deriveAddress(0)
     const {dstAddress, amount, pools, accountCounter, accountBalance} = args
     const plan = computeAccountTxPlan(
       cryptoProvider.network.chainConfig,
@@ -373,7 +370,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getHistory() {
-    // ? getTxHistory?
+    // TODO refactor to getTxHistory?
     const {legacy, group, single, account} = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getTxHistory([...single, ...group, ...legacy, account])
   }
@@ -381,11 +378,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getAccountInfo() {
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, 0)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
-    let delegationRatioSum = 0
-    accountInfo.delegation.map((pool) => {
-      // TODO reduce
-      delegationRatioSum += pool.ratio
-    })
+    const delegationRatioSum = accountInfo.delegation.reduce(
+      (prev, current) => prev + current.ratio,
+      0
+    )
     const delegation = accountInfo.delegation.map((pool) => {
       return {
         ...pool,
@@ -428,8 +424,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getVisibleAddresses() {
-    const single = await myAddresses.singleExternal.discoverAddressesWithMeta()
-    const group = await myAddresses.groupExternal.discoverAddressesWithMeta()
+    const single = await myAddresses.singleExtManager.discoverAddressesWithMeta()
+    const group = await myAddresses.groupExtManager.discoverAddressesWithMeta()
     return [...single, ...group] //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 

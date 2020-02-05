@@ -208,7 +208,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           {
             validationError: !poolInfo,
             ...poolInfo,
-            percent: 100,
+            ratio: 100,
             poolIdentifier: poolInfo.pool_id,
           },
         ],
@@ -497,16 +497,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
-    // if (!state.calculatingDelegationFee) {
-    //   // TODO
-    //   // in case tab was changed, thus
-    //   return
-    // }
     const pools = !revoke
-      ? state.shelleyDelegation.selectedPools.map(({pool_id, percent}) => {
+      ? state.shelleyDelegation.selectedPools.map(({pool_id, ratio}) => {
         return {
-          id: pool_id, //TODO refactor so both are pool_ids
-          ratio: percent,
+          id: pool_id,
+          ratio,
         }
       })
       : []
@@ -575,7 +570,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
             ? {
               validationError,
               // 100 just while multiple delegation isnt supported
-              percent: 100, // TODO refactor to 'ratio' when not duplicate with tax
+              ratio: 100,
               ...state.validStakepools[poolId],
               poolIdentifier,
             }
@@ -1015,10 +1010,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const toggleDisplayStakingPage = async (state, value) => {
-    // setState({
-    //   calculatingDelegationFee: false,
-    //   calculatingFee: false,
-    // })
     setState({displayStakingPage: value})
     resetAmountFields(state)
   }

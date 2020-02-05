@@ -11,19 +11,23 @@ import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDial
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
+const DelegationValidation = ({delegationValidationError}) => (
+  <div className="validation-message error">{getTranslation(delegationValidationError.code)}</div>
+)
+
 const StakePoolInfo = ({pool}) => {
-  // TODO refactor
-  const tax = pool.rewards && (pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]
-  const fixed = pool.rewards && pool.rewards.fixed && printAda(pool.rewards.fixed)
-  const limit = pool.rewards && pool.rewards.limit && printAda(pool.rewards.limit)
+  const {rewards, ticker, homepage, name, validationError} = pool
+  const tax = rewards && (rewards.ratio[0] * 100) / rewards.ratio[1]
+  const fixed = rewards && rewards.fixed && printAda(rewards.fixed)
+  const limit = rewards && rewards.limit && printAda(rewards.limit)
   return (
-    <div className={`stake-pool-info ${pool.validationError ? 'invalid' : 'valid'}`}>
-      {pool.validationError ? (
-        <div>{getTranslation(pool.validationError.code)}</div>
+    <div className={`stake-pool-info ${validationError ? 'invalid' : 'valid'}`}>
+      {validationError ? (
+        <div>{getTranslation(validationError.code)}</div>
       ) : (
         <div>
-          <div>{`Name: ${pool.name || ''}`}</div>
-          <div>{`Ticker: ${pool.ticker || ''}`}</div>
+          <div>{`Name: ${name || ''}`}</div>
+          <div>{`Ticker: ${ticker || ''}`}</div>
           <div>
             {`
             Tax: ${tax || ''}%
@@ -33,7 +37,7 @@ const StakePoolInfo = ({pool}) => {
           </div>
           <div>
             {'Homepage: '}
-            <a href={pool.homepage || ''}>{pool.homepage || ''}</a>
+            <a href={homepage || ''}>{homepage || ''}</a>
           </div>
         </div>
       )}
@@ -165,10 +169,8 @@ class Delegate extends Component<Props> {
           </button>
           {[
             delegationValidationError && (
-              <div className="validation-message error">
-                {getTranslation(delegationValidationError.code)}
-              </div>
-            ), // TODO refactor
+              <DelegationValidation delegationValidationError={delegationValidationError} />
+            ),
             calculatingDelegationFee && <CalculatingFee />,
           ]}
         </div>

@@ -18,7 +18,7 @@ const DelegationHistory = ({delegationHistory}) => {
               {entry.entryType === 'delegation' ? (
                 entry.stakePools.map((pool) => [
                   <div className="delegation-history-name">{pool.name}</div>,
-                  <div className="delegation-history-percent">{`${pool.percent} %`}</div>,
+                  <div className="delegation-history-percent">{`${pool.ratio} %`}</div>,
                   <div className="delegation-history-id">{pool.id}</div>,
                   <div />,
                 ])

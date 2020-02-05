@@ -565,8 +565,8 @@ button[data-balloon] {
   font-size: 14px;
   line-height: 24px;
   font-weight: normal;
-  text-align: left;
-  min-width: 350px;
+  text-align: center;
+  min-width: 280px;
   white-space: pre-wrap;
 }
 
