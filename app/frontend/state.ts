@@ -67,6 +67,7 @@ export interface State {
   showContactFormModal?: boolean
 
   calculatingFee?: boolean
+  transactionFee?: any
 
   sendAmountValidationError?: any
   showExportOption?: boolean
@@ -140,6 +141,7 @@ const initialState: State = {
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: 0, coins: 0},
+  transactionFee: 0,
   sendTransactionSummary: {
     amount: 0 as Lovelace,
     fee: 0 as Lovelace,

@@ -411,7 +411,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     // calculateTxFee
     const state = getState()
     if (!isSendFormFilledAndValid(state)) {
-      setState({calculatingFee: false})
+      setState({
+        calculatingFee: false,
+        transactionFee: 0,
+      })
       return
     }
 
@@ -446,6 +449,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
       },
+      transactionFee: plan.fee != null ? plan.fee : plan.estimatedFee,
     })
     handleError(
       'sendAmountValidationError',
@@ -522,6 +526,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         delegationFee: plan.fee,
       },
       sendTransactionSummary: {
+        amount: 0 as Lovelace,
+        donation: 0 as Lovelace,
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
       },
