@@ -48,6 +48,8 @@ const translations = {
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
   NetworkError: ({message}) =>
     `NetworkError: connection failed. Please check your network connection. ${message}`,
+
+  NodeOutOfSync: () => 'Node is out of sync, try again in 1-2 minutes.',
 }
 
 function getTranslation(code, params = {}) {

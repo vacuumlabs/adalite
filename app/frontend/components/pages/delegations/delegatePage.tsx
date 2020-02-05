@@ -13,6 +13,8 @@ const CalculatingFee = () => <div className="validation-message send">Calculatin
 
 const StakePoolInfo = ({pool}) => {
   const tax = pool.rewards && (pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]
+  const fixed = pool.rewards && pool.rewards.fixed
+  const limit = pool.rewards && pool.rewards.limit
   return (
     <div className={`stake-pool-info ${pool.validationError ? 'invalid' : 'valid'}`}>
       {pool.validationError ? (
@@ -21,7 +23,13 @@ const StakePoolInfo = ({pool}) => {
         <div>
           <div>{`Name: ${pool.name || ''}`}</div>
           <div>{`Ticker: ${pool.ticker || ''}`}</div>
-          <div>{`Tax: ${tax || ''}%`}</div>
+          <div>
+            {`
+            Tax: ${tax || ''}%
+            ${fixed ? ` , ${`Fixed: ${fixed}`}` : ''}
+            ${limit ? ` , ${`Limit: ${limit}`}` : ''}
+          `}
+          </div>
           <div>
             {'Homepage: '}
             <a href={pool.homepage || ''}>{pool.homepage || ''}</a>

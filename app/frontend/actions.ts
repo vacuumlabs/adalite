@@ -493,11 +493,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
-    if (!state.calculatingDelegationFee) {
-      // TODO
-      // in case tab was changed, thus
-      return
-    }
+    // if (!state.calculatingDelegationFee) {
+    //   // TODO
+    //   // in case tab was changed, thus
+    //   return
+    // }
     const pools = !revoke
       ? state.shelleyDelegation.selectedPools.map(({pool_id, percent}) => {
         return {
@@ -846,7 +846,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         }
       } else if (pollingCounter < maxRetries - 1) {
         if (pollingCounter === 21) {
-          loadingAction(state, 'This might take a while...')
+          loadingAction(state, 'Syncing wallet - this might take a while...')
         }
         await sleep(pollingInterval)
       }
@@ -991,10 +991,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const toggleDisplayStakingPage = async (state, value) => {
-    setState({
-      calculatingDelegationFee: false,
-      calculatingFee: false,
-    })
+    // setState({
+    //   calculatingDelegationFee: false,
+    //   calculatingFee: false,
+    // })
     setState({displayStakingPage: value})
     resetAmountFields(state)
   }

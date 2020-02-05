@@ -137,7 +137,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     * AdaLite original functionality which did not consider change addresses.
     * This is an intermediate step between legacy mode and full Yoroi compatibility.
     */
-    const candidates = (await getVisibleAddressesWithMeta()).filter(isAddressGroupType)
+    const candidates = await getVisibleAddressesWithMeta()
+    //.filter(isAddressGroupType)
 
     const randomSeedGenerator = PseudoRandom(rngSeed)
     const choice = candidates[randomSeedGenerator.nextInt() % candidates.length]
@@ -382,7 +383,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     let delegationRatioSum = 0
     accountInfo.delegation.map((pool) => {
-      //reduce
+      // TODO reduce
       delegationRatioSum += pool.ratio
     })
     const delegation = accountInfo.delegation.map((pool) => {
@@ -412,12 +413,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getUTxOs(): Promise<Array<any>> {
     try {
       const {legacy, group, single} = await myAddresses.discoverAllAddresses()
-      const utxos = await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...group, ...single])
-      // filter out duplicate utxos, out of duplicates keep group address utxos
-      return utxos.filter(
-        (utxo, index, self) =>
-          index === self.findIndex((t) => t.address === utxo.address || isGroup(utxo.address))
-      )
+      const groupUtxos = await blockchainExplorer.fetchUnspentTxOutputs(group)
+      const nonGroupUtxos = await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...single])
+      const groupUtxoAddresses = groupUtxos
+        .map(({address}) => isGroup(address) && address)
+        .filter((a) => !!a)
+      const uniqueNonGroupUtxos = nonGroupUtxos
+        .map((u) => !groupUtxoAddresses.includes(u.address) && u)
+        .filter((u) => !!u)
+      return [...uniqueNonGroupUtxos, ...groupUtxos]
     } catch (e) {
       throw NamedError('NetworkError')
     }

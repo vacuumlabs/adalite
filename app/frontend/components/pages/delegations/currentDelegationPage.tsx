@@ -20,8 +20,13 @@ const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
             <div />,
             <div className="delegation-history-id">{`Ticker: ${pool.ticker}`}</div>,
             <div />,
-            <div className="delegation-history-id">{`Tax: ${(pool.rewards.ratio[0] * 100) /
-              pool.rewards.ratio[1]}%`}</div>,
+            <div className="delegation-history-id">
+              {`
+              Tax: ${(pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1] || ''}%
+              ${pool.rewards.fixed ? ` , ${`Fixed: ${pool.rewards.fixed}`}` : ''}
+              ${pool.rewards.limit ? ` , ${`Limit: ${pool.rewards.limit}`}` : ''}
+            `}
+            </div>,
             <div />,
             <div className="delegation-history-id">
               {'Homepage: '}

@@ -20,6 +20,8 @@ const request = async function request(url, method = 'GET', body = null, headers
     if (response.status === 429) {
       await sleep(DELAY_AFTER_TOO_MANY_REQUESTS)
       return await request(url, method, body, headers)
+    } else if (response.status === 503) {
+      throw NamedError('NodeOutOfSync')
     } else if (response.status >= 400) {
       throw NamedError(
         'NetworkError',
@@ -29,7 +31,10 @@ const request = async function request(url, method = 'GET', body = null, headers
     return response.json()
   } catch (e) {
     debugLog(e)
-    throw NamedError('NetworkError', `${method} ${url} returns error: ${e}`)
+    throw NamedError(
+      e.name === 'NodeOutOfSync' ? e.name : 'NetworkError',
+      `${method} ${url} returns error: ${e}`
+    )
   }
 }
 
