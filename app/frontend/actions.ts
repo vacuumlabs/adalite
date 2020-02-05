@@ -666,6 +666,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const resetTransactionSummary = () => {
+    setState({
+      sendTransactionSummary: {
+        amount: 0 as Lovelace,
+        fee: 0 as Lovelace,
+        donation: 0 as Lovelace,
+        plan: null,
+      },
+    })
+  }
+
   const isSendAmountNonPositive = (fieldValue, validationError) =>
     fieldValue === '' ||
     (validationError &&
@@ -905,6 +916,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetSendFormState(state)
       resetAmountFields(state)
       resetDelegationField()
+      resetTransactionSummary()
       wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,

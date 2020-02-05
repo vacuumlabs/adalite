@@ -566,6 +566,8 @@ button[data-balloon] {
   line-height: 24px;
   font-weight: normal;
   text-align: left;
+  min-width: 350px;
+  white-space: pre-wrap;
 }
 
 [data-balloon]::before {
@@ -4043,9 +4045,12 @@ input:checked + .slider:before {
   
   [data-balloon]::after {
     position: fixed;
-    top: 90%;
+    top: 85%;
     left: 50%;
     bottom: unset;
+    max-width: 80%;
+    width: fit-content;
+    text-align: center;
   }
 
   [data-balloon]::before {

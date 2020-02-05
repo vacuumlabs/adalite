@@ -149,7 +149,7 @@ class SendAdaPage extends Component<Props> {
           <label className="ada-label amount donation" htmlFor="donation-amount">
             Donate<a
               {...tooltip(
-                'Your donation is very much appreciated and will\nbe used for further development of AdaLite',
+                'Your donation is very much appreciated and will be used for further development of AdaLite',
                 true
               )}
             >
