@@ -640,12 +640,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const resetAmountFields = (state) => {
     setState({
       donationAmount: {fieldValue: '', coins: 0},
-      sendTransactionSummary: {
-        amount: 0 as Lovelace,
-        donation: 0 as Lovelace,
-        fee: 0 as Lovelace,
-        plan: null,
-      },
+      transactionFee: 0,
       maxDonationAmount: Infinity,
       checkedDonationType: '',
       showCustomDonationInput: false,
@@ -864,7 +859,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
          * but submitting the transaction and syncing of the explorer
          * should take enough time to invalidate the request cache anyway
          */
-        await reloadWalletInfo(state)
         return {
           success: true,
           txHash,
@@ -931,6 +925,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetAmountFields(state)
       resetDelegationField()
       resetTransactionSummary()
+      await reloadWalletInfo(state)
       wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,
@@ -1018,6 +1013,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const toggleDisplayStakingPage = async (state, value) => {
     setState({displayStakingPage: value})
+    resetTransactionSummary()
     resetAmountFields(state)
   }
 
