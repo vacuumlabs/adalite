@@ -90,6 +90,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     } else {
       setState({
         [errorName]: e,
+        ...options,
       })
     }
   }
@@ -505,29 +506,35 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         }
       })
       : []
-    const accountBalance = state.shelleyAccountInfo.value + state.balance
+    const accountBalance = state.shelleyAccountInfo.value
     const accountCounter = state.shelleyAccountInfo.counter
     const plan = await wallet.getTxPlan(
       {amount: null, pools, accountCounter, accountBalance},
       'account'
     )
+    const isPlanValid = plan && accountBalance >= plan.fee
     handleError(
       'delegationValidationError',
-      accountBalance >= plan.fee ? {code: 'DelegationAccountBalanceError'} : null
+      !isPlanValid ? {code: 'DelegationAccountBalanceError'} : null,
+      {
+        calculatingDelegationFee: false,
+        delegationFee: !!plan && (plan.fee || plan.estimatedFee),
+      }
     )
-    setState({
-      shelleyDelegation: {
-        ...state.shelleyDelegation,
-        delegationFee: plan.fee,
-      },
-      sendTransactionSummary: {
-        amount: 0 as Lovelace,
-        donation: 0 as Lovelace,
-        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
-        plan: plan.fee != null ? plan : null,
-      },
-      calculatingDelegationFee: false,
-    })
+    isPlanValid &&
+      setState({
+        shelleyDelegation: {
+          ...state.shelleyDelegation,
+          delegationFee: plan.fee != null ? plan.fee : plan.estimatedFee,
+        },
+        sendTransactionSummary: {
+          amount: 0 as Lovelace,
+          donation: 0 as Lovelace,
+          fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+          plan: plan.fee != null ? plan : null,
+        },
+        calculatingDelegationFee: false,
+      })
   }
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 2000)

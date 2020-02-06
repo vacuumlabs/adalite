@@ -426,6 +426,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getVisibleAddresses() {
     const single = await myAddresses.singleExtManager.discoverAddressesWithMeta()
     const group = await myAddresses.groupExtManager.discoverAddressesWithMeta()
+    // TODO why not get also the account address
+    // need to change the ..withMeta function to do that
     return [...single, ...group] //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 
