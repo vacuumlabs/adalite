@@ -56,15 +56,6 @@ export function computeTxPlan(
   // Cannot construct transaction plan
   if (totalOutput + feeWithoutChange > totalInput) return null
 
-  if (type === 'account') {
-    const input = {
-      ...inputs[0],
-      coins: feeWithoutChange as Lovelace,
-    }
-    inputs[0] = input
-    return {type, inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
-  }
-
   // No change necessary, perfect fit or a account tx
   if (totalOutput + feeWithoutChange === totalInput) {
     return {type, inputs, outputs, change: null, cert, fee: feeWithoutChange as Lovelace}
@@ -82,6 +73,8 @@ export function computeTxPlan(
     return null
   }
 
+  console.log('inputs: ', inputs)
+
   return {
     type,
     inputs,
@@ -96,18 +89,29 @@ export function computeTxPlan(
 }
 
 export function selectMinimalTxPlan(
+  // TODO refactor to "minimalUtxoTxPlan"
   chainConfig,
   utxos: Array<any>,
   address,
-  coins,
   donationAmount,
-  changeAddress
+  changeAddress,
+  coins?,
+  pools?
 ): any {
   const profitableUtxos = utxos //utxos.filter(isUtxoProfitable)
 
   const inputs = []
 
-  const outputs = [{address, coins}]
+  const cert = pools
+    ? {
+      type: 'certificate_stake_delegation',
+      pools,
+    }
+    : null
+
+  coins = coins || computeRequiredTxFee(chainConfig)([{address}], [], cert)
+
+  const outputs = address ? [{address, coins}] : []
   if (donationAmount > 0) {
     outputs.push({address: ADALITE_CONFIG.ADA_DONATION_ADDRESS, coins: donationAmount})
   }
@@ -116,11 +120,11 @@ export function selectMinimalTxPlan(
 
   for (let i = 0; i < profitableUtxos.length; i++) {
     inputs.push(profitableUtxos[i])
-    const plan = computeTxPlan('utxo', chainConfig, inputs, outputs, change, null)
+    const plan = computeTxPlan('utxo', chainConfig, inputs, outputs, change, cert)
     if (plan) return plan
   }
 
-  return {estimatedFee: computeRequiredTxFee(chainConfig)(inputs, outputs, null)}
+  return {estimatedFee: computeRequiredTxFee(chainConfig)(inputs, outputs, cert)}
 }
 
 export function computeAccountTxPlan(
@@ -132,20 +136,21 @@ export function computeAccountTxPlan(
   counter,
   value
 ): any {
-  const inputs = [
-    {
-      address: srcAddress,
-      counter,
-      coins: value,
-    },
-  ]
-  const outputs = amount ? [{address: dstAddress, coins: amount}] : []
-
   const cert = pools
     ? {
       type: 'certificate_stake_delegation',
       pools,
     }
     : null
+  const coins = value || computeRequiredTxFee(chainConfig)({srcAddress}, [], cert)
+  const inputs = [
+    {
+      address: srcAddress,
+      counter,
+      coins,
+    },
+  ]
+  const outputs = amount ? [{address: dstAddress, coins: amount}] : []
+
   return computeTxPlan('account', chainConfig, inputs, outputs, null, cert)
 }

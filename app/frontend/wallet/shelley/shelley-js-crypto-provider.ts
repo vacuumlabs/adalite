@@ -83,7 +83,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
 
     const inputs = txAux.inputs.map((input) => prepareInput(txAux.type, input))
     const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
-    const outputs = txAux.outputs.length ? [...outpustAndChange].map(prepareOutput) : []
+    const outputs = outpustAndChange.length ? [...outpustAndChange].map(prepareOutput) : []
     const cert = txAux.cert ? prepareCert(inputs[0]) : null
 
     const tx = buildTransaction({

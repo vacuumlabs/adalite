@@ -25,6 +25,8 @@ const isUtxoProfitable = () => true
 
 const isUtxoNonStaking = ({address}) => !isGroup(address)
 
+const isUtxoStaking = ({address}) => isGroup(address)
+
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExtManager = AddressManager({
     addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
@@ -295,11 +297,14 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return _getMaxSendableAmount(utxos, address, false, 0, false)
   }
 
-  const uTxOTxPlanner = async (args) => {
-    const {address, coins, donationAmount, nonStaking} = args
-    const availableUtxos = nonStaking
-      ? (await getUTxOs()).filter(isUtxoNonStaking)
-      : await getUTxOs()
+  const uTxOTxPlanner = async (args, txType) => {
+    const {address, coins, donationAmount, pools} = args
+    const utxoFilter = {
+      delegation: isUtxoStaking,
+      nonStakingConversion: isUtxoNonStaking,
+      utxo: () => true,
+    }
+    const availableUtxos = (await getUTxOs()).filter(utxoFilter[txType])
     const changeAddress = await getChangeAddress()
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
@@ -308,14 +313,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       cryptoProvider.network.chainConfig,
       shuffledUtxos,
       address,
-      coins,
       donationAmount,
-      changeAddress
+      changeAddress,
+      coins,
+      pools
     )
     return plan
   }
 
-  const accountTxPlanner = async (args) => {
+  const accountTxPlanner = async (args, txType) => {
     const srcAddress = await myAddresses.accountAddrManager._deriveAddress(0)
     const {dstAddress, amount, pools, accountCounter, accountBalance} = args
     const plan = computeAccountTxPlan(
@@ -333,9 +339,11 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getTxPlan(args, txType) {
     const txPlaner = {
       utxo: uTxOTxPlanner,
+      nonStakingConversion: uTxOTxPlanner,
+      delegation: uTxOTxPlanner,
       account: accountTxPlanner,
     }
-    const plan = txPlaner[txType](args)
+    const plan = txPlaner[txType](args, txType)
     return plan
   }
 

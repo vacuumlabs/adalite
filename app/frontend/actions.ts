@@ -482,7 +482,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         donationAmount: null,
         nonStaking: true,
       },
-      'utxo'
+      'nonStakingConversion'
     )
     setState({
       sendTransactionSummary: {
@@ -506,13 +506,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         }
       })
       : []
-    const accountBalance = state.shelleyAccountInfo.value
-    const accountCounter = state.shelleyAccountInfo.counter
-    const plan = await wallet.getTxPlan(
-      {amount: null, pools, accountCounter, accountBalance},
-      'account'
-    )
-    const isPlanValid = plan && accountBalance >= plan.fee
+    const balance =
+      state.shelleyBalances.stakingBalance - state.shelleyBalances.rewardsAccountBalance
+    const plan = await wallet.getTxPlan({amount: null, pools, balance}, 'delegation')
+    const isPlanValid = plan && balance >= plan.fee
     handleError(
       'delegationValidationError',
       !isPlanValid ? {code: 'DelegationAccountBalanceError'} : null,
