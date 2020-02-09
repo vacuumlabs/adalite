@@ -21,7 +21,7 @@ const translations = {
 
   InvalidStakepoolIdentifier: () => 'Stakepool id or ticker is invalid.',
   RudundantStakePool: () => 'This stake pool is already chosen.',
-  DelegationAccountBalanceError: () => 'Not enough funds on account balance to pay the fee.',
+  DelegationAccountBalanceError: () => 'Not enough funds to pay the delegation fee.',
 
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
 
@@ -50,7 +50,7 @@ const translations = {
   NetworkError: ({message}) =>
     `NetworkError: connection failed. Please check your network connection. ${message}`,
 
-  NodeOutOfSync: () => 'Node is out of sync, try again in 1-2 minutes.',
+  NodeOutOfSync: () => 'Servis is temporary unavaible, please try again in 1-2 minutes.',
 }
 
 function getTranslation(code, params = {}) {

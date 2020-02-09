@@ -299,13 +299,14 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   const uTxOTxPlanner = async (args, txType) => {
     const {address, coins, donationAmount, pools} = args
-    const utxoFilter = {
+    const utxoFilters = {
       delegation: isUtxoStaking,
       nonStakingConversion: isUtxoNonStaking,
       utxo: () => true,
     }
+    const utxoFilter = utxoFilters[txType]
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(0)
-    const availableUtxos = (await getUTxOs()).filter(utxoFilter[txType])
+    const availableUtxos = (await getUTxOs()).filter(utxoFilter)
     const changeAddress = await getChangeAddress()
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
