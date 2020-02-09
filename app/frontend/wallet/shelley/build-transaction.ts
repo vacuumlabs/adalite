@@ -96,7 +96,8 @@ export function selectMinimalTxPlan(
   donationAmount,
   changeAddress,
   coins?,
-  pools?
+  pools?,
+  accountAddress?
 ): any {
   const profitableUtxos = utxos //utxos.filter(isUtxoProfitable)
 
@@ -106,6 +107,7 @@ export function selectMinimalTxPlan(
     ? {
       type: 'certificate_stake_delegation',
       pools,
+      accountAddress,
     }
     : null
 

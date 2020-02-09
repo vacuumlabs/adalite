@@ -74,9 +74,11 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const prepareCert = (input) => {
+      const path = addressToAbsPathMapper(txAux.cert.accountAddress)
+      const hdnode = deriveHdNode(path)
       return {
         type: 'stake_delegation',
-        privkey: input.privkey,
+        privkey: Buffer.from(hdnode.secretKey).toString('hex') as HexString,
         pools: txAux.cert.pools,
       }
     }

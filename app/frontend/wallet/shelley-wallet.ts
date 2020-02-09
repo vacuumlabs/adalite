@@ -304,6 +304,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       nonStakingConversion: isUtxoNonStaking,
       utxo: () => true,
     }
+    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(0)
     const availableUtxos = (await getUTxOs()).filter(utxoFilter[txType])
     const changeAddress = await getChangeAddress()
     // we do it pseudorandomly to guarantee fee computation stability
@@ -316,7 +317,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       donationAmount,
       changeAddress,
       coins,
-      pools
+      pools,
+      accountAddress
     )
     return plan
   }
