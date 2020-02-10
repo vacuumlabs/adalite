@@ -9,10 +9,14 @@ import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
 
-const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
+const CalculatingFee = () => (
+  <div className="validation-message send">Calculating fee...</div>
+)
 
 const DelegationValidation = ({delegationValidationError}) => (
-  <div className="validation-message error">{getTranslation(delegationValidationError.code)}</div>
+  <div className="validation-message error">
+    {getTranslation(delegationValidationError.code)}
+  </div>
 )
 
 const StakePoolInfo = ({pool}) => {
@@ -55,7 +59,7 @@ interface Props {
   calculatingDelegationFee: any
   delegationValidationError: any
   changeDelegation: any
-  submitTransaction: any
+  confirmTransaction: any
   closeTransactionErrorModal: any
   transactionSubmissionError: any
   showTransactionErrorModal: any
@@ -83,11 +87,11 @@ class Delegate extends Component<Props> {
     calculatingDelegationFee,
     delegationValidationError,
     changeDelegation,
-    submitTransaction,
+    confirmTransaction,
     closeTransactionErrorModal,
     transactionSubmissionError,
     showTransactionErrorModal,
-    showConfirmTransactionDialog,
+    showConfirmTransactionDialog
   }) {
     return (
       <div className="delegate card">
@@ -125,7 +129,11 @@ class Delegate extends Component<Props> {
                 {stakePools.length <= 1 || i === 0 ? (
                   <div />
                 ) : (
-                  <button className="button stake-pool" name={`${i}`} onClick={removeStakePool}>
+                  <button
+                    className="button stake-pool"
+                    name={`${i}`}
+                    onClick={removeStakePool}
+                  >
                     remove
                   </button>
                 )}
@@ -162,16 +170,21 @@ class Delegate extends Component<Props> {
           <button
             className="button primary staking"
             disabled={delegationValidationError || calculatingDelegationFee}
-            onClick={submitTransaction}
-            {...tooltip('100% of funds must be delegated to valid stake pools', false)}
+            onClick={confirmTransaction}
+            {...tooltip(
+              '100% of funds must be delegated to valid stake pools',
+              false
+            )}
           >
             Delegate
           </button>
           {[
             delegationValidationError && (
-              <DelegationValidation delegationValidationError={delegationValidationError} />
+              <DelegationValidation
+                delegationValidationError={delegationValidationError}
+              />
             ),
-            calculatingDelegationFee && <CalculatingFee />,
+            calculatingDelegationFee && <CalculatingFee />
           ]}
         </div>
         {showTransactionErrorModal && (
@@ -184,21 +197,23 @@ class Delegate extends Component<Props> {
             showHelp={errorHasHelp(transactionSubmissionError.code)}
           />
         )}
-        {showConfirmTransactionDialog && <ConfirmTransactionDialog />}
+        {showConfirmTransactionDialog && (
+          <ConfirmTransactionDialog isDelegation={true} />
+        )}
       </div>
     )
   }
 }
 
 export default connect(
-  (state) => ({
+  state => ({
     stakePools: state.shelleyDelegation.selectedPools,
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
     showTransactionErrorModal: state.showTransactionErrorModal,
     transactionSubmissionError: state.transactionSubmissionError,
-    showConfirmTransactionDialog: state.showConfirmTransactionDialog,
+    showConfirmTransactionDialog: state.showConfirmTransactionDialog
   }),
   actions
 )(Delegate)
