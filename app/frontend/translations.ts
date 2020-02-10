@@ -33,6 +33,8 @@ const translations = {
 
   InvalidMnemonic: () =>
     'Invalid mnemonic, check your mnemonic for typos and try again.',
+  AddressNotInBlockchain: () =>
+    'Wallet is not shelley compatible. Restore your wallet first.',
 
   TransportOpenUserCancelled: ({message}) =>
     `TransportCanceledByUser: ${message}`,
