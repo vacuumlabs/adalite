@@ -37,7 +37,10 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     const total = summary.amount + summary.donation + summary.fee
 
     return (
-      <Modal onRequestClose={cancelTransaction} title="Transaction review">
+      <Modal
+        onRequestClose={cancelTransaction}
+        title={isRevoke ? 'Delegation revocation review' : 'Transaction review'}
+      >
         <div className="review">
           {!isDelegation && (
             <Fragment>
