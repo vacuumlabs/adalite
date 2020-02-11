@@ -104,7 +104,7 @@ export default ({
   const setAuthMethod = (state, option) => {
     setState({
       authMethod: option,
-      showExportOption: false // TODO: revert - option === 'mnemonic' || option === 'file'
+      showExportOption: option === 'mnemonic' || option === 'file'
     })
   }
 
@@ -242,7 +242,7 @@ export default ({
       walletLoadingError: undefined,
       showWalletLoadingErrorModal: false,
       authMethod: 'mnemonic',
-      showExportOption: false //TODO: revert
+      showExportOption: true
     })
   }
 
