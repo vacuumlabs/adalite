@@ -7,7 +7,7 @@ const StakingBanner = ({closeBanner}) =>
     h(
       'div',
       {class: 'banner-text'},
-      'We launched our own Stake Pool. AdaLite will support staking. ',
+      'Staking with Adalite is out! ',
       h(
         'a',
         {
