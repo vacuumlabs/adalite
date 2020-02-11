@@ -19,10 +19,17 @@ import tooltip from '../../common/tooltip'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
-const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
+const CalculatingFee = () => (
+  <div className="validation-message send">Calculating fee...</div>
+)
 
 const SendFormErrorMessage = ({sendFormValidationError}) => (
-  <span>{getTranslation(sendFormValidationError.code, sendFormValidationError.params)}</span>
+  <span>
+    {getTranslation(
+      sendFormValidationError.code,
+      sendFormValidationError.params
+    )}
+  </span>
 )
 
 const SendValidation = ({sendFormValidationError, sendResponse}) =>
@@ -33,7 +40,9 @@ const SendValidation = ({sendFormValidationError, sendResponse}) =>
   ) : (
     sendResponse &&
     sendResponse.success && (
-      <div className="validation-message transaction-success">Transaction successful!</div>
+      <div className="validation-message transaction-success">
+        Transaction successful!
+      </div>
     )
   )
 
@@ -90,18 +99,21 @@ class SendAdaPage extends Component<Props> {
     maxDonationAmount,
     conversionRates,
     sendTransactionSummary: summary,
-    transactionFee,
+    transactionFee
   }) {
     const sendFormValidationError =
-      sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
+      sendAddressValidationError ||
+      sendAmountValidationError ||
+      donationAmountValidationError
 
     const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
-    const isDonationSufficient = maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
+    const isDonationSufficient =
+      maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
     const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
     const total = summary.amount + transactionFee + summary.donation
 
     const submitHandler = async () => {
-      await confirmTransaction(sendAddress, coinsAmount)
+      await confirmTransaction('send')
     }
 
     return (
@@ -116,7 +128,7 @@ class SendAdaPage extends Component<Props> {
           value={sendAddress}
           onInput={updateAddress}
           autoComplete="off"
-          onKeyDown={(e) => e.key === 'Enter' && this.amountField.focus()}
+          onKeyDown={e => e.key === 'Enter' && this.amountField.focus()}
         />
         <div className="send-values">
           <label className="ada-label amount" htmlFor="send-amount">
@@ -130,10 +142,10 @@ class SendAdaPage extends Component<Props> {
               placeholder="0.000000"
               value={sendAmount}
               onInput={updateAmount}
-              ref={(element) => {
+              ref={element => {
                 this.amountField = element
               }}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter' && this.submitTxBtn) {
                   this.submitTxBtn.click()
                   e.preventDefault()
@@ -148,7 +160,10 @@ class SendAdaPage extends Component<Props> {
               Max
             </button>
           </div>
-          <label className="ada-label amount donation" htmlFor="donation-amount">
+          <label
+            className="ada-label amount donation"
+            htmlFor="donation-amount"
+          >
             Donate<a
               {...tooltip(
                 'Your donation is very much appreciated and will be used for further development of AdaLite',
@@ -159,12 +174,18 @@ class SendAdaPage extends Component<Props> {
             </a>
           </label>
           {!isDonationSufficient && (
-            <div className="send-donate-msg">Insufficient balance for a donation.</div>
+            <div className="send-donate-msg">
+              Insufficient balance for a donation.
+            </div>
           )}
           {!showCustomDonationInput &&
-            isDonationSufficient && <DonationButtons isSendAddressValid={isSendAddressValid} />}
+            isDonationSufficient && (
+              <DonationButtons isSendAddressValid={isSendAddressValid} />
+            )}
           {showCustomDonationInput &&
-            isDonationSufficient && <CustomDonationInput isSendAddressValid={isSendAddressValid} />}
+            isDonationSufficient && (
+              <CustomDonationInput isSendAddressValid={isSendAddressValid} />
+            )}
           <div className="ada-label">Fee</div>
           <div className="send-fee">{printAda(transactionFee)}</div>
         </div>
@@ -172,7 +193,9 @@ class SendAdaPage extends Component<Props> {
           <div className="send-total-title">Total</div>
           <div className="send-total-inner">
             <div className="send-total-ada">{printAda(total)}</div>
-            {conversionRates && <Conversions balance={total} conversionRates={conversionRates} />}
+            {conversionRates && (
+              <Conversions balance={total} conversionRates={conversionRates} />
+            )}
           </div>
         </div>
         <div className="validation-row">
@@ -180,7 +203,7 @@ class SendAdaPage extends Component<Props> {
             className="button primary"
             disabled={!enableSubmit || feeRecalculating}
             onClick={submitHandler}
-            ref={(element) => {
+            ref={element => {
               this.submitTxBtn = element
             }}
           >
@@ -207,7 +230,9 @@ class SendAdaPage extends Component<Props> {
         )}
         {showConfirmTransactionDialog && <ConfirmTransactionDialog />}
         {showThanksForDonation && (
-          <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
+          <DonateThanksModal
+            closeThanksForDonationModal={closeThanksForDonationModal}
+          />
         )}
       </div>
     )
@@ -215,7 +240,7 @@ class SendAdaPage extends Component<Props> {
 }
 
 export default connect(
-  (state) => ({
+  state => ({
     transactionSubmissionError: state.transactionSubmissionError,
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddressValidationError,
@@ -232,7 +257,7 @@ export default connect(
     maxDonationAmount: state.maxDonationAmount,
     conversionRates: state.conversionRates && state.conversionRates.data,
     sendTransactionSummary: state.sendTransactionSummary,
-    transactionFee: state.transactionFee,
+    transactionFee: state.transactionFee
   }),
   actions
 )(SendAdaPage)

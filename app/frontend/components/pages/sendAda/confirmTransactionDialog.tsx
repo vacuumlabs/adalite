@@ -12,8 +12,8 @@ interface Props {
   setRawTransactionOpen: any
   rawTransactionOpen: boolean
   isDelegation?: boolean
-  isRevoke: boolean
   stakePools: any
+  txConfirmType: string
 }
 
 class ConfirmTransactionDialogClass extends Component<Props, {}> {
@@ -30,30 +30,42 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     cancelTransaction,
     setRawTransactionOpen,
     rawTransactionOpen,
-    isDelegation,
-    isRevoke,
-    stakePools
+    stakePools,
+    txConfirmType
   }) {
     const total = summary.amount + summary.donation + summary.fee
+    const titleMap = {
+      delegate: 'Delegation review',
+      revoke: 'Delegation revocation review',
+      send: 'Transaction review',
+      convert: 'Stakable balance conversion review'
+    }
 
     return (
-      <Modal
-        onRequestClose={cancelTransaction}
-        title={isRevoke ? 'Delegation revocation review' : 'Transaction review'}
-      >
+      <Modal onRequestClose={cancelTransaction} title={titleMap[txConfirmType]}>
         <div className="review">
-          {!isDelegation && (
+          {txConfirmType === 'send' && (
             <Fragment>
               <div className="review-label">Address</div>
               <div className="review-address">{sendAddress}</div>
+            </Fragment>
+          )}
+
+          {(txConfirmType === 'send' || txConfirmType === 'convert') && (
+            <Fragment>
               <div className="ada-label">Amount</div>
               <div className="review-amount">{printAda(summary.amount)}</div>
+            </Fragment>
+          )}
+
+          {txConfirmType === 'send' && (
+            <Fragment>
               <div className="ada-label">Donation</div>
               <div className="review-amount">{printAda(summary.donation)}</div>
             </Fragment>
           )}
-          {!isRevoke &&
-            isDelegation &&
+
+          {txConfirmType === 'delegate' &&
             stakePools.map((pool, i) => (
               <Fragment>
                 <div className="review-label">Pool ID</div>
@@ -71,11 +83,13 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
                 <div className="review-amount">{pool.homepage}</div>
               </Fragment>
             ))}
+
           <div className="ada-label">Fee</div>
           <div className="review-fee">{printAda(summary.fee)}</div>
           <div className="ada-label">Total</div>
           <div className="review-total">{printAda(total)}</div>
         </div>
+
         <div className="review-bottom">
           <button className="button primary" onClick={submitTransaction}>
             Confirm Transaction
@@ -108,7 +122,7 @@ export default connect(
     summary: state.sendTransactionSummary,
     rawTransactionOpen: state.rawTransactionOpen,
     stakePools: state.shelleyDelegation.selectedPools,
-    isRevoke: state.isRevoke
+    txConfirmType: state.txConfirmType
   }),
   actions
 )(ConfirmTransactionDialogClass)

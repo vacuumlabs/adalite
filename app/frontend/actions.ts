@@ -492,10 +492,7 @@ export default ({
 
   const revokeDelegation = async state => {
     await calculateDelegationFee(true)
-    setState({
-      isRevoke: true
-    })
-    confirmTransaction(getState())
+    confirmTransaction(getState(), 'revoke')
   }
 
   const convertNonStakingUtxos = async state => {
@@ -520,7 +517,7 @@ export default ({
       }
     })
     stopLoadingAction(state, {})
-    confirmTransaction(getState())
+    confirmTransaction(getState(), 'convert')
   }
 
   const calculateDelegationFee = async (revoke?: boolean) => {
@@ -624,7 +621,7 @@ export default ({
     validateDelegationAndCalculateDelegationFee()
   }
 
-  const confirmTransaction = state => {
+  const confirmTransaction = (state, txConfirmType) => {
     let txAux
     try {
       txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
@@ -634,6 +631,7 @@ export default ({
 
     setState({
       showConfirmTransactionDialog: true,
+      txConfirmType,
       // TODO: maybe do this only on demand
       rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
       rawTransactionOpen: false
@@ -641,8 +639,7 @@ export default ({
   }
 
   const cancelTransaction = () => ({
-    showConfirmTransactionDialog: false,
-    isRevoke: false
+    showConfirmTransactionDialog: false
   })
 
   const getPercentageDonationProperties = () => {
@@ -694,8 +691,7 @@ export default ({
     setState({
       sendResponse: '',
       loading: false,
-      showConfirmTransactionDialog: false,
-      isRevoke: false
+      showConfirmTransactionDialog: false
     })
   }
 
@@ -938,8 +934,7 @@ export default ({
 
   const submitTransaction = async state => {
     setState({
-      showConfirmTransactionDialog: false,
-      isRevoke: false
+      showConfirmTransactionDialog: false
     })
     if (state.usingHwWallet) {
       setState({waitingForHwWallet: true})

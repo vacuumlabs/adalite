@@ -93,6 +93,10 @@ class Delegate extends Component<Props> {
     showTransactionErrorModal,
     showConfirmTransactionDialog
   }) {
+    const delegationHandler = async () => {
+      await confirmTransaction('delegate')
+    }
+
     return (
       <div className="delegate card">
         <h2 className="card-title">Delegate Stake</h2>
@@ -170,7 +174,7 @@ class Delegate extends Component<Props> {
           <button
             className="button primary staking"
             disabled={delegationValidationError || calculatingDelegationFee}
-            onClick={confirmTransaction}
+            onClick={delegationHandler}
             {...tooltip(
               '100% of funds must be delegated to valid stake pools',
               false

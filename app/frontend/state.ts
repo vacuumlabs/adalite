@@ -120,7 +120,7 @@ export interface State {
       reward: number
     }
   }
-  isRevoke: boolean
+  txConfirmType: string
 }
 
 const initialState: State = {
@@ -204,7 +204,7 @@ const initialState: State = {
       reward: 0
     }
   },
-  isRevoke: false
+  txConfirmType: ''
 }
 
 export {initialState}
