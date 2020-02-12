@@ -8,36 +8,26 @@ const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
   SendAmountIsNan: () => 'Invalid format: Amount has to be a number',
-  SendAmountIsNotPositive: () =>
-    'Invalid format: Amount has to be a positive number',
+  SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
   SendAmountInsufficientFunds: ({balance}) =>
-    `Insufficient funds for the transaction. Your balance is ${printAda(
-      balance
-    )} ADA.`,
+    `Insufficient funds for the transaction. Your balance is ${printAda(balance)} ADA.`,
   SendAmountCantSendAnyFunds: () =>
     'Sending funds is not possible since there is not enough balance to pay the transaction fee',
-  SendAmountPrecisionLimit: () =>
-    'Invalid format: Maximum allowed precision is 0.000001',
+  SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
-    `Invalid format: Amount cannot exceed ${printAda(
-      Number.MAX_SAFE_INTEGER as Lovelace
-    )}`,
-  DonationAmountTooLow: () =>
-    `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
+    `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER as Lovelace)}`,
+  DonationAmountTooLow: () => `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
   DonationInsufficientBalance: () => 'Insufficient balance for the donation.',
 
   InvalidStakepoolIdentifier: () => 'Stakepool id or ticker is invalid.',
   RudundantStakePool: () => 'This stake pool is already chosen.',
-  DelegationAccountBalanceError: () =>
-    'Not enough funds to pay the delegation fee.',
+  DelegationAccountBalanceError: () => 'Not enough funds to pay the delegation fee.',
+  DelegationFeeError: () => 'Unsuccessful delegation fee calculation.',
 
-  InvalidMnemonic: () =>
-    'Invalid mnemonic, check your mnemonic for typos and try again.',
-  AddressNotInBlockchain: () =>
-    'Wallet is not shelley compatible. Restore your wallet first.',
+  InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
+  AddressNotInBlockchain: () => 'Wallet is not shelley compatible. Restore your wallet first.',
 
-  TransportOpenUserCancelled: ({message}) =>
-    `TransportCanceledByUser: ${message}`,
+  TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
   TransportError: ({message}) => `TransportError: ${message}`,
   TransportStatusError: ({message}) => `TransportStatusError: ${message}`,
 
@@ -45,16 +35,14 @@ const translations = {
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed.',
   TransactionRejectedWhileSigning: ({message}) =>
     `Transaction rejected while signing${message ? `:  ${message}` : '.'}`,
-  TransactionCorrupted: () =>
-    'TransactionCorrupted: Transaction assembling failure.',
+  TransactionCorrupted: () => 'TransactionCorrupted: Transaction assembling failure.',
   TransactionNotFoundInBlockchainAfterSubmission: ({txHash}) =>
     `TransactionNotFoundInBlockchainAfterSubmission: 
     Transaction ${txHash ||
       ''} not found in blockchain after being submitted, check it later please.`,
   TxSerializationError: ({message}) => `TxSerializationError: ${message}`,
 
-  TrezorRejected: () =>
-    'TrezorRejected: Operation rejected by the Trezor hardware wallet.',
+  TrezorRejected: () => 'TrezorRejected: Operation rejected by the Trezor hardware wallet.',
   TrezorSignTxError: ({message}) => `TrezorSignTxError: ${message}`,
   TrezorError: ({message}) => `TrezorError: ${message}`,
   LedgerOperationError: ({message}) => `LedgerOperationError: ${message}`,
@@ -64,8 +52,7 @@ const translations = {
   NetworkError: ({message}) =>
     `NetworkError: connection failed. Please check your network connection. ${message}`,
 
-  NodeOutOfSync: () =>
-    'Service is temporarily unavailable, please try again in 1-2 minutes.'
+  NodeOutOfSync: () => 'Service is temporarily unavailable, please try again in 1-2 minutes.',
 }
 
 function getTranslation(code, params = {}) {

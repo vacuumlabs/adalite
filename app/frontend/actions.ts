@@ -508,31 +508,38 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       : []
     const balance =
       state.shelleyBalances.stakingBalance - state.shelleyBalances.rewardsAccountBalance
-    const plan = await wallet.getTxPlan({amount: null, pools, balance}, 'delegation')
-    const isPlanValid = plan && balance >= plan.fee
-    console.log()
-    handleError(
-      'delegationValidationError',
-      !isPlanValid ? {code: 'DelegationAccountBalanceError'} : null,
-      {
-        calculatingDelegationFee: false,
-        delegationFee: !!plan && (plan.fee || plan.estimatedFee),
+    let plan
+    try {
+      plan = await wallet.getTxPlan({amount: null, pools, balance}, 'delegation')
+      if (!plan || balance < plan.fee) {
+        throw NamedError('DelegationAccountBalanceError')
       }
-    )
-    isPlanValid &&
-      setState({
-        shelleyDelegation: {
-          ...state.shelleyDelegation,
-          delegationFee: plan.fee != null ? plan.fee : plan.estimatedFee,
+    } catch (e) {
+      handleError(
+        'delegationValidationError',
+        {
+          code: e.name === 'DelegationAccountBalanceError' ? e.name : 'DelegationFeeError',
         },
-        sendTransactionSummary: {
-          amount: 0 as Lovelace,
-          donation: 0 as Lovelace,
-          fee: plan.fee != null ? plan.fee : plan.estimatedFee,
-          plan: plan.fee != null ? plan : null,
-        },
-        calculatingDelegationFee: false,
-      })
+        {
+          calculatingDelegationFee: false,
+        }
+      )
+      return
+    }
+
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        delegationFee: plan.fee != null ? plan.fee : plan.estimatedFee,
+      },
+      sendTransactionSummary: {
+        amount: 0 as Lovelace,
+        donation: 0 as Lovelace,
+        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+        plan: plan.fee != null ? plan : null,
+      },
+      calculatingDelegationFee: false,
+    })
   }
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 2000)
