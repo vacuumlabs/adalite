@@ -7,7 +7,7 @@ interface Props {
 const StakingBanner = ({onRequestClose}: Props) => (
   <div className="banner">
     <div className="banner-text">
-      AdaLite will support staking. We've just released balance check for incentivized testnet.{' '}
+      Staking with Adalite is out!{' '}
       <a
         href="#"
         onClick={(e) => {

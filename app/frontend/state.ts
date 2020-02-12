@@ -130,16 +130,14 @@ const initialState: State = {
     show: false,
     type: 'success', // OPTIONS are error, warning, success
     title: 'Wrong mnemonic',
-    hint: 'Hint: Ensure that your mnemonic is without mistake.'
+    hint: 'Hint: Ensure that your mnemonic is without mistake.',
   },
   displayWelcome:
     !(window.localStorage.getItem('dontShowDisclaimer') === 'true') &&
     ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN !== 'true',
   currentTab: 'wallet-info',
   walletIsLoaded: false,
-  showStakingBanner: !(
-    window.localStorage.getItem('dontShowStakingBanner2') === 'true'
-  ),
+  showStakingBanner: !(window.localStorage.getItem('dontShowStakingBannerTestnet') === 'true'),
   visibleAddresses: [],
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
@@ -149,20 +147,18 @@ const initialState: State = {
     amount: 0 as Lovelace,
     fee: 0 as Lovelace,
     donation: 0 as Lovelace,
-    plan: null
+    plan: null,
   },
   router: {
     pathname: window.location.pathname,
-    hash: window.location.hash
+    hash: window.location.hash,
   },
   mnemonicAuthForm: {
     mnemonicInputValue: '',
     mnemonicInputError: null,
-    formIsValid: false
+    formIsValid: false,
   },
-  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash)
-    ? 'hw-wallet'
-    : '',
+  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
   showDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
   rawTransactionOpen: false,
@@ -181,19 +177,18 @@ const initialState: State = {
   showUnexpectedErrorModal: false,
   sendSentry: {},
   autoLogin:
-    ADALITE_CONFIG.ADALITE_ENV === 'local' &&
-    ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
+    ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 
   // shelley
   displayStakingPage: ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley',
   shelleyDelegation: {
     selectedPools: [],
-    delegationFee: 0.0
+    delegationFee: 0.0,
   },
   shelleyBalances: {
     nonStakingBalance: 0,
     stakingBalance: 0,
-    rewardsAccountBalance: 0
+    rewardsAccountBalance: 0,
   },
   shelleyAccountInfo: {
     delegation: [],
@@ -201,10 +196,10 @@ const initialState: State = {
     counter: 0,
     last_rewards: {
       epoch: 0,
-      reward: 0
-    }
+      reward: 0,
+    },
   },
-  txConfirmType: ''
+  txConfirmType: '',
 }
 
 export {initialState}
