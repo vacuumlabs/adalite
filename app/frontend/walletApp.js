@@ -1,11 +1,12 @@
-const {h, render} = require('preact')
-const Provider = require('./libs/unistore/preact').Provider
-const App = require('./components/app')
+import {h, render} from 'preact'
+import {Provider as UnistoreStoreProvider} from './libs/unistore/preact'
+import {StoreProvider as HooksStoreProvider} from './libs/preact-hooks-unistore'
+import App from './components/app'
 
-const {createStore} = require('./store')
-const {ADALITE_CONFIG} = require('./config')
+import {createStore} from './store'
+import {ADALITE_CONFIG} from './config'
 
-const Sentry = require('@sentry/browser')
+import {init} from '@sentry/browser'
 
 if (ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL) {
   const url = new URL(ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL)
@@ -53,7 +54,7 @@ window.onhashchange = () =>
     },
   })
 
-Sentry.init({
+init({
   dsn: ADALITE_CONFIG.SENTRY_DSN,
   environment: ADALITE_CONFIG.ADALITE_ENV,
   // debug: true,
@@ -72,6 +73,6 @@ Sentry.init({
   },
 })
 
-const Wrapper = h(Provider, {store}, h(App))
+const Wrapper = h(HooksStoreProvider, {value: store}, h(UnistoreStoreProvider, {store}, h(App)))
 
 render(Wrapper, document.getElementById('root'))

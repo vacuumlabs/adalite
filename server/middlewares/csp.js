@@ -4,7 +4,7 @@ const directives = {
   'connect-src': ['*'],
   'img-src': ["'self'", 'data:'],
   'script-src': [
-    "'self'",
+    "'self' 'unsafe-eval'",
     /*
      * hash of the inline script used to test browser compatibility
      * you need to update it manually if it changes.

@@ -1,10 +1,10 @@
-const assert = require('assert')
-const {
+import assert from 'assert'
+import {
   importWalletSecretDef,
   exportWalletSecretDef,
   isWalletExportEncrypted,
-} = require('../../frontend/wallet/keypass-json')
-const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
+} from '../../frontend/wallet/keypass-json'
+import derivationSchemes from '../../frontend/wallet/helpers/derivation-schemes'
 
 const walletSecretObj1 = {
   wallet: {

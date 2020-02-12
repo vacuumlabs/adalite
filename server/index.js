@@ -2,10 +2,12 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const compression = require('compression')
 const fs = require('fs')
-const https = require('https')
+const http = require('http')
 const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
 
 let app = express()
+
+express.static.mime.types.wasm = 'application/wasm'
 
 app.use(bodyParser.json())
 app.use(compression())
@@ -105,7 +107,7 @@ if (enableHttps) {
     cert: fs.readFileSync('server.cert'),
     key: fs.readFileSync('server.key'),
   }
-  app = https.createServer(options, app)
+  app = http.createServer(options, app)
 }
 
 app.listen(backendConfig.PORT, () => {

@@ -1,12 +1,12 @@
-const assert = require('assert')
-const cbor = require('borc')
+import assert from 'assert'
+import cbor from 'borc'
 
-const {HARDENED_THRESHOLD} = require('../../frontend/wallet/constants')
-const derivationSchemes = require('../../frontend/wallet/derivation-schemes')
-const CardanoWalletSecretCryptoProvider = require('../../frontend/wallet/cardano-wallet-secret-crypto-provider')
-const tx = require('../../frontend/wallet/transaction')
-const mnemonicToWalletSecretDef = require('../../frontend/wallet/helpers/mnemonicToWalletSecretDef')
-const cryptoProviderSettings = require('./common/crypto-provider-settings')
+import {HARDENED_THRESHOLD} from '../../frontend/wallet/constants'
+import derivationSchemes from '../../frontend/wallet/helpers/derivation-schemes'
+import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/byron/cardano-wallet-secret-crypto-provider'
+import {TxInputFromUtxo, TxOutput, TxAux} from '../../frontend/wallet/byron/byron-transaction'
+import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
+import cryptoProviderSettings from './common/crypto-provider-settings'
 
 const cryptoProviders = []
 
@@ -20,13 +20,10 @@ const initCryptoProvider = async (settings, i) => {
   } else {
     walletSecretDef = await mnemonicToWalletSecretDef(settings.secret)
   }
-  cryptoProviders[i] = CardanoWalletSecretCryptoProvider(
-    {
-      walletSecretDef,
-      network: settings.network,
-    },
-    true
-  )
+  cryptoProviders[i] = CardanoWalletSecretCryptoProvider({
+    walletSecretDef,
+    network: settings.network,
+  })
 }
 
 before(async () => await Promise.all(cryptoProviderSettings.map(initCryptoProvider)))
@@ -82,7 +79,7 @@ describe('checking input integrity', () => {
     '839f8200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c008200d8185824825820aa22f977c2671836647d347ebe23822269ce21cd22f231e1279018b569dcd48c01ff9f8282d818584283581c2cdf2a4727c91392bcd1dc1df64e4b5a3a3ddb5645226616b651b90aa101581e581c140539c64edded60a7f2d3693300e8b2463207803127d23562295bf3001a5562e2a21a000186a08282d818584283581cfcca7f1da7a330be2cb4ff273e3b8e2bd77c3cdcd3e8d8381e0d9e49a101581e581c140539c64edded60a7f2de696f5546c042bbc8749c95e836b09b7884001aead6cd071a002bc253ffa0',
     'hex'
   )
-  const input1correct = tx.TxInputFromUtxo({
+  const input1correct = TxInputFromUtxo({
     txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
     address:
       'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
@@ -90,7 +87,7 @@ describe('checking input integrity', () => {
     outputIndex: 0,
   })
 
-  const input2correct = tx.TxInputFromUtxo({
+  const input2correct = TxInputFromUtxo({
     txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
     address:
       'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
@@ -98,7 +95,7 @@ describe('checking input integrity', () => {
     outputIndex: 1,
   })
 
-  const input1wrongHash = tx.TxInputFromUtxo({
+  const input1wrongHash = TxInputFromUtxo({
     txHash: 'aaaafde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2745',
     address:
       'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
@@ -106,7 +103,7 @@ describe('checking input integrity', () => {
     outputIndex: 0,
   })
 
-  const input1wrongCoins = tx.TxInputFromUtxo({
+  const input1wrongCoins = TxInputFromUtxo({
     txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
     address:
       'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
@@ -138,27 +135,29 @@ describe('transaction signing', () => {
     const addressToAbsPathMapper = (addr) => {
       const mapping = {
         // eslint-disable-next-line max-len
-        DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5: derivationSchemes.v1.toAbsoluteDerivationPath(
-          [2147483648, 0, 2147483655]
-        ),
+        DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5: [
+          2147483648,
+          2147483655,
+        ],
         // eslint-disable-next-line max-len
-        DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz: derivationSchemes.v1.toAbsoluteDerivationPath(
-          [2147483648, 0, 2147483658]
-        ),
+        DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz: [
+          2147483648,
+          2147483658,
+        ],
       }
 
       return mapping[addr]
     }
 
     const txInputs = [
-      tx.TxInputFromUtxo({
+      TxInputFromUtxo({
         txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
         address:
           'DdzFFzCqrhsjeiN7xW9DpwoPh13BMwDctP9RrufwAMa1dRmFaR9puCyckq4mXkjeZk1VsEJqxkb89z636SsGQ4x54boVoX3DRW3QC9g5',
         coins: 100000,
         outputIndex: 0,
       }),
-      tx.TxInputFromUtxo({
+      TxInputFromUtxo({
         txHash: '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765',
         address:
           'DdzFFzCqrhtCrR5oxyvhmRCfwFJ4tKXo7xocEXGoEMruhp23eddcuZVegJiiyJtuY5NDgG9eoe7CHVDRcszfKTKcHAxccvDVs1xwK7Gz',
@@ -168,19 +167,19 @@ describe('transaction signing', () => {
     ]
 
     const txOutputs = [
-      tx.TxOutput(
+      TxOutput(
         'DdzFFzCqrhsgPcpYL9aevEtfvP4bTFHde8kjT3acCkbK9SvfC9iikDPRtfRP8Sq6fsusNfRfm7sjhJfo7LDPT3c4rDr8PqkdHfW8PfuY',
         47,
         false
       ),
-      tx.TxOutput(
+      TxOutput(
         'DdzFFzCqrht5CupPRNPoukz3K1FD7TvYeSXbbM3oPvmmmLTSsbGzKHHypKNqtSXqVyvpBwqUw3vpRXYhpkbaLKkHw5qUEHr2v7h7Roc7',
         2788855,
         true
       ),
     ]
 
-    const txAux = tx.TxAux(txInputs, txOutputs, {})
+    const txAux = TxAux(txInputs, txOutputs, {})
     const txSignedStructured = await cryptoProviders[1]._signTxGetStructured(
       txAux,
       addressToAbsPathMapper

@@ -1,7 +1,7 @@
-const assert = require('assert')
-const cbor = require('borc')
+import assert from 'assert'
+import cbor from 'borc'
 
-const CborIndefiniteLengthArray = require('../../frontend/wallet/helpers/CborIndefiniteLengthArray')
+import CborIndefiniteLengthArray from '../../frontend/wallet/byron/helpers/CborIndefiniteLengthArray'
 
 describe('CBOR encoding of indefinite length arrays', () => {
   it('should properly encode empty array', () => {

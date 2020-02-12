@@ -17,4 +17,7 @@ describe('AdaLite Test Suite', () => {
   describe('Import/Export Wallet as JSON', () => {
     require('./keypass-json')
   })
+  describe('Shelley testnet', () => {
+    require('./shelley')
+  })
 })
