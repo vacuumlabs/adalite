@@ -5,7 +5,7 @@ import {Lovelace} from '../../state'
 
 import NamedError from '../../helpers/NamedError'
 
-import {ADALITE_CONFIG} from '../../config'
+import {ADA_DONATION_ADDRESS} from '../constants'
 
 type UTxOInput = {
   txHash: string
@@ -113,7 +113,7 @@ export function selectMinimalTxPlan(
 
   const outputs = address ? [{address, coins}] : []
   if (donationAmount > 0) {
-    outputs.push({address: ADALITE_CONFIG.ADA_DONATION_ADDRESS, coins: donationAmount})
+    outputs.push({address: ADA_DONATION_ADDRESS, coins: donationAmount})
   }
 
   const change = {address: changeAddress, coins: 0 as Lovelace}
