@@ -1,18 +1,11 @@
-import {
-  sign as signMsg,
-  derivePrivate,
-  xpubToHdPassphrase
-} from 'cardano-crypto.js'
+import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
 
 import HdNode from '../helpers/hd-node'
 import {buildTransaction} from './helpers/chainlib-wrapper'
 
 type HexString = string & {__typeHexString: any}
 
-const ShelleyJsCryptoProvider = ({
-  walletSecretDef: {rootSecret, derivationScheme},
-  network
-}) => {
+const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme}, network}) => {
   const masterHdNode = HdNode(rootSecret)
 
   const isHwWallet = () => false
@@ -21,21 +14,16 @@ const ShelleyJsCryptoProvider = ({
 
   const getDerivationScheme = () => derivationScheme
 
-  const deriveXpub = derivationPath =>
-    deriveHdNode(derivationPath).extendedPublicKey
+  const deriveXpub = (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
 
-  const deriveXpriv = derivationPath => deriveHdNode(derivationPath).secretKey
+  const deriveXpriv = (derivationPath) => deriveHdNode(derivationPath).secretKey
 
   function deriveHdNode(derivationPath) {
     return derivationPath.reduce(deriveChildHdNode, masterHdNode)
   }
 
   function deriveChildHdNode(hdNode, childIndex) {
-    const result = derivePrivate(
-      hdNode.toBuffer(),
-      childIndex,
-      derivationScheme.ed25519Mode
-    )
+    const result = derivePrivate(hdNode.toBuffer(), childIndex, derivationScheme.ed25519Mode)
 
     return HdNode(result)
   }
@@ -56,7 +44,7 @@ const ShelleyJsCryptoProvider = ({
         outputNo: input.outputIndex,
         address: input.address,
         privkey: Buffer.from(hdnode.secretKey).toString('hex'),
-        chaincode: Buffer.from(hdnode.chainCode).toString('hex')
+        chaincode: Buffer.from(hdnode.chainCode).toString('hex'),
       }
     }
 
@@ -66,7 +54,7 @@ const ShelleyJsCryptoProvider = ({
         address: input.address,
         privkey: Buffer.from(hdnode.secretKey).toString('hex'),
         accountCounter: input.counter,
-        value: input.coins
+        value: input.coins,
       }
     }
 
@@ -75,44 +63,39 @@ const ShelleyJsCryptoProvider = ({
       const hdnode = deriveHdNode(path)
       const inputPreparator = {
         utxo: prepareUtxoInput,
-        account: prepareAccountInput
+        account: prepareAccountInput,
       }
       return inputPreparator[type](input, hdnode)
     }
 
-    const prepareOutput = output => {
+    const prepareOutput = (output) => {
       return {
         address: output.address,
-        value: output.coins
+        value: output.coins,
       }
     }
 
-    const prepareCert = input => {
+    const prepareCert = (input) => {
       const path = addressToAbsPathMapper(txAux.cert.accountAddress)
       const hdnode = deriveHdNode(path)
       return {
         type: 'stake_delegation',
         privkey: Buffer.from(hdnode.secretKey).toString('hex') as HexString,
-        pools: txAux.cert.pools
+        pools: txAux.cert.pools,
       }
     }
 
-    const inputs = txAux.inputs.map(input => prepareInput(txAux.type, input))
-    const outpustAndChange = txAux.change
-      ? [...txAux.outputs, txAux.change]
-      : [...txAux.outputs]
-    const outputs = outpustAndChange.length
-      ? [...outpustAndChange].map(prepareOutput)
-      : []
+    const inputs = txAux.inputs.map((input) => prepareInput(txAux.type, input))
+    const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
+    const outputs = outpustAndChange.length ? [...outpustAndChange].map(prepareOutput) : []
     const cert = txAux.cert ? prepareCert(inputs[0]) : null
 
     const tx = buildTransaction({
       inputs,
       outputs,
       cert,
-      chainConfig: network.chainConfig
+      chainConfig: network.chainConfig,
     })
-    console.log(tx)
     return tx
   }
 
@@ -131,7 +114,7 @@ const ShelleyJsCryptoProvider = ({
     _sign: sign,
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
-    deriveXpriv
+    deriveXpriv,
   }
 }
 

@@ -73,8 +73,6 @@ export function computeTxPlan(
     return null
   }
 
-  console.log('inputs: ', inputs)
-
   return {
     type,
     inputs,
