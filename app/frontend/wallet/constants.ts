@@ -6,7 +6,7 @@ export const ETH_BLOCKCHAIN_EXPLORER = 'https://etherscan.io/address/'
 export const BTC_DONATION_ADDRESS = '3Qk3BDbw4yym6PM6vWA4bAsFkY76EWwtnp'
 export const ETH_DONATION_ADDRESS = '0xe1575549f79742d21E56426a1F9AD26997F5B9fb'
 export const ADA_DONATION_ADDRESS =
-  'DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5'
+  'addr1swmsajfedtl7jthd76wakxtvz559vhkeztlc9getrw5gldu709d22pdkf6f'
 export const TX_WITNESS_SIZE_BYTES = 139
 export const NETWORKS = {
   BYRON: {

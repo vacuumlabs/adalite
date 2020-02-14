@@ -4,17 +4,13 @@ import NamedError from '../helpers/NamedError'
 import debugLog from '../helpers/debugLog'
 import getHash from '../helpers/getHash'
 
-const cacheResults = (maxAge: number, cache_obj: Object = {}) => <
-  T extends Function
->(
-  fn: T
-): T => {
+const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
     const hash = getHash(JSON.stringify(args))
     if (!cache_obj[hash] || cache_obj[hash].timestamp + maxAge < Date.now()) {
       cache_obj[hash] = {
         timestamp: Date.now(),
-        data: fn(...args)
+        data: fn(...args),
       }
     }
     return cache_obj[hash].data
@@ -23,16 +19,14 @@ const cacheResults = (maxAge: number, cache_obj: Object = {}) => <
   return (wrapped as any) as T
 }
 
-const blockchainExplorer = ADALITE_CONFIG => {
+const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
 
   async function _fetchBulkAddressInfo(addresses) {
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/bulk/addresses/summary`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`
     const result = await request(url, 'POST', JSON.stringify(addresses), {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
     })
     return result.Right
   }
@@ -44,21 +38,19 @@ const blockchainExplorer = ADALITE_CONFIG => {
 
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
     const addressInfos = (await Promise.all(
-      chunks.map(async index => {
+      chunks.map(async (index) => {
         const beginIndex = index * gapLimit
-        return await getAddressInfos(
-          addresses.slice(beginIndex, beginIndex + gapLimit)
-        )
+        return await getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )).reduce(
       (acc, elem) => {
         return {
-          caTxList: [...acc.caTxList, ...elem.caTxList]
+          caTxList: [...acc.caTxList, ...elem.caTxList],
         }
       },
       {caTxList: []}
     )
-    addressInfos.caTxList.forEach(tx => {
+    addressInfos.caTxList.forEach((tx) => {
       transactions[tx.ctbId] = tx
     })
 
@@ -75,19 +67,13 @@ const blockchainExplorer = ADALITE_CONFIG => {
         }
       }
       t.effect = effect
-      t.fee =
-        t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin ||
-        parseInt(t.ctbInputSum.getCoin)
+      t.fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin || parseInt(t.ctbInputSum.getCoin)
     }
-    return Object.values(transactions).sort(
-      (a, b) => b.ctbTimeIssued - a.ctbTimeIssued
-    )
+    return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
   async function fetchTxInfo(txHash) {
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/txs/summary/${txHash}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/summary/${txHash}`
     const response = await request(url)
 
     return response.Right
@@ -95,9 +81,7 @@ const blockchainExplorer = ADALITE_CONFIG => {
 
   async function fetchTxRaw(txId) {
     // eslint-disable-next-line no-undef
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/txs/raw/${txId}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
     const result = await request(url)
     return Buffer.from(result.Right, 'hex')
   }
@@ -110,11 +94,11 @@ const blockchainExplorer = ADALITE_CONFIG => {
   async function filterUsedAddresses(addresses: Array<String>) {
     const txHistory = await getTxHistory(addresses)
     const usedAddresses = new Set()
-    txHistory.forEach(trx => {
-      ;(trx.ctbOutputs || []).forEach(output => {
+    txHistory.forEach((trx) => {
+      ;(trx.ctbOutputs || []).forEach((output) => {
         usedAddresses.add(output[0])
       })
-      ;(trx.ctbInputs || []).forEach(input => {
+      ;(trx.ctbInputs || []).forEach((input) => {
         usedAddresses.add(input[0])
       })
     })
@@ -125,11 +109,9 @@ const blockchainExplorer = ADALITE_CONFIG => {
   async function getBalance(addresses) {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
     const balance = (await Promise.all(
-      chunks.map(async index => {
+      chunks.map(async (index) => {
         const beginIndex = index * gapLimit
-        return await getAddressInfos(
-          addresses.slice(beginIndex, beginIndex + gapLimit)
-        )
+        return await getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )).reduce((acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10), 0)
     return balance
@@ -142,15 +124,15 @@ const blockchainExplorer = ADALITE_CONFIG => {
       'POST',
       JSON.stringify({
         txHash,
-        txBody
+        txBody,
       }),
       {
         'Content-Type': 'application/json',
-        ...(token ? {token} : {})
+        ...(token ? {token} : {}),
       }
     )
     if (!response.Right) {
-      debugLog(`Unexpected tx submission response: ${response}`)
+      debugLog(`Unexpected tx submission response: ${JSON.stringify(response)}`)
       throw NamedError('NodeOutOfSync')
     }
 
@@ -160,31 +142,29 @@ const blockchainExplorer = ADALITE_CONFIG => {
   async function fetchUnspentTxOutputs(addresses) {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
 
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/bulk/addresses/utxo`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
     const response = (await Promise.all(
-      chunks.map(async index => {
+      chunks.map(async (index) => {
         const beginIndex = index * gapLimit
         const response = await request(
           url,
           'POST',
           JSON.stringify(addresses.slice(beginIndex, beginIndex + gapLimit)),
           {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
           }
         )
         return response.Right
       })
     )).reduce((acc, cur) => acc.concat(cur), [])
 
-    return response.map(elem => {
+    return response.map((elem) => {
       return {
         txHash: elem.cuId,
         address: elem.cuAddress,
         coins: parseInt(elem.cuCoins.getCoin, 10),
-        outputIndex: elem.cuOutIndex
+        outputIndex: elem.cuOutIndex,
       }
     })
   }
@@ -197,7 +177,7 @@ const blockchainExplorer = ADALITE_CONFIG => {
     submitTxRaw,
     getBalance,
     fetchTxInfo,
-    filterUsedAddresses
+    filterUsedAddresses,
   }
 }
 
