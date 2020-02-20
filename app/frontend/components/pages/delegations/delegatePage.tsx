@@ -9,15 +9,16 @@ import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
 
-const CalculatingFee = () => (
-  <div className="validation-message send">Calculating fee...</div>
-)
+const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
-const DelegationValidation = ({delegationValidationError}) => (
-  <div className="validation-message error">
-    {getTranslation(delegationValidationError.code)}
-  </div>
-)
+const DelegationValidation = ({delegationValidationError, showTxSuccess}) =>
+  delegationValidationError ? (
+    <div className="validation-message error">{getTranslation(delegationValidationError.code)}</div>
+  ) : (
+    showTxSuccess === 'stake' && (
+      <div className="validation-message transaction-success">Transaction successful!</div>
+    )
+  )
 
 const StakePoolInfo = ({pool}) => {
   const {rewards, ticker, homepage, name, validationError} = pool
@@ -65,6 +66,7 @@ interface Props {
   showTransactionErrorModal: any
   selectAdaliteStakepool: any
   showConfirmTransactionDialog: any
+  showTxSuccess: any
 }
 
 class Delegate extends Component<Props> {
@@ -91,12 +93,13 @@ class Delegate extends Component<Props> {
     closeTransactionErrorModal,
     transactionSubmissionError,
     showTransactionErrorModal,
-    showConfirmTransactionDialog
+    showConfirmTransactionDialog,
+    showTxSuccess,
   }) {
     const delegationHandler = async () => {
       await confirmTransaction('delegate')
     }
-
+    console.log(showTxSuccess)
     return (
       <div className="delegate card">
         <h2 className="card-title">Delegate Stake</h2>
@@ -133,11 +136,7 @@ class Delegate extends Component<Props> {
                 {stakePools.length <= 1 || i === 0 ? (
                   <div />
                 ) : (
-                  <button
-                    className="button stake-pool"
-                    name={`${i}`}
-                    onClick={removeStakePool}
-                  >
+                  <button className="button stake-pool" name={`${i}`} onClick={removeStakePool}>
                     remove
                   </button>
                 )}
@@ -175,20 +174,19 @@ class Delegate extends Component<Props> {
             className="button primary staking"
             disabled={delegationValidationError || calculatingDelegationFee}
             onClick={delegationHandler}
-            {...tooltip(
-              '100% of funds must be delegated to valid stake pools',
-              false
-            )}
+            {...tooltip('100% of funds must be delegated to valid stake pools', false)}
           >
             Delegate
           </button>
           {[
-            delegationValidationError && (
+            calculatingDelegationFee ? (
+              <CalculatingFee />
+            ) : (
               <DelegationValidation
                 delegationValidationError={delegationValidationError}
+                showTxSuccess={showTxSuccess}
               />
             ),
-            calculatingDelegationFee && <CalculatingFee />
           ]}
         </div>
         {showTransactionErrorModal && (
@@ -201,23 +199,22 @@ class Delegate extends Component<Props> {
             showHelp={errorHasHelp(transactionSubmissionError.code)}
           />
         )}
-        {showConfirmTransactionDialog && (
-          <ConfirmTransactionDialog isDelegation={true} />
-        )}
+        {showConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
       </div>
     )
   }
 }
 
 export default connect(
-  state => ({
+  (state) => ({
     stakePools: state.shelleyDelegation.selectedPools,
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
     showTransactionErrorModal: state.showTransactionErrorModal,
     transactionSubmissionError: state.transactionSubmissionError,
-    showConfirmTransactionDialog: state.showConfirmTransactionDialog
+    showConfirmTransactionDialog: state.showConfirmTransactionDialog,
+    showTxSuccess: state.showTxSuccess,
   }),
   actions
 )(Delegate)

@@ -112,7 +112,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         conversionRates: null,
       })
-      // throw NamedError('ConversionRatesError', '`Could not fetch conversion rates.')
     }
   }
 
@@ -449,6 +448,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         donation: donationAmount,
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
+        type: 'send',
       },
       transactionFee: plan.fee != null ? plan.fee : plan.estimatedFee,
     })
@@ -463,11 +463,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     )
     setState({
       calculatingFee: false,
+      showTxSuccess: '',
     })
   }
 
   const revokeDelegation = async (state) => {
+    loadingAction(state, 'Preparing transaction...')
     await calculateDelegationFee(true)
+    stopLoadingAction(state, {})
     confirmTransaction(getState(), 'revoke')
   }
 
@@ -496,6 +499,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           donation: 0 as Lovelace,
           fee: plan.fee != null ? plan.fee : plan.estimatedFee,
           plan: plan.fee != null ? plan : null,
+          type: 'stake',
         },
       })
       confirmTransaction(getState(), 'convert')
@@ -539,7 +543,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )
       return
     }
-
+    setState({
+      showTxSuccess: state.showTxSuccess === 'stake' ? '' : state.showTxSuccess,
+    })
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -550,6 +556,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         donation: 0 as Lovelace,
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
+        type: 'stake',
       },
       calculatingDelegationFee: false,
     })
@@ -562,9 +569,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const delegationValidationError = state.shelleyDelegation.selectedPools.every(
       (pool) => pool.validationError || pool.poolIdentifier === ''
     )
-
     handleError('delegationValidationError', delegationValidationError)
-
     setState({
       delegationValidationError,
     })
@@ -701,6 +706,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         fee: 0 as Lovelace,
         donation: 0 as Lovelace,
         plan: null,
+        type: '',
       },
     })
   }
@@ -905,10 +911,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
     let sendResponse
     let txSubmitResult
-
+    const txType = state.sendTransactionSummary.type
     try {
       const txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
-
       const signedTx = await wallet.signTxAux(txAux)
 
       if (state.usingHwWallet) {
@@ -948,6 +953,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       wallet.generateNewSeeds()
       setState({
         waitingForHwWallet: false,
+        showTxSuccess: sendResponse && sendResponse.success ? txType : '',
         sendResponse,
       })
     }

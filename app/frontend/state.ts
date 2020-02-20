@@ -10,6 +10,7 @@ export interface SendTransactionSummary {
   donation?: Lovelace
   fee: Lovelace
   plan: any
+  type?: any
 }
 
 export interface State {
@@ -121,6 +122,7 @@ export interface State {
     }
   }
   txConfirmType: string
+  showTxSuccess: string
 }
 
 const initialState: State = {
@@ -200,6 +202,7 @@ const initialState: State = {
     },
   },
   txConfirmType: '',
+  showTxSuccess: '',
 }
 
 export {initialState}
