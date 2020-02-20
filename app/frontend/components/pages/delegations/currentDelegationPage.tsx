@@ -3,7 +3,12 @@ import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 
-const CurrentDelegationPage = ({currentDelegation, revokeDelegation, delegationValidationError, calculatingDelegationFee}) => {
+const CurrentDelegationPage = ({
+  currentDelegation,
+  revokeDelegation,
+  delegationValidationError,
+  calculatingDelegationFee,
+}) => {
   return (
     <div className="current-delegation card">
       <h2 className="card-title">Current delegation</h2>
@@ -32,7 +37,7 @@ const CurrentDelegationPage = ({currentDelegation, revokeDelegation, delegationV
               </div>,
             ])}
           </div>
-          <button 
+          <button
             className="button primary revoke-delegation"
             onClick={revokeDelegation}
             disabled={delegationValidationError || calculatingDelegationFee}
