@@ -26,13 +26,13 @@ const SendFormErrorMessage = ({sendFormValidationError}) => (
 )
 
 const SendValidation = ({sendFormValidationError, showTxSuccess}) =>
-  sendFormValidationError ? (
-    <div className="validation-message send error">
-      <SendFormErrorMessage sendFormValidationError={sendFormValidationError} />
-    </div>
+  showTxSuccess === 'send' ? (
+    <div className="validation-message transaction-success">Transaction successful!</div>
   ) : (
-    showTxSuccess === 'send' && (
-      <div className="validation-message transaction-success">Transaction successful!</div>
+    sendFormValidationError && (
+      <div className="validation-message send error">
+        <SendFormErrorMessage sendFormValidationError={sendFormValidationError} />
+      </div>
     )
   )
 

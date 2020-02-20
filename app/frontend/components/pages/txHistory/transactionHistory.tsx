@@ -69,7 +69,6 @@ class TransactionHistory extends Component<Props> {
     super(props)
   }
   render({transactionHistory}) {
-    console.log('render', transactionHistory.map((tx) => tx.effect))
     return (
       <div className="transactions card">
         <h2 className="card-title">Transaction History</h2>

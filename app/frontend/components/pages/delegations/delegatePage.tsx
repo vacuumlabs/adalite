@@ -12,11 +12,13 @@ import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDial
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
 const DelegationValidation = ({delegationValidationError, showTxSuccess}) =>
-  delegationValidationError ? (
-    <div className="validation-message error">{getTranslation(delegationValidationError.code)}</div>
+  showTxSuccess === 'stake' ? (
+    <div className="validation-message transaction-success">Transaction successful!</div>
   ) : (
-    showTxSuccess === 'stake' && (
-      <div className="validation-message transaction-success">Transaction successful!</div>
+    delegationValidationError && (
+      <div className="validation-message error">
+        {getTranslation(delegationValidationError.code)}
+      </div>
     )
   )
 
@@ -99,7 +101,6 @@ class Delegate extends Component<Props> {
     const delegationHandler = async () => {
       await confirmTransaction('delegate')
     }
-    console.log(showTxSuccess)
     return (
       <div className="delegate card">
         <h2 className="card-title">Delegate Stake</h2>

@@ -539,12 +539,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         },
         {
           calculatingDelegationFee: false,
+          showTxSuccess: state.showTxSuccess === 'send' ? state.showTxSuccess : '',
         }
       )
       return
     }
     setState({
-      showTxSuccess: state.showTxSuccess === 'stake' ? '' : state.showTxSuccess,
+      showTxSuccess: state.showTxSuccess === 'send' ? state.showTxSuccess : '',
     })
     setState({
       shelleyDelegation: {
