@@ -17,7 +17,7 @@ import {selectMinimalTxPlan, computeAccountTxPlan} from './shelley/build-transac
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
-import {isShelleyAddress, bechAddressToHex, isGroup} from './shelley/helpers/addresses'
+import {isShelleyAddress, bechAddressToHex, isGroup, isSingle} from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
 
@@ -26,6 +26,8 @@ const isUtxoProfitable = () => true
 const isUtxoNonStaking = ({address}) => !isGroup(address)
 
 const isUtxoStaking = ({address}) => isGroup(address)
+
+const isShelleyUtxo = ({address}) => isGroup(address) || isSingle(address)
 
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExtManager = AddressManager({
@@ -300,7 +302,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   const uTxOTxPlanner = async (args, txType) => {
     const {address, coins, donationAmount, pools} = args
     const utxoFilters = {
-      delegation: isUtxoStaking,
+      delegation: isShelleyUtxo,
       nonStakingConversion: isUtxoNonStaking,
       utxo: () => true,
     }

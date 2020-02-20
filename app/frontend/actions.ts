@@ -523,8 +523,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         }
       })
       : []
-    const balance =
-      state.shelleyBalances.stakingBalance - state.shelleyBalances.rewardsAccountBalance
+    // const balance =
+    //   state.shelleyBalances.stakingBalance - state.shelleyBalances.rewardsAccountBalance
+    const balance = state.balance
     let plan
     try {
       plan = await wallet.getTxPlan({amount: null, pools, balance}, 'delegation')
