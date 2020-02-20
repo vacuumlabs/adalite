@@ -2673,6 +2673,10 @@ input:checked + .slider:before {
   background-color: var(--color-staking-dark);
 }
 
+.button.revoke-delegation:disabled {
+  background-color: var(--color-staking-light);
+}
+
 .stake-pool-list {
   padding: 0 0 8px 0;
   margin: 0;

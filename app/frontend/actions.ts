@@ -475,25 +475,38 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, 'Preparing transaction...')
     const address = await wallet.getChangeAddress()
     const {sendAmount} = await wallet.getMaxNonStakingAmount(address)
-    const plan = await wallet.getTxPlan(
-      {
-        address,
-        coins: sendAmount,
-        donationAmount: null,
-        nonStaking: true,
-      },
-      'nonStakingConversion'
-    )
-    setState({
-      sendTransactionSummary: {
-        amount: sendAmount,
-        donation: 0 as Lovelace,
-        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
-        plan: plan.fee != null ? plan : null,
-      },
-    })
-    stopLoadingAction(state, {})
-    confirmTransaction(getState(), 'convert')
+    const balance = state.balance
+    let plan
+    try {
+      plan = await wallet.getTxPlan(
+        {
+          address,
+          coins: sendAmount,
+          donationAmount: null,
+          nonStaking: true,
+        },
+        'nonStakingConversion'
+      )
+      if (!plan || !plan.fee || balance < plan.fee) {
+        throw NamedError('NonStakingConversionError')
+      }
+      setState({
+        sendTransactionSummary: {
+          amount: sendAmount,
+          donation: 0 as Lovelace,
+          fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+          plan: plan.fee != null ? plan : null,
+        },
+      })
+      confirmTransaction(getState(), 'convert')
+      stopLoadingAction(state, {})
+    } catch (e) {
+      stopLoadingAction(state, {})
+      handleError('transactionSubmissionError', e)
+      setState({
+        showTransactionErrorModal: true,
+      })
+    }
   }
 
   const calculateDelegationFee = async (revoke?: boolean) => {
@@ -542,7 +555,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 2000)
+  const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
 
   const validateDelegationAndCalculateDelegationFee = () => {
     const state = getState()
