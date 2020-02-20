@@ -18,9 +18,7 @@ const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
               <div className="delegation-history-name">{pool.name}</div>,
               <div className="delegation-history-percent">{`${pool.ratio} %`}</div>,
               <div className="delegation-history-id">{pool.pool_id}</div>,
-              <div />,
               <div className="delegation-history-id">{`Ticker: ${pool.ticker}`}</div>,
-              <div />,
               <div className="delegation-history-id">
                 {`
                 Tax: ${(pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1] || ''}%
@@ -28,12 +26,10 @@ const CurrentDelegationPage = ({currentDelegation, revokeDelegation}) => {
                 ${pool.rewards.limit ? ` , ${`Limit: ${printAda(pool.rewards.limit)}`}` : ''}
               `}
               </div>,
-              <div />,
               <div className="delegation-history-id">
                 {'Homepage: '}
                 <a href={pool.homepage}>{pool.homepage}</a>
               </div>,
-              <div />,
             ])}
           </div>
           <button className="button primary revoke-delegation" onClick={revokeDelegation}>

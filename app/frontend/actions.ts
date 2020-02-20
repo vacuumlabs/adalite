@@ -511,7 +511,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     let plan
     try {
       plan = await wallet.getTxPlan({amount: null, pools, balance}, 'delegation')
-      if (!plan || balance < plan.fee) {
+      if (!plan || !plan.fee || balance < plan.fee) {
         throw NamedError('DelegationAccountBalanceError')
       }
     } catch (e) {

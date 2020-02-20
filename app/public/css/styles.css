@@ -1202,7 +1202,7 @@ li.main-tab label {
   box-sizing: border-box;
   display: inline-block;
   padding: 15px 25px;
-  color: #000;
+  color: var(--color-grey);
   width: 50%;
   text-align: center;
 }
@@ -2778,6 +2778,9 @@ input:checked + .slider:before {
   margin-bottom: 4px;
   justify-self: start;
   color: rgba(96, 106, 113, 0.64);
+  grid-column-start: 1;
+  grid-column-end: 3;
+  word-break: break-all;
 }
 
 /* TRANSACTIONS */
@@ -4192,6 +4195,7 @@ input:checked + .slider:before {
     box-shadow: unset;
     border-radius: unset;
     border-bottom: 1px transparent;
+    color: var(--color-black);
   }
 
   li.main-tab input + label.selected::before {
@@ -4205,6 +4209,10 @@ input:checked + .slider:before {
     background: #fff;
     box-shadow: unset;
   }
+  li.main-tab input + label {
+    color: var(--color-grey);
+  }
+  
 
   /* SEND ADA */
 
