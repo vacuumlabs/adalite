@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {h, Component} from 'preact'
 import printAda from '../../../helpers/printAda'
 import formatDate from '../../../helpers/formatDate'
 import {Lovelace} from '../../../state'
@@ -60,25 +60,64 @@ const Transaction = ({txid}) => (
   </div>
 )
 
-const TransactionHistory = ({transactionHistory}) => (
-  <div className="transactions card">
-    <h2 className="card-title">Transaction History</h2>
-    {transactionHistory.length === 0 ? (
-      <div className="transactions-empty">No transactions found</div>
-    ) : (
-      <ul className="transactions-content">
-        {transactionHistory.map((transaction) => (
-          <li key={transaction.ctbId} className="transaction-item">
-            <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
-            <FormattedAmount amount={transaction.effect} />
-            <Transaction txid={transaction.ctbId} />
-            <FormattedFee fee={transaction.fee} />
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-)
+interface Props {
+  transactionHistory: any
+}
+
+class TransactionHistory extends Component<Props> {
+  constructor(props) {
+    super(props)
+  }
+  render({transactionHistory}) {
+    console.log('render', transactionHistory.map((tx) => tx.effect))
+    return (
+      <div className="transactions card">
+        <h2 className="card-title">Transaction History</h2>
+        {transactionHistory.length === 0 ? (
+          <div className="transactions-empty">No transactions found</div>
+        ) : (
+          <ul className="transactions-content">
+            {transactionHistory.map((transaction) => (
+              <li key={transaction.ctbId} className="transaction-item">
+                <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
+                <FormattedAmount amount={transaction.effect} />
+                <Transaction txid={transaction.ctbId} />
+                <FormattedFee fee={transaction.fee} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )
+  }
+}
+
+// const TransactionHistory2 = ({transactionHistory}) => (
+//   <div className="transactions card">
+//     <h2 className="card-title">Transaction History</h2>
+//     {transactionHistory.length === 0 ? (
+//       <div className="transactions-empty">No transactions found</div>
+//     ) : (
+//       <ul className="transactions-content">
+//         {transactionHistory.map((transaction) => (
+//           <li key={transaction.ctbId} className="transaction-item">
+//             <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
+//             <FormattedAmount amount={transaction.effect} />
+//             <Transaction txid={transaction.ctbId} />
+//             <FormattedFee fee={transaction.fee} />
+//           </li>
+//         ))}
+//       </ul>
+//     )}
+//   </div>
+// )
+
+// export default connect(
+//   (state) => ({
+//     transactionHistory: state.transactionHistory,
+//   }),
+//   actions
+// )(TransactionHistory)
 
 export default connect(
   (state) => ({

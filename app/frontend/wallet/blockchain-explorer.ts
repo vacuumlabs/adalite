@@ -31,11 +31,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return result.Right
   }
 
-  const getAddressInfos = cacheResults(15000)(_fetchBulkAddressInfo)
+  // const getAddressInfos = cacheResults(15000)(_fetchBulkAddressInfo)
+  const getAddressInfos = _fetchBulkAddressInfo
 
   async function getTxHistory(addresses) {
     const transactions = []
-
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
     const addressInfos = (await Promise.all(
       chunks.map(async (index) => {
