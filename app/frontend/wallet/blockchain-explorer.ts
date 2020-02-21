@@ -31,13 +31,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return result.Right
   }
 
-  // const getAddressInfos = cacheResults(15000)(_fetchBulkAddressInfo)
-  const getAddressInfos = _fetchBulkAddressInfo
+  const getAddressInfos = cacheResults(15000)(_fetchBulkAddressInfo)
 
   async function getTxHistory(addresses) {
     const transactions = []
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const addressInfos = (await Promise.all(
+    const cachedAddressInfos = (await Promise.all(
       chunks.map(async (index) => {
         const beginIndex = index * gapLimit
         return await getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
@@ -50,6 +49,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       },
       {caTxList: []}
     )
+    // create a deep copy of address infos since
+    // we are mutating effect and fee
+    const addressInfos = JSON.parse(JSON.stringify(cachedAddressInfos))
     addressInfos.caTxList.forEach((tx) => {
       transactions[tx.ctbId] = tx
     })
