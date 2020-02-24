@@ -18,7 +18,7 @@ app.use(require('./middlewares/redirectToBaseUrl'))
 // don't track in local dev => no need for local GA
 if (backendConfig.ADALITE_GA_TRACKING_ID) {
   app.use(require('./middlewares/statsGoogleAnalytics').trackVisits)
-  // app.use(require('./middlewares/statsGoogleAnalytics').trackTxSubmissions)
+  app.use(require('./middlewares/statsGoogleAnalytics').trackTxSubmissions)
 }
 
 // don't track in local dev => no need for local redis
