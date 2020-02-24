@@ -22,11 +22,11 @@ const StakingPage = () => {
   return (
     <div className="dashboard desktop">
       <div className="dashboard-column">
-        <ShelleyBalances />,
+        <ShelleyBalances />
         <CurrentDelegationPage />
       </div>
       <div className="dashboard-column">
-        <DelegatePage />,
+        <DelegatePage />
         {/* <DelegationHistory /> */}
       </div>
     </div>
@@ -37,12 +37,12 @@ const SendingPage = ({showExportOption}) => {
   return (
     <div className="dashboard desktop">
       <div className="dashboard-column">
-        <Balance />,
-        <TransactionHistory />,
+        <Balance />
+        <TransactionHistory />
       </div>
       <div className="dashboard-column">
-        <SendAdaPage />,
-        <MyAddresses />,
+        <SendAdaPage />
+        <MyAddresses />
         {showExportOption && <ExportCard />}
       </div>
     </div>

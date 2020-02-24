@@ -23,6 +23,8 @@ const translations = {
   RudundantStakePool: () => 'This stake pool is already chosen.',
   DelegationAccountBalanceError: () => 'Not enough funds to pay the delegation fee.',
   DelegationFeeError: () => 'Unsuccessful delegation fee calculation.',
+  NonStakingConversionError: () =>
+    'Insufficient balance: Not enough funds to pay the conversion fee.',
 
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
   AddressNotInBlockchain: () => 'Wallet is not shelley compatible. Restore your wallet first.',
