@@ -326,7 +326,7 @@ export default ({setState, getState}) => {
   }
 
   const closeStakingBanner = (state) => {
-    window.localStorage.setItem('dontShowStakingBanner3', true)
+    window.localStorage.setItem('dontShowStakingBanner4', true)
     setState({
       showStakingBanner: false,
     })

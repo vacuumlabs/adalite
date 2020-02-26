@@ -44,27 +44,18 @@ class StakingPage extends Component {
       h(
         'div',
         {class: 'staking-inner'},
-        h('div', {class: 'staking-label'}, 'Upcoming'),
-        h(
-          'h2',
-          {class: 'staking-title'},
-          'Staking delegation and staking pool is coming to AdaLite'
-        ),
+        h('div', {class: 'staking-label'}, 'New'),
+        h('h2', {class: 'staking-title'}, 'Staking with AdaLite'),
         h(
           'p',
           {class: 'staking-text'},
-          'We are currently implementing staking delegation interface so our users can easily stake their Incentivized Testnet ADA to any stakepool directly from AdaLite. This feature will be available around Christmas on ',
+          'We released staking delegation interface so our users can access Shelley Testnet and easily delegate Incentivized Testnet ADA to any stake pool directly from AdaLite. We also improved the infrastructure of our stake pool which should be much more reliable now and we introduced very low 3% fee. You can access the delegation interface on ',
           h(
             'a',
             {href: 'https://testnet.adalite.io/', target: '_blank'},
             'https://testnet.adalite.io/'
           ),
-          '. Currently you can only check your Testnet balance there.'
-        ),
-        h(
-          'p',
-          {class: 'staking-text'},
-          'We launched our own AdaLite stake pool and we hope AdaLite users will be willing to stake with us.'
+          '. After release of the staking functionality on the Cardano main net, we will introduce this feature also on main site.'
         ),
         h(
           'div',
@@ -75,7 +66,7 @@ class StakingPage extends Component {
               'p',
               {},
               'Pool id: ',
-              h('b', {}, 'a19af49ed88574bd181022c38904d76482be0e57778f3ee28a6abf3769d6ac46')
+              h('b', {}, 'f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49733c37b8f6')
             )
         ),
         h(
