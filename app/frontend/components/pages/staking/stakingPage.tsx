@@ -100,7 +100,20 @@ const StakingPage = () => {
             https://testnet.adalite.io/
           </a>
           {'. '} After release of the staking functionality on the Cardano main net, we will
-          introduce this feature also on main site.
+          introduce this feature also on main site. The testnet phase is estimated to end in Q2-Q3
+          2020.
+        </p>
+        <p className="staking-text">
+          Users who had balance on their mnemonic wallets in the time of{' '}
+          <b>Shelley balance snapshot</b> (29.11.2019) can access the testnet and and stake this
+          balance. The purpose of staking on testnet is to help IOHK team to refine staking
+          functionality. Participating users will be able to transfer all the rewards earned with
+          staking to their main-net wallets at the end of testnet phase.
+        </p>
+        <p className="staking-text">
+          Please note that Staking is possible on Cardano testnet for <b>mnemonic wallets only</b>.
+          HW wallets are not supported yet but the support should be added before release of the
+          staking functionality to the main-net.
         </p>
         <div className="stakepool-info">
           <p>

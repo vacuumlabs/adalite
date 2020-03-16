@@ -7,7 +7,7 @@ interface Props {
 const StakingBanner = ({onRequestClose}: Props) => (
   <div className="banner">
     <div className="banner-text">
-      Staking with Adalite is out!{' '}
+      Stake with us on shelley testnet!{' '}
       <a
         href="#"
         onClick={(e) => {
