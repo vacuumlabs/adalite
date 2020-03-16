@@ -17,7 +17,7 @@ const initialState = {
     ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN !== 'true',
   currentTab: 'wallet-info',
   walletIsLoaded: false,
-  showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner4') === 'true'),
+  showStakingBanner: !(window.localStorage.getItem('dontShowStakingBanner5') === 'true'),
   newWalletMnemonic: '',
   ownAddressesWithMeta: [],
   // todo - object (sub-state) from send-ada form
