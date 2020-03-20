@@ -74,6 +74,9 @@
     "release-it": "^12.3.3"
   },
   "resolutions": {
-    "lodash": "4.17.14"
+    "lodash": "4.17.14",
+    "minimist": "^1.2.2",
+    "acorn": "^5.7.4",
+    "kind-of": "^6.0.3"
   }
 }
