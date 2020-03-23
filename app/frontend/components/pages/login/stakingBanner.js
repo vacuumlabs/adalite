@@ -7,7 +7,7 @@ const StakingBanner = ({closeBanner}) =>
     h(
       'div',
       {class: 'banner-text'},
-      'Staking with Adalite is out! ',
+      'Stake with us on shelley testnet! ',
       h(
         'a',
         {

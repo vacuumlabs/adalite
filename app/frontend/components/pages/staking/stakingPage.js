@@ -55,7 +55,21 @@ class StakingPage extends Component {
             {href: 'https://testnet.adalite.io/', target: '_blank'},
             'https://testnet.adalite.io/'
           ),
-          '. After release of the staking functionality on the Cardano main net, we will introduce this feature also on main site.'
+          'After release of the staking functionality on the Cardano main net, we will introduce this feature also on the main site. The testnet phase is estimated to end in Q2-Q3 2020.'
+        ),
+        h(
+          'p',
+          {class: 'staking-text'},
+          'Users who had balance on their mnemonic wallets in the time of ',
+          h('b', {}, 'Shelley balance snapshot'),
+          ' (29.11.2019) can access the testnet and and stake this balance. The purpose of staking on testnet is to help IOHK team to refine staking functionality. Participating users will be able to transfer all the rewards earned with staking to their main-net wallets at the end of testnet phase.'
+        ),
+        h(
+          'p',
+          {class: 'staking-text'},
+          'Please note that Staking is possible on Cardano testnet for ',
+          h('b', {}, 'mnemonic wallets only'),
+          '. HW wallets are not supported yet but the support should be added before release of the staking functionality to the main-net.'
         ),
         h(
           'div',
