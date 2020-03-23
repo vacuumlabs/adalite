@@ -6,7 +6,8 @@ const formatDate = (date) =>
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-    hour12: false,
-  })
+    hourCycle: 'h23',
+  } as any)
+// as any because there seems to be bug with hourCycle parameter
 
 export default formatDate
