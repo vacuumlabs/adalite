@@ -11,8 +11,8 @@ import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDial
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
-const DelegationValidation = ({delegationValidationError, showTxSuccess}) =>
-  showTxSuccess === 'stake' ? (
+const DelegationValidation = ({delegationValidationError, txSuccessTab}) =>
+  txSuccessTab === 'stake' ? (
     <div className="validation-message transaction-success">Transaction successful!</div>
   ) : (
     delegationValidationError && (
@@ -68,7 +68,7 @@ interface Props {
   showTransactionErrorModal: any
   selectAdaliteStakepool: any
   showConfirmTransactionDialog: any
-  showTxSuccess: any
+  txSuccessTab: any
 }
 
 class Delegate extends Component<Props> {
@@ -96,7 +96,7 @@ class Delegate extends Component<Props> {
     transactionSubmissionError,
     showTransactionErrorModal,
     showConfirmTransactionDialog,
-    showTxSuccess,
+    txSuccessTab,
   }) {
     const delegationHandler = async () => {
       await confirmTransaction('delegate')
@@ -185,7 +185,7 @@ class Delegate extends Component<Props> {
             ) : (
               <DelegationValidation
                 delegationValidationError={delegationValidationError}
-                showTxSuccess={showTxSuccess}
+                txSuccessTab={txSuccessTab}
               />
             ),
           ]}
@@ -215,7 +215,7 @@ export default connect(
     showTransactionErrorModal: state.showTransactionErrorModal,
     transactionSubmissionError: state.transactionSubmissionError,
     showConfirmTransactionDialog: state.showConfirmTransactionDialog,
-    showTxSuccess: state.showTxSuccess,
+    txSuccessTab: state.txSuccessTab,
   }),
   actions
 )(Delegate)

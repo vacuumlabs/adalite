@@ -23,12 +23,6 @@ import {ADALITE_CONFIG} from '../config'
 
 const isUtxoProfitable = () => true
 
-const isUtxoNonStaking = ({address}) => !isGroup(address)
-
-const isUtxoStaking = ({address}) => isGroup(address)
-
-const isShelleyUtxo = ({address}) => isGroup(address) || isSingle(address)
-
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExtManager = AddressManager({
     addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
@@ -127,7 +121,6 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   }
 
   async function getVisibleAddressesWithMeta() {
-    // TODO : only group?
     const addresses = await groupExtManager.discoverAddressesWithMeta()
     return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
@@ -139,7 +132,6 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     * This is an intermediate step between legacy mode and full Yoroi compatibility.
     */
     const candidates = await getVisibleAddressesWithMeta()
-    //.filter(isAddressGroupType)
 
     const randomSeedGenerator = PseudoRandom(rngSeed)
     const choice = candidates[randomSeedGenerator.nextInt() % candidates.length]
@@ -160,12 +152,13 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
 }
 
 const ShelleyBlockchainExplorer = (config) => {
+  // TODO: move to separate file
   const be = BlockchainExplorer(config)
 
   const fixAddress = (address) => (isShelleyAddress(address) ? bechAddressToHex(address) : address)
   const fix = (addresses: Array<string>): Array<string> => {
     return addresses.map(fixAddress)
-  }
+  } // TODO: rename to better name than "fix"
 
   async function getAccountInfo(accountPubkeyHex) {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`
@@ -240,7 +233,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   const accountIndex = 0
 
   const myAddresses = MyAddresses({
-    accountIndex: 0,
+    accountIndex,
     cryptoProvider,
     gapLimit: config.ADALITE_GAP_LIMIT,
     blockchainExplorer,
@@ -257,7 +250,6 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function submitTx(signedTx) {
     const {transaction, fragmentId} = signedTx
     const response = await blockchainExplorer.submitTxRaw(fragmentId, transaction).catch((e) => {
-      debugLog(e)
       throw e
     })
 
@@ -287,6 +279,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
+    // TODO: why do we need hasDonation?
     const utxos = (await getUTxOs()).filter(isUtxoProfitable)
     return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
   }
@@ -297,7 +290,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getMaxNonStakingAmount(address) {
-    const utxos = (await getUTxOs()).filter(isUtxoNonStaking)
+    const utxos = (await getUTxOs()).filter(({address}) => !isGroup(address))
     return _getMaxSendableAmount(utxos, address, false, 0, false)
   }
 
@@ -365,8 +358,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       delegate: uTxOTxPlanner,
       redeem: accountTxPlanner,
     }
-    const plan = txPlanners[args.txType](args, accountAddress)
-    return plan
+    return await txPlanners[args.txType](args, accountAddress)
   }
 
   async function getWalletInfo() {
@@ -400,7 +392,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getHistory() {
-    // TODO refactor to getTxHistory?
+    // TODO: refactor to getTxHistory? or add delegation history or rewards history
     const {legacy, group, single, account} = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getTxHistory([...single, ...group, ...legacy, account])
   }
@@ -456,8 +448,6 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getVisibleAddresses() {
     const single = await myAddresses.singleExtManager.discoverAddressesWithMeta()
     const group = await myAddresses.groupExtManager.discoverAddressesWithMeta()
-    // TODO why not get also the account address
-    // need to change the ..withMeta function to do that
     return [...group, ...single] //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 

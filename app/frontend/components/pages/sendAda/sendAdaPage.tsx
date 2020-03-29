@@ -25,8 +25,8 @@ const SendFormErrorMessage = ({sendFormValidationError}) => (
   <span>{getTranslation(sendFormValidationError.code, sendFormValidationError.params)}</span>
 )
 
-const SendValidation = ({sendFormValidationError, showTxSuccess}) =>
-  showTxSuccess === 'send' ? (
+const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
+  txSuccessTab === 'send' ? (
     <div className="validation-message transaction-success">Transaction successful!</div>
   ) : (
     sendFormValidationError && (
@@ -90,7 +90,7 @@ class SendAdaPage extends Component<Props> {
     conversionRates,
     sendTransactionSummary: summary,
     transactionFee,
-    showTxSuccess,
+    txSuccessTab,
   }) {
     const sendFormValidationError =
       sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
@@ -192,7 +192,7 @@ class SendAdaPage extends Component<Props> {
           ) : (
             <SendValidation
               sendFormValidationError={sendFormValidationError}
-              showTxSuccess={showTxSuccess}
+              txSuccessTab={txSuccessTab}
             />
           )}
         </div>
@@ -234,7 +234,7 @@ export default connect(
     conversionRates: state.conversionRates && state.conversionRates.data,
     sendTransactionSummary: state.sendTransactionSummary,
     transactionFee: state.transactionFee,
-    showTxSuccess: state.showTxSuccess,
+    txSuccessTab: state.txSuccessTab,
   }),
   actions
 )(SendAdaPage)

@@ -20,7 +20,7 @@ const sendAddressValidator = (fieldValue) =>
     ? {code: 'SendAddressInvalidAddress'}
     : null
 
-const sendAmountValidator = (fieldValue, coins) => {
+const sendAmountValidator = (fieldValue, coins, balance) => {
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
 
@@ -42,11 +42,17 @@ const sendAmountValidator = (fieldValue, coins) => {
   if (coins <= 0) {
     return {code: 'SendAmountIsNotPositive'}
   }
+  if (balance < coins) {
+    return {
+      code: 'SendAmountInsufficientFunds',
+      params: {balance},
+    }
+  }
   return null
 }
 
-const donationAmountValidator = (fieldValue, coins) => {
-  const amountError = sendAmountValidator(fieldValue, coins)
+const donationAmountValidator = (fieldValue, coins, balance) => {
+  const amountError = sendAmountValidator(fieldValue, coins, balance)
   if (amountError) {
     return amountError
   }
@@ -75,6 +81,15 @@ const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
   return null
 }
 
+const delegationFeeValidator = (fee, balance) => {
+  if (fee > balance) {
+    return {
+      code: 'DelegationAccountBalanceError',
+      params: {balance},
+    }
+  }
+}
+
 const mnemonicValidator = (mnemonic) => {
   if (!validateMnemonic(mnemonic)) {
     return {
@@ -84,7 +99,7 @@ const mnemonicValidator = (mnemonic) => {
   return null
 }
 
-const poolIdValidator = (poolId, selectedPools, validStakepools) => {
+const poolIdValidator = (poolIndex, poolId, selectedPools, validStakepools) => {
   if (poolId === '') {
     return null
   }
@@ -94,7 +109,7 @@ const poolIdValidator = (poolId, selectedPools, validStakepools) => {
     }
   }
   const selectedPoolsIds = selectedPools.map((pool) => pool.pool_id)
-  if (selectedPoolsIds.includes(poolId)) {
+  if (selectedPoolsIds.every((id, index) => poolId === id && index !== poolIndex)) {
     return {
       code: 'RudundantStakePool',
     }
@@ -107,6 +122,7 @@ export {
   sendAddressValidator,
   sendAmountValidator,
   feeValidator,
+  delegationFeeValidator,
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,

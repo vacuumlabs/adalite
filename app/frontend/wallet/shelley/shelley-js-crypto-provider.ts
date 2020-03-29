@@ -85,7 +85,6 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       }
     }
 
-    // const inputs = txAux.inputs.map((input) => prepareInput(txAux.type, input))
     const inputs = txAux.inputs.map(prepareInput)
     const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
     const outputs = outpustAndChange.length ? outpustAndChange.map(prepareOutput) : []
