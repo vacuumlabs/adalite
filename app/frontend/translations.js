@@ -9,8 +9,7 @@ const translations = {
   SendAmountIsNotPositive: () => 'Invalid format: Amount has to be a positive number',
   SendAmountInsufficientFunds: ({balance}) =>
     `Insufficient funds for the transaction. Your balance is ${printAda(balance)} ADA.`,
-  SendAmountCantSendAnyFunds: () =>
-    'Sending funds is not possible since there is not enough balance to pay the transaction fee',
+  SendAmountCantSendAnyFunds: () => 'Not enough balance.',
   SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER)}`,
