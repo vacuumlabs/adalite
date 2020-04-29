@@ -32,7 +32,7 @@
     "borc": "^2.1.0",
     "cardano-crypto.js": "5.2.0",
     "preact": "^8.2.7",
-    "trezor-connect": "7",
+    "trezor-connect": "^8.1.1",
     "webpack": "^4.1.1",
     "webpack-cli": "^3.3.6",
     "webpack-node-externals": "^1.6.0"
