@@ -27,7 +27,6 @@ const translations = {
     'Insufficient balance: Not enough funds to pay the conversion fee.',
 
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
-  AddressNotInBlockchain: () => 'Wallet is not shelley compatible. Restore your wallet first.',
 
   TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
   TransportError: ({message}) => `TransportError: ${message}`,
@@ -53,6 +52,8 @@ const translations = {
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
   NetworkError: ({message}) =>
     `NetworkError: connection failed. Please check your network connection. ${message}`,
+  BackendDownError: () =>
+    'We are sorry. It seems that our backend is not working properly at the moment, try again in a few minutes.',
 
   NodeOutOfSync: () => 'Service is temporarily unavailable, please try again in 1-2 minutes.',
 }

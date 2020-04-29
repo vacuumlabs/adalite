@@ -4,18 +4,13 @@ import sleep from '../../helpers/sleep'
 import {DELAY_AFTER_TOO_MANY_REQUESTS} from '../constants'
 
 const errors = {
-  503: 'NodeOutOfSync'
+  503: 'NodeOutOfSync',
 }
 
-const request = async function request(
-  url,
-  method = 'GET',
-  body = null,
-  headers = {}
-) {
+const request = async function request(url, method = 'GET', body = null, headers = {}) {
   let requestParams = {
     method,
-    headers
+    headers,
     //credentials: 'include',
     //mode: 'no-cors',
   }
@@ -23,7 +18,7 @@ const request = async function request(
     requestParams = Object.assign({}, requestParams, {body})
   }
   try {
-    const response = await fetch(url, requestParams as any).catch(e => {
+    const response = await fetch(url, requestParams as any).catch((e) => {
       throw NamedError('NetworkError', `${method} ${url} returns error: ${e}`)
     })
     if (!response) throw NamedError('NetworkError')
@@ -32,14 +27,14 @@ const request = async function request(
       return await request(url, method, body, headers)
     } else if (response.status === 503) {
       throw NamedError('NodeOutOfSync')
-    } else if (response.status === 404) {
-      throw NamedError('AddressNotInBlockchain')
+    } else if (response.status >= 500) {
+      throw NamedError('BackendDownError')
     } else if (response.status >= 400) {
       throw NamedError(
         'NetworkError',
-        `${method} ${url} returns error: ${
-          response.status
-        } on payload: ${JSON.stringify(requestParams)}`
+        `${method} ${url} returns error: ${response.status} on payload: ${JSON.stringify(
+          requestParams
+        )}`
       )
     }
     return response.json()

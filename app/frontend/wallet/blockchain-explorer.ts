@@ -31,7 +31,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return result.Right
   }
 
-  const getAddressInfos = cacheResults(15000)(_fetchBulkAddressInfo)
+  const getAddressInfos = cacheResults(5000)(_fetchBulkAddressInfo)
 
   async function getTxHistory(addresses) {
     const transactions = []
@@ -69,7 +69,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         }
       }
       t.effect = effect
-      t.fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin || parseInt(t.ctbInputSum.getCoin)
+      const fee = t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin || parseInt(t.ctbInputSum.getCoin)
+      t.fee = Math.max(fee, 0)
+      // some txs from restored testnet wallets have no inputs thus fee would be negative
     }
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }

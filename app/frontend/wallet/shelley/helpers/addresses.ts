@@ -1,4 +1,5 @@
 import * as lib from '@emurgo/js-chain-libs'
+import {isValidAddress as isValidByronAddress} from 'cardano-crypto.js'
 import bech32 from './bech32'
 const {Address, Account, AddressDiscrimination, PublicKey, AddressKind} = lib
 
@@ -70,16 +71,23 @@ export const isShelleyAddress = (address: string): boolean => {
   return address.startsWith('addr1')
 }
 
+const getAddressKind = (address: string) => {
+  // separate get_kind method since chain-libs throw error with legacy
+  // addresses TODO: refactor
+  try {
+    const wasmAddr = address.startsWith('addr1')
+      ? Address.from_string(address)
+      : Address.from_bytes(Buffer.from(address, 'hex'))
+    return wasmAddr.get_kind()
+  } catch (e) {
+    return undefined
+  }
+}
+
 export const isGroup = (address: string): boolean => {
-  const wasmAddr = isShelleyAddress(address)
-    ? Address.from_string(address)
-    : Address.from_bytes(Buffer.from(address, 'hex'))
-  return wasmAddr.get_kind() === AddressKind.Group
+  return getAddressKind(address) === AddressKind.Group
 }
 
 export const isSingle = (address: string): boolean => {
-  const wasmAddr = isShelleyAddress(address)
-    ? Address.from_string(address)
-    : Address.from_bytes(Buffer.from(address, 'hex'))
-  return wasmAddr.get_kind() === AddressKind.Single
+  return getAddressKind(address) === AddressKind.Single
 }
