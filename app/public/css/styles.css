@@ -666,7 +666,7 @@ button[data-balloon] {
 .alert-content {
   text-align: left;
   max-height: 180px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .alert.sidebar {
