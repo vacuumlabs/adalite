@@ -583,10 +583,11 @@ export default ({setState, getState}) => {
 
   const calculateMaxDonationAmount = async () => {
     const state = getState()
-    const maxDonationAmount = await wallet.getMaxDonationAmount(
-      state.sendAddress.fieldValue,
-      state.sendAmount.coins
-    )
+    const maxDonationAmount = await wallet
+      .getMaxDonationAmount(state.sendAddress.fieldValue, state.sendAmount.coins)
+      .catch((e) => {
+        handleError('sendAmountValidationError', {code: e.name})
+      })
     let newMaxDonationAmount
     if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
       newMaxDonationAmount = maxDonationAmount
@@ -645,13 +646,16 @@ export default ({setState, getState}) => {
 
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
-    const maxAmounts = await wallet
+    await wallet
       .getMaxSendableAmount(
         state.sendAddress.fieldValue,
         state.donationAmount.fieldValue !== '',
         state.donationAmount.coins,
         state.checkedDonationType
       )
+      .then((maxAmounts) => {
+        validateAndSetMaxFunds(state, maxAmounts)
+      })
       .catch((e) => {
         setState({
           calculatingFee: false,
@@ -659,7 +663,6 @@ export default ({setState, getState}) => {
         handleError('sendAmountValidationError', {code: e.name})
         return
       })
-    validateAndSetMaxFunds(state, maxAmounts)
   }
 
   const waitForTxToAppearOnBlockchain = async (state, txHash, pollingInterval, maxRetries) => {
