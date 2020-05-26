@@ -143,9 +143,7 @@ const CardanoWallet = async (options) => {
   }
 
   async function getTxInputsAndCoins() {
-    const utxos = await getUnspentTxOutputs().catch((e) => {
-      throw NamedError('NetworkError')
-    })
+    const utxos = await getUnspentTxOutputs()
     const txInputs = []
     let coins = 0
     const profitableUtxos = utxos.filter(isUtxoProfitable)
@@ -231,12 +229,7 @@ const CardanoWallet = async (options) => {
   async function prepareTxInputs(address, coins, hasDonation, donationAmount) {
     // we do it pseudorandomly to guarantee fee computation stability
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    const utxos = shuffleArray(
-      await getUnspentTxOutputs().catch((e) => {
-        throw NamedError('NetworkError')
-      }),
-      randomGenerator
-    )
+    const utxos = shuffleArray(await getUnspentTxOutputs(), randomGenerator)
     const profitableUtxos = utxos.filter(isUtxoProfitable)
 
     const txInputs = []
