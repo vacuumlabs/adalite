@@ -39,9 +39,12 @@ const translations = {
   TrezorError: ({message}) => `TrezorError: ${message}`,
   LedgerOperationError: ({message}) => `LedgerOperationError: ${message}`,
 
-  CoinAmountError: () => 'CoinAmounError: Unsupported amount of coins.',
+  CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
-  NetworkError: () => 'NetworkError: nection failed. Please check your network connection.',
+  NetworkError: () =>
+    'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
+  ServerError: () =>
+    'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
 }
 
 function getTranslation(code, params = {}) {
