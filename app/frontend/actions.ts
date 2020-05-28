@@ -114,6 +114,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  /* LOADING WALLET */
+
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
@@ -196,24 +198,27 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     return true
   }
 
-  const selectAdaliteStakepool = () => {
-    const state = getState()
-    const poolInfo =
-      state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
-    setState({
-      shelleyDelegation: {
-        ...state.shelleyDelegation,
-        selectedPools: [
-          {
-            validationError: !poolInfo,
-            ...poolInfo,
-            ratio: 100,
-            poolIdentifier: poolInfo.pool_id,
-          },
-        ],
-      },
-    })
-    validateDelegationAndCalculateDelegationFee()
+  const reloadWalletInfo = async (state) => {
+    loadingAction(state, 'Reloading wallet info...')
+    try {
+      const walletInfo = await wallet.getWalletInfo()
+      const conversionRates = getConversionRates(state)
+
+      // timeout setting loading state, so that loading shows even if everything was cached
+      setTimeout(() => setState({loading: false}), 500)
+      setState({
+        ...walletInfo,
+      })
+      await fetchConversionRates(conversionRates)
+    } catch (e) {
+      setState({
+        loading: false,
+      })
+      setErrorState('walletLoadingError', e)
+      setState({
+        showWalletLoadingErrorModal: true,
+      })
+    }
   }
 
   const loadDemoWallet = (state) => {
@@ -229,6 +234,34 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       showExportOption: true,
     })
   }
+
+  const closeDemoWalletWarningDialog = (state) => {
+    setState({
+      showDemoWalletWarningDialog: false,
+    })
+  }
+
+  const closeWalletLoadingErrorModal = (state) => {
+    setState({
+      showWalletLoadingErrorModal: false,
+    })
+  }
+
+  const logout = () => {
+    wallet = null
+    setState(
+      {
+        ...initialState,
+        displayWelcome: false,
+        autoLogin: false,
+      },
+      // @ts-ignore (we don't have types for forced state overwrite)
+      true
+    ) // force overwriting the state
+    window.history.pushState({}, '/', '/')
+  }
+
+  /* MNEMONIC */
 
   const openGenerateMnemonicDialog = (state) => {
     setState({
@@ -246,18 +279,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const closeGenerateMnemonicDialog = (state) => {
     setState({
       showGenerateMnemonicDialog: false,
-    })
-  }
-
-  const closeDemoWalletWarningDialog = (state) => {
-    setState({
-      showDemoWalletWarningDialog: false,
-    })
-  }
-
-  const closeWalletLoadingErrorModal = (state) => {
-    setState({
-      showWalletLoadingErrorModal: false,
     })
   }
 
@@ -287,6 +308,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       },
     })
   }
+
+  /* ADDRESS DETAIL */
 
   const verifyAddress = async () => {
     const state = getState()
@@ -329,63 +352,142 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const logout = () => {
-    wallet = null
-    setState(
-      {
-        ...initialState,
-        displayWelcome: false,
-        autoLogin: false,
-      },
-      // @ts-ignore (we don't have types for forced state overwrite)
-      true
-    ) // force overwriting the state
-    window.history.pushState({}, '/', '/')
+  /* DONATION */
+
+  const getPercentageDonationProperties = () => {
+    const state = getState()
+
+    const amount = state.sendAmount.coins
+
+    const preferredDonation: Lovelace = roundWholeAdas((amount * 0.002) as Lovelace) as Lovelace
+
+    return preferredDonation <= state.maxDonationAmount
+      ? {
+        text: '0.2%',
+        value: toAda(preferredDonation),
+      }
+      : {
+        text: '0.1%', // exceeded balance, lower to 1% or MIN
+        value: Math.max(
+          Math.round(toAda((preferredDonation / 2) as Lovelace)),
+          ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE
+        ) as Ada,
+      }
   }
 
-  const reloadWalletInfo = async (state) => {
-    loadingAction(state, 'Reloading wallet info...')
-    try {
-      const walletInfo = await wallet.getWalletInfo()
-      const conversionRates = getConversionRates(state)
+  const setDonation = (state, value) => {
+    setState({
+      donationAmount: Object.assign({}, state.donationAmount, {
+        fieldValue: value.toString(),
+        coins: parseCoins(value.toString()) || 0,
+      }),
+    })
+    validateSendFormAndCalculateFee()
+  }
 
-      // timeout setting loading state, so that loading shows even if everything was cached
-      setTimeout(() => setState({loading: false}), 500)
-      setState({
-        ...walletInfo,
-      })
-      await fetchConversionRates(conversionRates)
-    } catch (e) {
-      setState({
-        loading: false,
-      })
-      setErrorState('walletLoadingError', e)
-      setState({
-        showWalletLoadingErrorModal: true,
-      })
+  const getProperTextAndVal = async (coins) => {
+    if (coins < toCoins((500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE) as Ada)) {
+      //because 0.2%
+      return {
+        text: 'Min',
+        value: ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE,
+        thresholdReached: false,
+      }
+    }
+
+    const percentageProperties = await getPercentageDonationProperties()
+    return {
+      text: percentageProperties.text,
+      value: percentageProperties.value,
+      thresholdReached: true,
     }
   }
 
-  const openWelcome = async (state) => {
+  const resetPercentageDonation = () => {
     setState({
-      displayWelcome: true,
+      thresholdAmountReached: false,
+      percentageDonationValue: 0,
+      percentageDonationText: '0.2%',
     })
   }
 
-  const closeWelcome = (state, dontShowDisclaimer) => {
-    // we may get an ignored click event as the second argument, check only against booleans
-    window.localStorage.setItem('dontShowDisclaimer', dontShowDisclaimer)
+  const resetDonation = () => {
     setState({
-      displayWelcome: false,
+      checkedDonationType: '',
+      donationAmount: {fieldValue: '', coins: 0},
     })
   }
 
-  const closeStakingBanner = (state) => {
-    window.localStorage.setItem('dontShowStakingBannerTestnet2', 'true')
+  const handleThresholdAmount = async () => {
+    const state = getState()
+    const donationProperties = await getProperTextAndVal(state.sendAmount.coins)
+
+    if (state.checkedDonationType === 'percentage') {
+      // %-button is selected, adjust % value because sendAmount changed
+      setDonation(state, donationProperties.value)
+    }
+
+    if (state.checkedDonationType === 'percentage' || donationProperties.thresholdReached) {
+      // update %-button text and value
+      setState({
+        percentageDonationValue: donationProperties.value,
+        percentageDonationText: donationProperties.text,
+        thresholdAmountReached: true,
+      })
+    } else {
+      // disable and reset %-button because sendAmount is too low
+      resetPercentageDonation()
+    }
+  }
+
+  const calculateMaxDonationAmount = async () => {
+    const state = getState()
+    const maxDonationAmount = await wallet.getMaxDonationAmount(state.sendAddress.fieldValue, state
+      .sendAmount.coins as Lovelace)
+    let newMaxDonationAmount
+    if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
+      newMaxDonationAmount = maxDonationAmount
+    } else {
+      newMaxDonationAmount = 0
+      resetDonation()
+    }
+
     setState({
-      showStakingBanner: false,
+      maxDonationAmount: newMaxDonationAmount,
     })
   }
+
+  const updateDonation = (state, e) => {
+    if (state.checkedDonationType === e.target.id && e.target.id !== 'custom') {
+      // when clicking already selected button
+      resetDonation()
+    } else {
+      setState({
+        donationAmount: {
+          fieldValue: e.target.value,
+          coins: parseCoins(e.target.value) || 0,
+        },
+        checkedDonationType: e.target.id,
+      })
+    }
+    validateSendFormAndCalculateFee()
+  }
+
+  const toggleCustomDonation = (state) => {
+    resetDonation()
+    setState({
+      showCustomDonationInput: !state.showCustomDonationInput,
+    })
+    validateSendFormAndCalculateFee()
+  }
+
+  const closeThanksForDonationModal = (state) => {
+    setState({
+      showThanksForDonation: false,
+    })
+  }
+
+  /* SEND ADA */
 
   const validateSendForm = (state) => {
     setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
@@ -462,219 +564,19 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     )
     setState({
       calculatingFee: false,
-      showTxSuccess: '',
-    })
-  }
-
-  const revokeDelegation = async (state) => {
-    loadingAction(state, 'Preparing transaction...')
-    await calculateDelegationFee(true)
-    stopLoadingAction(state, {})
-    confirmTransaction(getState(), 'revoke')
-  }
-
-  const convertNonStakingUtxos = async (state) => {
-    loadingAction(state, 'Preparing transaction...')
-    const address = await wallet.getChangeAddress()
-    const {sendAmount} = await wallet.getMaxNonStakingAmount(address)
-    const balance = state.balance
-    let plan
-    try {
-      plan = await wallet.getTxPlan(
-        {
-          address,
-          coins: sendAmount,
-          donationAmount: null,
-          nonStaking: true,
-        },
-        'nonStakingConversion'
-      )
-      if (!plan || !plan.fee || balance < plan.fee) {
-        throw NamedError('NonStakingConversionError')
-      }
-      setState({
-        sendTransactionSummary: {
-          amount: sendAmount,
-          donation: 0 as Lovelace,
-          fee: plan.fee != null ? plan.fee : plan.estimatedFee,
-          plan: plan.fee != null ? plan : null,
-          type: 'stake',
-        },
-      })
-      confirmTransaction(getState(), 'convert')
-      stopLoadingAction(state, {})
-    } catch (e) {
-      stopLoadingAction(state, {})
-      setErrorState('transactionSubmissionError', e)
-      setState({
-        showTransactionErrorModal: true,
-      })
-    }
-  }
-
-  const calculateDelegationFee = async (revoke?: boolean) => {
-    const state = getState()
-    const pools = !revoke
-      ? state.shelleyDelegation.selectedPools.map(({pool_id, ratio}) => {
-        return {
-          id: pool_id,
-          ratio,
-        }
-      })
-      : []
-    // const balance =
-    //   state.shelleyBalances.stakingBalance - state.shelleyBalances.rewardsAccountBalance
-    const balance = state.balance
-    let plan
-    try {
-      plan = await wallet.getTxPlan({amount: null, pools, balance}, 'delegation')
-      if (!plan || !plan.fee || balance < plan.fee) {
-        throw NamedError('DelegationAccountBalanceError')
-      }
-    } catch (e) {
-      setErrorState(
-        'delegationValidationError',
-        {
-          code: e.name === 'DelegationAccountBalanceError' ? e.name : 'DelegationFeeError',
-        },
-        {
-          calculatingDelegationFee: false,
-          showTxSuccess: state.showTxSuccess === 'send' ? state.showTxSuccess : '',
-        }
-      )
-      return
-    }
-    setState({
-      showTxSuccess: state.showTxSuccess === 'send' ? state.showTxSuccess : '',
-    })
-    setState({
-      shelleyDelegation: {
-        ...state.shelleyDelegation,
-        delegationFee: plan.fee != null ? plan.fee : plan.estimatedFee,
-      },
-      sendTransactionSummary: {
-        amount: 0 as Lovelace,
-        donation: 0 as Lovelace,
-        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
-        plan: plan.fee != null ? plan : null,
-        type: 'stake',
-      },
-      calculatingDelegationFee: false,
-    })
-  }
-
-  const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
-
-  const validateDelegationAndCalculateDelegationFee = () => {
-    const state = getState()
-    const delegationValidationError = state.shelleyDelegation.selectedPools.every(
-      (pool) => pool.validationError || pool.poolIdentifier === ''
-    )
-    setErrorState('delegationValidationError', delegationValidationError)
-    setState({
-      delegationValidationError,
-    })
-    if (!delegationValidationError) {
-      setState({calculatingDelegationFee: true})
-      debouncedCalculateDelegationFee()
-    } else {
-      setState({
-        shelleyDelegation: {
-          ...state.shelleyDelegation,
-          delegationFee: 0,
-        },
-      })
-    }
-  }
-
-  const updateStakePoolIdentifier = (state, e) => {
-    const poolIdentifier = e.target.value
-    const poolId = state.ticker2Id[poolIdentifier] || poolIdentifier
-    const selectedPools = state.shelleyDelegation.selectedPools
-    setState({
-      shelleyDelegation: {
-        ...state.shelleyDelegation,
-        selectedPools: selectedPools.map((pool, i) => {
-          const index = parseInt(e.target.name, 10)
-          const validationError = poolIdValidator(poolId, selectedPools, state.validStakepools)
-          return i === index
-            ? {
-              validationError,
-              // 100 just while multiple delegation isnt supported
-              ratio: 100,
-              ...state.validStakepools[poolId],
-              poolIdentifier,
-            }
-            : pool
-        }),
-      },
-    })
-    validateDelegationAndCalculateDelegationFee()
-  }
-
-  const confirmTransaction = (state, txConfirmType) => {
-    let txAux
-    try {
-      txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
-    } catch (e) {
-      throw NamedError('TransactionCorrupted')
-    }
-
-    setState({
-      showConfirmTransactionDialog: true,
-      txConfirmType,
-      // TODO: maybe do this only on demand
-      rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
-      rawTransactionOpen: false,
-    })
-  }
-
-  const cancelTransaction = () => ({
-    showConfirmTransactionDialog: false,
-  })
-
-  const getPercentageDonationProperties = () => {
-    const state = getState()
-
-    const amount = state.sendAmount.coins
-
-    const preferredDonation: Lovelace = roundWholeAdas((amount * 0.002) as Lovelace) as Lovelace
-
-    return preferredDonation <= state.maxDonationAmount
-      ? {
-        text: '0.2%',
-        value: toAda(preferredDonation),
-      }
-      : {
-        text: '0.1%', // exceeded balance, lower to 1% or MIN
-        value: Math.max(
-          Math.round(toAda((preferredDonation / 2) as Lovelace)),
-          ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE
-        ) as Ada,
-      }
-  }
-
-  const resetPercentageDonation = () => {
-    setState({
-      thresholdAmountReached: false,
-      percentageDonationValue: 0,
-      percentageDonationText: '0.2%',
+      showTxSuccess: '', // TODO(merc): this shoud be boolean or string
     })
   }
 
   const resetAmountFields = (state) => {
     setState({
       donationAmount: {fieldValue: '', coins: 0},
-      transactionFee: 0,
+      transactionFee: 0, // TODO(merc): call resetDonation instead?
       maxDonationAmount: Infinity,
       checkedDonationType: '',
       showCustomDonationInput: false,
     })
     resetPercentageDonation()
-  }
-
-  const resetDelegationField = () => {
-    selectAdaliteStakepool()
   }
 
   const resetSendFormState = (state) => {
@@ -693,26 +595,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetAmountFields(state)
   }
 
-  const resetDonation = () => {
-    setState({
-      checkedDonationType: '',
-      donationAmount: {fieldValue: '', coins: 0},
-    })
-  }
-
-  const resetTransactionSummary = () => {
-    setState({
-      sendTransactionSummary: {
-        amount: 0 as Lovelace,
-        fee: 0 as Lovelace,
-        donation: 0 as Lovelace,
-        plan: null,
-        type: '',
-      },
-    })
-  }
-
   const isSendAmountNonPositive = (fieldValue, validationError) =>
+    // TODO(merc): checkout what is this for
     fieldValue === '' ||
     (validationError &&
       (validationError.code === 'SendAmountIsNotPositive' ||
@@ -743,73 +627,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }),
     })
     validateSendFormAndCalculateFee()
-  }
-
-  const setDonation = (state, value) => {
-    setState({
-      donationAmount: Object.assign({}, state.donationAmount, {
-        fieldValue: value.toString(),
-        coins: parseCoins(value.toString()) || 0,
-      }),
-    })
-    validateSendFormAndCalculateFee()
-  }
-
-  const getProperTextAndVal = async (coins) => {
-    if (coins < toCoins((500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE) as Ada)) {
-      //because 0.2%
-      return {
-        text: 'Min',
-        value: ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE,
-        thresholdReached: false,
-      }
-    }
-
-    const percentageProperties = await getPercentageDonationProperties()
-    return {
-      text: percentageProperties.text,
-      value: percentageProperties.value,
-      thresholdReached: true,
-    }
-  }
-
-  const handleThresholdAmount = async () => {
-    const state = getState()
-    const donationProperties = await getProperTextAndVal(state.sendAmount.coins)
-
-    if (state.checkedDonationType === 'percentage') {
-      // %-button is selected, adjust % value because sendAmount changed
-      setDonation(state, donationProperties.value)
-    }
-
-    if (state.checkedDonationType === 'percentage' || donationProperties.thresholdReached) {
-      // update %-button text and value
-      setState({
-        percentageDonationValue: donationProperties.value,
-        percentageDonationText: donationProperties.text,
-        thresholdAmountReached: true,
-      })
-    } else {
-      // disable and reset %-button because sendAmount is too low
-      resetPercentageDonation()
-    }
-  }
-
-  const calculateMaxDonationAmount = async () => {
-    const state = getState()
-    const maxDonationAmount = await wallet.getMaxDonationAmount(state.sendAddress.fieldValue, state
-      .sendAmount.coins as Lovelace)
-    let newMaxDonationAmount
-    if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
-      newMaxDonationAmount = maxDonationAmount
-    } else {
-      newMaxDonationAmount = 0
-      resetDonation()
-    }
-
-    setState({
-      maxDonationAmount: newMaxDonationAmount,
-    })
   }
 
   const updateAmount = async (state, e) => {
@@ -874,6 +691,225 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateAndSetMaxFunds(state, maxAmounts)
   }
 
+  const convertNonStakingUtxos = async (state) => {
+    loadingAction(state, 'Preparing transaction...')
+    const address = await wallet.getChangeAddress()
+    const {sendAmount} = await wallet.getMaxNonStakingAmount(address)
+    const balance = state.balance
+    let plan
+    try {
+      plan = await wallet.getTxPlan(
+        {
+          address,
+          coins: sendAmount,
+          donationAmount: null,
+          nonStaking: true,
+        },
+        'nonStakingConversion'
+      )
+      if (!plan || !plan.fee || balance < plan.fee) {
+        throw NamedError('NonStakingConversionError')
+      }
+      setState({
+        sendTransactionSummary: {
+          amount: sendAmount,
+          donation: 0 as Lovelace,
+          fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+          plan: plan.fee != null ? plan : null,
+          type: 'stake',
+        },
+      })
+      confirmTransaction(getState(), 'convert')
+      stopLoadingAction(state, {})
+    } catch (e) {
+      stopLoadingAction(state, {})
+      setErrorState('transactionSubmissionError', e)
+      setState({
+        showTransactionErrorModal: true,
+      })
+    }
+  }
+
+  /* DELEGATE */
+
+  const revokeDelegation = async (state) => {
+    loadingAction(state, 'Preparing transaction...')
+    await calculateDelegationFee(true)
+    stopLoadingAction(state, {})
+    confirmTransaction(getState(), 'revoke')
+  }
+
+  const calculateDelegationFee = async (revoke?: boolean) => {
+    const state = getState()
+    const pools = !revoke
+      ? state.shelleyDelegation.selectedPools.map(({pool_id, ratio}) => {
+        return {
+          id: pool_id,
+          ratio,
+        }
+      })
+      : []
+    const balance = state.balance
+    let plan
+    try {
+      plan = await wallet.getTxPlan({amount: null, pools, balance}, 'delegation')
+      if (!plan || !plan.fee || balance < plan.fee) {
+        throw NamedError('DelegationAccountBalanceError')
+      }
+    } catch (e) {
+      setErrorState(
+        'delegationValidationError',
+        {
+          code: e.name === 'DelegationAccountBalanceError' ? e.name : 'DelegationFeeError',
+        },
+        {
+          calculatingDelegationFee: false,
+          showTxSuccess: state.showTxSuccess === 'send' ? state.showTxSuccess : '',
+        }
+      )
+      return
+    }
+    setState({
+      showTxSuccess: state.showTxSuccess === 'send' ? state.showTxSuccess : '',
+    })
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        delegationFee: plan.fee != null ? plan.fee : plan.estimatedFee,
+      },
+      sendTransactionSummary: {
+        amount: 0 as Lovelace,
+        donation: 0 as Lovelace,
+        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+        plan: plan.fee != null ? plan : null,
+        type: 'stake',
+      },
+      calculatingDelegationFee: false,
+    })
+  }
+
+  const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
+
+  const validateDelegationAndCalculateFee = () => {
+    const state = getState()
+    const delegationValidationError = state.shelleyDelegation.selectedPools.every(
+      (pool) => pool.validationError || pool.poolIdentifier === ''
+    )
+    setErrorState('delegationValidationError', delegationValidationError)
+    setState({
+      delegationValidationError,
+    })
+    if (!delegationValidationError) {
+      setState({calculatingDelegationFee: true})
+      debouncedCalculateDelegationFee()
+    } else {
+      setState({
+        shelleyDelegation: {
+          ...state.shelleyDelegation,
+          delegationFee: 0,
+        },
+      })
+    }
+  }
+
+  const updateStakePoolIdentifier = (state, e) => {
+    const poolIdentifier = e.target.value
+    const poolId = state.ticker2Id[poolIdentifier] || poolIdentifier
+    const selectedPools = state.shelleyDelegation.selectedPools
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        selectedPools: selectedPools.map((pool, i) => {
+          const index = parseInt(e.target.name, 10)
+          const validationError = poolIdValidator(poolId, selectedPools, state.validStakepools)
+          return i === index
+            ? {
+              validationError,
+              // 100 just while multiple delegation isnt supported
+              ratio: 100,
+              ...state.validStakepools[poolId],
+              poolIdentifier,
+            }
+            : pool
+        }),
+      },
+    })
+    validateDelegationAndCalculateFee()
+  }
+
+  const selectAdaliteStakepool = () => {
+    const state = getState()
+    const poolInfo =
+      state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        selectedPools: [
+          {
+            validationError: !poolInfo,
+            ...poolInfo,
+            ratio: 100,
+            poolIdentifier: poolInfo.pool_id,
+          },
+        ],
+      },
+    })
+    validateDelegationAndCalculateFee()
+  }
+
+  const resetDelegationField = () => {
+    selectAdaliteStakepool()
+  }
+
+  /* TRANSACTION */
+
+  const resetTransactionSummary = () => {
+    setState({
+      sendTransactionSummary: {
+        amount: 0 as Lovelace,
+        fee: 0 as Lovelace,
+        donation: 0 as Lovelace,
+        plan: null,
+        type: '',
+      },
+    })
+  }
+
+  const confirmTransaction = (state, txConfirmType) => {
+    let txAux
+    try {
+      txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
+    } catch (e) {
+      throw NamedError('TransactionCorrupted')
+    }
+
+    setState({
+      showConfirmTransactionDialog: true,
+      txConfirmType,
+      // TODO: maybe do this only on demand
+      rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
+      rawTransactionOpen: false,
+    })
+  }
+
+  const cancelTransaction = () => ({
+    showConfirmTransactionDialog: false,
+  })
+
+  const setRawTransactionOpen = (state, open) => {
+    setState({
+      rawTransactionOpen: open,
+    })
+  }
+
+  const closeTransactionErrorModal = (state) => {
+    setState({
+      showTransactionErrorModal: false,
+    })
+  }
+
+  /* SUBMIT TX */
+
   const waitForTxToAppearOnBlockchain = async (state, txHash, pollingInterval, maxRetries) => {
     loadingAction(state, 'Transaction submitted - syncing wallet...')
 
@@ -896,7 +932,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         await sleep(pollingInterval)
       }
     }
-
     throw NamedError('TransactionNotFoundInBlockchainAfterSubmission')
   }
 
@@ -950,8 +985,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetAmountFields(state)
       resetDelegationField()
       resetTransactionSummary()
-      await reloadWalletInfo(state)
       wallet.generateNewSeeds()
+      await reloadWalletInfo(state)
       setState({
         waitingForHwWallet: false,
         showTxSuccess: sendResponse && sendResponse.success ? txType : '',
@@ -960,21 +995,39 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const closeThanksForDonationModal = (state) => {
+  /* EXPORT WALLET */
+
+  const exportJsonWallet = async (state, password, walletName) => {
+    const walletExport = JSON.stringify(
+      await exportWalletSecretDef(wallet.getWalletSecretDef(), password, walletName)
+    )
+
+    const blob = new Blob([walletExport], {
+      type: 'application/json;charset=utf-8',
+    })
+    saveAs(blob, `${walletName}.json`)
+  }
+
+  /* GENERAL */
+
+  const openWelcome = async (state) => {
     setState({
-      showThanksForDonation: false,
+      displayWelcome: true,
     })
   }
 
-  const closeTransactionErrorModal = (state) => {
+  const closeWelcome = (state, dontShowDisclaimer) => {
+    // we may get an ignored click event as the second argument, check only against booleans
+    window.localStorage.setItem('dontShowDisclaimer', dontShowDisclaimer)
     setState({
-      showTransactionErrorModal: false,
+      displayWelcome: false,
     })
   }
 
-  const closeUnexpectedErrorModal = (state) => {
+  const closeStakingBanner = (state) => {
+    window.localStorage.setItem('dontShowStakingBannerTestnet2', 'true')
     setState({
-      showUnexpectedErrorModal: false,
+      showStakingBanner: false,
     })
   }
 
@@ -990,57 +1043,22 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const exportJsonWallet = async (state, password, walletName) => {
-    const walletExport = JSON.stringify(
-      await exportWalletSecretDef(wallet.getWalletSecretDef(), password, walletName)
-    )
-
-    const blob = new Blob([walletExport], {
-      type: 'application/json;charset=utf-8',
-    })
-    saveAs(blob, `${walletName}.json`)
-  }
-
   const setLogoutNotificationOpen = (state, open) => {
     setState({
       logoutNotificationOpen: open,
     })
   }
 
-  const setRawTransactionOpen = (state, open) => {
-    setState({
-      rawTransactionOpen: open,
-    })
-  }
-
-  const updateDonation = (state, e) => {
-    if (state.checkedDonationType === e.target.id && e.target.id !== 'custom') {
-      // when clicking already selected button
-      resetDonation()
-    } else {
-      setState({
-        donationAmount: {
-          fieldValue: e.target.value,
-          coins: parseCoins(e.target.value) || 0,
-        },
-        checkedDonationType: e.target.id,
-      })
-    }
-    validateSendFormAndCalculateFee()
-  }
-
-  const toggleCustomDonation = (state) => {
-    resetDonation()
-    setState({
-      showCustomDonationInput: !state.showCustomDonationInput,
-    })
-    validateSendFormAndCalculateFee()
-  }
-
   const toggleDisplayStakingPage = async (state, value) => {
     setState({displayStakingPage: value})
     resetTransactionSummary()
     resetAmountFields(state)
+  }
+
+  const closeUnexpectedErrorModal = (state) => {
+    setState({
+      showUnexpectedErrorModal: false,
+    })
   }
 
   return {
