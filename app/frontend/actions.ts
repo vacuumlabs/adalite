@@ -70,8 +70,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )
     )
   }
-  // TODO rename to setErrorState
-  const handleError = (errorName: string, e: any, options?: any) => {
+  const setErrorState = (errorName: string, e: any, options?: any) => {
     if (e && e.name) {
       // TODO find a better way to distict
       // is a error
@@ -188,7 +187,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         loading: false,
       })
-      handleError('walletLoadingError', e)
+      setErrorState('walletLoadingError', e)
       setState({
         showWalletLoadingErrorModal: true,
       })
@@ -303,7 +302,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         setState({
           waitingForHwWallet: false,
         })
-        handleError('addressVerificationError', true)
+        setErrorState('addressVerificationError', true)
       }
     }
   }
@@ -360,7 +359,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         loading: false,
       })
-      handleError('walletLoadingError', e)
+      setErrorState('walletLoadingError', e)
       setState({
         showWalletLoadingErrorModal: true,
       })
@@ -389,12 +388,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const validateSendForm = (state) => {
-    handleError('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
-    handleError(
+    setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
+    setErrorState(
       'sendAmountValidationError',
       sendAmountValidator(state.sendAmount.fieldValue, state.sendAmount.coins)
     )
-    handleError(
+    setErrorState(
       'donationAmountValidationError',
       donationAmountValidator(state.donationAmount.fieldValue, state.donationAmount.coins)
     )
@@ -425,7 +424,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     try {
       plan = await wallet.getTxPlan({address, coins: amount, donationAmount}, 'utxo')
     } catch (e) {
-      handleError('sendAmountValidationError', {code: e.name})
+      setErrorState('sendAmountValidationError', {code: e.name})
       setState({
         calculatingFee: false,
       })
@@ -452,7 +451,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       },
       transactionFee: plan.fee != null ? plan.fee : plan.estimatedFee,
     })
-    handleError(
+    setErrorState(
       'sendAmountValidationError',
       feeValidator(
         amount,
@@ -506,7 +505,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       stopLoadingAction(state, {})
     } catch (e) {
       stopLoadingAction(state, {})
-      handleError('transactionSubmissionError', e)
+      setErrorState('transactionSubmissionError', e)
       setState({
         showTransactionErrorModal: true,
       })
@@ -533,7 +532,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         throw NamedError('DelegationAccountBalanceError')
       }
     } catch (e) {
-      handleError(
+      setErrorState(
         'delegationValidationError',
         {
           code: e.name === 'DelegationAccountBalanceError' ? e.name : 'DelegationFeeError',
@@ -571,7 +570,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const delegationValidationError = state.shelleyDelegation.selectedPools.every(
       (pool) => pool.validationError || pool.poolIdentifier === ''
     )
-    handleError('delegationValidationError', delegationValidationError)
+    setErrorState('delegationValidationError', delegationValidationError)
     setState({
       delegationValidationError,
     })
@@ -869,7 +868,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         setState({
           calculatingFee: false,
         })
-        handleError('sendAmountValidationError', {code: e.name})
+        setErrorState('sendAmountValidationError', {code: e.name})
         return
       })
     validateAndSetMaxFunds(state, maxAmounts)
@@ -939,7 +938,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         setState({showThanksForDonation: true})
       }
     } catch (e) {
-      handleError('transactionSubmissionError', e, {
+      setErrorState('transactionSubmissionError', e, {
         txHash: txSubmitResult && txSubmitResult.txHash,
       })
       setState({
