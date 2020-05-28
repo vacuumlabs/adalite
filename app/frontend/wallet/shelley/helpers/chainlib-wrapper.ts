@@ -84,7 +84,9 @@ export const computeRequiredTxFee = (chainConfig: ChainConfig) => (
 
 const _buildIOs = (inputs, outputs, payload) => {
   const inputBuilders = {
-    account: ({address, value}) =>
+    account: (
+      {address, value}
+    ) =>
       Input.from_account(
         Account.from_address(Address.from_string(address)),
         Value.from_str(value.toString())

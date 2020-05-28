@@ -27,12 +27,22 @@ export type Output = {
   coins: Lovelace
 }
 
+type Delegation = {
+  id: string
+  ratio: number
+}
+
+export type Cert = {
+  pools: Array<Delegation>
+  address: string
+}
+
 export interface TxPlan {
   type: string
   inputs: Array<Input>
   outputs: Array<Output>
   change: Output | null
-  cert?: Array<{id: string; ratio: number}>
+  cert?: Cert
   fee: Lovelace
 }
 
@@ -42,7 +52,7 @@ export function computeTxPlan(
   inputs: Array<Input>,
   outputs: Array<Output>,
   possibleChange?: Output,
-  cert?: any
+  cert?: any // TODO: cert
 ): TxPlan | null {
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0)
   const totalOutput = outputs.reduce((acc, output) => acc + output.coins, 0)
@@ -87,13 +97,13 @@ export function computeTxPlan(
 }
 
 export function selectMinimalTxPlan(
-  // TODO refactor to "minimalUtxoTxPlan"
+  // TODO refactor to "minimalUtxoTxPlan" and add types
   chainConfig,
-  utxos: Array<any>,
-  address,
-  donationAmount,
+  utxos: Array<any>, //utxos
   changeAddress,
+  address,
   coins?,
+  donationAmount?,
   pools?,
   accountAddress?
 ): any {
@@ -105,13 +115,10 @@ export function selectMinimalTxPlan(
     ? {
       type: 'certificate_stake_delegation',
       pools,
-      accountAddress,
+      accountAddress, // TODO: address: accountAddress
     }
     : null
-
-  coins = coins || computeRequiredTxFee(chainConfig)([{address}], [], cert)
-
-  const outputs = address ? [{address, coins}] : []
+  const outputs = coins ? [{address, coins}] : []
   if (donationAmount > 0) {
     outputs.push({address: ADA_DONATION_ADDRESS, coins: donationAmount})
   }
@@ -119,7 +126,7 @@ export function selectMinimalTxPlan(
   const change = {address: changeAddress, coins: 0 as Lovelace}
 
   for (let i = 0; i < profitableUtxos.length; i++) {
-    inputs.push(profitableUtxos[i])
+    inputs.push({type: 'utxo', ...profitableUtxos[i]})
     const plan = computeTxPlan('utxo', chainConfig, inputs, outputs, change, cert)
     if (plan) return plan
   }
@@ -129,28 +136,29 @@ export function selectMinimalTxPlan(
 
 export function computeAccountTxPlan(
   chainConfig,
-  dstAddress,
-  amount,
-  srcAddress,
-  pools,
+  dstAddress, // TODO: address
+  amount, // TODO: rename to coins
+  srcAddress, // TODO: accountAddress
   counter,
   value
 ): any {
-  const cert = pools
-    ? {
-      type: 'certificate_stake_delegation',
-      pools,
-    }
-    : null
-  const coins = value || computeRequiredTxFee(chainConfig)({srcAddress}, [], cert)
+  const accountInput = {
+    type: 'account',
+    address: srcAddress,
+    counter,
+  }
+  const inputFee = computeRequiredTxFee(chainConfig)([accountInput], [], null)
+  const coins = amount + inputFee
+  if (coins > value) {
+    return null
+  }
   const inputs = [
     {
-      address: srcAddress,
-      counter,
+      ...accountInput,
       coins,
     },
   ]
-  const outputs = amount ? [{address: dstAddress, coins: amount}] : []
+  const outputs = amount ? [{address: dstAddress, coins}] : []
 
-  return computeTxPlan('account', chainConfig, inputs, outputs, null, cert)
+  return computeTxPlan('account', chainConfig, inputs, outputs, null)
 }

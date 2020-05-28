@@ -38,7 +38,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
   async function signTx(txAux, addressToAbsPathMapper) {
     const prepareUtxoInput = (input, hdnode) => {
       return {
-        type: 'utxo',
+        type: input.type,
         txid: input.txHash,
         value: input.coins,
         outputNo: input.outputIndex,
@@ -50,7 +50,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
 
     const prepareAccountInput = (input, hdnode) => {
       return {
-        type: 'account',
+        type: input.type,
         address: input.address,
         privkey: Buffer.from(hdnode.secretKey).toString('hex'),
         accountCounter: input.counter,
@@ -58,37 +58,38 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       }
     }
 
-    const prepareInput = (type, input) => {
+    const prepareInput = (input) => {
       const path = addressToAbsPathMapper(input.address)
       const hdnode = deriveHdNode(path)
       const inputPreparator = {
         utxo: prepareUtxoInput,
         account: prepareAccountInput,
       }
-      return inputPreparator[type](input, hdnode)
+      return inputPreparator[input.type](input, hdnode)
     }
 
-    const prepareOutput = (output) => {
+    const prepareOutput = ({address, coins}) => {
       return {
-        address: output.address,
-        value: output.coins,
+        address,
+        value: coins,
       }
     }
 
-    const prepareCert = (input) => {
+    const prepareCert = ({type, pools}) => {
       const path = addressToAbsPathMapper(txAux.cert.accountAddress)
       const hdnode = deriveHdNode(path)
       return {
         type: 'stake_delegation',
         privkey: Buffer.from(hdnode.secretKey).toString('hex') as HexString,
-        pools: txAux.cert.pools,
+        pools,
       }
     }
 
-    const inputs = txAux.inputs.map((input) => prepareInput(txAux.type, input))
+    // const inputs = txAux.inputs.map((input) => prepareInput(txAux.type, input))
+    const inputs = txAux.inputs.map(prepareInput)
     const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
-    const outputs = outpustAndChange.length ? [...outpustAndChange].map(prepareOutput) : []
-    const cert = txAux.cert ? prepareCert(inputs[0]) : null
+    const outputs = outpustAndChange.length ? outpustAndChange.map(prepareOutput) : []
+    const cert = txAux.cert ? prepareCert(txAux.cert) : null
 
     const tx = buildTransaction({
       inputs,
