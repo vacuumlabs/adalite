@@ -711,11 +711,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const convertNonStakingUtxos = async (state) => {
     loadingAction(state, 'Preparing transaction...')
     const address = await wallet.getChangeAddress()
-    const {sendAmount} = await wallet.getMaxNonStakingAmount(address)
+    const {sendAmount: coins} = await wallet.getMaxNonStakingAmount(address)
     const balance = state.balance
     const plan = await prepareTxPlan({
       address,
-      coins: sendAmount,
+      coins,
       donationAmount: null,
       txType: 'convert',
     })
@@ -730,7 +730,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       stopLoadingAction(state, {})
       return
     }
-    setTransactionSummary('stake', plan, sendAmount)
+    setTransactionSummary('stake', plan, coins)
     confirmTransaction(getState(), 'convert')
     stopLoadingAction(state, {})
   }
@@ -985,8 +985,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       txSubmitResult = await wallet.submitTx(signedTx)
 
       if (!txSubmitResult) {
-        // TODO: cant we check and throw this in submitTx method
-        debugLog(txSubmitResult)
+        // TODO: this seems useless here
         throw NamedError('TransactionRejectedByNetwork')
       }
 

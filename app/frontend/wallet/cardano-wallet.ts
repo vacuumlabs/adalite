@@ -28,28 +28,6 @@ type UTxO = {
   outputIndex: number
 }
 
-// type AccountInput = {
-//   address: string
-//   coins: Lovelace
-//   counter: number
-//   type: string
-// }
-
-// export type Input = UTxO | any
-
-// export type Output = {
-//   address: string
-//   coins: Lovelace
-// }
-
-// export interface TxPlan {
-//   inputs: Array<Input>
-//   outputs: Array<Output>
-//   change: Output | null
-//   cert?: any
-//   fee: Lovelace
-// }
-
 interface NoTxPlan {
   estimatedFee: Lovelace
 }
@@ -158,12 +136,7 @@ const CardanoWallet = (options) => {
 
   async function submitTx(signedTx) {
     const {txBody, txHash} = signedTx
-    const response = await blockchainExplorer.submitTxRaw(txHash, txBody).catch((e) => {
-      debugLog(e)
-      throw e
-    })
-
-    return response
+    return await blockchainExplorer.submitTxRaw(txHash, txBody)
   }
 
   function getWalletSecretDef() {
@@ -262,12 +235,8 @@ const CardanoWallet = (options) => {
   }
 
   async function getUTxOs(): Promise<Array<UTxO>> {
-    try {
-      const addresses = await myAddresses.discoverAllAddresses()
-      return await blockchainExplorer.fetchUnspentTxOutputs(addresses)
-    } catch (e) {
-      throw NamedError('NetworkError')
-    }
+    const addresses = await myAddresses.discoverAllAddresses()
+    return await blockchainExplorer.fetchUnspentTxOutputs(addresses)
   }
 
   async function getVisibleAddresses() {

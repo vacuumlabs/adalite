@@ -249,11 +249,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function submitTx(signedTx) {
     const {transaction, fragmentId} = signedTx
-    const response = await blockchainExplorer.submitTxRaw(fragmentId, transaction).catch((e) => {
-      throw e
-    })
-
-    return response
+    return await blockchainExplorer.submitTxRaw(fragmentId, transaction)
   }
 
   function getWalletSecretDef() {
