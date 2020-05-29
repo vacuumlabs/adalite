@@ -137,7 +137,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     )
     if (!response.Right) {
       debugLog(`Unexpected tx submission response: ${JSON.stringify(response)}`)
-      throw NamedError('NodeOutOfSync')
+      throw NamedError('ServerError')
     }
 
     return response.Right

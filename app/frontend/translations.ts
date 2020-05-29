@@ -48,13 +48,12 @@ const translations = {
   TrezorError: ({message}) => `TrezorError: ${message}`,
   LedgerOperationError: ({message}) => `LedgerOperationError: ${message}`,
 
-  CoinAmountError: () => 'CoinAmounError: Unsupported amount of coins.',
+  CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
-  NetworkError: ({message}) =>
-    `NetworkError: connection failed. Please check your network connection. ${message}`,
-  BackendDownError: () =>
-    'We are sorry. It seems that our backend is not working properly at the moment, try again in a few minutes.',
-
+  NetworkError: () =>
+    'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
+  ServerError: () =>
+    'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
   NodeOutOfSync: () => 'Service is temporarily unavailable, please try again in 1-2 minutes.',
 }
 
