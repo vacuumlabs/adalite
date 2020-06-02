@@ -1,6 +1,4 @@
-import {h, Component} from 'preact'
-import {connect} from '../../../helpers/connect'
-import actions from '../../../actions'
+import {h} from 'preact'
 
 export const MainTab = ({name, selectedTab, selectTab}) => {
   return (

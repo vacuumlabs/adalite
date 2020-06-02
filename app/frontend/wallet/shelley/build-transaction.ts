@@ -1,10 +1,7 @@
 import {computeRequiredTxFee} from './helpers/chainlib-wrapper'
-import _ from 'lodash'
-// import {Input, Output, TxPlan} from '../cardano-wallet'
+// import _ from 'lodash'
 import {Lovelace} from '../../state'
-
 import NamedError from '../../helpers/NamedError'
-
 import {ADA_DONATION_ADDRESS} from '../constants'
 
 type UTxOInput = {

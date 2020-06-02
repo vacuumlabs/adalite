@@ -454,6 +454,19 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const resetDelegation = () => {
+    setState({
+      shelleyDelegation: {
+        delegationFee: 0,
+        selectedPools: [
+          {
+            poolIdentifier: '',
+          },
+        ],
+      },
+    })
+  }
+
   const validateSendForm = (state) => {
     setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
     setErrorState(
@@ -485,6 +498,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     } catch (e) {
       stopLoadingAction(state, {})
       resetAmountFields(state)
+      resetDelegation()
       setState({
         calculatingDelegationFee: false,
         calculatingFee: false,
@@ -808,9 +822,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const state = getState()
     //TODO: some validation in case poolIdentifier changed(hasPoolIdentifierChanged)
     const pools = !revoke
-      ? state.shelleyDelegation.selectedPools.map(({pool_id, ratio}) => {
+      ? state.shelleyDelegation.selectedPools.map(({pool_id: id, ratio}) => {
         return {
-          id: pool_id,
+          id,
           ratio,
         }
       })
@@ -939,19 +953,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     selectAdaliteStakepool()
   }
 
-  const resetDelegation = () => {
-    setState({
-      shelleyDelegation: {
-        delegationFee: 0,
-        selectedPools: [
-          {
-            poolIdentifier: '',
-          },
-        ],
-      },
-    })
-  }
-
   /* SUBMIT TX */
 
   const waitForTxToAppearOnBlockchain = async (state, txHash, pollingInterval, maxRetries) => {
@@ -1054,7 +1055,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* GENERAL */
 
-  const openWelcome = async (state) => {
+  const openWelcome = (state) => {
     setState({
       displayWelcome: true,
     })
@@ -1075,7 +1076,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const showContactFormModal = async (state) => {
+  const showContactFormModal = (state) => {
     setState({
       showContactFormModal: true,
     })
@@ -1093,7 +1094,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const toggleDisplayStakingPage = async (state, value) => {
+  const toggleDisplayStakingPage = (state, value) => {
     setState({displayStakingPage: value})
     resetTransactionSummary()
     resetSendFormFields(state)

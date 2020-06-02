@@ -88,6 +88,7 @@ const delegationFeeValidator = (fee, balance) => {
       params: {balance},
     }
   }
+  return null
 }
 
 const mnemonicValidator = (mnemonic) => {

@@ -65,9 +65,6 @@ interface Props {
 }
 
 class TransactionHistory extends Component<Props> {
-  constructor(props) {
-    super(props)
-  }
   render({transactionHistory}) {
     return (
       <div className="transactions card">
@@ -90,33 +87,6 @@ class TransactionHistory extends Component<Props> {
     )
   }
 }
-
-// const TransactionHistory2 = ({transactionHistory}) => (
-//   <div className="transactions card">
-//     <h2 className="card-title">Transaction History</h2>
-//     {transactionHistory.length === 0 ? (
-//       <div className="transactions-empty">No transactions found</div>
-//     ) : (
-//       <ul className="transactions-content">
-//         {transactionHistory.map((transaction) => (
-//           <li key={transaction.ctbId} className="transaction-item">
-//             <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
-//             <FormattedAmount amount={transaction.effect} />
-//             <Transaction txid={transaction.ctbId} />
-//             <FormattedFee fee={transaction.fee} />
-//           </li>
-//         ))}
-//       </ul>
-//     )}
-//   </div>
-// )
-
-// export default connect(
-//   (state) => ({
-//     transactionHistory: state.transactionHistory,
-//   }),
-//   actions
-// )(TransactionHistory)
 
 export default connect(
   (state) => ({

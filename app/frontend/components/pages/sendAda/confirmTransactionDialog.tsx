@@ -31,14 +31,14 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     setRawTransactionOpen,
     rawTransactionOpen,
     stakePools,
-    txConfirmType
+    txConfirmType,
   }) {
     const total = summary.amount + summary.donation + summary.fee
     const titleMap = {
       delegate: 'Delegation review',
       revoke: 'Delegation revocation review',
       send: 'Transaction review',
-      convert: 'Stakable balance conversion review'
+      convert: 'Stakable balance conversion review',
     }
 
     return (
@@ -67,7 +67,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
 
           {txConfirmType === 'delegate' &&
             stakePools.map((pool, i) => (
-              <Fragment>
+              <Fragment key={i}>
                 <div className="review-label">Pool ID</div>
                 <div className="review-amount">{pool.poolIdentifier}</div>
                 <div className="review-label">Pool Name</div>
@@ -76,8 +76,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
                 <div className="review-amount">{pool.ticker}</div>
                 <div className="review-label">Tax</div>
                 <div className="review-amount">
-                  {pool.rewards &&
-                    (pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]}%
+                  {pool.rewards && (pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]}%
                 </div>
                 <div className="review-label">Homepage</div>
                 <div className="review-amount">{pool.homepage}</div>
@@ -97,10 +96,10 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
           <a
             className="review-cancel"
             onClick={cancelTransaction}
-            ref={element => {
+            ref={(element) => {
               this.cancelTx = element
             }}
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               e.key === 'Enter' && (e.target as HTMLAnchorElement).click()
             }}
           >
@@ -117,12 +116,12 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
 }
 
 export default connect(
-  state => ({
+  (state) => ({
     sendAddress: state.sendAddress.fieldValue,
     summary: state.sendTransactionSummary,
     rawTransactionOpen: state.rawTransactionOpen,
     stakePools: state.shelleyDelegation.selectedPools,
-    txConfirmType: state.txConfirmType
+    txConfirmType: state.txConfirmType,
   }),
   actions
 )(ConfirmTransactionDialogClass)

@@ -35,6 +35,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     return signMsg(messageToSign, hdNode.toBuffer())
   }
 
+  // eslint-disable-next-line require-await
   async function signTx(txAux, addressToAbsPathMapper) {
     const prepareUtxoInput = (input, hdnode) => {
       return {

@@ -1,5 +1,5 @@
 import * as lib from '@emurgo/js-chain-libs'
-import {isValidAddress as isValidByronAddress} from 'cardano-crypto.js'
+// import {isValidAddress as isValidByronAddress} from 'cardano-crypto.js'
 import bech32 from './bech32'
 const {Address, Account, AddressDiscrimination, PublicKey, AddressKind} = lib
 

@@ -71,8 +71,13 @@ class DashboardPage extends Component<Props> {
       <div className="page-wrapper">
         {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
           <ul className="tabinator">
-            {mainTabs.map((name) => (
-              <MainTab name={name} selectedTab={selectedMainTab} selectTab={this.selectMainTab} />
+            {mainTabs.map((name, i) => (
+              <MainTab
+                key={i}
+                name={name}
+                selectedTab={selectedMainTab}
+                selectTab={this.selectMainTab}
+              />
             ))}
           </ul>
         )}
@@ -125,8 +130,13 @@ class DashboardMobileContent extends Component<Props> {
     return (
       <div className="dashboard-content">
         <ul className="dashboard-tabs">
-          {(displayStakingPage ? stakingTabs : sendingTabs).map((name) => (
-            <SubTab name={name} selectedTab={selectedSubTab} selectTab={this.selectSubTab} />
+          {(displayStakingPage ? stakingTabs : sendingTabs).map((name, i) => (
+            <SubTab
+              key={i}
+              name={name}
+              selectedTab={selectedSubTab}
+              selectTab={this.selectSubTab}
+            />
           ))}
         </ul>
         <Page />

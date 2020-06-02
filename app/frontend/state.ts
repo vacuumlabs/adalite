@@ -109,13 +109,14 @@ export interface State {
     stakePools?: any
   }
   delegationHistory?: any
-  validStakepools?: any
-  ticker2Id?: any
+  validStakepools?: any | null
+  ticker2Id?: any | null
   delegationValidationError?: any
   shelleyAccountInfo?: {
     delegation: any
     value: number
     counter: number
+    // eslint-disable-next-line camelcase
     last_rewards: {
       epoch: number
       reward: number

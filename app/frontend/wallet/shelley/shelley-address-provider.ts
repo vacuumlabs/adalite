@@ -26,7 +26,8 @@ const shelleyStakeAccountPath = (account: number) => {
 }
 
 const _validateScheme = (cryptoProvider) => {
-  const scheme = cryptoProvider.getDerivationScheme()
+  return
+  // const scheme = cryptoProvider.getDerivationScheme()
   //if (scheme.type !== 'v2') throw new Error('Invalid mnemonic scheme')
 }
 

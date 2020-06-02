@@ -6,7 +6,6 @@ import {TxInputFromUtxo} from './byron/byron-transaction'
 import {ADA_DONATION_ADDRESS, TX_WITNESS_SIZE_BYTES} from './constants'
 import CborIndefiniteLengthArray from './byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../helpers/NamedError'
-import {roundWholeAdas} from '../helpers/adaConverters'
 import {Lovelace} from '../state'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {

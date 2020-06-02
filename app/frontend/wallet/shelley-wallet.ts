@@ -17,7 +17,7 @@ import {selectMinimalTxPlan, computeAccountTxPlan} from './shelley/build-transac
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
-import {isShelleyAddress, bechAddressToHex, isGroup, isSingle} from './shelley/helpers/addresses'
+import {isShelleyAddress, bechAddressToHex, isGroup} from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
 
@@ -193,7 +193,9 @@ const ShelleyBlockchainExplorer = (config) => {
       throw NamedError('NetworkError', e.message)
     }
     const poolArray = JSON.parse(await response.text())
+    // eslint-disable-next-line no-sequences
     const validStakepools = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
+    // eslint-disable-next-line no-sequences
     const ticker2Id = poolArray.reduce((dict, el) => ((dict[el.ticker] = el.pool_id), dict), {})
     return {validStakepools, ticker2Id}
   }
@@ -333,7 +335,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     txType: string
   }
 
-  const accountTxPlanner = async (args: accountArgs, accountAddress: string) => {
+  const accountTxPlanner = (args: accountArgs, accountAddress: string) => {
     const {address, coins, accountBalance, counter} = args
     const plan = computeAccountTxPlan(
       cryptoProvider.network.chainConfig,
@@ -412,7 +414,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     }
   }
 
-  async function getValidStakepools() {
+  function getValidStakepools() {
     return blockchainExplorer.getValidStakepools()
   }
 
@@ -420,7 +422,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  async function getChangeAddress() {
+  function getChangeAddress() {
     return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
@@ -444,10 +446,11 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getVisibleAddresses() {
     const single = await myAddresses.singleExtManager.discoverAddressesWithMeta()
     const group = await myAddresses.groupExtManager.discoverAddressesWithMeta()
-    return [...group, ...single] //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
+    return [...group, ...single]
+    //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
   }
 
-  async function verifyAddress(addr: string) {
+  function verifyAddress(addr: string) {
     throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
   }
 

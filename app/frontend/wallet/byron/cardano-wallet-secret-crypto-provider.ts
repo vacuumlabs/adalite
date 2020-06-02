@@ -8,6 +8,7 @@ import {parseTxAux} from './helpers/cbor-parsers'
 import NamedError from '../../helpers/NamedError'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 
+// eslint-disable-next-line no-unused-vars
 import {DerivationScheme} from '../helpers/derivation-schemes'
 
 const CardanoWalletSecretCryptoProvider = ({
@@ -101,7 +102,7 @@ const CardanoWalletSecretCryptoProvider = ({
   async function signTxGetStructured(txAux, addressToAbsPathMapper) {
     const txHash = txAux.getId()
     const witnesses = await Promise.all(
-      txAux.inputs.map(async (input) => {
+      txAux.inputs.map((input) => {
         const absPath = addressToAbsPathMapper(input.utxo.address)
         return getWitness(txHash, absPath)
       })

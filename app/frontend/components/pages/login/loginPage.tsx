@@ -5,7 +5,7 @@ import isLeftClick from '../../../helpers/isLeftClick'
 
 import KeyFileAuth from './keyFileAuth'
 import MnemonicAuth from './mnemonicAuth'
-import HardwareAuth from './hardwareAuth'
+// import HardwareAuth from './hardwareAuth'
 import DemoWalletWarningDialog from './demoWalletWarningDialog'
 import GenerateMnemonicDialog from './generateMnemonicDialog'
 import LogoutNotification from './logoutNotification'

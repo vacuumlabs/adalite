@@ -1,5 +1,5 @@
 import * as lib from '@emurgo/js-chain-libs'
-import * as _ from 'lodash'
+// import * as _ from 'lodash'
 import {Buffer} from 'buffer'
 
 // Note(ppershing): cannot be imported directly via destructuring :-(
@@ -32,7 +32,6 @@ const {
   TransactionSignDataHash,
   UtxoPointer,
   FragmentId,
-  Bip32PrivateKey,
   LegacyDaedalusPrivateKey,
 } = lib
 
@@ -241,13 +240,13 @@ interface BuildTransactionParams {
   chainConfig: ChainConfig
 }
 
-export const verifyFee = ({inputs, outputs, cert, chainConfig}) => {
-  const amountIn = _.sumBy(inputs, (inp) => inp.value)
-  const amountOut = _.sumBy(outputs, (out) => out.value)
-  const fee = computeRequiredTxFee(chainConfig)(inputs, outputs, cert)
+// export const verifyFee = ({inputs, outputs, cert, chainConfig}) => {
+//   const amountIn = _.sumBy(inputs, (inp) => inp.value)
+//   const amountOut = _.sumBy(outputs, (out) => out.value)
+//   const fee = computeRequiredTxFee(chainConfig)(inputs, outputs, cert)
 
-  // if (amountIn !== amountOut + fee) throw new Error('Unbalanced tx')
-}
+//   if (amountIn !== amountOut + fee) throw new Error('Unbalanced tx')
+// }
 
 export const buildTransaction = ({inputs, outputs, cert, chainConfig}: BuildTransactionParams) => {
   const {certificate, payloadAuth} = _getCert(cert)
@@ -272,7 +271,7 @@ export const buildTransaction = ({inputs, outputs, cert, chainConfig}: BuildTran
 
   const message = Fragment.from_transaction(signedTx)
 
-  verifyFee({inputs, outputs, cert, chainConfig})
+  // verifyFee({inputs, outputs, cert, chainConfig})
 
   return {
     transaction: buf2hex(message.as_bytes()),
