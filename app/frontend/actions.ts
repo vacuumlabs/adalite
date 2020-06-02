@@ -80,10 +80,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           code: e.name,
           params: {
             message: e.message,
-            ...options,
           },
         },
         error: e,
+        ...options,
       })
     } else {
       setState({
@@ -439,26 +439,25 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const calculateMaxDonationAmount = async () => {
     const state = getState()
-    const maxDonationAmount = await wallet
+    await wallet
       .getMaxDonationAmount(state.sendAddress.fieldValue, state.sendAmount.coins as Lovelace)
-      .catch((e) => {
-        resetSendFormFields(state)
-        setErrorState('transactionSubmissionError', e)
+      .then((maxDonationAmount) => {
+        let newMaxDonationAmount
+        if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
+          newMaxDonationAmount = maxDonationAmount
+        } else {
+          newMaxDonationAmount = 0
+          resetDonation()
+        }
         setState({
-          showTransactionErrorModal: true,
+          maxDonationAmount: newMaxDonationAmount,
         })
-        return
       })
-    let newMaxDonationAmount
-    if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
-      newMaxDonationAmount = maxDonationAmount
-    } else {
-      newMaxDonationAmount = 0
-      resetDonation()
-    }
-    setState({
-      maxDonationAmount: newMaxDonationAmount,
-    })
+      .catch((e) => {
+        resetDonation()
+        resetAmountFields(state)
+        setErrorState('sendAmountValidationError', {code: e.name})
+      })
   }
 
   const updateDonation = (state, e) => {
@@ -529,10 +528,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const donationAmount = state.donationAmount.coins as Lovelace
     const address = state.sendAddress.fieldValue
     let plan
-    plan = await prepareTxPlan({address, coins, donationAmount, txType: 'sendAda'})
+    try {
+      plan = await prepareTxPlan({address, coins, donationAmount, txType: 'sendAda'})
+    } catch (e) {
+      setErrorState('sendAmountValidationError', {code: e.name})
+      return
+    }
     const newState = getState() // if the values changed meanwhile
     if (
-      !plan ||
       newState.sendAmount.fieldValue !== state.sendAmount.fieldValue ||
       newState.sendAddress.fieldValue !== state.sendAddress.fieldValue ||
       newState.donationAmount.fieldValue !== state.donationAmount.fieldValue
@@ -557,18 +560,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const prepareTxPlan = async (args) => {
+    const state = getState()
     let plan
     try {
       plan = await wallet.getTxPlan(args)
     } catch (e) {
-      stopLoadingAction(getState(), {})
-      resetDelegation()
+      stopLoadingAction(state, {})
+      resetAmountFields(state)
       setState({
         calculatingDelegationFee: false,
         calculatingFee: false,
       })
-      setErrorState('transactionSubmissionError', e)
-      setState({showTransactionErrorModal: true})
+      throw e
     }
     return plan
   }
@@ -691,13 +694,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
-    const maxAmounts = await wallet
+    await wallet
       .getMaxSendableAmount(
         state.sendAddress.fieldValue,
         state.donationAmount.fieldValue !== '',
         state.donationAmount.coins,
         state.checkedDonationType
       )
+      .then((maxAmounts) => {
+        validateAndSetMaxFunds(state, maxAmounts)
+      })
       .catch((e) => {
         setState({
           calculatingFee: false,
@@ -705,7 +711,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         setErrorState('sendAmountValidationError', {code: e.name})
         return
       })
-    validateAndSetMaxFunds(state, maxAmounts)
   }
 
   const convertNonStakingUtxos = async (state) => {
@@ -713,13 +718,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const address = await wallet.getChangeAddress()
     const {sendAmount: coins} = await wallet.getMaxNonStakingAmount(address)
     const balance = state.balance
-    const plan = await prepareTxPlan({
-      address,
-      coins,
-      donationAmount: null,
-      txType: 'convert',
-    })
-    if (!plan) {
+    let plan
+    try {
+      plan = await prepareTxPlan({
+        address,
+        coins,
+        donationAmount: null,
+        txType: 'convert',
+      })
+    } catch (e) {
+      setErrorState('transactionSubmissionError', e, {
+        showTransactionErrorModal: true,
+      })
       return
     }
     if (balance < (plan.fee || plan.estimatedFee)) {
@@ -768,8 +778,20 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       : []
     const balance = state.balance
-    const plan = await prepareTxPlan({coins: null, pools, txType: 'delegate'})
-    if (!plan || hasPoolIdentifiersChanged(state)) {
+    let plan
+    try {
+      plan = await prepareTxPlan({coins: null, pools, txType: 'delegate'})
+    } catch (e) {
+      if (!revoke) {
+        setErrorState('delegationValidationError', {code: e.name})
+      } else {
+        setErrorState('transactionSubmissionError', e, {
+          showTransactionErrorModal: true,
+        })
+      }
+      return
+    }
+    if (hasPoolIdentifiersChanged(state)) {
       return
     }
     const validationError = delegationFeeValidator(plan.fee || plan.estimatedFee, balance)
@@ -778,7 +800,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         shelleyDelegation: {
           ...state.shelleyDelegation,
-          delegationFee: plan && plan.fee != null ? plan.fee : plan.estimatedFee,
+          delegationFee: plan && !!plan.fee ? plan.fee : plan.estimatedFee,
         },
       })
       setTransactionSummary('stake', plan)
@@ -906,8 +928,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     } catch (e) {
       throw NamedError('TransactionCorrupted')
     }
-
-    console.log(state.sendTransactionSummary)
 
     setState({
       showConfirmTransactionDialog: true,
