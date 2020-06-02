@@ -351,53 +351,65 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  /* DONATION */
+  /* TRANSACTION */
 
-  const getPercentageDonationProperties = () => {
-    const state = getState()
-    const amount = state.sendAmount.coins
-    const preferredDonation: Lovelace = roundWholeAdas((amount * 0.002) as Lovelace) as Lovelace
+  const confirmTransaction = (state, txConfirmType) => {
+    let txAux
+    try {
+      txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
+    } catch (e) {
+      throw NamedError('TransactionCorrupted')
+    }
 
-    return preferredDonation <= state.maxDonationAmount
-      ? {
-        text: '0.2%',
-        value: toAda(preferredDonation),
-      }
-      : {
-        text: '0.1%', // exceeded balance, lower to 1% or MIN
-        value: Math.max(
-          Math.round(toAda((preferredDonation / 2) as Lovelace)),
-          ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE
-        ) as Ada,
-      }
-  }
-
-  const setDonation = (state, value) => {
     setState({
-      donationAmount: Object.assign({}, state.donationAmount, {
-        fieldValue: value.toString(),
-        coins: parseCoins(value.toString()) || 0,
-      }),
+      showConfirmTransactionDialog: true,
+      txConfirmType,
+      // TODO: maybe do this only on demand
+      rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
+      rawTransactionOpen: false,
     })
-    validateSendFormAndCalculateFee()
   }
 
-  const getProperTextAndVal = async (coins) => {
-    if (coins < toCoins((500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE) as Ada)) {
-      //because 0.2%
-      return {
-        text: 'Min',
-        value: ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE,
-        thresholdReached: false,
-      }
-    }
+  const cancelTransaction = () => ({
+    showConfirmTransactionDialog: false,
+  })
 
-    const percentageProperties = await getPercentageDonationProperties()
-    return {
-      text: percentageProperties.text,
-      value: percentageProperties.value,
-      thresholdReached: true,
-    }
+  const setRawTransactionOpen = (state, open) => {
+    setState({
+      rawTransactionOpen: open,
+    })
+  }
+
+  const closeTransactionErrorModal = (state) => {
+    setState({
+      showTransactionErrorModal: false,
+    })
+  }
+
+  /* SEND ADA */
+
+  const setTransactionSummary = (tab, plan, coins?, donationAmount?) => {
+    setState({
+      sendTransactionSummary: {
+        amount: coins || 0,
+        donation: donationAmount || 0,
+        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
+        plan: plan.fee != null ? plan : null,
+        tab,
+      },
+    })
+  }
+
+  const resetTransactionSummary = () => {
+    setState({
+      sendTransactionSummary: {
+        amount: 0 as Lovelace,
+        fee: 0 as Lovelace,
+        donation: 0 as Lovelace,
+        plan: null,
+        tab: '',
+      },
+    })
   }
 
   const resetPercentageDonation = () => {
@@ -408,89 +420,39 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const resetAmountFields = (state) => {
+    setState({
+      donationAmount: {fieldValue: '', coins: 0},
+      transactionFee: 0, // TODO(merc): call resetDonation instead?
+      maxDonationAmount: Infinity,
+      checkedDonationType: '',
+      showCustomDonationInput: false,
+    })
+    resetPercentageDonation()
+  }
+
+  const resetSendFormState = (state) => {
+    setState({
+      sendResponse: '',
+      loading: false,
+      showConfirmTransactionDialog: false,
+    })
+  }
+
+  const resetSendFormFields = (state) => {
+    setState({
+      sendAmount: {fieldValue: '', coins: 0},
+      sendAddress: {fieldValue: ''},
+    })
+    resetAmountFields(state)
+  }
+
   const resetDonation = () => {
     setState({
       checkedDonationType: '',
       donationAmount: {fieldValue: '', coins: 0},
     })
   }
-
-  const handleThresholdAmount = async () => {
-    const state = getState()
-    const donationProperties = await getProperTextAndVal(state.sendAmount.coins)
-
-    if (state.checkedDonationType === 'percentage') {
-      // %-button is selected, adjust % value because sendAmount changed
-      setDonation(state, donationProperties.value)
-    }
-
-    if (state.checkedDonationType === 'percentage' || donationProperties.thresholdReached) {
-      // update %-button text and value
-      setState({
-        percentageDonationValue: donationProperties.value,
-        percentageDonationText: donationProperties.text,
-        thresholdAmountReached: true,
-      })
-    } else {
-      // disable and reset %-button because sendAmount is too low
-      resetPercentageDonation()
-    }
-  }
-
-  const calculateMaxDonationAmount = async () => {
-    const state = getState()
-    await wallet
-      .getMaxDonationAmount(state.sendAddress.fieldValue, state.sendAmount.coins as Lovelace)
-      .then((maxDonationAmount) => {
-        let newMaxDonationAmount
-        if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
-          newMaxDonationAmount = maxDonationAmount
-        } else {
-          newMaxDonationAmount = 0
-          resetDonation()
-        }
-        setState({
-          maxDonationAmount: newMaxDonationAmount,
-        })
-      })
-      .catch((e) => {
-        resetDonation()
-        resetAmountFields(state)
-        setErrorState('sendAmountValidationError', {code: e.name})
-      })
-  }
-
-  const updateDonation = (state, e) => {
-    if (state.checkedDonationType === e.target.id && e.target.id !== 'custom') {
-      // when clicking already selected button
-      resetDonation()
-    } else {
-      setState({
-        donationAmount: {
-          fieldValue: e.target.value,
-          coins: parseCoins(e.target.value) || 0,
-        },
-        checkedDonationType: e.target.id,
-      })
-    }
-    validateSendFormAndCalculateFee()
-  }
-
-  const toggleCustomDonation = (state) => {
-    resetDonation()
-    setState({
-      showCustomDonationInput: !state.showCustomDonationInput,
-    })
-    validateSendFormAndCalculateFee()
-  }
-
-  const closeThanksForDonationModal = (state) => {
-    setState({
-      showThanksForDonation: false,
-    })
-  }
-
-  /* SEND ADA */
 
   const validateSendForm = (state) => {
     setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
@@ -514,6 +476,23 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     !state.sendAddressValidationError &&
     !state.sendAmountValidationError &&
     !state.donationAmountValidationError
+
+  const prepareTxPlan = async (args) => {
+    const state = getState()
+    let plan
+    try {
+      plan = await wallet.getTxPlan(args)
+    } catch (e) {
+      stopLoadingAction(state, {})
+      resetAmountFields(state)
+      setState({
+        calculatingDelegationFee: false,
+        calculatingFee: false,
+      })
+      throw e
+    }
+    return plan
+  }
 
   const calculateFee = async () => {
     const state = getState()
@@ -559,62 +538,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const prepareTxPlan = async (args) => {
-    const state = getState()
-    let plan
-    try {
-      plan = await wallet.getTxPlan(args)
-    } catch (e) {
-      stopLoadingAction(state, {})
-      resetAmountFields(state)
-      setState({
-        calculatingDelegationFee: false,
-        calculatingFee: false,
-      })
-      throw e
-    }
-    return plan
-  }
-
-  const setTransactionSummary = (tab, plan, coins?, donationAmount?) => {
-    setState({
-      sendTransactionSummary: {
-        amount: coins || 0,
-        donation: donationAmount || 0,
-        fee: plan.fee != null ? plan.fee : plan.estimatedFee,
-        plan: plan.fee != null ? plan : null,
-        tab,
-      },
-    })
-  }
-
-  const resetAmountFields = (state) => {
-    setState({
-      donationAmount: {fieldValue: '', coins: 0},
-      transactionFee: 0, // TODO(merc): call resetDonation instead?
-      maxDonationAmount: Infinity,
-      checkedDonationType: '',
-      showCustomDonationInput: false,
-    })
-    resetPercentageDonation()
-  }
-
-  const resetSendFormState = (state) => {
-    setState({
-      sendResponse: '',
-      loading: false,
-      showConfirmTransactionDialog: false,
-    })
-  }
-
-  const resetSendFormFields = (state) => {
-    setState({
-      sendAmount: {fieldValue: '', coins: 0},
-      sendAddress: {fieldValue: ''},
-    })
-    resetAmountFields(state)
-  }
-
   const isSendAmountNonPositive = (fieldValue, validationError) =>
     fieldValue === '' ||
     (validationError &&
@@ -637,6 +560,98 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }
       setState({calculatingFee: false})
     }
+  }
+
+  const setDonation = (state, value) => {
+    setState({
+      donationAmount: Object.assign({}, state.donationAmount, {
+        fieldValue: value.toString(),
+        coins: parseCoins(value.toString()) || 0,
+      }),
+    })
+    validateSendFormAndCalculateFee()
+  }
+
+  const getPercentageDonationProperties = () => {
+    const state = getState()
+    const amount = state.sendAmount.coins
+    const preferredDonation: Lovelace = roundWholeAdas((amount * 0.002) as Lovelace) as Lovelace
+
+    return preferredDonation <= state.maxDonationAmount
+      ? {
+        text: '0.2%',
+        value: toAda(preferredDonation),
+      }
+      : {
+        text: '0.1%', // exceeded balance, lower to 1% or MIN
+        value: Math.max(
+          Math.round(toAda((preferredDonation / 2) as Lovelace)),
+          ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE
+        ) as Ada,
+      }
+  }
+
+  const getProperTextAndVal = async (coins) => {
+    if (coins < toCoins((500 * ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE) as Ada)) {
+      //because 0.2%
+      return {
+        text: 'Min',
+        value: ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE,
+        thresholdReached: false,
+      }
+    }
+
+    const percentageProperties = await getPercentageDonationProperties()
+    return {
+      text: percentageProperties.text,
+      value: percentageProperties.value,
+      thresholdReached: true,
+    }
+  }
+
+  const handleThresholdAmount = async () => {
+    const state = getState()
+    const donationProperties = await getProperTextAndVal(state.sendAmount.coins)
+
+    if (state.checkedDonationType === 'percentage') {
+      // %-button is selected, adjust % value because sendAmount changed
+      setDonation(state, donationProperties.value)
+    }
+
+    if (state.checkedDonationType === 'percentage' || donationProperties.thresholdReached) {
+      // update %-button text and value
+      setState({
+        percentageDonationValue: donationProperties.value,
+        percentageDonationText: donationProperties.text,
+        thresholdAmountReached: true,
+      })
+    } else {
+      // disable and reset %-button because sendAmount is too low
+      resetPercentageDonation()
+    }
+  }
+
+  const calculateMaxDonationAmount = async () => {
+    const state = getState()
+    await wallet
+      .getMaxDonationAmount(state.sendAddress.fieldValue, state.sendAmount.coins as Lovelace)
+      .then((maxDonationAmount) => {
+        let newMaxDonationAmount
+        if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
+          newMaxDonationAmount = maxDonationAmount
+        } else {
+          newMaxDonationAmount = 0
+          resetDonation()
+        }
+        setState({
+          maxDonationAmount: newMaxDonationAmount,
+        })
+      })
+      .catch((e) => {
+        resetDonation()
+        resetAmountFields(state)
+        setErrorState('sendAmountValidationError', {code: e.name})
+      })
   }
 
   const updateAddress = (state, e) => {
@@ -745,6 +760,36 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     stopLoadingAction(state, {})
   }
 
+  const updateDonation = (state, e) => {
+    if (state.checkedDonationType === e.target.id && e.target.id !== 'custom') {
+      // when clicking already selected button
+      resetDonation()
+    } else {
+      setState({
+        donationAmount: {
+          fieldValue: e.target.value,
+          coins: parseCoins(e.target.value) || 0,
+        },
+        checkedDonationType: e.target.id,
+      })
+    }
+    validateSendFormAndCalculateFee()
+  }
+
+  const toggleCustomDonation = (state) => {
+    resetDonation()
+    setState({
+      showCustomDonationInput: !state.showCustomDonationInput,
+    })
+    validateSendFormAndCalculateFee()
+  }
+
+  const closeThanksForDonationModal = (state) => {
+    setState({
+      showThanksForDonation: false,
+    })
+  }
+
   /* DELEGATE */
 
   const hasPoolIdentifiersChanged = (shelleyDelegation) => {
@@ -757,13 +802,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )
     )
     // maybe also check if tab changed
-  }
-
-  const revokeDelegation = async (state) => {
-    loadingAction(state, 'Preparing transaction...')
-    await calculateDelegationFee(true)
-    stopLoadingAction(state, {})
-    confirmTransaction(getState(), 'revoke')
   }
 
   const calculateDelegationFee = async (revoke?: boolean) => {
@@ -809,6 +847,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       calculatingDelegationFee: false,
       txSuccessTab: state.txSuccessTab === 'send' ? state.txSuccessTab : '',
     })
+  }
+
+  const revokeDelegation = async (state) => {
+    loadingAction(state, 'Preparing transaction...')
+    await calculateDelegationFee(true)
+    stopLoadingAction(state, {})
+    confirmTransaction(getState(), 'revoke')
   }
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
@@ -904,53 +949,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           },
         ],
       },
-    })
-  }
-
-  /* TRANSACTION */
-
-  const resetTransactionSummary = () => {
-    setState({
-      sendTransactionSummary: {
-        amount: 0 as Lovelace,
-        fee: 0 as Lovelace,
-        donation: 0 as Lovelace,
-        plan: null,
-        tab: '',
-      },
-    })
-  }
-
-  const confirmTransaction = (state, txConfirmType) => {
-    let txAux
-    try {
-      txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
-    } catch (e) {
-      throw NamedError('TransactionCorrupted')
-    }
-
-    setState({
-      showConfirmTransactionDialog: true,
-      txConfirmType,
-      // TODO: maybe do this only on demand
-      rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
-      rawTransactionOpen: false,
-    })
-  }
-
-  const cancelTransaction = () => ({
-    showConfirmTransactionDialog: false,
-  })
-
-  const setRawTransactionOpen = (state, open) => {
-    setState({
-      rawTransactionOpen: open,
-    })
-  }
-
-  const closeTransactionErrorModal = (state) => {
-    setState({
-      showTransactionErrorModal: false,
     })
   }
 
