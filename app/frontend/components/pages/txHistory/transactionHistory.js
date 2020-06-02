@@ -45,11 +45,11 @@ const TransactionAddress = ({address}) =>
       'a',
       {
         class: 'transaction-address',
-        href: `https://adascan.net/transaction/${address}`,
+        href: `https://explorer.cardano.org/en/transaction/?id=${address}`,
         target: '_blank',
         rel: 'noopener',
       },
-      'AdaScan'
+      'CardanoExplorer'
     )
   )
 

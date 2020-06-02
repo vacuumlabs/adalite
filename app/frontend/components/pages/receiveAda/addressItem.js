@@ -81,12 +81,12 @@ class AddressItem extends Component {
             'a',
             {
               class: 'address-link',
-              href: `https://adascan.net/address/${address}`,
+              href: `https://explorer.cardano.org/en/address/?address=${address}`,
               style: 'margin-right:24px',
               target: '_blank',
               rel: 'noopener',
             },
-            'AdaScan'
+            'CardanoExplorer'
           )
         ),
         h(
