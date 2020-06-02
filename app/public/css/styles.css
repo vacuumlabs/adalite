@@ -570,6 +570,12 @@ button[data-balloon] {
   white-space: pre-wrap;
 }
 
+[data-balloon="Copied to clipboard"]::after,
+[data-balloon="Insufficient funds"]::after {
+  min-width: unset;
+  white-space: pre;
+}
+
 [data-balloon]::before {
   width: 0;
   height: 0;
@@ -703,7 +709,7 @@ button[data-balloon] {
 .alert-content {
   text-align: left;
   max-height: 180px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .alert.sidebar {
