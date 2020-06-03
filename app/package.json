@@ -23,10 +23,10 @@
     "test-chrome-headless": "yarn test && node node_modules/.bin/mocha-headless-chrome -f tests/index.html"
   },
   "dependencies": {
-    "@cardano-foundation/ledgerjs-hw-app-cardano": "^1.0.7",
-    "@ledgerhq/hw-transport": "^4.68.0",
-    "@ledgerhq/hw-transport-u2f": "^4.68.0",
-    "@ledgerhq/hw-transport-webusb": "^4.68.0",
+    "@cardano-foundation/ledgerjs-hw-app-cardano": "^1.0.8",
+    "@ledgerhq/hw-transport": "^5.15.0",
+    "@ledgerhq/hw-transport-u2f": "^5.15.0",
+    "@ledgerhq/hw-transport-webusb": "^5.16.0",
     "babel-regenerator-runtime": "^6.5.0",
     "bip39-light": "^1.0.7",
     "borc": "^2.1.0",
