@@ -67,10 +67,6 @@ export const groupAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, network: 
   return _addr.to_string('addr')
 }
 
-export const isShelleyAddress = (address: string): boolean => {
-  return address.startsWith('addr1')
-}
-
 const getAddressKind = (address: string) => {
   // separate get_kind method since chain-libs throw error with legacy
   // addresses TODO: refactor
@@ -82,6 +78,16 @@ const getAddressKind = (address: string) => {
   } catch (e) {
     return undefined
   }
+}
+
+export const isShelleyAddress = (address: string): boolean => {
+  if (!address.startsWith('addr1')) return false
+  const addressKind = getAddressKind(address)
+  return (
+    addressKind === AddressKind.Group ||
+    addressKind === AddressKind.Single ||
+    addressKind === AddressKind.Account
+  )
 }
 
 export const isGroup = (address: string): boolean => {
