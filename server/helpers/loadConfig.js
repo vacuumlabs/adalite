@@ -11,6 +11,26 @@ const boolStrings = ['true', 'false']
 const isBoolString = (str) => boolStrings.includes(str)
 const isPositiveIntString = (str) => check.positive(parseInt(str, 10))
 const isIntString = (str) => check.integer(parseInt(str, 10))
+const isCommaDelimitedListOfIpsOrEmpty = (str) => {
+  if (!str) {
+    return true
+  }
+
+  const ipItems = str.replace(/ /g, '').split(',')
+
+  return ipItems.every((ipItem) => {
+    const ipParts = ipItem.split('.')
+
+    if (ipParts.length !== 4) {
+      return false
+    }
+
+    return ipParts.every((ipPart) => {
+      const ipPartInt = parseInt(ipPart, 10)
+      return !isNaN(ipPartInt) && ipPartInt >= 0 && ipPartInt <= 255
+    })
+  })
+}
 
 const checkMap = check.map(process.env, {
   PORT: isPositiveIntString,
@@ -29,6 +49,7 @@ const checkMap = check.map(process.env, {
   ADALITE_FIXED_DONATION_VALUE: isPositiveIntString,
   ADALITE_MIN_DONATION_VALUE: isPositiveIntString,
   ADALITE_ENV: check.nonEmptyString,
+  ADALITE_IP_BLACKLIST: isCommaDelimitedListOfIpsOrEmpty,
   SENTRY_DSN: check.nonEmptyString,
 })
 
@@ -55,6 +76,7 @@ const {
   ADALITE_MAILCHIMP_API_KEY,
   ADALITE_MAILCHIMP_LIST_ID,
   ADALITE_ENV,
+  ADALITE_IP_BLACKLIST,
   SENTRY_DSN,
 } = process.env
 
@@ -114,6 +136,9 @@ const backendConfig = {
   ADALITE_GA_TRACKING_ID,
   ADALITE_MAILCHIMP_API_KEY,
   ADALITE_MAILCHIMP_LIST_ID,
+  ADALITE_IP_BLACKLIST: ADALITE_IP_BLACKLIST
+    ? ADALITE_IP_BLACKLIST.replace(/ /g, '').split(',')
+    : [],
 }
 
 module.exports = {

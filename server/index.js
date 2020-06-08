@@ -4,6 +4,7 @@ const compression = require('compression')
 const fs = require('fs')
 const https = require('https')
 const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
+const ipfilter = require('express-ipfilter').IpFilter
 
 let app = express()
 
@@ -27,6 +28,16 @@ if (backendConfig.REDIS_URL) {
     require('./middlewares/basicAuth')(['/usage_stats'], {admin: backendConfig.ADALITE_STATS_PWD})
   )
   require('./statsPageRedis')(app)
+}
+
+if (backendConfig.ADALITE_IP_BLACKLIST.length > 0) {
+  app.use(
+    ipfilter(backendConfig.ADALITE_IP_BLACKLIST, {
+      detectIp: (req) => req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+      mode: 'deny',
+      logLevel: 'deny',
+    })
+  )
 }
 
 app.use(express.static('app/public'))

@@ -53,6 +53,7 @@
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "express-basic-auth": "^1.2.0",
+    "express-ipfilter": "^1.1.2",
     "express-mung": "^0.5.1",
     "isomorphic-fetch": "^2.2.1",
     "normalize-url": "^4.0.0",
