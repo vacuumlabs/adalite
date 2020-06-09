@@ -5,6 +5,7 @@ const fs = require('fs')
 const https = require('https')
 const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
 const ipfilter = require('express-ipfilter').IpFilter
+const errorHandler = require('./middlewares/errorHandler')
 
 let app = express()
 
@@ -35,7 +36,7 @@ if (backendConfig.ADALITE_IP_BLACKLIST.length > 0) {
     ipfilter(backendConfig.ADALITE_IP_BLACKLIST, {
       detectIp: (req) => req.headers['x-forwarded-for'] || req.connection.remoteAddress,
       mode: 'deny',
-      logLevel: 'deny',
+      logLevel: 'deny', // logs "Access denied to IP address: <ip>" for denied IPs
     })
   )
 }
@@ -103,6 +104,8 @@ app.get('*', (req, res) => {
       </html>
     `)
 })
+
+app.use(errorHandler)
 
 /*
  * To run server in secure mode, you need to set
