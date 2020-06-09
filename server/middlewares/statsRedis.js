@@ -3,7 +3,6 @@ const device = require('device')
 const client = redis.createClient(process.env.REDIS_URL)
 const mung = require('express-mung')
 const normalizeUrl = require('normalize-url')
-const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 
 const knownIps = new Set()
 
@@ -56,20 +55,8 @@ const trackTxSubmissions = mung.json((body, req, res) => {
     incrCountersBy(`${txSubmissionType}:${txSubmissionSuccess}`, 1)
 
     if (txSubmissionSuccess === 'successful') {
-      const {txBody} = req.body
-      let txOutAmount = 0
-      let txTotalAmount = 0
-
-      try {
-        txOutAmount = parseTxBodyOutAmount(txBody)
-        txTotalAmount = parseTxBodyTotalAmount(txBody)
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e)
-      }
-
-      incrCountersBy(`${txSubmissionType}:sentOut`, txOutAmount)
-      incrCountersBy(`${txSubmissionType}:sentTotal`, txTotalAmount)
+      incrCountersBy(`${txSubmissionType}:sentOut`, 0)
+      incrCountersBy(`${txSubmissionType}:sentTotal`, 0)
     }
   }
 })
