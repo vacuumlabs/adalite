@@ -53,11 +53,6 @@ const trackTxSubmissions = mung.json((body, req, res) => {
     const txSubmissionSuccess = body.Right ? 'successful' : 'unsuccessful'
 
     incrCountersBy(`${txSubmissionType}:${txSubmissionSuccess}`, 1)
-
-    if (txSubmissionSuccess === 'successful') {
-      incrCountersBy(`${txSubmissionType}:sentOut`, 0)
-      incrCountersBy(`${txSubmissionType}:sentTotal`, 0)
-    }
   }
 })
 
