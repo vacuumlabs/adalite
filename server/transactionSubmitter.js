@@ -35,10 +35,21 @@ module.exports = function(app, env) {
           Right: {txHash},
         })
       }
+
+      // eslint-disable-next-line no-console
+      console.error(
+        `Submission of tx ${txHash} failed with status ${
+          response.status
+        } and message ${await response.text()}`
+      )
+
       return res.json({
         Left: 'Transaction rejected by network',
       })
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`Submission of tx ${txHash} failed with an unexpected error: ${err.stack}`)
+
       return res.json({
         Left: 'An unexpected error has occurred',
       })
