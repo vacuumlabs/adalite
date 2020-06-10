@@ -73,7 +73,7 @@
     "lint-staged": "^9.2.0",
     "prettier": "^1.19.1",
     "prettier-eslint-cli": "^5.0.0",
-    "release-it": "^12.3.3",
+    "release-it": "^13.6.2",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.2"
   },

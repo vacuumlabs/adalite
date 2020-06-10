@@ -37,7 +37,7 @@
     "preact": "^10.1.0",
     "trezor-connect": "7",
     "webpack": "^4.1.1",
-    "webpack-cli": "^3.3.6",
+    "webpack-cli": "^3.3.11",
     "webpack-node-externals": "^1.6.0"
   },
   "devDependencies": {
