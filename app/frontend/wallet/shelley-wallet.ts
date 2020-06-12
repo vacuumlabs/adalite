@@ -155,10 +155,11 @@ const ShelleyBlockchainExplorer = (config) => {
   // TODO: move to separate file
   const be = BlockchainExplorer(config)
 
-  const fixAddress = (address) => (isShelleyAddress(address) ? bechAddressToHex(address) : address)
-  const fix = (addresses: Array<string>): Array<string> => {
-    return addresses.map(fixAddress)
-  } // TODO: rename to better name than "fix"
+  const shelleyToHex = (address) =>
+    isShelleyAddress(address) ? bechAddressToHex(address) : address
+
+  const shelleyAddressesToHex = (addresses: Array<string>): Array<string> =>
+    addresses.map(shelleyToHex)
 
   async function getAccountInfo(accountPubkeyHex) {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`
@@ -201,18 +202,15 @@ const ShelleyBlockchainExplorer = (config) => {
   }
 
   return {
-    getTxHistory: (addresses) => {
-      return be.getTxHistory(fix(addresses))
-    },
+    getTxHistory: (addresses) => be.getTxHistory(shelleyAddressesToHex(addresses)),
     fetchTxRaw: be.fetchTxRaw,
-    fetchUnspentTxOutputs: (addresses) => be.fetchUnspentTxOutputs(fix(addresses)),
-    isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(fix(addresses)),
+    fetchUnspentTxOutputs: (addresses) =>
+      be.fetchUnspentTxOutputs(shelleyAddressesToHex(addresses)),
+    isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(shelleyAddressesToHex(addresses)),
     submitTxRaw: be.submitTxRaw,
-    getBalance: (addresses) => {
-      return be.getBalance(fix(addresses))
-    },
+    getBalance: (addresses) => be.getBalance(shelleyAddressesToHex(addresses)),
     fetchTxInfo: be.fetchTxInfo,
-    filterUsedAddresses: (addresses) => be.filterUsedAddresses(fix(addresses)),
+    filterUsedAddresses: (addresses) => be.filterUsedAddresses(shelleyAddressesToHex(addresses)),
     getAccountInfo,
     getValidStakepools,
   }

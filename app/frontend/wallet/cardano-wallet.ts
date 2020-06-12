@@ -10,7 +10,7 @@ import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
 import {computeRequiredTxFee, selectMinimalTxPlan, isUtxoProfitable} from './byron-tx-planner'
 import {MaxAmountCalculator} from './max-amount-calculator'
-// eslint-disable-next-line no-unused-vars
+
 import {TxPlan} from './shelley/build-transaction'
 
 const {
@@ -23,10 +23,6 @@ type UTxO = {
   address: string
   coins: Lovelace
   outputIndex: number
-}
-
-interface NoTxPlan {
-  estimatedFee: Lovelace
 }
 
 function prepareTxAux(plan: TxPlan) {

@@ -8,7 +8,6 @@ import {parseTxAux} from './helpers/cbor-parsers'
 import NamedError from '../../helpers/NamedError'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 
-// eslint-disable-next-line no-unused-vars
 import {DerivationScheme} from '../helpers/derivation-schemes'
 
 const CardanoWalletSecretCryptoProvider = ({
