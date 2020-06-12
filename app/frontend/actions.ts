@@ -400,14 +400,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const resetTransactionSummary = () => {
+  const resetTransactionSummary = (state) => {
     setState({
       sendTransactionSummary: {
         amount: 0 as Lovelace,
         fee: 0 as Lovelace,
         donation: 0 as Lovelace,
         plan: null,
-        tab: '',
+        tab: state.sendTransactionSummary.tab,
       },
     })
   }
@@ -562,7 +562,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const validateSendFormAndCalculateFee = () => {
     validateSendForm(getState())
-    resetTransactionSummary()
+    resetTransactionSummary(getState())
     setState({transactionFee: 0})
     const state = getState()
     if (isSendFormFilledAndValid(state)) {
@@ -1029,7 +1029,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetSendFormState(state)
       resetAmountFields(state)
       resetDelegationToAdalite()
-      resetTransactionSummary()
+      resetTransactionSummary(state)
       wallet.generateNewSeeds()
       await reloadWalletInfo(state)
       setState({
@@ -1096,7 +1096,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const toggleDisplayStakingPage = (state, value) => {
     setState({displayStakingPage: value})
-    resetTransactionSummary()
+    resetTransactionSummary(state)
     resetSendFormFields(state)
   }
 
