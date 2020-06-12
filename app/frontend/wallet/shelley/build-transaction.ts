@@ -1,5 +1,4 @@
 import {computeRequiredTxFee} from './helpers/chainlib-wrapper'
-// import _ from 'lodash'
 import {Lovelace} from '../../state'
 import NamedError from '../../helpers/NamedError'
 import {ADA_DONATION_ADDRESS} from '../constants'
@@ -30,8 +29,9 @@ type Delegation = {
 }
 
 export type Cert = {
+  type: string
   pools: Array<Delegation>
-  address: string
+  accountAddress: string
 }
 
 export interface TxPlan {
@@ -49,7 +49,7 @@ export function computeTxPlan(
   inputs: Array<Input>,
   outputs: Array<Output>,
   possibleChange?: Output,
-  cert?: any // TODO: cert
+  cert?: Cert
 ): TxPlan | null {
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0)
   const totalOutput = outputs.reduce((acc, output) => acc + output.coins, 0)
@@ -112,7 +112,7 @@ export function selectMinimalTxPlan(
     ? {
       type: 'certificate_stake_delegation',
       pools,
-      accountAddress, // TODO: address: accountAddress
+      accountAddress,
     }
     : null
   const outputs = coins ? [{address, coins}] : []

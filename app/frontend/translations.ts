@@ -20,7 +20,7 @@ const translations = {
   DonationInsufficientBalance: () => 'Insufficient balance for the donation.',
 
   InvalidStakepoolIdentifier: () => 'Stakepool id or ticker is invalid.',
-  RudundantStakePool: () => 'This stake pool is already chosen.',
+  RedundantStakePool: () => 'This stake pool is already chosen.',
   DelegationAccountBalanceError: () => 'Not enough funds to pay the delegation fee.',
   DelegationFeeError: () => 'Unsuccessful delegation fee calculation.',
   NonStakingConversionError: () =>

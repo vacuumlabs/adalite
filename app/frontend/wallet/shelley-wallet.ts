@@ -278,21 +278,21 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
     // TODO: why do we need hasDonation?
-    const utxos = (await getUTxOs()).filter(isUtxoProfitable)
+    const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
   }
 
   async function getMaxDonationAmount(address, sendAmount: Lovelace) {
-    const utxos = (await getUTxOs()).filter(isUtxoProfitable)
+    const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
   async function getMaxNonStakingAmount(address) {
-    const utxos = (await getUTxOs()).filter(({address}) => !isGroup(address))
+    const utxos = (await getUtxos()).filter(({address}) => !isGroup(address))
     return _getMaxSendableAmount(utxos, address, false, 0, false)
   }
 
-  type utXoArgs = {
+  type utxoArgs = {
     address?: string
     donationAmount?: Lovelace
     coins?: Lovelace
@@ -300,10 +300,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     txType?: string
   }
 
-  const uTxOTxPlanner = async (args: utXoArgs, accountAddress: string) => {
+  const utxoTxPlanner = async (args: utxoArgs, accountAddress: string) => {
     const {address, coins, donationAmount, pools, txType} = args
     const changeAddress = await getChangeAddress()
-    const availableUtxos = await getUTxOs()
+    const availableUtxos = await getUtxos()
     const nonStakingUtxos = availableUtxos.filter(({address}) => !isGroup(address))
     const groupAddressUtxos = availableUtxos.filter(({address}) => isGroup(address))
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
@@ -348,12 +348,12 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return plan
   }
 
-  async function getTxPlan(args: utXoArgs | accountArgs) {
+  async function getTxPlan(args: utxoArgs | accountArgs) {
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const txPlanners = {
-      sendAda: uTxOTxPlanner,
-      convert: uTxOTxPlanner,
-      delegate: uTxOTxPlanner,
+      sendAda: utxoTxPlanner,
+      convert: utxoTxPlanner,
+      delegate: utxoTxPlanner,
       redeem: accountTxPlanner,
     }
     return await txPlanners[args.txType](args, accountAddress)
@@ -426,7 +426,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
-  async function getUTxOs(): Promise<Array<any>> {
+  async function getUtxos(): Promise<Array<any>> {
     try {
       const {legacy, group, single} = await myAddresses.discoverAllAddresses()
       const groupUtxos = await blockchainExplorer.fetchUnspentTxOutputs(group)

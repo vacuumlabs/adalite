@@ -110,7 +110,7 @@ const poolIdValidator = (poolIndex, poolId, selectedPools, validStakepools) => {
   const selectedPoolsIds = selectedPools.map((pool) => pool.pool_id)
   if (selectedPoolsIds.every((id, index) => poolId === id && index !== poolIndex)) {
     return {
-      code: 'RudundantStakePool',
+      code: 'RedundantStakePool',
     }
   }
   return null

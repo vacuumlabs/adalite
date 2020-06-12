@@ -4,6 +4,7 @@ import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 import RawTransactionModal from './rawTransactionModal'
+import roundNumber from '../../../helpers/roundNumber'
 
 interface Props {
   sendAddress: any
@@ -76,7 +77,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
                 <div className="review-amount">{pool.ticker}</div>
                 <div className="review-label">Tax</div>
                 <div className="review-amount">
-                  {pool.rewards && (pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]}%
+                  {pool.rewards && roundNumber(pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]}%
                 </div>
                 <div className="review-label">Homepage</div>
                 <div className="review-amount">{pool.homepage}</div>

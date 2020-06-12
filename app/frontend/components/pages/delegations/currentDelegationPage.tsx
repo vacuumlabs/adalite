@@ -15,10 +15,6 @@ const CurrentDelegationPage = ({
       {currentDelegation.length ? (
         <div>
           <div className="current-delegation-wrapper">
-            {/* <div className="delegation-history-time">
-              {formatDelegationDate(currentDelegation[0].time)}
-            </div>]
-            <div /> */}
             {currentDelegation.map((pool, i) => [
               <div key={i} className="delegation-history-name">
                 {pool.name}
