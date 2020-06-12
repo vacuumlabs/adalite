@@ -131,9 +131,9 @@ const CardanoWallet = (options) => {
     return isHwWallet ? (cryptoProvider as any).getHwWalletName() : undefined
   }
 
-  async function submitTx(signedTx) {
+  function submitTx(signedTx): Promise<any> {
     const {txBody, txHash} = signedTx
-    return await blockchainExplorer.submitTxRaw(txHash, txBody)
+    return blockchainExplorer.submitTxRaw(txHash, txBody)
   }
 
   function getWalletSecretDef() {
@@ -202,10 +202,6 @@ const CardanoWallet = (options) => {
     return blockchainExplorer.getTxHistory(addresses)
   }
 
-  function getAccountInfo() {
-    return undefined
-  }
-
   function getValidStakepools() {
     return {validStakepools: null, ticker2Id: null}
   }
@@ -233,10 +229,10 @@ const CardanoWallet = (options) => {
 
   async function getUTxOs(): Promise<Array<UTxO>> {
     const addresses = await myAddresses.discoverAllAddresses()
-    return await blockchainExplorer.fetchUnspentTxOutputs(addresses)
+    return blockchainExplorer.fetchUnspentTxOutputs(addresses)
   }
 
-  function getVisibleAddresses() {
+  function getVisibleAddresses(): Promise<any> {
     return myAddresses.getVisibleAddresses()
   }
 
@@ -272,7 +268,6 @@ const CardanoWallet = (options) => {
     verifyAddress,
     fetchTxInfo,
     generateNewSeeds,
-    getAccountInfo,
     getValidStakepools,
     getWalletInfo,
     getMaxNonStakingAmount,

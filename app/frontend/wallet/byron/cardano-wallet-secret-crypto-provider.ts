@@ -1,7 +1,7 @@
 import {encode} from 'borc'
 import {blake2b, sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
 
-import {TxWitness, SignedTransactionStructured} from './byron-transaction'
+import {TxWitness, PkWitness, SignedTransactionStructured} from './byron-transaction'
 
 import HdNode from '../helpers/hd-node'
 import {parseTxAux} from './helpers/cbor-parsers'
@@ -81,7 +81,7 @@ const CardanoWalletSecretCryptoProvider = ({
     }
   }
 
-  async function getWitness(txAuxHash, absPath) {
+  async function getWitness(txAuxHash, absPath): Promise<PkWitness> {
     const xpub = await deriveXpub(absPath)
 
     /*

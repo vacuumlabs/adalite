@@ -25,12 +25,6 @@ const shelleyStakeAccountPath = (account: number) => {
   ]
 }
 
-const _validateScheme = (cryptoProvider) => {
-  return
-  // const scheme = cryptoProvider.getDerivationScheme()
-  //if (scheme.type !== 'v2') throw new Error('Invalid mnemonic scheme')
-}
-
 export const stakeAccountPubkeyHex = async (cryptoProvider, accountIndex: number) => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
   return await cryptoProvider
@@ -40,8 +34,6 @@ export const stakeAccountPubkeyHex = async (cryptoProvider, accountIndex: number
 }
 
 export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => async () => {
-  _validateScheme(cryptoProvider)
-
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
 
@@ -56,8 +48,6 @@ export const ShelleySingleAddressProvider = (
   accountIndex: number,
   isChange: boolean
 ) => async (i: number) => {
-  _validateScheme(cryptoProvider)
-
   const pathSpend = shelleyPath(accountIndex, isChange, i)
   const spendXpub = await cryptoProvider.deriveXpub(pathSpend)
 
@@ -72,8 +62,6 @@ export const ShelleyGroupAddressProvider = (
   accountIndex: number,
   isChange: boolean
 ) => async (i: number) => {
-  _validateScheme(cryptoProvider)
-
   const pathSpend = shelleyPath(accountIndex, isChange, i)
   const spendXpub = await cryptoProvider.deriveXpub(pathSpend)
 

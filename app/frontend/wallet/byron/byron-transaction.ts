@@ -25,7 +25,13 @@ function TxAux(inputs, outputs, attributes) {
   }
 }
 
-function TxWitness(extendedPublicKey, signature) {
+type PkWitness = {
+  extendedPublicKey: any
+  signature: any
+  encodeCBOR: any
+}
+
+function TxWitness(extendedPublicKey, signature): PkWitness {
   // default - PkWitness
   const type = 0
 
@@ -120,4 +126,12 @@ function SignedTransactionStructured(txAux, witnesses) {
   }
 }
 
-export {TxInput, TxInputFromUtxo, TxOutput, SignedTransactionStructured, TxAux, TxWitness}
+export {
+  TxInput,
+  TxInputFromUtxo,
+  TxOutput,
+  SignedTransactionStructured,
+  TxAux,
+  TxWitness,
+  PkWitness,
+}

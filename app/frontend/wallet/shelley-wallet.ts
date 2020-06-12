@@ -249,9 +249,9 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return isHwWallet ? (cryptoProvider as any).getHwWalletName() : undefined
   }
 
-  async function submitTx(signedTx) {
+  function submitTx(signedTx): Promise<any> {
     const {transaction, fragmentId} = signedTx
-    return await blockchainExplorer.submitTxRaw(fragmentId, transaction)
+    return blockchainExplorer.submitTxRaw(fragmentId, transaction)
   }
 
   function getWalletSecretDef() {
@@ -389,7 +389,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     }
   }
 
-  async function getHistory() {
+  async function getHistory(): Promise<any> {
     // TODO: refactor to getTxHistory? or add delegation history or rewards history
     const {legacy, group, single, account} = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getTxHistory([...single, ...group, ...legacy, account])
@@ -414,7 +414,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     }
   }
 
-  function getValidStakepools() {
+  function getValidStakepools(): Promise<any> {
     return blockchainExplorer.getValidStakepools()
   }
 
