@@ -75,7 +75,7 @@
     "prettier-eslint-cli": "^5.0.0",
     "release-it": "^13.6.2",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.2"
+    "typescript": "3.9.2"
   },
   "resolutions": {
     "lodash": "4.17.14",
