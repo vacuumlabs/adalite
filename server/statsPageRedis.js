@@ -75,6 +75,25 @@ module.exports = function(app, env) {
     try {
       const stats = await getStats()
 
+      const tableOfContents = Object.keys(stats)
+        .map(
+          (subject) => `
+          <b>${subject}:</b>
+          ${Object.keys(stats[subject])
+    .map(
+      (period) => `
+            <ul>
+                <a href="#${(subject + period).replace(':', '-')}">${
+  isAdaAmountKey(period) ? `${period} (ADA)` : period
+}</a>
+          </ul>
+        `
+    )
+    .join('')}
+      `
+        )
+        .join(' ')
+
       const statsHtml = Object.keys(stats)
         .map(
           (subject) => `
@@ -83,7 +102,9 @@ module.exports = function(app, env) {
     .map(
       (period) => `
               <ul>
-                <li>${isAdaAmountKey(period) ? `${period} (ADA)` : period} </li>
+                <li id=${(subject + period).replace(':', '-')}>
+                  ${isAdaAmountKey(period) ? `${period} (ADA)` : period}
+                </li>
                 <ul>
                   ${stats[subject][period]
     .map((item) => {
@@ -108,12 +129,18 @@ module.exports = function(app, env) {
         <!doctype html>
         <html>
           <head>
-            <meta charset="utf-8"/>
+            <meta charset="utf-8" name="viewport"
+                      content="height=device-height, 
+                      width=device-width, initial-scale=1.0, 
+                      minimum-scale=1.0, maximum-scale=1.0, 
+                      user-scalable=no, target-densitydpi=device-dpi">
             <title>AdaLite Wallet Stats</title>
             <link rel="icon" type="image/ico" href="assets/favicon.ico">
           </head>
           <body>
             Stats of transaction submissions and estimates of unique IPs visits per day, month and in total.
+            <a href="#tableOfContents" style="position:fixed;top:93%;left:calc(10% + 250px)">Table</a>
+            <div id="tableOfContents">${tableOfContents}</div>
             <div>${statsHtml}</div>
           </body>
         </html>
