@@ -184,7 +184,10 @@ describe('successful transaction fee computation', () => {
     mockNet.mockBulkAddressSummaryEndpoint()
     mockNet.mockUtxoEndpoint()
 
-    assert.equal((await wallets.used.getTxPlan(myAddress, 47, 0)).fee, 179288)
+    assert.equal(
+      (await wallets.used.getTxPlan({address: myAddress, coins: 47, donationAmount: 0})).fee,
+      179288
+    )
     mockNet.clean()
   })
 
@@ -192,7 +195,10 @@ describe('successful transaction fee computation', () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockUtxoEndpoint()
 
-    assert.equal((await wallets.used.getTxPlan(shortAddress, 47, 0)).fee, 177838)
+    assert.equal(
+      (await wallets.used.getTxPlan({address: shortAddress, coins: 47, donationAmount: 0})).fee,
+      177838
+    )
     mockNet.clean()
   })
 })
@@ -214,7 +220,7 @@ describe('transaction serialization', () => {
   it('should properly serialize transaction before signing', async () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockUtxoEndpoint()
-    const plan = await wallets.used.getTxPlan(myAddress, 47, false)
+    const plan = await wallets.used.getTxPlan({address: myAddress, coins: 47, donationAmount: 0})
     const txAux = wallets.used.prepareTxAux(plan)
 
     // transaction serialization before providing witnesses
@@ -231,7 +237,11 @@ describe('transaction serialization', () => {
     mockNet.mockUtxoEndpoint()
     mockNet.mockBulkAddressSummaryEndpoint()
 
-    const plan = await wallets.smallUtxos.getTxPlan(myAddress, 1000000, false)
+    const plan = await wallets.smallUtxos.getTxPlan({
+      address: myAddress,
+      coins: 1000000,
+      donationAmount: 0,
+    })
     const txAux = wallets.smallUtxos.prepareTxAux(plan)
 
     assert.equal(txAux.inputs.length, 2)
@@ -242,7 +252,7 @@ describe('transaction serialization', () => {
     const mockNet = mockNetwork(mockConfig2)
     mockNet.mockUtxoEndpoint()
 
-    const plan = await wallets.used.getTxPlan(myAddress, 47, false)
+    const plan = await wallets.used.getTxPlan({address: myAddress, coins: 47, donationAmount: 0})
     const txAux = await wallets.used.prepareTxAux(plan)
 
     const expectedTxHash = '5e3c57744fb9b134589cb006db3d6536cd6471a2bde542149326dd92859f0a93'
@@ -260,7 +270,7 @@ describe('transaction serialization', () => {
     const wallet = wallets.used
 
     const tx = await wallet
-      .getTxPlan(myAddress, 47, false)
+      .getTxPlan({address: myAddress, coins: 47, donationAmount: 0})
       .then(wallet.prepareTxAux)
       .then(wallet.signTxAux)
 
@@ -281,7 +291,7 @@ describe('test transaction submission', () => {
 
     const wallet = wallets.used
     const tx = await wallet
-      .getTxPlan(myAddress, 47, false)
+      .getTxPlan({address: myAddress, coins: 47, donationAmount: 0})
       .then(wallet.prepareTxAux)
       .then(wallet.signTxAux)
 
