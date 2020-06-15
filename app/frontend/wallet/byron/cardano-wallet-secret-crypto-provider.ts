@@ -1,6 +1,7 @@
 import {encode} from 'borc'
 import {blake2b, sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
 
+// eslint-disable-next-line no-unused-vars
 import {TxWitness, PkWitness, SignedTransactionStructured} from './byron-transaction'
 
 import HdNode from '../helpers/hd-node'
@@ -8,6 +9,7 @@ import {parseTxAux} from './helpers/cbor-parsers'
 import NamedError from '../../helpers/NamedError'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 
+// eslint-disable-next-line no-unused-vars
 import {DerivationScheme} from '../helpers/derivation-schemes'
 
 const CardanoWalletSecretCryptoProvider = ({

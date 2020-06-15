@@ -745,7 +745,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const convertNonStakingUtxos = async (state) => {
     loadingAction(state, 'Preparing transaction...')
     const address = await wallet.getChangeAddress()
-    const {sendAmount: coins} = await wallet.getMaxNonStakingAmount(address)
+    const maxAmount = await wallet.getMaxNonStakingAmount(address)
+    const coins = maxAmount && maxAmount.sendAmount
     const balance = state.balance
     let plan
     try {
@@ -1025,11 +1026,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         showTransactionErrorModal: true,
       })
     } finally {
+      resetTransactionSummary(state)
       resetSendFormFields(state)
       resetSendFormState(state)
       resetAmountFields(state)
       resetDelegationToAdalite()
-      resetTransactionSummary(state)
       wallet.generateNewSeeds()
       await reloadWalletInfo(state)
       setState({

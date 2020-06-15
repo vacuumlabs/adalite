@@ -305,6 +305,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const nonStakingUtxos = availableUtxos.filter(({address}) => !isGroup(address))
     const groupAddressUtxos = availableUtxos.filter(({address}) => isGroup(address))
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
+    // we shuffle non-staking utxos separately since we want them to be spend first
     const shuffledUtxos =
       txType === 'convert'
         ? shuffleArray(nonStakingUtxos, randomGenerator)
