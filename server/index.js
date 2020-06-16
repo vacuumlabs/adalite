@@ -2,7 +2,7 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const compression = require('compression')
 const fs = require('fs')
-const http = require('http')
+const https = require('https')
 const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
 
 let app = express()
@@ -107,7 +107,7 @@ if (enableHttps) {
     cert: fs.readFileSync('server.cert'),
     key: fs.readFileSync('server.key'),
   }
-  app = http.createServer(options, app)
+  app = https.createServer(options, app)
 }
 
 app.listen(backendConfig.PORT, () => {
