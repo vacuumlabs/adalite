@@ -199,7 +199,7 @@ const CardanoWallet = (options) => {
   }
 
   function getValidStakepools() {
-    throw NamedError('UnsupportedOperationError', 'Incompatible operation with Byron wallet')
+    return {validStakepools: null, ticker2Id: null}
   }
 
   function getMaxNonStakingAmount(address) {

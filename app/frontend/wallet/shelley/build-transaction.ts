@@ -1,7 +1,7 @@
 import {computeRequiredTxFee} from './helpers/chainlib-wrapper'
 import {Lovelace} from '../../state'
 import NamedError from '../../helpers/NamedError'
-import {ADA_DONATION_ADDRESS} from '../constants'
+import getDonationAddress from '../../helpers/getDonationAddress'
 
 type UTxOInput = {
   txHash: string
@@ -117,7 +117,7 @@ export function selectMinimalTxPlan(
     : null
   const outputs = coins ? [{address, coins}] : []
   if (donationAmount > 0) {
-    outputs.push({address: ADA_DONATION_ADDRESS, coins: donationAmount})
+    outputs.push({address: getDonationAddress(), coins: donationAmount})
   }
 
   const change = {address: changeAddress, coins: 0 as Lovelace}

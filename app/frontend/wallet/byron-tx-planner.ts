@@ -3,10 +3,11 @@ import {base58} from 'cardano-crypto.js'
 
 import {TxInputFromUtxo} from './byron/byron-transaction'
 
-import {ADA_DONATION_ADDRESS, TX_WITNESS_SIZE_BYTES} from './constants'
+import {TX_WITNESS_SIZE_BYTES} from './constants'
 import CborIndefiniteLengthArray from './byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
+import getDonationAddress from '../helpers/getDonationAddress'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
@@ -149,7 +150,7 @@ export function selectMinimalTxPlan(
   const inputs = []
 
   const outputs = [{address, coins}]
-  if (donationAmount > 0) outputs.push({address: ADA_DONATION_ADDRESS, coins: donationAmount})
+  if (donationAmount > 0) outputs.push({address: getDonationAddress(), coins: donationAmount})
 
   const change = {address: changeAddress, coins: 0 as Lovelace}
 

@@ -1,6 +1,6 @@
-import {ADA_DONATION_ADDRESS} from './constants'
 import {roundWholeAdas} from '../helpers/adaConverters'
 import {Lovelace} from '../state'
+import getDonationAddress from '../helpers/getDonationAddress'
 
 type UTxO = {
   txHash: string
@@ -33,7 +33,7 @@ export const MaxAmountCalculator = (computeRequiredTxFee) => {
     } else {
       const outputs = [
         {address, coins: 0 as Lovelace},
-        {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
+        {address: getDonationAddress(), coins: 0 as Lovelace},
       ]
       const txFee = computeRequiredTxFee(profitableInputs, outputs)
 
@@ -59,7 +59,7 @@ export const MaxAmountCalculator = (computeRequiredTxFee) => {
 
     const outputs = [
       {address, coins: 0 as Lovelace},
-      {address: ADA_DONATION_ADDRESS, coins: 0 as Lovelace},
+      {address: getDonationAddress(), coins: 0 as Lovelace},
     ]
 
     const txFee = computeRequiredTxFee(profitableInputs, outputs)

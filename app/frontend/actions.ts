@@ -15,7 +15,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
-import {ADA_DONATION_ADDRESS, NETWORKS} from './wallet/constants'
+import {NETWORKS} from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
 import {CardanoWallet} from './wallet/cardano-wallet'
@@ -30,6 +30,7 @@ import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 import {ShelleyWallet} from './wallet/shelley-wallet'
 import ShelleyJsCryptoProvider from './wallet/shelley/shelley-js-crypto-provider'
 import loadWasmModule from './helpers/wasmLoader'
+import getDonationAddress from './helpers/getDonationAddress'
 let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
 
 const debounceEvent = (callback, time) => {
@@ -1013,7 +1014,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
       const address = state.sendAddress.fieldValue
       const donationAmount = state.donationAmount.coins
-      const didDonate = address === ADA_DONATION_ADDRESS || donationAmount > 0
+      const didDonate = address === getDonationAddress() || donationAmount > 0
 
       if (didDonate) {
         setState({showThanksForDonation: true})

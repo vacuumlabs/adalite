@@ -7,8 +7,8 @@ import {
   BTC_DONATION_ADDRESS,
   ETH_BLOCKCHAIN_EXPLORER,
   ETH_DONATION_ADDRESS,
-  ADA_DONATION_ADDRESS,
 } from '../../wallet/constants'
+import getDonationAddress from '../../helpers/getDonationAddress'
 
 interface Props {
   showConversionRates: boolean
@@ -79,7 +79,7 @@ const Footer = () => {
             </a>
             <a
               className="donations-item ada"
-              href={`https://seiza.com/blockchain/address/${ADA_DONATION_ADDRESS}`}
+              href={`https://seiza.com/blockchain/address/${getDonationAddress()}`}
               target="_blank"
               title="Donate via Adalite"
               rel="noopener"
