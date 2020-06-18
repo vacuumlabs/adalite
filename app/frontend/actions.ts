@@ -952,7 +952,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const resetDelegationToAdalite = () => {
-    selectAdaliteStakepool()
+    if (ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley') {
+      selectAdaliteStakepool()
+    }
   }
 
   /* SUBMIT TX */
