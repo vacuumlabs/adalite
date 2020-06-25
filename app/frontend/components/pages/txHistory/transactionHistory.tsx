@@ -37,11 +37,11 @@ const Transaction = ({txid}) => (
         <span> | </span>
         <a
           className="transaction-address"
-          href={`https://adascan.net/transaction/${txid}`}
+          href={`https://explorer.cardano.org/en/transaction/?id=${txid}`}
           target="_blank"
           rel="noopener"
         >
-          AdaScan
+          CardanoExplorer
         </a>
       </span>
     )}
