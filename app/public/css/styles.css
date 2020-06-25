@@ -2110,7 +2110,6 @@ li.main-tab input + label.selected:after {
 
 .address-link {
   color: var(--color-grey);
-  margin-right: 24px;
 }
 
 .address-link:last-child {
