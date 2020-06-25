@@ -2,8 +2,8 @@
   "git": {
     "commitArgs": "-s",
     "tagArgs": "-s",
-    "commitMessage": "%s",
-    "tagName": "v%s"
+    "commitMessage": "${version}",
+    "tagName": "v${version}"
   },
   "npm": {
     "publish": false,
@@ -15,7 +15,7 @@
   },
   "github": {
     "release": true,
-    "releaseName": "v%s",
+    "releaseName": "v${version}",
     "preRelease": false,
     "draft": false,
     "tokenRef": "GITHUB_TOKEN",
