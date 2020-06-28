@@ -105,18 +105,31 @@ module.exports = function(app, env) {
                 <li id=${(subject + period).replace(':', '-')}>
                   ${isAdaAmountKey(period) ? `${period} (ADA)` : period}
                 </li>
-                <ul>
+                
+                <table style=";margin-left:36px;">
                   ${stats[subject][period]
     .map((item) => {
       const [key, value] = item
       return `
-          <li>
-            ${key}:   <b>${isAdaAmountKey(period) ? Math.round(value / 1000000) : value}</b>
-          </li>
+        
+      <tr style="list-style-type:circle;">
+          
+            <td style="display:list-item;">${key}:   <td>
+            <td style="text-align:end;">
+              <b>
+                ${
+  isAdaAmountKey(period)
+    ? Math.round(value / 1000000).toLocaleString('en')
+    : value.toLocaleString('en')
+}
+    </b>
+            </td>
+          </tr>
+          
         `
     })
     .join('')}
-              </ul>
+              </table>
             </ul>
           `
     )
@@ -133,7 +146,7 @@ module.exports = function(app, env) {
                       content="height=device-height, 
                       width=device-width, initial-scale=1.0, 
                       minimum-scale=1.0, maximum-scale=1.0, 
-                      user-scalable=no, target-densitydpi=device-dpi">
+                      user-scalable=no">
             <title>AdaLite Wallet Stats</title>
             <link rel="icon" type="image/ico" href="assets/favicon.ico">
           </head>
