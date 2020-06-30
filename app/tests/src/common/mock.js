@@ -44,6 +44,73 @@ const mock = (ADALITE_CONFIG) => {
     })
   }
 
+  function mockGetAccountInfo() {
+    fetchMock.config.overwriteRoutes = true
+    const acctInfoMock = {
+      delegation: [],
+      value: 0,
+      counter: 0,
+      last_rewards: {
+        epoch: 0,
+        reward: 0,
+      },
+    }
+
+    fetchMock.mock({
+      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`,
+      response: {
+        status: 200,
+        body: acctInfoMock,
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockGetStakePools() {
+    fetchMock.config.overwriteRoutes = true
+
+    const stakePoolsMock = [
+      {
+        pool_id: 'd4b1243dfc0bec57f146a90d85b478cdd3e0e646c43801c2bebd6792580a7db2',
+        owner: 'def7e265ec2c54e1cf00dae85ec407e823dd1374e6520cd59264df321513ffe5',
+        name: 'IOHK Stakepool',
+        description: null,
+        ticker: 'IOHK1',
+        homepage: 'https://staking.cardano.org',
+        rewards: {
+          fixed: 258251123,
+          ratio: [2, 25],
+          limit: null,
+        },
+      },
+    ]
+
+    fetchMock.mock({
+      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`,
+      response: {
+        status: 200,
+        body: stakePoolsMock,
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockGetConversionRates() {
+    fetchMock.config.overwriteRoutes = true
+
+    fetchMock.mock({
+      matcher: 'https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR',
+      response: {
+        status: 200,
+        body: {
+          USD: '0.08245',
+          EUR: '0.07364',
+        },
+        sendAsJson: true,
+      },
+    })
+  }
+
   function mockRawTxEndpoint() {
     fetchMock.config.overwriteRoutes = true
 
@@ -128,6 +195,9 @@ const mock = (ADALITE_CONFIG) => {
 
   return {
     mockBulkAddressSummaryEndpoint,
+    mockGetAccountInfo,
+    mockGetStakePools,
+    mockGetConversionRates,
     mockTransactionSubmitter,
     mockUtxoEndpoint,
     mockRawTxEndpoint,

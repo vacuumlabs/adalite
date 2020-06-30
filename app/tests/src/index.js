@@ -1,4 +1,6 @@
 describe('AdaLite Test Suite', () => {
+  require('./common/setup-test-config')
+
   describe('CBOR', () => {
     require('./cbor')
   })
@@ -16,6 +18,9 @@ describe('AdaLite Test Suite', () => {
   })
   describe('Import/Export Wallet as JSON', () => {
     require('./keypass-json')
+  })
+  describe('Actions', () => {
+    require('./actions/actions')
   })
   describe('Shelley testnet', () => {
     require('./shelley')
