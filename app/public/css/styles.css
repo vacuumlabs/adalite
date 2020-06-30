@@ -1081,10 +1081,19 @@ button[data-balloon] {
   padding: 16px 24px;
 }
 
+.banner.error {
+  background-color: var(--color-error);
+}
+
 .banner-text {
   flex: 1;
   padding-left: 40px;
   position: relative;
+  color: white;
+}
+
+.banner.error > .banner-text {
+  font-weight: bold;
 }
 
 .banner-text::before {
@@ -1094,11 +1103,15 @@ button[data-balloon] {
   display: inline-block;
   position: absolute;
   left: 0;
-  top: -2px;
+  top: calc( 50% - 12px );
   margin-right: 16px;
   vertical-align: middle;
   background: url('../assets/icon-star.svg') no-repeat;
   background-position: center center;
+}
+
+.banner.error > .banner-text::before {
+  display: none;
 }
 
 .banner .banner-close {
@@ -3526,6 +3539,7 @@ input:checked + .slider:before {
 
   .banner-text {
     padding-left: 0;
+    margin: 8px 0;
   }
 
   .banner-inner {
