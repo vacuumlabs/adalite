@@ -3,12 +3,12 @@ import {ADALITE_CONFIG} from '../../../frontend/config'
 import {CRYPTO_PROVIDER_TYPES} from '../../../frontend/wallet/constants'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import assert from 'assert'
-import {assertPropertiesEqual, setupState} from './actions'
+import {assertPropertiesEqual, setupInitialState} from './actions'
 
 let state, action
 
 beforeEach(() => {
-  ;[state, action] = setupState()
+  ;[state, action] = setupInitialState()
 })
 
 const expectedStateChanges = {

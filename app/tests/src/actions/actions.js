@@ -22,7 +22,7 @@ export function assertPropertiesEqual(state, expectedState) {
   }
 }
 
-export function setupState() {
+export function setupInitialState() {
   const cloneDeep = require('lodash/fp/cloneDeep')
   const state = cloneDeep(initialState)
 
@@ -36,4 +36,9 @@ export function setupState() {
 describe('Test wallet actions', function() {
   this.timeout(5000) // this doesn't work in Mocha with arrow functions
   require('./wallet-actions')
+})
+// eslint-disable-next-line prefer-arrow-callback
+describe('Test transaction actions', function() {
+  this.timeout(5000) // this doesn't work in Mocha with arrow functions
+  require('./transaction-actions')
 })
