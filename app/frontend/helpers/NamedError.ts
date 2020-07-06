@@ -1,8 +1,13 @@
-function NamedError(name, message = '', showHelp = '') {
-  const e = new Error(message || name || showHelp)
+type OptionalParams = {
+  message?: string
+  errorStack?: string
+}
+
+function NamedError(name: string, optionalParams: OptionalParams = {}) {
+  const e = new Error(optionalParams.message || name)
   e.name = name
-  e.message = message
-  ;(e as any).showHelp = showHelp
+  e.message = optionalParams.message || ''
+  e.stack = optionalParams.errorStack || e.stack
   return e
 }
 

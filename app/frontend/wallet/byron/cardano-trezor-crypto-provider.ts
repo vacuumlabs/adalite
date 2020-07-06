@@ -30,14 +30,13 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   })
 
   function deriveHdNode(childIndex) {
-    throw NamedError(
-      'UnsupportedOperationError',
-      'This operation is not supported on TrezorCryptoProvider!'
-    )
+    throw NamedError('UnsupportedOperationError', {
+      message: 'This operation is not supported on TrezorCryptoProvider!',
+    })
   }
 
   function sign(message, absDerivationPath) {
-    throw NamedError('UnsupportedOperationError', 'Operation not supported')
+    throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
   async function displayAddressForPath(absDerivationPath) {
@@ -103,7 +102,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
 
     if (response.error || !response.success) {
       debugLog(response)
-      throw NamedError('TrezorSignTxError', response.payload.error)
+      throw NamedError('TrezorSignTxError', {message: response.payload.error})
     }
 
     return {
@@ -113,7 +112,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   }
 
   function getWalletSecret() {
-    throw NamedError('UnsupportedOperationError', 'Unsupported operation!')
+    throw NamedError('UnsupportedOperationError', {message: 'Unsupported operation!'})
   }
 
   function getDerivationScheme() {
@@ -123,10 +122,10 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   function throwIfNotSuccess(response) {
     if (response.error || !response.success) {
       debugLog(response)
-      throw NamedError(
-        'TrezorError',
-        'Trezor operation failed, please make sure ad blockers are switched off for this site'
-      )
+      throw NamedError('TrezorError', {
+        message:
+          'Trezor operation failed, please make sure ad blockers are switched off for this site',
+      })
     }
   }
 

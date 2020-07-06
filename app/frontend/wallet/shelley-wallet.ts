@@ -171,10 +171,10 @@ const ShelleyBlockchainExplorer = (config) => {
         },
       })
       if (response.status >= 400) {
-        throw NamedError('NetworkError', 'Unable to fetch running stakepools.')
+        throw NamedError('NetworkError', {message: 'Unable to fetch running stakepools.'})
       }
     } catch (e) {
-      throw NamedError('NetworkError', e.message)
+      throw NamedError('NetworkError', {message: e.message})
     }
     const poolArray = JSON.parse(await response.text())
     const validStakepools = poolArray.reduce(
@@ -283,7 +283,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       .signTx(txAux, [], myAddresses.fixedPathMapper())
       .catch((e) => {
         debugLog(e)
-        throw NamedError('TransactionRejectedWhileSigning', e.message)
+        throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
       })
     return signedTx
   }
@@ -458,7 +458,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function verifyAddress(addr: string) {
     if (!('displayAddressForPath' in cryptoProvider)) {
-      throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
+      throw NamedError('UnsupportedOperationError', {message: 'unsupported operation: verifyAddress'})
     }
     const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(addr)
     const stakingAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
