@@ -17,10 +17,9 @@ const CryptoProviderFactory = (() => {
         return CardanoWalletSecretCryptoProvider(options)
 
       default:
-        throw NamedError(
-          'CryptoProviderError',
-          `Unknown crypto provider type: ${cryptoProviderType}`
-        )
+        throw NamedError('CryptoProviderError', {
+          message: `Unknown crypto provider type: ${cryptoProviderType}`,
+        })
     }
   }
 

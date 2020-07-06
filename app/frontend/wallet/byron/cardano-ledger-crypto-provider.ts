@@ -35,26 +35,25 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
   })
 
   function deriveHdNode(childIndex) {
-    throw NamedError(
-      'UnsupportedOperationError',
-      'This operation is not supported on LedgerCryptoProvider!'
-    )
+    throw NamedError('UnsupportedOperationError', {
+      message: 'This operation is not supported on LedgerCryptoProvider!',
+    })
   }
 
   function sign(message, absDerivationPath) {
-    throw NamedError('UnsupportedOperationError', 'Operation not supported')
+    throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
   async function displayAddressForPath(absDerivationPath) {
     try {
       await ledger.showAddress(absDerivationPath)
     } catch (err) {
-      throw NamedError('LedgerOperationError', `${err.name}: ${err.message}`)
+      throw NamedError('LedgerOperationError', {message: `${err.name}: ${err.message}`})
     }
   }
 
   function getWalletSecret() {
-    throw NamedError('UnsupportedOperationError', 'Unsupported operation!')
+    throw NamedError('UnsupportedOperationError', {message: 'Unsupported operation!'})
   }
 
   function getDerivationScheme() {
@@ -112,10 +111,9 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
     const response = await ledger.signTransaction(inputs, outputs)
 
     if (response.txHashHex !== unsignedTx.getId()) {
-      throw NamedError(
-        'TxSerializationError',
-        'Tx serialization mismatch between Ledger and Adalite'
-      )
+      throw NamedError('TxSerializationError', {
+        message: 'Tx serialization mismatch between Ledger and Adalite',
+      })
     }
 
     // serialize signed transaction for submission

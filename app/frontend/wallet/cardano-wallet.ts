@@ -147,7 +147,7 @@ const CardanoWallet = (options) => {
       .signTx(txAux, rawInputTxs, myAddresses.getAddressToAbsPathMapper())
       .catch((e) => {
         debugLog(e)
-        throw NamedError('TransactionRejectedWhileSigning', e.message)
+        throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
       })
 
     return signedTx
@@ -203,7 +203,9 @@ const CardanoWallet = (options) => {
   }
 
   function getMaxNonStakingAmount(address) {
-    throw NamedError('UnsupportedOperationError', 'Incompatible operation with Byron wallet')
+    throw NamedError('UnsupportedOperationError', {
+      message: 'Incompatible operation with Byron wallet',
+    })
   }
 
   async function fetchTxInfo(txHash) {
@@ -234,7 +236,9 @@ const CardanoWallet = (options) => {
 
   async function verifyAddress(addr: string) {
     if (!('displayAddressForPath' in cryptoProvider)) {
-      throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
+      throw NamedError('UnsupportedOperationError', {
+        message: 'unsupported operation: verifyAddress',
+      })
     }
     const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(addr)
     return await cryptoProvider.displayAddressForPath(absDerivationPath)
