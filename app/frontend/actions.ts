@@ -370,7 +370,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     try {
       txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
     } catch (e) {
-      throw NamedError('TransactionCorrupted', {errorStack: e.stack})
+      throw NamedError('TransactionCorrupted', {causedBy: e})
     }
 
     setState({
