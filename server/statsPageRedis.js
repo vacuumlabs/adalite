@@ -120,7 +120,7 @@ module.exports = function(app, env) {
                 ${
   isAdaAmountKey(period)
     ? Math.round(value / 1000000).toLocaleString('en')
-    : value.toLocaleString('en')
+    : parseInt(value, 10).toLocaleString('en')
 }
     </b>
             </td>
