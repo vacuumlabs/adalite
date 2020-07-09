@@ -1110,6 +1110,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const loadErrorBannerContent = (state) => {
+    const errorBannerContent = ADALITE_CONFIG.ADALITE_ERROR_BANNER_CONTENT
+    const shoulShowErrorBanner = !!errorBannerContent
+    setState({
+      errorBannerContent,
+      showStakingBanner: shoulShowErrorBanner ? false : state.showStakingBanner,
+    })
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -1154,5 +1163,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     revokeDelegation,
     selectAdaliteStakepool,
     convertNonStakingUtxos,
+    loadErrorBannerContent,
   }
 }

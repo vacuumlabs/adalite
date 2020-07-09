@@ -11,6 +11,7 @@ import GenerateMnemonicDialog from './generateMnemonicDialog'
 import LogoutNotification from './logoutNotification'
 import LoginPageSidebar from './loginPageSidebar'
 import StakingBanner from './stakingBanner'
+import ErrorBanner from './errorBanner'
 import Tag from '../../common/tag'
 import WalletLoadingErrorModal from './walletLoadingErrorModal'
 import {getTranslation} from '../../../translations'
@@ -39,6 +40,8 @@ interface Props {
   closeWalletLoadingErrorModal: any
   showStakingBanner: boolean
   autoLogin: boolean
+  errorBannerContent: any
+  loadErrorBannerContent: any
 }
 
 class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
@@ -55,6 +58,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
     if (this.props.autoLogin && this.props.authMethod !== 'mnemonic') {
       this.props.setAuthMethod('mnemonic')
     }
+    this.props.loadErrorBannerContent()
   }
 
   closeStakingBannerClick() {
@@ -78,6 +82,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
       showWalletLoadingErrorModal,
       closeWalletLoadingErrorModal,
       showStakingBanner,
+      errorBannerContent,
     },
     {isDropdownOpen}
   ) {
@@ -160,9 +165,11 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
         {authMethod === 'file' && <KeyFileAuth />}
       </div>
     )
+    // getErrorBannerContent()
     return (
       <div className="page-wrapper">
         {showStakingBanner && <StakingBanner onRequestClose={this.closeStakingBannerClick} />}
+        {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
         <div className="page-inner">
           <main className="page-main">
             {authMethod === '' ? <AuthCardInitial /> : <AuthCard />}
@@ -200,6 +207,7 @@ export default connect(
     showWalletLoadingErrorModal: state.showWalletLoadingErrorModal,
     showStakingBanner: state.showStakingBanner,
     autoLogin: state.autoLogin,
+    errorBannerContent: state.errorBannerContent,
   }),
   actions
 )(LoginPage)
