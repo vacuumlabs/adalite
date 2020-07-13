@@ -21,9 +21,9 @@ const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(
 
 const App = connect((state) => ({
   displayWelcome: state.displayWelcome,
-  showContactFormModal: state.showContactFormModal,
-  showUnexpectedErrorModal: state.showUnexpectedErrorModal,
-}))(({displayWelcome, showContactFormModal, showUnexpectedErrorModal}) => (
+  shouldShowContactFormModal: state.shouldShowContactFormModal,
+  shouldShowUnexpectedErrorModal: state.shouldShowUnexpectedErrorModal,
+}))(({displayWelcome, shouldShowContactFormModal, shouldShowUnexpectedErrorModal}) => (
   <div className="wrap">
     <LoadingOverlay />
     <Navbar />
@@ -32,8 +32,8 @@ const App = connect((state) => ({
     <AddressDetailDialog />
     {ADALITE_LOGOUT_AFTER > 0 && <AutoLogout />}
     {displayWelcome && <Welcome />}
-    {showContactFormModal && <ContactForm />}
-    {showUnexpectedErrorModal && <UnexpectedErrorModal />}
+    {shouldShowContactFormModal && <ContactForm />}
+    {shouldShowUnexpectedErrorModal && <UnexpectedErrorModal />}
   </div>
 ))
 

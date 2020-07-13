@@ -23,8 +23,8 @@ const expectedStateChanges = {
   usingHwWallet: false,
   hwWalletName: undefined,
   isDemoWallet: false,
-  showDemoWalletWarningDialog: false,
-  showGenerateMnemonicDialog: false,
+  shouldShowDemoWalletWarningDialog: false,
+  shouldShowGenerateMnemonicDialog: false,
   // send form
   sendAmount: {fieldValue: '', coins: 0},
   sendAddress: {fieldValue: ''},

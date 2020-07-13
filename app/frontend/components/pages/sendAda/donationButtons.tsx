@@ -19,7 +19,7 @@ interface Props {
   isSendAddressValid: boolean
   percentageDonationValue: any
   percentageDonationText: string
-  thresholdAmountReached: any
+  isThresholdAmountReached: any
 }
 
 class DonationButtons extends Component<Props> {
@@ -54,7 +54,7 @@ class DonationButtons extends Component<Props> {
     isSendAddressValid,
     percentageDonationValue,
     percentageDonationText,
-    thresholdAmountReached,
+    isThresholdAmountReached,
   }) {
     const isFormValid = isSendAddressValid && sendAmount && !sendAmountValidationError
     const isFixedInsufficient = this.isInsufficient(ADALITE_FIXED_DONATION_VALUE, 'fixed')
@@ -80,7 +80,7 @@ class DonationButtons extends Component<Props> {
           className={this.getButtonClass(percentageDonationValue, 'percentage')}
           value={percentageDonationValue}
           onClick={updateDonation}
-          disabled={!isFormValid || !thresholdAmountReached || isPercentageInsufficient}
+          disabled={!isFormValid || !isThresholdAmountReached || isPercentageInsufficient}
           {
           ...{ariaLabel: 'Percentage amount'} /* ignore ts error */
           }
@@ -110,7 +110,7 @@ export default connect(
     checkedDonationType: state.checkedDonationType,
     percentageDonationValue: state.percentageDonationValue,
     percentageDonationText: state.percentageDonationText,
-    thresholdAmountReached: state.thresholdAmountReached,
+    isThresholdAmountReached: state.isThresholdAmountReached,
     maxDonationAmount: state.maxDonationAmount,
   }),
   actions

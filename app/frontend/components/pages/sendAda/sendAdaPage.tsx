@@ -47,15 +47,15 @@ interface Props {
   updateAddress: any
   updateAmount: any
   confirmTransaction: any
-  showConfirmTransactionDialog: any
+  shouldShowConfirmTransactionDialog: any
   feeRecalculating: any
   sendMaxFunds: any
-  showThanksForDonation: any
+  shouldShowThanksForDonation: any
   closeThanksForDonationModal: any
   closeTransactionErrorModal: any
-  showTransactionErrorModal: any
+  shouldShowTransactionErrorModal: any
   coinsAmount: any
-  showCustomDonationInput: any
+  shouldShowCustomDonationInput: any
   maxDonationAmount: any
   conversionRates: any
   sendTransactionSummary: any
@@ -77,15 +77,15 @@ class SendAdaPage extends Component<Props> {
     updateAddress,
     updateAmount,
     confirmTransaction,
-    showConfirmTransactionDialog,
+    shouldShowConfirmTransactionDialog,
     feeRecalculating,
     sendMaxFunds,
-    showThanksForDonation,
+    shouldShowThanksForDonation,
     closeThanksForDonationModal,
     closeTransactionErrorModal,
-    showTransactionErrorModal,
+    shouldShowTransactionErrorModal,
     coinsAmount,
-    showCustomDonationInput,
+    shouldShowCustomDonationInput,
     maxDonationAmount,
     conversionRates,
     sendTransactionSummary: summary,
@@ -162,9 +162,9 @@ class SendAdaPage extends Component<Props> {
           {!isDonationSufficient && (
             <div className="send-donate-msg">Insufficient balance for a donation.</div>
           )}
-          {!showCustomDonationInput &&
+          {!shouldShowCustomDonationInput &&
             isDonationSufficient && <DonationButtons isSendAddressValid={isSendAddressValid} />}
-          {showCustomDonationInput &&
+          {shouldShowCustomDonationInput &&
             isDonationSufficient && <CustomDonationInput isSendAddressValid={isSendAddressValid} />}
           <div className="ada-label">Fee</div>
           <div className="send-fee">{printAda(transactionFee)}</div>
@@ -196,7 +196,7 @@ class SendAdaPage extends Component<Props> {
             />
           )}
         </div>
-        {showTransactionErrorModal && (
+        {shouldShowTransactionErrorModal && (
           <TransactionErrorModal
             onRequestClose={closeTransactionErrorModal}
             errorMessage={getTranslation(
@@ -206,8 +206,8 @@ class SendAdaPage extends Component<Props> {
             showHelp={errorHasHelp(transactionSubmissionError.code)}
           />
         )}
-        {showConfirmTransactionDialog && <ConfirmTransactionDialog />}
-        {showThanksForDonation && (
+        {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
+        {shouldShowThanksForDonation && (
           <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
         )}
       </div>
@@ -224,12 +224,12 @@ export default connect(
     sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount.fieldValue,
     donationAmountValidationError: state.donationAmountValidationError,
-    showConfirmTransactionDialog: state.showConfirmTransactionDialog,
-    showTransactionErrorModal: state.showTransactionErrorModal,
+    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
+    shouldShowTransactionErrorModal: state.shouldShowTransactionErrorModal,
     feeRecalculating: state.calculatingFee,
-    showThanksForDonation: state.showThanksForDonation,
+    shouldShowThanksForDonation: state.shouldShowThanksForDonation,
     coinsAmount: state.sendAmount.coins,
-    showCustomDonationInput: state.showCustomDonationInput,
+    shouldShowCustomDonationInput: state.shouldShowCustomDonationInput,
     maxDonationAmount: state.maxDonationAmount,
     conversionRates: state.conversionRates && state.conversionRates.data,
     sendTransactionSummary: state.sendTransactionSummary,

@@ -33,7 +33,7 @@ const StakingPage = () => {
   )
 }
 
-const SendingPage = ({showExportOption}) => {
+const SendingPage = ({shouldShowExportOption}) => {
   return (
     <div className="dashboard desktop">
       <div className="dashboard-column">
@@ -43,7 +43,7 @@ const SendingPage = ({showExportOption}) => {
       <div className="dashboard-column">
         <SendAdaPage />
         <MyAddresses />
-        {showExportOption && <ExportCard />}
+        {shouldShowExportOption && <ExportCard />}
       </div>
     </div>
   )
@@ -65,7 +65,7 @@ class DashboardPage extends Component<Props> {
     this.props.toggleDisplayStakingPage(name === 'Staking')
   }
 
-  render({showExportOption, displayStakingPage}, {selectedMainTab}) {
+  render({shouldShowExportOption, displayStakingPage}, {selectedMainTab}) {
     const mainTabs = ['Sending', 'Staking']
     return (
       <div className="page-wrapper">
@@ -83,7 +83,7 @@ class DashboardPage extends Component<Props> {
         )}
         <div className="dashboard desktop">
           {!displayStakingPage ? (
-            <SendingPage showExportOption={showExportOption} />
+            <SendingPage shouldShowExportOption={shouldShowExportOption} />
           ) : (
             <StakingPage />
           )}
@@ -92,7 +92,7 @@ class DashboardPage extends Component<Props> {
         <div className="dashboard mobile">
           {displayStakingPage ? <ShelleyBalances /> : <Balance />}
           <DashboardMobileContent displayStakingPage={displayStakingPage} />
-          {!displayStakingPage && showExportOption && <ExportCard />}
+          {!displayStakingPage && shouldShowExportOption && <ExportCard />}
         </div>
       </div>
     )
@@ -147,7 +147,7 @@ class DashboardMobileContent extends Component<Props> {
 
 export default connect(
   (state) => ({
-    showExportOption: state.showExportOption,
+    shouldShowExportOption: state.shouldShowExportOption,
     displayStakingPage: state.displayStakingPage,
   }),
   actions

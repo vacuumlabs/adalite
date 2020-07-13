@@ -65,7 +65,7 @@ init({
           event,
           resolve,
         },
-        showUnexpectedErrorModal: true,
+        shouldShowUnexpectedErrorModal: true,
       })
     }).then((res) => {
       return res === true ? event : null

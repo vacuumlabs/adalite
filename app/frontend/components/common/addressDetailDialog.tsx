@@ -19,7 +19,7 @@ const AddressDetailDialog = () => {
   } = useSelector((state) => ({
     showDetail: state.showAddressDetail,
     verificationError: state.addressVerificationError,
-    showVerification: state.showAddressVerification,
+    showVerification: state.shouldShowAddressVerification,
     waitingForHwWallet: state.waitingForHwWallet,
     hwWalletName: state.hwWalletName,
   }))

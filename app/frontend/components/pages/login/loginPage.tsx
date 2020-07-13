@@ -33,12 +33,12 @@ interface Props {
   walletLoadingError: any
   authMethod: '' | 'mnemonic' | 'hw-wallet' | 'file'
   setAuthMethod: (option: string) => void
-  showDemoWalletWarningDialog: boolean
+  shouldShowDemoWalletWarningDialog: boolean
   logoutNotificationOpen: boolean
-  showGenerateMnemonicDialog: boolean
-  showWalletLoadingErrorModal: boolean
+  shouldShowGenerateMnemonicDialog: boolean
+  shouldShowWalletLoadingErrorModal: boolean
   closeWalletLoadingErrorModal: any
-  showStakingBanner: boolean
+  shouldShowStakingBanner: boolean
   autoLogin: boolean
   errorBannerContent: any
   loadErrorBannerContent: any
@@ -76,12 +76,12 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
       walletLoadingError,
       authMethod,
       setAuthMethod,
-      showDemoWalletWarningDialog,
+      shouldShowDemoWalletWarningDialog,
       logoutNotificationOpen,
-      showGenerateMnemonicDialog,
-      showWalletLoadingErrorModal,
+      shouldShowGenerateMnemonicDialog,
+      shouldShowWalletLoadingErrorModal,
       closeWalletLoadingErrorModal,
-      showStakingBanner,
+      shouldShowStakingBanner,
       errorBannerContent,
     },
     {isDropdownOpen}
@@ -168,7 +168,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
     // getErrorBannerContent()
     return (
       <div className="page-wrapper">
-        {showStakingBanner && <StakingBanner onRequestClose={this.closeStakingBannerClick} />}
+        {shouldShowStakingBanner && <StakingBanner onRequestClose={this.closeStakingBannerClick} />}
         {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
         <div className="page-inner">
           <main className="page-main">
@@ -181,10 +181,10 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
             </div>
           </main>
           <LoginPageSidebar />
-          {showDemoWalletWarningDialog && <DemoWalletWarningDialog />}
-          {showGenerateMnemonicDialog && <GenerateMnemonicDialog />}
+          {shouldShowDemoWalletWarningDialog && <DemoWalletWarningDialog />}
+          {shouldShowGenerateMnemonicDialog && <GenerateMnemonicDialog />}
           {logoutNotificationOpen && <LogoutNotification />}
-          {showWalletLoadingErrorModal && (
+          {shouldShowWalletLoadingErrorModal && (
             <WalletLoadingErrorModal
               onRequestClose={closeWalletLoadingErrorModal}
               errorMessage={getTranslation(walletLoadingError.code, walletLoadingError.params)}
@@ -200,12 +200,12 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
 export default connect(
   (state) => ({
     authMethod: state.authMethod,
-    showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
+    shouldShowDemoWalletWarningDialog: state.shouldShowDemoWalletWarningDialog,
     logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,
-    showGenerateMnemonicDialog: state.showGenerateMnemonicDialog,
-    showWalletLoadingErrorModal: state.showWalletLoadingErrorModal,
-    showStakingBanner: state.showStakingBanner,
+    shouldShowGenerateMnemonicDialog: state.shouldShowGenerateMnemonicDialog,
+    shouldShowWalletLoadingErrorModal: state.shouldShowWalletLoadingErrorModal,
+    shouldShowStakingBanner: state.shouldShowStakingBanner,
     autoLogin: state.autoLogin,
     errorBannerContent: state.errorBannerContent,
   }),

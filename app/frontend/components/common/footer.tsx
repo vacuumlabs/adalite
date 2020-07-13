@@ -12,7 +12,7 @@ import getDonationAddress from '../../helpers/getDonationAddress'
 
 interface Props {
   showConversionRates: boolean
-  showContactFormModal: any
+  shouldShowContactFormModal: any
 }
 
 const showRatesOn = ['/txHistory', '/send']
@@ -21,7 +21,7 @@ const Footer = () => {
   const showConversionRates = useSelector(
     (state) => showRatesOn.indexOf(state.router.pathname) !== -1 && state.walletIsLoaded
   )
-  const {showContactFormModal} = useActions(actions)
+  const {shouldShowContactFormModal} = useActions(actions)
 
   return (
     <footer className="footer">
@@ -29,7 +29,11 @@ const Footer = () => {
         <Branding dark={false} />
         <div className="footer-row">
           <div className="social">
-            <button role="button" className="social-link email" onClick={showContactFormModal}>
+            <button
+              role="button"
+              className="social-link email"
+              onClick={shouldShowContactFormModal}
+            >
               Contact us
             </button>
             <a

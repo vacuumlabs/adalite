@@ -20,7 +20,7 @@ export interface State {
   displayWelcome: boolean
   currentTab: 'wallet-info'
   walletIsLoaded: boolean
-  showStakingBanner: boolean
+  shouldShowStakingBanner: boolean
   errorBannerContent: string
   visibleAddresses: Array<any> // TODO
   sendAddress: any // TODO
@@ -39,22 +39,22 @@ export interface State {
   }
 
   authMethod: AuthMethodEnum
-  showDemoWalletWarningDialog: boolean
+  shouldShowDemoWalletWarningDialog: boolean
   logoutNotificationOpen: boolean
   rawTransactionOpen: boolean
   rawTransaction: string
-  showMnemonicInfoAlert: boolean
+  shouldShowMnemonicInfoAlert: boolean
   transactionHistory: Array<Transaction>
   sendResponse: any // TODO
   checkedDonationType: string // TODO: enum
-  showCustomDonationInput: boolean
+  shouldShowCustomDonationInput: boolean
   donationAmount: any // TODO
   maxDonationAmount: number
   percentageDonationValue: number
   percentageDonationText: string
-  thresholdAmountReached: boolean
+  isThresholdAmountReached: boolean
 
-  showUnexpectedErrorModal: boolean
+  shouldShowUnexpectedErrorModal: boolean
   sendSentry: {
     event?: any
     resolve?: (shouldSend: boolean) => void
@@ -63,30 +63,30 @@ export interface State {
 
   // TODO
   waitingForHwWallet?: boolean
-  showConfirmTransactionDialog?: boolean
-  showTransactionErrorModal?: boolean
-  showThanksForDonation?: boolean
-  showContactFormModal?: boolean
+  shouldShowConfirmTransactionDialog?: boolean
+  shouldShowTransactionErrorModal?: boolean
+  shouldShowThanksForDonation?: boolean
+  shouldShowContactFormModal?: boolean
 
   calculatingFee?: boolean
   transactionFee?: any
 
   sendAmountValidationError?: any
-  showExportOption?: boolean
+  shouldShowExportOption?: boolean
 
   conversionRates?: {data: {USD: number; EUR: number}}
   balance?: number
-  showGenerateMnemonicDialog?: boolean
+  shouldShowGenerateMnemonicDialog?: boolean
 
   walletLoadingError?: any
-  showWalletLoadingErrorModal?: boolean
+  shouldShowWalletLoadingErrorModal?: boolean
   usingHwWallet?: boolean
   addressVerificationError?: boolean
   showAddressDetail?: {address: string; bip32path: string; copyOnClick: boolean}
   hwWalletName?: string
   isDemoWallet?: boolean
   error?: any
-  showAddressVerification?: boolean
+  shouldShowAddressVerification?: boolean
 
   donationAmountValidationError?: any
   sendAddressValidationError?: any
@@ -141,7 +141,9 @@ const initialState: State = {
     ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN !== 'true',
   currentTab: 'wallet-info',
   walletIsLoaded: false,
-  showStakingBanner: !(window.localStorage.getItem('dontShowStakingBannerTestnet2') === 'true'),
+  shouldShowStakingBanner: !(
+    window.localStorage.getItem('dontShowStakingBannerTestnet2') === 'true'
+  ),
   errorBannerContent: '',
   visibleAddresses: [],
   // todo - object (sub-state) from send-ada form
@@ -164,22 +166,22 @@ const initialState: State = {
     formIsValid: false,
   },
   authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
-  showDemoWalletWarningDialog: false,
+  shouldShowDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
   rawTransactionOpen: false,
   rawTransaction: '',
-  showMnemonicInfoAlert: false,
+  shouldShowMnemonicInfoAlert: false,
   transactionHistory: [],
   sendResponse: {},
   checkedDonationType: '',
-  showCustomDonationInput: false,
+  shouldShowCustomDonationInput: false,
   donationAmount: {fieldValue: 0, coins: 0},
   maxDonationAmount: Infinity,
   percentageDonationValue: 0,
   percentageDonationText: '0.2%', // What is this and why it isn't in config?
-  thresholdAmountReached: false,
+  isThresholdAmountReached: false,
 
-  showUnexpectedErrorModal: false,
+  shouldShowUnexpectedErrorModal: false,
   sendSentry: {},
   autoLogin:
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',

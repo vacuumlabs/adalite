@@ -17,11 +17,11 @@ interface Props {
   updateMnemonicValidationError: () => void
   //
   loadWallet: any
-  showMnemonicInfoAlert: boolean
+  shouldShowMnemonicInfoAlert: boolean
   openGenerateMnemonicDialog: () => void
   autoLogin: boolean
   displayWelcome: boolean
-  showDemoWalletWarningDialog: boolean
+  shouldShowDemoWalletWarningDialog: boolean
 }
 
 class LoadByMnemonicSectionClass extends Component<Props> {
@@ -32,7 +32,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
     const shouldFormFocus =
       !this.props.formData.mnemonicInputValue &&
       !this.props.displayWelcome &&
-      !this.props.showDemoWalletWarningDialog
+      !this.props.shouldShowDemoWalletWarningDialog
     shouldFormFocus && this.mnemonicField.focus()
   }
 
@@ -56,14 +56,14 @@ class LoadByMnemonicSectionClass extends Component<Props> {
     updateMnemonic,
     updateMnemonicValidationError,
     loadWallet,
-    showMnemonicInfoAlert,
+    shouldShowMnemonicInfoAlert,
     openGenerateMnemonicDialog,
   }) {
     const sanitizedMnemonic = sanitizeMnemonic(formData.mnemonicInputValue)
 
     return (
-      <div className={`authentication-content ${showMnemonicInfoAlert ? '' : 'centered'}`}>
-        {showMnemonicInfoAlert && (
+      <div className={`authentication-content ${shouldShowMnemonicInfoAlert ? '' : 'centered'}`}>
+        {shouldShowMnemonicInfoAlert && (
           <Alert alertType="info auth">
             Here you can use your mnemonic to access your new wallet.
           </Alert>
@@ -138,8 +138,8 @@ export default connect(
   (state) => ({
     formData: state.mnemonicAuthForm,
     displayWelcome: state.displayWelcome,
-    showDemoWalletWarningDialog: state.showDemoWalletWarningDialog,
-    showMnemonicInfoAlert: state.showMnemonicInfoAlert,
+    shouldShowDemoWalletWarningDialog: state.shouldShowDemoWalletWarningDialog,
+    shouldShowMnemonicInfoAlert: state.shouldShowMnemonicInfoAlert,
     autoLogin: state.autoLogin,
   }),
   actions

@@ -97,7 +97,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const setAuthMethod = (state, option) => {
     setState({
       authMethod: option,
-      showExportOption: option === 'mnemonic' || option === 'file',
+      shouldShowExportOption: option === 'mnemonic' || option === 'file',
     })
   }
 
@@ -173,8 +173,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         usingHwWallet,
         hwWalletName,
         isDemoWallet,
-        showDemoWalletWarningDialog: isDemoWallet && !autoLogin,
-        showGenerateMnemonicDialog: false,
+        shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,
+        shouldShowGenerateMnemonicDialog: false,
         // send form
         sendAmount: {fieldValue: '', coins: 0},
         sendAddress: {fieldValue: ''},
@@ -191,7 +191,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       setErrorState('walletLoadingError', e)
       setState({
-        showWalletLoadingErrorModal: true,
+        shouldShowWalletLoadingErrorModal: true,
       })
       return false
     }
@@ -216,7 +216,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       setErrorState('walletLoadingError', e)
       setState({
-        showWalletLoadingErrorModal: true,
+        shouldShowWalletLoadingErrorModal: true,
       })
     }
   }
@@ -229,21 +229,21 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         formIsValid: true,
       },
       walletLoadingError: undefined,
-      showWalletLoadingErrorModal: false,
+      shouldShowWalletLoadingErrorModal: false,
       authMethod: 'mnemonic',
-      showExportOption: true,
+      shouldShowExportOption: true,
     })
   }
 
   const closeDemoWalletWarningDialog = (state) => {
     setState({
-      showDemoWalletWarningDialog: false,
+      shouldShowDemoWalletWarningDialog: false,
     })
   }
 
   const closeWalletLoadingErrorModal = (state) => {
     setState({
-      showWalletLoadingErrorModal: false,
+      shouldShowWalletLoadingErrorModal: false,
     })
   }
 
@@ -270,15 +270,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         mnemonicInputError: null,
         formIsValid: false,
       },
-      showGenerateMnemonicDialog: true,
+      shouldShowGenerateMnemonicDialog: true,
       authMethod: 'mnemonic',
-      showMnemonicInfoAlert: true,
+      shouldShowMnemonicInfoAlert: true,
     })
   }
 
   const closeGenerateMnemonicDialog = (state) => {
     setState({
-      showGenerateMnemonicDialog: false,
+      shouldShowGenerateMnemonicDialog: false,
     })
   }
 
@@ -335,12 +335,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
      * because we don't want to trigger trezor address
      * verification for the  donation address
      */
-    const showAddressVerification = state.usingHwWallet && bip32path
+    const shouldShowAddressVerification = state.usingHwWallet && bip32path
 
     // trigger trezor address verification for the  donation address
     setState({
       showAddressDetail: {address, bip32path, copyOnClick},
-      showAddressVerification,
+      shouldShowAddressVerification,
     })
   }
 
@@ -348,7 +348,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       showAddressDetail: undefined,
       addressVerificationError: undefined,
-      showAddressVerification: undefined,
+      shouldShowAddressVerification: undefined,
     })
   }
 
@@ -363,7 +363,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
 
     setState({
-      showConfirmTransactionDialog: true,
+      shouldShowConfirmTransactionDialog: true,
       txConfirmType,
       // TODO: maybe do this only on demand
       rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
@@ -372,7 +372,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const cancelTransaction = () => ({
-    showConfirmTransactionDialog: false,
+    shouldShowConfirmTransactionDialog: false,
   })
 
   const setRawTransactionOpen = (state, open) => {
@@ -383,7 +383,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const closeTransactionErrorModal = (state) => {
     setState({
-      showTransactionErrorModal: false,
+      shouldShowTransactionErrorModal: false,
     })
   }
 
@@ -415,7 +415,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const resetPercentageDonation = () => {
     setState({
-      thresholdAmountReached: false,
+      isThresholdAmountReached: false,
       percentageDonationValue: 0,
       percentageDonationText: '0.2%',
     })
@@ -427,7 +427,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       transactionFee: 0, // TODO(merc): call resetDonation instead?
       maxDonationAmount: Infinity,
       checkedDonationType: '',
-      showCustomDonationInput: false,
+      shouldShowCustomDonationInput: false,
     })
     resetPercentageDonation()
   }
@@ -436,7 +436,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       sendResponse: '',
       loading: false,
-      showConfirmTransactionDialog: false,
+      shouldShowConfirmTransactionDialog: false,
     })
   }
 
@@ -638,7 +638,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         percentageDonationValue: donationProperties.value,
         percentageDonationText: donationProperties.text,
-        thresholdAmountReached: true,
+        isThresholdAmountReached: true,
       })
     } else {
       // disable and reset %-button because sendAmount is too low
@@ -759,14 +759,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
     } catch (e) {
       setErrorState('transactionSubmissionError', e, {
-        showTransactionErrorModal: true,
+        shouldShowTransactionErrorModal: true,
       })
       return
     }
     if (balance < (plan.fee || plan.estimatedFee)) {
       setErrorState('transactionSubmissionError', NamedError('NonStakingConversionError'))
       setState({
-        showTransactionErrorModal: true,
+        shouldShowTransactionErrorModal: true,
       })
       stopLoadingAction(state, {})
       return
@@ -795,14 +795,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const toggleCustomDonation = (state) => {
     resetDonation()
     setState({
-      showCustomDonationInput: !state.showCustomDonationInput,
+      shouldShowCustomDonationInput: !state.shouldShowCustomDonationInput,
     })
     validateSendFormAndCalculateFee()
   }
 
   const closeThanksForDonationModal = (state) => {
     setState({
-      showThanksForDonation: false,
+      shouldShowThanksForDonation: false,
     })
   }
 
@@ -840,7 +840,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         setErrorState('delegationValidationError', {code: e.name})
       } else {
         setErrorState('transactionSubmissionError', e, {
-          showTransactionErrorModal: true,
+          shouldShowTransactionErrorModal: true,
         })
       }
       return
@@ -986,7 +986,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const submitTransaction = async (state) => {
     setState({
-      showConfirmTransactionDialog: false,
+      shouldShowConfirmTransactionDialog: false,
     })
     if (state.usingHwWallet) {
       setState({waitingForHwWallet: true})
@@ -1019,14 +1019,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const didDonate = address === getDonationAddress() || donationAmount > 0
 
       if (didDonate) {
-        setState({showThanksForDonation: true})
+        setState({shouldShowThanksForDonation: true})
       }
     } catch (e) {
       setErrorState('transactionSubmissionError', e, {
         txHash: txSubmitResult && txSubmitResult.txHash,
       })
       setState({
-        showTransactionErrorModal: true,
+        shouldShowTransactionErrorModal: true,
       })
     } finally {
       resetTransactionSummary(state)
@@ -1076,19 +1076,19 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const closeStakingBanner = (state) => {
     window.localStorage.setItem('dontShowStakingBannerTestnet2', 'true')
     setState({
-      showStakingBanner: false,
+      shouldShowStakingBanner: false,
     })
   }
 
-  const showContactFormModal = (state) => {
+  const shouldShowContactFormModal = (state) => {
     setState({
-      showContactFormModal: true,
+      shouldShowContactFormModal: true,
     })
   }
 
   const closeContactFormModal = (state) => {
     setState({
-      showContactFormModal: false,
+      shouldShowContactFormModal: false,
     })
   }
 
@@ -1106,16 +1106,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const closeUnexpectedErrorModal = (state) => {
     setState({
-      showUnexpectedErrorModal: false,
+      shouldShowUnexpectedErrorModal: false,
     })
   }
 
   const loadErrorBannerContent = (state) => {
     const errorBannerContent = ADALITE_CONFIG.ADALITE_ERROR_BANNER_CONTENT
-    const shoulShowErrorBanner = !!errorBannerContent
+    const shouldShowErrorBanner = !!errorBannerContent
     setState({
       errorBannerContent,
-      showStakingBanner: shoulShowErrorBanner ? false : state.showStakingBanner,
+      shouldShowStakingBanner: shouldShowErrorBanner ? false : state.shouldShowStakingBanner,
     })
   }
 
@@ -1151,7 +1151,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     closeTransactionErrorModal,
     closeWalletLoadingErrorModal,
     closeUnexpectedErrorModal,
-    showContactFormModal,
+    shouldShowContactFormModal,
     closeContactFormModal,
     updateDonation,
     toggleCustomDonation,

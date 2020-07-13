@@ -65,9 +65,9 @@ interface Props {
   confirmTransaction: any
   closeTransactionErrorModal: any
   transactionSubmissionError: any
-  showTransactionErrorModal: any
+  shouldShowTransactionErrorModal: any
   selectAdaliteStakepool: any
-  showConfirmTransactionDialog: any
+  shouldShowConfirmTransactionDialog: any
   txSuccessTab: any
 }
 
@@ -94,8 +94,8 @@ class Delegate extends Component<Props> {
     confirmTransaction,
     closeTransactionErrorModal,
     transactionSubmissionError,
-    showTransactionErrorModal,
-    showConfirmTransactionDialog,
+    shouldShowTransactionErrorModal,
+    shouldShowConfirmTransactionDialog,
     txSuccessTab,
   }) {
     const delegationHandler = async () => {
@@ -190,7 +190,7 @@ class Delegate extends Component<Props> {
             ),
           ]}
         </div>
-        {showTransactionErrorModal && (
+        {shouldShowTransactionErrorModal && (
           <TransactionErrorModal
             onRequestClose={closeTransactionErrorModal}
             errorMessage={getTranslation(
@@ -200,7 +200,7 @@ class Delegate extends Component<Props> {
             showHelp={errorHasHelp(transactionSubmissionError.code)}
           />
         )}
-        {showConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
+        {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
       </div>
     )
   }
@@ -212,9 +212,9 @@ export default connect(
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
-    showTransactionErrorModal: state.showTransactionErrorModal,
+    shouldShowTransactionErrorModal: state.shouldShowTransactionErrorModal,
     transactionSubmissionError: state.transactionSubmissionError,
-    showConfirmTransactionDialog: state.showConfirmTransactionDialog,
+    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     txSuccessTab: state.txSuccessTab,
   }),
   actions
