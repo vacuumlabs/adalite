@@ -7,6 +7,11 @@ const check = require('check-types')
 // process.env.npm_package_version is undefined on Heroku
 const appVersion = require('../../package.json').version
 
+const encodeToHtml = (str) =>
+  str.replace(/[\u00A0-\u9999<>&']/gim, (i) => {
+    return `&#${i.charCodeAt(0)};`
+  })
+
 const boolStrings = ['true', 'false']
 const isBoolString = (str) => boolStrings.includes(str)
 const isPositiveIntString = (str) => check.positive(parseInt(str, 10))
@@ -81,10 +86,11 @@ const {
   ADALITE_IP_BLACKLIST,
   SENTRY_DSN,
   ADALITE_CARDANO_VERSION,
-  ADALITE_ERROR_BANNER_CONTENT,
 } = process.env
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
+
+const ADALITE_ERROR_BANNER_CONTENT = encodeToHtml(process.env.ADALITE_ERROR_BANNER_CONTENT)
 
 if (!check.all(checkMap)) {
   let problemFound = false

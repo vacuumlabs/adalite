@@ -4,10 +4,12 @@ interface Props {
   message: string
 }
 
-const ErrorBanner = ({message}: Props) => (
-  <div className="banner error">
-    <div className="banner-text">{message}</div>
-  </div>
-)
+const ErrorBanner = ({message}: Props) => {
+  return (
+    <div className="banner error">
+      <div className="banner-text">{message}</div>
+    </div>
+  )
+}
 
 export default ErrorBanner
