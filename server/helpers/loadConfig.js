@@ -57,6 +57,7 @@ const checkMap = check.map(process.env, {
   ADALITE_ENV: check.nonEmptyString,
   ADALITE_IP_BLACKLIST: isCommaDelimitedListOfIpsOrEmpty,
   SENTRY_DSN: check.nonEmptyString,
+  ADALITE_ERROR_BANNER_CONTENT: check.string,
 })
 
 const {
@@ -89,8 +90,6 @@ const {
 } = process.env
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
-
-const ADALITE_ERROR_BANNER_CONTENT = encodeToHtml(process.env.ADALITE_ERROR_BANNER_CONTENT)
 
 if (!check.all(checkMap)) {
   let problemFound = false
@@ -132,7 +131,7 @@ const frontendConfig = {
   SENTRY_DSN,
   ADALITE_DEVEL_AUTO_LOGIN,
   ADALITE_CARDANO_VERSION,
-  ADALITE_ERROR_BANNER_CONTENT,
+  ADALITE_ERROR_BANNER_CONTENT: encodeToHtml(process.env.ADALITE_ERROR_BANNER_CONTENT),
 }
 
 const backendConfig = {
