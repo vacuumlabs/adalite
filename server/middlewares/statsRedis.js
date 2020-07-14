@@ -3,6 +3,8 @@ const device = require('device')
 const client = redis.createClient(process.env.REDIS_URL)
 const mung = require('express-mung')
 const normalizeUrl = require('normalize-url')
+const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
+const {backendConfig} = require('../helpers/loadConfig')
 
 const knownIps = new Set()
 
@@ -53,6 +55,23 @@ const trackTxSubmissions = mung.json((body, req, res) => {
     const txSubmissionSuccess = body.Right ? 'successful' : 'unsuccessful'
 
     incrCountersBy(`${txSubmissionType}:${txSubmissionSuccess}`, 1)
+
+    if (backendConfig.ADALITE_CARDANO_VERSION === 'byron' && txSubmissionSuccess === 'successful') {
+      const {txBody} = req.body
+      let txOutAmount = 0
+      let txTotalAmount = 0
+
+      try {
+        txOutAmount = parseTxBodyOutAmount(txBody)
+        txTotalAmount = parseTxBodyTotalAmount(txBody)
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e)
+      }
+
+      incrCountersBy(`${txSubmissionType}:sentOut`, txOutAmount)
+      incrCountersBy(`${txSubmissionType}:sentTotal`, txTotalAmount)
+    }
   }
 })
 

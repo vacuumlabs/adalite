@@ -151,6 +151,7 @@ const backendConfig = {
   ADALITE_IP_BLACKLIST: ADALITE_IP_BLACKLIST
     ? ADALITE_IP_BLACKLIST.replace(/ /g, '').split(',')
     : [],
+  ADALITE_CARDANO_VERSION,
 }
 
 module.exports = {
