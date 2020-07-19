@@ -160,8 +160,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
-      const {validStakepools, ticker2Id} = {validStakepools: null, ticker2Id: null}
-      //await wallet.getValidStakepools()
+      const {validStakepools} = await wallet.getValidStakepools()
+      const ticker2Id = null
       setState({
         walletIsLoaded: true,
         ...walletInfo,
@@ -461,7 +461,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       shelleyDelegation: {
         delegationFee: 0,
         selectedPool: {
-          poolIdentifier: '',
+          poolHash: '',
         },
       },
     })
@@ -821,7 +821,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     //TODO: some validation in case poolIdentifier changed(hasPoolIdentifierChanged)
     const pool = [
       {
-        pool_id: state.shelleyDelegation.selectedPool,
+        pool_id: state.shelleyDelegation.selectedPool.poolHash,
         ratio: 100,
       },
     ]
@@ -897,20 +897,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
      * pool validation must happen before debouncing
      * but pool info shown after
      */
-    const poolIdentifier = e.target.value
-    const poolId = poolIdentifier
-    const validationError = poolIdValidator(poolId, state.validStakepools)
+    const poolHash = e.target.value
+    const validationError = poolIdValidator(poolHash, state.validStakepools)
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPool: {
           validationError,
-          ...state.validStakepools[poolId],
-          poolIdentifier,
+          ...state.validStakepools[poolHash],
         },
       },
     })
-    validateDelegationAndCalculateFee()
+    // validateDelegationAndCalculateFee()
   }
 
   const selectAdaliteStakepool = () => {
@@ -923,7 +921,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         selectedPool: {
           validationError: !poolInfo,
           ...poolInfo,
-          poolIdentifier: poolInfo.pool_id,
         },
       },
     })

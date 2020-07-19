@@ -159,7 +159,7 @@ const ShelleyBlockchainExplorer = (config) => {
   }
 
   async function getValidStakepools() {
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/stakePools`
     let response
     try {
       response = await fetch(url, {
@@ -176,11 +176,13 @@ const ShelleyBlockchainExplorer = (config) => {
       throw NamedError('NetworkError', e.message)
     }
     const poolArray = JSON.parse(await response.text())
-    // eslint-disable-next-line no-sequences
-    const validStakepools = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
-    // eslint-disable-next-line no-sequences
-    const ticker2Id = poolArray.reduce((dict, el) => ((dict[el.ticker] = el.pool_id), dict), {})
-    return {validStakepools, ticker2Id}
+    const validStakepools = poolArray.reduce(
+      // eslint-disable-next-line no-sequences
+      (dict, el) => ((dict[el.poolHash] = {...el}), dict),
+      {}
+    )
+    console.log(validStakepools)
+    return {validStakepools}
   }
 
   return {
