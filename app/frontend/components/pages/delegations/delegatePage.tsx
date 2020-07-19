@@ -23,28 +23,18 @@ const DelegationValidation = ({delegationValidationError, txSuccessTab}) =>
   )
 
 const StakePoolInfo = ({pool}) => {
-  const {rewards, ticker, homepage, name, validationError} = pool
-  const tax = rewards && (rewards.ratio[0] * 100) / rewards.ratio[1]
-  const fixed = rewards && rewards.fixed && printAda(rewards.fixed)
-  const limit = rewards && rewards.limit && printAda(rewards.limit)
+  const {fixedCost, url, margin, validationError} = pool
   return (
     <div className={`stake-pool-info ${validationError ? 'invalid' : 'valid'}`}>
       {validationError ? (
         <div>{getTranslation(validationError.code)}</div>
       ) : (
         <div>
-          <div>{`Name: ${name || ''}`}</div>
-          <div>{`Ticker: ${ticker || ''}`}</div>
-          <div>
-            {`
-            Tax: ${tax || ''}%
-            ${fixed ? ` , ${`Fixed: ${fixed}`}` : ''}
-            ${limit ? ` , ${`Limit: ${limit}`}` : ''}
-          `}
-          </div>
+          <div>{`Tax: ${margin || ''}`}</div>
+          <div>{`Fixed cost: ${fixedCost || ''}`}</div>
           <div>
             {'Homepage: '}
-            <a href={homepage || ''}>{homepage || ''}</a>
+            <a href={url || ''}>{url || ''}</a>
           </div>
         </div>
       )}
@@ -107,11 +97,11 @@ class Delegate extends Component<Props> {
                 className="input stake-pool-id"
                 name={'pool'}
                 placeholder="Ticker or Stake Pool ID"
-                value={''}
-                onInput={null} //updateStakePoolIdentifier
+                value={stakePool.poolHash}
+                onInput={updateStakePoolIdentifier}
                 autoComplete="off"
               />
-              {/* <StakePoolInfo pool={pool} /> */}
+              <StakePoolInfo pool={stakePool} />
               <div />
             </li>
           </ul>
@@ -162,7 +152,7 @@ class Delegate extends Component<Props> {
 
 export default connect(
   (state) => ({
-    stakePool: state.shelleyDelegation.selectedPools,
+    stakePool: state.shelleyDelegation.selectedPool,
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,

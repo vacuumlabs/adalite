@@ -183,6 +183,9 @@ const initialState: State = {
   displayStakingPage: ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley',
   shelleyDelegation: {
     delegationFee: 0.0,
+    selectedPool: {
+      poolHash: '',
+    },
   },
   shelleyBalances: {
     nonStakingBalance: 0,
