@@ -460,11 +460,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       shelleyDelegation: {
         delegationFee: 0,
-        selectedPools: [
-          {
-            poolIdentifier: '',
-          },
-        ],
+        selectedPool: {
+          poolIdentifier: '',
+        },
       },
     })
   }
@@ -812,11 +810,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const hasPoolIdentifiersChanged = (shelleyDelegation) => {
     const {shelleyDelegation: newShelleyDelegation} = getState()
     return (
-      shelleyDelegation.length === newShelleyDelegation.selectedPools.length &&
-      newShelleyDelegation.selectedPools.every(
-        ({poolIdentifier}, index) =>
-          poolIdentifier === shelleyDelegation.selectedPools[index].poolIdentifier
-      )
+      newShelleyDelegation.selectedPool.poolIdentifier ===
+      shelleyDelegation.selectedPool.poolIdentifier
     )
     // maybe also check if tab changed
   }
@@ -824,18 +819,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
     //TODO: some validation in case poolIdentifier changed(hasPoolIdentifierChanged)
-    const pools = !revoke
-      ? state.shelleyDelegation.selectedPools.map(({pool_id: id, ratio}) => {
-        return {
-          id,
-          ratio,
-        }
-      })
-      : []
+    const pool = [
+      {
+        pool_id: state.shelleyDelegation.selectedPool,
+        ratio: 100,
+      },
+    ]
     const balance = state.balance
     let plan
     try {
-      plan = await prepareTxPlan({coins: null, pools, txType: 'delegate'})
+      plan = await prepareTxPlan({coins: null, pool, txType: 'delegate'})
     } catch (e) {
       if (!revoke) {
         setErrorState('delegationValidationError', {code: e.name})
@@ -877,9 +870,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const validateDelegationAndCalculateFee = () => {
     const state = getState()
-    const delegationValidationError = state.shelleyDelegation.selectedPools.every(
-      (pool) => pool.validationError || pool.poolIdentifier === ''
-    )
+    const selectedPool = state.shelleyDelegation.selectedPool
+    const delegationValidationError =
+      selectedPool.validationError || selectedPool.poolIdentifier === ''
+
     setErrorState('delegationValidationError', delegationValidationError)
     setState({
       delegationValidationError,
@@ -904,29 +898,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
      * but pool info shown after
      */
     const poolIdentifier = e.target.value
-    const poolId = state.ticker2Id[poolIdentifier] || poolIdentifier
-    const selectedPools = state.shelleyDelegation.selectedPools
+    const poolId = poolIdentifier
+    const validationError = poolIdValidator(poolId, state.validStakepools)
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        selectedPools: selectedPools.map((pool, i) => {
-          const index = parseInt(e.target.name, 10)
-          const validationError = poolIdValidator(
-            index,
-            poolId,
-            selectedPools,
-            state.validStakepools
-          )
-          return i === index
-            ? {
-              validationError,
-              // 100 just while multiple delegation isnt supported
-              ratio: 100,
-              ...state.validStakepools[poolId],
-              poolIdentifier,
-            }
-            : pool
-        }),
+        selectedPool: {
+          validationError,
+          ...state.validStakepools[poolId],
+          poolIdentifier,
+        },
       },
     })
     validateDelegationAndCalculateFee()
@@ -939,14 +920,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        selectedPools: [
-          {
-            validationError: !poolInfo,
-            ...poolInfo,
-            ratio: 100,
-            poolIdentifier: poolInfo.pool_id,
-          },
-        ],
+        selectedPool: {
+          validationError: !poolInfo,
+          ...poolInfo,
+          poolIdentifier: poolInfo.pool_id,
+        },
       },
     })
     validateDelegationAndCalculateFee()

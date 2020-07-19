@@ -54,10 +54,8 @@ const StakePoolInfo = ({pool}) => {
 
 interface Props {
   updateStakePoolIdentifier: any
-  // updateStakePoolPercent,
-  // addStakePool,
   removeStakePool: any
-  stakePools: any
+  stakePool: any
   delegationFee: any
   calculatingDelegationFee: any
   delegationValidationError: any
@@ -83,10 +81,7 @@ class Delegate extends Component<Props> {
 
   render({
     updateStakePoolIdentifier,
-    // updateStakePoolPercent,
-    // addStakePool,
-    removeStakePool,
-    stakePools,
+    stakePool,
     delegationFee,
     calculatingDelegationFee,
     delegationValidationError,
@@ -106,65 +101,24 @@ class Delegate extends Component<Props> {
         <h2 className="card-title">Delegate Stake</h2>
         <div className="stakepools">
           <ul className="stake-pool-list">
-            {stakePools.map((pool, i) => (
-              <li key={i} className="stake-pool-item">
-                <input
-                  type="text"
-                  className="input stake-pool-id"
-                  name={`${i}`}
-                  placeholder="Ticker or Stake Pool ID"
-                  value={pool.poolIdentifier}
-                  onInput={updateStakePoolIdentifier}
-                  autoComplete="off"
-                />
-                {/* <div className="input-wrapper-percent">
-                  <input
-                    type="number"
-                    min="0"
-                    max={pool.percent + undelegatedPercent}
-                    {...{accuracy: '1'}}
-                    className="input stake-pool-percent"
-                    name={`${i}`}
-                    value={pool.percent}
-                    placeholder={pool.percent}
-                    onInput={updateStakePoolPercent}
-                    autoComplete="off"
-                  />
-                  <div className="percent">%</div>
-                </div> */}
-                {/* {formatStakePoolInfo(getStakePoolValidationMessage(stakePools, pool))} */}
-                <StakePoolInfo pool={pool} />
-                {stakePools.length <= 1 || i === 0 ? (
-                  <div />
-                ) : (
-                  <button className="button stake-pool" name={`${i}`} onClick={removeStakePool}>
-                    remove
-                  </button>
-                )}
-              </li>
-            ))}
+            <li className="stake-pool-item">
+              <input
+                type="text"
+                className="input stake-pool-id"
+                name={'pool'}
+                placeholder="Ticker or Stake Pool ID"
+                value={''}
+                onInput={null} //updateStakePoolIdentifier
+                autoComplete="off"
+              />
+              {/* <StakePoolInfo pool={pool} /> */}
+              <div />
+            </li>
           </ul>
         </div>
 
-        <div className="add-stake-pool-wrapper">
-          {/* <button
-            className="button add-stake-pool"
-            id="add-stake-pool"
-            onClick={addStakePool}
-            disabled={false}
-          >
-            Add Another Stake Pool
-          </button> */}
-        </div>
-        {/* <div className='stake-pool-info'>
-          nvsd
-        </div> */}
+        <div className="add-stake-pool-wrapper" />
         <div className="delegation-info-row">
-          {/* <label className="fee-label">Delegated</label>
-          <div
-            className={`delegation-percent${!delegationValidationError ? ' valid' : ''}`}
-          >{`${delegatedPercent} %`}
-          </div> */}
           <label className="fee-label">
             Fee<AdaIcon />
           </label>
@@ -175,7 +129,7 @@ class Delegate extends Component<Props> {
             className="button primary staking"
             disabled={delegationValidationError || calculatingDelegationFee}
             onClick={delegationHandler}
-            {...tooltip('100% of funds must be delegated to valid stake pools', false)}
+            {...tooltip('Funds must be delegated to valid stake pool', false)}
           >
             Delegate
           </button>
@@ -208,7 +162,7 @@ class Delegate extends Component<Props> {
 
 export default connect(
   (state) => ({
-    stakePools: state.shelleyDelegation.selectedPools,
+    stakePool: state.shelleyDelegation.selectedPools,
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,

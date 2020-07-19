@@ -13,7 +13,7 @@ interface Props {
   setRawTransactionOpen: any
   rawTransactionOpen: boolean
   isDelegation?: boolean
-  stakePools: any
+  stakePool: any
   txConfirmType: string
 }
 
@@ -31,7 +31,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     cancelTransaction,
     setRawTransactionOpen,
     rawTransactionOpen,
-    stakePools,
+    stakePool,
     txConfirmType,
   }) {
     const total = summary.amount + summary.donation + summary.fee
@@ -65,26 +65,24 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               <div className="review-amount">{printAda(summary.donation)}</div>
             </Fragment>
           )}
-
-          {txConfirmType === 'delegate' &&
-            stakePools.map((pool, i) => (
-              <Fragment key={i}>
-                <div className="review-label">Pool ID</div>
-                <div className="review-amount">{pool.poolIdentifier}</div>
-                <div className="review-label">Pool Name</div>
-                <div className="review-amount">{pool.name}</div>
-                <div className="review-label">Ticker</div>
-                <div className="review-amount">{pool.ticker}</div>
-                <div className="review-label">Tax</div>
-                <div className="review-amount">
-                  {pool.rewards && roundNumber(pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1]}
-                  %
-                </div>
-                <div className="review-label">Homepage</div>
-                <div className="review-amount">{pool.homepage}</div>
-              </Fragment>
-            ))}
-
+          {txConfirmType === 'delegate' && (
+            <Fragment>
+              <div className="review-label">Pool ID</div>
+              <div className="review-amount">{stakePool.poolIdentifier}</div>
+              <div className="review-label">Pool Name</div>
+              <div className="review-amount">{stakePool.name}</div>
+              <div className="review-label">Ticker</div>
+              <div className="review-amount">{stakePool.ticker}</div>
+              <div className="review-label">Tax</div>
+              <div className="review-amount">
+                {stakePool.rewards &&
+                  roundNumber(stakePool.rewards.ratio[0] * 100) / stakePool.rewards.ratio[1]}
+                %
+              </div>
+              <div className="review-label">Homepage</div>
+              <div className="review-amount">{stakePool.homepage}</div>
+            </Fragment>
+          )}
           <div className="ada-label">Fee</div>
           <div className="review-fee">{printAda(summary.fee)}</div>
           <div className="ada-label">Total</div>
@@ -122,7 +120,7 @@ export default connect(
     sendAddress: state.sendAddress.fieldValue,
     summary: state.sendTransactionSummary,
     rawTransactionOpen: state.rawTransactionOpen,
-    stakePools: state.shelleyDelegation.selectedPools,
+    stakePool: state.shelleyDelegation.selectedPool,
     txConfirmType: state.txConfirmType,
   }),
   actions
