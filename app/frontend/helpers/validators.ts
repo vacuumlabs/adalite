@@ -98,19 +98,13 @@ const mnemonicValidator = (mnemonic) => {
   return null
 }
 
-const poolIdValidator = (poolIndex, poolId, selectedPools, validStakepools) => {
+const poolIdValidator = (poolId, validStakepools) => {
   if (poolId === '') {
     return null
   }
   if (!validStakepools[poolId]) {
     return {
       code: 'InvalidStakepoolIdentifier',
-    }
-  }
-  const selectedPoolsIds = selectedPools.map((pool) => pool.pool_id)
-  if (selectedPoolsIds.every((id, index) => poolId === id && index !== poolIndex)) {
-    return {
-      code: 'RedundantStakePool',
     }
   }
   return null

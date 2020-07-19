@@ -92,7 +92,6 @@ export interface State {
   sendAddressValidationError?: any
   transactionSubmissionError?: any
 
-  // stakePools: any
   calculatingDelegationFee?: any
   isDelegationValid?: any
 
@@ -102,12 +101,12 @@ export interface State {
     rewardsAccountBalance?: number
   }
   shelleyDelegation?: {
-    selectedPools?: any
+    selectedPool?: any
     delegationFee?: any
   }
   displayStakingPage?: boolean
   currentDelegation?: {
-    stakePools?: any
+    stakePool?: any
   }
   delegationHistory?: any
   validStakepools?: any | null
@@ -183,7 +182,6 @@ const initialState: State = {
   // shelley
   displayStakingPage: ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley',
   shelleyDelegation: {
-    selectedPools: [],
     delegationFee: 0.0,
   },
   shelleyBalances: {
