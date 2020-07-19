@@ -144,17 +144,10 @@ const ShelleyBlockchainExplorer = (config) => {
   const addressesToHex = (addresses: Array<string>): Array<string> => addresses.map(addressToHex)
 
   async function getAccountInfo(accountPubkeyHex) {
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`
-    const response = await request(
-      url,
-      'POST',
-      JSON.stringify({
-        account: accountPubkeyHex,
-      }),
-      {
-        'content-Type': 'application/json',
-      }
-    )
+    const url = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/info/${accountPubkeyHex}`
+    const response = await request(url)
     return response
   }
 
@@ -181,7 +174,6 @@ const ShelleyBlockchainExplorer = (config) => {
       (dict, el) => ((dict[el.poolHash] = {...el}), dict),
       {}
     )
-    console.log(validStakepools)
     return {validStakepools}
   }
 
@@ -343,7 +335,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getWalletInfo() {
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
-    // const shelleyAccountInfo = await getAccountInfo()
+    const shelleyAccountInfo = await getAccountInfo()
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     // getDelegationHistory
@@ -352,10 +344,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       balance,
       shelleyBalances: {
         nonStakingBalance,
-        stakingBalance, //stakingBalance + shelleyAccountInfo.value,
-        rewardsAccountBalance: 0,
+        stakingBalance: stakingBalance + shelleyAccountInfo.value,
+        rewardsAccountBalance: shelleyAccountInfo.value,
       },
-      shelleyAccountInfo: {delegation: {}, value: 0},
+      shelleyAccountInfo,
       transactionHistory,
       visibleAddresses,
     }
@@ -379,21 +371,11 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getAccountInfo() {
-    const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, 0)
+    const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
-    const delegationRatioSum = accountInfo.delegation.reduce(
-      (prev, current) => prev + current.ratio,
-      0
-    )
-    const delegation = accountInfo.delegation.map((pool) => {
-      return {
-        ...pool,
-        ratio: Math.round(pool.ratio * (100 / delegationRatioSum)),
-      }
-    })
     return {
       ...accountInfo,
-      delegation,
+      value: 0,
     }
   }
 

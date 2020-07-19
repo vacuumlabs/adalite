@@ -115,6 +115,7 @@ export interface State {
   shelleyAccountInfo?: {
     delegation: any
     value: number
+    hasStakingKey: boolean
   }
   txConfirmType: string
   txSuccessTab: string
@@ -193,8 +194,9 @@ const initialState: State = {
     rewardsAccountBalance: 0,
   },
   shelleyAccountInfo: {
-    delegation: [],
+    delegation: {},
     value: 0,
+    hasStakingKey: false,
   },
   txConfirmType: '',
   txSuccessTab: '',
