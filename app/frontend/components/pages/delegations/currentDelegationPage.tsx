@@ -2,9 +2,10 @@ import {h} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
+import {Lovelace} from '../../../state'
 
 const CurrentDelegationPage = ({
-  currentDelegation,
+  pool,
   revokeDelegation,
   delegationValidationError,
   calculatingDelegationFee,
@@ -12,38 +13,29 @@ const CurrentDelegationPage = ({
   return (
     <div className="current-delegation card">
       <h2 className="card-title">Current delegation</h2>
-      {currentDelegation.length ? (
+      {Object.keys(pool).length ? (
         <div>
           <div className="current-delegation-wrapper">
-            {currentDelegation.map((pool, i) => [
-              <div key={i} className="delegation-history-name">
-                {pool.name}
-              </div>,
-              <div key={i} className="delegation-history-percent">{`${pool.ratio} %`}</div>,
-              <div key={i} className="delegation-history-id">
-                {pool.pool_id}
-              </div>,
-              <div key={i} className="delegation-history-id">{`Ticker: ${pool.ticker}`}</div>,
-              <div key={i} className="delegation-history-id">
-                {`
-                Tax: ${(pool.rewards.ratio[0] * 100) / pool.rewards.ratio[1] || ''}%
-                ${pool.rewards.fixed ? ` , ${`Fixed: ${printAda(pool.rewards.fixed)}`}` : ''}
-                ${pool.rewards.limit ? ` , ${`Limit: ${printAda(pool.rewards.limit)}`}` : ''}
-              `}
-              </div>,
-              <div key={i} className="delegation-history-id">
-                {'Homepage: '}
-                <a href={pool.homepage}>{pool.homepage}</a>
-              </div>,
-            ])}
+            {/* <div className="delegation-history-name">
+              {currentDelegation.name}
+            </div>, */}
+            <div className="delegation-history-id">{pool.poolHash}</div>
+            <div className="delegation-history-id">Tax: {pool.margin}%</div>
+            <div className="delegation-history-id">
+              Fixed cost: {printAda(parseInt(pool.fixedCost, 10) as Lovelace)}
+            </div>
+            <div className="delegation-history-id">
+              {'Homepage: '}
+              <a href={pool.url}>{pool.url}</a>
+            </div>
           </div>
-          <button
-            className="button primary revoke-delegation"
+          {/* <button
+            className="button primary revokedelegation-delegation"
             onClick={revokeDelegation}
             disabled={delegationValidationError || calculatingDelegationFee}
           >
             Revoke current delegation
-          </button>
+          </button> */}
         </div>
       ) : (
         <p>The funds are currently undelegated. Delegate now.</p>
@@ -54,7 +46,7 @@ const CurrentDelegationPage = ({
 
 export default connect(
   (state) => ({
-    currentDelegation: state.shelleyAccountInfo.delegation,
+    pool: state.shelleyAccountInfo.delegation,
     delegationValidationError: state.delegationValidationError,
     calculatingDelegationFee: state.calculatingDelegationFee,
   }),
