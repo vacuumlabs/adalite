@@ -12,6 +12,8 @@ const encodeToHtml = (str) =>
     return `&#${i.charCodeAt(0)};`
   })
 
+const shelleyNetworks = ['MAINNET', 'HASKELL_TESTNET']
+const isValidShelleyNetwork = (str) => shelleyNetworks.includes(str)
 const boolStrings = ['true', 'false']
 const isBoolString = (str) => boolStrings.includes(str)
 const isPositiveIntString = (str) => check.positive(parseInt(str, 10))
@@ -58,6 +60,7 @@ const checkMap = check.map(process.env, {
   ADALITE_IP_BLACKLIST: isCommaDelimitedListOfIpsOrEmpty,
   SENTRY_DSN: check.nonEmptyString,
   ADALITE_ERROR_BANNER_CONTENT: check.string,
+  ADALITE_NETWORK: isValidShelleyNetwork,
 })
 
 const {
@@ -87,6 +90,7 @@ const {
   ADALITE_IP_BLACKLIST,
   SENTRY_DSN,
   ADALITE_CARDANO_VERSION,
+  ADALITE_NETWORK,
 } = process.env
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
@@ -132,6 +136,7 @@ const frontendConfig = {
   ADALITE_DEVEL_AUTO_LOGIN,
   ADALITE_CARDANO_VERSION,
   ADALITE_ERROR_BANNER_CONTENT: encodeToHtml(process.env.ADALITE_ERROR_BANNER_CONTENT),
+  ADALITE_NETWORK,
 }
 
 const backendConfig = {
