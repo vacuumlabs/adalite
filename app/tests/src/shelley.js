@@ -3,13 +3,9 @@ import assert from 'assert'
 
 import ShelleyJsCryptoProvider from '../../frontend/wallet/shelley/shelley-js-crypto-provider'
 
-import {
-  ShelleyBaseAddressProvider,
-  ShelleyGroupAddressProvider,
-} from '../../frontend/wallet/shelley/shelley-address-provider'
+import {ShelleyBaseAddressProvider} from '../../frontend/wallet/shelley/shelley-address-provider'
 import {buildTransaction} from '../../frontend/wallet/shelley/helpers/chainlib-wrapper'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
-import _ from 'lodash'
 import loadWasmModule from './loadWasmModule'
 
 const getCryptoProvider = async (mnemonic, discriminator) => {
@@ -34,37 +30,6 @@ before(loadWasmModule)
 // addr1snwt9m3p2rvknj97fxm43452ndae5pe874nwzl48h6j8kcdn5p5apg9z8fytldp44gk4a3meafp5s6z8g8ukjh236q6wmfsxpq54khv3ujrlwz
 
 describe('shelley address derivation', () => {
-  const mnemonic1 =
-    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
-
-  it('should derive group addresses', async () => {
-    const cp = await getCryptoProvider(mnemonic1, 'mainnet')
-    const addrGen = ShelleyGroupAddressProvider(cp, 0, false)
-    const addresses = await Promise.all(_.range(5).map((i) => addrGen(i).then((x) => x.address)))
-
-    const expected = [
-      'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
-      'addr1qjl2z0xka340zn0swmss0qqmlet3slw2zw962q73l0t7zdwtpd0ftg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgr3wuds',
-      'addr1qj2re8xj8hlv4m7729hfwaxa8g04cj493vxk3dxaprugjed93d7m0g3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsg936smv',
-      'addr1qn69l8ttc5a26sc69mqknqjuk476dc5hrxurqk8aruwnsa0tlnk0mg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsg4crst4',
-      'addr1qser9zgaxt6p4wv3f7ngzrvcvyq0eqeayg97dxfskkkeyy5s79as8g3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgkap43f',
-    ]
-    assert.deepEqual(addresses, expected)
-  })
-
-  const mnemonic2 =
-    'miss torch plunge announce vacuum job gasp fix lottery ten merge style great section cactus'
-  it('should derive group addresses', async () => {
-    const cp = await getCryptoProvider(mnemonic2, 'testnet')
-    const addrGen = ShelleyGroupAddressProvider(cp, 0, false)
-
-    const {address} = await addrGen(0)
-    const expected =
-      'addr1snwt9m3p2rvknj97fxm43452ndae5pe874nwzl48h6j8kcdn5p5apg9z8fytldp44gk4a3meafp5s6z8g8ukjh236q6wmfsxpq54khv3ujrlwz'
-
-    assert.equal(address, expected)
-  })
-
   const mnemonic3 = 'test walk nut penalty hip pave soap entry language right filter choice'
   it('should derive base address from cardano shelley test vectors', async () => {
     const cp = await getCryptoProvider(mnemonic3, 'testnet') //TODO: change discriminator to networkId for shelley

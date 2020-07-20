@@ -32,9 +32,9 @@ const expectedStateChanges = {
   sendResponse: '',
 }
 
-it('Load shelley wallet', async () => {
+it.skip('Load shelley wallet', async () => {
   ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
-
+  ADALITE_CONFIG.ADALITE_NETWORK = 'INCENTIVIZED_TESTNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
   mockNet.mockBulkAddressSummaryEndpoint()
   mockNet.mockGetAccountInfo()
