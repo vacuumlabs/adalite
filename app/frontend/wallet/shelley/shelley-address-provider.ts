@@ -1,10 +1,5 @@
 import {HARDENED_THRESHOLD} from '../constants'
-import {
-  accountAddressFromXpub,
-  singleAddressFromXpub,
-  groupAddressFromXpub,
-  baseAddressFromXpub,
-} from './helpers/addresses'
+import {accountAddressFromXpub, baseAddressFromXpub} from './helpers/addresses'
 
 const shelleyPath = (account: number, isChange: boolean, addrIdx: number) => {
   return [
@@ -40,38 +35,7 @@ export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => a
 
   return {
     path: pathStake,
-    address: accountAddressFromXpub(stakeXpub, cryptoProvider.network),
-  }
-}
-
-export const ShelleySingleAddressProvider = (
-  cryptoProvider,
-  accountIndex: number,
-  isChange: boolean
-) => async (i: number) => {
-  const pathSpend = shelleyPath(accountIndex, isChange, i)
-  const spendXpub = await cryptoProvider.deriveXpub(pathSpend)
-
-  return {
-    path: pathSpend,
-    address: singleAddressFromXpub(spendXpub, cryptoProvider.network),
-  }
-}
-
-export const ShelleyGroupAddressProvider = (
-  cryptoProvider,
-  accountIndex: number,
-  isChange: boolean
-) => async (i: number) => {
-  const pathSpend = shelleyPath(accountIndex, isChange, i)
-  const spendXpub = await cryptoProvider.deriveXpub(pathSpend)
-
-  const pathStake = shelleyStakeAccountPath(accountIndex)
-  const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
-
-  return {
-    path: pathSpend,
-    address: groupAddressFromXpub(spendXpub, stakeXpub, cryptoProvider.network),
+    address: accountAddressFromXpub(stakeXpub, cryptoProvider.network.networkId),
   }
 }
 
@@ -88,11 +52,6 @@ export const ShelleyBaseAddressProvider = (
 
   return {
     path: pathSpend,
-    address: baseAddressFromXpub(
-      spendXpub,
-      stakeXpub,
-      accountIndex,
-      cryptoProvider.network.networkId
-    ), //TODO: get network from crypto provider
+    address: baseAddressFromXpub(spendXpub, stakeXpub, cryptoProvider.network.networkId),
   }
 }
