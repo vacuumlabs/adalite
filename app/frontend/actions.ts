@@ -160,7 +160,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
-      const {validStakepools, ticker2Id} = await wallet.getValidStakepools()
+      const {validStakepools, ticker2Id} = {validStakepools: [], ticker2Id: []}
+      //await wallet.getValidStakepools()
       setState({
         walletIsLoaded: true,
         ...walletInfo,

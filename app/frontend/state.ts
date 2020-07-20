@@ -116,12 +116,6 @@ export interface State {
   shelleyAccountInfo?: {
     delegation: any
     value: number
-    counter: number
-    // eslint-disable-next-line camelcase
-    last_rewards: {
-      epoch: number
-      reward: number
-    }
   }
   txConfirmType: string
   txSuccessTab: string
@@ -200,11 +194,6 @@ const initialState: State = {
   shelleyAccountInfo: {
     delegation: [],
     value: 0,
-    counter: 0,
-    last_rewards: {
-      epoch: 0,
-      reward: 0,
-    },
   },
   txConfirmType: '',
   txSuccessTab: '',

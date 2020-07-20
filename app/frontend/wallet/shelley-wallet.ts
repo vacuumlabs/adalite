@@ -17,7 +17,6 @@ import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
 import {
-  isShelleyAddress,
   isShelleyFormat,
   bechAddressToHex,
   isBase,
@@ -342,7 +341,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getWalletInfo() {
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
-    const shelleyAccountInfo = await getAccountInfo()
+    // const shelleyAccountInfo = await getAccountInfo()
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     // getDelegationHistory
@@ -351,10 +350,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       balance,
       shelleyBalances: {
         nonStakingBalance,
-        stakingBalance: stakingBalance + shelleyAccountInfo.value,
-        rewardsAccountBalance: shelleyAccountInfo.value,
+        stakingBalance, //stakingBalance + shelleyAccountInfo.value,
+        rewardsAccountBalance: 0,
       },
-      shelleyAccountInfo,
+      shelleyAccountInfo: {delegation: {}, value: 0},
       transactionHistory,
       visibleAddresses,
     }
