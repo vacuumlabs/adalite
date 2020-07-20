@@ -1,5 +1,6 @@
 import * as lib from '@emurgo/js-chain-libs'
 import bech32 from './bech32'
+import {packBaseAddress} from 'cardano-crypto.js'
 const {Address, Account, AddressDiscrimination, PublicKey, AddressKind} = lib
 
 const getDiscriminator = (network) => {
@@ -64,6 +65,16 @@ export const groupAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, network: 
     getDiscriminator(network)
   )
   return _addr.to_string('addr')
+}
+
+export const baseAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, account, networkId) => {
+  const addrBuffer = packBaseAddress(
+    spendXpub.slice(0, 32),
+    stakeXpub.slice(0, 32),
+    account,
+    networkId
+  )
+  return bech32.encode({prefix: 'addr', data: addrBuffer})
 }
 
 const getAddressKind = (address: string) => {

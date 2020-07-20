@@ -139,7 +139,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           await loadWasmModule()
           const cryptoProvider = ShelleyJsCryptoProvider({
             walletSecretDef,
-            network: NETWORKS.SHELLEY.INCENTIVIZED_TESTNET,
+            network: NETWORKS.SHELLEY.MAINNET,
           })
 
           wallet = await ShelleyWallet({

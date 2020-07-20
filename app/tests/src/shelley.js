@@ -3,7 +3,10 @@ import assert from 'assert'
 
 import ShelleyJsCryptoProvider from '../../frontend/wallet/shelley/shelley-js-crypto-provider'
 
-import {ShelleyGroupAddressProvider} from '../../frontend/wallet/shelley/shelley-address-provider'
+import {
+  ShelleyBaseAddressProvider,
+  ShelleyGroupAddressProvider,
+} from '../../frontend/wallet/shelley/shelley-address-provider'
 import {buildTransaction} from '../../frontend/wallet/shelley/helpers/chainlib-wrapper'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import _ from 'lodash'
@@ -61,9 +64,21 @@ describe('shelley address derivation', () => {
 
     assert.equal(address, expected)
   })
+
+  const mnemonic3 = 'test walk nut penalty hip pave soap entry language right filter choice'
+  it('should derive base address from cardano shelley test vectors', async () => {
+    const cp = await getCryptoProvider(mnemonic3, 'testnet') //TODO: change discriminator to networkId for shelley
+    const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
+
+    const {address} = await addrGen(0)
+    const expected =
+      'addr1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqcyl47r'
+
+    assert.equal(address, expected)
+  })
 })
 
-describe('legacy utxo daedalus witness computation', () => {
+describe.skip('legacy utxo daedalus witness computation', () => {
   it('should sign legacy daedalus witness correctly', async () => {
     const buildData = {
       inputs: [

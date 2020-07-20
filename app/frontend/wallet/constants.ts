@@ -22,6 +22,9 @@ export const NETWORKS = {
     },
   },
   SHELLEY: {
+    MAINNET: {
+      networkId: 0,
+    },
     INCENTIVIZED_TESTNET: {
       name: 'itn',
       addressDiscriminator: 'testnet',
