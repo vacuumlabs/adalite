@@ -78,7 +78,7 @@ class Delegate extends Component<Props> {
   }
 
   componentDidMount() {
-    this.props.selectAdaliteStakepool()
+    // this.props.selectAdaliteStakepool()
   }
 
   render({
