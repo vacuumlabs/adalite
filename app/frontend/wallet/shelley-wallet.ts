@@ -16,7 +16,13 @@ import {selectMinimalTxPlan, computeAccountTxPlan} from './shelley/build-transac
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
-import {isShelleyAddress, bechAddressToHex, isGroup} from './shelley/helpers/addresses'
+import {
+  isShelleyAddress,
+  isShelleyFormat,
+  bechAddressToHex,
+  isBase,
+  base58AddressToHex,
+} from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
 
@@ -58,7 +64,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     const baseExt = await baseExtAddrManager.discoverAddresses()
     const legacyInt = await legacyIntManager.discoverAddresses()
     const legacyExt = await legacyExtManager.discoverAddresses()
-    const accountAddr = undefined
+    const accountAddr = await accountAddrManager._deriveAddress(accountIndex)
 
     const isV1scheme = cryptoProvider.getDerivationScheme().type === 'v1'
     return {
@@ -264,7 +270,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getMaxNonStakingAmount(address) {
-    const utxos = (await getUtxos()).filter(({address}) => !isGroup(address))
+    const utxos = (await getUtxos()).filter(({address}) => !isBase(address))
     return _getMaxSendableAmount(utxos, address, false, 0, false)
   }
 
@@ -280,8 +286,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const {address, coins, donationAmount, pools, txType} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
-    const nonStakingUtxos = availableUtxos.filter(({address}) => !isGroup(address))
-    const groupAddressUtxos = availableUtxos.filter(({address}) => isGroup(address))
+    const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(address))
+    const baseAddressUtxos = availableUtxos.filter(({address}) => isBase(address))
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     // we shuffle non-staking utxos separately since we want them to be spend first
     const shuffledUtxos =
@@ -289,7 +295,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
         ? shuffleArray(nonStakingUtxos, randomGenerator)
         : [
           ...shuffleArray(nonStakingUtxos, randomGenerator),
-          ...shuffleArray(groupAddressUtxos, randomGenerator),
+          ...shuffleArray(baseAddressUtxos, randomGenerator),
         ]
     const plan = selectMinimalTxPlan(
       cryptoProvider.network.chainConfig,
@@ -413,7 +419,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getVisibleAddresses() {
     const base = await myAddresses.baseExtAddrManager.discoverAddressesWithMeta()
-    return [...base]
+    return base
   }
 
   function verifyAddress(addr: string) {
