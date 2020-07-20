@@ -3,6 +3,7 @@ import {
   accountAddressFromXpub,
   singleAddressFromXpub,
   groupAddressFromXpub,
+  baseAddressFromXpub,
 } from './helpers/addresses'
 
 const shelleyPath = (account: number, isChange: boolean, addrIdx: number) => {
@@ -71,5 +72,27 @@ export const ShelleyGroupAddressProvider = (
   return {
     path: pathSpend,
     address: groupAddressFromXpub(spendXpub, stakeXpub, cryptoProvider.network),
+  }
+}
+
+export const ShelleyBaseAddressProvider = (
+  cryptoProvider,
+  accountIndex: number,
+  isChange: boolean
+) => async (i: number) => {
+  const pathSpend = shelleyPath(accountIndex, isChange, i)
+  const spendXpub = await cryptoProvider.deriveXpub(pathSpend)
+
+  const pathStake = shelleyStakeAccountPath(accountIndex)
+  const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
+
+  return {
+    path: pathSpend,
+    address: baseAddressFromXpub(
+      spendXpub,
+      stakeXpub,
+      accountIndex,
+      cryptoProvider.network.networkId
+    ), //TODO: get network from crypto provider
   }
 }
