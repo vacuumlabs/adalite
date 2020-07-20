@@ -39,6 +39,7 @@ it('Calculate fee - byron', async () => {
 
 it('Calculate fee - shelley', async () => {
   ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
+  ADALITE_CONFIG.ADALITE_NETWORK = 'INCENTIVIZED_TESTNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
   mockNet.mockBulkAddressSummaryEndpoint()
   mockNet.mockGetAccountInfo()
@@ -60,5 +61,5 @@ it('Calculate fee - shelley', async () => {
   state.donationAmount.coins = 5000000
 
   await action.calculateFee()
-  assert.equal(state.transactionFee, 900000)
+  assert.equal(state.transactionFee, 400000)
 })
