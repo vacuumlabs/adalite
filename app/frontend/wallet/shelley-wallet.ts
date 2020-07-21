@@ -342,13 +342,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getPoolInfo(url) {
-    return await blockchainExplorer.getPoolInfo(url)
+    const poolInfo = await blockchainExplorer.getPoolInfo(url).catch(() => {
+      return {}
+    })
+    return poolInfo
   }
 
   async function getWalletInfo() {
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getAccountInfo()
-    console.log(shelleyAccountInfo)
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     // getDelegationHistory
@@ -386,7 +388,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   async function getAccountInfo() {
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
-    const poolInfo = await getPoolInfo('https://adage.app/poolmeta.json') //accountInfo.delegation.url)
+    const poolInfo = await getPoolInfo(accountInfo.delegation.url)
     return {
       ...accountInfo,
       delegation: {
@@ -453,6 +455,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     getAccountInfo,
     getValidStakepools,
     getWalletInfo,
+    getPoolInfo,
   }
 }
 

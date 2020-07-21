@@ -247,6 +247,10 @@ const CardanoWallet = (options) => {
     }
   }
 
+  function getPoolInfo(url) {
+    return {}
+  }
+
   return {
     isHwWallet,
     getHwWalletName,
@@ -267,6 +271,7 @@ const CardanoWallet = (options) => {
     getValidStakepools,
     getWalletInfo,
     getMaxNonStakingAmount,
+    getPoolInfo,
   }
 }
 

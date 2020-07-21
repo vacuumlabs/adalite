@@ -23,12 +23,14 @@ const DelegationValidation = ({delegationValidationError, txSuccessTab}) =>
     )
   )
 
-const StakePoolInfo = ({pool}) => {
-  const {fixedCost, homepage, margin, validationError, ticker, name} = pool
+const StakePoolInfo = ({pool, gettingPoolInfo}) => {
+  const {fixedCost, homepage, margin, ticker, name, validationError} = pool
   return (
     <div className={`stake-pool-info ${validationError ? 'invalid' : 'valid'}`}>
       {validationError ? (
         <div>{getTranslation(validationError.code)}</div>
+      ) : gettingPoolInfo ? (
+        <div>Getting pool info..</div>
       ) : (
         <div>
           <div>{`Name: ${name || ''}`}</div>
@@ -62,6 +64,7 @@ interface Props {
   selectAdaliteStakepool: any
   shouldShowConfirmTransactionDialog: any
   txSuccessTab: any
+  gettingPoolInfo: boolean
 }
 
 class Delegate extends Component<Props> {
@@ -87,10 +90,13 @@ class Delegate extends Component<Props> {
     shouldShowTransactionErrorModal,
     shouldShowConfirmTransactionDialog,
     txSuccessTab,
+    gettingPoolInfo,
   }) {
     const delegationHandler = async () => {
       await confirmTransaction('delegate')
     }
+    const validationError =
+      delegationValidationError || stakePool.validationError || stakePool.poolHash === ''
     return (
       <div className="delegate card">
         <h2 className="card-title">Delegate Stake</h2>
@@ -106,7 +112,7 @@ class Delegate extends Component<Props> {
                 onInput={updateStakePoolIdentifier}
                 autoComplete="off"
               />
-              <StakePoolInfo pool={stakePool} />
+              <StakePoolInfo pool={stakePool} gettingPoolInfo={gettingPoolInfo} />
               <div />
             </li>
           </ul>
@@ -122,7 +128,7 @@ class Delegate extends Component<Props> {
         <div className="validation-row">
           <button
             className="button primary staking"
-            disabled={delegationValidationError || calculatingDelegationFee}
+            disabled={validationError || calculatingDelegationFee}
             onClick={delegationHandler}
             {...tooltip('Funds must be delegated to valid stake pool', false)}
           >
@@ -165,6 +171,7 @@ export default connect(
     transactionSubmissionError: state.transactionSubmissionError,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     txSuccessTab: state.txSuccessTab,
+    gettingPoolInfo: state.gettingPoolInfo,
   }),
   actions
 )(Delegate)

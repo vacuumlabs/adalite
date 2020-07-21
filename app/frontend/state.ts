@@ -112,6 +112,7 @@ export interface State {
   validStakepools?: any | null
   ticker2Id?: any | null
   delegationValidationError?: any
+  gettingPoolInfo: boolean
   shelleyAccountInfo?: {
     delegation: any
     value: number
@@ -188,6 +189,7 @@ const initialState: State = {
       poolHash: '',
     },
   },
+  gettingPoolInfo: false,
   shelleyBalances: {
     nonStakingBalance: 0,
     stakingBalance: 0,

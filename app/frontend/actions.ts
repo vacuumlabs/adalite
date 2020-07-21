@@ -807,18 +807,35 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* DELEGATE */
 
-  const hasPoolIdentifiersChanged = (shelleyDelegation) => {
+  const hasPoolIdentifiersChanged = (state) => {
     const {shelleyDelegation: newShelleyDelegation} = getState()
     return (
-      newShelleyDelegation.selectedPool.poolIdentifier ===
-      shelleyDelegation.selectedPool.poolIdentifier
+      newShelleyDelegation.selectedPool.poolHash !== state.shelleyDelegation.selectedPool.poolHash
     )
     // maybe also check if tab changed
   }
 
+  const setPoolInfo = async (state) => {
+    const poolInfo = await wallet.getPoolInfo(state.shelleyDelegation.selectedPool.url)
+    if (hasPoolIdentifiersChanged(state)) {
+      return
+    }
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelation,
+        selectedPool: {
+          ...state.shelleyDelegation.selectedPool,
+          ...poolInfo,
+        },
+        delegationFee: 0,
+      },
+      gettingPoolInfo: false,
+    })
+  }
+
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
-    //TODO: some validation in case poolIdentifier changed(hasPoolIdentifierChanged)
+    setPoolInfo(state)
     const pool = [
       {
         pool_id: state.shelleyDelegation.selectedPool.poolHash,
@@ -879,7 +896,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       delegationValidationError,
     })
     if (!delegationValidationError) {
-      setState({calculatingDelegationFee: true})
+      setState({
+        calculatingDelegationFee: true,
+        gettingPoolInfo: true,
+      })
       debouncedCalculateDelegationFee()
     } else {
       setState({
@@ -908,7 +928,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         },
       },
     })
-    // validateDelegationAndCalculateFee()
+    if (validationError || poolHash === '') {
+      return
+    }
+    validateDelegationAndCalculateFee()
   }
 
   const selectAdaliteStakepool = () => {
