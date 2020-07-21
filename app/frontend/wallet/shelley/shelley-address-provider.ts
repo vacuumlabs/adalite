@@ -1,5 +1,9 @@
 import {HARDENED_THRESHOLD} from '../constants'
-import {accountAddressFromXpub, baseAddressFromXpub} from './helpers/addresses'
+import {
+  accountAddressFromXpub,
+  baseAddressFromXpub,
+  accountHexAddressFromXpub,
+} from './helpers/addresses'
 
 const shelleyPath = (account: number, isChange: boolean, addrIdx: number) => {
   return [
@@ -21,12 +25,11 @@ const shelleyStakeAccountPath = (account: number) => {
   ]
 }
 
-export const stakeAccountPubkeyHex = async (cryptoProvider, accountIndex: number) => {
+export const stakeAccountPubkeyHex = (cryptoProvider, accountIndex: number) => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
-  return await cryptoProvider
-    .deriveXpub(pathStake)
-    .slice(0, 32)
-    .toString('hex')
+  const stakeXpub = cryptoProvider.deriveXpub(pathStake)
+  const addrBuffer = accountHexAddressFromXpub(stakeXpub, cryptoProvider.network.networkId)
+  return Buffer.from(addrBuffer).toString('hex')
 }
 
 export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => async () => {

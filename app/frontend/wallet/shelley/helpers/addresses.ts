@@ -27,6 +27,10 @@ export const accountAddressFromXpub = (stakeXpub: Xpub, networkId) => {
   return bech32.encode({prefix: 'addr', data: addrBuffer})
 }
 
+export const accountHexAddressFromXpub = (stakeXpub: Xpub, networkId) => {
+  return packRewardsAccountAddress(xpub2pub(stakeXpub), 14, networkId)
+}
+
 export const baseAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, networkId) => {
   const addrBuffer = packBaseAddress(xpub2pub(spendXpub), xpub2pub(stakeXpub), 0, networkId)
   return bech32.encode({prefix: 'addr', data: addrBuffer})
