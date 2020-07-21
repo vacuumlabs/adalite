@@ -8,6 +8,7 @@ import TransactionErrorModal from '../../pages/sendAda/transactionErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
+import {Lovelace} from '../../../state'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -23,18 +24,22 @@ const DelegationValidation = ({delegationValidationError, txSuccessTab}) =>
   )
 
 const StakePoolInfo = ({pool}) => {
-  const {fixedCost, url, margin, validationError} = pool
+  const {fixedCost, homepage, margin, validationError, ticker, name} = pool
   return (
     <div className={`stake-pool-info ${validationError ? 'invalid' : 'valid'}`}>
       {validationError ? (
         <div>{getTranslation(validationError.code)}</div>
       ) : (
         <div>
+          <div>{`Name: ${name || ''}`}</div>
+          <div>{`Ticker: ${ticker || ''}`}</div>
           <div>{`Tax: ${margin || ''}`}</div>
-          <div>{`Fixed cost: ${fixedCost || ''}`}</div>
+          <div>{`Fixed cost: ${
+            fixedCost ? printAda(parseInt(fixedCost, 10) as Lovelace) : ''
+          }`}</div>
           <div>
             {'Homepage: '}
-            <a href={url || ''}>{url || ''}</a>
+            <a href={homepage || ''}>{homepage || ''}</a>
           </div>
         </div>
       )}
