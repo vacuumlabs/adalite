@@ -47,17 +47,15 @@ const mock = (ADALITE_CONFIG) => {
   function mockGetAccountInfo() {
     fetchMock.config.overwriteRoutes = true
     const acctInfoMock = {
-      delegation: [],
+      delegation: {},
       value: 0,
-      counter: 0,
-      last_rewards: {
-        epoch: 0,
-        reward: 0,
-      },
+      hasStakingKey: false,
     }
 
     fetchMock.mock({
-      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`,
+      matcher: `${
+        ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+      }/api/account/info/e020bf8333630c1db8cc6a783c17d0b44518641e468d2e816ce1064107`,
       response: {
         status: 200,
         body: acctInfoMock,
