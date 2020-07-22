@@ -342,9 +342,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getPoolInfo(url) {
-    const poolInfo = await blockchainExplorer.getPoolInfo(url).catch(() => {
-      return {}
-    })
+    const poolInfo = await blockchainExplorer.getPoolInfo(url)
     return poolInfo
   }
 
