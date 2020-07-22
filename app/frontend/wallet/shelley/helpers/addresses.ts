@@ -7,31 +7,34 @@ import {
   base58,
 } from 'cardano-crypto.js'
 
+type HexString = string // TODO: specify
+
 const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
 
 type Xpub = Buffer
 
-export const bechAddressToHex = (address: string) => {
+export const bechAddressToHex = (address: string): HexString => {
   const parsed = bech32.decode(address)
   if (parsed.prefix !== 'addr') throw Error('Invalid address')
   return parsed.data.toString('hex')
 }
 
-export const base58AddressToHex = (address: string) => {
+export const base58AddressToHex = (address: string): HexString => {
   const parsed = base58.decode(address)
   return parsed.toString('hex')
 }
 
-export const accountAddressFromXpub = (stakeXpub: Xpub, networkId) => {
+export const accountAddressFromXpub = (stakeXpub: Xpub, networkId): string => {
   const addrBuffer = packRewardsAccountAddress(xpub2pub(stakeXpub), 14, networkId)
   return bech32.encode({prefix: 'addr', data: addrBuffer})
 }
 
-export const accountHexAddressFromXpub = (stakeXpub: Xpub, networkId) => {
-  return packRewardsAccountAddress(xpub2pub(stakeXpub), 14, networkId)
+export const accountHexAddressFromXpub = (stakeXpub: Xpub, networkId): HexString => {
+  const addrBuffer = packRewardsAccountAddress(xpub2pub(stakeXpub), 14, networkId)
+  return Buffer.from(addrBuffer).toString('hex')
 }
 
-export const baseAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, networkId) => {
+export const baseAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, networkId): string => {
   const addrBuffer = packBaseAddress(xpub2pub(spendXpub), xpub2pub(stakeXpub), 0, networkId)
   return bech32.encode({prefix: 'addr', data: addrBuffer})
 }
