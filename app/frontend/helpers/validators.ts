@@ -10,7 +10,7 @@ const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as
 
 const _sendAddressValidators = {
   byron: isValidByronAddress,
-  shelley: isValidShelleyAddress,
+  shelley: (address) => true, //isValidShelleyAddress,
 }
 
 const sendAddressValidator = (fieldValue) =>

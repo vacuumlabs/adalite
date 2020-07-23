@@ -1,5 +1,5 @@
 import {encode} from 'borc'
-import {base58} from 'cardano-crypto.js'
+import bech32 from './helpers/bech32'
 
 import {ShelleyTxInputFromUtxo} from './shelley-transaction'
 
@@ -48,12 +48,11 @@ export function estimateTxSize(
   const txInputsSize = encode(new CborIndefiniteLengthArray(preparedInputs)).length
 
   const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
-
   const txOutputsSizes = outputs.map(
     // Note(ppershing): we are conservative here
     // FIXME(ppershing): shouldn't there be some +1 for the array encoding?
     // Is it in maxCborCoinsLen?
-    ({address, coins}) => base58.decode(address).length + maxCborCoinsLen
+    ({address, coins}) => bech32.decode(address).data.length + maxCborCoinsLen
   )
 
   // +2 for indef array start & end
@@ -185,7 +184,7 @@ export function selectMinimalTxPlan(
 
   const inputs = []
 
-  const outputs = [{address, coins}]
+  const outputs = address ? [{address, coins}] : []
   if (donationAmount > 0) outputs.push({address: getDonationAddress(), coins: donationAmount})
 
   const change = {address: changeAddress, coins: 0 as Lovelace}
