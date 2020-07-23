@@ -12,7 +12,7 @@ import {
 } from './shelley/shelley-address-provider'
 
 import {computeRequiredTxFee} from './shelley/helpers/chainlib-wrapper'
-import {selectMinimalTxPlan, computeAccountTxPlan} from './shelley/build-transaction'
+import {selectMinimalTxPlan} from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
@@ -277,12 +277,13 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     address?: string
     donationAmount?: Lovelace
     coins?: Lovelace
-    pools?: any
+    poolHash?: string
+    stakingKeyRegistered?: boolean
     txType?: string
   }
 
   const utxoTxPlanner = async (args: utxoArgs, accountAddress: string) => {
-    const {address, coins, donationAmount, pools, txType} = args
+    const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
     const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(address))
@@ -297,14 +298,14 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
           ...shuffleArray(baseAddressUtxos, randomGenerator),
         ]
     const plan = selectMinimalTxPlan(
-      cryptoProvider.network.chainConfig,
       shuffledUtxos,
-      changeAddress,
       address,
       coins,
       donationAmount,
-      pools,
-      accountAddress
+      changeAddress,
+      accountAddress,
+      poolHash,
+      stakingKeyRegistered
     )
     return plan
   }
@@ -317,18 +318,18 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     txType: string
   }
 
-  const accountTxPlanner = (args: accountArgs, accountAddress: string) => {
-    const {address, coins, accountBalance, counter} = args
-    const plan = computeAccountTxPlan(
-      cryptoProvider.network.chainConfig,
-      coins,
-      address,
-      accountAddress,
-      counter,
-      accountBalance
-    )
-    return plan
-  }
+  // const accountTxPlanner = (args: accountArgs, accountAddress: string) => {
+  //   const {address, coins, accountBalance, counter} = args
+  //   const plan = computeAccountTxPlan(
+  //     cryptoProvider.network.chainConfig,
+  //     coins,
+  //     address,
+  //     accountAddress,
+  //     counter,
+  //     accountBalance
+  //   )
+  //   return plan
+  // }
 
   async function getTxPlan(args: utxoArgs | accountArgs) {
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
@@ -336,7 +337,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       sendAda: utxoTxPlanner,
       convert: utxoTxPlanner,
       delegate: utxoTxPlanner,
-      redeem: accountTxPlanner,
+      // redeem: accountTxPlanner,
     }
     return await txPlanners[args.txType](args, accountAddress)
   }
