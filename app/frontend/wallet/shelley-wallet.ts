@@ -11,8 +11,7 @@ import {
   ShelleyBaseAddressProvider,
 } from './shelley/shelley-address-provider'
 
-import {computeRequiredTxFee} from './shelley/helpers/chainlib-wrapper'
-import {selectMinimalTxPlan} from './shelley/shelley-transaction-planner'
+import {selectMinimalTxPlan, computeRequiredTxFee} from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
@@ -202,7 +201,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   const {
     getMaxDonationAmount: _getMaxDonationAmount,
     getMaxSendableAmount: _getMaxSendableAmount,
-  } = MaxAmountCalculator(computeRequiredTxFee(cryptoProvider.network.chainConfig))
+  } = MaxAmountCalculator(computeRequiredTxFee)
 
   let seeds = {
     randomInputSeed,
