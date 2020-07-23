@@ -109,14 +109,14 @@ function ShelleyTxWitnessByron(publicKey, signature, chaincode, address_attribut
 
 function ShelleyTxInputFromUtxo(utxo) {
   // default input type
-  const type = utxo.type
-  const value = utxo.coins
+  const type = 0
+  const coins = utxo.coins
   const txid = utxo.txHash
   const outputNo = utxo.outputIndex
-  const path = utxo.path
-  const pubKey = utxo.pubKey
-  const protocolMagic = utxo.protocolMagic
-  const chaincode = utxo.chaincode
+  // const path = utxo.path
+  // const pubKey = utxo.pubKey
+  // const protocolMagic = utxo.protocolMagic
+  // const chaincode = utxo.chaincode
 
   function encodeCBOR(encoder) {
     return encoder.pushAny([txid, outputNo])
@@ -124,36 +124,37 @@ function ShelleyTxInputFromUtxo(utxo) {
 
   return {
     type,
-    value,
+    coins,
     txid,
     outputNo,
-    path,
-    pubKey,
-    protocolMagic,
-    chaincode,
+    encodeCBOR,
+    // path,
+    // pubKey,
+    // protocolMagic,
+    // chaincode,
   }
 }
 
-function ShelleyTxInputFromAccount(account_input) {
-  // default input type
-  const type = account_input.typ
-  const value = account_input.coins
-  const accountCounter = account_input.accountCounter
-  const pubKey = account_input.pubKey
-  const path = account_input.path
+// function ShelleyTxInputFromAccount(account_input) {
+//   // default input type
+//   const type = account_input.typ
+//   const value = account_input.coins
+//   const accountCounter = account_input.accountCounter
+//   const pubKey = account_input.pubKey
+//   const path = account_input.path
 
-  function encodeCBOR(encoder) {
-    return encoder.pushAny(null) //TODO: account inputs cant be serialised yet
-  }
+//   function encodeCBOR(encoder) {
+//     return encoder.pushAny(null) //TODO: account inputs cant be serialised yet
+//   }
 
-  return {
-    type,
-    value,
-    accountCounter,
-    pubKey,
-    path,
-  }
-}
+//   return {
+//     type,
+//     value,
+//     accountCounter,
+//     pubKey,
+//     path,
+//   }
+// }
 
 function ShelleySignedTransactionStructured(txAux, witnesses) {
   function getId() {
@@ -176,7 +177,7 @@ export {
   ShelleyTxAux,
   ShelleyTxWitnessByron,
   ShelleyTxWitnessShelley,
-  ShelleyTxInputFromAccount,
+  // ShelleyTxInputFromAccount,
   ShelleyTxInputFromUtxo,
   ShelleySignedTransactionStructured,
   build_witnesses,
