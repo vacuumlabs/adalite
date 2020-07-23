@@ -4,6 +4,11 @@ import {sign as signMsg, derivePrivate, xpubToHdPassphrase, blake2b} from 'carda
 import cbor from 'borc'
 
 import HdNode from '../helpers/hd-node'
+import {
+  ShelleyTxAux,
+  ShelleySignedTransactionStructured,
+  build_witnesses,
+} from './shelley-transaction'
 
 type HexString = string & {__typeHexString: any}
 
@@ -91,97 +96,19 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       }
     }
 
-    const buildTransaction = (inputs, outputs, cert, fee) => {
-      const tx_body = build_tx_body(inputs, outputs, cert, fee)
-      const tx_hash = hash_tx_body(tx_body)
-
-      const witnesses = build_witnesses(inputs, tx_hash)
-
-      const serialized_tx = cbor.encode([tx_body, witnesses, null]) //cert
-
-      return {transaction: serialized_tx, fragmentId: tx_hash}
-    }
-
-    const build_tx_body = (inputs, outputs, cert, fee) => {
-      const inputs_for_cbor = build_inputs(inputs)
-      const outputs_for_cbor = build_outputs(outputs)
-
-      const tx_body = {
-        0: inputs_for_cbor,
-        1: outputs_for_cbor,
-        2: fee,
-        3: null, //ttl
-      }
-
-      return tx_body
-    }
-
-    const build_inputs = (inputs) => {
-      const res = []
-      inputs.forEach((index, input) => {
-        res.push([input.txid, input.outputNo])
-      })
-      return res
-    }
-
-    const build_outputs = (outputs) => {
-      const result = []
-      outputs.forEach((index, output) => {
-        result.push([output.address, output.value])
-      })
-      return result
-    }
-
-    const hash_tx_body = (tx_body) => {
-      const tx_body_cbor = cbor.encode(tx_body)
-      return blake2b(tx_body_cbor, 32).toString('hex')
-    }
-
-    const build_witnesses = (inputs, tx_body_hash) => {
-      const shelley_witnesses = build_shelley_witnesses(inputs, tx_body_hash)
-      const byron_witnesses = build_byron_witnesses(inputs, tx_body_hash)
-
-      const witnesses = {}
-      if (shelley_witnesses.length > 0) {
-        witnesses[0] = shelley_witnesses
-      }
-      if (byron_witnesses.length > 0) {
-        witnesses[2] = byron_witnesses
-      }
-
-      return witnesses
-    }
-
-    const build_shelley_witnesses = (inputs, tx_body_hash) => {
-      const shelley_witnesses = []
-      inputs.forEach((index, input) => {
-        const signature = sign(tx_body_hash, input.path)
-        shelley_witnesses.push([input.pubKey, signature])
-      })
-
-      return shelley_witnesses
-    }
-
-    const build_byron_witnesses = (inputs, tx_body_hash) => {
-      const byron_witnesses = []
-      inputs.forEach((index, input) => {
-        const signature = sign(tx_body_hash, input.path)
-        const address_attributes = cbor.encode(
-          input.protocolMagic === network.protocolMagic ? {} : {2: cbor.encode(input.protocolMagic)}
-        )
-        byron_witnesses.push([input.pubKey, signature, input.chaincode, address_attributes])
-      })
-
-      return byron_witnesses
-    }
-
     const inputs = txAux.inputs.map(prepareInput)
     const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
     const outputs = outpustAndChange.length ? outpustAndChange.map(prepareOutput) : []
     const cert = txAux.cert ? prepareCert(txAux.cert) : null
     const fee = txAux.fee
-
-    const tx = buildTransaction(inputs, outputs, cert, fee)
+    // if (cert) {
+    //   tx = build_transaction(inputs, outputs, cert, fee)
+    // } else {
+    const tx_body = ShelleyTxAux(inputs, outputs, fee, network.ttl)
+    const witnesses = build_witnesses(inputs, tx_body.getId(), sign, network)
+    const structured_tx = ShelleySignedTransactionStructured(tx_body, witnesses)
+    const tx = {transaction: cbor.encode(structured_tx), fragmentId: structured_tx.getId()}
+    // }
 
     return tx
   }
