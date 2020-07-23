@@ -1,10 +1,10 @@
 import {encode} from 'borc'
 import {base58} from 'cardano-crypto.js'
 
-import {TxInputFromUtxo} from './byron-transaction'
+import {ShelleyTxInputFromUtxo} from './shelley-transaction'
 
 import {TX_WITNESS_SIZE_BYTES} from '../constants'
-import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
+import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
 import {Lovelace} from '../../state'
 import getDonationAddress from '../../helpers/getDonationAddress'
@@ -44,7 +44,7 @@ export function estimateTxSize(
   certs: Array<Cert>
 ): Lovelace {
   // exact size for inputs
-  const preparedInputs = inputs.map(TxInputFromUtxo)
+  const preparedInputs = inputs.map(ShelleyTxInputFromUtxo)
   const txInputsSize = encode(new CborIndefiniteLengthArray(preparedInputs)).length
 
   const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
@@ -150,7 +150,7 @@ export function computeTxPlan(
 }
 
 export function isUtxoProfitable(utxo: UTxO) {
-  const inputSize = encode(TxInputFromUtxo(utxo)).length
+  const inputSize = encode(ShelleyTxInputFromUtxo(utxo)).length
   const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZE_BYTES) - txFeeFunction(0)
 
   return utxo.coins > addedCost
