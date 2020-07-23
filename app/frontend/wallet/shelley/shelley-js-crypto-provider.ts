@@ -8,7 +8,7 @@ import {
   ShelleyTxAux,
   ShelleySignedTransactionStructured,
   build_witnesses,
-} from './shelley-transation'
+} from './shelley-transaction'
 
 type HexString = string & {__typeHexString: any}
 
@@ -101,15 +101,14 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     const outputs = outpustAndChange.length ? outpustAndChange.map(prepareOutput) : []
     const cert = txAux.cert ? prepareCert(txAux.cert) : null
     const fee = txAux.fee
-
-    if (cert) {
-      const tx = buildTransaction(inputs, outputs, cert, fee)
-    } else {
-      const tx_body = ShelleyTxAux(inputs, outputs, fee, network.ttl)
-      const witnesses = build_witnesses(inputs, tx_body.getId(), sign)
-      const structured_tx = ShelleySignedTransactionStructured(tx_body, witnesses)
-      const tx = {transaction: cbor.encode(structured_tx), fragmentId: structured_tx.getId()}
-    }
+    // if (cert) {
+    //   tx = build_transaction(inputs, outputs, cert, fee)
+    // } else {
+    const tx_body = ShelleyTxAux(inputs, outputs, fee, network.ttl)
+    const witnesses = build_witnesses(inputs, tx_body.getId(), sign, network)
+    const structured_tx = ShelleySignedTransactionStructured(tx_body, witnesses)
+    const tx = {transaction: cbor.encode(structured_tx), fragmentId: structured_tx.getId()}
+    // }
 
     return tx
   }

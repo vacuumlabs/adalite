@@ -1,10 +1,12 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable camelcase */
 import {encode} from 'borc'
 import {blake2b} from 'cardano-crypto.js'
 
 const build_inputs = (inputs) => {
   const res = []
   inputs.forEach((index, input) => {
-    if (input.type == 'utxo') {
+    if (input.type === 'utxo') {
       res.push([input.txid, input.outputNo])
     }
   })
@@ -19,9 +21,9 @@ const build_outputs = (outputs) => {
   return result
 }
 
-const build_witnesses = (inputs, tx_body_hash, sign) => {
+const build_witnesses = (inputs, tx_body_hash, sign, network) => {
   const shelley_witnesses = build_shelley_witnesses(inputs, tx_body_hash, sign)
-  const byron_witnesses = build_byron_witnesses(inputs, tx_body_hash, sign)
+  const byron_witnesses = build_byron_witnesses(inputs, tx_body_hash, sign, network)
 
   const witnesses = {}
   if (shelley_witnesses.length > 0) {
@@ -44,12 +46,12 @@ const build_shelley_witnesses = (inputs, tx_body_hash, sign) => {
   return shelley_witnesses
 }
 
-const build_byron_witnesses = (inputs, tx_body_hash, sign) => {
+const build_byron_witnesses = (inputs, tx_body_hash, sign, network) => {
   const byron_witnesses = []
   inputs.forEach((index, input) => {
     const signature = sign(tx_body_hash, input.path)
-    const address_attributes = cbor.encode(
-      input.protocolMagic === network.protocolMagic ? {} : {2: cbor.encode(input.protocolMagic)}
+    const address_attributes = encode(
+      input.protocolMagic === network.protocolMagic ? {} : {2: encode(input.protocolMagic)}
     )
     byron_witnesses.push([input.pubKey, signature, input.chaincode, address_attributes])
   })
@@ -59,7 +61,7 @@ const build_byron_witnesses = (inputs, tx_body_hash, sign) => {
 
 function ShelleyTxAux(inputs, outputs, fee, ttl) {
   function getId() {
-    return blake2b(encode(TxAux(inputs, outputs, fee, ttl)), 32).toString('hex')
+    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl)), 32).toString('hex')
   }
 
   function encodeCBOR(encoder) {
@@ -75,15 +77,11 @@ function ShelleyTxAux(inputs, outputs, fee, ttl) {
     getId,
     inputs,
     outputs,
-    attributes,
     encodeCBOR,
   }
 }
 
 function ShelleyTxWitnessShelley(publicKey, signature) {
-  const publicKey = publicKey
-  const signature = signature
-
   function encodeCBOR(encoder) {
     return encoder.pushAny([publicKey, signature])
   }
@@ -96,11 +94,6 @@ function ShelleyTxWitnessShelley(publicKey, signature) {
 }
 
 function ShelleyTxWitnessByron(publicKey, signature, chaincode, address_attributes) {
-  const publicKey = publicKey
-  const signature = signature
-  const chaincode = chaincode
-  const address_attributes = address_attributes
-
   function encodeCBOR(encoder) {
     return encoder.pushAny([publicKey, signature, chaincode, address_attributes])
   }
