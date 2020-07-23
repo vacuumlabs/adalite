@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable camelcase */
 import {sign as signMsg, derivePrivate, xpubToHdPassphrase, blake2b} from 'cardano-crypto.js'
 import cbor from 'borc'
 
@@ -104,7 +106,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       const inputs_for_cbor = build_inputs(inputs)
       const outputs_for_cbor = build_outputs(outputs)
 
-      tx_body = {
+      const tx_body = {
         0: inputs_for_cbor,
         1: outputs_for_cbor,
         2: fee,
@@ -131,15 +133,15 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const hash_tx_body = (tx_body) => {
-      tx_body_cbor = cbor.encode(tx_body)
+      const tx_body_cbor = cbor.encode(tx_body)
       return blake2b(tx_body_cbor, 32).toString('hex')
     }
 
-    const build_witnesses = (inputs, tx_hash) => {
-      shelley_witnesses = build_shelley_witnesses(inputs, tx_body_hash)
-      byron_witnesses = build_byron_witnesses(inputs, tx_body_hash)
+    const build_witnesses = (inputs, tx_body_hash) => {
+      const shelley_witnesses = build_shelley_witnesses(inputs, tx_body_hash)
+      const byron_witnesses = build_byron_witnesses(inputs, tx_body_hash)
 
-      witnesses = {}
+      const witnesses = {}
       if (shelley_witnesses.length > 0) {
         witnesses[0] = shelley_witnesses
       }
@@ -151,7 +153,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     }
 
     const build_shelley_witnesses = (inputs, tx_body_hash) => {
-      shelley_witnesses = []
+      const shelley_witnesses = []
       inputs.forEach((index, input) => {
         const signature = sign(tx_body_hash, input.path)
         shelley_witnesses.push([input.pubKey, signature])
@@ -165,9 +167,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       inputs.forEach((index, input) => {
         const signature = sign(tx_body_hash, input.path)
         const address_attributes = cbor.encode(
-          input.protocolMagic == BYRON.MAINNET.protocolMagic
-            ? {}
-            : {2: cbor.encode(input.protocolMagic)}
+          input.protocolMagic === network.protocolMagic ? {} : {2: cbor.encode(input.protocolMagic)}
         )
         byron_witnesses.push([input.pubKey, signature, input.chaincode, address_attributes])
       })
