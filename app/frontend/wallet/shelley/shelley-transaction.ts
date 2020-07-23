@@ -4,6 +4,11 @@ import {encode} from 'borc'
 import {blake2b} from 'cardano-crypto.js'
 import bech32 from './helpers/bech32'
 
+const TxOutputTypeCodes = {
+  SIGN_TX_OUTPUT_TYPE_ADDRESS: 1,
+  SIGN_TX_OUTPUT_TYPE_PATH: 2,
+}
+
 const build_inputs = (inputs) => {
   const res = []
   inputs.forEach((index, input) => {
@@ -17,47 +22,9 @@ const build_inputs = (inputs) => {
 const build_outputs = (outputs) => {
   const result = []
   outputs.forEach((index, output) => {
-    result.push([output.address, output.value])
+    result.push([output.address, 1, output.coins])
   })
   return result
-}
-
-const build_witnesses = (inputs, tx_body_hash, sign, network) => {
-  const shelley_witnesses = build_shelley_witnesses(inputs, tx_body_hash, sign)
-  const byron_witnesses = build_byron_witnesses(inputs, tx_body_hash, sign, network)
-
-  const witnesses = {}
-  if (shelley_witnesses.length > 0) {
-    witnesses[0] = shelley_witnesses
-  }
-  if (byron_witnesses.length > 0) {
-    witnesses[2] = byron_witnesses
-  }
-
-  return witnesses
-}
-
-const build_shelley_witnesses = (inputs, tx_body_hash, sign) => {
-  const shelley_witnesses = []
-  inputs.forEach((index, input) => {
-    const signature = sign(tx_body_hash, input.path)
-    shelley_witnesses.push([input.pubKey, signature])
-  })
-
-  return shelley_witnesses
-}
-
-const build_byron_witnesses = (inputs, tx_body_hash, sign, network) => {
-  const byron_witnesses = []
-  inputs.forEach((index, input) => {
-    const signature = sign(tx_body_hash, input.path)
-    const address_attributes = encode(
-      input.protocolMagic === network.protocolMagic ? {} : {2: encode(input.protocolMagic)}
-    )
-    byron_witnesses.push([input.pubKey, signature, input.chaincode, address_attributes])
-  })
-
-  return byron_witnesses
 }
 
 function ShelleyTxAux(inputs, outputs, fee, ttl) {
@@ -111,30 +78,21 @@ function ShelleyTxWitnessByron(publicKey, signature, chaincode, address_attribut
 }
 
 function ShelleyTxInputFromUtxo(utxo) {
-  // default input type
-  const type = 0
   const coins = utxo.coins
   const txid = utxo.txHash
   const outputNo = utxo.outputIndex
-  // const path = utxo.path
-  // const pubKey = utxo.pubKey
-  // const protocolMagic = utxo.protocolMagic
-  // const chaincode = utxo.chaincode
+  const address = utxo.address
 
   function encodeCBOR(encoder) {
     return encoder.pushAny([txid, outputNo])
   }
 
   return {
-    type,
     coins,
+    address,
     txid,
     outputNo,
     encodeCBOR,
-    // path,
-    // pubKey,
-    // protocolMagic,
-    // chaincode,
   }
 }
 
@@ -168,7 +126,7 @@ function ShelleySignedTransactionStructured(txAux, witnesses) {
   }
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny([txAux, witnesses, null]) //TODO: cert
+    return encoder.pushAny([txAux, witnesses]) //TODO: cert
   }
 
   return {
@@ -186,5 +144,4 @@ export {
   ShelleyTxOutput,
   ShelleyTxInputFromUtxo,
   ShelleySignedTransactionStructured,
-  build_witnesses,
 }

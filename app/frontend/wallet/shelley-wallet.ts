@@ -231,8 +231,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   function submitTx(signedTx): Promise<any> {
-    const {transaction, fragmentId} = signedTx
-    return blockchainExplorer.submitTxRaw(fragmentId, transaction)
+    const {txBody, txHash} = signedTx
+    return blockchainExplorer.submitTxRaw(txHash, txBody)
   }
 
   function getWalletSecretDef() {
@@ -261,7 +261,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
         debugLog(e)
         throw NamedError('TransactionRejectedWhileSigning', e.message)
       })
-
+    console.log(signedTx)
     return signedTx
   }
 

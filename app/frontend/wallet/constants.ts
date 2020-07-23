@@ -10,6 +10,7 @@ export const ADA_DONATION_ADDRESS_BYRON =
 export const ADA_DONATION_ADDRESS =
   'addr1swmsajfedtl7jthd76wakxtvz559vhkeztlc9getrw5gldu709d22pdkf6f'
 export const TX_WITNESS_SIZE_BYTES = 139
+export const PROTOCOL_MAGIC_KEY = 2
 export const NETWORKS = {
   BYRON: {
     MAINNET: {
@@ -23,16 +24,16 @@ export const NETWORKS = {
   },
   SHELLEY: {
     MAINNET: {
-      name: 'shelley-mainnet',
+      name: 'mainnet',
       networkId: 0,
       protocolMagic: 764824073,
-      ttl: undefined,
+      ttl: 500,
     },
     HASKELL_TESTNET: {
       name: 'htn',
       networkId: 0,
       protocolMagic: 42,
-      ttl: undefined,
+      ttl: 500,
     },
     INCENTIVIZED_TESTNET: {
       name: 'itn',
