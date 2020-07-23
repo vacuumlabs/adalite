@@ -1,13 +1,13 @@
 import {encode} from 'borc'
 import {base58} from 'cardano-crypto.js'
 
-import {TxInputFromUtxo} from './byron/byron-transaction'
+import {TxInputFromUtxo} from './byron-transaction'
 
-import {TX_WITNESS_SIZE_BYTES} from './constants'
-import CborIndefiniteLengthArray from './byron/helpers/CborIndefiniteLengthArray'
-import NamedError from '../helpers/NamedError'
-import {Lovelace} from '../state'
-import getDonationAddress from '../helpers/getDonationAddress'
+import {TX_WITNESS_SIZE_BYTES} from '../constants'
+import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
+import NamedError from '../../helpers/NamedError'
+import {Lovelace} from '../../state'
+import getDonationAddress from '../../helpers/getDonationAddress'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
