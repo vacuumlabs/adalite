@@ -2,6 +2,7 @@
 /* eslint-disable camelcase */
 import {encode} from 'borc'
 import {blake2b} from 'cardano-crypto.js'
+import bech32 from './helpers/bech32'
 
 const build_inputs = (inputs) => {
   const res = []
@@ -77,6 +78,8 @@ function ShelleyTxAux(inputs, outputs, fee, ttl) {
     getId,
     inputs,
     outputs,
+    fee,
+    ttl,
     encodeCBOR,
   }
 }
@@ -135,26 +138,29 @@ function ShelleyTxInputFromUtxo(utxo) {
   }
 }
 
-// function ShelleyTxInputFromAccount(account_input) {
-//   // default input type
-//   const type = account_input.typ
-//   const value = account_input.coins
-//   const accountCounter = account_input.accountCounter
-//   const pubKey = account_input.pubKey
-//   const path = account_input.path
+function ShelleyTxOutput(address, coins, isChange) {
+  function encodeCBOR(encoder) {
+    return encoder.pushAny([AddressCborWrapper(address), coins])
+  }
 
-//   function encodeCBOR(encoder) {
-//     return encoder.pushAny(null) //TODO: account inputs cant be serialised yet
-//   }
+  return {
+    address,
+    coins,
+    isChange,
+    encodeCBOR,
+  }
+}
 
-//   return {
-//     type,
-//     value,
-//     accountCounter,
-//     pubKey,
-//     path,
-//   }
-// }
+function AddressCborWrapper(address) {
+  function encodeCBOR(encoder) {
+    return encoder.push(bech32.decode(address).data)
+  }
+
+  return {
+    address,
+    encodeCBOR,
+  }
+}
 
 function ShelleySignedTransactionStructured(txAux, witnesses) {
   function getId() {
@@ -177,7 +183,7 @@ export {
   ShelleyTxAux,
   ShelleyTxWitnessByron,
   ShelleyTxWitnessShelley,
-  // ShelleyTxInputFromAccount,
+  ShelleyTxOutput,
   ShelleyTxInputFromUtxo,
   ShelleySignedTransactionStructured,
   build_witnesses,

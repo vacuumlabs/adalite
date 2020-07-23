@@ -44,72 +44,10 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
 
   // eslint-disable-next-line require-await
   async function signTx(txAux, addressToAbsPathMapper) {
-    const prepareUtxoInput = (input, hdnode, path) => {
-      return {
-        type: input.type,
-        txid: input.txHash,
-        value: input.coins,
-        outputNo: input.outputIndex,
-        address: input.address,
-        pubKey: Buffer.from(hdnode.publicKey).toString('hex'),
-        path,
-        chaincode: Buffer.from(hdnode.chainCode).toString('hex'),
-        protocolMagic: network.protocolMagic,
-      }
-    }
-
-    const prepareAccountInput = (input, hdnode, path) => {
-      return {
-        type: input.type,
-        address: input.address,
-        pubKey: Buffer.from(hdnode.publicKey).toString('hex'),
-        path,
-        accountCounter: input.counter,
-        value: input.coins,
-      }
-    }
-
-    const prepareInput = (input) => {
-      const path = addressToAbsPathMapper(input.address)
-      const hdnode = deriveHdNode(path)
-      const inputPreparator = {
-        utxo: prepareUtxoInput,
-        account: prepareAccountInput,
-      }
-      return inputPreparator[input.type](input, hdnode, path)
-    }
-
-    const prepareOutput = ({address, coins}) => {
-      return {
-        address,
-        value: coins,
-      }
-    }
-
-    const prepareCert = ({type, pools}) => {
-      const path = addressToAbsPathMapper(txAux.cert.accountAddress)
-      const hdnode = deriveHdNode(path)
-      return {
-        type: 'stake_delegation',
-        privkey: Buffer.from(hdnode.secretKey).toString('hex') as HexString,
-        pools,
-      }
-    }
-
-    const inputs = txAux.inputs.map(prepareInput)
-    const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
-    const outputs = outpustAndChange.length ? outpustAndChange.map(prepareOutput) : []
-    const cert = txAux.cert ? prepareCert(txAux.cert) : null
-    const fee = txAux.fee
-    // if (cert) {
-    //   tx = build_transaction(inputs, outputs, cert, fee)
-    // } else {
-    const tx_body = ShelleyTxAux(inputs, outputs, fee, network.ttl)
-    const witnesses = build_witnesses(inputs, tx_body.getId(), sign, network)
-    const structured_tx = ShelleySignedTransactionStructured(tx_body, witnesses)
+    const {inputs, outputs, fee, certs} = txAux
+    const witnesses = build_witnesses(inputs, txAux.getId(), sign, network)
+    const structured_tx = ShelleySignedTransactionStructured(txAux, witnesses)
     const tx = {transaction: cbor.encode(structured_tx), fragmentId: structured_tx.getId()}
-    // }
-
     return tx
   }
 

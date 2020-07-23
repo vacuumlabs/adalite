@@ -23,6 +23,7 @@ import {
 } from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
+import {ShelleyTxAux, ShelleyTxInputFromUtxo, ShelleyTxOutput} from './shelley/shelley-transaction'
 
 const isUtxoProfitable = () => true
 
@@ -242,7 +243,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   function prepareTxAux(plan) {
-    return plan
+    const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
+    const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
+    //txCerts
+    //txWithdrawals
+    if (plan.change) {
+      const {address, coins} = plan.change
+      txOutputs.push(ShelleyTxOutput(address, coins, true))
+    }
+    return ShelleyTxAux(txInputs, txOutputs, plan.fee, cryptoProvider.network.ttl)
   }
 
   async function signTxAux(txAux: any) {
