@@ -28,11 +28,11 @@ const Transaction = ({txid}) => (
       <span>
         <a
           className="transaction-address"
-          href={`https://seiza.com/blockchain/transaction/${txid}`}
+          href={`https://blockchair.com/cardano/transaction/${txid}`}
           target="_blank"
           rel="noopener"
         >
-          Seiza
+          Blockchair
         </a>
         <span> | </span>
         <a

@@ -59,11 +59,11 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
               <span>
                 <a
                   className="address-link"
-                  href={`https://seiza.com/blockchain/address/${address}`}
+                  href={`https://blockchair.com/cardano/address/${address}`}
                   target="_blank"
                   rel="noopener"
                 >
-                  Seiza
+                  Blockchair
                 </a>
                 <span> | </span>
                 <a
