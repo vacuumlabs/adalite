@@ -836,16 +836,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const calculateDelegationFee = async (revoke?: boolean) => {
     const state = getState()
     setPoolInfo(state)
-    const pool = [
-      {
-        pool_id: state.shelleyDelegation.selectedPool.poolHash,
-        ratio: 100,
-      },
-    ]
+    const poolHash = state.shelleyDelegation.selectedPool.poolHash
+    const stakingKeyRegistered = state.shelleyAccountInfo.hasStakingKey
     const balance = state.balance
     let plan
     try {
-      plan = await prepareTxPlan({coins: null, pool, txType: 'delegate'})
+      plan = await prepareTxPlan({coins: null, poolHash, stakingKeyRegistered, txType: 'delegate'})
     } catch (e) {
       if (!revoke) {
         setErrorState('delegationValidationError', {code: e.name})
