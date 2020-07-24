@@ -32,7 +32,7 @@ type Output = {
 
 type Cert = {
   type: string
-  accountAddress: string
+  accountAddressPath: any
   poolHash: string | null
 }
 
@@ -54,14 +54,19 @@ export function estimateTxSize(
     // Is it in maxCborCoinsLen?
     ({address, coins}) => bech32.decode(address).data.length + maxCborCoinsLen
   )
-
   // +2 for indef array start & end
   const txOutputsSize = txOutputsSizes.reduce((acc, x) => acc + x, 0) + 2
+
+  const preparedCerts = certs.map(
+    (cert) => encode(new CborIndefiniteLengthArray(preparedInputs)).length
+  )
+
+  const txCertSize = preparedCerts.reduce((acc, x) => acc + x, 0) + 2
 
   const txMetaSize = 1 // currently empty Map
 
   // the 1 is there for the CBOR "tag" for an array of 4 elements
-  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
+  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize
 
   const txWitnessesSize = inputs.length * TX_WITNESS_SIZE_BYTES + 1
 
@@ -155,10 +160,14 @@ export function isUtxoProfitable(utxo: UTxO) {
   return utxo.coins > addedCost
 }
 
-function createCert(type, accountAddress, poolHash) {
+function createCert(type, accountAddressPath, poolHash) {
+  const certTypes = {
+    delegation: 0, // TODO: real values
+    staking_key_registration: 1,
+  }
   return {
-    type,
-    accountAddress,
+    type: certTypes[type],
+    accountAddressPath,
     poolHash,
   }
 }
@@ -169,16 +178,16 @@ export function selectMinimalTxPlan(
   coins,
   donationAmount,
   changeAddress,
-  accountAddress,
+  accountAddressPath,
   poolHash = null,
   registerStakingKey = false
 ): TxPlan | NoTxPlan {
   const certs = []
   if (poolHash) {
-    certs.push(createCert('delegation', accountAddress, poolHash))
+    certs.push(createCert('delegation', accountAddressPath, poolHash))
   }
   if (registerStakingKey) {
-    certs.push(createCert('register_staking_key', accountAddress, null))
+    certs.push(createCert('staking_key_registration', accountAddressPath, null))
   }
   const profitableUtxos = utxos.filter(isUtxoProfitable)
 

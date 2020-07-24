@@ -23,7 +23,12 @@ import {
 } from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
-import {ShelleyTxAux, ShelleyTxInputFromUtxo, ShelleyTxOutput} from './shelley/shelley-transaction'
+import {
+  ShelleyTxAux,
+  ShelleyTxInputFromUtxo,
+  ShelleyTxOutput,
+  ShelleyTxCert,
+} from './shelley/shelley-transaction'
 
 const isUtxoProfitable = () => true
 
@@ -245,13 +250,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   function prepareTxAux(plan) {
     const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
     const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
-    //txCerts
+    const txCerts = plan.certs.map(({type, accountAddressPath, poolHash}) =>
+      ShelleyTxCert(type, accountAddressPath, poolHash)
+    )
     //txWithdrawals
     if (plan.change) {
       const {address, coins} = plan.change
       txOutputs.push(ShelleyTxOutput(address, coins, true))
     }
-    return ShelleyTxAux(txInputs, txOutputs, plan.fee, cryptoProvider.network.ttl)
+    return ShelleyTxAux(txInputs, txOutputs, plan.fee, cryptoProvider.network.ttl, txCerts)
   }
 
   async function signTxAux(txAux: any) {
@@ -290,7 +297,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     txType?: string
   }
 
-  const utxoTxPlanner = async (args: utxoArgs, accountAddress: string) => {
+  const utxoTxPlanner = async (args: utxoArgs, accountAddressPath) => {
     const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
@@ -311,9 +318,9 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       coins,
       donationAmount,
       changeAddress,
-      accountAddress,
+      accountAddressPath,
       poolHash,
-      stakingKeyRegistered
+      !stakingKeyRegistered
     )
     return plan
   }
@@ -341,13 +348,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getTxPlan(args: utxoArgs | accountArgs) {
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
+    const accountAddressPath = myAddresses.fixedPathMapper()(accountAddress)
+    console.log(accountAddressPath)
     const txPlanners = {
       sendAda: utxoTxPlanner,
       convert: utxoTxPlanner,
       delegate: utxoTxPlanner,
       // redeem: accountTxPlanner,
     }
-    return await txPlanners[args.txType](args, accountAddress)
+    return await txPlanners[args.txType](args, accountAddressPath)
   }
 
   async function getPoolInfo(url) {
