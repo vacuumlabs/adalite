@@ -86,7 +86,7 @@ export function estimateTxSize(
 export function computeRequiredTxFee(
   inputs: Array<Input>,
   outputs: Array<Output>,
-  certs: Array<Cert>
+  certs: Array<Cert> = []
 ): Lovelace {
   const fee = txFeeFunction(estimateTxSize(inputs, outputs, certs))
   return fee
