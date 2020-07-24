@@ -12,9 +12,7 @@ const TxOutputTypeCodes = {
 const build_inputs = (inputs) => {
   const res = []
   inputs.forEach((index, input) => {
-    if (input.type === 'utxo') {
-      res.push([input.txid, input.outputNo])
-    }
+    res.push([input.txid, input.outputNo])
   })
   return res
 }
@@ -22,14 +20,24 @@ const build_inputs = (inputs) => {
 const build_outputs = (outputs) => {
   const result = []
   outputs.forEach((index, output) => {
-    result.push([output.address, 1, output.coins])
+    result.push([output.address, TxOutputTypeCodes.SIGN_TX_OUTPUT_TYPE_ADDRESS, output.coins])
   })
   return result
 }
 
-function ShelleyTxAux(inputs, outputs, fee, ttl) {
+const build_certs = (certs) => {
+  const res = []
+  certs.forEach((index, cert) => {
+    cert.poolHash
+      ? res.push([cert.type, cert.path, cert.poolHash])
+      : res.push([cert.type, cert.path])
+  })
+  return res
+}
+
+function ShelleyTxAux(inputs, outputs, fee, ttl, certs = []) {
   function getId() {
-    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl)), 32).toString('hex')
+    return blake2b(encode(ShelleyTxAux(inputs, outputs, certs, fee, ttl)), 32).toString('hex')
   }
 
   function encodeCBOR(encoder) {
@@ -38,6 +46,7 @@ function ShelleyTxAux(inputs, outputs, fee, ttl) {
       1: build_outputs(outputs),
       2: fee,
       3: ttl,
+      4: build_certs(certs),
     })
   }
 
@@ -47,6 +56,7 @@ function ShelleyTxAux(inputs, outputs, fee, ttl) {
     outputs,
     fee,
     ttl,
+    certs,
     encodeCBOR,
   }
 }
@@ -78,10 +88,10 @@ function ShelleyTxWitnessByron(publicKey, signature, chaincode, address_attribut
 }
 
 function ShelleyTxInputFromUtxo(utxo) {
-  const coins = utxo.coins
+  const coins = utxo.coins // TODO: not needed?
   const txid = utxo.txHash
   const outputNo = utxo.outputIndex
-  const address = utxo.address
+  const address = utxo.address // TODO: not needed?
 
   function encodeCBOR(encoder) {
     return encoder.pushAny([txid, outputNo])
@@ -109,6 +119,21 @@ function ShelleyTxOutput(address, coins, isChange) {
   }
 }
 
+function ShelleyTxCert(type, accountPath, poolHash) {
+  function encodeCBOR(encoder) {
+    return poolHash
+      ? encoder.pushAny([type, accountPath, poolHash])
+      : encoder.pushAny([type, accountPath])
+  }
+
+  return {
+    encodeCBOR,
+    type,
+    accountPath,
+    poolHash,
+  }
+}
+
 function AddressCborWrapper(address) {
   function encodeCBOR(encoder) {
     return encoder.push(bech32.decode(address).data)
@@ -126,7 +151,7 @@ function ShelleySignedTransactionStructured(txAux, witnesses) {
   }
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny([txAux, witnesses]) //TODO: cert
+    return encoder.pushAny([txAux, witnesses])
   }
 
   return {
@@ -143,5 +168,6 @@ export {
   ShelleyTxWitnessShelley,
   ShelleyTxOutput,
   ShelleyTxInputFromUtxo,
+  ShelleyTxCert,
   ShelleySignedTransactionStructured,
 }
