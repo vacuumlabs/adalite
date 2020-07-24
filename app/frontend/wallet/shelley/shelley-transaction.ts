@@ -11,7 +11,7 @@ const TxOutputTypeCodes = {
 
 function ShelleyTxAux(inputs, outputs, fee, ttl, certs = []) {
   function getId() {
-    return blake2b(encode(ShelleyTxAux(inputs, outputs, certs, fee, ttl)), 32).toString('hex')
+    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl, certs)), 32).toString('hex')
   }
 
   function encodeCBOR(encoder) {
@@ -31,6 +31,28 @@ function ShelleyTxAux(inputs, outputs, fee, ttl, certs = []) {
     fee,
     ttl,
     certs,
+    encodeCBOR,
+  }
+}
+
+function ShelleyFee(fee) {
+  function encodeCBOR(encoder) {
+    return encoder.pushAny([fee])
+  }
+
+  return {
+    fee,
+    encodeCBOR,
+  }
+}
+
+function ShelleyTtl(ttl) {
+  function encodeCBOR(encoder) {
+    return encoder.pushAny([ttl])
+  }
+
+  return {
+    ttl,
     encodeCBOR,
   }
 }
@@ -147,5 +169,7 @@ export {
   ShelleyTxOutput,
   ShelleyTxInputFromUtxo,
   ShelleyTxCert,
+  ShelleyFee,
+  ShelleyTtl,
   ShelleySignedTransactionStructured,
 }
