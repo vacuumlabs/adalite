@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
-import {sign as signMsg, derivePrivate, xpubToHdPassphrase, blake2b} from 'cardano-crypto.js'
+import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
 import {encode, decode} from 'borc'
 
 import HdNode from '../helpers/hd-node'
@@ -71,7 +71,9 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
   const build_byron_witness = async (tx_body_hash, sign, path, network) => {
     const signature = await sign(tx_body_hash, path)
     const address_attributes = encode(
-      network.name === 'mainnet' ? {} : {[PROTOCOL_MAGIC_KEY]: encode(network.protocolMagic)}
+      network.name === 'mainnet'
+        ? {}
+        : new Map().set([PROTOCOL_MAGIC_KEY], encode(network.protocolMagic))
     )
     return ShelleyTxWitnessByron(derivePub(path), signature, getChainCode(), address_attributes)
   }
@@ -88,12 +90,12 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     })
     const shelleyWitnesses = await Promise.all(_shelleyWitnesses)
     const byronWitnesses = await Promise.all(_byronWitnesses)
-    const witnesses = {}
+    const witnesses = new Map()
     if (shelleyWitnesses.length > 0) {
-      witnesses[0] = shelleyWitnesses
+      witnesses.set(0, shelleyWitnesses)
     }
     if (byronWitnesses.length > 0) {
-      witnesses[2] = byronWitnesses
+      witnesses.set(2, byronWitnesses)
     }
     return witnesses
   }

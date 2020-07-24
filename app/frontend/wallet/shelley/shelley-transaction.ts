@@ -15,13 +15,13 @@ function ShelleyTxAux(inputs, outputs, fee, ttl, certs = []) {
   }
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny({
-      0: inputs,
-      1: outputs,
-      2: fee,
-      3: ttl,
-      4: certs,
-    })
+    const txMap = new Map()
+    txMap.set(0, inputs)
+    txMap.set(1, outputs)
+    txMap.set(2, fee)
+    txMap.set(3, ttl)
+    // txMap.set(4, certs)
+    return encoder.pushAny(txMap)
   }
 
   return {
@@ -37,7 +37,7 @@ function ShelleyTxAux(inputs, outputs, fee, ttl, certs = []) {
 
 function ShelleyFee(fee) {
   function encodeCBOR(encoder) {
-    return encoder.pushAny([fee])
+    return encoder.pushAny(fee)
   }
 
   return {
@@ -48,7 +48,7 @@ function ShelleyFee(fee) {
 
 function ShelleyTtl(ttl) {
   function encodeCBOR(encoder) {
-    return encoder.pushAny([ttl])
+    return encoder.pushAny(ttl)
   }
 
   return {
@@ -104,11 +104,8 @@ function ShelleyTxInputFromUtxo(utxo) {
 
 function ShelleyTxOutput(address, coins, isChange) {
   function encodeCBOR(encoder) {
-    return encoder.pushAny([
-      AddressCborWrapper(address),
-      TxOutputTypeCodes.SIGN_TX_OUTPUT_TYPE_ADDRESS,
-      coins,
-    ])
+    const addressBuff = bech32.decode(address).data
+    return encoder.pushAny([addressBuff, TxOutputTypeCodes.SIGN_TX_OUTPUT_TYPE_ADDRESS, coins])
   }
 
   return {
@@ -131,17 +128,6 @@ function ShelleyTxCert(type, accountPath, poolHash) {
     type,
     accountPath,
     poolHash,
-  }
-}
-
-function AddressCborWrapper(address) {
-  function encodeCBOR(encoder) {
-    return encoder.push(bech32.decode(address).data)
-  }
-
-  return {
-    address,
-    encodeCBOR,
   }
 }
 
