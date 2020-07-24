@@ -28,6 +28,8 @@ import {
   ShelleyTxInputFromUtxo,
   ShelleyTxOutput,
   ShelleyTxCert,
+  ShelleyFee,
+  ShelleyTtl,
 } from './shelley/shelley-transaction'
 
 const isUtxoProfitable = () => true
@@ -253,12 +255,14 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const txCerts = plan.certs.map(({type, accountAddressPath, poolHash}) =>
       ShelleyTxCert(type, accountAddressPath, poolHash)
     )
-    //txWithdrawals
+    const txFee = ShelleyFee(plan.fee)
+    const txTtl = ShelleyTtl(cryptoProvider.network.ttl)
+    // TODO: txWithdrawals
     if (plan.change) {
       const {address, coins} = plan.change
       txOutputs.push(ShelleyTxOutput(address, coins, true))
     }
-    return ShelleyTxAux(txInputs, txOutputs, plan.fee, cryptoProvider.network.ttl, txCerts)
+    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts)
   }
 
   async function signTxAux(txAux: any) {
