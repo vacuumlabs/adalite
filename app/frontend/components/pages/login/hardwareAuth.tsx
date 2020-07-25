@@ -1,6 +1,7 @@
 import {h} from 'preact'
 import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
 import {TrezorLogoWhite, LedgerLogoWhite} from '../../common/svg'
+import {ADALITE_CONFIG} from '../../../config'
 
 interface Props {
   loadWallet: any
@@ -21,49 +22,53 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
 
   return (
     <div className="authentication-content hardware">
-      <div className="authentication-wallet">
-        <div className="authentication-image-container">
-          <img className="authentication-image" src="assets/trezor.jpg" alt="Trezor model T" />
-        </div>
-        <div className="authentication-paragraph">Trezor model T</div>
-        <div className="authentication-paragraph small">
-          {TrezorAffiliateLink('Support us by buying one')}
-        </div>
-        <div
-          className="authentication-paragraph small"
-          dangerouslySetInnerHTML={{__html: '&nbsp;'}}
-        />
-        <button
-          className="button primary trezor"
-          onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR})}
-        >
-          Unlock with<div className="trezor-logo-container">
-            <TrezorLogoWhite />
+      {ADALITE_CONFIG.ADALITE_ENABLE_TREZOR && (
+        <div className="authentication-wallet">
+          <div className="authentication-image-container">
+            <img className="authentication-image" src="assets/trezor.jpg" alt="Trezor model T" />
           </div>
-        </button>
-      </div>
-      <div className="authentication-wallet">
-        <div className="authentication-image-container">
-          <img
-            className="authentication-image"
-            src="assets/ledger_nano_s_x.jpg"
-            alt="Ledger Nano S/X"
+          <div className="authentication-paragraph">Trezor model T</div>
+          <div className="authentication-paragraph small">
+            {TrezorAffiliateLink('Support us by buying one')}
+          </div>
+          <div
+            className="authentication-paragraph small"
+            dangerouslySetInnerHTML={{__html: '&nbsp;'}}
           />
+          <button
+            className="button primary trezor"
+            onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR})}
+          >
+            Unlock with<div className="trezor-logo-container">
+              <TrezorLogoWhite />
+            </div>
+          </button>
         </div>
-        <div className="authentication-paragraph">Ledger Nano S/X</div>
-        <div className="authentication-paragraph small">also with Android device</div>
-        <div className="authentication-paragraph small">
-          {LedgerAffiliateLink('Support us by buying one')}
-        </div>
-        <button
-          className="button primary ledger"
-          onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER})}
-        >
-          Unlock with<div className="ledger-logo-container">
-            <LedgerLogoWhite />
+      )}
+      {ADALITE_CONFIG.ADALITE_ENABLE_LEDGER && (
+        <div className="authentication-wallet">
+          <div className="authentication-image-container">
+            <img
+              className="authentication-image"
+              src="assets/ledger_nano_s_x.jpg"
+              alt="Ledger Nano S/X"
+            />
           </div>
-        </button>
-      </div>
+          <div className="authentication-paragraph">Ledger Nano S/X</div>
+          <div className="authentication-paragraph small">also with Android device</div>
+          <div className="authentication-paragraph small">
+            {LedgerAffiliateLink('Support us by buying one')}
+          </div>
+          <button
+            className="button primary ledger"
+            onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER})}
+          >
+            Unlock with<div className="ledger-logo-container">
+              <LedgerLogoWhite />
+            </div>
+          </button>
+        </div>
+      )}
     </div>
   )
 }
