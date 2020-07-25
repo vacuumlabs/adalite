@@ -14,7 +14,11 @@ import {HARDENED_THRESHOLD, PROTOCOL_MAGIC_KEY} from '../constants'
 
 type HexString = string & {__typeHexString: any}
 
-const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme}, network}) => {
+const ShelleyJsCryptoProvider = ({
+  walletSecretDef: {rootSecret, derivationScheme},
+  network,
+  config,
+}) => {
   const masterHdNode = HdNode(rootSecret)
 
   const isHwWallet = () => false

@@ -26,9 +26,9 @@ import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace} from './state'
 import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
+import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 
 import {ShelleyWallet} from './wallet/shelley-wallet'
-import ShelleyJsCryptoProvider from './wallet/shelley/shelley-js-crypto-provider'
 import loadWasmModule from './helpers/wasmLoader'
 import getDonationAddress from './helpers/getDonationAddress'
 let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
@@ -137,10 +137,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         }
         case 'shelley': {
           await loadWasmModule()
-          const cryptoProvider = ShelleyJsCryptoProvider({
-            walletSecretDef,
-            network: NETWORKS.SHELLEY[ADALITE_CONFIG.ADALITE_NETWORK],
-          })
+          const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
+            cryptoProviderType,
+            {
+              walletSecretDef,
+              network: NETWORKS.SHELLEY[ADALITE_CONFIG.ADALITE_NETWORK],
+              config: ADALITE_CONFIG,
+            }
+          )
 
           wallet = await ShelleyWallet({
             config: ADALITE_CONFIG,
