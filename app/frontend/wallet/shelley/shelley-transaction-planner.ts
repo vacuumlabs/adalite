@@ -162,8 +162,9 @@ export function isUtxoProfitable(utxo: UTxO) {
 
 function createCert(type, accountAddressPath, poolHash) {
   const certTypes = {
-    delegation: 0, // TODO: real values
-    staking_key_registration: 1,
+    staking_key_registration: 0,
+    staking_key_deregistration: 1,
+    delegation: 2,
   }
   return {
     type: certTypes[type],
@@ -186,7 +187,7 @@ export function selectMinimalTxPlan(
   if (poolHash) {
     certs.push(createCert('delegation', accountAddressPath, poolHash))
   }
-  if (registerStakingKey) {
+  if (poolHash && registerStakingKey) {
     certs.push(createCert('staking_key_registration', accountAddressPath, null))
   }
   const profitableUtxos = utxos.filter(isUtxoProfitable)

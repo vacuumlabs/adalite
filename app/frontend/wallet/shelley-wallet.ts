@@ -351,9 +351,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   // }
 
   async function getTxPlan(args: utxoArgs | accountArgs) {
-    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
-    const accountAddressPath = myAddresses.fixedPathMapper()(accountAddress)
-    console.log(accountAddressPath)
+    const accountAddressPath = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
+    // const accountAddressPath = myAddresses.fixedPathMapper()(accountAddress)
     const txPlanners = {
       sendAda: utxoTxPlanner,
       convert: utxoTxPlanner,
