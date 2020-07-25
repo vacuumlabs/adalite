@@ -4,7 +4,16 @@ import Ledger from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import {encode} from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
-// import {TxWitness, SignedTransactionStructured} from './byron-transaction'
+import {HARDENED_THRESHOLD} from '../constants'
+import {
+  ShelleyTxWitnessShelley,
+  ShelleyTxWitnessByron,
+  ShelleySignedTransactionStructured,
+} from './shelley-transaction'
+
+import {bechAddressToHex} from './helpers/addresses'
+// eslint-disable-next-line no-duplicate-imports
+// import type {OutputTypeAddress, InputTypeUTxO} from '@cardano-foundation/ledgerjs-hw-app-cardano'
 
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
@@ -34,6 +43,17 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     return Buffer.from(xpubHex, 'hex')
   })
 
+  const derivePub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
+    const response = await ledger.getExtendedPublicKey(absDerivationPath)
+    return Buffer.from(response.publicKeyHex, 'hex')
+  })
+
+  // TODO: refacotr
+  const getChainCode = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
+    const response = await ledger.getExtendedPublicKey(absDerivationPath)
+    return Buffer.from(response.chainCodeHex, 'hex')
+  })
+
   function deriveHdNode(childIndex) {
     throw NamedError(
       'UnsupportedOperationError',
@@ -61,11 +81,101 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     return derivationScheme
   }
 
+  function _prepareInput(input, addressToAbsPathMapper): InputTypeUTxO {
+    return {
+      txHashHex: input.txid,
+      outputIndex: input.outputNo,
+      path: addressToAbsPathMapper(input.address),
+    }
+  }
+
+  type InputTypeUTxO = {
+    txHashHex: string
+    outputIndex: number
+    path: any //BIP32Path,
+  }
+
+  type OutputTypeAddress = {
+    amountStr: string
+    addressHex: string
+  }
+
+  function _prepareOutput(output, addressToAbsPathMapper): OutputTypeAddress {
+    return {
+      amountStr: `${output.coins}`,
+      addressHex: bechAddressToHex(output.address),
+    }
+  }
+
+  async function prepareWitness(witness) {
+    const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852 // TODO: move this somewhere
+    const publicKey = await derivePub(witness.path)
+    const chaincode = await getChainCode(witness.path)
+    const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
+    return isShelleyPath(witness.path)
+      ? ShelleyTxWitnessShelley(publicKey, signature)
+      : ShelleyTxWitnessByron(publicKey, signature, chaincode, {})
+  }
+
+  function prepareBody(unsignedTx, txWitnesses) {
+    return encode(ShelleySignedTransactionStructured(unsignedTx, txWitnesses, null)).toString('hex')
+  }
+
+  async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
+    const inputs = unsignedTx.inputs.map((input, i) => _prepareInput(input, addressToAbsPathMapper))
+
+    const outputs = unsignedTx.outputs.map((output) =>
+      _prepareOutput(output, addressToAbsPathMapper)
+    )
+    const feeStr = `${unsignedTx.fee.fee}`
+    const ttlStr = `${network.ttl}`
+
+    const certificates = []
+    const withdrawals = []
+    console.log({
+      networkId: network.networkId,
+      magic: network.protocolMagic,
+      inputs,
+      outputs,
+      feeStr,
+      ttlStr,
+      certificates,
+      withdrawals,
+    })
+    const response = await ledger.signTransaction(
+      network.networkId,
+      network.protocolMagic,
+      inputs,
+      outputs,
+      feeStr,
+      ttlStr,
+      certificates,
+      withdrawals
+    )
+
+    if (response.txHashHex !== unsignedTx.getId()) {
+      throw NamedError(
+        'TxSerializationError',
+        'Tx serialization mismatch between Ledger and Adalite'
+      )
+    }
+
+    // serialize signed transaction for submission
+    const txWitnesses = await Promise.all(
+      response.witnesses.map((witness) => prepareWitness(witness))
+    )
+
+    return {
+      txHash: response.txHashHex,
+      txBody: prepareBody(unsignedTx, txWitnesses),
+    }
+  }
+
   return {
     network,
     getWalletSecret,
     getDerivationScheme,
-    // signTx,
+    signTx,
     displayAddressForPath,
     deriveXpub,
     isHwWallet,
