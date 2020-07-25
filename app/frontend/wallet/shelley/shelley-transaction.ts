@@ -9,7 +9,7 @@ const TxOutputTypeCodes = {
   SIGN_TX_OUTPUT_TYPE_PATH: 2,
 }
 
-function ShelleyTxAux(inputs, outputs, fee, ttl, certs = []) {
+function ShelleyTxAux(inputs, outputs, fee, ttl, certs) {
   function getId() {
     return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl, certs)), 32).toString('hex')
   }
@@ -20,7 +20,7 @@ function ShelleyTxAux(inputs, outputs, fee, ttl, certs = []) {
     txMap.set(1, outputs)
     txMap.set(2, fee)
     txMap.set(3, ttl)
-    // txMap.set(4, certs)
+    txMap.set(4, certs)
     return encoder.pushAny(txMap)
   }
 
@@ -118,26 +118,33 @@ function ShelleyTxOutput(address, coins, isChange) {
 
 function ShelleyTxCert(type, accountPath, poolHash) {
   function encodeCBOR(encoder) {
-    return poolHash
-      ? encoder.pushAny([type, accountPath, poolHash])
-      : encoder.pushAny([type, accountPath])
+    const accountAddressHash = bech32.decode(accountPath).data
+    // FIXME: this really a bech32 address, not path
+    // TODO: this returns Uint8 array of size 29
+    const account = [0, accountAddressHash]
+    const encodedCertsTypes = {
+      0: [type, account],
+      1: [type, account],
+      2: [type, account, poolHash],
+    }
+    return encoder.pushAny(encodedCertsTypes[type])
   }
 
   return {
-    encodeCBOR,
     type,
     accountPath,
     poolHash,
+    encodeCBOR,
   }
 }
 
-function ShelleySignedTransactionStructured(txAux, witnesses) {
+function ShelleySignedTransactionStructured(txAux, witnesses, meta) {
   function getId() {
     return txAux.getId()
   }
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny([txAux, witnesses])
+    return encoder.pushAny([txAux, witnesses, meta])
   }
 
   return {

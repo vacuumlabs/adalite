@@ -109,8 +109,9 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
       network,
       addressToAbsPathMapper
     )
+    const meta = null
 
-    return ShelleySignedTransactionStructured(txAux, witnesses)
+    return ShelleySignedTransactionStructured(txAux, witnesses, meta)
   }
 
   return {
