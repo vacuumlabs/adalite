@@ -267,7 +267,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function signTxAux(txAux: any) {
     const signedTx = await cryptoProvider
-      .signTx(txAux, myAddresses.fixedPathMapper())
+      .signTx(txAux, [], myAddresses.fixedPathMapper())
       .catch((e) => {
         debugLog(e)
         throw NamedError('TransactionRejectedWhileSigning', e.message)

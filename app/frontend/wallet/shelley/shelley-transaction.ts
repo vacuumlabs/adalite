@@ -9,9 +9,9 @@ const TxOutputTypeCodes = {
   SIGN_TX_OUTPUT_TYPE_PATH: 2,
 }
 
-function ShelleyTxAux(inputs, outputs, fee, ttl, certs) {
+function ShelleyTxAux(inputs, outputs, fee, ttl, certs?) {
   function getId() {
-    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl, certs)), 32).toString('hex')
+    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl)), 32).toString('hex')
   }
 
   function encodeCBOR(encoder) {
@@ -20,7 +20,7 @@ function ShelleyTxAux(inputs, outputs, fee, ttl, certs) {
     txMap.set(1, outputs)
     txMap.set(2, fee)
     txMap.set(3, ttl)
-    txMap.set(4, certs)
+    if (certs && certs.length) txMap.set(4, certs)
     return encoder.pushAny(txMap)
   }
 
@@ -88,9 +88,9 @@ function ShelleyTxInputFromUtxo(utxo) {
   const txid = utxo.txHash
   const outputNo = utxo.outputIndex
   const address = utxo.address
-
+  const txHash = Buffer.from(txid, 'hex')
   function encodeCBOR(encoder) {
-    return encoder.pushAny([txid, outputNo])
+    return encoder.pushAny([txHash, outputNo])
   }
 
   return {
@@ -105,7 +105,7 @@ function ShelleyTxInputFromUtxo(utxo) {
 function ShelleyTxOutput(address, coins, isChange) {
   function encodeCBOR(encoder) {
     const addressBuff = bech32.decode(address).data
-    return encoder.pushAny([addressBuff, TxOutputTypeCodes.SIGN_TX_OUTPUT_TYPE_ADDRESS, coins])
+    return encoder.pushAny([addressBuff, coins])
   }
 
   return {
