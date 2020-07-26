@@ -109,12 +109,13 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
 
   async function prepareWitness(witness) {
     const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852 // TODO: move this somewhere
-    const publicKey = await derivePub(witness.path)
-    const chaincode = await getChainCode(witness.path)
+    const {chainCodeHex, publicKeyHex} = await ledger.getExtendedPublicKey(witness.path)
+    const chainCode = Buffer.from(chainCodeHex, 'hex')
+    const publicKey = Buffer.from(publicKeyHex, 'hex')
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
     return isShelleyPath(witness.path)
       ? ShelleyTxWitnessShelley(publicKey, signature)
-      : ShelleyTxWitnessByron(publicKey, signature, chaincode, {})
+      : ShelleyTxWitnessByron(publicKey, signature, chainCode, {})
   }
 
   function prepareBody(unsignedTx, txWitnesses) {
@@ -153,18 +154,24 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
       withdrawals
     )
 
+    const adaliteTx = ShelleySignedTransactionStructured(unsignedTx, [], [])
+    console.log('adalite_tx', encode(adaliteTx).toString('hex'))
+
+    console.log(response)
+    console.log(response.txHashHex, unsignedTx.getId())
+    // serialize signed transaction for submission
+    const txWitnesses = await Promise.all(
+      response.witnesses.map((witness) => prepareWitness(witness))
+    )
+
+    console.log(txWitnesses)
+
     if (response.txHashHex !== unsignedTx.getId()) {
       throw NamedError(
         'TxSerializationError',
         'Tx serialization mismatch between Ledger and Adalite'
       )
     }
-
-    // serialize signed transaction for submission
-    const txWitnesses = await Promise.all(
-      response.witnesses.map((witness) => prepareWitness(witness))
-    )
-
     return {
       txHash: response.txHashHex,
       txBody: prepareBody(unsignedTx, txWitnesses),
