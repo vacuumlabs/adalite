@@ -11,7 +11,7 @@ const TxOutputTypeCodes = {
 
 function ShelleyTxAux(inputs, outputs, fee, ttl, certs?) {
   function getId() {
-    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl)), 32).toString('hex')
+    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl, certs)), 32).toString('hex')
   }
 
   function encodeCBOR(encoder) {
@@ -116,23 +116,24 @@ function ShelleyTxOutput(address, coins, isChange) {
   }
 }
 
-function ShelleyTxCert(type, accountPath, poolHash) {
+function ShelleyTxCert(type, accountAddress, poolHash) {
+  console.log(type, accountAddress, poolHash)
   function encodeCBOR(encoder) {
-    const accountAddressHash = bech32.decode(accountPath).data
-    // FIXME: this really a bech32 address, not path
-    // TODO: this returns Uint8 array of size 29
+    const accountAddressHash = bech32.decode(accountAddress).data.slice(1)
+    let hash
+    if (poolHash) hash = Buffer.from(poolHash, 'hex')
     const account = [0, accountAddressHash]
     const encodedCertsTypes = {
       0: [type, account],
       1: [type, account],
-      2: [type, account, poolHash],
+      2: [type, account, hash],
     }
     return encoder.pushAny(encodedCertsTypes[type])
   }
 
   return {
     type,
-    accountPath,
+    accountAddress,
     poolHash,
     encodeCBOR,
   }
