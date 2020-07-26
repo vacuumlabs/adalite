@@ -4,16 +4,13 @@ import Ledger from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import {encode} from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
-import {HARDENED_THRESHOLD} from '../constants'
 import {
   ShelleyTxWitnessShelley,
   ShelleyTxWitnessByron,
   ShelleySignedTransactionStructured,
 } from './shelley-transaction'
 
-import {bechAddressToHex} from './helpers/addresses'
-// eslint-disable-next-line no-duplicate-imports
-// import type {OutputTypeAddress, InputTypeUTxO} from '@cardano-foundation/ledgerjs-hw-app-cardano'
+import {bechAddressToHex, isShelleyPath} from './helpers/addresses'
 
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
@@ -41,17 +38,6 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     const response = await ledger.getExtendedPublicKey(absDerivationPath)
     const xpubHex = response.publicKeyHex + response.chainCodeHex
     return Buffer.from(xpubHex, 'hex')
-  })
-
-  const derivePub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
-    const response = await ledger.getExtendedPublicKey(absDerivationPath)
-    return Buffer.from(response.publicKeyHex, 'hex')
-  })
-
-  // TODO: refacotr
-  const getChainCode = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
-    const response = await ledger.getExtendedPublicKey(absDerivationPath)
-    return Buffer.from(response.chainCodeHex, 'hex')
   })
 
   function deriveHdNode(childIndex) {
@@ -100,7 +86,21 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     addressHex: string
   }
 
-  function _prepareOutput(output, addressToAbsPathMapper): OutputTypeAddress {
+  type Certificate = {
+    type: number
+    path: any //BIP32Path,
+    poolKeyHashHex?: string
+  }
+
+  function _prepareCert(cert, addressToAbsPathMapper): Certificate {
+    return {
+      type: cert.type,
+      path: addressToAbsPathMapper(cert.accountAddress),
+      poolKeyHashHex: cert.poolHash,
+    }
+  }
+
+  function _prepareOutput(output): OutputTypeAddress {
     return {
       amountStr: `${output.coins}`,
       addressHex: bechAddressToHex(output.address),
@@ -108,7 +108,6 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
   }
 
   async function prepareWitness(witness) {
-    const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852 // TODO: move this somewhere
     const {chainCodeHex, publicKeyHex} = await ledger.getExtendedPublicKey(witness.path)
     const chainCode = Buffer.from(chainCodeHex, 'hex')
     const publicKey = Buffer.from(publicKeyHex, 'hex')
@@ -125,34 +124,37 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
     const inputs = unsignedTx.inputs.map((input, i) => _prepareInput(input, addressToAbsPathMapper))
 
-    const outputs = unsignedTx.outputs.map((output) =>
-      _prepareOutput(output, addressToAbsPathMapper)
-    )
+    const outputs = unsignedTx.outputs.map((output) => _prepareOutput(output))
+    const certificates = unsignedTx.certs.map((cert) => _prepareCert(cert, addressToAbsPathMapper))
     const feeStr = `${unsignedTx.fee.fee}`
     const ttlStr = `${network.ttl}`
-
-    const certificates = []
+    console.log(certificates)
     const withdrawals = []
-    console.log({
-      networkId: network.networkId,
-      magic: network.protocolMagic,
-      inputs,
-      outputs,
-      feeStr,
-      ttlStr,
-      certificates,
-      withdrawals,
-    })
-    const response = await ledger.signTransaction(
-      network.networkId,
-      network.protocolMagic,
-      inputs,
-      outputs,
-      feeStr,
-      ttlStr,
-      certificates,
-      withdrawals
+    console.log(unsignedTx)
+    console.log(
+      JSON.stringify({
+        networkId: network.networkId,
+        magic: network.protocolMagic,
+        inputs,
+        outputs,
+        feeStr,
+        ttlStr,
+        certificates,
+        withdrawals,
+      })
     )
+    const response = await ledger
+      .signTransaction(
+        network.networkId,
+        network.protocolMagic,
+        inputs,
+        outputs,
+        feeStr,
+        ttlStr,
+        certificates,
+        withdrawals
+      )
+      .catch((e) => console.log(e))
 
     const adaliteTx = ShelleySignedTransactionStructured(unsignedTx, [], [])
     console.log('adalite_tx', encode(adaliteTx).toString('hex'))

@@ -252,8 +252,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   function prepareTxAux(plan) {
     const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
     const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
-    const txCerts = plan.certs.map(({type, accountAddressPath, poolHash}) =>
-      ShelleyTxCert(type, accountAddressPath, poolHash)
+    const txCerts = plan.certs.map(({type, accountAddress, poolHash}) =>
+      ShelleyTxCert(type, accountAddress, poolHash)
     )
     const txFee = ShelleyFee(plan.fee)
     const txTtl = ShelleyTtl(cryptoProvider.network.ttl)
@@ -301,7 +301,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     txType?: string
   }
 
-  const utxoTxPlanner = async (args: utxoArgs, accountAddressPath) => {
+  const utxoTxPlanner = async (args: utxoArgs, accountAddress) => {
     const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
@@ -322,7 +322,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       coins,
       donationAmount,
       changeAddress,
-      accountAddressPath,
+      accountAddress,
       poolHash,
       !stakingKeyRegistered
     )
@@ -351,15 +351,14 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   // }
 
   async function getTxPlan(args: utxoArgs | accountArgs) {
-    const accountAddressPath = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
-    // const accountAddressPath = myAddresses.fixedPathMapper()(accountAddress)
+    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const txPlanners = {
       sendAda: utxoTxPlanner,
       convert: utxoTxPlanner,
       delegate: utxoTxPlanner,
       // redeem: accountTxPlanner,
     }
-    return await txPlanners[args.txType](args, accountAddressPath)
+    return await txPlanners[args.txType](args, accountAddress)
   }
 
   async function getPoolInfo(url) {

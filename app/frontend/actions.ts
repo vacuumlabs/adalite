@@ -845,7 +845,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const balance = state.balance
     let plan
     try {
-      plan = await prepareTxPlan({coins: null, poolHash, stakingKeyRegistered, txType: 'delegate'})
+      plan = await prepareTxPlan({coins: 55, poolHash, stakingKeyRegistered, txType: 'delegate'})
     } catch (e) {
       if (!revoke) {
         setErrorState('delegationValidationError', {code: e.name})

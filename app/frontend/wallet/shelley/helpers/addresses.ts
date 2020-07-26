@@ -6,12 +6,16 @@ import {
   AddressTypes,
   base58,
 } from 'cardano-crypto.js'
+import {HARDENED_THRESHOLD} from '../../constants'
 
 type HexString = string // TODO: specify
 
 const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
 
 type Xpub = Buffer
+
+// TODO: do this more precisely
+export const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852
 
 export const bechAddressToHex = (address: string): HexString => {
   const parsed = bech32.decode(address)
