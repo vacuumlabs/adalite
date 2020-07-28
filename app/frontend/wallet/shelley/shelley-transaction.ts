@@ -70,6 +70,8 @@ function ShelleyTxWitnessShelley(publicKey, signature) {
 }
 
 function ShelleyTxWitnessByron(publicKey, signature, chaincode, address_attributes) {
+  console.log([publicKey, signature, chaincode, address_attributes])
+
   function encodeCBOR(encoder) {
     return encoder.pushAny([publicKey, signature, chaincode, address_attributes])
   }
@@ -132,6 +134,7 @@ function ShelleyTxCert(type, accountAddress, poolHash) {
   }
 
   return {
+    address: accountAddress,
     type,
     accountAddress,
     poolHash,

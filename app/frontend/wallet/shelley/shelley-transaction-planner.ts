@@ -68,8 +68,8 @@ export function estimateTxSize(
   // the 1 is there for the CBOR "tag" for an array of 4 elements
   const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize
 
-  const txWitnessesSize = inputs.length * TX_WITNESS_SIZE_BYTES + 1
-
+  const txWitnessesSize = (certs.length + inputs.length) * TX_WITNESS_SIZE_BYTES + 1
+  // TODO: also for withdrawals
   // the 1 is there for the CBOR "tag" for an array of 2 elements
   const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
 
@@ -78,7 +78,7 @@ export function estimateTxSize(
   * because it may have more than 1 byte of overhead
   * if more than 16 elements are present
   */
-  const slack = 4
+  const slack = 50 // TODO: this is too much
 
   return txSizeInBytes + slack
 }

@@ -10,7 +10,8 @@ import {
   ShelleyTxWitnessByron,
 } from './shelley-transaction'
 
-import {HARDENED_THRESHOLD, PROTOCOL_MAGIC_KEY} from '../constants'
+import {PROTOCOL_MAGIC_KEY} from '../constants'
+import {isShelleyPath} from './helpers/addresses'
 
 type HexString = string & {__typeHexString: any}
 
@@ -31,7 +32,7 @@ const ShelleyJsCryptoProvider = ({
 
   const derivePub = (derivationPath) => deriveHdNode(derivationPath).publicKey
 
-  const getChainCode = () => derivationScheme.ed25519Mode
+  const getChainCode = (derivationPath) => deriveHdNode(derivationPath).chainCode
 
   const deriveXpriv = (derivationPath) => deriveHdNode(derivationPath).secretKey
 
@@ -53,7 +54,7 @@ const ShelleyJsCryptoProvider = ({
   }
 
   // eslint-disable-next-line require-await
-  async function signTx(txAux, addressToAbsPathMapper) {
+  async function signTx(txAux, inputsRaw, addressToAbsPathMapper) {
     const structured_tx = await signTxGetStructured(txAux, addressToAbsPathMapper)
     const tx = {
       txBody: encode(structured_tx).toString('hex'),
@@ -74,23 +75,23 @@ const ShelleyJsCryptoProvider = ({
 
   const build_byron_witness = async (tx_body_hash, sign, path, network) => {
     const signature = await sign(tx_body_hash, path)
-    const address_attributes = encode(
-      network.name === 'mainnet'
-        ? {}
-        : new Map().set([PROTOCOL_MAGIC_KEY], encode(network.protocolMagic))
-    )
-    return ShelleyTxWitnessByron(derivePub(path), signature, getChainCode(), address_attributes)
+    // const address_attributes = encode(
+    //   network.name === 'mainnet'
+    //     ? {}
+    //     : new Map().set([PROTOCOL_MAGIC_KEY], encode(network.protocolMagic))
+    // ) // TODO:
+    const address_attributes = encode({})
+    return ShelleyTxWitnessByron(derivePub(path), signature, getChainCode(path), address_attributes)
   }
 
   const build_witnesses = async (inputs, tx_body_hash, sign, network, addressToAbsPathMapper) => {
-    const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852 // TODO: move this somewhere
     const _shelleyWitnesses = []
     const _byronWitnesses = []
     inputs.forEach((input) => {
       const inputPath = addressToAbsPathMapper(input.address)
       isShelleyPath(inputPath)
         ? _shelleyWitnesses.push(build_shelley_witness(tx_body_hash, inputPath, sign))
-        : _byronWitnesses.push(build_byron_witness(tx_body_hash, inputPath, sign, network))
+        : _byronWitnesses.push(build_byron_witness(tx_body_hash, sign, inputPath, network))
     })
     const shelleyWitnesses = await Promise.all(_shelleyWitnesses)
     const byronWitnesses = await Promise.all(_byronWitnesses)
@@ -107,7 +108,7 @@ const ShelleyJsCryptoProvider = ({
   async function signTxGetStructured(txAux, addressToAbsPathMapper) {
     const txHash = txAux.getId()
     const witnesses = await build_witnesses(
-      txAux.inputs,
+      [...txAux.inputs, ...txAux.certs],
       txHash,
       sign,
       network,
