@@ -10,6 +10,8 @@ import {
   ShelleySignedTransactionStructured,
 } from './shelley-transaction'
 
+import {PROTOCOL_MAGIC_KEY} from '../constants'
+
 import {bechAddressToHex, isShelleyPath} from './helpers/addresses'
 
 import derivationSchemes from '../helpers/derivation-schemes'
@@ -107,14 +109,43 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     }
   }
 
-  async function prepareWitness(witness) {
-    const {chainCodeHex, publicKeyHex} = await ledger.getExtendedPublicKey(witness.path)
-    const chainCode = Buffer.from(chainCodeHex, 'hex')
-    const publicKey = Buffer.from(publicKeyHex, 'hex')
+  const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32) // TODO: export from addresses
+
+  const ShelleyWitness = async (witness) => {
+    const xpub = await deriveXpub(witness.path)
+    const publicKey = xpub2pub(xpub)
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
-    return isShelleyPath(witness.path)
-      ? ShelleyTxWitnessShelley(publicKey, signature)
-      : ShelleyTxWitnessByron(publicKey, signature, chainCode, {})
+    return ShelleyTxWitnessShelley(publicKey, signature)
+  }
+
+  const ByronWitness = async (witness) => {
+    const xpub = await deriveXpub(witness.path)
+    const publicKey = xpub2pub(xpub)
+    const chainCode = xpub.slice(33, 64) // TODO: move this somewhere
+    const addressAttributes = encode({}) // TODO:
+    const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
+    return ShelleyTxWitnessByron(publicKey, signature, chainCode, addressAttributes)
+  }
+
+  const prepareWitnesses = async (ledgerWitnesses) => {
+    const _shelleyWitnesses = []
+    const _byronWitnesses = []
+    ledgerWitnesses.forEach((witness) => {
+      isShelleyPath(witness.path)
+        ? _shelleyWitnesses.push(ShelleyWitness(witness))
+        : _byronWitnesses.push(ByronWitness(witness))
+    })
+    // console.log(_shelleyWitnesses)
+    const shelleyWitnesses = await Promise.all(_shelleyWitnesses)
+    const byronWitnesses = await Promise.all(_byronWitnesses)
+    const witnesses = new Map()
+    if (shelleyWitnesses.length > 0) {
+      witnesses.set(0, shelleyWitnesses)
+    }
+    if (byronWitnesses.length > 0) {
+      witnesses.set(2, byronWitnesses)
+    }
+    return witnesses
   }
 
   function prepareBody(unsignedTx, txWitnesses) {
@@ -156,24 +187,22 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
       )
       .catch((e) => console.log(e))
 
-    const adaliteTx = ShelleySignedTransactionStructured(unsignedTx, [], [])
-    console.log('adalite_tx', encode(adaliteTx).toString('hex'))
-
-    console.log(response)
-    console.log(response.txHashHex, unsignedTx.getId())
-    // serialize signed transaction for submission
-    const txWitnesses = await Promise.all(
-      response.witnesses.map((witness) => prepareWitness(witness))
-    )
-
-    console.log(txWitnesses)
-
     if (response.txHashHex !== unsignedTx.getId()) {
       throw NamedError(
         'TxSerializationError',
         'Tx serialization mismatch between Ledger and Adalite'
       )
     }
+
+    const adaliteTx = ShelleySignedTransactionStructured(unsignedTx, [], [])
+    console.log('adalite_tx', encode(adaliteTx).toString('hex'))
+
+    console.log(response)
+    console.log(response.txHashHex, unsignedTx.getId())
+    // serialize signed transaction for submission
+    const txWitnesses = await prepareWitnesses(response.witnesses)
+
+    console.log('witnesses', txWitnesses)
     return {
       txHash: response.txHashHex,
       txBody: prepareBody(unsignedTx, txWitnesses),

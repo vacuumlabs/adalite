@@ -138,17 +138,13 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     accountAddrManager,
     getChangeAddress,
     getVisibleAddressesWithMeta,
+    legacyExtManager,
   }
 }
 
 const ShelleyBlockchainExplorer = (config) => {
   // TODO: move methods to blockchain-explorer file
   const be = BlockchainExplorer(config)
-
-  const addressToHex = (address) =>
-    isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address)
-
-  const addressesToHex = (addresses: Array<string>): Array<string> => addresses.map(addressToHex)
 
   async function getAccountInfo(accountPubkeyHex) {
     const url = `${
@@ -192,14 +188,14 @@ const ShelleyBlockchainExplorer = (config) => {
   }
 
   return {
-    getTxHistory: (addresses) => be.getTxHistory(addressesToHex(addresses)),
+    getTxHistory: (addresses) => be.getTxHistory(addresses),
     fetchTxRaw: be.fetchTxRaw,
-    fetchUnspentTxOutputs: (addresses) => be.fetchUnspentTxOutputs(addressesToHex(addresses)),
-    isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(addressesToHex(addresses)),
+    fetchUnspentTxOutputs: (addresses) => be.fetchUnspentTxOutputs(addresses),
+    isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(addresses),
     submitTxRaw: be.submitTxRaw,
-    getBalance: (addresses) => be.getBalance(addressesToHex(addresses)),
+    getBalance: (addresses) => be.getBalance(addresses),
     fetchTxInfo: be.fetchTxInfo,
-    filterUsedAddresses: (addresses) => be.filterUsedAddresses(addressesToHex(addresses)),
+    filterUsedAddresses: (addresses) => be.filterUsedAddresses(addresses),
     getAccountInfo,
     getValidStakepools,
     getPoolInfo,
@@ -228,6 +224,9 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     gapLimit: config.ADALITE_GAP_LIMIT,
     blockchainExplorer,
   })
+
+  const addressToHex = (address) =>
+    isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address)
 
   function isHwWallet() {
     return cryptoProvider.isHwWallet()
@@ -288,7 +287,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getMaxNonStakingAmount(address) {
-    const utxos = (await getUtxos()).filter(({address}) => !isBase(address))
+    const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
     return _getMaxSendableAmount(utxos, address, false, 0, false)
   }
 
@@ -305,8 +304,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
-    const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(address))
-    const baseAddressUtxos = availableUtxos.filter(({address}) => isBase(address))
+    const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(addressToHex(address)))
+    const baseAddressUtxos = availableUtxos.filter(({address}) => isBase(addressToHex(address)))
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     // we shuffle non-staking utxos separately since we want them to be spend first
     const shuffledUtxos =
@@ -438,7 +437,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getVisibleAddresses() {
     const base = await myAddresses.baseExtAddrManager.discoverAddressesWithMeta()
-    return base
+    const legacy = await myAddresses.legacyExtManager.discoverAddressesWithMeta()
+    return [...base, ...legacy]
   }
 
   function verifyAddress(addr: string) {

@@ -25,9 +25,9 @@ export const NETWORKS = {
   SHELLEY: {
     MAINNET: {
       name: 'mainnet',
-      networkId: 0,
+      networkId: 1,
       protocolMagic: 764824073,
-      ttl: 500,
+      ttl: 1000000,
     },
     HASKELL_TESTNET: {
       name: 'htn',
