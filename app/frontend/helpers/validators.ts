@@ -46,6 +46,9 @@ const sendAmountValidator = (fieldValue, coins, balance) => {
       params: {balance},
     }
   }
+  if (balance < 1000000) {
+    return {code: 'SendAmountBalanceTooLow'}
+  }
   return null
 }
 

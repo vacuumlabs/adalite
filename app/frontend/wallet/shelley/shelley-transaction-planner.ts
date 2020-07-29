@@ -114,6 +114,13 @@ interface NoTxPlan {
   estimatedFee: Lovelace
 }
 
+const checkOutputs = (outputs, fee) => {
+  for (const {coins} of outputs) {
+    if (coins < 1000000 + fee) return false
+  }
+  return true
+}
+
 export function computeTxPlan(
   inputs: Array<Input>,
   outputs: Array<Output>,
@@ -134,7 +141,9 @@ export function computeTxPlan(
 
   // No change necessary, perfect fit
   if (totalOutput + feeWithoutChange === totalInput) {
-    return {inputs, outputs, change: null, certs, deposit, fee: feeWithoutChange as Lovelace}
+    if (checkOutputs(outputs, 0)) {
+      return {inputs, outputs, change: null, certs, deposit, fee: feeWithoutChange as Lovelace}
+    }
   }
 
   const feeWithChange = computeRequiredTxFee(inputs, [...outputs, possibleChange], certs)
@@ -142,24 +151,32 @@ export function computeTxPlan(
   if (totalOutput + feeWithChange > totalInput) {
     // We cannot fit the change output into the transaction
     // Instead, just increase the fee
-    return {
-      inputs,
-      outputs,
-      change: null,
-      certs,
-      deposit,
-      fee: (totalOutput - totalInput) as Lovelace,
+    if (checkOutputs(outputs, 0)) {
+      return {
+        inputs,
+        outputs,
+        change: null,
+        certs,
+        deposit,
+        fee: (totalOutput - totalInput) as Lovelace,
+      }
     }
+  }
+
+  const change = {
+    ...possibleChange,
+    address: possibleChange.address,
+    coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
+  }
+
+  if (!checkOutputs([...outputs, change], 0)) {
+    return null
   }
 
   return {
     inputs,
     outputs,
-    change: {
-      ...possibleChange,
-      address: possibleChange.address,
-      coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
-    },
+    change,
     certs,
     deposit,
     fee: feeWithChange as Lovelace,
