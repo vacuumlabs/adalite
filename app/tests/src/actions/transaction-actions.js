@@ -61,5 +61,5 @@ it('Calculate fee - shelley', async () => {
   state.donationAmount.coins = 5000000
 
   await action.calculateFee()
-  assert.equal(state.transactionFee, 400000)
+  assert.equal(state.transactionFee, 163116)
 })
