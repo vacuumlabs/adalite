@@ -79,8 +79,8 @@ const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
   return null
 }
 
-const delegationFeeValidator = (fee, balance) => {
-  if (fee > balance) {
+const delegationFeeValidator = (fee, deposit, balance) => {
+  if (fee + deposit > balance) {
     return {
       code: 'DelegationAccountBalanceError',
       params: {balance},
