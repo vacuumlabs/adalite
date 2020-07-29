@@ -10,7 +10,7 @@ import {
   ShelleySignedTransactionStructured,
 } from './shelley-transaction'
 
-import {PROTOCOL_MAGIC_KEY} from '../constants'
+// import {PROTOCOL_MAGIC_KEY} from '../constants'
 
 import {bechAddressToHex, isShelleyPath} from './helpers/addresses'
 
@@ -135,7 +135,6 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
         ? _shelleyWitnesses.push(ShelleyWitness(witness))
         : _byronWitnesses.push(ByronWitness(witness))
     })
-    // console.log(_shelleyWitnesses)
     const shelleyWitnesses = await Promise.all(_shelleyWitnesses)
     const byronWitnesses = await Promise.all(_byronWitnesses)
     const witnesses = new Map()
@@ -154,38 +153,21 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
 
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
     const inputs = unsignedTx.inputs.map((input, i) => _prepareInput(input, addressToAbsPathMapper))
-
     const outputs = unsignedTx.outputs.map((output) => _prepareOutput(output))
     const certificates = unsignedTx.certs.map((cert) => _prepareCert(cert, addressToAbsPathMapper))
     const feeStr = `${unsignedTx.fee.fee}`
     const ttlStr = `${network.ttl}`
-    console.log(certificates)
     const withdrawals = []
-    console.log(unsignedTx)
-    console.log(
-      JSON.stringify({
-        networkId: network.networkId,
-        magic: network.protocolMagic,
-        inputs,
-        outputs,
-        feeStr,
-        ttlStr,
-        certificates,
-        withdrawals,
-      })
+    const response = await ledger.signTransaction(
+      network.networkId,
+      network.protocolMagic,
+      inputs,
+      outputs,
+      feeStr,
+      ttlStr,
+      certificates,
+      withdrawals
     )
-    const response = await ledger
-      .signTransaction(
-        network.networkId,
-        network.protocolMagic,
-        inputs,
-        outputs,
-        feeStr,
-        ttlStr,
-        certificates,
-        withdrawals
-      )
-      .catch((e) => console.log(e))
 
     if (response.txHashHex !== unsignedTx.getId()) {
       throw NamedError(
@@ -193,16 +175,9 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
         'Tx serialization mismatch between Ledger and Adalite'
       )
     }
-
-    const adaliteTx = ShelleySignedTransactionStructured(unsignedTx, [], [])
-    console.log('adalite_tx', encode(adaliteTx).toString('hex'))
-
-    console.log(response)
-    console.log(response.txHashHex, unsignedTx.getId())
     // serialize signed transaction for submission
     const txWitnesses = await prepareWitnesses(response.witnesses)
 
-    console.log('witnesses', txWitnesses)
     return {
       txHash: response.txHashHex,
       txBody: prepareBody(unsignedTx, txWitnesses),

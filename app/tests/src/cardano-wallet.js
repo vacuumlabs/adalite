@@ -3,7 +3,7 @@ import cbor from 'borc'
 
 import {CardanoWallet} from '../../frontend/wallet/cardano-wallet'
 import CryptoProviderFactory from '../../frontend/wallet/byron/crypto-provider-factory'
-import {txFeeFunction} from '../../frontend/wallet/byron-tx-planner'
+import {txFeeFunction} from '../../frontend/wallet/byron/byron-tx-planner'
 
 import mockNetwork from './common/mock'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'

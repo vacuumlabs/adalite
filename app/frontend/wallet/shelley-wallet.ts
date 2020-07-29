@@ -271,7 +271,6 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
         debugLog(e)
         throw NamedError('TransactionRejectedWhileSigning', e.message)
       })
-    console.log(signedTx)
     return signedTx
   }
 
