@@ -28,6 +28,7 @@ type Input = UTxO
 type Output = {
   address: string
   coins: Lovelace
+  accountAddress: string
 }
 
 type Cert = {
@@ -155,6 +156,7 @@ export function computeTxPlan(
     inputs,
     outputs,
     change: {
+      ...possibleChange,
       address: possibleChange.address,
       coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
     },
@@ -205,10 +207,10 @@ export function selectMinimalTxPlan(
 
   const inputs = []
 
-  const outputs = address ? [{address, coins}] : []
-  if (donationAmount > 0) outputs.push({address: getDonationAddress(), coins: donationAmount})
+  const outputs = address ? [{address, coins, accountAddress}] : []
+  if (donationAmount > 0) {outputs.push({address: getDonationAddress(), coins: donationAmount, accountAddress})}
 
-  const change = {address: changeAddress, coins: 0 as Lovelace}
+  const change = {address: changeAddress, coins: 0 as Lovelace, accountAddress}
 
   for (let i = 0; i < profitableUtxos.length; i++) {
     inputs.push(profitableUtxos[i])
