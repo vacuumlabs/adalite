@@ -35,7 +35,7 @@ const StakePoolInfo = ({pool, gettingPoolInfo}) => {
         <div>
           <div>{`Name: ${name || ''}`}</div>
           <div>{`Ticker: ${ticker || ''}`}</div>
-          <div>{`Tax: ${margin || ''}`}</div>
+          <div>{`Tax: ${margin * 100 || ''}`}%</div>
           <div>{`Fixed cost: ${
             fixedCost ? printAda(parseInt(fixedCost, 10) as Lovelace) : ''
           }`}</div>

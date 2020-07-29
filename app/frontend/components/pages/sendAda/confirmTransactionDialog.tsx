@@ -4,7 +4,8 @@ import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 import RawTransactionModal from './rawTransactionModal'
-import roundNumber from '../../../helpers/roundNumber'
+// import roundNumber from '../../../helpers/roundNumber'
+import {Lovelace} from '../../../state'
 
 interface Props {
   sendAddress: any
@@ -68,23 +69,28 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
           {txConfirmType === 'delegate' && (
             <Fragment>
               <div className="review-label">Pool ID</div>
-              <div className="review-amount">{stakePool.poolIdentifier}</div>
+              <div className="review-amount">{stakePool.poolHash}</div>
               <div className="review-label">Pool Name</div>
               <div className="review-amount">{stakePool.name}</div>
               <div className="review-label">Ticker</div>
               <div className="review-amount">{stakePool.ticker}</div>
               <div className="review-label">Tax</div>
               <div className="review-amount">
-                {stakePool.rewards &&
-                  roundNumber(stakePool.rewards.ratio[0] * 100) / stakePool.rewards.ratio[1]}
+                {stakePool.margin && stakePool.margin}
                 %
+              </div>
+              <div className="review-label">Fixed cost</div>
+              <div className="review-amount">
+                {stakePool.fixedCost && printAda(stakePool.fixedCost)}
               </div>
               <div className="review-label">Homepage</div>
               <div className="review-amount">{stakePool.homepage}</div>
             </Fragment>
           )}
           <div className="ada-label">Fee</div>
-          <div className="review-fee">{printAda(summary.fee)}</div>
+          <div className="review-fee">{printAda((summary.fee * 100) as Lovelace)}</div>
+          {summary.deposit && <div className="ada-label">Deposit</div>}
+          {summary.deposit && <div className="review-fee">{printAda(summary.deposit)}</div>}
           <div className="ada-label">Total</div>
           <div className="review-total">{printAda(total)}</div>
         </div>

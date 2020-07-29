@@ -16,10 +16,10 @@ const CurrentDelegationPage = ({
       {Object.keys(pool).length ? (
         <div>
           <div className="current-delegation-wrapper">
-            <div className="delegation-history-name">{pool.name}</div>
+            <div className="delegation-history-name">{pool.name || 'Pool'}</div>
             <div className="delegation-history-id">{pool.poolHash}</div>
             <div className="delegation-history-id">Ticker: {pool.ticker || ''}</div>
-            <div className="delegation-history-id">Tax: {pool.margin}%</div>
+            <div className="delegation-history-id">Tax: {pool.margin * 100 || ''}%</div>
             <div className="delegation-history-id">
               Fixed cost: {printAda(parseInt(pool.fixedCost, 10) as Lovelace)}
             </div>
