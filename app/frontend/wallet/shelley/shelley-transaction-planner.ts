@@ -31,7 +31,7 @@ type Output = {
 }
 
 type Cert = {
-  type: string
+  type: number
   accountAddressPath: any
   poolHash: string | null
 }
@@ -92,11 +92,20 @@ export function computeRequiredTxFee(
   return fee
 }
 
+function computeRequiredDeposit(certs: Array<Cert>): Lovelace {
+  let deposit = 0
+  for (const {type} of certs) {
+    if (type === 0) deposit += 2000000
+  }
+  return deposit as Lovelace
+}
+
 interface TxPlan {
   inputs: Array<Input>
   outputs: Array<Output>
   change: Output | null
   certs: Array<Cert>
+  deposit: Lovelace
   fee: Lovelace
 }
 
@@ -111,20 +120,20 @@ export function computeTxPlan(
   certs: Array<Cert>
 ): TxPlan | null {
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0)
-  const totalOutput = outputs.reduce((acc, output) => acc + output.coins, 0)
+  const deposit = computeRequiredDeposit(certs)
+  const totalOutput = outputs.reduce((acc, output) => acc + output.coins, 0) + deposit
 
   if (totalOutput > Number.MAX_SAFE_INTEGER) {
     throw NamedError('CoinAmountError')
   }
 
   const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certs)
-
   // Cannot construct transaction plan
   if (totalOutput + feeWithoutChange > totalInput) return null
 
   // No change necessary, perfect fit
   if (totalOutput + feeWithoutChange === totalInput) {
-    return {inputs, outputs, change: null, certs, fee: feeWithoutChange as Lovelace}
+    return {inputs, outputs, change: null, certs, deposit, fee: feeWithoutChange as Lovelace}
   }
 
   const feeWithChange = computeRequiredTxFee(inputs, [...outputs, possibleChange], certs)
@@ -137,6 +146,7 @@ export function computeTxPlan(
       outputs,
       change: null,
       certs,
+      deposit,
       fee: (totalOutput - totalInput) as Lovelace,
     }
   }
@@ -149,6 +159,7 @@ export function computeTxPlan(
       coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
     },
     certs,
+    deposit,
     fee: feeWithChange as Lovelace,
   }
 }

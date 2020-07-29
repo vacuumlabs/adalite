@@ -859,13 +859,19 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const validationError = delegationFeeValidator(plan.fee || plan.estimatedFee, balance)
+    const validationError = delegationFeeValidator(
+      plan.fee || plan.estimatedFee,
+      plan.deposit,
+      balance
+    )
     setErrorState('delegationValidationError', validationError)
     if (!validationError) {
+      const delegationFee = plan && !!plan.fee ? plan.fee : plan.estimatedFee
       setState({
         shelleyDelegation: {
           ...state.shelleyDelegation,
-          delegationFee: plan && !!plan.fee ? plan.fee : plan.estimatedFee,
+          delegationFee: delegationFee ? delegationFee + plan.deposit : 0,
+          // TODO: we probably want to show deposit in separate field
         },
       })
       setTransactionSummary('stake', plan)
