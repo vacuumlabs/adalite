@@ -962,11 +962,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     updateStakePoolIdentifier(getState(), null, ADALITE_CONFIG.ADALITE_STAKE_POOL_ID)
   }
 
-  const resetDelegationToAdalite = () => {
-    if (ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley') {
-      selectAdaliteStakepool()
-    }
-  }
+  // const resetDelegationToAdalite = () => {
+  //   if (ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley') {
+  //     selectAdaliteStakepool()
+  //   }
+  // }
 
   /* SUBMIT TX */
 
