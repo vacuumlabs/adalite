@@ -57,6 +57,7 @@ if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./transactionSubmitter')(app)
   require('./emailSubmitter')(app)
 }
+require('./poolInfoGetter')(app)
 
 app.get('*', (req, res) => {
   const serverUrl = backendConfig.ADALITE_SERVER_URL

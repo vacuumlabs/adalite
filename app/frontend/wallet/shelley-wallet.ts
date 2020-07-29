@@ -181,7 +181,12 @@ const ShelleyBlockchainExplorer = (config) => {
   }
 
   async function getPoolInfo(url) {
-    const response = await request(url).catch(() => {
+    const response = await request(
+      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
+      'POST',
+      JSON.stringify({poolUrl: url}),
+      {'Content-Type': 'application/json'}
+    ).catch(() => {
       return {}
     })
     return response
