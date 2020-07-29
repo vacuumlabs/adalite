@@ -838,11 +838,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const calculateDelegationFee = async (revoke?: boolean) => {
-    const state = getState()
-    setPoolInfo(state)
-    const poolHash = state.shelleyDelegation.selectedPool.poolHash
-    const stakingKeyRegistered = state.shelleyAccountInfo.hasStakingKey
-    const balance = state.balance
+    const newState = getState()
+    setPoolInfo(newState)
+    const poolHash = newState.shelleyDelegation.selectedPool.poolHash
+    const stakingKeyRegistered = newState.shelleyAccountInfo.hasStakingKey
+    const balance = newState.balance
     let plan
     try {
       plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: 'delegate'})
@@ -856,6 +856,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }
       return
     }
+    const state = getState()
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
@@ -917,13 +918,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const updateStakePoolIdentifier = (state, e) => {
+  const updateStakePoolIdentifier = (state, e, hash?) => {
     /**
      * this has to be redone,
      * pool validation must happen before debouncing
      * but pool info shown after
      */
-    const poolHash = e.target.value
+    const poolHash = hash || e.target.value
     const validationError = poolIdValidator(poolHash, state.validStakepools)
     setState({
       shelleyDelegation: {
@@ -941,19 +942,20 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const selectAdaliteStakepool = () => {
-    const state = getState()
-    const poolInfo =
-      state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
-    setState({
-      shelleyDelegation: {
-        ...state.shelleyDelegation,
-        selectedPool: {
-          validationError: !poolInfo,
-          ...poolInfo,
-        },
-      },
-    })
-    validateDelegationAndCalculateFee()
+    // const state = getState()
+    // const poolInfo =
+    //   state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
+    // setState({
+    //   shelleyDelegation: {
+    //     ...state.shelleyDelegation,
+    //     selectedPool: {
+    //       validationError: !poolInfo,
+    //       ...poolInfo,
+    //     },
+    //   },
+    // })
+    // validateDelegationAndCalculateFee()
+    updateStakePoolIdentifier(getState(), null, ADALITE_CONFIG.ADALITE_STAKE_POOL_ID)
   }
 
   const resetDelegationToAdalite = () => {
@@ -1038,7 +1040,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetSendFormFields(state)
       resetSendFormState(state)
       resetAmountFields(state)
-      resetDelegationToAdalite()
+      resetDelegation()
       wallet.generateNewSeeds()
       await reloadWalletInfo(state)
       setState({
