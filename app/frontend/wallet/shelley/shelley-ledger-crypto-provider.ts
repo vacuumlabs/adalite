@@ -88,6 +88,14 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     addressHex: string
   }
 
+  type OutputTypeChange = {
+    addressTypeNibble: number
+    spendingPath: any //BIP32Path,
+    amountStr: string
+    stakingPath?: any //BIP32Path,
+    stakingKeyHashHex?: string
+  }
+
   type Certificate = {
     type: number
     path: any //BIP32Path,
@@ -102,11 +110,19 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     }
   }
 
-  function _prepareOutput(output): OutputTypeAddress {
-    return {
-      amountStr: `${output.coins}`,
-      addressHex: bechAddressToHex(output.address),
-    }
+  function _prepareOutput(output): OutputTypeAddress | OutputTypeChange {
+    console.log(output)
+    return output.isChange
+      ? {
+        addressTypeNibble: 0, // TODO: get from address
+        spendingPath: output.spendingPath,
+        amountStr: `${output.coins}`,
+        stakingPath: output.stakingPath,
+      }
+      : {
+        amountStr: `${output.coins}`,
+        addressHex: bechAddressToHex(output.address),
+      }
   }
 
   const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32) // TODO: export from addresses
@@ -177,7 +193,6 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     }
     // serialize signed transaction for submission
     const txWitnesses = await prepareWitnesses(response.witnesses)
-
     return {
       txHash: response.txHashHex,
       txBody: prepareBody(unsignedTx, txWitnesses),

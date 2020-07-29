@@ -97,7 +97,7 @@ function ShelleyTxInputFromUtxo(utxo) {
   }
 }
 
-function ShelleyTxOutput(address, coins, isChange) {
+function ShelleyTxOutput(address, coins, isChange, spendingPath = null, stakingPath = null) {
   function encodeCBOR(encoder) {
     const addressBuff = bech32.decode(address).data
     return encoder.pushAny([addressBuff, coins])
@@ -107,6 +107,8 @@ function ShelleyTxOutput(address, coins, isChange) {
     address,
     coins,
     isChange,
+    spendingPath,
+    stakingPath,
     encodeCBOR,
   }
 }

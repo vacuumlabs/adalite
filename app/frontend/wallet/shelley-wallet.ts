@@ -263,8 +263,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     const txTtl = ShelleyTtl(cryptoProvider.network.ttl)
     // TODO: txWithdrawals
     if (plan.change) {
-      const {address, coins} = plan.change
-      txOutputs.push(ShelleyTxOutput(address, coins, true))
+      const {address, coins, accountAddress} = plan.change
+      const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(address)
+      const stakingPath = myAddresses.getAddressToAbsPathMapper()(accountAddress)
+      txOutputs.push(ShelleyTxOutput(address, coins, true, absDerivationPath, stakingPath))
     }
     return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts)
   }
