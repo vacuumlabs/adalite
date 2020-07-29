@@ -15,7 +15,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
-import {NETWORKS} from './wallet/constants'
+import {NETWORKS, CRYPTO_PROVIDER_TYPES} from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
 import {CardanoWallet} from './wallet/cardano-wallet'
@@ -29,7 +29,7 @@ import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 
 import {ShelleyWallet} from './wallet/shelley-wallet'
-import loadWasmModule from './helpers/wasmLoader'
+// import loadWasmModule from './helpers/wasmLoader'
 import getDonationAddress from './helpers/getDonationAddress'
 let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
 
@@ -137,7 +137,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           break
         }
         case 'shelley': {
-          await loadWasmModule()
           const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
             cryptoProviderType,
             {

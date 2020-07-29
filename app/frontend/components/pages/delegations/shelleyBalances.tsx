@@ -57,7 +57,7 @@ const shelleyBalances = ({
       Rewards account balance
       <a
         {...tooltip(
-          'This value represents balance on your rewards account. It contains all received rewards from delegation and ADA potentially sent to the rewards address.',
+          'This value represents balance on your rewards account. It contains all received rewards from delegation.',
           true
         )}
       >
@@ -71,9 +71,14 @@ const shelleyBalances = ({
           : `${printAda(rewardsAccountBalance)}`}
         <AdaIcon />
       </div>
-      {/* <button className="button stake-pool" onClick={null}>
+      <button
+        {...tooltip('Comming soon.', true)}
+        disabled
+        className="button stake-pool"
+        onClick={null}
+      >
         Redeem
-      </button> */}
+      </button>
     </div>
     <div className="total-balance-wrapper">
       <h2 className="card-title staking-balances-title">Balance</h2>

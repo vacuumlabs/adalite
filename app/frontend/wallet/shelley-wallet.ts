@@ -418,7 +418,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
         ...accountInfo.delegation,
         ...poolInfo,
       },
-      value: 0,
+      value: accountInfo.rewards || 0,
     }
   }
 
@@ -443,8 +443,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getVisibleAddresses() {
     const base = await myAddresses.baseExtAddrManager.discoverAddressesWithMeta()
-    const legacy = await myAddresses.legacyExtManager.discoverAddressesWithMeta()
-    return [...base, ...legacy]
+    return [...base]
   }
 
   async function verifyAddress(addr: string) {

@@ -2,6 +2,7 @@ import {h} from 'preact'
 import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
 import {TrezorLogoWhite, LedgerLogoWhite} from '../../common/svg'
 import {ADALITE_CONFIG} from '../../../config'
+import tooltip from '../../common/tooltip'
 
 interface Props {
   loadWallet: any
@@ -36,6 +37,7 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
         />
         <button
           disabled={!ADALITE_CONFIG.ADALITE_ENABLE_TREZOR}
+          {...tooltip('Support for Trezor coming soon', !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR)}
           className="button primary trezor"
           onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR})}
         >
@@ -58,6 +60,7 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
           {LedgerAffiliateLink('Support us by buying one')}
         </div>
         <button
+          {...tooltip('Support for Trezor coming soon', !ADALITE_CONFIG.ADALITE_ENABLE_LEDGER)}
           disabled={!ADALITE_CONFIG.ADALITE_ENABLE_LEDGER}
           className="button primary ledger"
           onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER})}
