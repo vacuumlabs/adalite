@@ -117,6 +117,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   /* LOADING WALLET */
 
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
+    // loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
     })
@@ -159,6 +160,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
+      if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       )).rootSecret
@@ -325,7 +327,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           addressVerificationError: false,
         })
         await wallet.verifyAddress(state.showAddressDetail.address)
-        setState({waitingForHwWallet: false})
+        setState({
+          waitingForHwWallet: false,
+        })
       } catch (e) {
         setState({
           waitingForHwWallet: false,

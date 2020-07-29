@@ -53,9 +53,9 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
     throw NamedError('UnsupportedOperationError', 'Operation not supported')
   }
 
-  async function displayAddressForPath(absDerivationPath) {
+  async function displayAddressForPath(absDerivationPath, stakingPath?) {
     try {
-      await ledger.showAddress(absDerivationPath)
+      await ledger.showAddress(0, 1, absDerivationPath, stakingPath)
     } catch (err) {
       throw NamedError('LedgerOperationError', `${err.name}: ${err.message}`)
     }

@@ -445,8 +445,14 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return [...base, ...legacy]
   }
 
-  function verifyAddress(addr: string) {
-    throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
+  async function verifyAddress(addr: string) {
+    if (!('displayAddressForPath' in cryptoProvider)) {
+      throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
+    }
+    const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(addr)
+    const stakingAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
+    const stakingPath = myAddresses.getAddressToAbsPathMapper()(stakingAddress)
+    return await cryptoProvider.displayAddressForPath(absDerivationPath, stakingPath)
   }
 
   function generateNewSeeds() {
