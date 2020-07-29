@@ -121,7 +121,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
   const ByronWitness = async (witness) => {
     const xpub = await deriveXpub(witness.path)
     const publicKey = xpub2pub(xpub)
-    const chainCode = xpub.slice(33, 64) // TODO: move this somewhere
+    const chainCode = xpub.slice(32, 64) // TODO: move this somewhere
     const addressAttributes = encode({}) // TODO:
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
     return ShelleyTxWitnessByron(publicKey, signature, chainCode, addressAttributes)
