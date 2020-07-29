@@ -137,7 +137,7 @@ const initialState: State = {
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   shouldShowStakingBanner: !(
-    window.localStorage.getItem('dontShowStakingBannerTestnet2') === 'true'
+    window.localStorage.getItem('dontShowStakingBannerTestnet3') === 'true'
   ),
   errorBannerContent: '',
   visibleAddresses: [],
