@@ -27,6 +27,7 @@ const translations = {
     'Insufficient balance: Not enough funds to pay the conversion fee.',
 
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
+  DaedalusMnemonic: () => '',
 
   TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
   TransportError: ({message}) => `TransportError: ${message}`,
