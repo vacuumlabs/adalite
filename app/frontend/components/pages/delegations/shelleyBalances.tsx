@@ -71,12 +71,7 @@ const shelleyBalances = ({
           : `${printAda(rewardsAccountBalance)}`}
         <AdaIcon />
       </div>
-      <button
-        {...tooltip('Comming soon.', true)}
-        disabled
-        className="button stake-pool"
-        onClick={null}
-      >
+      <button disabled className="button stake-pool" onClick={null} style="color:gray;">
         Redeem
       </button>
     </div>
