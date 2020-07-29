@@ -184,11 +184,11 @@ export function selectMinimalTxPlan(
   registerStakingKey = false
 ): TxPlan | NoTxPlan {
   const certs = []
-  if (poolHash) {
-    certs.push(createCert('delegation', accountAddress, poolHash))
-  }
   if (poolHash && registerStakingKey) {
     certs.push(createCert('staking_key_registration', accountAddress, null))
+  }
+  if (poolHash) {
+    certs.push(createCert('delegation', accountAddress, poolHash))
   }
   const profitableUtxos = utxos.filter(isUtxoProfitable)
 
