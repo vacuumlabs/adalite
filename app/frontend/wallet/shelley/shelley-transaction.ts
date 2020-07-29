@@ -4,11 +4,6 @@ import {encode} from 'borc'
 import {blake2b} from 'cardano-crypto.js'
 import bech32 from './helpers/bech32'
 
-const TxOutputTypeCodes = {
-  SIGN_TX_OUTPUT_TYPE_ADDRESS: 1,
-  SIGN_TX_OUTPUT_TYPE_PATH: 2,
-}
-
 function ShelleyTxAux(inputs, outputs, fee, ttl, certs?) {
   function getId() {
     return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl, certs)), 32).toString('hex')
@@ -70,8 +65,6 @@ function ShelleyTxWitnessShelley(publicKey, signature) {
 }
 
 function ShelleyTxWitnessByron(publicKey, signature, chaincode, address_attributes) {
-  console.log([publicKey, signature, chaincode, address_attributes])
-
   function encodeCBOR(encoder) {
     return encoder.pushAny([publicKey, signature, chaincode, address_attributes])
   }
@@ -119,7 +112,6 @@ function ShelleyTxOutput(address, coins, isChange) {
 }
 
 function ShelleyTxCert(type, accountAddress, poolHash) {
-  console.log(type, accountAddress, poolHash)
   function encodeCBOR(encoder) {
     const accountAddressHash = bech32.decode(accountAddress).data.slice(1)
     let hash

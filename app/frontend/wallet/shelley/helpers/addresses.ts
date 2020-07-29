@@ -43,18 +43,30 @@ export const baseAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, networkId)
   return bech32.encode({prefix: 'addr', data: addrBuffer})
 }
 
-export const isShelleyAddress = (address) => {
-  const addressType = getAddressInfo(Buffer.from(address, 'hex')).addressType
-  return (
-    addressType === AddressTypes.BASE ||
-    addressType === AddressTypes.ENTERPRISE ||
-    addressType === AddressTypes.POINTER ||
-    addressType === AddressTypes.REWARDS
-  )
+export const isShelleyAddress = (address): boolean => {
+  try {
+    const addressType = getAddressInfo(Buffer.from(address, 'hex')).addressType
+    return (
+      addressType === AddressTypes.BASE ||
+      addressType === AddressTypes.ENTERPRISE ||
+      addressType === AddressTypes.POINTER ||
+      addressType === AddressTypes.REWARDS
+    )
+  } catch (e) {
+    return false
+  }
 }
 
 export const isShelleyFormat = (address: string): boolean => {
-  return address.startsWith('addr1')
+  return address.startsWith('addr')
+}
+
+export const isValidShelleyAddress = (address: string): boolean => {
+  try {
+    return isShelleyFormat(address) && isShelleyAddress(bechAddressToHex(address))
+  } catch (e) {
+    return false
+  }
 }
 
 export const isBase = (address: string): boolean => {

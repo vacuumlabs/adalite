@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
 import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
-import {encode, decode} from 'borc'
+import {encode} from 'borc'
 
 import HdNode from '../helpers/hd-node'
 import {
@@ -10,7 +10,7 @@ import {
   ShelleyTxWitnessByron,
 } from './shelley-transaction'
 
-import {PROTOCOL_MAGIC_KEY} from '../constants'
+// import {PROTOCOL_MAGIC_KEY} from '../constants'
 import {isShelleyPath} from './helpers/addresses'
 
 type HexString = string & {__typeHexString: any}
@@ -60,7 +60,6 @@ const ShelleyJsCryptoProvider = ({
       txBody: encode(structured_tx).toString('hex'),
       txHash: structured_tx.getId().toString('hex'),
     }
-    console.log(structured_tx)
     return tx
   }
 
