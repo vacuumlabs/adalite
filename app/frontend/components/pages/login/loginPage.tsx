@@ -16,7 +16,7 @@ import Tag from '../../common/tag'
 import WalletLoadingErrorModal from './walletLoadingErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
-import {ADALITE_CONFIG} from '../../../config'
+// import {ADALITE_CONFIG} from '../../../config'
 
 const AUTH_METHOD_NAMES = {
   'mnemonic': 'Mnemonic',

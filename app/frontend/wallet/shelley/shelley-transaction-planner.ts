@@ -208,7 +208,13 @@ export function selectMinimalTxPlan(
   const inputs = []
 
   const outputs = address ? [{address, coins, accountAddress}] : []
-  if (donationAmount > 0) {outputs.push({address: getDonationAddress(), coins: donationAmount, accountAddress})}
+  if (donationAmount > 0) {
+    outputs.push({
+      address: getDonationAddress(),
+      coins: donationAmount,
+      accountAddress,
+    })
+  }
 
   const change = {address: changeAddress, coins: 0 as Lovelace, accountAddress}
 

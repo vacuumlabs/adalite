@@ -111,7 +111,6 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
   }
 
   function _prepareOutput(output): OutputTypeAddress | OutputTypeChange {
-    console.log(output)
     return output.isChange
       ? {
         addressTypeNibble: 0, // TODO: get from address
