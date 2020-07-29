@@ -571,7 +571,9 @@ button[data-balloon] {
 }
 
 [data-balloon="Copied to clipboard"]::after,
-[data-balloon="Insufficient funds"]::after {
+[data-balloon="Insufficient funds"]::after,
+[data-balloon="Support for Ledger coming soon"]::after
+[data-balloon="Support for Trezor coming soon"]::after {
   min-width: unset;
   white-space: pre;
 }
