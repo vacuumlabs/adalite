@@ -11,7 +11,11 @@ import {
   ShelleyBaseAddressProvider,
 } from './shelley/shelley-address-provider'
 
-import {selectMinimalTxPlan, computeRequiredTxFee} from './shelley/shelley-transaction-planner'
+import {
+  selectMinimalTxPlan,
+  computeRequiredTxFee,
+  isUtxoProfitable,
+} from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
@@ -32,7 +36,7 @@ import {
   ShelleyTtl,
 } from './shelley/shelley-transaction'
 
-const isUtxoProfitable = () => true
+// const isUtxoProfitable = () => true
 
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExtManager = AddressManager({
