@@ -50,6 +50,9 @@ const translations = {
   LedgerOperationError: ({message}) => `LedgerOperationError: ${message}`,
 
   CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
+  OutputTooSmall: () =>
+    'Output amount too low. Minimum output amount is 1 ADA. Please try to send different amount',
+  SendAmountBalanceTooLow: () => 'Not enough balance',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
   NetworkError: () =>
     'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',

@@ -502,6 +502,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     let plan
     try {
       plan = await wallet.getTxPlan(args)
+      if (!plan.fee) {
+        throw NamedError('OutputTooSmall')
+      }
     } catch (e) {
       stopLoadingAction(state, {})
       resetAmountFields(state)

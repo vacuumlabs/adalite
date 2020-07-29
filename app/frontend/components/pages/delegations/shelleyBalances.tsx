@@ -35,7 +35,7 @@ const shelleyBalances = ({
       Non-staking balance
       <a
         {...tooltip(
-          'Non-staking balance represents amount of coins you are NOT able to delegate to any pool. (funds located on legacy or non-staking addresses)',
+          'Non-staking balance represents amount of coins you are NOT able to delegate to any pool. (These funds can be automatically transferred to your first staking address. (minimum is 1.5 ADA))',
           true
         )}
       >
