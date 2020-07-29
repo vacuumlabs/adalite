@@ -141,7 +141,7 @@ export function computeTxPlan(
 
   // No change necessary, perfect fit
   if (totalOutput + feeWithoutChange === totalInput) {
-    if (checkOutputs(outputs, feeWithoutChange)) {
+    if (checkOutputs(outputs, 0)) {
       return {inputs, outputs, change: null, certs, deposit, fee: feeWithoutChange as Lovelace}
     }
   }
@@ -151,7 +151,7 @@ export function computeTxPlan(
   if (totalOutput + feeWithChange > totalInput) {
     // We cannot fit the change output into the transaction
     // Instead, just increase the fee
-    if (checkOutputs(outputs, feeWithChange)) {
+    if (checkOutputs(outputs, 0)) {
       return {
         inputs,
         outputs,
@@ -169,7 +169,7 @@ export function computeTxPlan(
     coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
   }
 
-  if (!checkOutputs([...outputs, change], feeWithChange)) {
+  if (!checkOutputs([...outputs, change], 0)) {
     return null
   }
 
