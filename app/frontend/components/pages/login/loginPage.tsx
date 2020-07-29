@@ -24,8 +24,7 @@ const AUTH_METHOD_NAMES = {
   'file': 'Key file',
 }
 
-const ENABLE_HW_WALLETS =
-  ADALITE_CONFIG.ADALITE_ENABLE_TREZOR || ADALITE_CONFIG.ADALITE_ENABLE_LEDGER
+const ENABLE_HW_WALLETS = true
 
 const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
 
