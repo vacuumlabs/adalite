@@ -49,7 +49,7 @@ const Transaction = ({txid}) => (
       <span>
         <a
           className="transaction-address"
-          href={`https://shelleyexplorer.cardano.org/en/transaction/${txid}`}
+          href={`https://explorer.cardano.org/en/transaction?id=${txid}`}
           target="_blank"
           rel="noopener"
         >
