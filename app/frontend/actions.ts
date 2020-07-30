@@ -943,6 +943,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       },
     })
     if (validationError || poolHash === '') {
+      resetDelegation()
       return
     }
     validateDelegationAndCalculateFee()
