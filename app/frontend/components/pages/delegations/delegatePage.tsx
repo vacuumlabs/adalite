@@ -9,6 +9,7 @@ import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
 import {Lovelace} from '../../../state'
+import {ADALITE_CONFIG} from '../../../config'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -74,7 +75,7 @@ class Delegate extends Component<Props> {
   }
 
   componentDidMount() {
-    this.props.selectAdaliteStakepool()
+    if (ADALITE_CONFIG.ADALITE_STAKE_POOL_ID !== '') this.props.selectAdaliteStakepool()
   }
 
   render({
