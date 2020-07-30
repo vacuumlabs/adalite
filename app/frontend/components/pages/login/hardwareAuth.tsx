@@ -37,7 +37,7 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
         />
         <button
           disabled={!ADALITE_CONFIG.ADALITE_ENABLE_TREZOR}
-          {...tooltip('Support for Trezor coming soon', !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR)}
+          {...tooltip('Coming on August the 5th', !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR)}
           className="button primary trezor"
           onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR})}
         >

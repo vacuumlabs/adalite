@@ -76,7 +76,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               <div className="review-amount">{stakePool.ticker}</div>
               <div className="review-label">Tax</div>
               <div className="review-amount">
-                {stakePool.margin && stakePool.margin}
+                {stakePool.margin && stakePool.margin * 100}
                 %
               </div>
               <div className="review-label">Fixed cost</div>
@@ -88,7 +88,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             </Fragment>
           )}
           <div className="ada-label">Fee</div>
-          <div className="review-fee">{printAda((summary.fee * 100) as Lovelace)}</div>
+          <div className="review-fee">{printAda(summary.fee as Lovelace)}</div>
           {summary.deposit && <div className="ada-label">Deposit</div>}
           {summary.deposit && <div className="review-fee">{printAda(summary.deposit)}</div>}
           <div className="ada-label">Total</div>

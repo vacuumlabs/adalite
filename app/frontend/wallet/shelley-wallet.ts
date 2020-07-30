@@ -128,8 +128,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     */
     const candidates = await getVisibleAddressesWithMeta()
 
-    const randomSeedGenerator = PseudoRandom(rngSeed)
-    const choice = candidates[randomSeedGenerator.nextInt() % candidates.length]
+    // const randomSeedGenerator = PseudoRandom(rngSeed)
+    const choice = candidates[0]
     return choice.address
   }
 
