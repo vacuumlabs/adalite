@@ -30,8 +30,10 @@ const translations = {
   DaedalusMnemonic: () => '',
 
   TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
-  TransportError: ({message}) => `TransportError: ${message}`,
-  TransportStatusError: ({message}) => `TransportStatusError: ${message}`,
+  TransportError: ({message}) =>
+    `TransportError: ${message}.If you are using a hardware wallet, please make sure your firmware is updated.`,
+  TransportStatusError: ({message}) =>
+    `TransportStatusError: ${message}.Please make sure your hardware wallet firmware is updated.`,
 
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed.',
