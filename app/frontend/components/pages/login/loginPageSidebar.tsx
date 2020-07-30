@@ -47,25 +47,7 @@ const MnemonicContent = () => (
           >
             Yoroi-type
           </a>{' '}
-          mnemonics (15 words) and{' '}
-          <a
-            className="sidebar-link"
-            href="https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#daedalus-compatibility"
-            rel="noopener"
-            target="blank"
-          >
-            partially
-          </a>{' '}
-          interoperable with{' '}
-          <a
-            className="sidebar-link"
-            href="https://daedaluswallet.io/"
-            rel="noopener"
-            target="blank"
-          >
-            Daedalus-type
-          </a>{' '}
-          mnemonics (12/27 words).
+          mnemonics (15 words).
         </p>
       </Alert>
     </div>

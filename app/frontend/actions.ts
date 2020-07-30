@@ -847,6 +847,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
+    const newState = getState()
     setState({
       shelleyDelegation: {
         ...state.shelleyDelation,
@@ -854,7 +855,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           ...state.shelleyDelegation.selectedPool,
           ...poolInfo,
         },
-        delegationFee: 0,
+        delegationFee: newState.shelleyDelegation.delegationFee,
       },
       gettingPoolInfo: false,
     })
