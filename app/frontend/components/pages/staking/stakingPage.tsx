@@ -1,8 +1,10 @@
+/* eslint-disable max-len */
 import {h} from 'preact'
 import {useState, useCallback} from 'preact/hooks'
 import submitEmailRaw from '../../../helpers/submitEmailRaw'
 import NamedError from '../../../helpers/NamedError'
 import debugLog from '../../../helpers/debugLog'
+import {ADALITE_CONFIG} from '../../../config'
 
 const isValidEmail = (email) => {
   // eslint-disable-next-line max-len
@@ -92,35 +94,26 @@ const StakingPage = () => {
         <div className="staking-label">New</div>
         <h2 className="staking-title">Staking with Adalite</h2>
         <p className="staking-text">
-          We released staking delegation interface so our users can access Shelley Testnet and
-          easily delegate Incentivized Testnet ADA to any stake pool directly from AdaLite. We also
-          improved the infrastructure of our stake pool which should be much more reliable now and
-          we introduced very low 3% fee. You can access the delegation interface on{' '}
-          <a href="https://testnet.adalite.io/" target="_blank">
-            https://testnet.adalite.io/
-          </a>
-          {'. '} After release of the staking functionality on the Cardano main net, we will
-          introduce this feature also on main site. The testnet phase is estimated to end in Q2-Q3
-          2020.
+          After Cardano Shelley hard-fork on the July 29th staking was introduced to Cardano.
+          AdaLite will provide compatibility with the new Shelley address format and transactions.
+          We also released the staking interface for main-net. Please report any bugs that you may
+          find in our wallet. Follow our Telegram and Twitter to be informed about changes and
+          release dates for hardware wallets support.
         </p>
         <p className="staking-text">
-          Users who had balance on their mnemonic wallets in the time of{' '}
-          <b>Shelley balance snapshot</b> (29.11.2019) can access the testnet and and stake this
-          balance. The purpose of staking on testnet is to help IOHK team to refine staking
-          functionality. Participating users will be able to transfer all the rewards earned with
-          staking to their main-net wallets at the end of testnet phase.
+          In order to stake, you need to transfer your funds from old Byron address format to new
+          Shelley address format. Transaction that will do this automatically can be created easily
+          from the staking interface.
         </p>
         <p className="staking-text">
-          Please note that Staking is possible on Cardano testnet for <b>mnemonic wallets only</b>.
-          HW wallets are not supported yet but the support should be added before release of the
-          staking functionality to the main-net.
+          We are running our own reliable staking pool with a very low 3% fee. By delegating your
+          stake to us you are supporting the development of AdaLite.
         </p>
         <div className="stakepool-info">
           <p>
-            AdaLite stake pool ticker: <b>ADLT1</b>
             {window.innerWidth > 767 && (
               <p>
-                Pool id: <b>f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49733c37b8f6</b>
+                Pool id: <b>{ADALITE_CONFIG.ADALITE_STAKE_POOL_ID}</b>
               </p>
             )}
           </p>
