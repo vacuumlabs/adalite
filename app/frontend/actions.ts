@@ -492,6 +492,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     )
   }
 
+  const resetDelegationWithoutHash = (state) => {
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        selectedPool: {
+          poolHash: state.shelleyDelegation.selectedPool.poolhHash,
+        },
+        delegationFee: 0,
+      },
+    })
+  }
+
   const isSendFormFilledAndValid = (state) =>
     state.sendAddress.fieldValue !== '' &&
     state.sendAmount.fieldValue !== '' &&
@@ -510,7 +522,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     } catch (e) {
       stopLoadingAction(state, {})
       resetAmountFields(state)
-      resetDelegation()
+      resetDelegationWithoutHash(state)
       setState({
         calculatingDelegationFee: false,
         calculatingFee: false,
@@ -828,6 +840,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const setPoolInfo = async (state) => {
+    if (hasPoolIdentifiersChanged(state)) {
+      return
+    }
     const poolInfo = await wallet.getPoolInfo(state.shelleyDelegation.selectedPool.url)
     if (hasPoolIdentifiersChanged(state)) {
       return
@@ -939,11 +954,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         selectedPool: {
           validationError,
           ...state.validStakepools[poolHash],
+          poolHash,
         },
       },
     })
     if (validationError || poolHash === '') {
-      resetDelegation()
+      if (poolHash === '') {
+        resetDelegation()
+        setState({
+          delegationValidationError: null,
+        })
+      }
       return
     }
     validateDelegationAndCalculateFee()
