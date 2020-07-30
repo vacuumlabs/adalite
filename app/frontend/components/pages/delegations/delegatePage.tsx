@@ -14,7 +14,7 @@ import {ADALITE_CONFIG} from '../../../config'
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
 const DelegationValidation = ({delegationValidationError, txSuccessTab}) =>
-  txSuccessTab === 'stake' ? (
+  txSuccessTab === 'stake' && !delegationValidationError ? (
     <div className="validation-message transaction-success">Transaction successful!</div>
   ) : (
     delegationValidationError && (
@@ -108,7 +108,7 @@ class Delegate extends Component<Props> {
                 type="text"
                 className="input stake-pool-id"
                 name={'pool'}
-                placeholder="Ticker or Stake Pool ID"
+                placeholder="Stake Pool ID"
                 value={stakePool.poolHash}
                 onInput={updateStakePoolIdentifier}
                 autoComplete="off"
@@ -129,7 +129,7 @@ class Delegate extends Component<Props> {
         <div className="validation-row">
           <button
             className="button primary staking"
-            disabled={validationError || calculatingDelegationFee}
+            disabled={validationError || calculatingDelegationFee || stakePool.poolHash === ''}
             onClick={delegationHandler}
             {...tooltip('Funds must be delegated to valid stake pool', false)}
           >

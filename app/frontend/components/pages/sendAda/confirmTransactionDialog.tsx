@@ -35,7 +35,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     stakePool,
     txConfirmType,
   }) {
-    const total = summary.amount + summary.donation + summary.fee
+    const total = summary.amount + summary.donation + summary.fee + summary.deposit
     const titleMap = {
       delegate: 'Delegation review',
       revoke: 'Delegation revocation review',
