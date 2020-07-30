@@ -85,12 +85,12 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               </div>
               <div className="review-label">Homepage</div>
               <div className="review-amount">{stakePool.homepage}</div>
+              <div className="ada-label">Deposit</div>
+              <div className="review-fee">{printAda(summary.deposit)}</div>
             </Fragment>
           )}
           <div className="ada-label">Fee</div>
           <div className="review-fee">{printAda(summary.fee as Lovelace)}</div>
-          {summary.deposit && <div className="ada-label">Deposit</div>}
-          {summary.deposit && <div className="review-fee">{printAda(summary.deposit)}</div>}
           <div className="ada-label">Total</div>
           <div className="review-total">{printAda(total)}</div>
         </div>
