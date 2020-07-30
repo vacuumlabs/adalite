@@ -493,11 +493,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const resetDelegationWithoutHash = (state) => {
+    const newState = getState()
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPool: {
-          poolHash: state.shelleyDelegation.selectedPool.poolhHash,
+          ...newState.shelleyDelegation.selectedPool,
         },
         delegationFee: 0,
       },
