@@ -55,7 +55,6 @@ const checkMap = check.map(process.env, {
   ADALITE_SUPPORT_EMAIL: check.nonEmptyString,
   ADALITE_FIXED_DONATION_VALUE: isPositiveIntString,
   ADALITE_MIN_DONATION_VALUE: isPositiveIntString,
-  ADALITE_STAKE_POOL_ID: check.nonEmptyString,
   ADALITE_ENV: check.nonEmptyString,
   ADALITE_IP_BLACKLIST: isCommaDelimitedListOfIpsOrEmpty,
   SENTRY_DSN: check.nonEmptyString,
