@@ -12,7 +12,12 @@ import {
 
 // import {PROTOCOL_MAGIC_KEY} from '../constants'
 
-import {bechAddressToHex, isShelleyPath} from './helpers/addresses'
+import {
+  bechAddressToHex,
+  isShelleyPath,
+  isShelleyFormat,
+  base58AddressToHex,
+} from './helpers/addresses'
 
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
@@ -120,7 +125,9 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
       }
       : {
         amountStr: `${output.coins}`,
-        addressHex: bechAddressToHex(output.address),
+        addressHex: isShelleyFormat(output.address)
+          ? bechAddressToHex(output.address)
+          : base58AddressToHex(output.address),
       }
   }
 
