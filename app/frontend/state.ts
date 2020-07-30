@@ -11,6 +11,7 @@ export interface SendTransactionSummary {
   fee: Lovelace
   plan: any
   tab?: any
+  deposit: any
 }
 
 export interface State {
@@ -150,6 +151,7 @@ const initialState: State = {
     fee: 0 as Lovelace,
     donation: 0 as Lovelace,
     plan: null,
+    deposit: 0,
   },
   router: {
     pathname: window.location.pathname,

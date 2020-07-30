@@ -405,6 +405,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
         tab,
+        deposit: plan.deposit,
       },
     })
   }
@@ -417,6 +418,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         donation: 0 as Lovelace,
         plan: null,
         tab: state.sendTransactionSummary.tab,
+        deposit: 0,
       },
     })
   }
@@ -901,8 +903,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const validateDelegationAndCalculateFee = () => {
     const state = getState()
     const selectedPool = state.shelleyDelegation.selectedPool
-    const delegationValidationError =
-      selectedPool.validationError || selectedPool.poolIdentifier === ''
+    const delegationValidationError = selectedPool.validationError || selectedPool.poolHash === ''
 
     setErrorState('delegationValidationError', delegationValidationError)
     setState({

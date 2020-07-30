@@ -36,7 +36,11 @@ const translations = {
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed.',
   TransactionRejectedWhileSigning: ({message}) =>
-    `Transaction rejected while signing${message ? `:  ${message}` : '.'}`,
+    `Transaction rejected while signing${
+      message
+        ? `:  ${message}`
+        : '.If you are using a hardware wallet, please make sure your firmware is updated.'
+    }`,
   TransactionCorrupted: () => 'TransactionCorrupted: Transaction assembling failure.',
   TransactionNotFoundInBlockchainAfterSubmission: ({txHash}) =>
     `TransactionNotFoundInBlockchainAfterSubmission: 
@@ -47,7 +51,8 @@ const translations = {
   TrezorRejected: () => 'TrezorRejected: Operation rejected by the Trezor hardware wallet.',
   TrezorSignTxError: ({message}) => `TrezorSignTxError: ${message}`,
   TrezorError: ({message}) => `TrezorError: ${message}`,
-  LedgerOperationError: ({message}) => `LedgerOperationError: ${message}`,
+  LedgerOperationError: ({message}) =>
+    `LedgerOperationError: ${message}. Please make your sure your ledger firmware is updated.`,
 
   CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
   OutputTooSmall: () => 'Output amount too low. Minimum output amount is 1 ADA.',
