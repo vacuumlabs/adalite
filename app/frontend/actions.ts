@@ -496,6 +496,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
+        selectedPool: {
+          poolHash: state.shelleyDelegation.selectedPool.poolhHash,
+        },
         delegationFee: 0,
       },
     })
@@ -837,6 +840,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const setPoolInfo = async (state) => {
+    if (hasPoolIdentifiersChanged(state)) {
+      return
+    }
     const poolInfo = await wallet.getPoolInfo(state.shelleyDelegation.selectedPool.url)
     if (hasPoolIdentifiersChanged(state)) {
       return
