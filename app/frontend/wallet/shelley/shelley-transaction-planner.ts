@@ -8,6 +8,8 @@ import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArra
 import NamedError from '../../helpers/NamedError'
 import {Lovelace} from '../../state'
 import getDonationAddress from '../../helpers/getDonationAddress'
+import {base58} from 'cardano-crypto.js'
+import {isShelleyFormat} from './helpers/addresses'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
@@ -53,7 +55,10 @@ export function estimateTxSize(
     // Note(ppershing): we are conservative here
     // FIXME(ppershing): shouldn't there be some +1 for the array encoding?
     // Is it in maxCborCoinsLen?
-    ({address, coins}) => bech32.decode(address).data.length + maxCborCoinsLen
+    ({address, coins}) =>
+      isShelleyFormat(address)
+        ? bech32.decode(address).data.length + maxCborCoinsLen
+        : base58.decode(address).length + maxCborCoinsLen
   )
   // +2 for indef array start & end
   const txOutputsSize = txOutputsSizes.reduce((acc, x) => acc + x, 0) + 2

@@ -1,8 +1,9 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
 import {encode} from 'borc'
-import {blake2b} from 'cardano-crypto.js'
+import {blake2b, base58} from 'cardano-crypto.js'
 import bech32 from './helpers/bech32'
+import {isShelleyFormat} from './helpers/addresses'
 
 function ShelleyTxAux(inputs, outputs, fee, ttl, certs?) {
   function getId() {
@@ -99,7 +100,9 @@ function ShelleyTxInputFromUtxo(utxo) {
 
 function ShelleyTxOutput(address, coins, isChange, spendingPath = null, stakingPath = null) {
   function encodeCBOR(encoder) {
-    const addressBuff = bech32.decode(address).data
+    const addressBuff = isShelleyFormat(address)
+      ? bech32.decode(address).data
+      : base58.decode(address)
     return encoder.pushAny([addressBuff, coins])
   }
 
