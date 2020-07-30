@@ -83,7 +83,7 @@ const Footer = () => {
             </a>
             <a
               className="donations-item ada"
-              href={`https://seiza.com/blockchain/address/${getDonationAddress()}`}
+              href={`https://adascan.net/address/${getDonationAddress()}`}
               target="_blank"
               title="Donate via Adalite"
               rel="noopener"
