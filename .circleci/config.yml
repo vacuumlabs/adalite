@@ -27,8 +27,8 @@ jobs:
       - run: cp .env.example .env
       - run: yarn install
       - run: cd app && yarn install && cd ../
-      - run: yarn audit --groups dependencies
-      - run: cd app && yarn audit --groups dependencies && cd ../
+      - run: yarn audit
+      - run: cd app && yarn audit && cd ../
 
       - save_cache:
           paths:
