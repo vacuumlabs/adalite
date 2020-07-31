@@ -163,7 +163,7 @@ export function computeTxPlan(
         change: null,
         certs,
         deposit,
-        fee: (totalOutput - totalInput) as Lovelace,
+        fee: (totalInput - totalOutput) as Lovelace,
       }
     }
   }
