@@ -84,7 +84,16 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
                   target="_blank"
                   rel="noopener"
                 >
-                  Shelley explorer
+                  ShelleyExplorer
+                </a>
+                <span> | </span>
+                <a
+                  className="address-link"
+                  href={`https://adascan.net/address/${address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  AdaScan
                 </a>
               </span>
             )}

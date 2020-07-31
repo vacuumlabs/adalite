@@ -53,7 +53,16 @@ const Transaction = ({txid}) => (
           target="_blank"
           rel="noopener"
         >
-          Shelley explorer
+          ShelleyExplorer
+        </a>
+        <span> | </span>
+        <a
+          className="transaction-address"
+          href={`https://adascan.net/transaction/${txid}`}
+          target="_blank"
+          rel="noopener"
+        >
+          AdaScan
         </a>
       </span>
     )}
