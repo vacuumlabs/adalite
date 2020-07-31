@@ -36,7 +36,17 @@ const StakePoolInfo = ({pool, gettingPoolInfo}) => {
         <div>
           <div>{`Name: ${name || ''}`}</div>
           <div>{`Ticker: ${ticker || ''}`}</div>
-          <div>{`Tax: ${margin * 100 || ''}`}%</div>
+          <div>
+            <a
+              {...tooltip(
+                'Tax is deducted from the rewards that pool distributes to the delegators.\nFixed cost of the pool is taken from the pool rewards every epoch. This fee is shared among all delegators of the pool, not per delegator. Minimum value is 340 ADA.',
+                true
+              )}
+            >
+              <span className="delegation show-info">{''}</span>
+            </a>
+            {`Tax: ${margin * 100 || ''}`}%
+          </div>
           <div>{`Fixed cost: ${
             fixedCost ? printAda(parseInt(fixedCost, 10) as Lovelace) : ''
           }`}</div>

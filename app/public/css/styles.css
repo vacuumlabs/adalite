@@ -566,7 +566,7 @@ button[data-balloon] {
   line-height: 24px;
   font-weight: normal;
   text-align: center;
-  min-width: 280px;
+  min-width: 344px;
   white-space: pre-wrap;
 }
 
@@ -2705,7 +2705,7 @@ input:checked + .slider:before {
 .stake-pool-item {
   display: grid;
   /* grid-template-columns: 76% 24%; */
-  padding: 24px 16px 24px 0;
+  padding: 24px 0px 24px 0;
   color: var(--color-grey);
 }
 
@@ -2941,6 +2941,12 @@ input:checked + .slider:before {
   background-size: contain;
   background-position: center;
   background-image: url('../assets/question_symbol.svg');
+}
+
+.delegation.show-info::after {
+  position: relative;
+  top: 52px;
+  float: right;
 }
 
 .send-values .ada-label {
