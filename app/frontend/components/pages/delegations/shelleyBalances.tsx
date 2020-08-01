@@ -35,7 +35,7 @@ const shelleyBalances = ({
       Non-staking balance
       <a
         {...tooltip(
-          'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address. (minimum is 1.5 ADA)',
+          'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address by clicking on the "Convert to stakeable" button. (minimum is 1.5 ADA)',
           true
         )}
       >

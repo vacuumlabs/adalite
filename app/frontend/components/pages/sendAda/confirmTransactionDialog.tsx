@@ -42,14 +42,26 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
       send: 'Transaction review',
       convert: 'Stakable balance conversion review',
     }
-
     return (
       <Modal onRequestClose={cancelTransaction} title={titleMap[txConfirmType]}>
+        {txConfirmType === 'convert' && (
+          <div>
+            We are creating transaction that will send all funds from your non-staking addresses to
+            your first staking address
+          </div>
+        )}
         <div className="review">
           {txConfirmType === 'send' && (
             <Fragment>
               <div className="review-label">Address</div>
               <div className="review-address">{sendAddress}</div>
+            </Fragment>
+          )}
+
+          {txConfirmType === 'convert' && (
+            <Fragment>
+              <div className="review-label">Address</div>
+              <div className="review-address">{summary.plan.outputs[0].address}</div>
             </Fragment>
           )}
 
