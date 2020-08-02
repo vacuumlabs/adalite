@@ -317,15 +317,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* ADDRESS DETAIL */
 
-  const verifyAddress = async () => {
-    const state = getState()
-    if (state.usingHwWallet && state.showAddressDetail) {
+  const verifyAddress = async (state, address?) => {
+    const newState = getState()
+    if (newState.usingHwWallet) {
       try {
         setState({
           waitingForHwWallet: true,
           addressVerificationError: false,
         })
-        await wallet.verifyAddress(state.showAddressDetail.address)
+        await wallet.verifyAddress(address || newState.showAddressDetail.address)
         setState({
           waitingForHwWallet: false,
         })
