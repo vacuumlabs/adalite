@@ -1079,6 +1079,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         shouldShowTransactionErrorModal: true,
       })
     } finally {
+      closeConfirmationDialog(state)
       resetTransactionSummary(state)
       resetSendFormFields(state)
       resetSendFormState(state)
