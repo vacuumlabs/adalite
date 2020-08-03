@@ -379,6 +379,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const closeConfirmationDialog = (state) => {
+    setState({
+      keepConfirmationDialogOpen: false,
+      shouldShowConfirmTransactionDialog: false,
+    })
+  }
+
   const cancelTransaction = () => ({
     shouldShowConfirmTransactionDialog: false,
   })
@@ -795,6 +802,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       stopLoadingAction(state, {})
       return
     }
+    setState({
+      keepConfirmationDialogOpen: true,
+    })
     setTransactionSummary('stake', plan, coins)
     confirmTransaction(getState(), 'convert')
     stopLoadingAction(state, {})
@@ -1023,9 +1033,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const submitTransaction = async (state) => {
-    setState({
-      shouldShowConfirmTransactionDialog: false,
-    })
+    if (!state.keepConfirmationDialogOpen) {
+      setState({
+        shouldShowConfirmTransactionDialog: false,
+      })
+    }
     if (state.usingHwWallet) {
       setState({waitingForHwWallet: true})
       loadingAction(state, `Waiting for ${state.hwWalletName}...`)
@@ -1055,7 +1067,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const address = state.sendAddress.fieldValue
       const donationAmount = state.donationAmount.coins
       const didDonate = address === getDonationAddress() || donationAmount > 0
-
+      closeConfirmationDialog(state)
       if (didDonate) {
         setState({shouldShowThanksForDonation: true})
       }

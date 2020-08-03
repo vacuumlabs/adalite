@@ -26,6 +26,7 @@ export interface State {
   visibleAddresses: Array<any> // TODO
   sendAddress: any // TODO
   sendAmount: any // TODO
+  keepConfirmationDialogOpen: boolean
 
   sendTransactionSummary: SendTransactionSummary
 
@@ -204,6 +205,7 @@ const initialState: State = {
   },
   txConfirmType: '',
   txSuccessTab: '',
+  keepConfirmationDialogOpen: false,
 }
 
 export {initialState}
