@@ -12,6 +12,7 @@ const shelleyBalances = ({
   balance,
   reloadWalletInfo,
   convertNonStakingUtxos,
+  redeemRewards,
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">
@@ -71,9 +72,11 @@ const shelleyBalances = ({
           : `${printAda(rewardsAccountBalance)}`}
         <AdaIcon />
       </div>
-      <button disabled className="button stake-pool" onClick={null} style="color:gray;">
-        Redeem
-      </button>
+      {!!rewardsAccountBalance && (
+        <button className="button stake-pool" onClick={redeemRewards}>
+          Redeem
+        </button>
+      )}
     </div>
     <div className="total-balance-wrapper">
       <h2 className="card-title staking-balances-title">Balance</h2>

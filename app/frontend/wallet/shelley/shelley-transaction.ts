@@ -5,9 +5,12 @@ import {blake2b, base58} from 'cardano-crypto.js'
 import bech32 from './helpers/bech32'
 import {isShelleyFormat} from './helpers/addresses'
 
-function ShelleyTxAux(inputs, outputs, fee, ttl, certs?) {
+function ShelleyTxAux(inputs, outputs, fee, ttl, certs?, withdrawals?) {
   function getId() {
-    return blake2b(encode(ShelleyTxAux(inputs, outputs, fee, ttl, certs)), 32).toString('hex')
+    return blake2b(
+      encode(ShelleyTxAux(inputs, outputs, fee, ttl, certs, withdrawals)),
+      32
+    ).toString('hex')
   }
 
   function encodeCBOR(encoder) {
@@ -17,6 +20,7 @@ function ShelleyTxAux(inputs, outputs, fee, ttl, certs?) {
     txMap.set(2, fee)
     txMap.set(3, ttl)
     if (certs && certs.length) txMap.set(4, certs)
+    if (withdrawals) txMap.set(5, withdrawals)
     return encoder.pushAny(txMap)
   }
 
@@ -27,6 +31,7 @@ function ShelleyTxAux(inputs, outputs, fee, ttl, certs?) {
     fee,
     ttl,
     certs,
+    withdrawals,
     encodeCBOR,
   }
 }
@@ -61,6 +66,22 @@ function ShelleyTxWitnessShelley(publicKey, signature) {
   return {
     publicKey,
     signature,
+    encodeCBOR,
+  }
+}
+
+function ShelleyWitdrawal(accountAddress, rewards) {
+  function encodeCBOR(encoder) {
+    const accountAddressHash = bech32.decode(accountAddress).data // TODO: this is not hash, is bytes
+    const withdrawalMap = new Map()
+    withdrawalMap.set(accountAddressHash, rewards)
+
+    return encoder.pushAny(withdrawalMap)
+  }
+  return {
+    accountAddress,
+    rewards,
+    address: accountAddress,
     encodeCBOR,
   }
 }
@@ -165,5 +186,6 @@ export {
   ShelleyTxCert,
   ShelleyFee,
   ShelleyTtl,
+  ShelleyWitdrawal,
   ShelleySignedTransactionStructured,
 }

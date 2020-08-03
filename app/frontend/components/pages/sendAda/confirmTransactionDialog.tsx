@@ -114,6 +114,13 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             </Fragment>
           )}
 
+          {txConfirmType === 'redeem' && (
+            <Fragment>
+              <div className="ada-label">Rewards</div>
+              <div className="review-amount">{printAda(summary.plan.withdrawals[0].rewards)}</div>
+            </Fragment>
+          )}
+
           {txConfirmType === 'send' && (
             <Fragment>
               <div className="ada-label">Donation</div>
