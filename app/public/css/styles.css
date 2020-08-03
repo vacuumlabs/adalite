@@ -3118,7 +3118,7 @@ input:checked + .slider:before {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 20;
+  z-index: 998;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -3133,6 +3133,7 @@ input:checked + .slider:before {
   line-height: 32px;
   font-weight: bold;
   color: white;
+  z-index: 999;
 }
 
 .spinner {
@@ -3155,6 +3156,7 @@ input:checked + .slider:before {
   clip: rect(24px, 40px, 40px, 0);
   -webkit-animation: rotate 2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
   animation: rotate 2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+  z-index: 999;
 }
 
 .spinner span::before {
