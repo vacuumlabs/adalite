@@ -64,7 +64,6 @@ const translations = {
     'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
   ServerError: () =>
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
-  NodeOutOfSync: () => 'Service is temporarily unavailable, please try again in 1-2 minutes.',
 }
 
 function getTranslation(code, params = {}) {
