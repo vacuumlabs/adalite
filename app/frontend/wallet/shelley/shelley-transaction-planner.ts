@@ -1,7 +1,7 @@
 import {encode} from 'borc'
 import bech32 from './helpers/bech32'
 
-import {ShelleyTxInputFromUtxo} from './shelley-transaction'
+import {ShelleyTxInputFromUtxo, ShelleyWitdrawal} from './shelley-transaction'
 
 import {TX_WITNESS_SIZE_BYTES} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
@@ -39,12 +39,18 @@ type Cert = {
   poolHash: string | null
 }
 
+type Withdrawal = {
+  accountAddress: string
+  rewards: Lovelace
+}
+
 // Estimates size of final transaction in bytes.
 // Note(ppershing): can overshoot a bit
 export function estimateTxSize(
   inputs: Array<Input>,
   outputs: Array<Output>,
-  certs: Array<Cert>
+  certs: Array<Cert>,
+  withdrawals?: Array<Withdrawal>
 ): Lovelace {
   // exact size for inputs
   const preparedInputs = inputs.map(ShelleyTxInputFromUtxo)
@@ -64,15 +70,20 @@ export function estimateTxSize(
   const txOutputsSize = txOutputsSizes.reduce((acc, x) => acc + x, 0) + 2
 
   const preparedCerts = certs.map(
-    (cert) => encode(new CborIndefiniteLengthArray(preparedInputs)).length
+    (cert) => encode(new CborIndefiniteLengthArray(preparedInputs)).length // FIXME: not prepared inputs, certs
   )
+
+  // const preparedWithdrawals = withdrawals.map(ShelleyWitdrawal)
+  // const txWithdrawalsSize = preparedWithdrawals.map(
+  //   (withdrawal) => encode(new CborIndefiniteLengthArray(withdrawal)).length
+  // )
 
   const txCertSize = preparedCerts.reduce((acc, x) => acc + x, 0) + 2
 
   const txMetaSize = 1 // currently empty Map
 
   // the 1 is there for the CBOR "tag" for an array of 4 elements
-  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize
+  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize // + txWithdrawalsSize
 
   const txWitnessesSize = (certs.length + inputs.length) * TX_WITNESS_SIZE_BYTES + 1
   // TODO: also for withdrawals
@@ -84,7 +95,7 @@ export function estimateTxSize(
   * because it may have more than 1 byte of overhead
   * if more than 16 elements are present
   */
-  const slack = 50 // TODO: this is too much
+  const slack = 200 // TODO: this is too much
 
   return txSizeInBytes + slack
 }
@@ -92,9 +103,10 @@ export function estimateTxSize(
 export function computeRequiredTxFee(
   inputs: Array<Input>,
   outputs: Array<Output>,
-  certs: Array<Cert> = []
+  certs: Array<Cert> = [],
+  withdrawals?: Array<Withdrawal>
 ): Lovelace {
-  const fee = txFeeFunction(estimateTxSize(inputs, outputs, certs))
+  const fee = txFeeFunction(estimateTxSize(inputs, outputs, certs, withdrawals))
   return fee
 }
 
@@ -113,6 +125,7 @@ interface TxPlan {
   certs: Array<Cert>
   deposit: Lovelace
   fee: Lovelace
+  withdrawals?: Array<Withdrawal>
 }
 
 interface NoTxPlan {
@@ -130,28 +143,44 @@ export function computeTxPlan(
   inputs: Array<Input>,
   outputs: Array<Output>,
   possibleChange: Output,
-  certs: Array<Cert>
+  certs: Array<Cert>,
+  withdrawals: Array<Withdrawal>
 ): TxPlan | null {
-  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0)
+  const withdrawalAmount = withdrawals && withdrawals.length ? withdrawals[0].rewards : 0
+  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + withdrawalAmount
   const deposit = computeRequiredDeposit(certs)
-  const totalOutput = outputs.reduce((acc, output) => acc + output.coins, 0) + deposit
+  const totalOutput =
+    outputs.reduce((acc, output) => acc + output.coins, 0) + deposit + withdrawalAmount
 
   if (totalOutput > Number.MAX_SAFE_INTEGER) {
     throw NamedError('CoinAmountError')
   }
 
-  const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certs)
+  const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certs, withdrawals)
   // Cannot construct transaction plan
   if (totalOutput + feeWithoutChange > totalInput) return null
 
   // No change necessary, perfect fit
   if (totalOutput + feeWithoutChange === totalInput) {
     if (checkOutputs(outputs, 0)) {
-      return {inputs, outputs, change: null, certs, deposit, fee: feeWithoutChange as Lovelace}
+      return {
+        inputs,
+        outputs,
+        change: null,
+        certs,
+        deposit,
+        fee: feeWithoutChange as Lovelace,
+        withdrawals,
+      }
     }
   }
 
-  const feeWithChange = computeRequiredTxFee(inputs, [...outputs, possibleChange], certs)
+  const feeWithChange = computeRequiredTxFee(
+    inputs,
+    [...outputs, possibleChange],
+    certs,
+    withdrawals
+  )
 
   if (totalOutput + feeWithChange > totalInput) {
     // We cannot fit the change output into the transaction
@@ -164,6 +193,7 @@ export function computeTxPlan(
         certs,
         deposit,
         fee: (totalInput - totalOutput) as Lovelace,
+        withdrawals,
       }
     }
   }
@@ -171,7 +201,7 @@ export function computeTxPlan(
   const change = {
     ...possibleChange,
     address: possibleChange.address,
-    coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
+    coins: (totalInput - totalOutput - feeWithChange + withdrawalAmount) as Lovelace,
   }
 
   if (!checkOutputs([...outputs, change], 0)) {
@@ -185,6 +215,7 @@ export function computeTxPlan(
     certs,
     deposit,
     fee: feeWithChange as Lovelace,
+    withdrawals,
   }
 }
 
@@ -216,14 +247,19 @@ export function selectMinimalTxPlan(
   changeAddress,
   accountAddress,
   poolHash = null,
-  registerStakingKey = false
+  registerStakingKey = false,
+  rewards = 0
 ): TxPlan | NoTxPlan {
   const certs = []
+  const withdrawals: Array<Withdrawal> = []
   if (poolHash && registerStakingKey) {
     certs.push(createCert('staking_key_registration', accountAddress, null))
   }
   if (poolHash) {
     certs.push(createCert('delegation', accountAddress, poolHash))
+  }
+  if (rewards) {
+    withdrawals.push({accountAddress, rewards: rewards as Lovelace})
   }
   const profitableUtxos = utxos.filter(isUtxoProfitable)
 
@@ -242,9 +278,9 @@ export function selectMinimalTxPlan(
 
   for (let i = 0; i < profitableUtxos.length; i++) {
     inputs.push(profitableUtxos[i])
-    const plan = computeTxPlan(inputs, outputs, change, certs)
+    const plan = computeTxPlan(inputs, outputs, change, certs, withdrawals)
     if (plan) return plan
   }
 
-  return {estimatedFee: computeRequiredTxFee(inputs, outputs, certs)}
+  return {estimatedFee: computeRequiredTxFee(inputs, outputs, certs, withdrawals)}
 }

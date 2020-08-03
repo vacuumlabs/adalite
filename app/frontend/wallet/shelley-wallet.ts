@@ -34,6 +34,7 @@ import {
   ShelleyTxCert,
   ShelleyFee,
   ShelleyTtl,
+  ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
 
 // const isUtxoProfitable = () => true
@@ -265,14 +266,16 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     )
     const txFee = ShelleyFee(plan.fee)
     const txTtl = ShelleyTtl(cryptoProvider.network.ttl)
-    // TODO: txWithdrawals
+    const txWithdrawals = plan.withdrawals.map(({accountAddress, rewards}) => {
+      return ShelleyWitdrawal(accountAddress, rewards)
+    })
     if (plan.change) {
       const {address, coins, accountAddress} = plan.change
       const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(address)
       const stakingPath = myAddresses.getAddressToAbsPathMapper()(accountAddress)
       txOutputs.push(ShelleyTxOutput(address, coins, true, absDerivationPath, stakingPath))
     }
-    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts)
+    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts, txWithdrawals[0]) // TODO: witdrawal is just one
   }
 
   async function signTxAux(txAux: any) {
@@ -308,10 +311,11 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     poolHash?: string
     stakingKeyRegistered?: boolean
     txType?: string
+    rewards: any
   }
 
   const utxoTxPlanner = async (args: utxoArgs, accountAddress) => {
-    const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType} = args
+    const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType, rewards} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
     const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(addressToHex(address)))
@@ -333,7 +337,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       changeAddress,
       accountAddress,
       poolHash,
-      !stakingKeyRegistered
+      !stakingKeyRegistered,
+      rewards
     )
     return plan
   }
@@ -365,7 +370,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       sendAda: utxoTxPlanner,
       convert: utxoTxPlanner,
       delegate: utxoTxPlanner,
-      // redeem: accountTxPlanner,
+      redeem: utxoTxPlanner,
     }
     return await txPlanners[args.txType](args, accountAddress)
   }

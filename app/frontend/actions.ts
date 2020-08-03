@@ -810,6 +810,37 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     stopLoadingAction(state, {})
   }
 
+  const redeemRewards = async (state) => {
+    loadingAction(state, 'Preparing transaction...')
+    // const address = await wallet.getChangeAddress()
+    const rewards = state.shelleyBalances.rewardsAccountBalance
+    const balance = state.balance
+    let plan
+    try {
+      plan = await prepareTxPlan({
+        rewards,
+        txType: 'redeem',
+      })
+    } catch (e) {
+      setErrorState('transactionSubmissionError', e, {
+        shouldShowTransactionErrorModal: true,
+      })
+      return
+    }
+    if (balance < (plan.fee || plan.estimatedFee)) {
+      setErrorState('transactionSubmissionError', NamedError('NonStakingConversionError'))
+      setState({
+        shouldShowTransactionErrorModal: true,
+      })
+      stopLoadingAction(state, {})
+      return
+    }
+    console.log(plan)
+    setTransactionSummary('stake', plan, rewards)
+    confirmTransaction(getState(), 'redeem')
+    stopLoadingAction(state, {})
+  }
+
   const updateDonation = (state, e) => {
     if (state.checkedDonationType === e.target.id && e.target.id !== 'custom') {
       // when clicking already selected button
@@ -1215,5 +1246,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     selectAdaliteStakepool,
     convertNonStakingUtxos,
     loadErrorBannerContent,
+    redeemRewards,
   }
 }
