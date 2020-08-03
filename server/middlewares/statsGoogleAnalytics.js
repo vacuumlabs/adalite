@@ -1,6 +1,7 @@
 const device = require('device')
 const mung = require('express-mung')
 const normalizeUrl = require('normalize-url')
+const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const ua = require('universal-analytics')
 const {backendConfig} = require('../helpers/loadConfig')
 
@@ -84,11 +85,22 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
       }
 
       if (txSubmissionSuccess === 'successful') {
+        const {txBody} = req.body
+
+        const txSentAmount = parseTxBodyOutAmount(txBody)
         await trackEvent({
           ...baseEventData,
           action: `${txSubmissionType}:sentOut`,
           label: 'successful payment',
-          value: undefined,
+          value: Math.floor(txSentAmount / 1000000),
+        })
+
+        const txTotalAmount = parseTxBodyTotalAmount(txBody)
+        await trackEvent({
+          ...baseEventData,
+          action: `${txSubmissionType}:sentTotal`,
+          label: 'total amount',
+          value: Math.floor(txTotalAmount / 1000000),
         })
       } else {
         await trackEvent({
