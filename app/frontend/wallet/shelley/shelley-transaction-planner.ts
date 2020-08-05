@@ -50,7 +50,7 @@ export function estimateTxSize(
   inputs: Array<Input>,
   outputs: Array<Output>,
   certs: Array<Cert>,
-  withdrawals?: Array<Withdrawal>
+  withdrawals: Array<Withdrawal>
 ): Lovelace {
   // exact size for inputs
   const preparedInputs = inputs.map(ShelleyTxInputFromUtxo)
@@ -73,17 +73,21 @@ export function estimateTxSize(
     (cert) => encode(new CborIndefiniteLengthArray(preparedInputs)).length // FIXME: not prepared inputs, certs
   )
 
-  // const preparedWithdrawals = withdrawals.map(ShelleyWitdrawal)
-  // const txWithdrawalsSize = preparedWithdrawals.map(
-  //   (withdrawal) => encode(new CborIndefiniteLengthArray(withdrawal)).length
-  // )
+  let txWithdrawalsSize = 0
+  if (withdrawals) {
+    const preparedWithdrawals = withdrawals.map(
+      ({accountAddress, rewards}) => encode(ShelleyWitdrawal(accountAddress, rewards)).length
+    )
+
+    txWithdrawalsSize = preparedWithdrawals.reduce((acc, x) => acc + x, 0) + 2
+  }
 
   const txCertSize = preparedCerts.reduce((acc, x) => acc + x, 0) + 2
 
   const txMetaSize = 1 // currently empty Map
 
   // the 1 is there for the CBOR "tag" for an array of 4 elements
-  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize // + txWithdrawalsSize
+  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize + txWithdrawalsSize
 
   const txWitnessesSize = (certs.length + inputs.length) * TX_WITNESS_SIZE_BYTES + 1
   // TODO: also for withdrawals
@@ -95,7 +99,7 @@ export function estimateTxSize(
   * because it may have more than 1 byte of overhead
   * if more than 16 elements are present
   */
-  const slack = 200 // TODO: this is too much
+  const slack = 100 // TODO: this is too much
 
   return txSizeInBytes + slack
 }
