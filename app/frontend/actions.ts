@@ -1118,6 +1118,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetDelegation()
       wallet.generateNewSeeds()
       await reloadWalletInfo(state)
+      selectAdaliteStakepool()
       setState({
         waitingForHwWallet: false,
         txSuccessTab: sendResponse && sendResponse.success ? txTab : '',
