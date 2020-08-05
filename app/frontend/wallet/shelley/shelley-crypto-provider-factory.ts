@@ -1,14 +1,14 @@
 import {CRYPTO_PROVIDER_TYPES} from '../constants'
 import ShelleyJsCryptoProvider from './shelley-js-crypto-provider'
-// import CardanoTrezorCryptoProvider from './cardano-trezor-crypto-provider'
+import ShelleyTrezorCryptoProvider from './shelley-trezor-crypto-provider'
 import ShelleyLedgerCryptoProvider from './shelley-ledger-crypto-provider'
 import NamedError from '../../helpers/NamedError'
 
 const ShelleyCryptoProviderFactory = (() => {
   const getCryptoProvider = (cryptoProviderType, options) => {
     switch (cryptoProviderType) {
-      // case CRYPTO_PROVIDER_TYPES.TREZOR:
-      //     return CardanoTrezorCryptoProvider(options)
+      case CRYPTO_PROVIDER_TYPES.TREZOR:
+        return ShelleyTrezorCryptoProvider(options)
 
       case CRYPTO_PROVIDER_TYPES.LEDGER:
         return ShelleyLedgerCryptoProvider(options)
