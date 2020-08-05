@@ -107,7 +107,9 @@ const ShelleyJsCryptoProvider = ({
   async function signTxGetStructured(txAux, addressToAbsPathMapper) {
     const txHash = txAux.getId()
     const witnesses = await build_witnesses(
-      [...txAux.inputs, ...txAux.certs, txAux.withdrawals], // TODO: a withdrawal!
+      txAux.withdrawals
+        ? [...txAux.inputs, ...txAux.certs, txAux.withdrawals]
+        : [...txAux.inputs, ...txAux.certs], // TODO: a withdrawal!
       txHash,
       sign,
       network,

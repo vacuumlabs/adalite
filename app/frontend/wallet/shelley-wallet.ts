@@ -365,6 +365,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   // }
 
   async function getTxPlan(args: utxoArgs | accountArgs) {
+    // TODO: passing accountAddress to plan is useless, as well as this function
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const txPlanners = {
       sendAda: utxoTxPlanner,
