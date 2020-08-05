@@ -108,7 +108,7 @@ export function computeRequiredTxFee(
   inputs: Array<Input>,
   outputs: Array<Output>,
   certs: Array<Cert> = [],
-  withdrawals?: Array<Withdrawal>
+  withdrawals: Array<Withdrawal> = []
 ): Lovelace {
   const fee = txFeeFunction(estimateTxSize(inputs, outputs, certs, withdrawals))
   return fee
