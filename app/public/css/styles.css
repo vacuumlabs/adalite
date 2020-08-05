@@ -2442,6 +2442,8 @@ li.main-tab input + label.selected:after {
 }
 
 .stakepool-info {
+  padding-left: 16px;
+  text-align: left;
   margin-bottom: 24px;
 }
 
