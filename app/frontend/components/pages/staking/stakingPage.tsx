@@ -4,7 +4,9 @@ import {useState, useCallback} from 'preact/hooks'
 import submitEmailRaw from '../../../helpers/submitEmailRaw'
 import NamedError from '../../../helpers/NamedError'
 import debugLog from '../../../helpers/debugLog'
-import {ADALITE_CONFIG} from '../../../config'
+
+const ADLT2Hash = 'ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d'
+const ADLTHash = '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438'
 
 const isValidEmail = (email) => {
   // eslint-disable-next-line max-len
@@ -106,18 +108,37 @@ const StakingPage = () => {
           from the staking interface.
         </p>
         <p className="staking-text">
-          We are running our own reliable staking pool with a very low 3% fee. By delegating your
+          We are running our own reliable staking pools with a very low 3% fee. By delegating your
           stake to us you are supporting the development of AdaLite.
         </p>
-        <div className="stakepool-info">
-          <p>
-            {window.innerWidth > 767 && (
-              <p>
-                Pool id: <b>{ADALITE_CONFIG.ADALITE_STAKE_POOL_ID}</b>
-              </p>
-            )}
+
+        {window.innerWidth > 767 && (
+          <div className="stakepool-info">
+            <p>
+              <a href={`https://pooltool.io/pool/${ADLT2Hash}`} target="_blank">
+                {' '}
+                ADLT2
+              </a>: <b>{ADLT2Hash} (NEW)</b>
+            </p>
+            <p>
+              <a href={`https://pooltool.io/pool/${ADLTHash}`} target="_blank">
+                ADLT
+              </a>: <b>{ADLTHash}</b>
+            </p>
+          </div>
+        )}
+        {window.innerWidth <= 767 && (
+          <p className="staking-text">
+            You can check out our pools on pooltool with tickers{' '}
+            <a href={`https://pooltool.io/pool/${ADLT2Hash}`} target="_blank">
+              ADLT2
+            </a>{' '}
+            <b>(NEW)</b> AND{' '}
+            <a href={`https://pooltool.io/pool/${ADLTHash}`} target="_blank">
+              ADLT
+            </a>.
           </p>
-        </div>
+        )}
 
         <form className="staking-form" id="stakingForm">
           <input
