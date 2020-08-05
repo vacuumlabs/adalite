@@ -51,13 +51,21 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
       revoke: 'Delegation revocation review',
       send: 'Transaction review',
       convert: 'Stakable balance conversion review',
+      redeem: 'Rewards redemption review',
     }
     return (
+      // TODO: make separate fragments into constants and then build specific types from them
       <Modal onRequestClose={cancelTransaction} title={titleMap[txConfirmType]}>
         {txConfirmType === 'convert' && (
           <div>
             We are creating transaction that will send all funds from your non-staking addresses to
             your first staking address
+          </div>
+        )}
+        {txConfirmType === 'redeem' && (
+          <div>
+            We are creating transaction that will redeem all funds from your rewards account balance
+            to your first staking address
           </div>
         )}
         <div className="review">
@@ -114,8 +122,10 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             </Fragment>
           )}
 
-          {txConfirmType === 'redeem' && (
+          {txConfirmType === 'redeem' && ( // TODO: add address verification for hw wallets
             <Fragment>
+              <div className="review-label">Address</div>
+              <div className="review-address">{summary.plan.change.address}</div>
               <div className="ada-label">Rewards</div>
               <div className="review-amount">{printAda(summary.plan.withdrawals[0].rewards)}</div>
             </Fragment>

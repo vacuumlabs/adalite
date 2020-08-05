@@ -10,6 +10,7 @@ import {
   donationAmountValidator,
   poolIdValidator,
   delegationFeeValidator,
+  redemptionAmountValidator,
 } from './helpers/validators'
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
@@ -812,7 +813,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const redeemRewards = async (state) => {
     loadingAction(state, 'Preparing transaction...')
-    // const address = await wallet.getChangeAddress()
     const rewards = state.shelleyBalances.rewardsAccountBalance
     const balance = state.balance
     let plan
@@ -827,15 +827,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       return
     }
-    if (balance < (plan.fee || plan.estimatedFee)) {
-      setErrorState('transactionSubmissionError', NamedError('NonStakingConversionError'))
+    const redemptionValidationError = redemptionAmountValidator(balance, rewards, plan.fee)
+    if (redemptionValidationError) {
+      setErrorState('transactionSubmissionError', NamedError(redemptionValidationError.code))
       setState({
         shouldShowTransactionErrorModal: true,
       })
       stopLoadingAction(state, {})
       return
     }
-    console.log(plan)
     setTransactionSummary('stake', plan, rewards)
     confirmTransaction(getState(), 'redeem')
     stopLoadingAction(state, {})

@@ -52,6 +52,16 @@ const sendAmountValidator = (fieldValue, coins, balance) => {
   return null
 }
 
+const redemptionAmountValidator = (balance, rewards, fee) => {
+  if (fee >= balance) {
+    return {code: 'SendAmountCantSendAnyFunds'}
+  }
+  if (fee >= rewards) {
+    return {code: 'RewardsBalanceTooLow'}
+  }
+  return null
+}
+
 const donationAmountValidator = (fieldValue, coins, balance) => {
   const amountError = sendAmountValidator(fieldValue, coins, balance)
   if (amountError) {
@@ -128,4 +138,5 @@ export {
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
+  redemptionAmountValidator,
 }

@@ -25,6 +25,8 @@ const translations = {
   DelegationFeeError: () => 'Unsuccessful delegation fee calculation.',
   NonStakingConversionError: () =>
     'Insufficient balance: Not enough funds to pay the conversion fee.',
+  RewardsBalanceTooLow: () =>
+    'Rewards account balance lower than the fee required to pay for the transacion.',
 
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
   DaedalusMnemonic: () => '',
