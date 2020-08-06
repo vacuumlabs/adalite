@@ -81,7 +81,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               <div className="review-label">Address</div>
               <div className="review-address">
                 {summary.plan.outputs[0].address}
-                {true &&
+                {showVerification &&
                   (verificationError ? (
                     <div className="detail-error" style="float: right;">
                       <div>

@@ -182,6 +182,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         isDemoWallet,
         shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,
         shouldShowGenerateMnemonicDialog: false,
+        shouldShowAddressVerification: usingHwWallet,
         // send form
         sendAmount: {fieldValue: '', coins: 0},
         sendAddress: {fieldValue: ''},
