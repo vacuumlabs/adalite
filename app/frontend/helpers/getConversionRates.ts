@@ -14,7 +14,9 @@ async function getConversionRates(state) {
   return conversionRates
 }
 async function fetchConversionRates() {
-  return await request('https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR')
+  return await request('https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR').catch(
+    (e) => null
+  )
 }
 
 export default getConversionRates
