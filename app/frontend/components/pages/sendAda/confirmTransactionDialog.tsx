@@ -45,7 +45,13 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     verifyAddress,
     hwWalletName,
   }) {
-    const total = summary.amount + summary.donation + summary.fee + summary.deposit
+    // TODO: refactor all of this
+    const totalAmount = summary.amount + summary.donation + summary.fee + summary.deposit
+    const totalAmounts = {
+      convert: summary.amount,
+      redeem: summary.amount - summary.fee,
+    }
+    const total = totalAmounts[txConfirmType] || totalAmount
     const titleMap = {
       delegate: 'Delegation review',
       revoke: 'Delegation revocation review',
@@ -115,10 +121,17 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             </Fragment>
           )}
 
-          {(txConfirmType === 'send' || txConfirmType === 'convert') && (
+          {txConfirmType === 'send' && (
             <Fragment>
               <div className="ada-label">Amount</div>
               <div className="review-amount">{printAda(summary.amount)}</div>
+            </Fragment>
+          )}
+
+          {txConfirmType === 'convert' && (
+            <Fragment>
+              <div className="ada-label">Amount</div>
+              <div className="review-amount">{printAda(totalAmount)}</div>
             </Fragment>
           )}
 
