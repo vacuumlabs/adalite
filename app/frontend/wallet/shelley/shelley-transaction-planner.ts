@@ -1,7 +1,7 @@
 import {encode} from 'borc'
 import bech32 from './helpers/bech32'
 
-import {ShelleyTxInputFromUtxo, ShelleyWitdrawal} from './shelley-transaction'
+import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
 
 import {TX_WITNESS_SIZE_BYTES} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
@@ -35,7 +35,7 @@ type Output = {
 
 type Cert = {
   type: number
-  accountAddressPath: any
+  accountAddress: any
   poolHash: string | null
 }
 
@@ -69,20 +69,23 @@ export function estimateTxSize(
   // +2 for indef array start & end
   const txOutputsSize = txOutputsSizes.reduce((acc, x) => acc + x, 0) + 2
 
-  const preparedCerts = certs.map(
-    (cert) => encode(new CborIndefiniteLengthArray(preparedInputs)).length // FIXME: not prepared inputs, certs
-  )
+  let txCertSize = 0
+  if (certs.length) {
+    // TODO: refactor
+    const preparedCerts = certs.map(
+      ({type, accountAddress, poolHash}) =>
+        encode(ShelleyTxCert(type, accountAddress, poolHash)).length
+    )
+    txCertSize = preparedCerts.reduce((acc, x) => acc + x, 0) + 2
+  }
 
   let txWithdrawalsSize = 0
-  if (withdrawals) {
+  if (withdrawals.length) {
     const preparedWithdrawals = withdrawals.map(
       ({accountAddress, rewards}) => encode(ShelleyWitdrawal(accountAddress, rewards)).length
     )
-
     txWithdrawalsSize = preparedWithdrawals.reduce((acc, x) => acc + x, 0) + 2
   }
-
-  const txCertSize = preparedCerts.reduce((acc, x) => acc + x, 0) + 2
 
   const txMetaSize = 1 // currently empty Map
 
@@ -224,6 +227,8 @@ export function computeTxPlan(
 }
 
 export function isUtxoProfitable(utxo: UTxO) {
+  // in case of legacy utxos, we want to convert them even if they are non-profitable
+  if (!isShelleyFormat(utxo.address)) return true
   const inputSize = encode(ShelleyTxInputFromUtxo(utxo)).length
   const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZE_BYTES) - txFeeFunction(0)
 
