@@ -1116,7 +1116,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetSendFormFields(state)
       resetSendFormState(state)
       resetAmountFields(state)
-      resetDelegation()
       wallet.generateNewSeeds()
       await reloadWalletInfo(state)
       selectAdaliteStakepool()
