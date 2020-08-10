@@ -33,9 +33,9 @@ const translations = {
 
   TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
   TransportError: ({message}) =>
-    `TransportError: ${message}.If you are using a hardware wallet, please make sure your firmware is updated.`,
+    `TransportError: ${message}.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.`,
   TransportStatusError: ({message}) =>
-    `TransportStatusError: ${message}.Please make sure your hardware wallet firmware is updated.`,
+    `TransportStatusError: ${message}.Please make sure you are using the latest version of the Cardano application.`,
 
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed.',
@@ -43,7 +43,7 @@ const translations = {
     `Transaction rejected while signing${
       message
         ? `:  ${message}`
-        : '.If you are using a hardware wallet, please make sure your firmware is updated.'
+        : '.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.'
     }`,
   TransactionCorrupted: () => 'TransactionCorrupted: Transaction assembling failure.',
   TransactionNotFoundInBlockchainAfterSubmission: ({txHash}) =>
@@ -56,7 +56,7 @@ const translations = {
   TrezorSignTxError: ({message}) => `TrezorSignTxError: ${message}`,
   TrezorError: ({message}) => `TrezorError: ${message}`,
   LedgerOperationError: ({message}) =>
-    `LedgerOperationError: ${message}. Please make your sure your ledger firmware is updated.`,
+    `LedgerOperationError: ${message}. Please make sure you are using the latest version of the Cardano application.`,
 
   CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
   OutputTooSmall: () => 'Output amount too low. Minimum output amount is 1 ADA.',
