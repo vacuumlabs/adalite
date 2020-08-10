@@ -38,8 +38,13 @@ const ShelleyLedgerCryptoProvider = async ({network, config}) => {
       transport = await LedgerTransportU2F.create()
     }
   } catch (hwTransportError) {
-    debugLog(hwTransportError)
-    throw hwTransportError
+    // fallback to U2F in any case
+    try {
+      transport = await LedgerTransportU2F.create()
+    } catch (u2fError) {
+      debugLog(u2fError)
+      throw hwTransportError
+    }
   }
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
