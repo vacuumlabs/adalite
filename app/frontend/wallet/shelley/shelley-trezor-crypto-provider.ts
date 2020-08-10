@@ -167,33 +167,12 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
       networkId: network.networkId,
       certificates,
       withdrawals,
-    }).then((e) => {
-      console.log(
-        e,
-        JSON.stringify({
-          inputs,
-          outputs,
-          protocolMagic: network.protocolMagic,
-          fee,
-          ttl,
-          networkId: network.networkId,
-          // certificates,
-          // withdrawals,
-          // metadata,
-        })
-      )
-      return e
     })
 
     if (response.error || !response.success) {
       debugLog(response)
       throw NamedError('TrezorSignTxError', response.payload.error)
     }
-
-    console.log({
-      txHash: response.payload.hash,
-      txBody: response.payload.serializedTx,
-    })
 
     return {
       txHash: response.payload.hash,

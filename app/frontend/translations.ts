@@ -43,7 +43,7 @@ const translations = {
     `Transaction rejected while signing${
       message
         ? `:  ${message}`
-        : '.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.'
+        : '.If you are using a Ledger, please make sure you are using the latest version of the Cardano application. If you are using Trezor, please make sure your Trezor firmware is updated.'
     }`,
   TransactionCorrupted: () => 'TransactionCorrupted: Transaction assembling failure.',
   TransactionNotFoundInBlockchainAfterSubmission: ({txHash}) =>
