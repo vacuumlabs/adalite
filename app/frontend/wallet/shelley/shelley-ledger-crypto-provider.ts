@@ -9,6 +9,7 @@ import {
   ShelleyTxWitnessByron,
   ShelleySignedTransactionStructured,
 } from './shelley-transaction'
+import * as platform from 'platform'
 
 // import {PROTOCOL_MAGIC_KEY} from '../constants'
 
@@ -22,17 +23,23 @@ import {
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 
+const isWebUsbSupported = async () => {
+  const isSupported = await LedgerTransportWebusb.isSupported()
+  return isSupported && platform.os.family !== 'Windows' && platform.name !== 'Opera'
+}
+
 const ShelleyLedgerCryptoProvider = async ({network, config}) => {
   let transport
   try {
-    transport = await LedgerTransportU2F.create()
-  } catch (u2fError) {
-    try {
+    const support = await isWebUsbSupported()
+    if (support) {
       transport = await LedgerTransportWebusb.create()
-    } catch (webUsbError) {
-      debugLog(webUsbError)
-      throw u2fError
+    } else {
+      transport = await LedgerTransportU2F.create()
     }
+  } catch (hwTransportError) {
+    debugLog(hwTransportError)
+    throw hwTransportError
   }
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
