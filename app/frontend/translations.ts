@@ -35,7 +35,7 @@ const translations = {
   TransportError: ({message}) =>
     `TransportError: ${message}.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.`,
   TransportStatusError: ({message}) =>
-    `TransportStatusError: ${message}.Please make sure you are using the latest version of the Cardano application.`,
+    'TransportStatusError: Please make sure that the Cardano Ledger App is opened before initiating the connection.',
 
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed.',

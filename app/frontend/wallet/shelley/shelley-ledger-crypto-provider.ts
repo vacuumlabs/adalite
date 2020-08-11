@@ -32,9 +32,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
   let transport
   try {
     const support = await isWebUsbSupported()
-    console.log(`Called through WebUSB button: ${!!isWebUSB}`)
     if (support || isWebUSB) {
-      console.log('Loading through WebUSB')
       transport = await LedgerTransportWebusb.create()
     } else {
       transport = await LedgerTransportU2F.create()
@@ -42,10 +40,8 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
   } catch (hwTransportError) {
     // fallback to U2F in any case
     try {
-      console.log('Falling back to U2F due to error')
       transport = await LedgerTransportU2F.create()
     } catch (u2fError) {
-      console.log('Failed to load U2F fallback. Ending.')
       debugLog(u2fError)
       throw hwTransportError
     }
