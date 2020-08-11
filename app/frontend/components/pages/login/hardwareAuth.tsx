@@ -69,6 +69,14 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
             <LedgerLogoWhite />
           </div>
         </button>
+        <button
+          className="button secondary"
+          onClick={() =>
+            loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER, isWebUSB: true})
+          }
+        >
+          Connect with WebUSB
+        </button>
       </div>
     </div>
   )

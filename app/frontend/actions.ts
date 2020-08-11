@@ -117,7 +117,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* LOADING WALLET */
 
-  const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
+  const loadWallet = async (state, {cryptoProviderType, walletSecretDef, isWebUSB}) => {
     // loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
@@ -144,6 +144,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
               walletSecretDef,
               network: NETWORKS.SHELLEY[ADALITE_CONFIG.ADALITE_NETWORK],
               config: ADALITE_CONFIG,
+              isWebUSB,
             }
           )
 
