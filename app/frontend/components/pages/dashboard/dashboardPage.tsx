@@ -12,6 +12,7 @@ import CurrentDelegationPage from '../delegations/currentDelegationPage'
 import ShelleyBalances from '../delegations/shelleyBalances'
 import {ADALITE_CONFIG} from '.././../../config'
 import {MainTab, SubTab} from './tabs'
+import InfoModal from '../../common/infoModal'
 
 interface Props {
   displayStakingPage: any
@@ -65,10 +66,11 @@ class DashboardPage extends Component<Props> {
     this.props.toggleDisplayStakingPage(name === 'Staking')
   }
 
-  render({shouldShowExportOption, displayStakingPage}, {selectedMainTab}) {
+  render({shouldShowExportOption, displayStakingPage, displayInfoModal}, {selectedMainTab}) {
     const mainTabs = ['Sending', 'Staking']
     return (
       <div className="page-wrapper">
+        {displayInfoModal && <InfoModal />}
         {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
           <ul className="tabinator">
             {mainTabs.map((name, i) => (
@@ -149,6 +151,7 @@ export default connect(
   (state) => ({
     shouldShowExportOption: state.shouldShowExportOption,
     displayStakingPage: state.displayStakingPage,
+    displayInfoModal: state.displayInfoModal,
   }),
   actions
 )(DashboardPage)

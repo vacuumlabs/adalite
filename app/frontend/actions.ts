@@ -1157,6 +1157,20 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const openInfoModal = (state) => {
+    setState({
+      displayInfoModal: true,
+    })
+  }
+
+  const closeInfoModal = (state, dontShowDisclaimer) => {
+    // we may get an ignored click event as the second argument, check only against booleans
+    window.localStorage.setItem('dontShowInfoModal', dontShowDisclaimer)
+    setState({
+      displayInfoModal: false,
+    })
+  }
+
   const closeStakingBanner = (state) => {
     window.localStorage.setItem('dontShowStakingBannerTestnet3', 'true')
     setState({
@@ -1249,5 +1263,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     convertNonStakingUtxos,
     loadErrorBannerContent,
     redeemRewards,
+    openInfoModal,
+    closeInfoModal,
   }
 }
