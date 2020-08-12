@@ -79,7 +79,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
 
     const isV1scheme = cryptoProvider.getDerivationScheme().type === 'v1'
     return {
-      legacy: isV1scheme ? [...legacyInt] : [...legacyInt, ...legacyExt],
+      legacy: isV1scheme ? [...legacyExt] : [...legacyInt, ...legacyExt],
       base: [...baseInt, ...baseExt],
       account: accountAddr,
     }
@@ -116,24 +116,6 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     return (address) => mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
   }
 
-  async function getVisibleAddressesWithMeta() {
-    const addresses = await baseExtAddrManager.discoverAddressesWithMeta()
-    return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
-  }
-
-  async function getChangeAddress(rngSeed: number): Promise<string> {
-    /*
-    * We use visible addresses as change addresses to mainintain
-    * AdaLite original functionality which did not consider change addresses.
-    * This is an intermediate step between legacy mode and full Yoroi compatibility.
-    */
-    const candidates = await getVisibleAddressesWithMeta()
-
-    // const randomSeedGenerator = PseudoRandom(rngSeed)
-    const choice = candidates[0]
-    return choice.address
-  }
-
   return {
     getAddressToAbsPathMapper,
     fixedPathMapper,
@@ -141,8 +123,6 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     // TODO(refactor)
     baseExtAddrManager,
     accountAddrManager,
-    getChangeAddress,
-    getVisibleAddressesWithMeta,
     legacyExtManager,
   }
 }
@@ -211,7 +191,13 @@ const ShelleyBlockchainExplorer = (config) => {
     getPoolInfo,
   }
 }
-const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvider}: any) => {
+const ShelleyWallet = ({
+  config,
+  randomInputSeed,
+  randomChangeSeed,
+  cryptoProvider,
+  isShelleyCompatible,
+}: any) => {
   const {
     getMaxDonationAmount: _getMaxDonationAmount,
     getMaxSendableAmount: _getMaxSendableAmount,
@@ -235,8 +221,9 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     blockchainExplorer,
   })
 
-  const addressToHex = (address) =>
-    isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address)
+  const addressToHex = (
+    address // TODO: move to addresses
+  ) => (isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address))
 
   function isHwWallet() {
     return cryptoProvider.isHwWallet()
@@ -440,8 +427,18 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  function getChangeAddress() {
-    return myAddresses.getChangeAddress(seeds.randomChangeSeed)
+  async function getChangeAddress() {
+    /*
+    * We use visible addresses as change addresses to mainintain
+    * AdaLite original functionality which did not consider change addresses.
+    * This is an intermediate step between legacy mode and full Yoroi compatibility.
+    */
+    const candidates = await getVisibleAddresses()
+
+    // const randomSeedGenerator = PseudoRandom(rngSeed)
+    const choice = candidates[0]
+    return choice.address
+    // return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
   async function getUtxos(): Promise<Array<any>> {
@@ -452,13 +449,17 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getVisibleAddresses() {
-    const base = await myAddresses.baseExtAddrManager.discoverAddressesWithMeta()
-    return [...base]
+    const addresses = isShelleyCompatible
+      ? await myAddresses.baseExtAddrManager.discoverAddressesWithMeta()
+      : await myAddresses.legacyExtManager.discoverAddressesWithMeta()
+    return addresses
   }
 
   async function verifyAddress(addr: string) {
     if (!('displayAddressForPath' in cryptoProvider)) {
-      throw NamedError('UnsupportedOperationError', {message: 'unsupported operation: verifyAddress'})
+      throw NamedError('UnsupportedOperationError', {
+        message: 'unsupported operation: verifyAddress',
+      })
     }
     const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(addr)
     const stakingAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)

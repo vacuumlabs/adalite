@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
-import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
-import {encode} from 'borc'
+import {sign as signMsg, derivePrivate, xpubToHdPassphrase, base58} from 'cardano-crypto.js'
+import {encode, decode} from 'borc'
 
 import HdNode from '../helpers/hd-node'
 import {
@@ -12,6 +12,7 @@ import {
 
 // import {PROTOCOL_MAGIC_KEY} from '../constants'
 import {isShelleyPath} from './helpers/addresses'
+import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 
 type HexString = string & {__typeHexString: any}
 
@@ -28,13 +29,10 @@ const ShelleyJsCryptoProvider = ({
 
   const getDerivationScheme = () => derivationScheme
 
-  const deriveXpub = (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
-
-  const derivePub = (derivationPath) => deriveHdNode(derivationPath).publicKey
-
-  const getChainCode = (derivationPath) => deriveHdNode(derivationPath).chainCode
-
-  const deriveXpriv = (derivationPath) => deriveHdNode(derivationPath).secretKey
+  const deriveXpub = CachedDeriveXpubFactory(
+    derivationScheme,
+    (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
+  )
 
   function deriveHdNode(derivationPath) {
     return derivationPath.reduce(deriveChildHdNode, masterHdNode)
@@ -49,7 +47,6 @@ const ShelleyJsCryptoProvider = ({
   async function sign(message, keyDerivationPath) {
     const hdNode = await deriveHdNode(keyDerivationPath)
     const messageToSign = Buffer.from(message, 'hex')
-
     return signMsg(messageToSign, hdNode.toBuffer())
   }
 
@@ -69,18 +66,22 @@ const ShelleyJsCryptoProvider = ({
 
   const build_shelley_witness = async (tx_body_hash, path, sign) => {
     const signature = await sign(tx_body_hash, path)
-    return ShelleyTxWitnessShelley(derivePub(path), signature)
+    const xpub = await deriveXpub(path)
+    return ShelleyTxWitnessShelley(xpub.slice(0, 32), signature)
   }
 
-  const build_byron_witness = async (tx_body_hash, sign, path, network) => {
+  const build_byron_witness = async (tx_body_hash, sign, path, address) => {
     const signature = await sign(tx_body_hash, path)
-    // const address_attributes = encode(
-    //   network.name === 'mainnet'
-    //     ? {}
-    //     : new Map().set([PROTOCOL_MAGIC_KEY], encode(network.protocolMagic))
-    // ) // TODO:
-    const address_attributes = encode({})
-    return ShelleyTxWitnessByron(derivePub(path), signature, getChainCode(path), address_attributes)
+    const xpub = await deriveXpub(path)
+    const addressAsBuffer = decode(base58.decode(address))[0].value // TODO get from cardano-crypto
+    const addressData = decode(addressAsBuffer)
+    const address_attributes = addressData[1]
+    return ShelleyTxWitnessByron(
+      xpub.slice(0, 32),
+      signature,
+      xpub.slice(32, 64),
+      encode(address_attributes)
+    )
   }
 
   const build_witnesses = async (inputs, tx_body_hash, sign, network, addressToAbsPathMapper) => {
@@ -88,12 +89,13 @@ const ShelleyJsCryptoProvider = ({
     const _byronWitnesses = []
     inputs.forEach((input) => {
       const inputPath = addressToAbsPathMapper(input.address)
+      // console.log(inputPath)
       isShelleyPath(inputPath)
         ? _shelleyWitnesses.push(build_shelley_witness(tx_body_hash, inputPath, sign))
-        : _byronWitnesses.push(build_byron_witness(tx_body_hash, sign, inputPath, network))
+        : _byronWitnesses.push(build_byron_witness(tx_body_hash, sign, inputPath, input.address))
     })
     const shelleyWitnesses = await Promise.all(_shelleyWitnesses)
-    const byronWitnesses = await Promise.all(_byronWitnesses)
+    const byronWitnesses = await Promise.all(_byronWitnesses) // TODO: move this below
     const witnesses = new Map()
     if (shelleyWitnesses.length > 0) {
       witnesses.set(0, shelleyWitnesses)
@@ -111,7 +113,7 @@ const ShelleyJsCryptoProvider = ({
         ? [...txAux.inputs, ...txAux.certs, txAux.withdrawals]
         : [...txAux.inputs, ...txAux.certs], // TODO: a withdrawal!
       txHash,
-      sign,
+      sign, // TODO: useless here
       network,
       addressToAbsPathMapper
     )
@@ -131,7 +133,6 @@ const ShelleyJsCryptoProvider = ({
     _sign: sign,
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
-    deriveXpriv,
   }
 }
 

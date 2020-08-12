@@ -136,7 +136,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
       <div className="authentication card initial">
         <h2 className="authentication-title">How do you want to access your Cardano Wallet?</h2>
         <div className="auth-options">
-          {AuthOption('mnemonic', ['15 word passphrase'], 'fastest')}
+          {AuthOption('mnemonic', ['12 or 15 word passphrase'], 'fastest')}
           {ENABLE_HW_WALLETS &&
             AuthOption(
               'hw-wallet',
