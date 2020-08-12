@@ -103,15 +103,9 @@ const delegationFeeValidator = (fee, deposit, balance) => {
 }
 
 const mnemonicValidator = (mnemonic) => {
-  const len = mnemonic.split(' ').length
   if (!validateMnemonic(mnemonic)) {
     return {
       code: 'InvalidMnemonic',
-    }
-  }
-  if (len === 12 || len === 27) {
-    return {
-      code: 'DaedalusMnemonic',
     }
   }
   return null

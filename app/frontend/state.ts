@@ -41,6 +41,9 @@ export interface State {
     formIsValid: boolean
   }
 
+  isShelleyCompatible: any
+  shouldShowNonShelleyCompatibleDialog: any
+
   authMethod: AuthMethodEnum
   shouldShowDemoWalletWarningDialog: boolean
   logoutNotificationOpen: boolean
@@ -165,6 +168,8 @@ const initialState: State = {
     mnemonicInputError: null,
     formIsValid: false,
   },
+  isShelleyCompatible: true,
+  shouldShowNonShelleyCompatibleDialog: false,
   authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
   shouldShowDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,

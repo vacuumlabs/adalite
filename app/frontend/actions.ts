@@ -16,7 +16,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
-import {NETWORKS, CRYPTO_PROVIDER_TYPES} from './wallet/constants'
+import {NETWORKS} from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
 import {CardanoWallet} from './wallet/cardano-wallet'
@@ -122,6 +122,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
     })
+    const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
     try {
       switch (ADALITE_CONFIG.ADALITE_CARDANO_VERSION) {
         case 'byron': {
@@ -151,6 +152,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           wallet = await ShelleyWallet({
             config: ADALITE_CONFIG,
             cryptoProvider,
+            isShelleyCompatible,
           })
           break
         }
@@ -182,6 +184,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         hwWalletName,
         isDemoWallet,
         shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,
+        shouldShowNonShelleyCompatibleDialog: !isShelleyCompatible,
         shouldShowGenerateMnemonicDialog: false,
         shouldShowAddressVerification: usingHwWallet,
         // send form
@@ -192,6 +195,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         // shelley
         validStakepools,
         ticker2Id,
+        isShelleyCompatible,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
@@ -247,6 +251,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const closeDemoWalletWarningDialog = (state) => {
     setState({
       shouldShowDemoWalletWarningDialog: false,
+    })
+  }
+
+  const closeNonShelleyCompatibleDialog = (state) => {
+    setState({
+      shouldShowNonShelleyCompatibleDialog: false,
+    })
+  }
+
+  const openNonShelleyCompatibleDialog = (state) => {
+    setState({
+      shouldShowNonShelleyCompatibleDialog: true,
     })
   }
 
@@ -1244,6 +1260,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,
+    closeNonShelleyCompatibleDialog,
+    openNonShelleyCompatibleDialog,
     closeThanksForDonationModal,
     setLogoutNotificationOpen,
     setRawTransactionOpen,

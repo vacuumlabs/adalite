@@ -13,6 +13,8 @@ import ShelleyBalances from '../delegations/shelleyBalances'
 import {ADALITE_CONFIG} from '.././../../config'
 import {MainTab, SubTab} from './tabs'
 import InfoModal from '../../common/infoModal'
+import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
+import DashboardErrorBanner from './dashboardErrorBanner'
 
 interface Props {
   displayStakingPage: any
@@ -66,12 +68,24 @@ class DashboardPage extends Component<Props> {
     this.props.toggleDisplayStakingPage(name === 'Staking')
   }
 
-  render({shouldShowExportOption, displayStakingPage, displayInfoModal}, {selectedMainTab}) {
+  render(
+    {
+      shouldShowExportOption,
+      displayStakingPage,
+      isShelleyCompatible,
+      shouldShowNonShelleyCompatibleDialog,
+      displayInfoModal,
+    },
+    {selectedMainTab}
+  ) {
     const mainTabs = ['Sending', 'Staking']
     return (
       <div className="page-wrapper">
-        {displayInfoModal && <InfoModal />}
-        {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
+        {isShelleyCompatible && displayInfoModal && <InfoModal />}
+        {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
+        {!isShelleyCompatible && <DashboardErrorBanner />}
+        {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' &&
+          isShelleyCompatible && (
           <ul className="tabinator">
             {mainTabs.map((name, i) => (
               <MainTab
@@ -152,6 +166,8 @@ export default connect(
     shouldShowExportOption: state.shouldShowExportOption,
     displayStakingPage: state.displayStakingPage,
     displayInfoModal: state.displayInfoModal,
+    isShelleyCompatible: state.isShelleyCompatible,
+    shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
   }),
   actions
 )(DashboardPage)
