@@ -79,7 +79,17 @@ const shelleyBalances = ({
       )}
     </div>
     <div className="total-balance-wrapper">
-      <h2 className="card-title staking-balances-title">Balance</h2>
+      <h2 className="card-title staking-balances-title">
+        Available balance
+        <a
+          {...tooltip(
+            'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to redeem your rewards',
+            true
+          )}
+        >
+          <span className="show-info">{''}</span>
+        </a>
+      </h2>
       <div className="balance-row">
         <div className="balance-amount-staking">
           {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
