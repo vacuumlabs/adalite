@@ -1213,6 +1213,18 @@ button[data-balloon] {
 
 .tabinator li {
   display: unset;
+  position: relative;
+}
+
+.tabinator li.primary:after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 14px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-brand);
+  border-radius: 50%;
 }
 
 li.main-tab input {
@@ -4246,6 +4258,17 @@ input:checked + .slider:before {
   li.main-tab input + label {
     color: var(--color-grey);
   }
+
+  .tabinator li.primary:after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: calc(50% + -36px);
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-brand);
+    border-radius: 50%;
+  }
   
 
   /* SEND ADA */
@@ -4565,6 +4588,17 @@ input:checked + .slider:before {
     color: #000;
     background: #fff;
     box-shadow: unset;
+  }
+
+  .tabinator li.primary:after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: calc(50% + -36px);
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-brand);
+    border-radius: 50%;
   }
 
   /* TRANSACTIONS */
