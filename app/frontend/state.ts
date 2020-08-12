@@ -19,6 +19,7 @@ export interface State {
   loadingMessage: string
   alert: any // TODO
   displayWelcome: boolean
+  displayInfoModal: boolean
   currentTab: 'wallet-info'
   walletIsLoaded: boolean
   shouldShowStakingBanner: boolean
@@ -141,6 +142,7 @@ const initialState: State = {
   shouldShowStakingBanner: !(
     window.localStorage.getItem('dontShowStakingBannerTestnet3') === 'true'
   ),
+  displayInfoModal: !(window.localStorage.getItem('dontShowInfoModal') === 'true'),
   errorBannerContent: '',
   visibleAddresses: [],
   // todo - object (sub-state) from send-ada form
