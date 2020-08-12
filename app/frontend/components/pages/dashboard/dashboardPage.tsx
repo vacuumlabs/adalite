@@ -53,7 +53,7 @@ class DashboardPage extends Component<Props> {
   constructor(props) {
     super(props)
     this.state = {
-      selectedMainTab: 'Staking',
+      selectedMainTab: 'Sending',
     }
     this.selectMainTab = this.selectMainTab.bind(this)
   }

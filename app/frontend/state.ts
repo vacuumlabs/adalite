@@ -185,7 +185,7 @@ const initialState: State = {
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 
   // shelley
-  displayStakingPage: ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley',
+  displayStakingPage: false,
   shelleyDelegation: {
     delegationFee: 0.0,
     selectedPool: {
