@@ -2,6 +2,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
 import {Lovelace} from './state'
+import {RECOMMENDED_LEDGER_APP_VERSION} from './wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -66,6 +67,10 @@ const translations = {
     'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
   ServerError: () =>
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
+  OutdatedCardanoAppError: ({message}) =>
+    `OutdatedCardanoAppError: Your cardano application is running on an outdated version ${message}. Please update your cardano application to the version ${
+      RECOMMENDED_LEDGER_APP_VERSION.major
+    }.${RECOMMENDED_LEDGER_APP_VERSION.minor}.${RECOMMENDED_LEDGER_APP_VERSION.patch} or later.`,
 }
 
 function getTranslation(code, params = {}) {
