@@ -10,6 +10,8 @@ import {
   ShelleySignedTransactionStructured,
 } from './shelley-transaction'
 import * as platform from 'platform'
+import {MINIMAL_LEDGER_APP_VERSION} from './../constants'
+import {hasMinimalVersion} from './helpers/version-check'
 
 // import {PROTOCOL_MAGIC_KEY} from '../constants'
 
@@ -49,6 +51,14 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
   const derivationScheme = derivationSchemes.v2
+
+  const version = await ledger.getVersion()
+  if (!hasMinimalVersion(version)) {
+    throw NamedError(
+      'OutdatedCardanoAppError',
+      `${version.major}.${version.minor}.${version.patch}`
+    )
+  }
 
   const isHwWallet = () => true
   const getHwWalletName = () => 'Ledger'
