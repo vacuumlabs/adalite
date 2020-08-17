@@ -170,7 +170,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
 
     if (response.error || !response.success) {
       debugLog(response)
-      throw NamedError('TrezorSignTxError', {causedBy: response.payload.error})
+      throw NamedError('TrezorSignTxError', {message: response.payload.error})
     }
 
     return {
