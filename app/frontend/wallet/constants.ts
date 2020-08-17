@@ -27,7 +27,8 @@ export const NETWORKS = {
       name: 'mainnet',
       networkId: 1,
       protocolMagic: 764824073,
-      ttl: 10000000,
+      maxTtl: 10000000,
+      ttl: 3600,
     },
     HASKELL_TESTNET: {
       name: 'htn',

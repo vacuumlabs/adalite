@@ -211,11 +211,12 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
   }
 
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
+    console.log(unsignedTx)
     const inputs = unsignedTx.inputs.map((input, i) => _prepareInput(input, addressToAbsPathMapper))
     const outputs = unsignedTx.outputs.map((output) => _prepareOutput(output))
     const certificates = unsignedTx.certs.map((cert) => _prepareCert(cert, addressToAbsPathMapper))
     const feeStr = `${unsignedTx.fee.fee}`
-    const ttlStr = `${network.ttl}`
+    const ttlStr = `${unsignedTx.ttl.ttl}`
     const withdrawals = unsignedTx.withdrawals
       ? [_prepareWithdrawal(unsignedTx.withdrawals, addressToAbsPathMapper)]
       : []
