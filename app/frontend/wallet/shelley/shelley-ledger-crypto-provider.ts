@@ -54,10 +54,9 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
 
   const version = await ledger.getVersion()
   if (!hasMinimalVersion(version)) {
-    throw NamedError(
-      'OutdatedCardanoAppError',
-      `${version.major}.${version.minor}.${version.patch}`
-    )
+    throw NamedError('OutdatedCardanoAppError', {
+      message: `${version.major}.${version.minor}.${version.patch}`,
+    })
   }
 
   const isHwWallet = () => true
