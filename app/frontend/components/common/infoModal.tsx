@@ -4,6 +4,7 @@ import actions from '../../actions'
 import Modal from './modal'
 import Alert from './alert'
 import Branding from './branding'
+import ImageModal from './imageModal'
 
 const Article = ({children, title, icon}) => (
   <article className="article">
@@ -27,14 +28,16 @@ interface Props {
   closeInfoModal: (dontShowAgain: boolean) => void
 }
 
-class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean}> {
+class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; shouldShowImage}> {
   constructor(props) {
     super(props)
     this.state = {
       dontShowAgainCheckbox: window.localStorage.getItem('dontShowInfoModal') === 'true',
+      shouldShowImage: false,
     }
     this.checkboxClick = this.checkboxClick.bind(this)
     this.closeInfoModal = this.closeInfoModal.bind(this)
+    this.toggleImage = this.toggleImage.bind(this)
   }
 
   checkboxClick() {
@@ -45,7 +48,13 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean}> {
     this.props.closeInfoModal(this.state.dontShowAgainCheckbox) // TODO: true
   }
 
-  render({closeInfoModal}, {dontShowAgainCheckbox}) {
+  toggleImage(shouldShowImage) {
+    this.setState({
+      shouldShowImage,
+    })
+  }
+
+  render({closeInfoModal}, {dontShowAgainCheckbox, shouldShowImage}) {
     return (
       <Modal>
         <section className="welcome">
@@ -72,9 +81,13 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean}> {
                 </b>{' '}
                 (this was postponed by IOHK from the originally announced date of 18th August). You
                 should be receiving rewards at the end of each epoch afterward (~5 days). Please
-                refer to this image if you want to know more about how the staking cycle works. In
-                general, after you stake, it will take 15-20 days to receive first rewards but after
-                that, you should be receiving rewards periodically.
+                refer to{' '}
+                <a href="#" onClick={() => this.toggleImage(true)}>
+                  this
+                </a>{' '}
+                image if you want to know more about how the staking cycle works. In general, after
+                you stake, it will take 15-20 days to receive first rewards but after that, you
+                should be receiving rewards periodically.
               </p>
             </Article>
             <Article title="Staking with AdaLite" icon="">
@@ -122,6 +135,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean}> {
             </button>
           </div>
         </section>
+        {shouldShowImage && <ImageModal closeModal={() => this.toggleImage(false)} />}
       </Modal>
     )
   }
