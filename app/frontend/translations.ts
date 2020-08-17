@@ -70,7 +70,9 @@ const translations = {
   OutdatedCardanoAppError: ({message}) =>
     `OutdatedCardanoAppError: Your cardano application is running on an outdated version ${message}. Please update your cardano application to the version ${
       RECOMMENDED_LEDGER_APP_VERSION.major
-    }.${RECOMMENDED_LEDGER_APP_VERSION.minor}.${RECOMMENDED_LEDGER_APP_VERSION.patch} or later.`,
+    }.${RECOMMENDED_LEDGER_APP_VERSION.minor}.${
+      RECOMMENDED_LEDGER_APP_VERSION.patch
+    } or later. See https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps for more information.`,
 }
 
 function getTranslation(code, params = {}) {
