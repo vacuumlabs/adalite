@@ -170,7 +170,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
 
     if (response.error || !response.success) {
       debugLog(response)
-      throw NamedError('TrezorSignTxError', {causedBy: response.payload.error})
+      throw NamedError('TrezorSignTxError', {message: response.payload.error})
     }
 
     return {
@@ -192,7 +192,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
       debugLog(response)
       throw NamedError('TrezorError', {
         message:
-          'Trezor operation failed, please make sure ad blockers are switched off for this site',
+          'Trezor operation failed, please make sure ad blockers are switched off for this site and you are using the latest version of Trezor firmware',
       })
     }
   }
