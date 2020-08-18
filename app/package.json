@@ -24,7 +24,7 @@
     "postinstall": "node ./helpers/removeChainLibsWasmImport"
   },
   "dependencies": {
-    "@cardano-foundation/ledgerjs-hw-app-cardano": "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/2.0.0-rc.1/cardano-foundation-ledgerjs-hw-app-cardano-2.0.0-rc.1.tgz",
+    "@cardano-foundation/ledgerjs-hw-app-cardano": "^2.0.0",
     "@emurgo/js-chain-libs": "https://github.com/SebastienGllmt/js-chain-libs-pkg",
     "@ledgerhq/hw-transport": "^5.15.0",
     "@ledgerhq/hw-transport-u2f": "^5.15.0",
