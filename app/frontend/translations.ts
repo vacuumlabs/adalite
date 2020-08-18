@@ -35,12 +35,14 @@ const translations = {
   TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
   TransportError: ({message}) =>
     `TransportError: ${message}.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.`,
-  TransportStatusError: ({message}) =>
-    `TransportStatusError: ${message}. ${
-      message === 'Ledger device: Wrong Ledger app'
-        ? 'Please make sure that the Cardano Ledger App is opened before initiating the connection.'
-        : 'Please make sure you are using the latest version of the Cardano application.'
-    }`,
+  TransportStatusError: ({message}) => {
+    const errors = {
+      'Ledger device: Wrong Ledger app':
+        'Please make sure that the Cardano Ledger App is opened before initiating the connection.',
+      // 'Ledger device: ': 'Insert you pin.',
+    }
+    return `TransportStatusError: ${message}. ${errors[message] || ''}`
+  },
 
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed.',

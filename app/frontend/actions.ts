@@ -367,8 +367,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const confirmTransaction = (state, txConfirmType) => {
     let txAux
+    const newState = getState()
     try {
-      txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
+      txAux = wallet.prepareTxAux(newState.sendTransactionSummary.plan)
     } catch (e) {
       throw NamedError('TransactionCorrupted', {causedBy: e})
     }
