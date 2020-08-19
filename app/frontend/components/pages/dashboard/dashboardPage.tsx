@@ -8,7 +8,7 @@ import SendAdaPage from '../sendAda/sendAdaPage'
 import MyAddresses from '../receiveAda/myAddresses'
 import DelegatePage from '../delegations/delegatePage'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
-// import DelegationHistory from '../delegations/delegationHistory'
+import DelegationHistory from '../delegations/delegationHistory'
 import ShelleyBalances from '../delegations/shelleyBalances'
 import {ADALITE_CONFIG} from '.././../../config'
 import {MainTab, SubTab} from './tabs'
@@ -26,11 +26,11 @@ const StakingPage = () => {
     <div className="dashboard desktop">
       <div className="dashboard-column">
         <ShelleyBalances />
-        <CurrentDelegationPage />
+        <DelegationHistory />
       </div>
       <div className="dashboard-column">
         <DelegatePage />
-        {/* <DelegationHistory /> */}
+        <CurrentDelegationPage />
       </div>
     </div>
   )
