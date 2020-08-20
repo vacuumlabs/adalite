@@ -127,6 +127,11 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     poolKeyHashHex?: string
   }
 
+  type Withdrawal = {
+    path: any //BIP32Path,
+    amountStr: string
+  }
+
   function _prepareCert(cert, addressToAbsPathMapper): Certificate {
     return {
       type: cert.type,
@@ -149,6 +154,13 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
           ? bechAddressToHex(output.address)
           : base58AddressToHex(output.address),
       }
+  }
+
+  function _prepareWithdrawal(withdrawal, addressToAbsPathMapper): Withdrawal {
+    return {
+      path: addressToAbsPathMapper(withdrawal.address),
+      amountStr: `${withdrawal.rewards}`,
+    }
   }
 
   const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32) // TODO: export from addresses
@@ -199,7 +211,8 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     const certificates = unsignedTx.certs.map((cert) => _prepareCert(cert, addressToAbsPathMapper))
     const feeStr = `${unsignedTx.fee.fee}`
     const ttlStr = `${network.ttl}`
-    const withdrawals = []
+    const withdrawals = [_prepareWithdrawal(unsignedTx.withdrawals, addressToAbsPathMapper)]
+
     const response = await ledger.signTransaction(
       network.networkId,
       network.protocolMagic,
