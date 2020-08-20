@@ -112,6 +112,11 @@ p.hey {
   width:100%,
 }
 
+/* UTILITIES */
+.ml-8 {
+  margin-left: 8px;
+}
+
 /* SELECTABILITY */
 
 .one-click-select {
@@ -2337,7 +2342,6 @@ li.main-tab input + label.selected:after {
   position: relative;
   padding-left: 21px;
   color: var(--color-grey);
-
 }
 
 .copy-text::before {
@@ -2827,84 +2831,14 @@ input:checked + .slider:before {
   grid-template-columns: 50% 50%;
 }
 
-.delegation-history {
-  position: relative;
-  padding-right: 28px;
-}
-
-.delegation-history::before {
-  position: absolute;
-  content: '';
-  left: 56px;
-  right: 40px;
-  bottom: 40px;
-  height: 40px;
-  background-image: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 1),
-    rgba(255, 255, 255, 0)
-  );
-  z-index: 2;
-}
-
-.delegation-history-content {
-  padding: 0;
-  margin: 0;
-  max-height: 680px;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  position: relative;
-}
-
-.delegation-history-item {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  padding: 24px 16px 24px 0;
-  border-top: 1px solid var(--color-border);
-  color: var(--color-grey);
-}
-
-.delegation-history-item:last-child {
-  margin-bottom: 8px;
-}
-
-.delegation-history-title {
-  margin-bottom: 8px;
-  text-transform: capitalize;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.delegation-history-title.reward {
-  color: var(--color-green)
-}
-
-.delegation-history-time {
-  margin-bottom: 8px;
-  align-self: center;
-}
-
-.delegation-history-percent {
-  font-size: 16px;
-  font-weight: bold;
-  text-align: right;
-}
-
-.delegation-history-amount {
-  font-size: 16px;
-  font-weight: bold;
-  text-align: right;
-  color: var(--color-green)
-}
-
-.delegation-history-name {
+.current-delegation-name {
   font-size: 14px;
   font-weight: bold;
   margin-left: 12px;
   justify-self: start;
 }
 
-.delegation-history-id {
+.current-delegation-id {
   margin-left: 12px;
   margin-bottom: 4px;
   justify-self: start;
