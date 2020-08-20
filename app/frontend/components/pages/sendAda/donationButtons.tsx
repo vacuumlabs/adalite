@@ -63,7 +63,10 @@ class DonationButtons extends Component<Props> {
       <div className="send-donate">
         <button
           id="fixed"
-          className={this.getButtonClass(ADALITE_FIXED_DONATION_VALUE, 'fixed')}
+          className={`${this.getButtonClass(
+            ADALITE_FIXED_DONATION_VALUE,
+            'fixed'
+          )} thin-data-balloon`}
           value={ADALITE_FIXED_DONATION_VALUE}
           onClick={updateDonation}
           disabled={!isFormValid || isFixedInsufficient}
@@ -77,7 +80,10 @@ class DonationButtons extends Component<Props> {
         </button>
         <button
           id="percentage"
-          className={this.getButtonClass(percentageDonationValue, 'percentage')}
+          className={`${this.getButtonClass(
+            percentageDonationValue,
+            'percentage'
+          )} thin-data-balloon`}
           value={percentageDonationValue}
           onClick={updateDonation}
           disabled={!isFormValid || !isThresholdAmountReached || isPercentageInsufficient}

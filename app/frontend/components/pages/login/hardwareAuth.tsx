@@ -37,8 +37,11 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
         />
         <button
           disabled={!ADALITE_CONFIG.ADALITE_ENABLE_TREZOR}
-          {...tooltip('Coming on August the 5th', !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR)}
-          className="button primary trezor"
+          {...tooltip(
+            'Support for Trezor is temporarily disabled',
+            !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR
+          )}
+          className="button primary trezor thin-data-balloon"
           onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR})}
         >
           Unlock with<div className="trezor-logo-container">
@@ -60,9 +63,12 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
           {LedgerAffiliateLink('Support us by buying one')}
         </div>
         <button
-          {...tooltip('Support for Trezor coming soon', !ADALITE_CONFIG.ADALITE_ENABLE_LEDGER)}
+          {...tooltip(
+            'Support for Ledger is temporarily disabled',
+            !ADALITE_CONFIG.ADALITE_ENABLE_LEDGER
+          )}
           disabled={!ADALITE_CONFIG.ADALITE_ENABLE_LEDGER}
-          className="button primary ledger"
+          className="button primary ledger thin-data-balloon"
           onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER})}
         >
           Unlock with<div className="ledger-logo-container">
