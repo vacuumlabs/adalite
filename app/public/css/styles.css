@@ -4142,7 +4142,7 @@ input:checked + .slider:before {
   .wide-data-balloon[data-balloon]::after {
     min-width: unset;
   }
-
+  
   [data-balloon]::before {
     display: none;
   }
