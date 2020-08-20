@@ -2940,7 +2940,7 @@ input:checked + .slider:before {
   padding: 0;
   margin: 0;
   max-height: 680px;
-  overflow-y: scroll;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: relative;
 }
