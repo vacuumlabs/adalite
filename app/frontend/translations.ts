@@ -39,7 +39,7 @@ const translations = {
     const errors = {
       'Ledger device: Wrong Ledger app':
         'Please make sure that the Cardano Ledger App is opened before initiating the connection.',
-      // 'Ledger device: ': 'Insert you pin.',
+      'Ledger device: Device is locked': 'Please unlock your device.',
     }
     return `TransportStatusError: ${message}. ${errors[message] || ''}`
   },
