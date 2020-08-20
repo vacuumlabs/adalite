@@ -132,6 +132,13 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
       }
   }
 
+  function prepareWithdrawal(withdrawal, addressToAbsPathMapper): CardanoWithdrawal {
+    return {
+      path: addressToAbsPathMapper(withdrawal.address),
+      amount: `${withdrawal.rewards}`,
+    }
+  }
+
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
     const _inputs = []
     for (const input of unsignedTx.inputs) {
@@ -155,7 +162,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
 
     const fee = `${unsignedTx.fee.fee}`
     const ttl = `${unsignedTx.ttl.ttl}`
-    const withdrawals = []
+    const withdrawals = [prepareWithdrawal(unsignedTx.withdrawals, addressToAbsPathMapper)]
 
     const response = await TrezorConnect.cardanoSignTransaction({
       inputs,
