@@ -571,6 +571,10 @@ button[data-balloon] {
   white-space: pre-wrap;
 }
 
+.wide-data-balloon[data-balloon]::after {
+  min-width: 480px;
+}
+
 [data-balloon="Copied to clipboard"]::after,
 [data-balloon="Insufficient funds"]::after,
 [data-balloon="Support for Ledger coming soon"]::after,
@@ -4114,6 +4118,10 @@ input:checked + .slider:before {
     max-width: 80%;
     width: fit-content;
     text-align: center;
+  }
+
+  .wide-data-balloon[data-balloon]::after {
+    min-width: unset;
   }
 
   [data-balloon]::before {
