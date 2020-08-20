@@ -575,10 +575,7 @@ button[data-balloon] {
   min-width: 480px;
 }
 
-[data-balloon="Copied to clipboard"]::after,
-[data-balloon="Insufficient funds"]::after,
-[data-balloon="Support for Ledger coming soon"]::after,
-[data-balloon="Coming on August the 5th"]::after {
+.thin-data-balloon[data-balloon]::after {
   min-width: unset;
   white-space: pre;
 }
