@@ -1063,6 +1063,7 @@ button[data-balloon] {
   margin: 0 auto;
   flex: 1;
   flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 .page-inner {

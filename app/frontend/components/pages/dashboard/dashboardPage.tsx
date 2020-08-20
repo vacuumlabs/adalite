@@ -1,4 +1,4 @@
-import {h, Component} from 'preact'
+import {h, Component, Fragment} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'
@@ -38,7 +38,7 @@ const StakingPage = () => {
 
 const SendingPage = ({shouldShowExportOption}) => {
   return (
-    <div className="dashboard desktop">
+    <Fragment>
       <div className="dashboard-column">
         <Balance />
         <TransactionHistory />
@@ -48,7 +48,7 @@ const SendingPage = ({shouldShowExportOption}) => {
         <MyAddresses />
         {shouldShowExportOption && <ExportCard />}
       </div>
-    </div>
+    </Fragment>
   )
 }
 
