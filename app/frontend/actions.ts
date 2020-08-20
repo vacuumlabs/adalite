@@ -381,11 +381,19 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* TRANSACTION */
 
-  const confirmTransaction = (state, txConfirmType) => {
+  const confirmTransaction = async (state, txConfirmType) => {
     let txAux
     const newState = getState()
     try {
-      txAux = wallet.prepareTxAux(newState.sendTransactionSummary.plan)
+      if (newState.sendTransactionSummary.plan) {
+        txAux = wallet.prepareTxAux(newState.sendTransactionSummary.plan)
+      } else {
+        loadingAction(state, 'Preparing transaction plan...')
+        await sleep(1000) // wait for plan to be set in case of unfortunate timing
+        const retriedState = getState()
+        txAux = wallet.prepareTxAux(retriedState.sendTransactionSummary.plan)
+        stopLoadingAction(state, {})
+      }
     } catch (e) {
       throw NamedError('TransactionCorrupted', {causedBy: e})
     }
@@ -826,7 +834,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       keepConfirmationDialogOpen: true,
     })
     setTransactionSummary('stake', plan, coins)
-    confirmTransaction(getState(), 'convert')
+    await confirmTransaction(getState(), 'convert')
     stopLoadingAction(state, {})
   }
 
@@ -856,7 +864,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       return
     }
     setTransactionSummary('stake', plan, rewards)
-    confirmTransaction(getState(), 'redeem')
+    await confirmTransaction(getState(), 'redeem')
     stopLoadingAction(state, {})
   }
 
@@ -972,7 +980,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, 'Preparing transaction...')
     await calculateDelegationFee(true)
     stopLoadingAction(state, {})
-    confirmTransaction(getState(), 'revoke')
+    await confirmTransaction(getState(), 'revoke')
   }
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
