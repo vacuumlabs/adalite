@@ -4112,9 +4112,9 @@ input:checked + .slider:before {
   
   [data-balloon]::after {
     position: fixed;
-    top: 85%;
+    top: unset;
     left: 50%;
-    bottom: unset;
+    bottom: 10vw;
     max-width: 80%;
     width: fit-content;
     text-align: center;
