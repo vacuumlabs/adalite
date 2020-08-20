@@ -18,8 +18,9 @@ const shelleyBalances = ({
     <h2 className="card-title staking-balances-title">
       Staking balance
       <a
+        className="wide-data-balloon"
         {...tooltip(
-          'Staking balance represents amount of coins you are able to delegate to a pool.',
+          'Staking balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn\'t lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked)',
           true
         )}
       >
