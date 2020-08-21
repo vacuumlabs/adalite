@@ -2,7 +2,7 @@ import debugLog from '../helpers/debugLog'
 import AddressManager from './address-manager'
 import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
-import {MAX_INT32} from './constants'
+import {MAX_INT32, UNKNOWN_POOL_NAME} from './constants'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
 import {
@@ -36,6 +36,15 @@ import {
   ShelleyTtl,
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
+import {
+  DelegetionHistoryObject,
+  StakePool,
+  StakeDelegation,
+  DelegetionHistoryItemType,
+  StakingReward,
+  RewardWithdrawal,
+} from '../components/pages/delegations/delegationHistoryPage'
+import distinct from '../helpers/distinct'
 
 // const isUtxoProfitable = () => true
 
@@ -199,6 +208,7 @@ const ShelleyBlockchainExplorer = (config) => {
     getRewardsBalance,
     getValidStakepools,
     getPoolInfo,
+    getDelegationHistory: be.getDelegationHistory,
   }
 }
 const ShelleyWallet = ({
@@ -379,13 +389,15 @@ const ShelleyWallet = ({
   }
 
   async function getWalletInfo() {
+    const {validStakepools} = await getValidStakepools()
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getAccountInfo()
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
-    // getDelegationHistory
+    const delegationHistory = await getDelegationHistory(shelleyAccountInfo, validStakepools)
     // getWithdrawalHistory
     return {
+      validStakepools,
       balance,
       shelleyBalances: {
         nonStakingBalance,
@@ -394,6 +406,7 @@ const ShelleyWallet = ({
       },
       shelleyAccountInfo,
       transactionHistory,
+      delegationHistory,
       visibleAddresses,
     }
   }
@@ -415,12 +428,116 @@ const ShelleyWallet = ({
     return blockchainExplorer.getTxHistory([...base, ...legacy, account])
   }
 
+  async function getDelegationHistory(
+    shelleyAccountInfo,
+    validStakepools
+  ): Promise<DelegetionHistoryObject[]> {
+    const {delegations, rewards, withdrawals} = await blockchainExplorer.getDelegationHistory(
+      shelleyAccountInfo.accountPubkeyHex
+    )
+
+    const extractUrl = (poolHash) => {
+      const stakePool = validStakepools[poolHash]
+      if (stakePool) {
+        return stakePool.url
+      } else {
+        return null
+      }
+    }
+
+    const poolMetaUrls = distinct([
+      ...distinct(delegations.map((delegation) => extractUrl(delegation.poolHash))),
+      ...distinct(rewards.map((reward) => extractUrl(reward.poolHash))),
+    ]).filter((x) => x != null)
+
+    // Run requests for meta data in parallel
+    const metaDataPromises = poolMetaUrls.map((url: string) => ({
+      url,
+      metaDataPromise: getPoolInfo(url),
+    }))
+    const metaUrlToPoolNameMap = {}
+    for (const promise of metaDataPromises) {
+      const metaData = await promise.metaDataPromise
+      metaUrlToPoolNameMap[promise.url] = metaData.name
+    }
+
+    const poolHashToPoolName = (poolHash) => {
+      const poolName = metaUrlToPoolNameMap[extractUrl(poolHash)]
+      if (poolName) {
+        return poolName
+      } else {
+        return UNKNOWN_POOL_NAME
+      }
+    }
+
+    const parseStakePool = (delegationHistoryObject) => {
+      const stakePool: StakePool = {
+        id: delegationHistoryObject.poolHash,
+        name: poolHashToPoolName(delegationHistoryObject.poolHash),
+      }
+
+      return stakePool
+    }
+
+    // Prepare delegations
+    let oldPool: StakePool = null
+    const parsedDelegations = delegations
+      .map((delegation) => ({...delegation, time: new Date(delegation.time)}))
+      .sort((a, b) => a.time.getTime() - b.time.getTime()) // sort by time, oldest first
+      .map((delegation) => {
+        const stakePool: StakePool = parseStakePool(delegation)
+        const stakeDelegation: StakeDelegation = {
+          type: DelegetionHistoryItemType.StakeDelegation,
+          epoch: delegation.epochNo,
+          dateTime: new Date(delegation.time),
+          newStakePool: stakePool,
+          oldStakePool: oldPool,
+        }
+        oldPool = stakePool
+
+        return stakeDelegation
+      })
+      .reverse() // newest first
+
+    // Prepare rewards
+    const parsedRewards = rewards.map((reward) => {
+      const stakingReward: StakingReward = {
+        type: DelegetionHistoryItemType.StakingReward,
+        epoch: reward.epochNo,
+        dateTime: new Date(reward.time),
+        reward: reward.amount,
+        stakePool: parseStakePool(reward),
+      }
+
+      return stakingReward
+    })
+
+    // Prepare withdrawals
+    const parsedWithdrawals = withdrawals.map((withdrawal) => {
+      const rewardWithdrawal: RewardWithdrawal = {
+        type: DelegetionHistoryItemType.RewardWithdrawal,
+        epoch: withdrawal.epochNo,
+        dateTime: new Date(withdrawal.time),
+        credit: withdrawal.amount,
+      }
+
+      return rewardWithdrawal
+    })
+
+    const combined = [...parsedDelegations, ...parsedRewards, ...parsedWithdrawals].sort(
+      (a, b) => b.dateTime.getTime() - a.dateTime.getTime()
+    ) // sort by time, newest first
+
+    return combined
+  }
+
   async function getAccountInfo() {
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
     const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(accountPubkeyHex)
     return {
+      accountPubkeyHex,
       ...accountInfo,
       delegation: {
         ...accountInfo.delegation,

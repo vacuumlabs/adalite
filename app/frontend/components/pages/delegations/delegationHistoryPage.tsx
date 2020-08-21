@@ -3,43 +3,54 @@ import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {CopyPoolId} from './common'
 
-enum DelegetionHistoryItemType {
+export enum DelegetionHistoryItemType {
   StakeDelegation,
   StakingReward,
   RewardWithdrawal,
 }
 
-interface DelegetionHistoryObject {
+export interface DelegetionHistoryObject {
   type: DelegetionHistoryItemType
+  epoch: number
+  dateTime: Date
 }
 
-interface StakePool {
+export interface StakePool {
   id: string
   name: string
 }
 
-interface StakeDelegation extends DelegetionHistoryObject {
-  epoch: number
-  date: string
-  time: string
+export interface StakeDelegation extends DelegetionHistoryObject {
   newStakePool: StakePool
   oldStakePool?: StakePool
+}
+
+const EpochDateTime = ({epoch, dateTime}: {epoch: number; dateTime: Date}) => {
+  const day = dateTime.getDate()
+  const monthIndex = dateTime.getMonth()
+  const year = dateTime.getFullYear()
+  const minutes = dateTime.getMinutes()
+  const hours = dateTime.getHours()
+  const seconds = dateTime.getSeconds()
+  return (
+    <div className="grey margin-bottom">
+      Epoch {epoch}, {monthIndex}/{day}/{year}, {hours}:{minutes}:{seconds}
+    </div>
+  )
 }
 
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
   return (
     <li className="delegations-history-item">
-      <div className="label">{stakeDelegation.newStakePool.name}</div>
-      <div className="grey margin-bottom">
-        Epoch {stakeDelegation.epoch}, {stakeDelegation.date}, {stakeDelegation.time}
-      </div>
+      <div className="label">Stake Delegation</div>
+      <EpochDateTime epoch={stakeDelegation.epoch} dateTime={stakeDelegation.dateTime} />
       <div>
-        New pool: <span className="bold">StakeNuts</span>
+        New pool: <span className="bold">{stakeDelegation.newStakePool.name}</span>
         <CopyPoolId value={stakeDelegation.newStakePool.id} />
       </div>
       {stakeDelegation.oldStakePool ? (
         <div>
-          Previous pool: StakeNuts
+          Previous pool: {stakeDelegation.oldStakePool.name}
           <CopyPoolId value={stakeDelegation.oldStakePool.id} />
         </div>
       ) : (
@@ -49,10 +60,7 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
   )
 }
 
-interface StakingReward extends DelegetionHistoryObject {
-  epoch: number
-  date: string
-  time: string
+export interface StakingReward extends DelegetionHistoryObject {
   reward: number
   stakePool: StakePool
 }
@@ -62,9 +70,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
     <li className="delegations-history-item">
       <div>
         <div className="label">Staking reward</div>
-        <div className="grey margin-bottom">
-          Epoch {stakingReward.epoch}, {stakingReward.date}, {stakingReward.time}
-        </div>
+        <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
       </div>
       <div>
         <div>Reward: {stakingReward.reward}</div>
@@ -77,10 +83,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
   )
 }
 
-interface RewardWithdrawal extends DelegetionHistoryObject {
-  epoch: number
-  date: string
-  time: string
+export interface RewardWithdrawal extends DelegetionHistoryObject {
   credit: number
 }
 
@@ -90,9 +93,7 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
       <div className="space-between">
         <div>
           <div className="label">Reward withdrawal</div>
-          <div className="grey margin-bottom">
-            Epoch {rewardWithdrawal.epoch}, {rewardWithdrawal.date}, {rewardWithdrawal.time}
-          </div>
+          <EpochDateTime epoch={rewardWithdrawal.epoch} dateTime={rewardWithdrawal.dateTime} />
         </div>
         <div>
           <div className="transaction-amount credit">{rewardWithdrawal.credit}</div>
@@ -106,20 +107,21 @@ interface Props {
   delegationHistory: any
 }
 
-const DTOToItem = {
-  [DelegetionHistoryItemType.StakeDelegation]: (dto: DelegetionHistoryObject) => (
-    <StakeDelegationItem stakeDelegation={dto as StakeDelegation} />
+const DelegationHistoryObjectToItem = {
+  [DelegetionHistoryItemType.StakeDelegation]: (x: DelegetionHistoryObject) => (
+    <StakeDelegationItem stakeDelegation={x as StakeDelegation} />
   ),
-  [DelegetionHistoryItemType.StakingReward]: (dto: DelegetionHistoryObject) => (
-    <StakingRewardItem stakingReward={dto as StakingReward} />
+  [DelegetionHistoryItemType.StakingReward]: (x: DelegetionHistoryObject) => (
+    <StakingRewardItem stakingReward={x as StakingReward} />
   ),
-  [DelegetionHistoryItemType.RewardWithdrawal]: (dto: DelegetionHistoryObject) => (
-    <RewardWithdrawalItem rewardWithdrawal={dto as RewardWithdrawal} />
+  [DelegetionHistoryItemType.RewardWithdrawal]: (x: DelegetionHistoryObject) => (
+    <RewardWithdrawalItem rewardWithdrawal={x as RewardWithdrawal} />
   ),
 }
 
 class DelegationHistoryPage extends Component<Props> {
   render({delegationHistory}) {
+    // example
     const delegationHistory1: DelegetionHistoryObject[] = [
       stakeDelegation1,
       stakeDelegation2,
@@ -127,9 +129,9 @@ class DelegationHistoryPage extends Component<Props> {
       rewardWithdrawal1,
     ].reverse()
 
-    const items = delegationHistory1.map((data: DelegetionHistoryObject) => {
+    const items = delegationHistory.map((data: DelegetionHistoryObject) => {
       try {
-        return DTOToItem[data.type](data)
+        return DelegationHistoryObjectToItem[data.type](data)
       } catch (e) {
         return ''
       }
@@ -138,7 +140,7 @@ class DelegationHistoryPage extends Component<Props> {
     return (
       <div className="delegations-history card">
         <h2 className="card-title">Staking History</h2>
-        {delegationHistory1.length === 0 ? (
+        {delegationHistory.length === 0 ? (
           <div className="transactions-empty">No history found</div>
         ) : (
           <ul className="delegations-history-content">{items}</ul>
@@ -159,8 +161,7 @@ export default connect(
 const stakeDelegation1 = {
   type: DelegetionHistoryItemType.StakeDelegation,
   epoch: 212,
-  date: '08/19/2020',
-  time: '13:43:51',
+  dateTime: new Date('2020-07-31T03:38:31.000Z'),
   newStakePool: {
     id: '0f292fcaa02b8b2f9b3c8f9fd8e0bb21abedb692a6d5058df3ef2735',
     name: 'StakeNuts',
@@ -171,8 +172,7 @@ const stakeDelegation1 = {
 const stakeDelegation2 = {
   type: DelegetionHistoryItemType.StakeDelegation,
   epoch: 212,
-  date: '08/20/2020',
-  time: '07:36:48',
+  dateTime: new Date('2020-07-31T03:38:31.000Z'),
   newStakePool: {
     id: 'ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d',
     name: 'AdaLite Stake Pool 2',
@@ -187,8 +187,7 @@ const stakeDelegation2 = {
 const stakingReward1 = {
   type: DelegetionHistoryItemType.StakingReward,
   epoch: 216,
-  date: '08/20/2020',
-  time: '07:36:48',
+  dateTime: new Date('2020-07-31T03:38:31.000Z'),
   reward: 21.931391,
   stakePool: {
     id: 'ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d',
@@ -197,10 +196,9 @@ const stakingReward1 = {
 }
 
 // TODO: Delete
-const rewardWithdrawal1 = {
+const rewardWithdrawal1: RewardWithdrawal = {
   type: DelegetionHistoryItemType.RewardWithdrawal,
   epoch: 216,
-  date: '09/08/2020',
-  time: '14:31:24',
+  dateTime: new Date('2020-07-31T03:38:31.000Z'),
   credit: 21.768808,
 }
