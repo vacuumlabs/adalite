@@ -147,6 +147,9 @@ const ShelleyBlockchainExplorer = (config) => {
     }).catch(() => {
       return 0
     })
+    if (!response || !response[accountPubKeyHex] || !response[accountPubKeyHex].remainingAmount) {
+      return 0
+    }
     return parseInt(response[accountPubKeyHex].remainingAmount, 10)
   }
 
@@ -421,7 +424,9 @@ const ShelleyWallet = ({
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
-    const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(accountPubkeyHex)
+    const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(
+      'e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e'
+    )
     return {
       ...accountInfo,
       delegation: {
