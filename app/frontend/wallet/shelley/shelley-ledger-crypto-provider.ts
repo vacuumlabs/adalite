@@ -211,7 +211,9 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     const certificates = unsignedTx.certs.map((cert) => _prepareCert(cert, addressToAbsPathMapper))
     const feeStr = `${unsignedTx.fee.fee}`
     const ttlStr = `${network.ttl}`
-    const withdrawals = [_prepareWithdrawal(unsignedTx.withdrawals, addressToAbsPathMapper)]
+    const withdrawals = unsignedTx.withdrawals
+      ? [_prepareWithdrawal(unsignedTx.withdrawals, addressToAbsPathMapper)]
+      : []
 
     const response = await ledger.signTransaction(
       network.networkId,
