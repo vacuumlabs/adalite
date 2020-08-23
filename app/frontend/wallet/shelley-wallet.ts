@@ -132,11 +132,22 @@ const ShelleyBlockchainExplorer = (config) => {
   const be = BlockchainExplorer(config)
 
   async function getAccountInfo(accountPubkeyHex) {
+    // TODO: not pubkey, address
     const url = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/info/${accountPubkeyHex}`
     const response = await request(url)
     return response
+  }
+
+  async function getRewardsBalance(accountPubKeyHex) {
+    const url = 'https://iohk-mainnet.yoroiwallet.com/api/getAccountState'
+    const response = await request(url, 'POST', JSON.stringify({addresses: [accountPubKeyHex]}), {
+      'Content-Type': 'application/json',
+    }).catch(() => {
+      return 0
+    })
+    return parseInt(response[accountPubKeyHex].remainingAmount, 10)
   }
 
   async function getValidStakepools() {
@@ -187,6 +198,7 @@ const ShelleyBlockchainExplorer = (config) => {
     fetchTxInfo: be.fetchTxInfo,
     filterUsedAddresses: (addresses) => be.filterUsedAddresses(addresses),
     getAccountInfo,
+    getRewardsBalance,
     getValidStakepools,
     getPoolInfo,
   }
@@ -409,13 +421,14 @@ const ShelleyWallet = ({
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
+    const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(accountPubkeyHex)
     return {
       ...accountInfo,
       delegation: {
         ...accountInfo.delegation,
         ...poolInfo,
       },
-      value: accountInfo.rewards || 0,
+      value: rewardsAccountBalance || 0,
     }
   }
 
