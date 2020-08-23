@@ -147,6 +147,9 @@ const ShelleyBlockchainExplorer = (config) => {
     }).catch(() => {
       return 0
     })
+    if (!response || !response[accountPubKeyHex] || !response[accountPubKeyHex].remainingAmount) {
+      return 0
+    }
     return parseInt(response[accountPubKeyHex].remainingAmount, 10)
   }
 
