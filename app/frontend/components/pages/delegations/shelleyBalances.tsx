@@ -13,6 +13,7 @@ const shelleyBalances = ({
   reloadWalletInfo,
   convertNonStakingUtxos,
   redeemRewards,
+  calculatingDelegationFee,
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">
@@ -20,7 +21,7 @@ const shelleyBalances = ({
       <a
         className="wide-data-balloon"
         {...tooltip(
-          'Staking balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn\'t lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked)',
+          "Staking balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked)",
           true
         )}
       >
@@ -50,7 +51,11 @@ const shelleyBalances = ({
         <AdaIcon />
       </div>
       {!!nonStakingBalance && (
-        <button className="button stake-pool" onClick={convertNonStakingUtxos}>
+        <button
+          disabled={calculatingDelegationFee}
+          className="button stake-pool"
+          onClick={convertNonStakingUtxos}
+        >
           Convert to stakable
         </button>
       )}
@@ -74,7 +79,11 @@ const shelleyBalances = ({
         <AdaIcon />
       </div>
       {!!rewardsAccountBalance && (
-        <button className="button stake-pool" onClick={redeemRewards}>
+        <button
+          disabled={calculatingDelegationFee}
+          className="button stake-pool"
+          onClick={redeemRewards}
+        >
           Redeem
         </button>
       )}
@@ -110,6 +119,7 @@ export default connect(
     nonStakingBalance: state.shelleyBalances.nonStakingBalance,
     rewardsAccountBalance: state.shelleyBalances.rewardsAccountBalance,
     balance: state.balance,
+    calculatingDelegationFee: state.calculatingDelegationFee,
   }),
   actions
 )(shelleyBalances)
