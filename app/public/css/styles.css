@@ -2308,6 +2308,38 @@ li.main-tab input + label.selected:after {
   background-image: url('../assets/copy_symbol_active.svg');
 }
 
+/* DOWNLOAD TRANSACTIONS */
+
+.download-transaction {
+  margin: 2px 16px 0px 0px;
+}
+
+.download-transactions-text {
+  position: relative;
+  padding-left: 21px;
+  color: var(--color-grey);
+
+}
+
+.download-transactions-text::before {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/csv_icon.svg');
+}
+
+.download-transactions-text:hover::before {
+  background-image: url('../assets/csv_icon_active.svg');
+}
+
 /* WELCOME MODAL */
 
 .welcome-title {
@@ -2914,6 +2946,11 @@ input:checked + .slider:before {
   word-wrap: break-word;
   border: 1px solid var(--color-border);
   border-radius: 4px;
+}
+
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 /* SEND */
