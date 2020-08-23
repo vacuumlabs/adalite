@@ -424,9 +424,7 @@ const ShelleyWallet = ({
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
-    const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(
-      'e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e'
-    )
+    const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(accountPubkeyHex)
     return {
       ...accountInfo,
       delegation: {
