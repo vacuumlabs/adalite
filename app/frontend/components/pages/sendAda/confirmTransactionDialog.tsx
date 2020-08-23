@@ -6,6 +6,7 @@ import Modal from '../../common/modal'
 import RawTransactionModal from './rawTransactionModal'
 // import roundNumber from '../../../helpers/roundNumber'
 import {Lovelace} from '../../../state'
+import AddressVerification from '../../common/addressVerification'
 
 interface Props {
   sendAddress: any
@@ -16,11 +17,6 @@ interface Props {
   isDelegation?: boolean
   stakePool: any
   txConfirmType: string
-  showVerification: any
-  waitingForHwWallet: any
-  verificationError: any
-  verifyAddress: any
-  hwWalletName: any
 }
 
 class ConfirmTransactionDialogClass extends Component<Props, {}> {
@@ -39,11 +35,6 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     rawTransactionOpen,
     stakePool,
     txConfirmType,
-    showVerification,
-    waitingForHwWallet,
-    verificationError,
-    verifyAddress,
-    hwWalletName,
   }) {
     // TODO: refactor all of this
     const totalAmount = summary.amount + summary.donation + summary.fee + summary.deposit
@@ -87,36 +78,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               <div className="review-label">Address</div>
               <div className="review-address">
                 {summary.plan.outputs[0].address}
-                {showVerification &&
-                  (verificationError ? (
-                    <div className="detail-error" style="float: right;">
-                      <div>
-                        Verification failed.{' '}
-                        <a
-                          href="#"
-                          className="detail-verify"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            verifyAddress(summary.plan.outputs[0].address)
-                          }}
-                        >
-                          Try again
-                        </a>
-                      </div>
-                    </div>
-                  ) : (
-                    <a
-                      href="#"
-                      className="detail-verify"
-                      style="float: right;"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        !waitingForHwWallet && verifyAddress(summary.plan.outputs[0].address)
-                      }}
-                    >
-                      {waitingForHwWallet ? 'Verifying address..' : `Verify on ${hwWalletName}`}
-                    </a>
-                  ))}
+                <AddressVerification address={summary.plan.outputs[0].address} />
               </div>
             </Fragment>
           )}
@@ -138,7 +100,10 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
           {txConfirmType === 'redeem' && ( // TODO: add address verification for hw wallets
             <Fragment>
               <div className="review-label">Address</div>
-              <div className="review-address">{summary.plan.change.address}</div>
+              <div className="review-address">
+                {summary.plan.change.address}
+                <AddressVerification address={summary.plan.change.address} />
+              </div>
               <div className="ada-label">Rewards</div>
               <div className="review-amount">{printAda(summary.plan.withdrawals[0].rewards)}</div>
             </Fragment>
@@ -212,10 +177,6 @@ export default connect(
     rawTransactionOpen: state.rawTransactionOpen,
     stakePool: state.shelleyDelegation.selectedPool,
     txConfirmType: state.txConfirmType,
-    waitingForHwWallet: state.waitingForHwWallet,
-    showVerification: state.shouldShowAddressVerification,
-    verificationError: state.addressVerificationError,
-    hwWalletName: state.hwWalletName,
   }),
   actions
 )(ConfirmTransactionDialogClass)
