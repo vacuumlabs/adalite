@@ -2,6 +2,7 @@ import {h, Component, Fragment} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {CopyPoolId} from './common'
+import toLocalDate from '../../../../frontend/helpers/toLocalDate'
 
 export enum DelegetionHistoryItemType {
   StakeDelegation,
@@ -26,15 +27,9 @@ export interface StakeDelegation extends DelegetionHistoryObject {
 }
 
 const EpochDateTime = ({epoch, dateTime}: {epoch: number; dateTime: Date}) => {
-  const day = dateTime.getDate()
-  const monthIndex = dateTime.getMonth()
-  const year = dateTime.getFullYear()
-  const minutes = dateTime.getMinutes()
-  const hours = dateTime.getHours()
-  const seconds = dateTime.getSeconds()
   return (
     <div className="grey margin-bottom">
-      Epoch {epoch}, {monthIndex}/{day}/{year}, {hours}:{minutes}:{seconds}
+      Epoch {epoch}, {toLocalDate(dateTime)}
     </div>
   )
 }
