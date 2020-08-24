@@ -2311,7 +2311,7 @@ li.main-tab input + label.selected:after {
 /* DOWNLOAD TRANSACTIONS */
 
 .download-transaction {
-  margin: 2px 16px 0px 0px;
+  margin: 4px 16px 0px 0px;
 }
 
 .download-transactions-text {
