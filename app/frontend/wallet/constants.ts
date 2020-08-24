@@ -108,4 +108,4 @@ export const RECOMMENDED_LEDGER_APP_VERSION = {
   patch: 4,
 }
 
-export const UNKNOWN_POOL_NAME = 'Unknown pool'
+export const UNKNOWN_POOL_NAME = '<Unknown pool>'

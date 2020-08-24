@@ -116,14 +116,6 @@ const DelegationHistoryObjectToItem = {
 
 class DelegationHistoryPage extends Component<Props> {
   render({delegationHistory}) {
-    // example
-    const delegationHistory1: DelegetionHistoryObject[] = [
-      stakeDelegation1,
-      stakeDelegation2,
-      stakingReward1,
-      rewardWithdrawal1,
-    ].reverse()
-
     const items = delegationHistory.map((data: DelegetionHistoryObject) => {
       try {
         return DelegationHistoryObjectToItem[data.type](data)
@@ -151,49 +143,3 @@ export default connect(
   }),
   actions
 )(DelegationHistoryPage)
-
-// TODO: Delete
-const stakeDelegation1 = {
-  type: DelegetionHistoryItemType.StakeDelegation,
-  epoch: 212,
-  dateTime: new Date('2020-07-31T03:38:31.000Z'),
-  newStakePool: {
-    id: '0f292fcaa02b8b2f9b3c8f9fd8e0bb21abedb692a6d5058df3ef2735',
-    name: 'StakeNuts',
-  },
-}
-
-// TODO: Delete
-const stakeDelegation2 = {
-  type: DelegetionHistoryItemType.StakeDelegation,
-  epoch: 212,
-  dateTime: new Date('2020-07-31T03:38:31.000Z'),
-  newStakePool: {
-    id: 'ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d',
-    name: 'AdaLite Stake Pool 2',
-  },
-  oldStakePool: {
-    id: '0f292fcaa02b8b2f9b3c8f9fd8e0bb21abedb692a6d5058df3ef2735',
-    name: 'StakeNuts',
-  },
-}
-
-// TODO: Delete
-const stakingReward1 = {
-  type: DelegetionHistoryItemType.StakingReward,
-  epoch: 216,
-  dateTime: new Date('2020-07-31T03:38:31.000Z'),
-  reward: 21.931391,
-  stakePool: {
-    id: 'ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d',
-    name: 'AdaLite Stake Pool 2',
-  },
-}
-
-// TODO: Delete
-const rewardWithdrawal1: RewardWithdrawal = {
-  type: DelegetionHistoryItemType.RewardWithdrawal,
-  epoch: 216,
-  dateTime: new Date('2020-07-31T03:38:31.000Z'),
-  credit: 21.768808,
-}
