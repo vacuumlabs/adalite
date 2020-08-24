@@ -5,6 +5,7 @@ import {Lovelace} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
+import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {
   const value = printAda(Math.abs(amount) as Lovelace)
@@ -74,55 +75,51 @@ interface Props {
 }
 
 const ExportCSV = ({transactionHistory}) => {
-  const range = (n) => [...Array(n).keys()]
+  const formatTransactionDate = (ctbTimeIssued) =>
+    moment.utc(new Date(ctbTimeIssued * 1000)).format('MM/DD/YYYY hh:mm A [UTC]')
 
-  const columnsPerIO = 2 // address, ada amount
   const delimiter = ','
   const rowsDelimiter = '\n'
 
-  // Headers
-  const maxInputsCount = Math.max(...transactionHistory.map((t) => t.ctbInputs.length))
-  const maxOutputsCount = Math.max(...transactionHistory.map((t) => t.ctbOutputs.length))
-  const maxInputsColumnCount = maxInputsCount * columnsPerIO
-  const maxOutputsColumnCount = maxOutputsCount * columnsPerIO
-  const inputHeaders = range(maxInputsCount)
-    .map((i) => `Input ${i + 1} address${delimiter}Input ${i + 1} amount`)
-    .join(delimiter)
-  const outputHeaders = range(maxOutputsCount)
-    .map((i) => `Output ${i + 1} address${delimiter}Output ${i + 1} amount`)
-    .join(delimiter)
-
   const headers =
+    `Type${delimiter}` +
+    `Received amount${delimiter}` +
+    `Received currency${delimiter}` +
+    `Sent amount${delimiter}` +
+    `Sent currency${delimiter}` +
+    `Fee amount${delimiter}` +
+    `Fee currency${delimiter}` +
     `Transaction ID${delimiter}` +
-    `Received date${delimiter}` +
-    `${inputHeaders}${delimiter}` +
-    `${outputHeaders}${delimiter}` +
-    `Input sum${delimiter}` +
-    `Output sum${delimiter}` +
-    `Fee${delimiter}` +
-    'Effect'
+    `Date${delimiter}`
 
-  // Rows
-  const translateIOs = (ctbIOs, maxColumnCount) =>
-    ctbIOs
-      .map(
-        (ctbIO) => `${ctbIO[0]}${delimiter}${printAda(ctbIO[1].getCoin as Lovelace)}${delimiter}`
+  const rows = transactionHistory.map((transaction) => {
+    if (transaction.effect > 0) {
+      return (
+        `${'Received'}${delimiter}` +
+        `${printAda(transaction.effect as Lovelace)}${delimiter}` +
+        `ADA${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${transaction.ctbId}${delimiter}` +
+        `${formatTransactionDate(transaction.ctbTimeIssued)}${delimiter}`
       )
-      .join('') + delimiter.repeat(maxColumnCount - ctbIOs.length * columnsPerIO)
+    } else {
+      return (
+        `${'Sent'}${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${printAda((Math.abs(transaction.effect) - transaction.fee) as Lovelace)}${delimiter}` +
+        `ADA${delimiter}` +
+        `${printAda(transaction.fee as Lovelace)}${delimiter}` +
+        `ADA${delimiter}` +
+        `${transaction.ctbId}${delimiter}` +
+        `${formatTransactionDate(transaction.ctbTimeIssued)}${delimiter}`
+      )
+    }
+  })
 
-  const rows = transactionHistory.map(
-    (transaction) =>
-      `${transaction.ctbId}${delimiter}` +
-      `${new Date(transaction.ctbTimeIssued * 1000).toISOString()}${delimiter}` +
-      `${translateIOs(transaction.ctbInputs, maxInputsColumnCount)}` +
-      `${translateIOs(transaction.ctbOutputs, maxOutputsColumnCount)}` +
-      `${printAda(transaction.ctbInputSum.getCoin as Lovelace)}${delimiter}` +
-      `${printAda(transaction.ctbOutputSum.getCoin as Lovelace)}${delimiter}` +
-      `${printAda(transaction.fee as Lovelace)}${delimiter}` +
-      `${printAda(transaction.effect as Lovelace)}`
-  )
-
-  // Create file
   const fileContents = `${headers}${rowsDelimiter}${rows.join(rowsDelimiter)}`
   const filename = 'transactions.csv'
   const filetype = 'text/plain'
