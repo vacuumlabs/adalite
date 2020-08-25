@@ -2317,7 +2317,7 @@ li.main-tab input + label.selected:after {
 .download-transactions-text {
   position: relative;
   padding-left: 21px;
-  color: var(--color-grey);
+  color: rgba(96, 106, 113, 0.64);
 
 }
 
