@@ -122,6 +122,10 @@ const ShelleyJsCryptoProvider = ({
     return ShelleySignedTransactionStructured(txAux, witnesses, meta)
   }
 
+  function checkVersion() {
+    return
+  }
+
   return {
     network,
     signTx,
@@ -133,6 +137,7 @@ const ShelleyJsCryptoProvider = ({
     _sign: sign,
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
+    checkVersion,
   }
 }
 

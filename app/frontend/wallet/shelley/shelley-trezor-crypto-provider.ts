@@ -206,6 +206,10 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     }
   }
 
+  function checkVersion() {
+    return
+  }
+
   return {
     getWalletSecret,
     getDerivationScheme,
@@ -217,6 +221,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     _sign: sign,
     _deriveHdNode: deriveHdNode,
     network,
+    checkVersion,
   }
 }
 

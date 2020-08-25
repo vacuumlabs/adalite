@@ -79,14 +79,13 @@ const shelleyBalances = ({
           : `${printAda(rewardsAccountBalance)}`}
         <AdaIcon />
       </div>
-      {!!rewardsAccountBalance &&
-        hwWalletName !== 'Ledger' && (
+      {!!rewardsAccountBalance && (
         <button
           disabled={calculatingDelegationFee}
           className="button stake-pool"
           onClick={redeemRewards}
         >
-            Redeem
+          Redeem
         </button>
       )}
     </div>
