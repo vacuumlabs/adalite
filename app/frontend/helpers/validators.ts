@@ -54,10 +54,10 @@ const sendAmountValidator = (fieldValue, coins, balance) => {
 
 const redemptionAmountValidator = (balance, rewards, fee) => {
   if (fee >= balance) {
-    return {code: 'SendAmountCantSendAnyFunds'}
+    return {code: 'SendAmountCantSendAnyFunds', message: ''}
   }
   if (fee >= rewards) {
-    return {code: 'RewardsBalanceTooLow'}
+    return {code: 'RewardsBalanceTooLow', message: ''}
   }
   return null
 }

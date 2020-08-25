@@ -53,11 +53,8 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
   const derivationScheme = derivationSchemes.v2
 
   const version = await ledger.getVersion()
-  if (!hasMinimalVersion(version)) {
-    throw NamedError('OutdatedCardanoAppError', {
-      message: `${version.major}.${version.minor}.${version.patch}`,
-    })
-  }
+
+  checkVersion()
 
   const isHwWallet = () => true
   const getHwWalletName = () => 'Ledger'
@@ -67,6 +64,15 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     const xpubHex = response.publicKeyHex + response.chainCodeHex
     return Buffer.from(xpubHex, 'hex')
   })
+
+  function checkVersion(recommended: boolean = false) {
+    if (!hasMinimalVersion(version, recommended)) {
+      const errorName = recommended ? 'NotRecommendedCardanoAppVerion' : 'OutdatedCardanoAppError'
+      throw NamedError(errorName, {
+        message: `${version.major}.${version.minor}.${version.patch}`,
+      })
+    }
+  }
 
   function deriveHdNode(childIndex) {
     throw NamedError('UnsupportedOperationError', {
@@ -250,6 +256,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     getHwWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
+    checkVersion,
   }
 }
 

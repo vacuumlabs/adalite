@@ -255,6 +255,10 @@ const CardanoWallet = (options) => {
     return {}
   }
 
+  function checkCryptoProviderVersion() {
+    return {code: 'UnsupportedOperation', message: ''}
+  }
+
   return {
     isHwWallet,
     getHwWalletName,
@@ -276,6 +280,7 @@ const CardanoWallet = (options) => {
     getWalletInfo,
     getMaxNonStakingAmount,
     getPoolInfo,
+    checkCryptoProviderVersion,
   }
 }
 
