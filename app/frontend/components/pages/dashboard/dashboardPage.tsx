@@ -84,8 +84,7 @@ class DashboardPage extends Component<Props> {
         {isShelleyCompatible && displayInfoModal && <InfoModal />}
         {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
         {!isShelleyCompatible && <DashboardErrorBanner />}
-        {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' &&
-          isShelleyCompatible && (
+        {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
           <ul className="tabinator">
             {mainTabs.map((name, i) => (
               <MainTab
