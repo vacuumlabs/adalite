@@ -242,6 +242,7 @@ p.hey {
   border: none;
   display: inline-block;
   text-decoration: none;
+  outline:none;
 }
 
 .button:hover {
