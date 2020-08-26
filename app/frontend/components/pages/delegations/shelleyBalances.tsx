@@ -109,7 +109,7 @@ const shelleyBalances = ({
           {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
           <AdaIcon />
         </div>
-        <button className="button refresh" onClick={reloadWalletInfo}>
+        <button className="button secondary refresh" onClick={reloadWalletInfo}>
           Refresh
         </button>
       </div>
