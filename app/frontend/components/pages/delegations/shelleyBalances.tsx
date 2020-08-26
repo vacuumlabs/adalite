@@ -23,7 +23,7 @@ const shelleyBalances = ({
       <a
         className="wide-data-balloon"
         {...tooltip(
-          "Staking balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked)",
+          "Staking Balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked). Also all staking rewards that are added to your Rewards Balance at the end of each epoch are included in your Staking Balance.",
           true
         )}
       >
@@ -66,8 +66,9 @@ const shelleyBalances = ({
     <h2 className="card-title staking-balances-title">
       Rewards account balance
       <a
+        className="wide-data-balloon"
         {...tooltip(
-          'This value represents balance on your rewards account. It contains all received rewards from delegation.',
+          'This value represents balance on your rewards account. It contains all rewards received from delegation that were not transferred yet to your Available balance. This rewards are automatically staked. You need to Withdraw Rewards only when you want to spend them. Withdraw Rewards button will appear only once you have some rewards in your Rewards Balance.',
           true
         )}
       >
@@ -87,7 +88,7 @@ const shelleyBalances = ({
           className="button stake-pool"
           onClick={redeemRewards}
         >
-          Redeem
+          Withdraw Rewards
         </button>
       )}
     </div>
@@ -96,7 +97,7 @@ const shelleyBalances = ({
         Available balance
         <a
           {...tooltip(
-            'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to redeem your rewards',
+            'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to withdraw them.',
             true
           )}
         >
