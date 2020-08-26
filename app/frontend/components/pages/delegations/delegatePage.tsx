@@ -154,7 +154,10 @@ class Delegate extends Component<Props> {
               stakePool.poolHash === ''
             }
             onClick={delegationHandler}
-            {...tooltip('Funds must be delegated to valid stake pool', false)}
+            {...tooltip(
+              'You are using Shelley incompatible wallet. To delegate your ADA, follow the instructions to convert you wallet.',
+              !isShelleyCompatible
+            )}
           >
             Delegate
           </button>
