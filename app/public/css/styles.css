@@ -1987,7 +1987,7 @@ li.main-tab input + label.selected:after {
   margin-left: 16px;
   font-size: 20px;
   line-height: 48px;
-  color: var(--color-staking);
+  color: var(--color-brand);
   padding-right: 20px;
   position: relative;
 }
@@ -1998,13 +1998,13 @@ li.main-tab input + label.selected:after {
 } 
 
 .staking-balances-amount svg path {
-  fill: var(--color-staking);
+  fill: var(--color-brand);
 }
 
 .balance-amount-staking {
   font-size: 32px;
   line-height: 48px;
-  color: var(--color-staking);
+  color: var(--color-brand);
   padding-right: 34px;
   position: relative;
 }
@@ -2015,7 +2015,7 @@ li.main-tab input + label.selected:after {
 } 
 
 .balance-amount-staking svg path {
-  fill: var(--color-staking);
+  fill: var(--color-brand);
 }
 
 .total-balance-wrapper {

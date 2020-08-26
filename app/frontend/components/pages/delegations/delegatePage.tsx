@@ -146,7 +146,7 @@ class Delegate extends Component<Props> {
         </div>
         <div className="validation-row">
           <button
-            className="button primary staking"
+            className="button primary"
             disabled={
               !isShelleyCompatible ||
               validationError ||
