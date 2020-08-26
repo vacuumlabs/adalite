@@ -56,7 +56,7 @@ const shelleyBalances = ({
         !!nonStakingBalance && (
         <button
           disabled={calculatingDelegationFee}
-          className="button stake-pool"
+          className="button secondary"
           onClick={convertNonStakingUtxos}
         >
             Convert to stakable
@@ -85,7 +85,7 @@ const shelleyBalances = ({
       {!!rewardsAccountBalance && (
         <button
           disabled={calculatingDelegationFee}
-          className="button stake-pool"
+          className="button secondary"
           onClick={redeemRewards}
         >
           Withdraw Rewards
