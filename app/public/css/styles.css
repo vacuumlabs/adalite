@@ -263,19 +263,6 @@ p.hey {
   color: white;
 }
 
-.button.primary.staking {
-  background-color: var(--color-staking);
-}
-
-.button.primary.staking:hover {
-  background-color: var(--color-staking-dark);
-}
-
-.button.primary.staking:disabled {
-  background-color: var(--color-staking-light);
-  color: white;
-}
-
 .button.secondary {
   padding: 10px 24px;
   color: var(--color-grey);
@@ -2380,7 +2367,6 @@ li.main-tab input + label.selected:after {
   position: relative;
   padding-left: 21px;
   color: rgba(96, 106, 113, 0.64);
-
 }
 
 .download-transactions-text::before {
@@ -2738,51 +2724,6 @@ input:checked + .slider:before {
 
 .input.stake-pool-id {
   margin-bottom: 12px;
-}
-
-.button.add-stake-pool {
-  float: right;
-  border: 1px solid var(--color-staking);
-  margin-right: 16px;
-  font-size: 14px;
-  font-weight: 400;
-  background-color: transparent;
-  padding: 6px 10px;
-  color: var(--color-staking);
-  white-space: nowrap;
-}
-
-.button.add-stake-pool svg path {
-  fill: var(--color-staking);
-}
-
-.button.add-stake-pool.active,
-.button.add-stake-pool:hover {
-  background-color: var(--color-staking);
-  color: #fff;
-}
-
-.button.add-stake-pool.active svg path,
-.button.add-stake-pool:hover svg path {
-  fill: #fff;
-}
-
-.button.add-stake-pool:disabled {
-  border-color: var(--color-border);
-  color: var(--color-placeholder);
-}
-
-.button.add-stake-pool:disabled svg path {
-  fill: var(--color-placeholder);
-}
-
-.button.add-stake-pool:disabled:hover {
-  background-color: var(--color-staking-light);
-  color: #fff;
-}
-
-.button.add-stake-pool:disabled:hover svg path {
-  fill: #fff;
 }
 
 .button.revoke-delegation {
