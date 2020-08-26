@@ -331,18 +331,13 @@ p.hey {
   background-image: url('../assets/refresh_button_symbol_active.svg');
 }
 
-.button.logout {
+.button.secondary.logout {
   margin-left: 16px;
   padding: 7px 24px 8px 56px;
   position: relative;
-  color: var(--color-grey);
-  border: 2px solid var(--color-border);
-  font-weight: normal;
-  background-color: white;
-  font-size: 14px;
 }
 
-.button.logout::before {
+.button.secondary.logout::before {
   content: '';
   position: absolute;
   top: 0;
@@ -357,11 +352,7 @@ p.hey {
   background-image: url('../assets/logout_symbol.svg');
 }
 
-.button.logout:hover {
-  color: var(--color-brand);
-}
-
-.button.logout:hover::before {
+.button.secondary.logout:hover::before {
   background-image: url('../assets/logout_symbol_active.svg');
 }
 

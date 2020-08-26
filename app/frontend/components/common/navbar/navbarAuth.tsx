@@ -99,7 +99,7 @@ class NavbarAuth extends Component<Props, {}> {
               Help
             </a>
           </div>
-          <button className="button logout" onClick={() => setTimeout(logout, 100)}>
+          <button className="button secondary logout" onClick={() => setTimeout(logout, 100)}>
             Logout
           </button>
         </div>
