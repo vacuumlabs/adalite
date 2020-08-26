@@ -75,7 +75,7 @@ interface Props {
   delegationFee: any
   calculatingDelegationFee: any
   delegationValidationError: any
-  changeDelegation: any
+  isShelleyCompatible: any
   confirmTransaction: any
   closeTransactionErrorModal: any
   transactionSubmissionError: any
@@ -102,7 +102,7 @@ class Delegate extends Component<Props> {
     delegationFee,
     calculatingDelegationFee,
     delegationValidationError,
-    changeDelegation,
+    isShelleyCompatible,
     confirmTransaction,
     closeTransactionErrorModal,
     transactionSubmissionError,
@@ -147,7 +147,12 @@ class Delegate extends Component<Props> {
         <div className="validation-row">
           <button
             className="button primary staking"
-            disabled={validationError || calculatingDelegationFee || stakePool.poolHash === ''}
+            disabled={
+              !isShelleyCompatible ||
+              validationError ||
+              calculatingDelegationFee ||
+              stakePool.poolHash === ''
+            }
             onClick={delegationHandler}
             {...tooltip('Funds must be delegated to valid stake pool', false)}
           >
@@ -191,6 +196,7 @@ export default connect(
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,
+    isShelleyCompatible: state.isShelleyCompatible,
   }),
   actions
 )(Delegate)

@@ -15,6 +15,7 @@ const shelleyBalances = ({
   redeemRewards,
   calculatingDelegationFee,
   hwWalletName,
+  isShelleyCompatible,
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">
@@ -51,13 +52,14 @@ const shelleyBalances = ({
         {isNaN(Number(nonStakingBalance)) ? nonStakingBalance : `${printAda(nonStakingBalance)}`}
         <AdaIcon />
       </div>
-      {!!nonStakingBalance && (
+      {isShelleyCompatible &&
+        !!nonStakingBalance && (
         <button
           disabled={calculatingDelegationFee}
           className="button stake-pool"
           onClick={convertNonStakingUtxos}
         >
-          Convert to stakable
+            Convert to stakable
         </button>
       )}
     </div>
@@ -122,6 +124,7 @@ export default connect(
     balance: state.balance,
     calculatingDelegationFee: state.calculatingDelegationFee,
     hwWalletName: state.hwWalletName,
+    isShelleyCompatible: state.isShelleyCompatible,
   }),
   actions
 )(shelleyBalances)
