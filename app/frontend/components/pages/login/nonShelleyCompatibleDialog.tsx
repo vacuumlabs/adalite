@@ -32,6 +32,11 @@ class NonShelleyCompatibleWarningDialogClass {
           AdaLite Shelley-compatible wallet.
         </p>
         <ol>
+          <li>
+            If you participated in the Incentivized Test Net staking, withdraw your rewards to your
+            wallet balance on the "Staking" tab (top left corner of the screen), clicking on the
+            Withdraw Rewards button (this button is visible only if you have some ITN rewards).
+          </li>
           <li>Logout of this wallet.</li>
           <li>Navigate to main page and click "Create New Wallet" in the right top corner.</li>
           <li>Wrote down your new 15 word mnemonic seed phrase.</li>
