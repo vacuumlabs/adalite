@@ -169,28 +169,8 @@ const ShelleyBlockchainExplorer = (config) => {
     return {validStakepools}
   }
 
-  async function getBestBlock() {
-    let bestBlock: number = 0
-    try {
-      const response = await request(
-        `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestBlock`
-      )
-      bestBlock = response.Right.bestBlock
-    } catch (e) {}
-
-    return bestBlock
-  }
-
   async function getBestSlot() {
-    let bestSlot: number = 0
-    try {
-      const response = await request(
-        `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`
-      )
-      bestSlot = response.Right.bestSlot
-    } catch (e) {}
-
-    return bestSlot
+    return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
   }
 
   return {
@@ -207,7 +187,6 @@ const ShelleyBlockchainExplorer = (config) => {
     getValidStakepools,
     getPoolInfo: (url) => be.getPoolInfo(url),
     getStakingHistory: be.getStakingHistory,
-    getBestBlock,
     getBestSlot,
   }
 }
@@ -266,13 +245,17 @@ const ShelleyWallet = ({
   }
 
   async function calculateTtl() {
-    const bestSlot = await blockchainExplorer.getBestSlot()
-
-    if (bestSlot) {
-      return bestSlot + cryptoProvider.network.ttl
-    } else {
-      return cryptoProvider.network.maxTtl
-    }
+    return (
+      cryptoProvider.network.ttl +
+      (await blockchainExplorer
+        .getBestSlot()
+        .then((res) => res.Right.bestSlot)
+        .catch(
+          () =>
+            cryptoProvider.network.eraStartSlot +
+            Math.floor((Date.now() - cryptoProvider.network.eraStartDateTime) / 1000)
+        ))
+    )
   }
 
   async function prepareTxAux(plan) {

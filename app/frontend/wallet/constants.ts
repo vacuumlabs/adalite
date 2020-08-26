@@ -27,7 +27,8 @@ export const NETWORKS = {
       name: 'mainnet',
       networkId: 1,
       protocolMagic: 764824073,
-      maxTtl: 10000000,
+      eraStartSlot: 4492800, // 21600 slot x 208 epochs
+      eraStartDateTime: Date.parse('29 Jul 2020 21:44:51 UTC'),
       ttl: 3600,
     },
     HASKELL_TESTNET: {
