@@ -276,7 +276,6 @@ p.hey {
   color: white;
 }
 
-
 .button.secondary {
   padding: 10px 24px;
   color: var(--color-grey);
@@ -284,6 +283,10 @@ p.hey {
   font-weight: normal;
   background-color: white;
   font-size: 14px;
+}
+
+.button.secondary:hover {
+  color: var(--color-brand);
 }
 
 .button.outline {
@@ -2735,21 +2738,6 @@ input:checked + .slider:before {
 
 .input.stake-pool-id {
   margin-bottom: 12px;
-}
-
-.button.stake-pool {
-  padding: 0;
-  background: none;
-  font-size: 14px;
-  color: var(--color-staking);
-  text-decoration: none;
-  margin-left: 16px;
-  font-weight: normal;
-  text-decoration: underline;
-}
-
-.button.stake-pool svg path {
-  fill: var(--color-staking);
 }
 
 .button.add-stake-pool {
