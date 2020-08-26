@@ -306,18 +306,13 @@ p.hey {
   width: 206px;
 }
 
-.button.refresh {
-  padding-left: 60px;
+.button.secondary.refresh {
+  padding: 12px 24px 12px 60px;
   position: relative;
-  background-color: white;
-  border: 2px solid var(--color-border);
-  color: var(--color-grey);
-  font-weight: normal;
-  font-size: 14px;
   line-height: 24px;
 }
 
-.button.refresh::before {
+.button.secondary.refresh::before {
   content: '';
   background-position: center;
   background-repeat: no-repeat;
@@ -332,12 +327,8 @@ p.hey {
   background-image: url('../assets/refresh_button_symbol.svg');
 }
 
-.button.refresh:hover::before {
+.button.secondary.refresh:hover::before {
   background-image: url('../assets/refresh_button_symbol_active.svg');
-}
-
-.button.refresh:hover {
-  color: var(--color-brand);
 }
 
 .button.logout {
@@ -3484,12 +3475,12 @@ input:checked + .slider:before {
 }
 
 @media screen and (min-width: 1024px) and (max-width: 1112px) {
-  .button.refresh {
+  .button.secondary.refresh {
     text-indent: -9999em;
     padding-left: 24px;
   }
 
-  .button.refresh::before {
+  .button.secondary.refresh::before {
     left: 0;
     right: 0;
   }
@@ -3576,12 +3567,12 @@ input:checked + .slider:before {
     font-size: 14px;
   }
 
-  .button.refresh {
+  .button.secondary.refresh {
     text-indent: -9999em;
     padding-left: 24px;
   }
 
-  .button.refresh::before {
+  .button.secondary.refresh::before {
     left: 0;
     right: 0;
   }
