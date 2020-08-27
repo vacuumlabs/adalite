@@ -164,22 +164,8 @@ const ShelleyBlockchainExplorer = (config) => {
 
   async function getValidStakepools() {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-    let response
-    try {
-      response = await fetch(url, {
-        method: 'GET',
-        body: null,
-        headers: {
-          'content-Type': 'application/json',
-        },
-      })
-      if (response.status >= 400) {
-        throw NamedError('NetworkError', {message: 'Unable to fetch running stakepools.'})
-      }
-    } catch (e) {
-      throw NamedError('NetworkError', {message: e.message})
-    }
-    const validStakepools = JSON.parse(await response.text())
+    const validStakepools = await request(url)
+
     return {validStakepools}
   }
 
