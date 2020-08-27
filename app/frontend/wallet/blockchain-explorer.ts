@@ -177,9 +177,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const withdrawalsUrl = `https://explorer-staging.adalite.io/api/account/withdrawalHistory/${accountPubkeyHex}`
 
     // Run requests in parallel
-    const delegationsRequest = request(delegationsUrl)
-    // const rewardsRequest = request(rewardsUrl)
-    const withdrawalsRequest = request(withdrawalsUrl)
+    const delegationsRequest = request(delegationsUrl).catch(() => [])
+    // const rewardsRequest = request(rewardsUrl).catch(()=>[]
+    const withdrawalsRequest = request(withdrawalsUrl).catch(() => [])
 
     // Await all
     const delegations = await delegationsRequest
