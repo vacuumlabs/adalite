@@ -214,16 +214,14 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       [...delegations, ...rewards].map(({poolHash}) => extractUrl(poolHash))
     ).filter((x) => x != null)
 
-    // Run requests for meta data in parallel
-    const metaDataPromises = poolMetaUrls.map((url: string) => ({
-      url,
-      metaDataPromise: getPoolInfo(url),
-    }))
-    const metaUrlToPoolNameMap = {}
-    for (const promise of metaDataPromises) {
-      const metaData = await promise.metaDataPromise
-      metaUrlToPoolNameMap[promise.url] = metaData.name
-    }
+    const metaUrlToPoolNameMap = (await Promise.all(
+      poolMetaUrls.map((url: string) =>
+        getPoolInfo(url).then((metaData) => ({url, name: metaData.name}))
+      )
+    )).reduce((map, {url, name}) => {
+      map[url] = name
+      return map
+    }, {})
 
     const poolHashToPoolName = (poolHash) => {
       const poolName = metaUrlToPoolNameMap[extractUrl(poolHash)]
