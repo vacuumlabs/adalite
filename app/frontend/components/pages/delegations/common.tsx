@@ -6,7 +6,6 @@ export const CopyPoolId = ({value}) => {
     <CopyOnClick
       value={value}
       elementClass="address-link copy"
-      inline
       tooltipMessage="Pool ID copied to clipboard"
     >
       <a className="copy-text ml-8" />
