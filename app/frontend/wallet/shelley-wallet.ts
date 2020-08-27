@@ -36,14 +36,7 @@ import {
   ShelleyTtl,
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
-import {
-  DelegetionHistoryObject,
-  StakePool,
-  StakeDelegation,
-  DelegetionHistoryItemType,
-  StakingReward,
-  RewardWithdrawal,
-} from '../components/pages/delegations/delegationHistoryPage'
+import {DelegetionHistoryObject} from '../components/pages/delegations/delegationHistoryPage'
 import distinct from '../helpers/distinct'
 
 // const isUtxoProfitable = () => true
@@ -169,18 +162,6 @@ const ShelleyBlockchainExplorer = (config) => {
     return {validStakepools}
   }
 
-  async function getPoolInfo(url) {
-    const response = await request(
-      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
-      'POST',
-      JSON.stringify({poolUrl: url}),
-      {'Content-Type': 'application/json'}
-    ).catch(() => {
-      return {}
-    })
-    return response
-  }
-
   return {
     getTxHistory: (addresses) => be.getTxHistory(addresses),
     fetchTxRaw: be.fetchTxRaw,
@@ -193,7 +174,7 @@ const ShelleyBlockchainExplorer = (config) => {
     getAccountInfo,
     getRewardsBalance,
     getValidStakepools,
-    getPoolInfo,
+    getPoolInfo: (url) => be.getPoolInfo(url),
     getDelegationHistory: be.getDelegationHistory,
   }
 }
@@ -418,90 +399,10 @@ const ShelleyWallet = ({
     shelleyAccountInfo,
     validStakepools
   ): Promise<DelegetionHistoryObject[]> {
-    const {delegations, rewards, withdrawals} = await blockchainExplorer.getDelegationHistory(
-      shelleyAccountInfo.accountPubkeyHex
+    return await blockchainExplorer.getDelegationHistory(
+      shelleyAccountInfo.accountPubkeyHex,
+      validStakepools
     )
-
-    const extractUrl = (poolHash) =>
-      validStakepools[poolHash] ? validStakepools[poolHash].url : null
-
-    const poolMetaUrls = distinct(
-      [...delegations, ...rewards].map(({poolHash}) => extractUrl(poolHash))
-    ).filter((x) => x != null)
-
-    // Run requests for meta data in parallel
-    const metaDataPromises = poolMetaUrls.map((url: string) => ({
-      url,
-      metaDataPromise: getPoolInfo(url),
-    }))
-    const metaUrlToPoolNameMap = {}
-    for (const promise of metaDataPromises) {
-      const metaData = await promise.metaDataPromise
-      metaUrlToPoolNameMap[promise.url] = metaData.name
-    }
-
-    const poolHashToPoolName = (poolHash) => {
-      const poolName = metaUrlToPoolNameMap[extractUrl(poolHash)]
-      return poolName || UNKNOWN_POOL_NAME
-    }
-
-    const parseStakePool = (delegationHistoryObject) => {
-      const stakePool: StakePool = {
-        id: delegationHistoryObject.poolHash,
-        name: poolHashToPoolName(delegationHistoryObject.poolHash),
-      }
-
-      return stakePool
-    }
-
-    // Prepare delegations
-    let oldPool: StakePool = null
-    const parsedDelegations = delegations
-      .map((delegation) => ({...delegation, time: new Date(delegation.time)}))
-      .sort((a, b) => a.time.getTime() - b.time.getTime()) // sort by time, oldest first
-      .map((delegation) => {
-        const stakePool: StakePool = parseStakePool(delegation)
-        const stakeDelegation: StakeDelegation = {
-          type: DelegetionHistoryItemType.StakeDelegation,
-          epoch: delegation.epochNo,
-          dateTime: new Date(delegation.time),
-          newStakePool: stakePool,
-          oldStakePool: oldPool,
-        }
-        oldPool = stakePool
-
-        return stakeDelegation
-      })
-      .reverse() // newest first
-
-    // Prepare rewards
-    const parsedRewards = rewards.map((reward) => {
-      const stakingReward: StakingReward = {
-        type: DelegetionHistoryItemType.StakingReward,
-        epoch: reward.epochNo,
-        dateTime: new Date(reward.time),
-        reward: reward.amount,
-        stakePool: parseStakePool(reward),
-      }
-
-      return stakingReward
-    })
-
-    // Prepare withdrawals
-    const parsedWithdrawals = withdrawals.map((withdrawal) => {
-      const rewardWithdrawal: RewardWithdrawal = {
-        type: DelegetionHistoryItemType.RewardWithdrawal,
-        epoch: withdrawal.epochNo,
-        dateTime: new Date(withdrawal.time),
-        credit: withdrawal.amount,
-      }
-
-      return rewardWithdrawal
-    })
-
-    return [...parsedDelegations, ...parsedRewards, ...parsedWithdrawals].sort(
-      (a, b) => b.dateTime.getTime() - a.dateTime.getTime()
-    ) // sort by time, newest first
   }
 
   async function getAccountInfo() {
