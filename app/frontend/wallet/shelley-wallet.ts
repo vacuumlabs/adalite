@@ -422,19 +422,12 @@ const ShelleyWallet = ({
       shelleyAccountInfo.accountPubkeyHex
     )
 
-    const extractUrl = (poolHash) => {
-      const stakePool = validStakepools[poolHash]
-      if (stakePool) {
-        return stakePool.url
-      } else {
-        return null
-      }
-    }
+    const extractUrl = (poolHash) =>
+      validStakepools[poolHash] ? validStakepools[poolHash].url : null
 
-    const poolMetaUrls = distinct([
-      ...distinct(delegations.map((delegation) => extractUrl(delegation.poolHash))),
-      ...distinct(rewards.map((reward) => extractUrl(reward.poolHash))),
-    ]).filter((x) => x != null)
+    const poolMetaUrls = distinct(
+      [...delegations, ...rewards].map(({poolHash}) => extractUrl(poolHash))
+    ).filter((x) => x != null)
 
     // Run requests for meta data in parallel
     const metaDataPromises = poolMetaUrls.map((url: string) => ({
@@ -449,11 +442,7 @@ const ShelleyWallet = ({
 
     const poolHashToPoolName = (poolHash) => {
       const poolName = metaUrlToPoolNameMap[extractUrl(poolHash)]
-      if (poolName) {
-        return poolName
-      } else {
-        return UNKNOWN_POOL_NAME
-      }
+      return poolName || UNKNOWN_POOL_NAME
     }
 
     const parseStakePool = (delegationHistoryObject) => {
@@ -510,11 +499,9 @@ const ShelleyWallet = ({
       return rewardWithdrawal
     })
 
-    const combined = [...parsedDelegations, ...parsedRewards, ...parsedWithdrawals].sort(
+    return [...parsedDelegations, ...parsedRewards, ...parsedWithdrawals].sort(
       (a, b) => b.dateTime.getTime() - a.dateTime.getTime()
     ) // sort by time, newest first
-
-    return combined
   }
 
   async function getAccountInfo() {
