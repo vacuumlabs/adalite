@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@babel/runtime@7.3.4", "@babel/runtime@^7.10.2":
+"@babel/runtime@7.3.4", "@babel/runtime@^7.11.0":
   version "7.3.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.3.4.tgz#73d12ba819e365fcf7fd152aed56d6df97d21c83"
   integrity sha512-IvfvnMdSaLBateu0jfsYIpZTxAc2cKEXEMiezGGN75QcBcecDUKd3PgLAncT0oOgxKy8dd8hrJKj9MfzgfZd6g==
@@ -1223,6 +1223,11 @@ events@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.1.0.tgz#84279af1b34cb75aa88bf5ff291f6d0bd9b31a59"
   integrity sha512-Rv+u8MLHNOdMjTAFeT3nCjHn2aGlx435FP/sDHNaRhDEMwyI/aB22Kj2qIN8R0cw3z28psEQLYwxVKLsKrMgWg==
+
+events@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/events/-/events-3.2.0.tgz#93b87c18f8efcd4202a461aec4dfc0556b639379"
+  integrity sha512-/46HWwbfCX2xTawVfkKLGxMifJYQBWMwY1mjywRtb4c9x8l5NP3KoJtnIOiL1hfdRkIuYhETxQlo62IF8tcnlg==
 
 evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
   version "1.0.3"
@@ -3326,14 +3331,14 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
-trezor-connect@^8.1.1:
-  version "8.1.7"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.7.tgz#6db17d029d5c1cbab66eb06823869ba97b8eefa5"
-  integrity sha512-nK4rt17FT3Gsfdq4m0QR10ZnWzTNCsLB0Qp7LoPkaWrft0+fUyv5ryMRHdTnL3x//8s+Vl80nIw/Wlkvn3jvlw==
+trezor-connect@^8.1.12:
+  version "8.1.12"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.12.tgz#99beee082e4a27a72a64d0156874140363393b1e"
+  integrity sha512-2vnkL7T3wyozTiOUznCCEVOR4JfXUYivWGjxDVH2Wad8ngjqdg3KQjwIrrX4FIN7BQ5hBAuYY0JnmRaXdl4kIA==
   dependencies:
-    "@babel/runtime" "^7.10.2"
-    events "^3.1.0"
-    whatwg-fetch "^3.0.0"
+    "@babel/runtime" "^7.11.0"
+    events "^3.2.0"
+    whatwg-fetch "^3.3.1"
 
 tslib@^1.9.0:
   version "1.9.3"
@@ -3545,10 +3550,10 @@ webpack@^4.1.1:
     watchpack "^1.5.0"
     webpack-sources "^1.0.1"
 
-whatwg-fetch@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.0.0.tgz#fc804e458cc460009b1a2b966bc8817d2578aefb"
-  integrity sha512-9GSJUgz1D4MfyKU7KRqwOjXCXTqWdFNvEr7eUBYchQiVc744mqK/MzXPNR2WsPkmkOa4ywfg8C2n8h+13Bey1Q==
+whatwg-fetch@^3.3.1:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.4.0.tgz#e11de14f4878f773fbebcde8871b2c0699af8b30"
+  integrity sha512-rsum2ulz2iuZH08mJkT0Yi6JnKhwdw4oeyMjokgxd+mmqYSd9cPpOQf01TIWgjxG/U4+QR+AwKq6lSbXVxkyoQ==
 
 which-module@^2.0.0:
   version "2.0.0"

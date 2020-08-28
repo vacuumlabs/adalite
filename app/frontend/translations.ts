@@ -3,8 +3,6 @@ import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
 import {Lovelace} from './state'
 import {RECOMMENDED_LEDGER_APP_VERSION} from './wallet/constants'
-import {h, Fragment} from 'preact'
-// import { Fragment } from '@emurgo/js-chain-libs'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 

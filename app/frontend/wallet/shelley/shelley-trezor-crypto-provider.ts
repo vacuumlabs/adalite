@@ -8,7 +8,7 @@ import debugLog from '../../helpers/debugLog'
 const CardanoTrezorCryptoProvider = ({network, config}) => {
   const derivationScheme = derivationSchemes.v2
 
-  const TrezorConnect = require('../../libs/trezor-connect-local').default
+  const TrezorConnect = require('trezor-connect').default
 
   TrezorConnect.manifest({
     email: ADALITE_SUPPORT_EMAIL,
@@ -68,7 +68,9 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
 
   type CardanoInput = {
     path: string | number[]
+    // eslint-disable-next-line camelcase
     prev_hash: string
+    // eslint-disable-next-line camelcase
     prev_index: number
   }
   type CardanoOutput =

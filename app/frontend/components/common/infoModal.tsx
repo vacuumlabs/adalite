@@ -3,7 +3,6 @@ import {connect} from '../../helpers/connect'
 import actions from '../../actions'
 import Modal from './modal'
 import Alert from './alert'
-import Branding from './branding'
 import ImageModal from './imageModal'
 
 const Article = ({children, title, icon}) => (
