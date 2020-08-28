@@ -2,7 +2,7 @@ import debugLog from '../helpers/debugLog'
 import AddressManager from './address-manager'
 import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
-import {MAX_INT32} from './constants'
+import {MAX_INT32, UNKNOWN_POOL_NAME} from './constants'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
 import {
@@ -36,6 +36,8 @@ import {
   ShelleyTtl,
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
+import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
+import distinct from '../helpers/distinct'
 
 // const isUtxoProfitable = () => true
 
@@ -155,35 +157,9 @@ const ShelleyBlockchainExplorer = (config) => {
 
   async function getValidStakepools() {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-    let response
-    try {
-      response = await fetch(url, {
-        method: 'GET',
-        body: null,
-        headers: {
-          'content-Type': 'application/json',
-        },
-      })
-      if (response.status >= 400) {
-        throw NamedError('NetworkError', {message: 'Unable to fetch running stakepools.'})
-      }
-    } catch (e) {
-      throw NamedError('NetworkError', {message: e.message})
-    }
-    const validStakepools = JSON.parse(await response.text())
-    return {validStakepools}
-  }
+    const validStakepools = await request(url)
 
-  async function getPoolInfo(url) {
-    const response = await request(
-      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
-      'POST',
-      JSON.stringify({poolUrl: url}),
-      {'Content-Type': 'application/json'}
-    ).catch(() => {
-      return {}
-    })
-    return response
+    return {validStakepools}
   }
 
   return {
@@ -198,7 +174,8 @@ const ShelleyBlockchainExplorer = (config) => {
     getAccountInfo,
     getRewardsBalance,
     getValidStakepools,
-    getPoolInfo,
+    getPoolInfo: (url) => be.getPoolInfo(url),
+    getStakingHistory: be.getStakingHistory,
   }
 }
 const ShelleyWallet = ({
@@ -379,13 +356,15 @@ const ShelleyWallet = ({
   }
 
   async function getWalletInfo() {
+    const {validStakepools} = await getValidStakepools()
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getAccountInfo()
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
-    // getDelegationHistory
+    const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
     // getWithdrawalHistory
     return {
+      validStakepools,
       balance,
       shelleyBalances: {
         nonStakingBalance,
@@ -394,6 +373,7 @@ const ShelleyWallet = ({
       },
       shelleyAccountInfo,
       transactionHistory,
+      stakingHistory,
       visibleAddresses,
     }
   }
@@ -415,12 +395,23 @@ const ShelleyWallet = ({
     return blockchainExplorer.getTxHistory([...base, ...legacy, account])
   }
 
+  async function getStakingHistory(
+    shelleyAccountInfo,
+    validStakepools
+  ): Promise<StakingHistoryObject[]> {
+    return await blockchainExplorer.getStakingHistory(
+      shelleyAccountInfo.accountPubkeyHex,
+      validStakepools
+    )
+  }
+
   async function getAccountInfo() {
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
     const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(accountPubkeyHex)
     return {
+      accountPubkeyHex,
       ...accountInfo,
       delegation: {
         ...accountInfo.delegation,

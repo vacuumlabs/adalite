@@ -1,10 +1,10 @@
 import {h, Component} from 'preact'
 import printAda from '../../../helpers/printAda'
-import formatDate from '../../../helpers/formatDate'
 import {Lovelace} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
+import toLocalDate from '../../../helpers/toLocalDate'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {
@@ -135,6 +135,8 @@ const ExportCSV = ({transactionHistory}) => {
 
 class TransactionHistory extends Component<Props> {
   render({transactionHistory}) {
+    const formatDate = (date) => toLocalDate(new Date(date * 1000))
+
     return (
       <div className="transactions card">
         <div className="transactions-header">

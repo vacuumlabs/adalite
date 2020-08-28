@@ -114,7 +114,7 @@ export interface State {
   currentDelegation?: {
     stakePool?: any
   }
-  delegationHistory?: any
+  stakingHistory?: any
   validStakepools?: any | null
   ticker2Id?: any | null
   delegationValidationError?: any

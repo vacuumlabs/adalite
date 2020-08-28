@@ -3,6 +3,15 @@ import range from './helpers/range'
 import NamedError from '../helpers/NamedError'
 import debugLog from '../helpers/debugLog'
 import getHash from '../helpers/getHash'
+import {
+  StakingHistoryItemType,
+  RewardWithdrawal,
+  StakeDelegation,
+  StakePool,
+  StakingReward,
+} from '../components/pages/delegations/stakingHistoryPage'
+import distinct from '../helpers/distinct'
+import {UNKNOWN_POOL_NAME} from './constants'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -170,6 +179,109 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
   }
 
+  async function getPoolInfo(url) {
+    const response = await request(
+      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
+      'POST',
+      JSON.stringify({poolUrl: url}),
+      {'Content-Type': 'application/json'}
+    ).catch(() => {
+      return {}
+    })
+    return response
+  }
+
+  async function getStakingHistory(accountPubkeyHex, validStakepools) {
+    // Urls
+    const delegationsUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/delegationHistory/${accountPubkeyHex}`
+    // const rewardsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/rewardHistory/${accountPubkeyHex}`
+    const withdrawalsUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/withdrawalHistory/${accountPubkeyHex}`
+
+    const [delegations, /*rewards,*/ withdrawals] = await Promise.all([
+      request(delegationsUrl).catch(() => []),
+      // request(rewardsUrl).catch(()=>[]),
+      request(withdrawalsUrl).catch(() => []),
+    ])
+    const rewards = []
+
+    const extractUrl = (poolHash) =>
+      validStakepools[poolHash] ? validStakepools[poolHash].url : null
+
+    const poolMetaUrls = distinct(
+      [...delegations, ...rewards].map(({poolHash}) => extractUrl(poolHash))
+    ).filter((url) => url != null)
+
+    const metaUrlToPoolNameMap = (await Promise.all(
+      poolMetaUrls.map((url: string) =>
+        getPoolInfo(url).then((metaData) => ({url, name: metaData.name}))
+      )
+    )).reduce((map, {url, name}) => {
+      map[url] = name
+      return map
+    }, {})
+
+    const poolHashToPoolName = (poolHash) =>
+      metaUrlToPoolNameMap[extractUrl(poolHash)] || UNKNOWN_POOL_NAME
+
+    const parseStakePool = (stakingHistoryObject): StakePool => ({
+      id: stakingHistoryObject.poolHash,
+      name: poolHashToPoolName(stakingHistoryObject.poolHash),
+    })
+
+    // Prepare delegations
+    let oldPool: StakePool = null
+    const parsedDelegations = delegations
+      .map((delegation) => ({...delegation, time: new Date(delegation.time)}))
+      .sort((a, b) => a.time.getTime() - b.time.getTime()) // sort by time, oldest first
+      .map((delegation) => {
+        const stakePool: StakePool = parseStakePool(delegation)
+        const stakeDelegation: StakeDelegation = {
+          type: StakingHistoryItemType.StakeDelegation,
+          epoch: delegation.epochNo,
+          dateTime: new Date(delegation.time),
+          newStakePool: stakePool,
+          oldStakePool: oldPool,
+        }
+        oldPool = stakePool
+
+        return stakeDelegation
+      })
+      .reverse() // newest first
+
+    // Prepare rewards
+    const parsedRewards = rewards.map((reward) => {
+      const stakingReward: StakingReward = {
+        type: StakingHistoryItemType.StakingReward,
+        epoch: reward.epochNo,
+        dateTime: new Date(reward.time),
+        reward: reward.amount,
+        stakePool: parseStakePool(reward),
+      }
+
+      return stakingReward
+    })
+
+    // Prepare withdrawals
+    const parsedWithdrawals = withdrawals.map((withdrawal) => {
+      const rewardWithdrawal: RewardWithdrawal = {
+        type: StakingHistoryItemType.RewardWithdrawal,
+        epoch: withdrawal.epochNo,
+        dateTime: new Date(withdrawal.time),
+        credit: withdrawal.amount,
+      }
+
+      return rewardWithdrawal
+    })
+
+    return [...parsedDelegations, ...parsedRewards, ...parsedWithdrawals].sort(
+      (a, b) => b.dateTime.getTime() - a.dateTime.getTime()
+    ) // sort by time, newest first
+  }
+
   return {
     getTxHistory,
     fetchTxRaw,
@@ -179,6 +291,8 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     getBalance,
     fetchTxInfo,
     filterUsedAddresses,
+    getPoolInfo,
+    getStakingHistory,
   }
 }
 
