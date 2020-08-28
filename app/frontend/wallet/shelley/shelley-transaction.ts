@@ -72,7 +72,8 @@ function ShelleyTxWitnessShelley(publicKey, signature) {
 
 function ShelleyWitdrawal(accountAddress, rewards) {
   function encodeCBOR(encoder) {
-    const accountAddressHash = bech32.decode(accountAddress).data // TODO: this is not hash, is bytes
+    // TODO: accountAddressHash is not a hash, it's bytes
+    const accountAddressHash = bech32.decode(accountAddress).data
     const withdrawalMap = new Map()
     withdrawalMap.set(accountAddressHash, rewards)
 

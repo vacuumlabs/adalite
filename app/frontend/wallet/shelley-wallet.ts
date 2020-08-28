@@ -256,7 +256,8 @@ const ShelleyWallet = ({
       const stakingPath = myAddresses.getAddressToAbsPathMapper()(accountAddress)
       txOutputs.push(ShelleyTxOutput(address, coins, true, absDerivationPath, stakingPath))
     }
-    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts, txWithdrawals[0]) // TODO: witdrawal is just one
+    // TODO: there is just one witdrawal
+    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts, txWithdrawals[0])
   }
 
   async function signTxAux(txAux: any) {

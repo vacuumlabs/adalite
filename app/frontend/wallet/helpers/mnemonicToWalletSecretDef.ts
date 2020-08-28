@@ -3,12 +3,8 @@ import {decodePaperWalletMnemonic, mnemonicToRootKeypair} from 'cardano-crypto.j
 import {validateMnemonic, isMnemonicInPaperWalletFormat} from '../mnemonic'
 
 import derivationSchemes from './derivation-schemes'
-import {ADALITE_CONFIG} from '../../config'
 
 const guessDerivationSchemeFromMnemonic = (mnemonic) => {
-  // if (ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley') {
-  //   return derivationSchemes.v2 //TODO: v1 should have been abandoned in shelley (?)
-  // }
   return mnemonic.split(' ').length === 12 ? derivationSchemes.v1 : derivationSchemes.v2
 }
 

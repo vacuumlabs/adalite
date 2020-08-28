@@ -10,7 +10,6 @@ import {
   ShelleySignedTransactionStructured,
 } from './shelley-transaction'
 import * as platform from 'platform'
-import {MINIMAL_LEDGER_APP_VERSION} from './../constants'
 import {hasMinimalVersion} from './helpers/version-check'
 
 // import {PROTOCOL_MAGIC_KEY} from '../constants'
