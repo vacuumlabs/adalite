@@ -201,22 +201,19 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/withdrawalHistory/${accountPubkeyHex}`
 
-    // Run requests in parallel
-    const delegationsRequest = request(delegationsUrl).catch(() => [])
-    // const rewardsRequest = request(rewardsUrl).catch(()=>[]
-    const withdrawalsRequest = request(withdrawalsUrl).catch(() => [])
-
-    // Await all
-    const delegations = await delegationsRequest
-    const rewards = [] //await rewardsRequest
-    const withdrawals = await withdrawalsRequest
+    const [delegations, /*rewards,*/ withdrawals] = await Promise.all([
+      request(delegationsUrl).catch(() => []),
+      // request(rewardsUrl).catch(()=>[]),
+      request(withdrawalsUrl).catch(() => []),
+    ])
+    const rewards = []
 
     const extractUrl = (poolHash) =>
       validStakepools[poolHash] ? validStakepools[poolHash].url : null
 
     const poolMetaUrls = distinct(
       [...delegations, ...rewards].map(({poolHash}) => extractUrl(poolHash))
-    ).filter((x) => x != null)
+    ).filter((url) => url != null)
 
     const metaUrlToPoolNameMap = (await Promise.all(
       poolMetaUrls.map((url: string) =>
@@ -227,19 +224,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       return map
     }, {})
 
-    const poolHashToPoolName = (poolHash) => {
-      const poolName = metaUrlToPoolNameMap[extractUrl(poolHash)]
-      return poolName || UNKNOWN_POOL_NAME
-    }
+    const poolHashToPoolName = (poolHash) =>
+      metaUrlToPoolNameMap[extractUrl(poolHash)] || UNKNOWN_POOL_NAME
 
-    const parseStakePool = (stakingHistoryObject) => {
-      const stakePool: StakePool = {
-        id: stakingHistoryObject.poolHash,
-        name: poolHashToPoolName(stakingHistoryObject.poolHash),
-      }
-
-      return stakePool
-    }
+    const parseStakePool = (stakingHistoryObject): StakePool => ({
+      id: stakingHistoryObject.poolHash,
+      name: poolHashToPoolName(stakingHistoryObject.poolHash),
+    })
 
     // Prepare delegations
     let oldPool: StakePool = null

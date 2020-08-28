@@ -398,7 +398,7 @@ const ShelleyWallet = ({
   async function getStakingHistory(
     shelleyAccountInfo,
     validStakepools
-  ): Promise<DelegetionHistoryObject[]> {
+  ): Promise<StakingHistoryObject[]> {
     return await blockchainExplorer.getStakingHistory(
       shelleyAccountInfo.accountPubkeyHex,
       validStakepools
