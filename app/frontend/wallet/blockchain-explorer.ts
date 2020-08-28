@@ -193,9 +193,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
   async function getStakingHistory(accountPubkeyHex, validStakepools) {
     // Urls
-    const delegationsUrl = `https://explorer-staging.adalite.io/api/account/delegationHistory/${accountPubkeyHex}`
-    // const rewardsUrl = `https://explorer-staging.adalite.io/api/account/rewardHistory/${accountPubkeyHex}`
-    const withdrawalsUrl = `https://explorer-staging.adalite.io/api/account/withdrawalHistory/${accountPubkeyHex}`
+    const delegationsUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/delegationHistory/${accountPubkeyHex}`
+    // const rewardsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/rewardHistory/${accountPubkeyHex}`
+    const withdrawalsUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/withdrawalHistory/${accountPubkeyHex}`
 
     // Run requests in parallel
     const delegationsRequest = request(delegationsUrl).catch(() => [])
