@@ -36,7 +36,7 @@ import {
   ShelleyTtl,
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
-import {DelegetionHistoryObject} from '../components/pages/delegations/delegationHistoryPage'
+import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
 import distinct from '../helpers/distinct'
 
 // const isUtxoProfitable = () => true
@@ -175,7 +175,7 @@ const ShelleyBlockchainExplorer = (config) => {
     getRewardsBalance,
     getValidStakepools,
     getPoolInfo: (url) => be.getPoolInfo(url),
-    getDelegationHistory: be.getDelegationHistory,
+    getStakingHistory: be.getStakingHistory,
   }
 }
 const ShelleyWallet = ({
@@ -361,7 +361,7 @@ const ShelleyWallet = ({
     const shelleyAccountInfo = await getAccountInfo()
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
-    const delegationHistory = await getDelegationHistory(shelleyAccountInfo, validStakepools)
+    const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
     // getWithdrawalHistory
     return {
       validStakepools,
@@ -373,7 +373,7 @@ const ShelleyWallet = ({
       },
       shelleyAccountInfo,
       transactionHistory,
-      delegationHistory,
+      stakingHistory,
       visibleAddresses,
     }
   }
@@ -395,11 +395,11 @@ const ShelleyWallet = ({
     return blockchainExplorer.getTxHistory([...base, ...legacy, account])
   }
 
-  async function getDelegationHistory(
+  async function getStakingHistory(
     shelleyAccountInfo,
     validStakepools
   ): Promise<DelegetionHistoryObject[]> {
-    return await blockchainExplorer.getDelegationHistory(
+    return await blockchainExplorer.getStakingHistory(
       shelleyAccountInfo.accountPubkeyHex,
       validStakepools
     )

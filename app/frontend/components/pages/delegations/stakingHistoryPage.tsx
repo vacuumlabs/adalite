@@ -2,16 +2,16 @@ import {h, Component, Fragment} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {CopyPoolId} from './common'
-import toLocalDate from '../../../../frontend/helpers/toLocalDate'
+import toLocalDate from '../../../helpers/toLocalDate'
 
-export enum DelegetionHistoryItemType {
+export enum StakingHistoryItemType {
   StakeDelegation,
   StakingReward,
   RewardWithdrawal,
 }
 
-export interface DelegetionHistoryObject {
-  type: DelegetionHistoryItemType
+export interface StakingHistoryObject {
+  type: StakingHistoryItemType
   epoch: number
   dateTime: Date
 }
@@ -21,7 +21,7 @@ export interface StakePool {
   name: string
 }
 
-export interface StakeDelegation extends DelegetionHistoryObject {
+export interface StakeDelegation extends StakingHistoryObject {
   newStakePool: StakePool
   oldStakePool?: StakePool
 }
@@ -55,7 +55,7 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
   )
 }
 
-export interface StakingReward extends DelegetionHistoryObject {
+export interface StakingReward extends StakingHistoryObject {
   reward: number
   stakePool: StakePool
 }
@@ -78,7 +78,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
   )
 }
 
-export interface RewardWithdrawal extends DelegetionHistoryObject {
+export interface RewardWithdrawal extends StakingHistoryObject {
   credit: number
 }
 
@@ -99,26 +99,26 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
 }
 
 interface Props {
-  delegationHistory: any
+  stakingHistory: any
 }
 
-const DelegationHistoryObjectToItem = {
-  [DelegetionHistoryItemType.StakeDelegation]: (x: DelegetionHistoryObject) => (
+const StakingHistoryObjectToItem = {
+  [StakingHistoryItemType.StakeDelegation]: (x: StakingHistoryObject) => (
     <StakeDelegationItem stakeDelegation={x as StakeDelegation} />
   ),
-  [DelegetionHistoryItemType.StakingReward]: (x: DelegetionHistoryObject) => (
+  [StakingHistoryItemType.StakingReward]: (x: StakingHistoryObject) => (
     <StakingRewardItem stakingReward={x as StakingReward} />
   ),
-  [DelegetionHistoryItemType.RewardWithdrawal]: (x: DelegetionHistoryObject) => (
+  [StakingHistoryItemType.RewardWithdrawal]: (x: StakingHistoryObject) => (
     <RewardWithdrawalItem rewardWithdrawal={x as RewardWithdrawal} />
   ),
 }
 
-class DelegationHistoryPage extends Component<Props> {
-  render({delegationHistory}) {
-    const items = delegationHistory.map((data: DelegetionHistoryObject) => {
+class StakingHistoryPage extends Component<Props> {
+  render({stakingHistory}) {
+    const items = stakingHistory.map((data: StakingHistoryObject) => {
       try {
-        return DelegationHistoryObjectToItem[data.type](data)
+        return StakingHistoryObjectToItem[data.type](data)
       } catch (e) {
         return ''
       }
@@ -127,7 +127,7 @@ class DelegationHistoryPage extends Component<Props> {
     return (
       <div className="delegations-history card">
         <h2 className="card-title">Staking History</h2>
-        {delegationHistory.length === 0 ? (
+        {stakingHistory.length === 0 ? (
           <div className="transactions-empty">No history found</div>
         ) : (
           <ul className="delegations-history-content">{items}</ul>
@@ -139,7 +139,7 @@ class DelegationHistoryPage extends Component<Props> {
 
 export default connect(
   (state) => ({
-    delegationHistory: state.delegationHistory,
+    stakingHistory: state.stakingHistory,
   }),
   actions
-)(DelegationHistoryPage)
+)(StakingHistoryPage)
