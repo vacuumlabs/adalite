@@ -3,6 +3,7 @@ import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import {Lovelace} from '../../../state'
+import {CopyPoolId} from './common'
 
 const CurrentDelegationPage = ({
   pool,
@@ -16,14 +17,17 @@ const CurrentDelegationPage = ({
       {Object.keys(pool).length ? (
         <div>
           <div className="current-delegation-wrapper">
-            <div className="delegation-history-name">{pool.name || 'Pool'}</div>
-            <div className="delegation-history-id">{pool.poolHash}</div>
-            <div className="delegation-history-id">Ticker: {pool.ticker || ''}</div>
-            <div className="delegation-history-id">Tax: {pool.margin * 100 || ''}%</div>
-            <div className="delegation-history-id">
+            <div className="current-delegation-name">
+              {pool.name || 'Pool'}
+              <CopyPoolId value={pool.poolHash} />
+            </div>
+            <div className="current-delegation-id">{pool.poolHash}</div>
+            <div className="current-delegation-id">Ticker: {pool.ticker || ''}</div>
+            <div className="current-delegation-id">Tax: {pool.margin * 100 || ''}%</div>
+            <div className="current-delegation-id">
               Fixed cost: {printAda(parseInt(pool.fixedCost, 10) as Lovelace)}
             </div>
-            <div className="delegation-history-id">
+            <div className="current-delegation-id">
               {'Homepage: '}
               <a href={pool.homepage}>{pool.homepage}</a>
             </div>

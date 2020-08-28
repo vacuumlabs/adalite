@@ -10,6 +10,8 @@ interface Props {
   copy?: boolean
   enableTooltip?: boolean
   children: ComponentChildren
+  inline?: boolean
+  tooltipMessage?: string
 }
 
 class CopyOnClick extends Component<Props, {copied: boolean}> {
@@ -53,15 +55,24 @@ class CopyOnClick extends Component<Props, {copied: boolean}> {
     }
   }
 
-  render({children, elementClass = '', copy = true, enableTooltip = true}, {copied}) {
+  render(
+    {
+      children,
+      elementClass = '',
+      copy = true,
+      enableTooltip = true,
+      tooltipMessage = 'Copied to clipboard',
+    },
+    {copied}
+  ) {
     return (
-      <p
+      <span
         className={`${elementClass} thin-data-balloon`}
         onClick={copy && this.copyTextToClipboard}
-        {...tooltip('Copied to clipboard', true, copied && enableTooltip)}
+        {...tooltip(tooltipMessage, true, copied && enableTooltip)}
       >
         {children}
-      </p>
+      </span>
     )
   }
 }
