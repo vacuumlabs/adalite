@@ -3,6 +3,8 @@ import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {CopyPoolId} from './common'
 import toLocalDate from '../../../helpers/toLocalDate'
+import {Lovelace} from '../../../state'
+import printAda from '../../../helpers/printAda'
 
 export enum StakingHistoryItemType {
   StakeDelegation,
@@ -56,7 +58,7 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
 }
 
 export interface StakingReward extends StakingHistoryObject {
-  reward: number
+  reward: Lovelace
   stakePool: StakePool
 }
 
@@ -68,7 +70,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
         <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
       </div>
       <div>
-        <div>Reward: {stakingReward.reward}</div>
+        <div>Reward: {printAda(stakingReward.reward)}</div>
         <div className="grey">
           {stakingReward.stakePool.name}
           <CopyPoolId value={stakingReward.stakePool.id} />
@@ -79,7 +81,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
 }
 
 export interface RewardWithdrawal extends StakingHistoryObject {
-  credit: number
+  credit: Lovelace
 }
 
 const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithdrawal}) => {
@@ -91,7 +93,7 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
           <EpochDateTime epoch={rewardWithdrawal.epoch} dateTime={rewardWithdrawal.dateTime} />
         </div>
         <div>
-          <div className="transaction-amount credit">{rewardWithdrawal.credit}</div>
+          <div className="transaction-amount credit">{printAda(rewardWithdrawal.credit)}</div>
         </div>
       </div>
     </li>
