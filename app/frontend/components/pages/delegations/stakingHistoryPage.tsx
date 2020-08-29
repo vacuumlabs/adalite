@@ -42,7 +42,7 @@ const EpochDateTime = ({epoch, dateTime}: {epoch: number; dateTime: Date}) => {
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
   return (
     <li className="delegations-history-item">
-      <div className="label">Stake Delegation</div>
+      <div className="label">Stake delegation</div>
       <EpochDateTime epoch={stakeDelegation.epoch} dateTime={stakeDelegation.dateTime} />
       <div>
         New pool: <span className="bold">{stakeDelegation.newStakePool.name}</span>
