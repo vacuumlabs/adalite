@@ -182,9 +182,11 @@ const StakingHistoryObjectToItem = {
   [StakingHistoryItemType.RewardWithdrawal]: (x: StakingHistoryObject) => (
     <RewardWithdrawalItem rewardWithdrawal={x as RewardWithdrawal} />
   ),
-  [StakingHistoryItemType.StakingKeyRegistration]: (x: StakingHistoryObject) => (
-    <StakingKeyRegistrationItem stakingKeyRegistration={x as StakingKeyRegistration} />
-  ),
+  // Temporary disabled because of db-sync issue
+  // [StakingHistoryItemType.StakingKeyRegistration]: (x: StakingHistoryObject) => (
+  //   <StakingKeyRegistrationItem stakingKeyRegistration={x as StakingKeyRegistration} />
+  // ),
+  [StakingHistoryItemType.StakingKeyRegistration]: (x: StakingHistoryObject) => '',
 }
 
 class StakingHistoryPage extends Component<Props> {
