@@ -28,6 +28,7 @@ export interface StakePool {
 export interface StakeDelegation extends StakingHistoryObject {
   newStakePool: StakePool
   oldStakePool?: StakePool
+  txid: string
 }
 
 const EpochDateTime = ({epoch, dateTime}: {epoch: number; dateTime: Date}) => {
@@ -55,6 +56,11 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
       ) : (
         ''
       )}
+      <ViewOnCardanoScan
+        txid={stakeDelegation.txid}
+        suffix="?tab=delegations"
+        className="margin-top"
+      />
     </li>
   )
 }
@@ -84,6 +90,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
 
 export interface RewardWithdrawal extends StakingHistoryObject {
   credit: Lovelace
+  txid: string
 }
 
 const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithdrawal}) => {
@@ -98,6 +105,7 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
           <div className="transaction-amount credit">{printAda(rewardWithdrawal.credit)}</div>
         </div>
       </div>
+      <ViewOnCardanoScan txid={rewardWithdrawal.txid} suffix="?tab=withdrawals" />
     </li>
   )
 }
@@ -105,6 +113,7 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
 export interface StakingKeyRegistration extends StakingHistoryObject {
   action: string
   stakingKey: string
+  txid: string
 }
 
 const formatStakingKey = (str: string, n: number) =>
@@ -132,7 +141,30 @@ stakingKeyRegistration: StakingKeyRegistration
           <a className="copy-text ml-8" />
         </CopyOnClick>
       </div>
+      <ViewOnCardanoScan
+        txid={stakingKeyRegistration.txid}
+        suffix="?tab=stakecertificates"
+        className="margin-top"
+      />
     </li>
+  )
+}
+
+const ViewOnCardanoScan = ({txid, suffix, className = ''}) => {
+  return (
+    <div className={`blockexplorer-link ${className}`}>
+      <span>View on </span>
+      <span>
+        <a
+          className="transaction-address"
+          href={`https://cardanoscan.io/transaction/${txid}${suffix}`}
+          target="_blank"
+          rel="noopener"
+        >
+          Cardanoscan
+        </a>
+      </span>
+    </div>
   )
 }
 

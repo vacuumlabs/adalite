@@ -246,6 +246,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         const stakePool: StakePool = parseStakePool(delegation)
         const stakeDelegation: StakeDelegation = {
           type: StakingHistoryItemType.StakeDelegation,
+          txid: delegation.txHash,
           epoch: delegation.epochNo,
           dateTime: new Date(delegation.time),
           newStakePool: stakePool,
@@ -274,6 +275,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const parsedWithdrawals = withdrawals.map((withdrawal) => {
       const rewardWithdrawal: RewardWithdrawal = {
         type: StakingHistoryItemType.RewardWithdrawal,
+        txid: withdrawal.txHash,
         epoch: withdrawal.epochNo,
         dateTime: new Date(withdrawal.time),
         credit: withdrawal.amount,
@@ -286,6 +288,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const parsedStakingKeyRegistrations = stakingKeyRegistrations.map((registration) => {
       const stakingKeyRegistration: StakingKeyRegistration = {
         type: StakingHistoryItemType.StakingKeyRegistration,
+        txid: registration.txHash,
         epoch: registration.epochNo,
         dateTime: new Date(registration.time),
         action: registration.action,

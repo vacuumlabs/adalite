@@ -2310,6 +2310,10 @@ li.main-tab input + label.selected:after {
   margin-bottom: 12px;
 }
 
+.delegations-history-item .margin-top {
+  margin-top: 12px;
+}
+
 .delegations-history-item .space-between {
   display: flex;
   justify-content: space-between;
