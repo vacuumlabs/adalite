@@ -41,7 +41,7 @@ const EpochDateTime = ({epoch, dateTime}: {epoch: number; dateTime: Date}) => {
 
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
   return (
-    <li className="delegations-history-item">
+    <li className="staking-history-item">
       <div className="label">Stake delegation</div>
       <EpochDateTime epoch={stakeDelegation.epoch} dateTime={stakeDelegation.dateTime} />
       <div>
@@ -72,7 +72,7 @@ export interface StakingReward extends StakingHistoryObject {
 
 const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
   return (
-    <li className="delegations-history-item">
+    <li className="staking-history-item">
       <div>
         <div className="label">Staking reward</div>
         <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
@@ -95,7 +95,7 @@ export interface RewardWithdrawal extends StakingHistoryObject {
 
 const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithdrawal}) => {
   return (
-    <li className="delegations-history-item">
+    <li className="staking-history-item">
       <div className="space-between">
         <div>
           <div className="label">Reward withdrawal</div>
@@ -125,7 +125,7 @@ const StakingKeyRegistrationItem = ({
 stakingKeyRegistration: StakingKeyRegistration
 }) => {
   return (
-    <li className="delegations-history-item">
+    <li className="staking-history-item">
       <div className="label">Staking key {stakingKeyRegistration.action}</div>
       <EpochDateTime
         epoch={stakingKeyRegistration.epoch}
@@ -198,12 +198,12 @@ class StakingHistoryPage extends Component<Props> {
     })
 
     return (
-      <div className="delegations-history card">
+      <div className="staking-history card">
         <h2 className="card-title">Staking History</h2>
         {stakingHistory.length === 0 ? (
           <div className="transactions-empty">No history found</div>
         ) : (
-          <ul className="delegations-history-content">{items}</ul>
+          <ul className="staking-history-content">{items}</ul>
         )}
       </div>
     )
