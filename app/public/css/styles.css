@@ -4234,6 +4234,12 @@ input:checked + .slider:before {
     align-self: center;
   }
 
+  /* DELEGATION HISTORY */
+  .delegations-history-content {
+    max-height: initial;
+    overflow: auto;
+  }
+
   /* DASHBOARD */
 
   .dashboard.desktop {
@@ -4704,6 +4710,12 @@ input:checked + .slider:before {
 
   .detail-row .detail-input {
     margin-bottom: 24px;
+  }
+
+  /* DELEGATION HISTORY */
+  .delegations-history-content {
+    max-height: initial;
+    overflow: hidden;
   }
 
   /* STAKING PAGE */
