@@ -5,11 +5,13 @@ import {CopyPoolId} from './common'
 import toLocalDate from '../../../helpers/toLocalDate'
 import {Lovelace} from '../../../state'
 import printAda from '../../../helpers/printAda'
+import CopyOnClick from '../../common/copyOnClick'
 
 export enum StakingHistoryItemType {
   StakeDelegation,
   StakingReward,
   RewardWithdrawal,
+  StakingKeyRegistration,
 }
 
 export interface StakingHistoryObject {
@@ -100,6 +102,40 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
   )
 }
 
+export interface StakingKeyRegistration extends StakingHistoryObject {
+  action: string
+  stakingKey: string
+}
+
+const formatStakingKey = (str: string, n: number) =>
+  `${str.substring(0, n)}...${str.substring(str.length - n)}`
+
+const StakingKeyRegistrationItem = ({
+  stakingKeyRegistration,
+}: {
+stakingKeyRegistration: StakingKeyRegistration
+}) => {
+  return (
+    <li className="delegations-history-item">
+      <div className="label">Staking key {stakingKeyRegistration.action}</div>
+      <EpochDateTime
+        epoch={stakingKeyRegistration.epoch}
+        dateTime={stakingKeyRegistration.dateTime}
+      />
+      <div>
+        Staking key: {formatStakingKey(stakingKeyRegistration.stakingKey, 8)}
+        <CopyOnClick
+          value={stakingKeyRegistration.stakingKey}
+          elementClass="address-link copy"
+          tooltipMessage="Staking key copied to clipboard"
+        >
+          <a className="copy-text ml-8" />
+        </CopyOnClick>
+      </div>
+    </li>
+  )
+}
+
 interface Props {
   stakingHistory: any
 }
@@ -113,6 +149,9 @@ const StakingHistoryObjectToItem = {
   ),
   [StakingHistoryItemType.RewardWithdrawal]: (x: StakingHistoryObject) => (
     <RewardWithdrawalItem rewardWithdrawal={x as RewardWithdrawal} />
+  ),
+  [StakingHistoryItemType.StakingKeyRegistration]: (x: StakingHistoryObject) => (
+    <StakingKeyRegistrationItem stakingKeyRegistration={x as StakingKeyRegistration} />
   ),
 }
 
