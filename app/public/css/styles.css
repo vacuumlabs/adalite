@@ -2285,13 +2285,13 @@ li.main-tab input + label.selected:after {
   height: 20px;
 }
 
-/* DELEGATION HISTORY */
-.delegations-history {
+/* STAKING HISTORY */
+.staking-history {
   position: relative;
   padding-right: 28px;
 }
 
-.delegations-history-content {
+.staking-history-content {
   padding: 0;
   margin: 0;
   max-height: 680px;
@@ -2300,43 +2300,43 @@ li.main-tab input + label.selected:after {
   position: relative;
 }
 
-.delegations-history-item {
+.staking-history-item {
   padding: 24px 16px 24px 0;
   border-top: 1px solid var(--color-border);
   color: var(--color-grey);
 }
 
-.delegations-history-item .margin-bottom {
+.staking-history-item .margin-bottom {
   margin-bottom: 12px;
 }
 
-.delegations-history-item .margin-top {
+.staking-history-item .margin-top {
   margin-top: 12px;
 }
 
-.delegations-history-item .space-between {
+.staking-history-item .space-between {
   display: flex;
   justify-content: space-between;
 }
 
-.delegations-history-item .label {
+.staking-history-item .label {
   font-size: 16px;
   font-weight: bold;
 }
 
-.delegations-history-item .right {
+.staking-history-item .right {
   text-align: right;
 }
 
-.delegations-history-item .wrapper {
+.staking-history-item .wrapper {
   margin-left: 12px;
 }
 
-.delegations-history-item .bold {
+.staking-history-item .bold {
   font-weight: bold;
 }
 
-.delegations-history-item .grey {
+.staking-history-item .grey {
   color: rgba(96, 106, 113, 0.64);
 }
 
@@ -4234,8 +4234,8 @@ input:checked + .slider:before {
     align-self: center;
   }
 
-  /* DELEGATION HISTORY */
-  .delegations-history-content {
+  /* STAKING HISTORY */
+  .staking-history-content {
     max-height: initial;
     overflow: auto;
   }
@@ -4712,8 +4712,8 @@ input:checked + .slider:before {
     margin-bottom: 24px;
   }
 
-  /* DELEGATION HISTORY */
-  .delegations-history-content {
+  /* STAKING HISTORY */
+  .staking-history-content {
     max-height: initial;
     overflow: hidden;
   }
