@@ -9,6 +9,7 @@ import {
   StakeDelegation,
   StakePool,
   StakingReward,
+  StakingKeyRegistration,
 } from '../components/pages/delegations/stakingHistoryPage'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -200,11 +201,15 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const withdrawalsUrl = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/withdrawalHistory/${accountPubkeyHex}`
+    const stakingKeyRegistrationUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/stakeRegistrationHistory/${accountPubkeyHex}`
 
-    const [delegations, /*rewards,*/ withdrawals] = await Promise.all([
+    const [delegations, /*rewards,*/ withdrawals, stakingKeyRegistrations] = await Promise.all([
       request(delegationsUrl).catch(() => []),
       // request(rewardsUrl).catch(()=>[]),
       request(withdrawalsUrl).catch(() => []),
+      request(stakingKeyRegistrationUrl).catch(() => []),
     ])
     const rewards = []
 
@@ -277,9 +282,25 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       return rewardWithdrawal
     })
 
-    return [...parsedDelegations, ...parsedRewards, ...parsedWithdrawals].sort(
-      (a, b) => b.dateTime.getTime() - a.dateTime.getTime()
-    ) // sort by time, newest first
+    // Prepare staking key registration
+    const parsedStakingKeyRegistrations = stakingKeyRegistrations.map((registration) => {
+      const stakingKeyRegistration: StakingKeyRegistration = {
+        type: StakingHistoryItemType.StakingKeyRegistration,
+        epoch: registration.epochNo,
+        dateTime: new Date(registration.time),
+        action: registration.action,
+        stakingKey: accountPubkeyHex,
+      }
+
+      return stakingKeyRegistration
+    })
+
+    return [
+      ...parsedDelegations,
+      ...parsedRewards,
+      ...parsedWithdrawals,
+      ...parsedStakingKeyRegistrations,
+    ].sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime()) // sort by time, newest first
   }
 
   return {
