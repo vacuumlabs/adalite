@@ -128,12 +128,13 @@ class DashboardMobileContent extends Component<Props> {
   pages = {
     'Delegate ADA': DelegatePage,
     'Current Delegation': CurrentDelegationPage,
+    'Staking history': StakingHistoryPage,
     'Send ADA': SendAdaPage,
     'Transactions': TransactionHistory,
     'Recieve ADA': MyAddresses,
   }
   render({displayStakingPage}, {selectedSubTab}) {
-    const stakingTabs = ['Delegate ADA', 'Current Delegation']
+    const stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
     const sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
     if (displayStakingPage && sendingTabs.includes(selectedSubTab)) {
       this.selectSubTab('Delegate ADA')
