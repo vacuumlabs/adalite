@@ -117,6 +117,11 @@ p.hey {
   margin-left: 8px;
 }
 
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
 /* SELECTABILITY */
 
 .one-click-select {
@@ -515,6 +520,38 @@ p.hey {
   border: none;
   background-color: transparent;
   padding: 0;
+}
+
+/* ACCORDIONS */
+
+.accordion {
+  cursor: pointer;
+}
+
+.accordion-panel {
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+}
+
+.accordion-panel.hidden {
+  max-height: 0;
+}
+
+.accordion-panel.shown {
+  max-height: 600px;
+}
+
+.accordion-icon {
+  transform-origin: 50% 30%;
+  transition: transform 0.5s ease-out;
+}
+
+.accordion-icon.hidden {
+  transform: rotate(0deg);
+}
+
+.accordion-icon.shown {
+  transform: rotate(180deg);
 }
 
 /* FORM GLOBAL */
@@ -1296,6 +1333,10 @@ li.main-tab input + label.selected:after {
   font-size: 16px;
   line-height: 32px;
   font-weight: bold;
+}
+
+.card-title.no-margin {
+  margin-bottom: unset;
 }
 
 /* AUTHENTICATION */
@@ -2312,11 +2353,6 @@ li.main-tab input + label.selected:after {
   margin-top: 12px;
 }
 
-.staking-history-item .space-between {
-  display: flex;
-  justify-content: space-between;
-}
-
 .staking-history-item .label {
   font-size: 16px;
   font-weight: bold;
@@ -2759,6 +2795,10 @@ input:checked + .slider:before {
   /* grid-template-columns: 76% 24%; */
   padding: 24px 0px 24px 0;
   color: var(--color-grey);
+}
+
+.stake-pool {
+  margin-top: 24px;
 }
 
 .add-stake-pool-wrapper {

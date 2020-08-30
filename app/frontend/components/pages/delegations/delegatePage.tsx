@@ -1,4 +1,4 @@
-import {h, Component} from 'preact'
+import {h, Component, Fragment} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import tooltip from '../../common/tooltip'
@@ -10,6 +10,7 @@ import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
 import {Lovelace} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
+import Accordion from '../../common/accordion'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -84,6 +85,7 @@ interface Props {
   shouldShowConfirmTransactionDialog: any
   txSuccessTab: any
   gettingPoolInfo: boolean
+  pool: any
 }
 
 class Delegate extends Component<Props> {
@@ -110,79 +112,88 @@ class Delegate extends Component<Props> {
     shouldShowConfirmTransactionDialog,
     txSuccessTab,
     gettingPoolInfo,
+    pool,
   }) {
     const delegationHandler = async () => {
       await confirmTransaction('delegate')
     }
     const validationError =
       delegationValidationError || stakePool.validationError || stakePool.poolHash === ''
+
     return (
       <div className="delegate card">
-        <h2 className="card-title">Delegate Stake</h2>
-        <div className="stakepools">
-          <ul className="stake-pool-list">
-            <li className="stake-pool-item">
-              <input
-                type="text"
-                className="input stake-pool-id"
-                name={'pool'}
-                placeholder="Stake Pool ID"
-                value={stakePool.poolHash}
-                onInput={updateStakePoolIdentifier}
-                autoComplete="off"
-              />
-              <StakePoolInfo pool={stakePool} gettingPoolInfo={gettingPoolInfo} />
-              <div />
-            </li>
-          </ul>
-        </div>
+        <Accordion
+          initialVisibility={!Object.keys(pool).length}
+          header={<h2 className="card-title no-margin">Delegate Stake</h2>}
+          body={
+            <Fragment>
+              <div className="stake-pool">
+                <ul className="stake-pool-list">
+                  <li className="stake-pool-item">
+                    <input
+                      type="text"
+                      className="input stake-pool-id"
+                      name={'pool'}
+                      placeholder="Stake Pool ID"
+                      value={stakePool.poolHash}
+                      onInput={updateStakePoolIdentifier}
+                      autoComplete="off"
+                    />
+                    <StakePoolInfo pool={stakePool} gettingPoolInfo={gettingPoolInfo} />
+                    <div />
+                  </li>
+                </ul>
+              </div>
 
-        <div className="add-stake-pool-wrapper" />
-        <div className="delegation-info-row">
-          <label className="fee-label">
-            Fee<AdaIcon />
-          </label>
-          <div className="delegation-fee">{printAda(delegationFee)}</div>
-        </div>
-        <div className="validation-row">
-          <button
-            className="button primary"
-            disabled={
-              !isShelleyCompatible ||
-              validationError ||
-              calculatingDelegationFee ||
-              stakePool.poolHash === ''
-            }
-            onClick={delegationHandler}
-            {...tooltip(
-              'You are using Shelley incompatible wallet. To delegate your ADA, follow the instructions to convert you wallet.',
-              !isShelleyCompatible
-            )}
-          >
-            Delegate
-          </button>
-          {[
-            calculatingDelegationFee ? (
-              <CalculatingFee />
-            ) : (
-              <DelegationValidation
-                delegationValidationError={delegationValidationError}
-                txSuccessTab={txSuccessTab}
-              />
-            ),
-          ]}
-        </div>
-        {shouldShowTransactionErrorModal && (
-          <TransactionErrorModal
-            onRequestClose={closeTransactionErrorModal}
-            errorMessage={getTranslation(
-              transactionSubmissionError.code,
-              transactionSubmissionError.params
-            )}
-            showHelp={errorHasHelp(transactionSubmissionError.code)}
-          />
-        )}
-        {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
+              <div className="add-stake-pool-wrapper" />
+              <div className="delegation-info-row">
+                <label className="fee-label">
+                  Fee<AdaIcon />
+                </label>
+                <div className="delegation-fee">{printAda(delegationFee)}</div>
+              </div>
+              <div className="validation-row">
+                <button
+                  className="button primary"
+                  disabled={
+                    !isShelleyCompatible ||
+                    validationError ||
+                    calculatingDelegationFee ||
+                    stakePool.poolHash === ''
+                  }
+                  onClick={delegationHandler}
+                  {...tooltip(
+                    'You are using Shelley incompatible wallet. To delegate your ADA, follow the instructions to convert you wallet.',
+                    !isShelleyCompatible
+                  )}
+                >
+                  Delegate
+                </button>
+                {[
+                  calculatingDelegationFee ? (
+                    <CalculatingFee />
+                  ) : (
+                    <DelegationValidation
+                      delegationValidationError={delegationValidationError}
+                      txSuccessTab={txSuccessTab}
+                    />
+                  ),
+                ]}
+              </div>
+              {shouldShowTransactionErrorModal && (
+                <TransactionErrorModal
+                  onRequestClose={closeTransactionErrorModal}
+                  errorMessage={getTranslation(
+                    transactionSubmissionError.code,
+                    transactionSubmissionError.params
+                  )}
+                  showHelp={errorHasHelp(transactionSubmissionError.code)}
+                />
+              )}
+              {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
+            </Fragment>
+          }
+        />
       </div>
     )
   }
@@ -200,6 +211,7 @@ export default connect(
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,
     isShelleyCompatible: state.isShelleyCompatible,
+    pool: state.shelleyAccountInfo.delegation,
   }),
   actions
 )(Delegate)
