@@ -2,7 +2,7 @@ import debugLog from '../helpers/debugLog'
 import AddressManager from './address-manager'
 import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
-import {MAX_INT32, UNKNOWN_POOL_NAME} from './constants'
+import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
 import {
@@ -14,7 +14,7 @@ import {
 import {
   selectMinimalTxPlan,
   computeRequiredTxFee,
-  isUtxoProfitable,
+  isUtxoProfitable, // TODO: useless
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
@@ -37,9 +37,6 @@ import {
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
 import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
-import distinct from '../helpers/distinct'
-
-// const isUtxoProfitable = () => true
 
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExtManager = AddressManager({
@@ -144,11 +141,14 @@ const ShelleyBlockchainExplorer = (config) => {
 
   async function getRewardsBalance(accountPubKeyHex) {
     const url = 'https://iohk-mainnet.yoroiwallet.com/api/getAccountState'
-    const response = await request(url, 'POST', JSON.stringify({addresses: [accountPubKeyHex]}), {
-      'Content-Type': 'application/json',
-    }).catch(() => {
-      return 0
-    })
+    let response
+    const maxRetries = 5
+    for (let retries = 0; retries < maxRetries; retries++) {
+      response = await request(url, 'POST', JSON.stringify({addresses: [accountPubKeyHex]}), {
+        'Content-Type': 'application/json',
+      }).catch((e) => null)
+      if (response) break
+    }
     if (!response || !response[accountPubKeyHex] || !response[accountPubKeyHex].remainingAmount) {
       return 0
     }
