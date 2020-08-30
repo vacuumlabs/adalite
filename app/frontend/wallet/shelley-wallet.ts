@@ -37,6 +37,7 @@ import {
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
 import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
+import {captureException} from '@sentry/browser'
 
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExtManager = AddressManager({
@@ -142,11 +143,17 @@ const ShelleyBlockchainExplorer = (config) => {
   async function getRewardsBalance(accountPubKeyHex) {
     const url = 'https://iohk-mainnet.yoroiwallet.com/api/getAccountState'
     let response
+    let caughtServerError = false
     const maxRetries = 5
     for (let retries = 0; retries < maxRetries; retries++) {
       response = await request(url, 'POST', JSON.stringify({addresses: [accountPubKeyHex]}), {
         'Content-Type': 'application/json',
-      }).catch((e) => null)
+      }).catch((e) => {
+        if (e.name === 'ServerError' && !caughtServerError) {
+          caughtServerError = true
+          captureException(e)
+        }
+      })
       if (response) break
     }
     if (!response || !response[accountPubKeyHex] || !response[accountPubKeyHex].remainingAmount) {
