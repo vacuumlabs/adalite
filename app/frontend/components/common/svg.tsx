@@ -270,6 +270,31 @@ const DownloadIcon = () => (
   </svg>
 )
 
+const DropdownCaret = () => (
+  <svg width="24px" height="12px" viewBox="0 0 12 6" version="1.1">
+    <g
+      id="Symbols"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <g
+        id="select"
+        transform="translate(-348.000000, -31.000000)"
+        stroke="#20323F"
+        strokeWidth="1.3"
+      >
+        <g id="Group-4">
+          <polyline id="Path-7" points="349 32 354 36 359 32" />
+        </g>
+      </g>
+    </g>
+  </svg>
+)
+
 export {
   LedgerLogoWhite,
   TrezorLogoWhite,
@@ -284,4 +309,5 @@ export {
   ExitIcon,
   RefreshIcon,
   DownloadIcon,
+  DropdownCaret,
 }
