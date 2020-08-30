@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {Fragment, h} from 'preact'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 import actions from '../../../actions'
@@ -19,11 +19,10 @@ const shelleyBalances = ({
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">
-      Staking balance
+      Available balance
       <a
-        className="wide-data-balloon"
         {...tooltip(
-          "Staking Balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked). Also all staking rewards that are added to your Rewards Balance at the end of each epoch are included in your Staking Balance.",
+          'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to withdraw them.',
           true
         )}
       >
@@ -32,37 +31,14 @@ const shelleyBalances = ({
     </h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
-        {isNaN(Number(stakingBalance)) ? stakingBalance : `${printAda(stakingBalance)}`}
+        {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>
+      <button className="button secondary refresh" onClick={reloadWalletInfo}>
+        Refresh
+      </button>
     </div>
-    <h2 className="card-title staking-balances-title">
-      Non-staking balance
-      <a
-        {...tooltip(
-          'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address by clicking on the "Convert to stakeable" button. (minimum is 1.5 ADA)',
-          true
-        )}
-      >
-        <span className="show-info">{''}</span>
-      </a>
-    </h2>
-    <div className="staking-balances-row">
-      <div className="staking-balances-amount">
-        {isNaN(Number(nonStakingBalance)) ? nonStakingBalance : `${printAda(nonStakingBalance)}`}
-        <AdaIcon />
-      </div>
-      {isShelleyCompatible &&
-        !!nonStakingBalance && (
-        <button
-          disabled={calculatingDelegationFee}
-          className="button secondary"
-          onClick={convertNonStakingUtxos}
-        >
-            Convert to stakable
-        </button>
-      )}
-    </div>
+
     <h2 className="card-title staking-balances-title">
       Rewards account balance
       <a
@@ -85,19 +61,21 @@ const shelleyBalances = ({
       {!!rewardsAccountBalance && (
         <button
           disabled={calculatingDelegationFee}
-          className="button secondary"
+          className="button secondary withdraw"
           onClick={redeemRewards}
         >
-          Withdraw Rewards
+          Withdraw
         </button>
       )}
     </div>
+
     <div className="total-balance-wrapper">
       <h2 className="card-title staking-balances-title">
-        Available balance
+        Staking balance
         <a
+          className="wide-data-balloon"
           {...tooltip(
-            'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to withdraw them.',
+            "Staking Balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked). Also all staking rewards that are added to your Rewards Balance at the end of each epoch are included in your Staking Balance.",
             true
           )}
         >
@@ -106,13 +84,42 @@ const shelleyBalances = ({
       </h2>
       <div className="balance-row">
         <div className="balance-amount-staking">
-          {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
+          {isNaN(Number(stakingBalance)) ? stakingBalance : `${printAda(stakingBalance)}`}
           <AdaIcon />
         </div>
-        <button className="button secondary refresh" onClick={reloadWalletInfo}>
-          Refresh
-        </button>
       </div>
+
+      {isShelleyCompatible &&
+        !!nonStakingBalance && (
+        <Fragment>
+          <h2 className="card-title staking-balances-title">
+              Non-staking balance
+            <a
+              {...tooltip(
+                'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address by clicking on the "Convert to stakeable" button. (minimum is 1.5 ADA)',
+                true
+              )}
+            >
+              <span className="show-info">{''}</span>
+            </a>
+          </h2>
+          <div className="balance-row">
+            <div className="balance-amount-staking">
+              {isNaN(Number(nonStakingBalance))
+                ? nonStakingBalance
+                : `${printAda(nonStakingBalance)}`}
+              <AdaIcon />
+            </div>
+            <button
+              disabled={calculatingDelegationFee}
+              className="button secondary"
+              onClick={convertNonStakingUtxos}
+            >
+                Convert to stakable
+            </button>
+          </div>
+        </Fragment>
+      )}
     </div>
   </div>
 )

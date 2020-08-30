@@ -308,7 +308,7 @@ p.hey {
 }
 
 .button.secondary.refresh {
-  padding: 12px 24px 12px 60px;
+  padding: 10px 24px 10px 58px;
   position: relative;
   line-height: 24px;
 }
@@ -330,6 +330,31 @@ p.hey {
 
 .button.secondary.refresh:hover::before {
   background-image: url('../assets/refresh_button_symbol_active.svg');
+}
+
+.button.secondary.withdraw {
+  padding: 10px 24px 10px 58px;
+  position: relative;
+  line-height: 24px;
+}
+
+.button.secondary.withdraw::before {
+  content: '';
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  background-image: url('../assets/cash-stack.svg');
+}
+
+.button.secondary.withdraw:hover::before {
+  background-image: url('../assets/cash-stack_active.svg');
 }
 
 .button.secondary.logout {
@@ -3476,6 +3501,16 @@ input:checked + .slider:before {
     left: 0;
     right: 0;
   }
+
+  .button.secondary.withdraw {
+    text-indent: -9999em;
+    padding-left: 24px;
+  }
+
+  .button.secondary.withdraw::before {
+    left: 0;
+    right: 0;
+  }
 }
 
 /* MOBILE MEDIA QUERIES */
@@ -3565,6 +3600,16 @@ input:checked + .slider:before {
   }
 
   .button.secondary.refresh::before {
+    left: 0;
+    right: 0;
+  }
+
+  .button.secondary.withdraw {
+    text-indent: -9999em;
+    padding-left: 24px;
+  }
+
+  .button.secondary.withdraw::before {
     left: 0;
     right: 0;
   }
