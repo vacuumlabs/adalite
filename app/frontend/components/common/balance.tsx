@@ -14,14 +14,14 @@ interface Props {
 
 const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
   <div className="balance card">
-    <h2 className="card-title balance-title">Balance</h2>
+    <h2 className="card-title balance-title">Available balance</h2>
     <div className="balance-row">
       <div className="balance-amount">
         {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>
       <button className="button secondary refresh" onClick={reloadWalletInfo}>
-        Refresh Balance
+        Refresh
       </button>
     </div>
     {conversionRates && <Conversions balance={balance} conversionRates={conversionRates} />}
