@@ -162,7 +162,7 @@ const ViewOnCardanoScan = ({txid, suffix, className = ''}) => {
           target="_blank"
           rel="noopener"
         >
-          Cardanoscan
+          CardanoScan
         </a>
       </span>
     </div>
