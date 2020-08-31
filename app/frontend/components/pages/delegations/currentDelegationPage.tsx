@@ -31,6 +31,15 @@ const CurrentDelegationPage = ({
               {'Homepage: '}
               <a href={pool.homepage}>{pool.homepage}</a>
             </div>
+            <div className="current-delegation-id">
+              {'View on '}
+              <a
+                className="transaction-address"
+                href={`https://cardanoscan.io/pool/${pool.poolHash}`}
+              >
+                CardanoScan
+              </a>
+            </div>
           </div>
           {/* <button
             className="button primary revokedelegation-delegation"
