@@ -169,7 +169,7 @@ const ShelleyBlockchainExplorer = (config) => {
     return {validStakepools}
   }
 
-  async function getBestSlot() {
+  function getBestSlot() {
     return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
   }
 
