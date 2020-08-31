@@ -34,7 +34,7 @@ const shelleyBalances = ({
         {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>
-      <button className="button secondary refresh" onClick={reloadWalletInfo}>
+      <button className="button secondary balance refresh" onClick={reloadWalletInfo}>
         Refresh
       </button>
     </div>
@@ -61,7 +61,7 @@ const shelleyBalances = ({
       {!!rewardsAccountBalance && (
         <button
           disabled={calculatingDelegationFee}
-          className="button secondary withdraw"
+          className="button secondary balance withdraw"
           onClick={redeemRewards}
         >
           Withdraw

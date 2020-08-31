@@ -20,7 +20,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
         {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>
-      <button className="button secondary refresh" onClick={reloadWalletInfo}>
+      <button className="button secondary balance refresh" onClick={reloadWalletInfo}>
         Refresh
       </button>
     </div>
