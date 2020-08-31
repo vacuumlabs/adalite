@@ -197,7 +197,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const delegationsUrl = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/delegationHistory/${accountPubkeyHex}`
-    // const rewardsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/rewardHistory/${accountPubkeyHex}`
+    // const rewardsUrl = `${
+    //   ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    // }/api/account/rewardHistory/${accountPubkeyHex}`
     const withdrawalsUrl = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/withdrawalHistory/${accountPubkeyHex}`
