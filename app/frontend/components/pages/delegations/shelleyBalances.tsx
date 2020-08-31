@@ -112,11 +112,9 @@ const shelleyBalances = ({
             </div>
             <button
               disabled={calculatingDelegationFee}
-              className="button secondary"
+              className="button secondary convert"
               onClick={convertNonStakingUtxos}
-            >
-                Convert to stakable
-            </button>
+            />
           </div>
         </Fragment>
       )}

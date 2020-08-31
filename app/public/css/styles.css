@@ -314,12 +314,12 @@ p.hey {
 
 .button.secondary.balance {
   width: 154px;
+  line-height: 24px;
 }
 
 .button.secondary.refresh {
   padding: 10px 24px 10px 58px;
   position: relative;
-  line-height: 24px;
 }
 
 .button.secondary.refresh::before {
@@ -344,7 +344,6 @@ p.hey {
 .button.secondary.withdraw {
   padding: 10px 24px 10px 58px;
   position: relative;
-  line-height: 24px;
 }
 
 .button.secondary.withdraw::before {
@@ -364,6 +363,15 @@ p.hey {
 
 .button.secondary.withdraw:hover::before {
   background-image: url('../assets/cash-stack_active.svg');
+}
+
+.button.secondary.convert {
+  padding: 10px 20px;
+  line-height: 24px;
+}
+
+.button.secondary.convert::before {
+  content: 'Convert to stakable'
 }
 
 .button.secondary.logout {
@@ -3556,6 +3564,10 @@ input:checked + .slider:before {
     right: 0;
   }
 
+  .button.secondary.convert::before {
+    content: 'Convert'
+  }
+
   .button.secondary.balance {
     width: unset;
   }
@@ -3660,6 +3672,10 @@ input:checked + .slider:before {
   .button.secondary.withdraw::before {
     left: 0;
     right: 0;
+  }
+
+  .button.secondary.convert::before {
+    content: 'Convert'
   }
 
   .button.secondary.balance {
