@@ -67,6 +67,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
 
     for (const t of Object.values(transactions)) {
+      t.fee = parseInt(t.fee, 10)
       let effect = 0 //effect on wallet balance accumulated
       for (const input of t.ctbInputs || []) {
         if (addresses.includes(input[0])) {

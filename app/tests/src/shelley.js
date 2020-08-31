@@ -20,30 +20,37 @@ const getCryptoProvider = async (mnemonic, discriminator) => {
 window.wasm = null
 before(loadWasmModule)
 
-// test vectors for mainnet
-// abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address
-// group/external/0 addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0
-
-// test vectors for ITN
-// miss torch plunge announce vacuum job gasp fix lottery ten merge style great section cactus
-// account: 85a0a23a48bfb435aa2d5ec779ea4348684741f9695d51d034eda60608295b5d91
-// addr1snwt9m3p2rvknj97fxm43452ndae5pe874nwzl48h6j8kcdn5p5apg9z8fytldp44gk4a3meafp5s6z8g8ukjh236q6wmfsxpq54khv3ujrlwz
-
 describe('shelley address derivation', () => {
-  const mnemonic3 = 'test walk nut penalty hip pave soap entry language right filter choice'
-  it('should derive base address from cardano shelley test vectors', async () => {
-    const cp = await getCryptoProvider(mnemonic3, 'testnet') //TODO: change discriminator to networkId for shelley
+  const mnemonic15Words =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
+  it('should derive base address from 15-words mnemonic', async () => {
+    const cp = await getCryptoProvider(mnemonic15Words, 'mainnet') //TODO: change discriminator to networkId for shelley
     const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
 
     const {address} = await addrGen(0)
     const expected =
-      'addr1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqcyl47r'
+      'addr1qzz6hulv54gzf2suy2u5gkvmt6ysasfdlvvegy3fmf969y7r3y3kdut55a40jff00qmg74686vz44v6k363md06qkq0qk0f2ud'
+
+    assert.equal(address, expected)
+  })
+
+  const mnemonic12Words =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+  // 12-word (legacy Daedalus) mnemonics should not be used in prod to derive base addresses at all
+  // we just want to test that the V1 derivation scheme is applied for 12 word mnemonics
+  it('should derive base address from 12-words mnemonic', async () => {
+    const cp = await getCryptoProvider(mnemonic12Words, 'mainnet') //TODO: change discriminator to networkId for shelley
+    const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
+
+    const {address} = await addrGen(0)
+    const expected =
+      'addr1qq3cu826yxrm8apxeata5pk5xrxxe9puqmru6ncltfv9c65a94kuhuc9jka90jnn78zd25lmm6vq8a79w9yjt8p4ykwst0wwa5'
 
     assert.equal(address, expected)
   })
 })
 
-describe.skip('legacy utxo daedalus witness computation', () => {
+describe('legacy utxo daedalus witness computation', () => {
   it('should sign legacy daedalus witness correctly', async () => {
     const buildData = {
       inputs: [

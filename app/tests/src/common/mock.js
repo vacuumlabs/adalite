@@ -55,7 +55,7 @@ const mock = (ADALITE_CONFIG) => {
     fetchMock.mock({
       matcher: `${
         ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-      }/api/account/info/e020bf8333630c1db8cc6a783c17d0b44518641e468d2e816ce1064107`,
+      }/api/account/info/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
       response: {
         status: 200,
         body: acctInfoMock,
@@ -191,6 +191,99 @@ const mock = (ADALITE_CONFIG) => {
     })
   }
 
+  function mockPoolMeta() {
+    fetchMock.post({
+      matcher: `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
+      response: {
+        status: 200,
+        body: {
+          name: 'XXXX',
+          description: 'This pool allows us to sustain and improve our free services',
+          ticker: 'TEST',
+          homepage: 'https://testtest.io',
+        },
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockGetAccountState() {
+    fetchMock.post({
+      matcher: 'https://iohk-mainnet.yoroiwallet.com/api/getAccountState',
+      response: {
+        status: 200,
+        body: {
+          e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e: {
+            remainingAmount: '0',
+            rewards: '',
+            withdrawals: '',
+            poolOperator: null,
+          },
+        },
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockAccountDelegationHistory() {
+    fetchMock.mock({
+      matcher: `${
+        ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+      }/api/account/delegationHistory/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
+      response: {
+        status: 200,
+        body: [
+          {
+            epochNo: 211,
+            time: '2020-08-17T15:04:30.000Z',
+            poolHash: '0f292fcaa02b8b2f9b3c8f9fd8e0bb21abedb692a6d5058df3ef2735',
+            txHash: '3526d8d772238c975e22ed654161b97c8d99e7601ae97ede930b9cc57c52c8a0',
+          },
+          {
+            epochNo: 209,
+            time: '2020-08-08T11:09:51.000Z',
+            poolHash: 'df1750df9b2df285fcfb50f4740657a18ee3af42727d410c37b86207',
+            txHash: 'b84471f9dda4e5381f8986b0db8cfe9ebaf88472c68076af326d88b46ae915e7',
+          },
+        ],
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockAccountStakeRegistrationHistory() {
+    fetchMock.mock({
+      matcher: `${
+        ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+      }/api/account/stakeRegistrationHistory/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
+      response: {
+        status: 200,
+        body: [
+          {
+            epochNo: 208,
+            time: '2020-07-30T11:26:51.000Z',
+            action: 'registration',
+            txHash: '53f474e786f79b4b25bdfc51cfd6f5f018b28d951545b5d7d219f2601a9a0083',
+          },
+        ],
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockWithdrawalHistory() {
+    fetchMock.mock({
+      matcher: `${
+        ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+      }/api/account/withdrawalHistory/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
+      response: {
+        status: 200,
+        body: [],
+        sendAsJson: true,
+      },
+    })
+  }
+
   return {
     mockBulkAddressSummaryEndpoint,
     mockGetAccountInfo,
@@ -199,6 +292,11 @@ const mock = (ADALITE_CONFIG) => {
     mockTransactionSubmitter,
     mockUtxoEndpoint,
     mockRawTxEndpoint,
+    mockPoolMeta,
+    mockGetAccountState,
+    mockAccountDelegationHistory,
+    mockAccountStakeRegistrationHistory,
+    mockWithdrawalHistory,
     clean,
   }
 }

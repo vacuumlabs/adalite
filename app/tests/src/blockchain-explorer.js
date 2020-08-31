@@ -515,7 +515,7 @@ describe('wallet history parsing', function() {
     mockNet.mockBulkAddressSummaryEndpoint()
     const txHistory = await blockchainExplorer.getTxHistory(addresses)
 
-    assert.equal(JSON.stringify(txHistory), JSON.stringify(expectedTxHistory))
+    assert.deepEqual(txHistory, expectedTxHistory)
     mockNet.clean()
   })
 })
