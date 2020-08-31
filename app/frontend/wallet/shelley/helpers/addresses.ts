@@ -17,6 +17,8 @@ type Xpub = Buffer
 // TODO: do this more precisely
 export const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852
 
+export const isV1Address = (address: string) => address.startsWith('D') // TODO: make this proper
+
 export const bechAddressToHex = (address: string): HexString => {
   const parsed = bech32.decode(address)
   if (parsed.prefix !== 'addr') throw Error('Invalid address')
