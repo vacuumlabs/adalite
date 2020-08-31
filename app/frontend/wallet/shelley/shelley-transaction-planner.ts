@@ -54,8 +54,8 @@ export function estimateTxSize(
 ): Lovelace {
   // exact size for inputs
   const preparedInputs = inputs.map(ShelleyTxInputFromUtxo)
-  const txInputsSize = encode(new CborIndefiniteLengthArray(preparedInputs)).length
-
+  const inputSlack = inputs.length * 40
+  const txInputsSize = encode(new CborIndefiniteLengthArray(preparedInputs)).length + inputSlack
   const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
   const txOutputsSizes = outputs.map(
     // Note(ppershing): we are conservative here
