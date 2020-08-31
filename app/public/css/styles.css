@@ -3682,6 +3682,20 @@ input:checked + .slider:before {
     width: unset;
   }
 
+  /* ACCORDIONS */
+
+  .accordion {
+    cursor: unset;
+  }
+  
+  .accordion-panel.hidden, .accordion-panel.shown {
+    max-height: unset;
+  }
+  
+  .accordion-icon {
+    display: none;
+  }
+
   /* NAVBAR */
 
   .navbar {
@@ -4470,6 +4484,20 @@ input:checked + .slider:before {
 
   .button.navbar {
     margin-left: 0;
+  }
+
+  /* ACCORDIONS */
+
+  .accordion {
+    cursor: unset;
+  }
+  
+  .accordion-panel.hidden, .accordion-panel.shown {
+    max-height: unset;
+  }
+  
+  .accordion-icon {
+    display: none;
   }
 
   /* MODALS */
