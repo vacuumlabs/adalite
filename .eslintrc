@@ -6,22 +6,41 @@
     "mocha": true,
     "es6": true
   },
-  "plugins": ["react-hooks"],
+  "plugins": [
+    "react-hooks",
+    "@typescript-eslint"
+  ],
   "rules": {
     "no-bitwise": "off",
     "guard-for-in": "off",
     "react/react-in-jsx-scope": "off",
     "no-undef": "off",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "error"
+    "react-hooks/exhaustive-deps": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none"
+      }
+    ],
+    "no-unused-vars": "off"
   },
+  "overrides": [
+    {
+        "files": ["*.js"],
+        "rules": {
+            "@typescript-eslint/no-unused-vars": "off",
+            "no-unused-vars": "warn"
+        }
+    }
+  ],
   "settings": {
     "react": {
         "version": "16.8",
         "pragma": "h"
     }
   },
-  "parser": "@typescript-eslint/typescript-estree",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "jsx": true
   }

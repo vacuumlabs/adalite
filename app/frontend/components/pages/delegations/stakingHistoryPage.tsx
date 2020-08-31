@@ -1,4 +1,4 @@
-import {h, Component, Fragment} from 'preact'
+import {h, Component} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {CopyPoolId} from './common'
@@ -119,10 +119,11 @@ export interface StakingKeyRegistration extends StakingHistoryObject {
 const formatStakingKey = (str: string, n: number) =>
   `${str.substring(0, n)}...${str.substring(str.length - n)}`
 
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 const StakingKeyRegistrationItem = ({
   stakingKeyRegistration,
 }: {
-stakingKeyRegistration: StakingKeyRegistration
+  stakingKeyRegistration: StakingKeyRegistration
 }) => {
   return (
     <li className="staking-history-item">
