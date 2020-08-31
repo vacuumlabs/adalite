@@ -245,17 +245,13 @@ const ShelleyWallet = ({
   }
 
   async function calculateTtl() {
-    return (
-      cryptoProvider.network.ttl +
-      (await blockchainExplorer
-        .getBestSlot()
-        .then((res) => res.Right.bestSlot)
-        .catch(
-          () =>
-            cryptoProvider.network.eraStartSlot +
-            Math.floor((Date.now() - cryptoProvider.network.eraStartDateTime) / 1000)
-        ))
-    )
+    try {
+      const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
+      return bestSlot + cryptoProvider.network.ttl
+    } catch (e) {
+      const timePassed = Math.floor((Date.now() - cryptoProvider.network.eraStartDateTime) / 1000)
+      return cryptoProvider.network.eraStartSlot + timePassed + cryptoProvider.network.ttl
+    }
   }
 
   async function prepareTxAux(plan) {
