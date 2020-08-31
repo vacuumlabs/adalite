@@ -3,7 +3,7 @@ import {base58} from 'cardano-crypto.js'
 
 import {TxInputFromUtxo} from './byron-transaction'
 
-import {TX_WITNESS_SIZE_BYTES} from '../constants'
+import {TX_WITNESS_SIZES} from '../constants'
 import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
 import {Lovelace} from '../../state'
@@ -54,7 +54,7 @@ export function estimateTxSize(inputs: Array<Input>, outputs: Array<Output>): Lo
   // the 1 is there for the CBOR "tag" for an array of 4 elements
   const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize
 
-  const txWitnessesSize = inputs.length * TX_WITNESS_SIZE_BYTES + 1
+  const txWitnessesSize = inputs.length * TX_WITNESS_SIZES.byronV1 + 1
 
   // the 1 is there for the CBOR "tag" for an array of 2 elements
   const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
@@ -133,7 +133,7 @@ export function computeTxPlan(
 
 export function isUtxoProfitable(utxo: UTxO) {
   const inputSize = encode(TxInputFromUtxo(utxo)).length
-  const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZE_BYTES) - txFeeFunction(0)
+  const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZES.byronV1) - txFeeFunction(0)
 
   return utxo.coins > addedCost
 }

@@ -3,13 +3,13 @@ import bech32 from './helpers/bech32'
 
 import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
 
-import {TX_WITNESS_SIZE_BYTES} from '../constants'
+import {TX_WITNESS_SIZES} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
 import {Lovelace} from '../../state'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58} from 'cardano-crypto.js'
-import {isShelleyFormat} from './helpers/addresses'
+import {isShelleyFormat, isV1Address} from './helpers/addresses'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
@@ -92,7 +92,21 @@ export function estimateTxSize(
   // the 1 is there for the CBOR "tag" for an array of 4 elements
   const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize + txWithdrawalsSize
 
-  const txWitnessesSize = (certs.length + inputs.length) * TX_WITNESS_SIZE_BYTES + 1
+  // TODO: refactor
+  const shelleyInputs = inputs.filter(({address}) => isShelleyFormat(address))
+  const byronInputs = inputs.filter(({address}) => !isShelleyFormat(address))
+
+  const shelleyWitnessesSize =
+    (withdrawals.length + certs.length + shelleyInputs.length) * TX_WITNESS_SIZES.shelley
+
+  let byronWitnessesSize = 0
+  if (byronInputs.length) {
+    byronWitnessesSize =
+      byronInputs.length *
+      (isV1Address(byronInputs[0].address) ? TX_WITNESS_SIZES.byronV1 : TX_WITNESS_SIZES.byronv2)
+  }
+
+  const txWitnessesSize = shelleyWitnessesSize + byronWitnessesSize
   // TODO: also for withdrawals
   // the 1 is there for the CBOR "tag" for an array of 2 elements
   const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
@@ -230,7 +244,7 @@ export function isUtxoProfitable(utxo: UTxO) {
   // in case of legacy utxos, we want to convert them even if they are non-profitable
   if (!isShelleyFormat(utxo.address)) return true
   const inputSize = encode(ShelleyTxInputFromUtxo(utxo)).length
-  const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZE_BYTES) - txFeeFunction(0)
+  const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZES.shelley) - txFeeFunction(0)
 
   return utxo.coins > addedCost
 }
