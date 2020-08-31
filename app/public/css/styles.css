@@ -312,6 +312,10 @@ p.hey {
   width: 206px;
 }
 
+.button.secondary.balance {
+  width: 154px;
+}
+
 .button.secondary.refresh {
   padding: 10px 24px 10px 58px;
   position: relative;
@@ -3551,6 +3555,10 @@ input:checked + .slider:before {
     left: 0;
     right: 0;
   }
+
+  .button.secondary.balance {
+    width: unset;
+  }
 }
 
 /* MOBILE MEDIA QUERIES */
@@ -3652,6 +3660,10 @@ input:checked + .slider:before {
   .button.secondary.withdraw::before {
     left: 0;
     right: 0;
+  }
+
+  .button.secondary.balance {
+    width: unset;
   }
 
   /* NAVBAR */
