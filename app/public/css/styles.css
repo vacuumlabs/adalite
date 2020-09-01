@@ -554,7 +554,8 @@ p.hey {
 }
 
 .accordion-icon {
-  transform-origin: 50% 30%;
+  margin-top: 6px;
+  transform-origin: 50% 37%;
   transition: transform 0.5s ease-out;
 }
 
