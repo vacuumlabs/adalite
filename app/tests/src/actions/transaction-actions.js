@@ -35,14 +35,14 @@ it('Calculate fee - shelley', async () => {
 
   state.sendAddress.fieldValue =
     'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0'
-  state.sendAmount.fieldValue = 10
-  state.sendAmount.coins = 10000000
+  state.sendAmount.fieldValue = 1
+  state.sendAmount.coins = 1000000
   state.donationAmount.fieldValue = 5
   state.donationAmount.coins = 5000000
 
   await action.calculateFee()
 
-  assert.equal(state.transactionFee, 170675)
+  assert.equal(state.transactionFee, 181222)
 
   mockNet.clean()
 })
