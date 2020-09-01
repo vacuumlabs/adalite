@@ -57,6 +57,15 @@ const utxoMock = {
       cuCoins: {getCoin: '5000'},
     },
   ],
+  addr1qxckq52xs3lgpvllaryq9cak94wpje9q48prtzuqp7p40nkr3y3kdut55a40jff00qmg74686vz44v6k363md06qkq0qa69lwq: [
+    {
+      cuId: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+      cuOutIndex: 1,
+      cuAddress:
+        'addr1qxckq52xs3lgpvllaryq9cak94wpje9q48prtzuqp7p40nkr3y3kdut55a40jff00qmg74686vz44v6k363md06qkq0qa69lwq',
+      cuCoins: {getCoin: '10000000'},
+    },
+  ],
 }
 
 export default utxoMock

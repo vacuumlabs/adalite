@@ -550,7 +550,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     let plan
     try {
       plan = await wallet.getTxPlan(args)
-      if (!plan.fee && !plan.estimatedFee) {
+      // TODO: refactor getTxPlan to explicitly acknowledge
+      // about failure to estimate the tx fee and its reason
+      if (!plan.fee) {
         throw NamedError('OutputTooSmall')
       }
     } catch (e) {
