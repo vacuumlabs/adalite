@@ -97,11 +97,6 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
               if the protocol is not supported by the OS or browser, we automatically fall back to
               the old U2F standard).
             </Article>
-            <Article title="AdaLite exchange temporary outage" icon="">
-              We removed the link to our in-wallet exchange because our partner is not able to
-              process payments to Shelley addresses yet. We will restore this service once our
-              partner fixes this and be fully operational again. Sorry for the inconvenience.
-            </Article>
           </div>
           <div className="welcome-footer">
             <label className="checkbox">
