@@ -140,28 +140,6 @@ const ShelleyBlockchainExplorer = (config) => {
     return response
   }
 
-  async function getRewardsBalance(accountPubKeyHex) {
-    const url = 'https://iohk-mainnet.yoroiwallet.com/api/getAccountState'
-    let response
-    let caughtServerError = false
-    const maxRetries = 5
-    for (let retries = 0; retries < maxRetries; retries++) {
-      response = await request(url, 'POST', JSON.stringify({addresses: [accountPubKeyHex]}), {
-        'Content-Type': 'application/json',
-      }).catch((e) => {
-        if (e.name === 'ServerError' && !caughtServerError) {
-          caughtServerError = true
-          captureException(e)
-        }
-      })
-      if (response) break
-    }
-    if (!response || !response[accountPubKeyHex] || !response[accountPubKeyHex].remainingAmount) {
-      return 0
-    }
-    return parseInt(response[accountPubKeyHex].remainingAmount, 10)
-  }
-
   async function getValidStakepools() {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
     const validStakepools = await request(url)
@@ -183,7 +161,6 @@ const ShelleyBlockchainExplorer = (config) => {
     fetchTxInfo: be.fetchTxInfo,
     filterUsedAddresses: (addresses) => be.filterUsedAddresses(addresses),
     getAccountInfo,
-    getRewardsBalance,
     getValidStakepools,
     getPoolInfo: (url) => be.getPoolInfo(url),
     getStakingHistory: be.getStakingHistory,
@@ -432,7 +409,6 @@ const ShelleyWallet = ({
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
-    const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(accountPubkeyHex)
     return {
       accountPubkeyHex,
       ...accountInfo,
@@ -440,7 +416,7 @@ const ShelleyWallet = ({
         ...accountInfo.delegation,
         ...poolInfo,
       },
-      value: rewardsAccountBalance || 0,
+      value: accountInfo.rewards || 0,
     }
   }
 
