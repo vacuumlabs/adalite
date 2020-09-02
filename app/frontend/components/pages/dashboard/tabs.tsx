@@ -2,7 +2,7 @@ import {h} from 'preact'
 
 export const MainTab = ({name, selectedTab, selectTab}) => {
   return (
-    <li className="main-tab">
+    <li className={`main-tab ${name === 'Staking' ? 'primary' : ''}`}>
       <input type="radio" id={name} name="tabs" onClick={() => selectTab(name)} />
       <label className={name === selectedTab ? 'selected' : ''} htmlFor={name}>
         {name}

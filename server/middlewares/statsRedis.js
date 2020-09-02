@@ -4,7 +4,6 @@ const client = redis.createClient(process.env.REDIS_URL)
 const mung = require('express-mung')
 const normalizeUrl = require('normalize-url')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
-const {backendConfig} = require('../helpers/loadConfig')
 
 const knownIps = new Set()
 
@@ -56,7 +55,7 @@ const trackTxSubmissions = mung.json((body, req, res) => {
 
     incrCountersBy(`${txSubmissionType}:${txSubmissionSuccess}`, 1)
 
-    if (backendConfig.ADALITE_CARDANO_VERSION === 'byron' && txSubmissionSuccess === 'successful') {
+    if (txSubmissionSuccess === 'successful') {
       const {txBody} = req.body
       let txOutAmount = 0
       let txTotalAmount = 0

@@ -1,4 +1,4 @@
-import {h, Component} from 'preact'
+import {h, Component, Fragment} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import tooltip from '../../common/tooltip'
@@ -8,11 +8,14 @@ import TransactionErrorModal from '../../pages/sendAda/transactionErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
+import {Lovelace} from '../../../state'
+import {ADALITE_CONFIG} from '../../../config'
+import Accordion from '../../common/accordion'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
 const DelegationValidation = ({delegationValidationError, txSuccessTab}) =>
-  txSuccessTab === 'stake' ? (
+  txSuccessTab === 'stake' && !delegationValidationError ? (
     <div className="validation-message transaction-success">Transaction successful!</div>
   ) : (
     delegationValidationError && (
@@ -22,25 +25,39 @@ const DelegationValidation = ({delegationValidationError, txSuccessTab}) =>
     )
   )
 
-const StakePoolInfo = ({pool}) => {
-  const {rewards, ticker, homepage, name, validationError} = pool
-  const tax = rewards && (rewards.ratio[0] * 100) / rewards.ratio[1]
-  const fixed = rewards && rewards.fixed && printAda(rewards.fixed)
-  const limit = rewards && rewards.limit && printAda(rewards.limit)
+const StakePoolInfo = ({pool, gettingPoolInfo}) => {
+  const {fixedCost, homepage, margin, ticker, name, validationError} = pool
   return (
     <div className={`stake-pool-info ${validationError ? 'invalid' : 'valid'}`}>
       {validationError ? (
         <div>{getTranslation(validationError.code)}</div>
+      ) : gettingPoolInfo ? (
+        <div>Getting pool info..</div>
       ) : (
         <div>
           <div>{`Name: ${name || ''}`}</div>
           <div>{`Ticker: ${ticker || ''}`}</div>
           <div>
-            {`
-            Tax: ${tax || ''}%
-            ${fixed ? ` , ${`Fixed: ${fixed}`}` : ''}
-            ${limit ? ` , ${`Limit: ${limit}`}` : ''}
-          `}
+            <a
+              {...tooltip(
+                'Tax is deducted from the rewards that pool distributes to the delegators.',
+                true
+              )}
+            >
+              <span className="delegation show-info">{''}</span>
+            </a>
+            {`Tax: ${margin * 100 || ''}`}%
+          </div>
+          <div>
+            <a
+              {...tooltip(
+                'Fixed cost of the pool is taken from the pool rewards every epoch. This fee is shared among all delegators of the pool, not per delegator. Minimum value is 340 ADA.',
+                true
+              )}
+            >
+              <span className="delegation show-info">{''}</span>
+            </a>
+            {`Fixed cost: ${fixedCost ? printAda(parseInt(fixedCost, 10) as Lovelace) : ''}`}
           </div>
           <div>
             {'Homepage: '}
@@ -54,14 +71,12 @@ const StakePoolInfo = ({pool}) => {
 
 interface Props {
   updateStakePoolIdentifier: any
-  // updateStakePoolPercent,
-  // addStakePool,
   removeStakePool: any
-  stakePools: any
+  stakePool: any
   delegationFee: any
   calculatingDelegationFee: any
   delegationValidationError: any
-  changeDelegation: any
+  isShelleyCompatible: any
   confirmTransaction: any
   closeTransactionErrorModal: any
   transactionSubmissionError: any
@@ -69,6 +84,8 @@ interface Props {
   selectAdaliteStakepool: any
   shouldShowConfirmTransactionDialog: any
   txSuccessTab: any
+  gettingPoolInfo: boolean
+  pool: any
 }
 
 class Delegate extends Component<Props> {
@@ -78,129 +95,105 @@ class Delegate extends Component<Props> {
   }
 
   componentDidMount() {
-    this.props.selectAdaliteStakepool()
+    if (ADALITE_CONFIG.ADALITE_STAKE_POOL_ID !== '') this.props.selectAdaliteStakepool()
   }
 
   render({
     updateStakePoolIdentifier,
-    // updateStakePoolPercent,
-    // addStakePool,
-    removeStakePool,
-    stakePools,
+    stakePool,
     delegationFee,
     calculatingDelegationFee,
     delegationValidationError,
-    changeDelegation,
+    isShelleyCompatible,
     confirmTransaction,
     closeTransactionErrorModal,
     transactionSubmissionError,
     shouldShowTransactionErrorModal,
     shouldShowConfirmTransactionDialog,
     txSuccessTab,
+    gettingPoolInfo,
+    pool,
   }) {
     const delegationHandler = async () => {
       await confirmTransaction('delegate')
     }
+    const validationError =
+      delegationValidationError || stakePool.validationError || stakePool.poolHash === ''
+
     return (
       <div className="delegate card">
-        <h2 className="card-title">Delegate Stake</h2>
-        <div className="stakepools">
-          <ul className="stake-pool-list">
-            {stakePools.map((pool, i) => (
-              <li key={i} className="stake-pool-item">
-                <input
-                  type="text"
-                  className="input stake-pool-id"
-                  name={`${i}`}
-                  placeholder="Ticker or Stake Pool ID"
-                  value={pool.poolIdentifier}
-                  onInput={updateStakePoolIdentifier}
-                  autoComplete="off"
-                />
-                {/* <div className="input-wrapper-percent">
-                  <input
-                    type="number"
-                    min="0"
-                    max={pool.percent + undelegatedPercent}
-                    {...{accuracy: '1'}}
-                    className="input stake-pool-percent"
-                    name={`${i}`}
-                    value={pool.percent}
-                    placeholder={pool.percent}
-                    onInput={updateStakePoolPercent}
-                    autoComplete="off"
-                  />
-                  <div className="percent">%</div>
-                </div> */}
-                {/* {formatStakePoolInfo(getStakePoolValidationMessage(stakePools, pool))} */}
-                <StakePoolInfo pool={pool} />
-                {stakePools.length <= 1 || i === 0 ? (
-                  <div />
-                ) : (
-                  <button className="button stake-pool" name={`${i}`} onClick={removeStakePool}>
-                    remove
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Accordion
+          initialVisibility={!Object.keys(pool).length}
+          header={<h2 className="card-title no-margin">Delegate Stake</h2>}
+          body={
+            <Fragment>
+              <div className="stake-pool">
+                <ul className="stake-pool-list">
+                  <li className="stake-pool-item">
+                    <input
+                      type="text"
+                      className="input stake-pool-id"
+                      name={'pool'}
+                      placeholder="Stake Pool ID"
+                      value={stakePool.poolHash}
+                      onInput={updateStakePoolIdentifier}
+                      autoComplete="off"
+                    />
+                    <StakePoolInfo pool={stakePool} gettingPoolInfo={gettingPoolInfo} />
+                    <div />
+                  </li>
+                </ul>
+              </div>
 
-        <div className="add-stake-pool-wrapper">
-          {/* <button
-            className="button add-stake-pool"
-            id="add-stake-pool"
-            onClick={addStakePool}
-            disabled={false}
-          >
-            Add Another Stake Pool
-          </button> */}
-        </div>
-        {/* <div className='stake-pool-info'>
-          nvsd
-        </div> */}
-        <div className="delegation-info-row">
-          {/* <label className="fee-label">Delegated</label>
-          <div
-            className={`delegation-percent${!delegationValidationError ? ' valid' : ''}`}
-          >{`${delegatedPercent} %`}
-          </div> */}
-          <label className="fee-label">
-            Fee<AdaIcon />
-          </label>
-          <div className="delegation-fee">{printAda(delegationFee)}</div>
-        </div>
-        <div className="validation-row">
-          <button
-            className="button primary staking"
-            disabled={delegationValidationError || calculatingDelegationFee}
-            onClick={delegationHandler}
-            {...tooltip('100% of funds must be delegated to valid stake pools', false)}
-          >
-            Delegate
-          </button>
-          {[
-            calculatingDelegationFee ? (
-              <CalculatingFee />
-            ) : (
-              <DelegationValidation
-                delegationValidationError={delegationValidationError}
-                txSuccessTab={txSuccessTab}
-              />
-            ),
-          ]}
-        </div>
-        {shouldShowTransactionErrorModal && (
-          <TransactionErrorModal
-            onRequestClose={closeTransactionErrorModal}
-            errorMessage={getTranslation(
-              transactionSubmissionError.code,
-              transactionSubmissionError.params
-            )}
-            showHelp={errorHasHelp(transactionSubmissionError.code)}
-          />
-        )}
-        {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
+              <div className="add-stake-pool-wrapper" />
+              <div className="delegation-info-row">
+                <label className="fee-label">
+                  Fee<AdaIcon />
+                </label>
+                <div className="delegation-fee">{printAda(delegationFee)}</div>
+              </div>
+              <div className="validation-row">
+                <button
+                  className="button primary"
+                  disabled={
+                    !isShelleyCompatible ||
+                    validationError ||
+                    calculatingDelegationFee ||
+                    stakePool.poolHash === ''
+                  }
+                  onClick={delegationHandler}
+                  {...tooltip(
+                    'You are using Shelley incompatible wallet. To delegate your ADA, follow the instructions to convert you wallet.',
+                    !isShelleyCompatible
+                  )}
+                >
+                  Delegate
+                </button>
+                {[
+                  calculatingDelegationFee ? (
+                    <CalculatingFee />
+                  ) : (
+                    <DelegationValidation
+                      delegationValidationError={delegationValidationError}
+                      txSuccessTab={txSuccessTab}
+                    />
+                  ),
+                ]}
+              </div>
+              {shouldShowTransactionErrorModal && (
+                <TransactionErrorModal
+                  onRequestClose={closeTransactionErrorModal}
+                  errorMessage={getTranslation(
+                    transactionSubmissionError.code,
+                    transactionSubmissionError.params
+                  )}
+                  showHelp={errorHasHelp(transactionSubmissionError.code)}
+                />
+              )}
+              {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
+            </Fragment>
+          }
+        />
       </div>
     )
   }
@@ -208,7 +201,7 @@ class Delegate extends Component<Props> {
 
 export default connect(
   (state) => ({
-    stakePools: state.shelleyDelegation.selectedPools,
+    stakePool: state.shelleyDelegation.selectedPool,
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
@@ -216,6 +209,9 @@ export default connect(
     transactionSubmissionError: state.transactionSubmissionError,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     txSuccessTab: state.txSuccessTab,
+    gettingPoolInfo: state.gettingPoolInfo,
+    isShelleyCompatible: state.isShelleyCompatible,
+    pool: state.shelleyAccountInfo.delegation,
   }),
   actions
 )(Delegate)

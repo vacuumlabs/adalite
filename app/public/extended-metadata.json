@@ -1,0 +1,42 @@
+{
+  "info": {
+    "url_png_icon_64x64": "https://adalite.io/logo_64x64.png",
+    "url_png_logo": "https://adalite.io/logo.png",
+    "location": "Bratislava, Slovakia",
+    "social": {
+      "twitter_handle": "AdaLiteWallet",
+      "telegram_handle": "AdaLite",
+      "facebook_handle": "",
+      "youtube_handle": "",
+      "twitch_handle": "",
+      "discord_handle": "",
+      "github_handle": "vacuumlabs/adalite"
+    },
+    "company": {
+      "name": "Vacuumlabs s.r.o.",
+      "addr": "Digital Park I, Einsteinova 3692/21",
+      "city": "Bratislava",
+      "country": "Slovakia",
+      "company_id": "48207497",
+      "vat_id": "SK2120112962"
+    },
+    "about": {
+      "me": "Adalite (ADLT) - We are an open-source client-side interface for direct interaction with the Cardano blockchain.",
+      "company": "We are Vacuumlabs. Since 2012, helping more than 60 clients from around the world build digital products, move fast and iterate by providing flexible and reliable engineering teams and product designers as a service."
+    },
+    "rss": ""
+  },
+  "telegram-admin-handle": {
+    "0": "pepo6969"
+  },
+  "my-pool-ids": {
+    "0": "04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438",
+    "1": "ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d",
+    "2": "92229dcf782ce8a82050fdeecb9334cc4d906c6eb66cdbdcea86fb5f"
+  },
+  "when-satured-then-recommend": {
+    "0": "04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438",
+    "1": "ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d",
+    "2": "92229dcf782ce8a82050fdeecb9334cc4d906c6eb66cdbdcea86fb5f"
+  }
+}

@@ -14,14 +14,14 @@ interface Props {
 
 const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
   <div className="balance card">
-    <h2 className="card-title balance-title">Balance</h2>
+    <h2 className="card-title balance-title">Available balance</h2>
     <div className="balance-row">
       <div className="balance-amount">
         {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>
-      <button className="button refresh" onClick={reloadWalletInfo}>
-        Refresh Balance
+      <button className="button secondary balance refresh" onClick={reloadWalletInfo}>
+        Refresh
       </button>
     </div>
     {conversionRates && <Conversions balance={balance} conversionRates={conversionRates} />}
@@ -31,7 +31,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
         href="https://exchange.adalite.io/"
         target="_blank"
       >
-        Buy ADA
+        Buy/Sell ADA
       </a>
       <span className="buy-ada-partner-logo">
         Powered by<img

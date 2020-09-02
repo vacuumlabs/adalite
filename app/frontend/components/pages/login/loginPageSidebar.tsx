@@ -65,7 +65,7 @@ const MnemonicContent = () => (
           >
             Daedalus-type
           </a>{' '}
-          mnemonics (12/27 words).
+          mnemonics (12 words).
         </p>
       </Alert>
     </div>
@@ -99,8 +99,8 @@ const WalletContent = () => (
     <div className="sidebar-item">
       <p className="sidebar-paragraph">
         Computers might be vulnerable to attacks on program and system level. Typing your mnemonic
-        directly may put your wallet at risk. We currently support Trezor Model T and Ledger Nano S
-        and Nano X hardware wallets.
+        directly may put your wallet at risk. We currently support Trezor Model T, Ledger Nano S and
+        Nano X hardware wallets.
       </p>
     </div>
     <div className="sidebar-item">

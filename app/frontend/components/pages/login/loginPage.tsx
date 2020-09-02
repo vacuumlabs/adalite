@@ -16,13 +16,15 @@ import Tag from '../../common/tag'
 import WalletLoadingErrorModal from './walletLoadingErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
-import {ADALITE_CONFIG} from '../../../config'
+// import {ADALITE_CONFIG} from '../../../config'
 
 const AUTH_METHOD_NAMES = {
   'mnemonic': 'Mnemonic',
   'hw-wallet': 'Hardware Wallet',
   'file': 'Key file',
 }
+
+const ENABLE_HW_WALLETS = true
 
 const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
 
@@ -134,8 +136,8 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
       <div className="authentication card initial">
         <h2 className="authentication-title">How do you want to access your Cardano Wallet?</h2>
         <div className="auth-options">
-          {AuthOption('mnemonic', ['12, 15 or 27 word passphrase'], 'fastest')}
-          {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' &&
+          {AuthOption('mnemonic', ['12 or 15 word passphrase'], 'fastest')}
+          {ENABLE_HW_WALLETS &&
             AuthOption(
               'hw-wallet',
               ['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger'],
@@ -149,14 +151,14 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
       <div className="authentication card">
         <ul className="auth-tabs">
           {AuthTab('mnemonic')}
-          {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && AuthTab('hw-wallet', true)}
+          {ENABLE_HW_WALLETS && AuthTab('hw-wallet', true)}
           {AuthTab('file')}
         </ul>
         <div className={`dropdown auth ${isDropdownOpen ? 'open' : ''}`}>
           {CurrentDropdownItem(authMethod)}
           <ul className="dropdown-items">
             {DropdownItem('mnemonic')}
-            {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && DropdownItem('hw-wallet')}
+            {ENABLE_HW_WALLETS && DropdownItem('hw-wallet')}
             {DropdownItem('file')}
           </ul>
         </div>

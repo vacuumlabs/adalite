@@ -1,4 +1,4 @@
-import {h, Component} from 'preact'
+import {h, Component, Fragment} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'
@@ -8,10 +8,13 @@ import SendAdaPage from '../sendAda/sendAdaPage'
 import MyAddresses from '../receiveAda/myAddresses'
 import DelegatePage from '../delegations/delegatePage'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
-// import DelegationHistory from '../delegations/delegationHistory'
+import StakingHistoryPage from '../delegations/stakingHistoryPage'
 import ShelleyBalances from '../delegations/shelleyBalances'
 import {ADALITE_CONFIG} from '.././../../config'
 import {MainTab, SubTab} from './tabs'
+import InfoModal from '../../common/infoModal'
+import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
+import DashboardErrorBanner from './dashboardErrorBanner'
 
 interface Props {
   displayStakingPage: any
@@ -23,11 +26,11 @@ const StakingPage = () => {
     <div className="dashboard desktop">
       <div className="dashboard-column">
         <ShelleyBalances />
-        <CurrentDelegationPage />
+        <StakingHistoryPage />
       </div>
       <div className="dashboard-column">
         <DelegatePage />
-        {/* <DelegationHistory /> */}
+        <CurrentDelegationPage />
       </div>
     </div>
   )
@@ -35,7 +38,7 @@ const StakingPage = () => {
 
 const SendingPage = ({shouldShowExportOption}) => {
   return (
-    <div className="dashboard desktop">
+    <Fragment>
       <div className="dashboard-column">
         <Balance />
         <TransactionHistory />
@@ -45,7 +48,7 @@ const SendingPage = ({shouldShowExportOption}) => {
         <MyAddresses />
         {shouldShowExportOption && <ExportCard />}
       </div>
-    </div>
+    </Fragment>
   )
 }
 
@@ -53,7 +56,7 @@ class DashboardPage extends Component<Props> {
   constructor(props) {
     super(props)
     this.state = {
-      selectedMainTab: 'Staking',
+      selectedMainTab: 'Sending',
     }
     this.selectMainTab = this.selectMainTab.bind(this)
   }
@@ -65,10 +68,22 @@ class DashboardPage extends Component<Props> {
     this.props.toggleDisplayStakingPage(name === 'Staking')
   }
 
-  render({shouldShowExportOption, displayStakingPage}, {selectedMainTab}) {
+  render(
+    {
+      shouldShowExportOption,
+      displayStakingPage,
+      isShelleyCompatible,
+      shouldShowNonShelleyCompatibleDialog,
+      displayInfoModal,
+    },
+    {selectedMainTab}
+  ) {
     const mainTabs = ['Sending', 'Staking']
     return (
       <div className="page-wrapper">
+        {isShelleyCompatible && displayInfoModal && <InfoModal />}
+        {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
+        {!isShelleyCompatible && <DashboardErrorBanner />}
         {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
           <ul className="tabinator">
             {mainTabs.map((name, i) => (
@@ -113,12 +128,13 @@ class DashboardMobileContent extends Component<Props> {
   pages = {
     'Delegate ADA': DelegatePage,
     'Current Delegation': CurrentDelegationPage,
+    'Staking history': StakingHistoryPage,
     'Send ADA': SendAdaPage,
     'Transactions': TransactionHistory,
     'Recieve ADA': MyAddresses,
   }
   render({displayStakingPage}, {selectedSubTab}) {
-    const stakingTabs = ['Delegate ADA', 'Current Delegation']
+    const stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
     const sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
     if (displayStakingPage && sendingTabs.includes(selectedSubTab)) {
       this.selectSubTab('Delegate ADA')
@@ -149,6 +165,9 @@ export default connect(
   (state) => ({
     shouldShowExportOption: state.shouldShowExportOption,
     displayStakingPage: state.displayStakingPage,
+    displayInfoModal: state.displayInfoModal,
+    isShelleyCompatible: state.isShelleyCompatible,
+    shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
   }),
   actions
 )(DashboardPage)

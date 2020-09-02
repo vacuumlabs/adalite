@@ -51,12 +51,19 @@ if (!backendConfig.ADALITE_TREZOR_CONNECT_URL) {
   app.use(require('./middlewares/csp'))
 }
 
+// HSTS headers
+app.use((req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
+  next()
+})
+
 if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
   require('./mocking')(app)
 } else {
   require('./transactionSubmitter')(app)
   require('./emailSubmitter')(app)
 }
+require('./poolInfoGetter')(app)
 
 app.get('*', (req, res) => {
   const serverUrl = backendConfig.ADALITE_SERVER_URL

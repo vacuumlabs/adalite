@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {Fragment, h} from 'preact'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 import actions from '../../../actions'
@@ -12,13 +12,17 @@ const shelleyBalances = ({
   balance,
   reloadWalletInfo,
   convertNonStakingUtxos,
+  redeemRewards,
+  calculatingDelegationFee,
+  hwWalletName,
+  isShelleyCompatible,
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">
-      Staking balance
+      Available balance
       <a
         {...tooltip(
-          'Staking balance represents amount of coins you are able to delegate to a pool.',
+          'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to withdraw them.',
           true
         )}
       >
@@ -27,37 +31,20 @@ const shelleyBalances = ({
     </h2>
     <div className="staking-balances-row">
       <div className="staking-balances-amount">
-        {isNaN(Number(stakingBalance)) ? stakingBalance : `${printAda(stakingBalance)}`}
+        {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>
+      <button className="button secondary balance refresh" onClick={reloadWalletInfo}>
+        Refresh
+      </button>
     </div>
-    <h2 className="card-title staking-balances-title">
-      Non-staking balance
-      <a
-        {...tooltip(
-          'Non-staking balance represents amount of coins you are NOT able to delegate to any pool. (funds located on legacy or non-staking addresses)',
-          true
-        )}
-      >
-        <span className="show-info">{''}</span>
-      </a>
-    </h2>
-    <div className="staking-balances-row">
-      <div className="staking-balances-amount">
-        {isNaN(Number(nonStakingBalance)) ? nonStakingBalance : `${printAda(nonStakingBalance)}`}
-        <AdaIcon />
-      </div>
-      {!!nonStakingBalance && (
-        <button className="button stake-pool" onClick={convertNonStakingUtxos}>
-          Convert to stakable
-        </button>
-      )}
-    </div>
+
     <h2 className="card-title staking-balances-title">
       Rewards account balance
       <a
+        className="wide-data-balloon"
         {...tooltip(
-          'This value represents balance on your rewards account. It contains all received rewards from delegation and ADA potentially sent to the rewards address.',
+          'This value represents balance on your rewards account. It contains all rewards received from delegation that were not transferred yet to your Available balance. This rewards are automatically staked. You need to Withdraw Rewards only when you want to spend them. Withdraw Rewards button will appear only once you have some rewards in your Rewards Balance.',
           true
         )}
       >
@@ -71,21 +58,66 @@ const shelleyBalances = ({
           : `${printAda(rewardsAccountBalance)}`}
         <AdaIcon />
       </div>
-      {/* <button className="button stake-pool" onClick={null}>
-        Redeem
-      </button> */}
+      {!!rewardsAccountBalance && (
+        <button
+          disabled={calculatingDelegationFee}
+          className="button secondary balance withdraw"
+          onClick={redeemRewards}
+        >
+          Withdraw
+        </button>
+      )}
     </div>
+
     <div className="total-balance-wrapper">
-      <h2 className="card-title staking-balances-title">Balance</h2>
+      <h2 className="card-title staking-balances-title">
+        Staking balance
+        <a
+          className="wide-data-balloon"
+          {...tooltip(
+            "Staking Balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked). Also all staking rewards that are added to your Rewards Balance at the end of each epoch are included in your Staking Balance.",
+            true
+          )}
+        >
+          <span className="show-info">{''}</span>
+        </a>
+      </h2>
       <div className="balance-row">
         <div className="balance-amount-staking">
-          {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
+          {isNaN(Number(stakingBalance)) ? stakingBalance : `${printAda(stakingBalance)}`}
           <AdaIcon />
         </div>
-        <button className="button refresh" onClick={reloadWalletInfo}>
-          Refresh
-        </button>
       </div>
+
+      {isShelleyCompatible &&
+        !!nonStakingBalance && (
+        <Fragment>
+          <h2 className="card-title staking-balances-title">
+              Non-staking balance
+            <a
+              {...tooltip(
+                'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address by clicking on the "Convert to stakeable" button. (minimum is 1.5 ADA)',
+                true
+              )}
+            >
+              <span className="show-info">{''}</span>
+            </a>
+          </h2>
+          <div className="balance-row">
+            <div className="balance-amount-staking">
+              {isNaN(Number(nonStakingBalance))
+                ? nonStakingBalance
+                : `${printAda(nonStakingBalance)}`}
+              <AdaIcon />
+            </div>
+            <button
+              disabled={calculatingDelegationFee}
+              className="button secondary convert"
+              onClick={convertNonStakingUtxos}
+            />
+          </div>
+        </Fragment>
+      )}
     </div>
   </div>
 )
@@ -96,6 +128,9 @@ export default connect(
     nonStakingBalance: state.shelleyBalances.nonStakingBalance,
     rewardsAccountBalance: state.shelleyBalances.rewardsAccountBalance,
     balance: state.balance,
+    calculatingDelegationFee: state.calculatingDelegationFee,
+    hwWalletName: state.hwWalletName,
+    isShelleyCompatible: state.isShelleyCompatible,
   }),
   actions
 )(shelleyBalances)

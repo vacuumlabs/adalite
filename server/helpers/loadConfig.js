@@ -12,6 +12,8 @@ const encodeToHtml = (str) =>
     return `&#${i.charCodeAt(0)};`
   })
 
+const shelleyNetworks = ['MAINNET', 'HASKELL_TESTNET', 'INCENTIVIZED_TESTNET']
+const isValidShelleyNetwork = (str) => shelleyNetworks.includes(str)
 const boolStrings = ['true', 'false']
 const isBoolString = (str) => boolStrings.includes(str)
 const isPositiveIntString = (str) => check.positive(parseInt(str, 10))
@@ -53,11 +55,13 @@ const checkMap = check.map(process.env, {
   ADALITE_SUPPORT_EMAIL: check.nonEmptyString,
   ADALITE_FIXED_DONATION_VALUE: isPositiveIntString,
   ADALITE_MIN_DONATION_VALUE: isPositiveIntString,
-  ADALITE_STAKE_POOL_ID: check.nonEmptyString,
   ADALITE_ENV: check.nonEmptyString,
   ADALITE_IP_BLACKLIST: isCommaDelimitedListOfIpsOrEmpty,
   SENTRY_DSN: check.nonEmptyString,
   ADALITE_ERROR_BANNER_CONTENT: check.string,
+  ADALITE_NETWORK: isValidShelleyNetwork,
+  ADALITE_ENABLE_TREZOR: isBoolString,
+  ADALITE_ENABLE_LEDGER: isBoolString,
 })
 
 const {
@@ -87,6 +91,9 @@ const {
   ADALITE_IP_BLACKLIST,
   SENTRY_DSN,
   ADALITE_CARDANO_VERSION,
+  ADALITE_NETWORK,
+  ADALITE_ENABLE_TREZOR,
+  ADALITE_ENABLE_LEDGER,
 } = process.env
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
@@ -132,6 +139,9 @@ const frontendConfig = {
   ADALITE_DEVEL_AUTO_LOGIN,
   ADALITE_CARDANO_VERSION,
   ADALITE_ERROR_BANNER_CONTENT: encodeToHtml(process.env.ADALITE_ERROR_BANNER_CONTENT),
+  ADALITE_NETWORK,
+  ADALITE_ENABLE_TREZOR: ADALITE_ENABLE_TREZOR === 'true',
+  ADALITE_ENABLE_LEDGER: ADALITE_ENABLE_LEDGER === 'true',
 }
 
 const backendConfig = {

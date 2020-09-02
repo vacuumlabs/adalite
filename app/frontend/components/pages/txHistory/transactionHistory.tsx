@@ -1,10 +1,11 @@
 import {h, Component} from 'preact'
 import printAda from '../../../helpers/printAda'
-import formatDate from '../../../helpers/formatDate'
 import {Lovelace} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
+import toLocalDate from '../../../helpers/toLocalDate'
+import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {
   const value = printAda(Math.abs(amount) as Lovelace)
@@ -49,11 +50,20 @@ const Transaction = ({txid}) => (
       <span>
         <a
           className="transaction-address"
-          href={`https://shelleyexplorer.cardano.org/en/transaction/${txid}`}
+          href={`https://cardanoscan.io/transaction/${txid}`}
           target="_blank"
           rel="noopener"
         >
-          Shelley explorer
+          CardanoScan
+        </a>
+        <span> | </span>
+        <a
+          className="transaction-address"
+          href={`https://adascan.net/transaction/${txid}`}
+          target="_blank"
+          rel="noopener"
+        >
+          AdaScan
         </a>
       </span>
     )}
@@ -64,11 +74,77 @@ interface Props {
   transactionHistory: any
 }
 
+const ExportCSV = ({transactionHistory}) => {
+  const formatTransactionDate = (ctbTimeIssued) =>
+    moment.utc(new Date(ctbTimeIssued * 1000)).format('MM/DD/YYYY hh:mm A [UTC]')
+
+  const delimiter = ','
+  const rowsDelimiter = '\n'
+
+  const headers =
+    `Type${delimiter}` +
+    `Received amount${delimiter}` +
+    `Received currency${delimiter}` +
+    `Sent amount${delimiter}` +
+    `Sent currency${delimiter}` +
+    `Fee amount${delimiter}` +
+    `Fee currency${delimiter}` +
+    `Transaction ID${delimiter}` +
+    `Date${delimiter}`
+
+  const rows = transactionHistory.map((transaction) => {
+    if (transaction.effect > 0) {
+      return (
+        `${'Received'}${delimiter}` +
+        `${printAda(transaction.effect as Lovelace)}${delimiter}` +
+        `ADA${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${transaction.ctbId}${delimiter}` +
+        `${formatTransactionDate(transaction.ctbTimeIssued)}${delimiter}`
+      )
+    } else {
+      return (
+        `${'Sent'}${delimiter}` +
+        `${delimiter}` +
+        `${delimiter}` +
+        `${printAda((Math.abs(transaction.effect) - transaction.fee) as Lovelace)}${delimiter}` +
+        `ADA${delimiter}` +
+        `${printAda(transaction.fee as Lovelace)}${delimiter}` +
+        `ADA${delimiter}` +
+        `${transaction.ctbId}${delimiter}` +
+        `${formatTransactionDate(transaction.ctbTimeIssued)}${delimiter}`
+      )
+    }
+  })
+
+  const fileContents = `${headers}${rowsDelimiter}${rows.join(rowsDelimiter)}`
+  const filename = 'transactions.csv'
+  const filetype = 'text/plain'
+
+  const dataURI = `data:${filetype};base64,${btoa(fileContents)}`
+
+  return (
+    <a href={dataURI} download={filename} className="download-transactions-text">
+      Export to CSV
+    </a>
+  )
+}
+
 class TransactionHistory extends Component<Props> {
   render({transactionHistory}) {
+    const formatDate = (date) => toLocalDate(new Date(date * 1000))
+
     return (
       <div className="transactions card">
-        <h2 className="card-title">Transaction History</h2>
+        <div className="transactions-header">
+          <h2 className="card-title">Transaction History</h2>
+          <div className="download-transaction">
+            <ExportCSV transactionHistory={transactionHistory} />
+          </div>
+        </div>
         {transactionHistory.length === 0 ? (
           <div className="transactions-empty">No transactions found</div>
         ) : (

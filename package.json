@@ -1,6 +1,6 @@
 {
   "name": "cardano",
-  "version": "4.0.1",
+  "version": "5.0.1",
   "engines": {
     "node": "11.10"
   },
@@ -29,7 +29,7 @@
     "test-chrome-headless": "cd app && yarn install && yarn test-chrome-headless",
     "mocha": "cd app && mocha-chrome --help",
     "eslint": "eslint . --max-warnings=0 --ext .ts,.tsx,.js,.jsx",
-    "fix": "prettier-eslint --write \"{app/frontend,app/tests/src,server}/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "fix": "prettier-eslint --write \"{{app/frontend,app/tests/src,server}/**/*.{ts,tsx,js,jsx,json,css},,package.json}\"",
     "heroku-postbuild": "cd app && yarn install && yarn build",
     "generate-cert": "test -e server.cert && echo \"certificate already exists\" || openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj \"/C=US\""
   },
@@ -39,7 +39,7 @@
     }
   },
   "lint-staged": {
-    "{{app/frontend,app/tests,server}/**/*.{ts,tsx,js,jsx,json,css},package.json}": [
+    "{{app/frontend,app/tests/src,server}/**/*.{ts,tsx,js,jsx,json,css},package.json}": [
       "prettier-eslint --write",
       "git add"
     ]
@@ -57,12 +57,15 @@
     "express-ipfilter": "^1.1.2",
     "express-mung": "^0.5.1",
     "isomorphic-fetch": "^2.2.1",
+    "moment": "^2.27.0",
     "normalize-url": "^4.0.0",
     "redis": "^2.8.0",
     "redisscan": "^2.0.0",
     "universal-analytics": "^0.4.20"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "2",
+    "@typescript-eslint/parser": "2",
     "babel-eslint": "^8.2.2",
     "eslint": "^6.0.1",
     "eslint-config-vacuumlabs": "^1.8.2",
@@ -82,6 +85,7 @@
     "lodash": "4.17.19",
     "minimist": "^1.2.2",
     "acorn": "^5.7.4",
-    "kind-of": "^6.0.3"
+    "kind-of": "^6.0.3",
+    "elliptic": "^6.5.3"
   }
 }

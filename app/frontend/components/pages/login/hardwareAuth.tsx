@@ -1,6 +1,8 @@
 import {h} from 'preact'
 import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
 import {TrezorLogoWhite, LedgerLogoWhite} from '../../common/svg'
+import {ADALITE_CONFIG} from '../../../config'
+import tooltip from '../../common/tooltip'
 
 interface Props {
   loadWallet: any
@@ -34,7 +36,12 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
           dangerouslySetInnerHTML={{__html: '&nbsp;'}}
         />
         <button
-          className="button primary trezor"
+          disabled={!ADALITE_CONFIG.ADALITE_ENABLE_TREZOR}
+          {...tooltip(
+            'Support for Trezor is temporarily disabled',
+            !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR
+          )}
+          className="button primary trezor thin-data-balloon"
           onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR})}
         >
           Unlock with<div className="trezor-logo-container">
@@ -56,12 +63,25 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
           {LedgerAffiliateLink('Support us by buying one')}
         </div>
         <button
-          className="button primary ledger"
+          {...tooltip(
+            'Support for Ledger is temporarily disabled',
+            !ADALITE_CONFIG.ADALITE_ENABLE_LEDGER
+          )}
+          disabled={!ADALITE_CONFIG.ADALITE_ENABLE_LEDGER}
+          className="button primary ledger thin-data-balloon"
           onClick={() => loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER})}
         >
           Unlock with<div className="ledger-logo-container">
             <LedgerLogoWhite />
           </div>
+        </button>
+        <button
+          className="button secondary"
+          onClick={() =>
+            loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER, isWebUSB: true})
+          }
+        >
+          Connect with WebUSB
         </button>
       </div>
     </div>

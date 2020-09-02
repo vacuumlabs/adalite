@@ -3,6 +3,16 @@ import range from './helpers/range'
 import NamedError from '../helpers/NamedError'
 import debugLog from '../helpers/debugLog'
 import getHash from '../helpers/getHash'
+import {
+  StakingHistoryItemType,
+  RewardWithdrawal,
+  StakeDelegation,
+  StakePool,
+  StakingReward,
+  StakingKeyRegistration,
+} from '../components/pages/delegations/stakingHistoryPage'
+import distinct from '../helpers/distinct'
+import {UNKNOWN_POOL_NAME} from './constants'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -57,6 +67,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
 
     for (const t of Object.values(transactions)) {
+      t.fee = parseInt(t.fee, 10)
       let effect = 0 //effect on wallet balance accumulated
       for (const input of t.ctbInputs || []) {
         if (addresses.includes(input[0])) {
@@ -69,10 +80,6 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         }
       }
       t.effect = effect
-      const fee =
-        t.ctbInputSum.getCoin - t.ctbOutputSum.getCoin || parseInt(t.ctbInputSum.getCoin, 10)
-      t.fee = Math.max(fee, 0)
-      // some txs from restored testnet wallets have no inputs thus fee would be negative
     }
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
@@ -174,6 +181,134 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
   }
 
+  async function getPoolInfo(url) {
+    const response = await request(
+      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
+      'POST',
+      JSON.stringify({poolUrl: url}),
+      {'Content-Type': 'application/json'}
+    ).catch(() => {
+      return {}
+    })
+    return response
+  }
+
+  async function getStakingHistory(accountPubkeyHex, validStakepools) {
+    // Urls
+    const delegationsUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/delegationHistory/${accountPubkeyHex}`
+    // const rewardsUrl = `${
+    //   ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    // }/api/account/rewardHistory/${accountPubkeyHex}`
+    const withdrawalsUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/withdrawalHistory/${accountPubkeyHex}`
+    const stakingKeyRegistrationUrl = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/stakeRegistrationHistory/${accountPubkeyHex}`
+
+    const [delegations, /*rewards,*/ withdrawals, stakingKeyRegistrations] = await Promise.all([
+      request(delegationsUrl).catch(() => []),
+      // request(rewardsUrl).catch(()=>[]),
+      request(withdrawalsUrl).catch(() => []),
+      request(stakingKeyRegistrationUrl).catch(() => []),
+    ])
+    const rewards = []
+
+    const extractUrl = (poolHash) =>
+      validStakepools[poolHash] ? validStakepools[poolHash].url : null
+
+    const poolMetaUrls = distinct(
+      [...delegations, ...rewards].map(({poolHash}) => extractUrl(poolHash))
+    ).filter((url) => url != null)
+
+    const metaUrlToPoolNameMap = (await Promise.all(
+      poolMetaUrls.map((url: string) =>
+        getPoolInfo(url).then((metaData) => ({url, name: metaData.name}))
+      )
+    )).reduce((map, {url, name}) => {
+      map[url] = name
+      return map
+    }, {})
+
+    const poolHashToPoolName = (poolHash) =>
+      metaUrlToPoolNameMap[extractUrl(poolHash)] || UNKNOWN_POOL_NAME
+
+    const parseStakePool = (stakingHistoryObject): StakePool => ({
+      id: stakingHistoryObject.poolHash,
+      name: poolHashToPoolName(stakingHistoryObject.poolHash),
+    })
+
+    // Prepare delegations
+    let oldPool: StakePool = null
+    const parsedDelegations = delegations
+      .map((delegation) => ({...delegation, time: new Date(delegation.time)}))
+      .sort((a, b) => a.time.getTime() - b.time.getTime()) // sort by time, oldest first
+      .map((delegation) => {
+        const stakePool: StakePool = parseStakePool(delegation)
+        const stakeDelegation: StakeDelegation = {
+          type: StakingHistoryItemType.StakeDelegation,
+          txid: delegation.txHash,
+          epoch: delegation.epochNo,
+          dateTime: new Date(delegation.time),
+          newStakePool: stakePool,
+          oldStakePool: oldPool,
+        }
+        oldPool = stakePool
+
+        return stakeDelegation
+      })
+      .reverse() // newest first
+
+    // Prepare rewards
+    const parsedRewards = rewards.map((reward) => {
+      const stakingReward: StakingReward = {
+        type: StakingHistoryItemType.StakingReward,
+        epoch: reward.epochNo,
+        dateTime: new Date(reward.time),
+        reward: reward.amount,
+        stakePool: parseStakePool(reward),
+      }
+
+      return stakingReward
+    })
+
+    // Prepare withdrawals
+    const parsedWithdrawals = withdrawals.map((withdrawal) => {
+      const rewardWithdrawal: RewardWithdrawal = {
+        type: StakingHistoryItemType.RewardWithdrawal,
+        txid: withdrawal.txHash,
+        epoch: withdrawal.epochNo,
+        dateTime: new Date(withdrawal.time),
+        credit: withdrawal.amount,
+      }
+
+      return rewardWithdrawal
+    })
+
+    // Prepare staking key registration
+    const parsedStakingKeyRegistrations = stakingKeyRegistrations.map((registration) => {
+      const stakingKeyRegistration: StakingKeyRegistration = {
+        type: StakingHistoryItemType.StakingKeyRegistration,
+        txid: registration.txHash,
+        epoch: registration.epochNo,
+        dateTime: new Date(registration.time),
+        action: registration.action,
+        stakingKey: accountPubkeyHex,
+      }
+
+      return stakingKeyRegistration
+    })
+
+    return [
+      ...parsedDelegations,
+      ...parsedRewards,
+      ...parsedWithdrawals,
+      ...parsedStakingKeyRegistrations,
+    ].sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime()) // sort by time, newest first
+  }
+
   return {
     getTxHistory,
     fetchTxRaw,
@@ -183,6 +318,8 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     getBalance,
     fetchTxInfo,
     filterUsedAddresses,
+    getPoolInfo,
+    getStakingHistory,
   }
 }
 

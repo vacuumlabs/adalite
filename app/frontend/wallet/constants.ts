@@ -8,8 +8,13 @@ export const ETH_DONATION_ADDRESS = '0xe1575549f79742d21E56426a1F9AD26997F5B9fb'
 export const ADA_DONATION_ADDRESS_BYRON =
   'DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5'
 export const ADA_DONATION_ADDRESS =
-  'addr1swmsajfedtl7jthd76wakxtvz559vhkeztlc9getrw5gldu709d22pdkf6f'
-export const TX_WITNESS_SIZE_BYTES = 139
+  'addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2mjdvnpufphgjawhyh0tg9r3sk85ls4'
+export const TX_WITNESS_SIZES = {
+  byronv2: 139,
+  shelley: 139, //TODO: this is too much
+  byronV1: 170,
+}
+export const PROTOCOL_MAGIC_KEY = 2
 export const NETWORKS = {
   BYRON: {
     MAINNET: {
@@ -22,6 +27,20 @@ export const NETWORKS = {
     },
   },
   SHELLEY: {
+    MAINNET: {
+      name: 'mainnet',
+      networkId: 1,
+      protocolMagic: 764824073,
+      eraStartSlot: 4492800, // 21600 slot x 208 epochs
+      eraStartDateTime: Date.parse('29 Jul 2020 21:44:51 UTC'),
+      ttl: 3600,
+    },
+    HASKELL_TESTNET: {
+      name: 'htn',
+      networkId: 0,
+      protocolMagic: 42,
+      ttl: 500,
+    },
     INCENTIVIZED_TESTNET: {
       name: 'itn',
       addressDiscriminator: 'testnet',
@@ -82,3 +101,17 @@ export const CRYPTO_PROVIDER_TYPES = {
 }
 export const SENTRY_USER_FEEDBACK_API =
   'https://sentry.io/api/0/projects/vacuumlabs-sro/adalite-frontend/user-feedback/'
+
+export const MINIMAL_LEDGER_APP_VERSION = {
+  major: 2,
+  minor: 0,
+  patch: 2,
+}
+
+export const RECOMMENDED_LEDGER_APP_VERSION = {
+  major: 2,
+  minor: 0,
+  patch: 4,
+}
+
+export const UNKNOWN_POOL_NAME = '<Unknown pool>'

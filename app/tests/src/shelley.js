@@ -3,10 +3,9 @@ import assert from 'assert'
 
 import ShelleyJsCryptoProvider from '../../frontend/wallet/shelley/shelley-js-crypto-provider'
 
-import {ShelleyGroupAddressProvider} from '../../frontend/wallet/shelley/shelley-address-provider'
+import {ShelleyBaseAddressProvider} from '../../frontend/wallet/shelley/shelley-address-provider'
 import {buildTransaction} from '../../frontend/wallet/shelley/helpers/chainlib-wrapper'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
-import _ from 'lodash'
 import loadWasmModule from './loadWasmModule'
 
 const getCryptoProvider = async (mnemonic, discriminator) => {
@@ -21,43 +20,31 @@ const getCryptoProvider = async (mnemonic, discriminator) => {
 window.wasm = null
 before(loadWasmModule)
 
-// test vectors for mainnet
-// abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address
-// group/external/0 addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0
-
-// test vectors for ITN
-// miss torch plunge announce vacuum job gasp fix lottery ten merge style great section cactus
-// account: 85a0a23a48bfb435aa2d5ec779ea4348684741f9695d51d034eda60608295b5d91
-// addr1snwt9m3p2rvknj97fxm43452ndae5pe874nwzl48h6j8kcdn5p5apg9z8fytldp44gk4a3meafp5s6z8g8ukjh236q6wmfsxpq54khv3ujrlwz
-
 describe('shelley address derivation', () => {
-  const mnemonic1 =
+  const mnemonic15Words =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
-
-  it('should derive group addresses', async () => {
-    const cp = await getCryptoProvider(mnemonic1, 'mainnet')
-    const addrGen = ShelleyGroupAddressProvider(cp, 0, false)
-    const addresses = await Promise.all(_.range(5).map((i) => addrGen(i).then((x) => x.address)))
-
-    const expected = [
-      'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
-      'addr1qjl2z0xka340zn0swmss0qqmlet3slw2zw962q73l0t7zdwtpd0ftg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgr3wuds',
-      'addr1qj2re8xj8hlv4m7729hfwaxa8g04cj493vxk3dxaprugjed93d7m0g3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsg936smv',
-      'addr1qn69l8ttc5a26sc69mqknqjuk476dc5hrxurqk8aruwnsa0tlnk0mg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsg4crst4',
-      'addr1qser9zgaxt6p4wv3f7ngzrvcvyq0eqeayg97dxfskkkeyy5s79as8g3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgkap43f',
-    ]
-    assert.deepEqual(addresses, expected)
-  })
-
-  const mnemonic2 =
-    'miss torch plunge announce vacuum job gasp fix lottery ten merge style great section cactus'
-  it('should derive group addresses', async () => {
-    const cp = await getCryptoProvider(mnemonic2, 'testnet')
-    const addrGen = ShelleyGroupAddressProvider(cp, 0, false)
+  it('should derive base address from 15-words mnemonic', async () => {
+    const cp = await getCryptoProvider(mnemonic15Words, 'mainnet') //TODO: change discriminator to networkId for shelley
+    const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
 
     const {address} = await addrGen(0)
     const expected =
-      'addr1snwt9m3p2rvknj97fxm43452ndae5pe874nwzl48h6j8kcdn5p5apg9z8fytldp44gk4a3meafp5s6z8g8ukjh236q6wmfsxpq54khv3ujrlwz'
+      'addr1qzz6hulv54gzf2suy2u5gkvmt6ysasfdlvvegy3fmf969y7r3y3kdut55a40jff00qmg74686vz44v6k363md06qkq0qk0f2ud'
+
+    assert.equal(address, expected)
+  })
+
+  const mnemonic12Words =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+  // 12-word (legacy Daedalus) mnemonics should not be used in prod to derive base addresses at all
+  // we just want to test that the V1 derivation scheme is applied for 12 word mnemonics
+  it('should derive base address from 12-words mnemonic', async () => {
+    const cp = await getCryptoProvider(mnemonic12Words, 'mainnet') //TODO: change discriminator to networkId for shelley
+    const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
+
+    const {address} = await addrGen(0)
+    const expected =
+      'addr1qq3cu826yxrm8apxeata5pk5xrxxe9puqmru6ncltfv9c65a94kuhuc9jka90jnn78zd25lmm6vq8a79w9yjt8p4ykwst0wwa5'
 
     assert.equal(address, expected)
   })

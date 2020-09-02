@@ -1,5 +1,5 @@
 import {isValidAddress as isValidByronAddress} from 'cardano-crypto.js'
-import {isShelleyAddress as isValidShelleyAddress} from '../wallet/shelley/helpers/addresses'
+import {isValidShelleyAddress} from '../wallet/shelley/helpers/addresses'
 import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
@@ -10,7 +10,7 @@ const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as
 
 const _sendAddressValidators = {
   byron: isValidByronAddress,
-  shelley: isValidShelleyAddress,
+  shelley: (address) => isValidShelleyAddress(address) || isValidByronAddress(address),
 }
 
 const sendAddressValidator = (fieldValue) =>
@@ -46,6 +46,19 @@ const sendAmountValidator = (fieldValue, coins, balance) => {
       params: {balance},
     }
   }
+  if (balance < 1000000) {
+    return {code: 'SendAmountBalanceTooLow'}
+  }
+  return null
+}
+
+const redemptionAmountValidator = (balance, rewards, fee) => {
+  if (fee >= balance) {
+    return {code: 'SendAmountCantSendAnyFunds', message: ''}
+  }
+  if (fee >= rewards) {
+    return {code: 'RewardsBalanceTooLow', message: ''}
+  }
   return null
 }
 
@@ -79,8 +92,8 @@ const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
   return null
 }
 
-const delegationFeeValidator = (fee, balance) => {
-  if (fee > balance) {
+const delegationFeeValidator = (fee, deposit, balance) => {
+  if (fee + deposit > balance) {
     return {
       code: 'DelegationAccountBalanceError',
       params: {balance},
@@ -98,19 +111,13 @@ const mnemonicValidator = (mnemonic) => {
   return null
 }
 
-const poolIdValidator = (poolIndex, poolId, selectedPools, validStakepools) => {
+const poolIdValidator = (poolId, validStakepools) => {
   if (poolId === '') {
     return null
   }
   if (!validStakepools[poolId]) {
     return {
       code: 'InvalidStakepoolIdentifier',
-    }
-  }
-  const selectedPoolsIds = selectedPools.map((pool) => pool.pool_id)
-  if (selectedPoolsIds.every((id, index) => poolId === id && index !== poolIndex)) {
-    return {
-      code: 'RedundantStakePool',
     }
   }
   return null
@@ -125,4 +132,5 @@ export {
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
+  redemptionAmountValidator,
 }

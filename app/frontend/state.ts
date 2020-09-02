@@ -11,6 +11,7 @@ export interface SendTransactionSummary {
   fee: Lovelace
   plan: any
   tab?: any
+  deposit: any
 }
 
 export interface State {
@@ -18,6 +19,7 @@ export interface State {
   loadingMessage: string
   alert: any // TODO
   displayWelcome: boolean
+  displayInfoModal: boolean
   currentTab: 'wallet-info'
   walletIsLoaded: boolean
   shouldShowStakingBanner: boolean
@@ -25,6 +27,7 @@ export interface State {
   visibleAddresses: Array<any> // TODO
   sendAddress: any // TODO
   sendAmount: any // TODO
+  keepConfirmationDialogOpen: boolean
 
   sendTransactionSummary: SendTransactionSummary
 
@@ -37,6 +40,9 @@ export interface State {
     mnemonicInputError: {code: string}
     formIsValid: boolean
   }
+
+  isShelleyCompatible: any
+  shouldShowNonShelleyCompatibleDialog: any
 
   authMethod: AuthMethodEnum
   shouldShowDemoWalletWarningDialog: boolean
@@ -92,7 +98,6 @@ export interface State {
   sendAddressValidationError?: any
   transactionSubmissionError?: any
 
-  // stakePools: any
   calculatingDelegationFee?: any
   isDelegationValid?: any
 
@@ -102,26 +107,22 @@ export interface State {
     rewardsAccountBalance?: number
   }
   shelleyDelegation?: {
-    selectedPools?: any
+    selectedPool?: any
     delegationFee?: any
   }
   displayStakingPage?: boolean
   currentDelegation?: {
-    stakePools?: any
+    stakePool?: any
   }
-  delegationHistory?: any
+  stakingHistory?: any
   validStakepools?: any | null
   ticker2Id?: any | null
   delegationValidationError?: any
+  gettingPoolInfo: boolean
   shelleyAccountInfo?: {
     delegation: any
     value: number
-    counter: number
-    // eslint-disable-next-line camelcase
-    last_rewards: {
-      epoch: number
-      reward: number
-    }
+    hasStakingKey: boolean
   }
   txConfirmType: string
   txSuccessTab: string
@@ -142,8 +143,9 @@ const initialState: State = {
   currentTab: 'wallet-info',
   walletIsLoaded: false,
   shouldShowStakingBanner: !(
-    window.localStorage.getItem('dontShowStakingBannerTestnet2') === 'true'
+    window.localStorage.getItem('dontShowStakingBannerTestnet3') === 'true'
   ),
+  displayInfoModal: !(window.localStorage.getItem('dontShowInfoModal') === 'true'),
   errorBannerContent: '',
   visibleAddresses: [],
   // todo - object (sub-state) from send-ada form
@@ -155,6 +157,7 @@ const initialState: State = {
     fee: 0 as Lovelace,
     donation: 0 as Lovelace,
     plan: null,
+    deposit: 0,
   },
   router: {
     pathname: window.location.pathname,
@@ -165,6 +168,8 @@ const initialState: State = {
     mnemonicInputError: null,
     formIsValid: false,
   },
+  isShelleyCompatible: true,
+  shouldShowNonShelleyCompatibleDialog: false,
   authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
   shouldShowDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
@@ -187,27 +192,27 @@ const initialState: State = {
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 
   // shelley
-  displayStakingPage: ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley',
+  displayStakingPage: false,
   shelleyDelegation: {
-    selectedPools: [],
     delegationFee: 0.0,
+    selectedPool: {
+      poolHash: '',
+    },
   },
+  gettingPoolInfo: false,
   shelleyBalances: {
     nonStakingBalance: 0,
     stakingBalance: 0,
     rewardsAccountBalance: 0,
   },
   shelleyAccountInfo: {
-    delegation: [],
+    delegation: {},
     value: 0,
-    counter: 0,
-    last_rewards: {
-      epoch: 0,
-      reward: 0,
-    },
+    hasStakingKey: false,
   },
   txConfirmType: '',
   txSuccessTab: '',
+  keepConfirmationDialogOpen: false,
 }
 
 export {initialState}

@@ -1,11 +1,26 @@
-import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
+/* eslint-disable no-use-before-define */
+/* eslint-disable camelcase */
+import {sign as signMsg, derivePrivate, xpubToHdPassphrase, base58} from 'cardano-crypto.js'
+import {encode, decode} from 'borc'
 
 import HdNode from '../helpers/hd-node'
-import {buildTransaction} from './helpers/chainlib-wrapper'
+import {
+  ShelleySignedTransactionStructured,
+  ShelleyTxWitnessShelley,
+  ShelleyTxWitnessByron,
+} from './shelley-transaction'
+
+// import {PROTOCOL_MAGIC_KEY} from '../constants'
+import {isShelleyPath} from './helpers/addresses'
+import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 
 type HexString = string & {__typeHexString: any}
 
-const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme}, network}) => {
+const ShelleyJsCryptoProvider = ({
+  walletSecretDef: {rootSecret, derivationScheme},
+  network,
+  config,
+}) => {
   const masterHdNode = HdNode(rootSecret)
 
   const isHwWallet = () => false
@@ -14,9 +29,10 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
 
   const getDerivationScheme = () => derivationScheme
 
-  const deriveXpub = (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
-
-  const deriveXpriv = (derivationPath) => deriveHdNode(derivationPath).secretKey
+  const deriveXpub = CachedDeriveXpubFactory(
+    derivationScheme,
+    (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
+  )
 
   function deriveHdNode(derivationPath) {
     return derivationPath.reduce(deriveChildHdNode, masterHdNode)
@@ -31,77 +47,83 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
   async function sign(message, keyDerivationPath) {
     const hdNode = await deriveHdNode(keyDerivationPath)
     const messageToSign = Buffer.from(message, 'hex')
-
     return signMsg(messageToSign, hdNode.toBuffer())
   }
 
   // eslint-disable-next-line require-await
-  async function signTx(txAux, addressToAbsPathMapper) {
-    const prepareUtxoInput = (input, hdnode) => {
-      return {
-        type: input.type,
-        txid: input.txHash,
-        value: input.coins,
-        outputNo: input.outputIndex,
-        address: input.address,
-        privkey: Buffer.from(hdnode.secretKey).toString('hex'),
-        chaincode: Buffer.from(hdnode.chainCode).toString('hex'),
-      }
+  async function signTx(txAux, inputsRaw, addressToAbsPathMapper) {
+    const structured_tx = await signTxGetStructured(txAux, addressToAbsPathMapper)
+    const tx = {
+      txBody: encode(structured_tx).toString('hex'),
+      txHash: structured_tx.getId().toString('hex'),
     }
-
-    const prepareAccountInput = (input, hdnode) => {
-      return {
-        type: input.type,
-        address: input.address,
-        privkey: Buffer.from(hdnode.secretKey).toString('hex'),
-        accountCounter: input.counter,
-        value: input.coins,
-      }
-    }
-
-    const prepareInput = (input) => {
-      const path = addressToAbsPathMapper(input.address)
-      const hdnode = deriveHdNode(path)
-      const inputPreparator = {
-        utxo: prepareUtxoInput,
-        account: prepareAccountInput,
-      }
-      return inputPreparator[input.type](input, hdnode)
-    }
-
-    const prepareOutput = ({address, coins}) => {
-      return {
-        address,
-        value: coins,
-      }
-    }
-
-    const prepareCert = ({type, pools}) => {
-      const path = addressToAbsPathMapper(txAux.cert.accountAddress)
-      const hdnode = deriveHdNode(path)
-      return {
-        type: 'stake_delegation',
-        privkey: Buffer.from(hdnode.secretKey).toString('hex') as HexString,
-        pools,
-      }
-    }
-
-    const inputs = txAux.inputs.map(prepareInput)
-    const outpustAndChange = txAux.change ? [...txAux.outputs, txAux.change] : [...txAux.outputs]
-    const outputs = outpustAndChange.length ? outpustAndChange.map(prepareOutput) : []
-    const cert = txAux.cert ? prepareCert(txAux.cert) : null
-
-    const tx = buildTransaction({
-      inputs,
-      outputs,
-      cert,
-      chainConfig: network.chainConfig,
-    })
     return tx
   }
 
   function getHdPassphrase() {
     return xpubToHdPassphrase(masterHdNode.extendedPublicKey)
+  }
+
+  const build_shelley_witness = async (tx_body_hash, path, sign) => {
+    const signature = await sign(tx_body_hash, path)
+    const xpub = await deriveXpub(path)
+    return ShelleyTxWitnessShelley(xpub.slice(0, 32), signature)
+  }
+
+  const build_byron_witness = async (tx_body_hash, sign, path, address) => {
+    const signature = await sign(tx_body_hash, path)
+    const xpub = await deriveXpub(path)
+    const addressAsBuffer = decode(base58.decode(address))[0].value // TODO get from cardano-crypto
+    const addressData = decode(addressAsBuffer)
+    const address_attributes = addressData[1]
+    return ShelleyTxWitnessByron(
+      xpub.slice(0, 32),
+      signature,
+      xpub.slice(32, 64),
+      encode(address_attributes)
+    )
+  }
+
+  const build_witnesses = async (inputs, tx_body_hash, sign, network, addressToAbsPathMapper) => {
+    const _shelleyWitnesses = []
+    const _byronWitnesses = []
+    inputs.forEach((input) => {
+      const inputPath = addressToAbsPathMapper(input.address)
+      // console.log(inputPath)
+      isShelleyPath(inputPath)
+        ? _shelleyWitnesses.push(build_shelley_witness(tx_body_hash, inputPath, sign))
+        : _byronWitnesses.push(build_byron_witness(tx_body_hash, sign, inputPath, input.address))
+    })
+    const shelleyWitnesses = await Promise.all(_shelleyWitnesses)
+    const byronWitnesses = await Promise.all(_byronWitnesses) // TODO: move this below
+    const witnesses = new Map()
+    if (shelleyWitnesses.length > 0) {
+      witnesses.set(0, shelleyWitnesses)
+    }
+    if (byronWitnesses.length > 0) {
+      witnesses.set(2, byronWitnesses)
+    }
+    return witnesses
+  }
+
+  async function signTxGetStructured(txAux, addressToAbsPathMapper) {
+    const txHash = txAux.getId()
+    const witnesses = await build_witnesses(
+      txAux.withdrawals
+        ? [...txAux.inputs, ...txAux.certs, txAux.withdrawals]
+        : [...txAux.inputs, ...txAux.certs], // TODO: a withdrawal!
+      txHash,
+      sign, // TODO: useless here
+      network,
+      addressToAbsPathMapper
+    )
+    const meta = null
+
+    return ShelleySignedTransactionStructured(txAux, witnesses, meta)
+  }
+
+  function checkVersion() {
+    return
   }
 
   return {
@@ -115,7 +137,7 @@ const ShelleyJsCryptoProvider = ({walletSecretDef: {rootSecret, derivationScheme
     _sign: sign,
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
-    deriveXpriv,
+    checkVersion,
   }
 }
 

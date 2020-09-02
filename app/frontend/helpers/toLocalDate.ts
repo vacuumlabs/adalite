@@ -1,5 +1,5 @@
-const formatDate = (date) =>
-  new Date(date * 1000).toLocaleString(undefined, {
+const toLocalDate = (date: Date) =>
+  date.toLocaleString(undefined, {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -10,4 +10,4 @@ const formatDate = (date) =>
   } as any)
 // as any because there seems to be bug with hourCycle parameter
 
-export default formatDate
+export default toLocalDate

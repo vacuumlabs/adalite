@@ -13,6 +13,7 @@ interface Props {
   isDemoWallet: boolean
   logout: () => void
   openWelcome: any
+  openInfoModal: any
 }
 
 class NavbarAuth extends Component<Props, {}> {
@@ -41,7 +42,7 @@ class NavbarAuth extends Component<Props, {}> {
     }
   }
 
-  render({isDemoWallet, logout, openWelcome}) {
+  render({isDemoWallet, logout, openWelcome, openInfoModal}) {
     return (
       <nav
         className={`navbar authed ${isDemoWallet ? 'demo' : ''}`}
@@ -70,6 +71,16 @@ class NavbarAuth extends Component<Props, {}> {
           <div className="navbar-version">{`Ver. ${APP_VERSION}`}</div>
           <div className="navbar-content">
             <a
+              className="navbar-link primary"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                openInfoModal()
+              }}
+            >
+              News
+            </a>
+            <a
               className="navbar-link"
               href="#"
               onClick={(e) => {
@@ -88,7 +99,7 @@ class NavbarAuth extends Component<Props, {}> {
               Help
             </a>
           </div>
-          <button className="button logout" onClick={() => setTimeout(logout, 100)}>
+          <button className="button secondary logout" onClick={() => setTimeout(logout, 100)}>
             Logout
           </button>
         </div>

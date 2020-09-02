@@ -10,6 +10,7 @@ import {
   donationAmountValidator,
   poolIdValidator,
   delegationFeeValidator,
+  redemptionAmountValidator,
 } from './helpers/validators'
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
@@ -26,10 +27,10 @@ import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace} from './state'
 import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
+import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 
 import {ShelleyWallet} from './wallet/shelley-wallet'
-import ShelleyJsCryptoProvider from './wallet/shelley/shelley-js-crypto-provider'
-import loadWasmModule from './helpers/wasmLoader'
+// import loadWasmModule from './helpers/wasmLoader'
 import getDonationAddress from './helpers/getDonationAddress'
 let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
 
@@ -116,10 +117,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* LOADING WALLET */
 
-  const loadWallet = async (state, {cryptoProviderType, walletSecretDef}) => {
+  const loadWallet = async (state, {cryptoProviderType, walletSecretDef, isWebUSB}) => {
+    // loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
     })
+    const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
     try {
       switch (ADALITE_CONFIG.ADALITE_CARDANO_VERSION) {
         case 'byron': {
@@ -136,15 +139,20 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           break
         }
         case 'shelley': {
-          await loadWasmModule()
-          const cryptoProvider = ShelleyJsCryptoProvider({
-            walletSecretDef,
-            network: NETWORKS.SHELLEY.INCENTIVIZED_TESTNET,
-          })
+          const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
+            cryptoProviderType,
+            {
+              walletSecretDef,
+              network: NETWORKS.SHELLEY[ADALITE_CONFIG.ADALITE_NETWORK],
+              config: ADALITE_CONFIG,
+              isWebUSB,
+            }
+          )
 
           wallet = await ShelleyWallet({
             config: ADALITE_CONFIG,
             cryptoProvider,
+            isShelleyCompatible,
           })
           break
         }
@@ -155,12 +163,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
+      if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
-      const {validStakepools, ticker2Id} = await wallet.getValidStakepools()
+      const ticker2Id = null
       setState({
         walletIsLoaded: true,
         ...walletInfo,
@@ -174,15 +183,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         hwWalletName,
         isDemoWallet,
         shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,
+        shouldShowNonShelleyCompatibleDialog: !isShelleyCompatible,
         shouldShowGenerateMnemonicDialog: false,
+        shouldShowAddressVerification: usingHwWallet,
         // send form
         sendAmount: {fieldValue: '', coins: 0},
         sendAddress: {fieldValue: ''},
         donationAmount: {fieldValue: '', coins: 0},
         sendResponse: '',
         // shelley
-        validStakepools,
         ticker2Id,
+        isShelleyCompatible,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
@@ -238,6 +249,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const closeDemoWalletWarningDialog = (state) => {
     setState({
       shouldShowDemoWalletWarningDialog: false,
+    })
+  }
+
+  const closeNonShelleyCompatibleDialog = (state) => {
+    setState({
+      shouldShowNonShelleyCompatibleDialog: false,
+    })
+  }
+
+  const openNonShelleyCompatibleDialog = (state) => {
+    setState({
+      shouldShowNonShelleyCompatibleDialog: true,
     })
   }
 
@@ -311,16 +334,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* ADDRESS DETAIL */
 
-  const verifyAddress = async () => {
-    const state = getState()
-    if (state.usingHwWallet && state.showAddressDetail) {
+  const verifyAddress = async (state, address?) => {
+    const newState = getState()
+    if (newState.usingHwWallet) {
       try {
         setState({
           waitingForHwWallet: true,
           addressVerificationError: false,
         })
-        await wallet.verifyAddress(state.showAddressDetail.address)
-        setState({waitingForHwWallet: false})
+        await wallet.verifyAddress(address || newState.showAddressDetail.address)
+        setState({
+          waitingForHwWallet: false,
+        })
       } catch (e) {
         setState({
           waitingForHwWallet: false,
@@ -354,12 +379,21 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* TRANSACTION */
 
-  const confirmTransaction = (state, txConfirmType) => {
+  const confirmTransaction = async (state, txConfirmType) => {
     let txAux
+    const newState = getState()
     try {
-      txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
+      if (newState.sendTransactionSummary.plan) {
+        txAux = await wallet.prepareTxAux(newState.sendTransactionSummary.plan)
+      } else {
+        loadingAction(state, 'Preparing transaction plan...')
+        await sleep(1000) // wait for plan to be set in case of unfortunate timing
+        const retriedState = getState()
+        txAux = await wallet.prepareTxAux(retriedState.sendTransactionSummary.plan)
+        stopLoadingAction(state, {})
+      }
     } catch (e) {
-      throw NamedError('TransactionCorrupted')
+      throw NamedError('TransactionCorrupted', {causedBy: e})
     }
 
     setState({
@@ -368,6 +402,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       // TODO: maybe do this only on demand
       rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
       rawTransactionOpen: false,
+    })
+  }
+
+  const closeConfirmationDialog = (state) => {
+    setState({
+      keepConfirmationDialogOpen: false,
+      shouldShowConfirmTransactionDialog: false,
     })
   }
 
@@ -397,6 +438,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         fee: plan.fee != null ? plan.fee : plan.estimatedFee,
         plan: plan.fee != null ? plan : null,
         tab,
+        deposit: plan.deposit,
       },
     })
   }
@@ -409,6 +451,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         donation: 0 as Lovelace,
         plan: null,
         tab: state.sendTransactionSummary.tab,
+        deposit: 0,
       },
     })
   }
@@ -459,11 +502,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       shelleyDelegation: {
         delegationFee: 0,
-        selectedPools: [
-          {
-            poolIdentifier: '',
-          },
-        ],
+        selectedPool: {
+          poolHash: '',
+        },
       },
     })
   }
@@ -484,6 +525,19 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     )
   }
 
+  const resetDelegationWithoutHash = (state) => {
+    const newState = getState()
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelegation,
+        selectedPool: {
+          ...newState.shelleyDelegation.selectedPool,
+        },
+        delegationFee: 0,
+      },
+    })
+  }
+
   const isSendFormFilledAndValid = (state) =>
     state.sendAddress.fieldValue !== '' &&
     state.sendAmount.fieldValue !== '' &&
@@ -496,10 +550,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     let plan
     try {
       plan = await wallet.getTxPlan(args)
+      // TODO: refactor getTxPlan to explicitly acknowledge
+      // about failure to estimate the tx fee and its reason
+      if (!plan.fee) {
+        throw NamedError('OutputTooSmall')
+      }
     } catch (e) {
       stopLoadingAction(state, {})
       resetAmountFields(state)
-      resetDelegation()
+      resetDelegationWithoutHash(state)
       setState({
         calculatingDelegationFee: false,
         calculatingFee: false,
@@ -771,8 +830,46 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       stopLoadingAction(state, {})
       return
     }
+    setState({
+      keepConfirmationDialogOpen: true,
+    })
     setTransactionSummary('stake', plan, coins)
-    confirmTransaction(getState(), 'convert')
+    await confirmTransaction(getState(), 'convert')
+    stopLoadingAction(state, {})
+  }
+
+  const redeemRewards = async (state) => {
+    loadingAction(state, 'Preparing transaction...')
+    const rewards = state.shelleyBalances.rewardsAccountBalance
+    const balance = state.balance
+    let plan
+    try {
+      plan = await prepareTxPlan({
+        rewards,
+        txType: 'redeem',
+      })
+    } catch (e) {
+      setErrorState('transactionSubmissionError', e, {
+        shouldShowTransactionErrorModal: true,
+      })
+      return
+    }
+    // const cryptoProviderVersionError = wallet.checkCryptoProviderVersion()
+    const redemptionValidationError =
+      redemptionAmountValidator(balance, rewards, plan.fee) || wallet.checkCryptoProviderVersion()
+    if (redemptionValidationError) {
+      setErrorState(
+        'transactionSubmissionError',
+        NamedError(redemptionValidationError.code, {message: redemptionValidationError.message})
+      )
+      setState({
+        shouldShowTransactionErrorModal: true,
+      })
+      stopLoadingAction(state, {})
+      return
+    }
+    setTransactionSummary('stake', plan, rewards)
+    await confirmTransaction(getState(), 'redeem')
     stopLoadingAction(state, {})
   }
 
@@ -808,33 +905,45 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* DELEGATE */
 
-  const hasPoolIdentifiersChanged = (shelleyDelegation) => {
+  const hasPoolIdentifiersChanged = (state) => {
     const {shelleyDelegation: newShelleyDelegation} = getState()
     return (
-      shelleyDelegation.length === newShelleyDelegation.selectedPools.length &&
-      newShelleyDelegation.selectedPools.every(
-        ({poolIdentifier}, index) =>
-          poolIdentifier === shelleyDelegation.selectedPools[index].poolIdentifier
-      )
+      newShelleyDelegation.selectedPool.poolHash !== state.shelleyDelegation.selectedPool.poolHash
     )
     // maybe also check if tab changed
   }
 
+  const setPoolInfo = async (state) => {
+    if (hasPoolIdentifiersChanged(state)) {
+      return
+    }
+    const poolInfo = await wallet.getPoolInfo(state.shelleyDelegation.selectedPool.url)
+    if (hasPoolIdentifiersChanged(state)) {
+      return
+    }
+    const newState = getState()
+    setState({
+      shelleyDelegation: {
+        ...state.shelleyDelation,
+        selectedPool: {
+          ...state.shelleyDelegation.selectedPool,
+          ...poolInfo,
+        },
+        delegationFee: newState.shelleyDelegation.delegationFee,
+      },
+      gettingPoolInfo: false,
+    })
+  }
+
   const calculateDelegationFee = async (revoke?: boolean) => {
-    const state = getState()
-    //TODO: some validation in case poolIdentifier changed(hasPoolIdentifierChanged)
-    const pools = !revoke
-      ? state.shelleyDelegation.selectedPools.map(({pool_id: id, ratio}) => {
-        return {
-          id,
-          ratio,
-        }
-      })
-      : []
-    const balance = state.balance
+    const newState = getState()
+    setPoolInfo(newState)
+    const poolHash = newState.shelleyDelegation.selectedPool.poolHash
+    const stakingKeyRegistered = newState.shelleyAccountInfo.hasStakingKey
+    const balance = newState.balance
     let plan
     try {
-      plan = await prepareTxPlan({coins: null, pools, txType: 'delegate'})
+      plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: 'delegate'})
     } catch (e) {
       if (!revoke) {
         setErrorState('delegationValidationError', {code: e.name})
@@ -845,16 +954,23 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }
       return
     }
+    const state = getState()
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const validationError = delegationFeeValidator(plan.fee || plan.estimatedFee, balance)
+    const validationError = delegationFeeValidator(
+      plan.fee || plan.estimatedFee,
+      plan.deposit,
+      balance
+    )
     setErrorState('delegationValidationError', validationError)
     if (!validationError) {
+      const delegationFee = plan && !!plan.fee ? plan.fee : plan.estimatedFee
       setState({
         shelleyDelegation: {
           ...state.shelleyDelegation,
-          delegationFee: plan && !!plan.fee ? plan.fee : plan.estimatedFee,
+          delegationFee: delegationFee ? delegationFee + plan.deposit : 0,
+          // TODO: we probably want to show deposit in separate field
         },
       })
       setTransactionSummary('stake', plan)
@@ -869,22 +985,25 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, 'Preparing transaction...')
     await calculateDelegationFee(true)
     stopLoadingAction(state, {})
-    confirmTransaction(getState(), 'revoke')
+    await confirmTransaction(getState(), 'revoke')
   }
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
 
   const validateDelegationAndCalculateFee = () => {
     const state = getState()
-    const delegationValidationError = state.shelleyDelegation.selectedPools.every(
-      (pool) => pool.validationError || pool.poolIdentifier === ''
-    )
+    const selectedPool = state.shelleyDelegation.selectedPool
+    const delegationValidationError = selectedPool.validationError || selectedPool.poolHash === ''
+
     setErrorState('delegationValidationError', delegationValidationError)
     setState({
       delegationValidationError,
     })
     if (!delegationValidationError) {
-      setState({calculatingDelegationFee: true})
+      setState({
+        calculatingDelegationFee: true,
+        gettingPoolInfo: true,
+      })
       debouncedCalculateDelegationFee()
     } else {
       setState({
@@ -896,66 +1015,58 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const updateStakePoolIdentifier = (state, e) => {
+  const updateStakePoolIdentifier = (state, e, hash?) => {
     /**
      * this has to be redone,
      * pool validation must happen before debouncing
      * but pool info shown after
      */
-    const poolIdentifier = e.target.value
-    const poolId = state.ticker2Id[poolIdentifier] || poolIdentifier
-    const selectedPools = state.shelleyDelegation.selectedPools
+    const poolHash = hash || e.target.value
+    const validationError = poolIdValidator(poolHash, state.validStakepools)
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        selectedPools: selectedPools.map((pool, i) => {
-          const index = parseInt(e.target.name, 10)
-          const validationError = poolIdValidator(
-            index,
-            poolId,
-            selectedPools,
-            state.validStakepools
-          )
-          return i === index
-            ? {
-              validationError,
-              // 100 just while multiple delegation isnt supported
-              ratio: 100,
-              ...state.validStakepools[poolId],
-              poolIdentifier,
-            }
-            : pool
-        }),
+        selectedPool: {
+          validationError,
+          ...state.validStakepools[poolHash],
+          poolHash,
+        },
       },
     })
+    if (validationError || poolHash === '') {
+      if (poolHash === '') {
+        resetDelegation()
+        setState({
+          delegationValidationError: null,
+        })
+      }
+      return
+    }
     validateDelegationAndCalculateFee()
   }
 
   const selectAdaliteStakepool = () => {
-    const state = getState()
-    const poolInfo =
-      state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
-    setState({
-      shelleyDelegation: {
-        ...state.shelleyDelegation,
-        selectedPools: [
-          {
-            validationError: !poolInfo,
-            ...poolInfo,
-            ratio: 100,
-            poolIdentifier: poolInfo.pool_id,
-          },
-        ],
-      },
-    })
-    validateDelegationAndCalculateFee()
+    // const state = getState()
+    // const poolInfo =
+    //   state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
+    // setState({
+    //   shelleyDelegation: {
+    //     ...state.shelleyDelegation,
+    //     selectedPool: {
+    //       validationError: !poolInfo,
+    //       ...poolInfo,
+    //     },
+    //   },
+    // })
+    // validateDelegationAndCalculateFee()
+    updateStakePoolIdentifier(getState(), null, ADALITE_CONFIG.ADALITE_STAKE_POOL_ID)
   }
 
-  const resetDelegationToAdalite = () => {
-    if (ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley') {
-      selectAdaliteStakepool()
-    }
-  }
+  // const resetDelegationToAdalite = () => {
+  //   if (ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley') {
+  //     selectAdaliteStakepool()
+  //   }
+  // }
 
   /* SUBMIT TX */
 
@@ -985,9 +1096,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const submitTransaction = async (state) => {
-    setState({
-      shouldShowConfirmTransactionDialog: false,
-    })
+    if (!state.keepConfirmationDialogOpen) {
+      setState({
+        shouldShowConfirmTransactionDialog: false,
+      })
+    }
     if (state.usingHwWallet) {
       setState({waitingForHwWallet: true})
       loadingAction(state, `Waiting for ${state.hwWalletName}...`)
@@ -998,7 +1111,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     let txSubmitResult
     const txTab = state.sendTransactionSummary.tab
     try {
-      const txAux = wallet.prepareTxAux(state.sendTransactionSummary.plan)
+      const txAux = await wallet.prepareTxAux(state.sendTransactionSummary.plan)
       const signedTx = await wallet.signTxAux(txAux)
 
       if (state.usingHwWallet) {
@@ -1017,7 +1130,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const address = state.sendAddress.fieldValue
       const donationAmount = state.donationAmount.coins
       const didDonate = address === getDonationAddress() || donationAmount > 0
-
+      closeConfirmationDialog(state)
       if (didDonate) {
         setState({shouldShowThanksForDonation: true})
       }
@@ -1029,13 +1142,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         shouldShowTransactionErrorModal: true,
       })
     } finally {
+      closeConfirmationDialog(state)
       resetTransactionSummary(state)
       resetSendFormFields(state)
       resetSendFormState(state)
       resetAmountFields(state)
-      resetDelegationToAdalite()
       wallet.generateNewSeeds()
       await reloadWalletInfo(state)
+      selectAdaliteStakepool()
       setState({
         waitingForHwWallet: false,
         txSuccessTab: sendResponse && sendResponse.success ? txTab : '',
@@ -1073,8 +1187,22 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const openInfoModal = (state) => {
+    setState({
+      displayInfoModal: true,
+    })
+  }
+
+  const closeInfoModal = (state, dontShowDisclaimer) => {
+    // we may get an ignored click event as the second argument, check only against booleans
+    window.localStorage.setItem('dontShowInfoModal', dontShowDisclaimer)
+    setState({
+      displayInfoModal: false,
+    })
+  }
+
   const closeStakingBanner = (state) => {
-    window.localStorage.setItem('dontShowStakingBannerTestnet2', 'true')
+    window.localStorage.setItem('dontShowStakingBannerTestnet3', 'true')
     setState({
       shouldShowStakingBanner: false,
     })
@@ -1145,6 +1273,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
     closeDemoWalletWarningDialog,
+    closeNonShelleyCompatibleDialog,
+    openNonShelleyCompatibleDialog,
     closeThanksForDonationModal,
     setLogoutNotificationOpen,
     setRawTransactionOpen,
@@ -1164,5 +1294,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     selectAdaliteStakepool,
     convertNonStakingUtxos,
     loadErrorBannerContent,
+    redeemRewards,
+    openInfoModal,
+    closeInfoModal,
   }
 }

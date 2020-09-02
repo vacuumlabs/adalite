@@ -10,6 +10,7 @@ interface Props {
     | 'warning'
     | 'error event'
     | 'info auth'
+    | 'news'
   children: ComponentChildren
 }
 

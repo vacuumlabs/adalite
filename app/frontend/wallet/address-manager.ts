@@ -4,7 +4,7 @@ import NamedError from '../helpers/NamedError'
 
 const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}) => {
   if (!gapLimit) {
-    throw NamedError('ParamsValidationError', `Invalid gap limit: ${gapLimit}`)
+    throw NamedError('ParamsValidationError', {message: `Invalid gap limit: ${gapLimit}`})
   }
 
   const deriveAddressMemo = {}

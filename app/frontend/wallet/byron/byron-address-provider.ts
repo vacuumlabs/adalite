@@ -1,4 +1,4 @@
-import {packAddress} from 'cardano-crypto.js'
+import {packBootstrapAddress, base58} from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../constants'
 
 const v1Path = (account: number, isChange: boolean, addrIdx: number) => {
@@ -37,6 +37,6 @@ export const ByronAddressProvider = (
 
   return {
     path,
-    address: packAddress(path, xpub, hdPassphrase, scheme.ed25519Mode),
+    address: base58.encode(packBootstrapAddress(path, xpub, hdPassphrase, scheme.ed25519Mode)),
   }
 }

@@ -8,7 +8,7 @@ import {MAX_INT32} from './constants'
 import shuffleArray from './helpers/shuffleArray'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
-import {computeRequiredTxFee, selectMinimalTxPlan, isUtxoProfitable} from './byron-tx-planner'
+import {computeRequiredTxFee, selectMinimalTxPlan, isUtxoProfitable} from './byron/byron-tx-planner'
 import {MaxAmountCalculator} from './max-amount-calculator'
 // eslint-disable-next-line no-unused-vars
 import {TxPlan} from './shelley/build-transaction'
@@ -147,7 +147,7 @@ const CardanoWallet = (options) => {
       .signTx(txAux, rawInputTxs, myAddresses.getAddressToAbsPathMapper())
       .catch((e) => {
         debugLog(e)
-        throw NamedError('TransactionRejectedWhileSigning', e.message)
+        throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
       })
 
     return signedTx
@@ -203,7 +203,9 @@ const CardanoWallet = (options) => {
   }
 
   function getMaxNonStakingAmount(address) {
-    throw NamedError('UnsupportedOperationError', 'Incompatible operation with Byron wallet')
+    throw NamedError('UnsupportedOperationError', {
+      message: 'Incompatible operation with Byron wallet',
+    })
   }
 
   async function fetchTxInfo(txHash) {
@@ -234,7 +236,9 @@ const CardanoWallet = (options) => {
 
   async function verifyAddress(addr: string) {
     if (!('displayAddressForPath' in cryptoProvider)) {
-      throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
+      throw NamedError('UnsupportedOperationError', {
+        message: 'unsupported operation: verifyAddress',
+      })
     }
     const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(addr)
     return await cryptoProvider.displayAddressForPath(absDerivationPath)
@@ -245,6 +249,14 @@ const CardanoWallet = (options) => {
       randomInputSeed: randomInputSeed || Math.floor(Math.random() * MAX_INT32),
       randomChangeSeed: randomChangeSeed || Math.floor(Math.random() * MAX_INT32),
     }
+  }
+
+  function getPoolInfo(url) {
+    return {}
+  }
+
+  function checkCryptoProviderVersion() {
+    return {code: 'UnsupportedOperation', message: ''}
   }
 
   return {
@@ -267,6 +279,8 @@ const CardanoWallet = (options) => {
     getValidStakepools,
     getWalletInfo,
     getMaxNonStakingAmount,
+    getPoolInfo,
+    checkCryptoProviderVersion,
   }
 }
 

@@ -30,19 +30,25 @@ const expectedStateChanges = {
   sendAddress: {fieldValue: ''},
   donationAmount: {fieldValue: '', coins: 0},
   sendResponse: '',
+  ticker2Id: null,
 }
 
-it('Load shelley wallet', async () => {
+it('Should properly load shelley wallet', async () => {
   ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
-
+  ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
   mockNet.mockBulkAddressSummaryEndpoint()
   mockNet.mockGetAccountInfo()
   mockNet.mockGetStakePools()
   mockNet.mockGetConversionRates()
+  mockNet.mockPoolMeta()
+  mockNet.mockGetAccountState()
+  mockNet.mockAccountDelegationHistory()
+  mockNet.mockAccountStakeRegistrationHistory()
+  mockNet.mockWithdrawalHistory()
 
-  expectedStateChanges.validStakepools = {
-    d4b1243dfc0bec57f146a90d85b478cdd3e0e646c43801c2bebd6792580a7db2: {
+  expectedStateChanges.validStakepools = [
+    {
       pool_id: 'd4b1243dfc0bec57f146a90d85b478cdd3e0e646c43801c2bebd6792580a7db2',
       owner: 'def7e265ec2c54e1cf00dae85ec407e823dd1374e6520cd59264df321513ffe5',
       name: 'IOHK Stakepool',
@@ -51,26 +57,26 @@ it('Load shelley wallet', async () => {
       homepage: 'https://staking.cardano.org',
       rewards: {
         fixed: 258251123,
-        limit: null,
         ratio: [2, 25],
+        limit: null,
       },
     },
-  }
-  expectedStateChanges.ticker2Id = {
-    IOHK1: 'd4b1243dfc0bec57f146a90d85b478cdd3e0e646c43801c2bebd6792580a7db2',
-  }
+  ]
+  expectedStateChanges.balance = 0
 
   await action.loadWallet(state, {
     cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
     walletSecretDef: await mnemonicToWalletSecretDef(
-      'blame matrix water coil diet seat nerve street movie turkey jump bundle'
+      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
     ),
   })
   assertPropertiesEqual(state, expectedStateChanges)
-  assert.equal(state.visibleAddresses.length, 40)
+  assert.equal(state.visibleAddresses.length, 20)
+
+  mockNet.clean()
 })
 
-it('Load byron wallet', async () => {
+it('Should properly load byron wallet', async () => {
   ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'byron'
 
   const mockNet = mockNetwork(ADALITE_CONFIG)
@@ -81,6 +87,7 @@ it('Load byron wallet', async () => {
 
   expectedStateChanges.validStakepools = null
   expectedStateChanges.ticker2Id = null
+  expectedStateChanges.balance = 1500000
 
   await action.loadWallet(state, {
     cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
@@ -88,6 +95,8 @@ it('Load byron wallet', async () => {
       'blame matrix water coil diet seat nerve street movie turkey jump bundle'
     ),
   })
+
+  mockNet.clean()
   assertPropertiesEqual(state, expectedStateChanges)
   assert.equal(state.visibleAddresses.length, 10)
 })

@@ -1,8 +1,15 @@
-function NamedError(name, message = '', showHelp = '') {
-  const e = new Error(message || name || showHelp)
+type OptionalParams = {
+  message?: string
+  causedBy?: Error
+}
+
+function NamedError(name: string, optionalParams: OptionalParams = {}) {
+  const e = new Error(optionalParams.message || name)
   e.name = name
-  e.message = message
-  ;(e as any).showHelp = showHelp
+  e.message = optionalParams.message || ''
+  e.stack = optionalParams.causedBy
+    ? `\nError caused by:\n${optionalParams.causedBy.stack}`
+    : e.stack
   return e
 }
 

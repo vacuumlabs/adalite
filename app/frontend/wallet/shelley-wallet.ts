@@ -6,22 +6,38 @@ import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
 import {
-  ShelleyGroupAddressProvider,
   stakeAccountPubkeyHex,
-  ShelleySingleAddressProvider,
   ShelleyStakingAccountProvider,
+  ShelleyBaseAddressProvider,
 } from './shelley/shelley-address-provider'
 
-import {computeRequiredTxFee} from './shelley/helpers/chainlib-wrapper'
-import {selectMinimalTxPlan, computeAccountTxPlan} from './shelley/build-transaction'
+import {
+  selectMinimalTxPlan,
+  computeRequiredTxFee,
+  isUtxoProfitable, // TODO: useless
+} from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {ByronAddressProvider} from './byron/byron-address-provider'
-import {isShelleyAddress, bechAddressToHex, isGroup} from './shelley/helpers/addresses'
+import {
+  isShelleyFormat,
+  bechAddressToHex,
+  isBase,
+  base58AddressToHex,
+} from './shelley/helpers/addresses'
 import request from './helpers/request'
 import {ADALITE_CONFIG} from '../config'
-
-const isUtxoProfitable = () => true
+import {
+  ShelleyTxAux,
+  ShelleyTxInputFromUtxo,
+  ShelleyTxOutput,
+  ShelleyTxCert,
+  ShelleyFee,
+  ShelleyTtl,
+  ShelleyWitdrawal,
+} from './shelley/shelley-transaction'
+import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
+import {captureException} from '@sentry/browser'
 
 const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
   const legacyExtManager = AddressManager({
@@ -36,51 +52,35 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     blockchainExplorer,
   })
 
-  const singleExtManager = AddressManager({
-    addressProvider: ShelleySingleAddressProvider(cryptoProvider, accountIndex, false),
-    gapLimit,
-    blockchainExplorer,
-  })
-
-  const singleIntManager = AddressManager({
-    addressProvider: ShelleySingleAddressProvider(cryptoProvider, accountIndex, true),
-    gapLimit,
-    blockchainExplorer,
-  })
-
-  const groupExtManager = AddressManager({
-    addressProvider: ShelleyGroupAddressProvider(cryptoProvider, accountIndex, false),
-    gapLimit,
-    blockchainExplorer,
-  })
-
-  const groupIntManager = AddressManager({
-    addressProvider: ShelleyGroupAddressProvider(cryptoProvider, accountIndex, true),
-    gapLimit,
-    blockchainExplorer,
-  })
-
   const accountAddrManager = AddressManager({
     addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
     gapLimit: 1,
     blockchainExplorer,
   })
 
+  const baseExtAddrManager = AddressManager({
+    addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, false),
+    gapLimit,
+    blockchainExplorer,
+  })
+
+  const baseIntAddrManager = AddressManager({
+    addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, true),
+    gapLimit,
+    blockchainExplorer,
+  })
+
   async function discoverAllAddresses() {
+    const baseInt = await baseIntAddrManager.discoverAddresses()
+    const baseExt = await baseExtAddrManager.discoverAddresses()
     const legacyInt = await legacyIntManager.discoverAddresses()
     const legacyExt = await legacyExtManager.discoverAddresses()
-    const groupInt = await groupIntManager.discoverAddresses()
-    const groupExt = await groupExtManager.discoverAddresses()
-
-    const singleInt = await singleIntManager.discoverAddresses()
-    const singleExt = await singleExtManager.discoverAddresses()
     const accountAddr = await accountAddrManager._deriveAddress(accountIndex)
 
     const isV1scheme = cryptoProvider.getDerivationScheme().type === 'v1'
     return {
-      legacy: isV1scheme ? [...legacyInt] : [...legacyInt, ...legacyExt],
-      group: [...groupInt, ...groupExt],
-      single: [...singleInt, ...singleExt],
+      legacy: isV1scheme ? [...legacyExt] : [...legacyInt, ...legacyExt],
+      base: [...baseInt, ...baseExt],
       account: accountAddr,
     }
   }
@@ -90,10 +90,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       {},
       legacyIntManager.getAddressToAbsPathMapping(),
       legacyExtManager.getAddressToAbsPathMapping(),
-      singleIntManager.getAddressToAbsPathMapping(),
-      singleExtManager.getAddressToAbsPathMapping(),
-      groupIntManager.getAddressToAbsPathMapping(),
-      groupExtManager.getAddressToAbsPathMapping(),
+      baseIntAddrManager.getAddressToAbsPathMapping(),
+      baseExtAddrManager.getAddressToAbsPathMapping(),
       accountAddrManager.getAddressToAbsPathMapping()
     )
     return (address) => mapping[address]
@@ -105,10 +103,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
       ...legacyExtManager.getAddressToAbsPathMapping(),
     }
     const mappingShelley = {
-      ...singleIntManager.getAddressToAbsPathMapping(),
-      ...singleExtManager.getAddressToAbsPathMapping(),
-      ...groupIntManager.getAddressToAbsPathMapping(),
-      ...groupExtManager.getAddressToAbsPathMapping(),
+      ...baseIntAddrManager.getAddressToAbsPathMapping(),
+      ...baseExtAddrManager.getAddressToAbsPathMapping(),
       ...accountAddrManager.getAddressToAbsPathMapping(),
     }
 
@@ -120,106 +116,91 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     return (address) => mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
   }
 
-  async function getVisibleAddressesWithMeta() {
-    const addresses = await groupExtManager.discoverAddressesWithMeta()
-    return addresses //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
-  }
-
-  async function getChangeAddress(rngSeed: number): Promise<string> {
-    /*
-    * We use visible addresses as change addresses to mainintain
-    * AdaLite original functionality which did not consider change addresses.
-    * This is an intermediate step between legacy mode and full Yoroi compatibility.
-    */
-    const candidates = await getVisibleAddressesWithMeta()
-
-    const randomSeedGenerator = PseudoRandom(rngSeed)
-    const choice = candidates[randomSeedGenerator.nextInt() % candidates.length]
-    return choice.address
-  }
-
   return {
     getAddressToAbsPathMapper,
     fixedPathMapper,
     discoverAllAddresses,
     // TODO(refactor)
-    groupExtManager,
-    singleExtManager,
+    baseExtAddrManager,
     accountAddrManager,
-    getChangeAddress,
-    getVisibleAddressesWithMeta,
+    legacyExtManager,
   }
 }
 
 const ShelleyBlockchainExplorer = (config) => {
-  // TODO: move to separate file
+  // TODO: move methods to blockchain-explorer file
   const be = BlockchainExplorer(config)
 
-  const shelleyToHex = (address) =>
-    isShelleyAddress(address) ? bechAddressToHex(address) : address
-
-  const shelleyAddressesToHex = (addresses: Array<string>): Array<string> =>
-    addresses.map(shelleyToHex)
-
   async function getAccountInfo(accountPubkeyHex) {
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/account/info`
-    const response = await request(
-      url,
-      'POST',
-      JSON.stringify({
-        account: accountPubkeyHex,
-      }),
-      {
-        'content-Type': 'application/json',
-      }
-    )
+    // TODO: not pubkey, address
+    const url = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/info/${accountPubkeyHex}`
+    const response = await request(url)
     return response
+  }
+
+  async function getRewardsBalance(accountPubKeyHex) {
+    const url = 'https://iohk-mainnet.yoroiwallet.com/api/getAccountState'
+    let response
+    let caughtServerError = false
+    const maxRetries = 5
+    for (let retries = 0; retries < maxRetries; retries++) {
+      response = await request(url, 'POST', JSON.stringify({addresses: [accountPubKeyHex]}), {
+        'Content-Type': 'application/json',
+      }).catch((e) => {
+        if (e.name === 'ServerError' && !caughtServerError) {
+          caughtServerError = true
+          captureException(e)
+        }
+      })
+      if (response) break
+    }
+    if (!response || !response[accountPubKeyHex] || !response[accountPubKeyHex].remainingAmount) {
+      return 0
+    }
+    return parseInt(response[accountPubKeyHex].remainingAmount, 10)
   }
 
   async function getValidStakepools() {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-    let response
-    try {
-      response = await fetch(url, {
-        method: 'GET',
-        body: null,
-        headers: {
-          'content-Type': 'application/json',
-        },
-      })
-      if (response.status >= 400) {
-        throw NamedError('NetworkError', 'Unable to fetch running stakepools.')
-      }
-    } catch (e) {
-      throw NamedError('NetworkError', e.message)
-    }
-    const poolArray = JSON.parse(await response.text())
-    // eslint-disable-next-line no-sequences
-    const validStakepools = poolArray.reduce((dict, el) => ((dict[el.pool_id] = {...el}), dict), {})
-    // eslint-disable-next-line no-sequences
-    const ticker2Id = poolArray.reduce((dict, el) => ((dict[el.ticker] = el.pool_id), dict), {})
-    return {validStakepools, ticker2Id}
+    const validStakepools = await request(url)
+
+    return {validStakepools}
+  }
+
+  function getBestSlot() {
+    return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
   }
 
   return {
-    getTxHistory: (addresses) => be.getTxHistory(shelleyAddressesToHex(addresses)),
+    getTxHistory: (addresses) => be.getTxHistory(addresses),
     fetchTxRaw: be.fetchTxRaw,
-    fetchUnspentTxOutputs: (addresses) =>
-      be.fetchUnspentTxOutputs(shelleyAddressesToHex(addresses)),
-    isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(shelleyAddressesToHex(addresses)),
+    fetchUnspentTxOutputs: (addresses) => be.fetchUnspentTxOutputs(addresses),
+    isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(addresses),
     submitTxRaw: be.submitTxRaw,
-    getBalance: (addresses) => be.getBalance(shelleyAddressesToHex(addresses)),
+    getBalance: (addresses) => be.getBalance(addresses),
     fetchTxInfo: be.fetchTxInfo,
-    filterUsedAddresses: (addresses) => be.filterUsedAddresses(shelleyAddressesToHex(addresses)),
+    filterUsedAddresses: (addresses) => be.filterUsedAddresses(addresses),
     getAccountInfo,
+    getRewardsBalance,
     getValidStakepools,
+    getPoolInfo: (url) => be.getPoolInfo(url),
+    getStakingHistory: be.getStakingHistory,
+    getBestSlot,
   }
 }
-const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvider}: any) => {
+const ShelleyWallet = ({
+  config,
+  randomInputSeed,
+  randomChangeSeed,
+  cryptoProvider,
+  isShelleyCompatible,
+}: any) => {
   const {
     getMaxDonationAmount: _getMaxDonationAmount,
     getMaxSendableAmount: _getMaxSendableAmount,
-  } = MaxAmountCalculator(computeRequiredTxFee(cryptoProvider.network.chainConfig))
+  } = MaxAmountCalculator(computeRequiredTxFee)
 
   let seeds = {
     randomInputSeed,
@@ -239,6 +220,10 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     blockchainExplorer,
   })
 
+  const addressToHex = (
+    address // TODO: move to addresses
+  ) => (isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address))
+
   function isHwWallet() {
     return cryptoProvider.isHwWallet()
   }
@@ -248,8 +233,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   function submitTx(signedTx): Promise<any> {
-    const {transaction, fragmentId} = signedTx
-    return blockchainExplorer.submitTxRaw(fragmentId, transaction)
+    const {txBody, txHash} = signedTx
+    return blockchainExplorer.submitTxRaw(txHash, txBody)
   }
 
   function getWalletSecretDef() {
@@ -259,18 +244,44 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     }
   }
 
-  function prepareTxAux(plan) {
-    return plan
+  async function calculateTtl() {
+    try {
+      const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
+      return bestSlot + cryptoProvider.network.ttl
+    } catch (e) {
+      const timePassed = Math.floor((Date.now() - cryptoProvider.network.eraStartDateTime) / 1000)
+      return cryptoProvider.network.eraStartSlot + timePassed + cryptoProvider.network.ttl
+    }
+  }
+
+  async function prepareTxAux(plan) {
+    const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
+    const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
+    const txCerts = plan.certs.map(({type, accountAddress, poolHash}) =>
+      ShelleyTxCert(type, accountAddress, poolHash)
+    )
+    const txFee = ShelleyFee(plan.fee)
+    const txTtl = ShelleyTtl(await calculateTtl())
+    const txWithdrawals = plan.withdrawals.map(({accountAddress, rewards}) => {
+      return ShelleyWitdrawal(accountAddress, rewards)
+    })
+    if (plan.change) {
+      const {address, coins, accountAddress} = plan.change
+      const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(address)
+      const stakingPath = myAddresses.getAddressToAbsPathMapper()(accountAddress)
+      txOutputs.push(ShelleyTxOutput(address, coins, true, absDerivationPath, stakingPath))
+    }
+    // TODO: there is just one witdrawal
+    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts, txWithdrawals[0])
   }
 
   async function signTxAux(txAux: any) {
     const signedTx = await cryptoProvider
-      .signTx(txAux, myAddresses.fixedPathMapper())
+      .signTx(txAux, [], myAddresses.fixedPathMapper())
       .catch((e) => {
         debugLog(e)
-        throw NamedError('TransactionRejectedWhileSigning', e.message)
+        throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
       })
-
     return signedTx
   }
 
@@ -286,7 +297,7 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
   }
 
   async function getMaxNonStakingAmount(address) {
-    const utxos = (await getUtxos()).filter(({address}) => !isGroup(address))
+    const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
     return _getMaxSendableAmount(utxos, address, false, 0, false)
   }
 
@@ -294,16 +305,18 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     address?: string
     donationAmount?: Lovelace
     coins?: Lovelace
-    pools?: any
+    poolHash?: string
+    stakingKeyRegistered?: boolean
     txType?: string
+    rewards: any
   }
 
-  const utxoTxPlanner = async (args: utxoArgs, accountAddress: string) => {
-    const {address, coins, donationAmount, pools, txType} = args
+  const utxoTxPlanner = async (args: utxoArgs, accountAddress) => {
+    const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType, rewards} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
-    const nonStakingUtxos = availableUtxos.filter(({address}) => !isGroup(address))
-    const groupAddressUtxos = availableUtxos.filter(({address}) => isGroup(address))
+    const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(addressToHex(address)))
+    const baseAddressUtxos = availableUtxos.filter(({address}) => isBase(addressToHex(address)))
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     // we shuffle non-staking utxos separately since we want them to be spend first
     const shuffledUtxos =
@@ -311,17 +324,18 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
         ? shuffleArray(nonStakingUtxos, randomGenerator)
         : [
           ...shuffleArray(nonStakingUtxos, randomGenerator),
-          ...shuffleArray(groupAddressUtxos, randomGenerator),
+          ...shuffleArray(baseAddressUtxos, randomGenerator),
         ]
     const plan = selectMinimalTxPlan(
-      cryptoProvider.network.chainConfig,
       shuffledUtxos,
-      changeAddress,
       address,
       coins,
       donationAmount,
-      pools,
-      accountAddress
+      changeAddress,
+      accountAddress,
+      poolHash,
+      !stakingKeyRegistered,
+      rewards
     )
     return plan
   }
@@ -334,37 +348,46 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     txType: string
   }
 
-  const accountTxPlanner = (args: accountArgs, accountAddress: string) => {
-    const {address, coins, accountBalance, counter} = args
-    const plan = computeAccountTxPlan(
-      cryptoProvider.network.chainConfig,
-      coins,
-      address,
-      accountAddress,
-      counter,
-      accountBalance
-    )
-    return plan
-  }
+  // const accountTxPlanner = (args: accountArgs, accountAddress: string) => {
+  //   const {address, coins, accountBalance, counter} = args
+  //   const plan = computeAccountTxPlan(
+  //     cryptoProvider.network.chainConfig,
+  //     coins,
+  //     address,
+  //     accountAddress,
+  //     counter,
+  //     accountBalance
+  //   )
+  //   return plan
+  // }
 
   async function getTxPlan(args: utxoArgs | accountArgs) {
+    // TODO: passing accountAddress to plan is useless, as well as this function
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const txPlanners = {
       sendAda: utxoTxPlanner,
       convert: utxoTxPlanner,
       delegate: utxoTxPlanner,
-      redeem: accountTxPlanner,
+      redeem: utxoTxPlanner,
     }
     return await txPlanners[args.txType](args, accountAddress)
   }
 
+  async function getPoolInfo(url) {
+    const poolInfo = await blockchainExplorer.getPoolInfo(url)
+    return poolInfo
+  }
+
   async function getWalletInfo() {
+    const {validStakepools} = await getValidStakepools()
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getAccountInfo()
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
-    // getDelegationHistory
+    const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
+    // getWithdrawalHistory
     return {
+      validStakepools,
       balance,
       shelleyBalances: {
         nonStakingBalance,
@@ -373,14 +396,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       },
       shelleyAccountInfo,
       transactionHistory,
+      stakingHistory,
       visibleAddresses,
     }
   }
 
   async function getBalance() {
-    const {legacy, group, single} = await myAddresses.discoverAllAddresses()
-    const nonStakingBalance = await blockchainExplorer.getBalance([...legacy, ...single])
-    const stakingBalance = await blockchainExplorer.getBalance(group)
+    const {legacy, base} = await myAddresses.discoverAllAddresses()
+    const nonStakingBalance = await blockchainExplorer.getBalance(legacy)
+    const stakingBalance = await blockchainExplorer.getBalance(base)
     return {
       stakingBalance,
       nonStakingBalance,
@@ -390,26 +414,33 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
 
   async function getHistory(): Promise<any> {
     // TODO: refactor to getTxHistory? or add delegation history or rewards history
-    const {legacy, group, single, account} = await myAddresses.discoverAllAddresses()
-    return blockchainExplorer.getTxHistory([...single, ...group, ...legacy, account])
+    const {legacy, base, account} = await myAddresses.discoverAllAddresses()
+    return blockchainExplorer.getTxHistory([...base, ...legacy, account])
+  }
+
+  async function getStakingHistory(
+    shelleyAccountInfo,
+    validStakepools
+  ): Promise<StakingHistoryObject[]> {
+    return await blockchainExplorer.getStakingHistory(
+      shelleyAccountInfo.accountPubkeyHex,
+      validStakepools
+    )
   }
 
   async function getAccountInfo() {
-    const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, 0)
+    const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
-    const delegationRatioSum = accountInfo.delegation.reduce(
-      (prev, current) => prev + current.ratio,
-      0
-    )
-    const delegation = accountInfo.delegation.map((pool) => {
-      return {
-        ...pool,
-        ratio: Math.round(pool.ratio * (100 / delegationRatioSum)),
-      }
-    })
+    const poolInfo = await getPoolInfo(accountInfo.delegation.url)
+    const rewardsAccountBalance = await blockchainExplorer.getRewardsBalance(accountPubkeyHex)
     return {
+      accountPubkeyHex,
       ...accountInfo,
-      delegation,
+      delegation: {
+        ...accountInfo.delegation,
+        ...poolInfo,
+      },
+      value: rewardsAccountBalance || 0,
     }
   }
 
@@ -421,36 +452,44 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  function getChangeAddress() {
-    return myAddresses.getChangeAddress(seeds.randomChangeSeed)
+  async function getChangeAddress() {
+    /*
+    * We use visible addresses as change addresses to mainintain
+    * AdaLite original functionality which did not consider change addresses.
+    * This is an intermediate step between legacy mode and full Yoroi compatibility.
+    */
+    const candidates = await getVisibleAddresses()
+
+    // const randomSeedGenerator = PseudoRandom(rngSeed)
+    const choice = candidates[0]
+    return choice.address
+    // return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
   async function getUtxos(): Promise<Array<any>> {
-    try {
-      const {legacy, group, single} = await myAddresses.discoverAllAddresses()
-      const groupUtxos = await blockchainExplorer.fetchUnspentTxOutputs(group)
-      const nonGroupUtxos = await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...single])
-      const groupUtxoAddresses = groupUtxos
-        .map(({address}) => isGroup(address) && address)
-        .filter((a) => !!a)
-      const uniqueNonGroupUtxos = nonGroupUtxos
-        .map((u) => !groupUtxoAddresses.includes(u.address) && u)
-        .filter((u) => !!u)
-      return [...uniqueNonGroupUtxos, ...groupUtxos]
-    } catch (e) {
-      throw NamedError('NetworkError')
-    }
+    const {legacy, base} = await myAddresses.discoverAllAddresses()
+    const baseUtxos = await blockchainExplorer.fetchUnspentTxOutputs(base)
+    const nonStakingUtxos = await blockchainExplorer.fetchUnspentTxOutputs(legacy)
+    return [...nonStakingUtxos, ...baseUtxos]
   }
 
   async function getVisibleAddresses() {
-    const single = await myAddresses.singleExtManager.discoverAddressesWithMeta()
-    const group = await myAddresses.groupExtManager.discoverAddressesWithMeta()
-    return [...group, ...single]
-    //filterUnusedEndAddresses(addresses, config.ADALITE_DEFAULT_ADDRESS_COUNT)
+    const addresses = isShelleyCompatible
+      ? await myAddresses.baseExtAddrManager.discoverAddressesWithMeta()
+      : await myAddresses.legacyExtManager.discoverAddressesWithMeta()
+    return addresses
   }
 
-  function verifyAddress(addr: string) {
-    throw NamedError('UnsupportedOperationError', 'unsupported operation: verifyAddress')
+  async function verifyAddress(addr: string) {
+    if (!('displayAddressForPath' in cryptoProvider)) {
+      throw NamedError('UnsupportedOperationError', {
+        message: 'unsupported operation: verifyAddress',
+      })
+    }
+    const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(addr)
+    const stakingAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
+    const stakingPath = myAddresses.getAddressToAbsPathMapper()(stakingAddress)
+    return await cryptoProvider.displayAddressForPath(absDerivationPath, stakingPath)
   }
 
   function generateNewSeeds() {
@@ -458,6 +497,15 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
       randomInputSeed: randomInputSeed || Math.floor(Math.random() * MAX_INT32),
       randomChangeSeed: randomChangeSeed || Math.floor(Math.random() * MAX_INT32),
     }
+  }
+
+  function checkCryptoProviderVersion() {
+    try {
+      cryptoProvider.checkVersion(true)
+    } catch (e) {
+      return {code: e.name, message: e.message}
+    }
+    return null
   }
 
   return {
@@ -481,6 +529,8 @@ const ShelleyWallet = ({config, randomInputSeed, randomChangeSeed, cryptoProvide
     getAccountInfo,
     getValidStakepools,
     getWalletInfo,
+    getPoolInfo,
+    checkCryptoProviderVersion,
   }
 }
 

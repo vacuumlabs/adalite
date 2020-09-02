@@ -69,7 +69,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
           </Alert>
         )}
         <label className="authentication-label" htmlFor="mnemonic-submitted">
-          Enter the 12 or 15-word wallet mnemonic or 27-word Daedalus-type paper wallet mnemonic
+          Enter the 12 or 15-word wallet mnemonic seed phrase
         </label>
         <input
           type="text"

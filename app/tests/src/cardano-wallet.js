@@ -3,7 +3,7 @@ import cbor from 'borc'
 
 import {CardanoWallet} from '../../frontend/wallet/cardano-wallet'
 import CryptoProviderFactory from '../../frontend/wallet/byron/crypto-provider-factory'
-import {txFeeFunction} from '../../frontend/wallet/byron-tx-planner'
+import {txFeeFunction} from '../../frontend/wallet/byron/byron-tx-planner'
 
 import mockNetwork from './common/mock'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
@@ -186,7 +186,7 @@ describe('successful transaction fee computation', () => {
 
     assert.equal(
       (await wallets.used.getTxPlan({address: myAddress, coins: 47, donationAmount: 0})).fee,
-      179288
+      182013
     )
     mockNet.clean()
   })
@@ -197,7 +197,7 @@ describe('successful transaction fee computation', () => {
 
     assert.equal(
       (await wallets.used.getTxPlan({address: shortAddress, coins: 47, donationAmount: 0})).fee,
-      177838
+      180563
     )
     mockNet.clean()
   })
@@ -211,7 +211,7 @@ describe('max sendable amount computation', () => {
 
     const maxAmounts = await wallets.smallUtxos.getMaxSendableAmount(myAddress, false)
 
-    assert.equal(maxAmounts.sendAmount, 1324447)
+    assert.equal(maxAmounts.sendAmount, 1321723)
     mockNet.clean()
   })
 })
@@ -226,7 +226,7 @@ describe('transaction serialization', () => {
     // transaction serialization before providing witnesses
     const txAuxSerialized = cbor.encode(txAux).toString('hex')
     const expectedtxAuxSerialized =
-      '839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cf9a5257f805a1d378c87b0bfb09232c10d9098bc56fd21d9a6a4072aa101581e581c140539c64edded60a7f2c4692c460a154cbdd06088333fd7f75ea7e7001a0ff80ab91a002a8c6cffa0'
+      '839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cf9a5257f805a1d378c87b0bfb09232c10d9098bc56fd21d9a6a4072aa101581e581c140539c64edded60a7f2c4692c460a154cbdd06088333fd7f75ea7e7001a0ff80ab91a002a81c7ffa0'
 
     assert.equal(txAuxSerialized, expectedtxAuxSerialized)
     mockNet.clean()
@@ -255,7 +255,7 @@ describe('transaction serialization', () => {
     const plan = await wallets.used.getTxPlan({address: myAddress, coins: 47, donationAmount: 0})
     const txAux = await wallets.used.prepareTxAux(plan)
 
-    const expectedTxHash = '5e3c57744fb9b134589cb006db3d6536cd6471a2bde542149326dd92859f0a93'
+    const expectedTxHash = 'fbc75523d969d65caf94e9ab4e689e220ee3d7380319db75cef90273f3ad68dc'
 
     assert.equal(txAux.getId(), expectedTxHash)
     mockNet.clean()
@@ -275,7 +275,7 @@ describe('transaction serialization', () => {
       .then(wallet.signTxAux)
 
     const expectedTxBody =
-      '82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cf9a5257f805a1d378c87b0bfb09232c10d9098bc56fd21d9a6a4072aa101581e581c140539c64edded60a7f2c4692c460a154cbdd06088333fd7f75ea7e7001a0ff80ab91a002a8c6cffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e5840337f577d102af20120ade17d54821b1e40a218ddf9ca29dd4fd46f7394b0c7d9abc6c4d9ac46d592c83dea1d31465665614b7198c4ceef00632e6b48e13490088200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840982ffc1339a390bbd26948ab64fd6510f557e9c7cb04e665dd168797822e156335affdce50e08831b6532304450e4e490d805b9ed184b7f6ce64107b0b16c102'
+      '82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cf9a5257f805a1d378c87b0bfb09232c10d9098bc56fd21d9a6a4072aa101581e581c140539c64edded60a7f2c4692c460a154cbdd06088333fd7f75ea7e7001a0ff80ab91a002a81c7ffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e584020278d74d3650abba727b78c314f7d0565778fc7a80f72918c909ddc03553c2f04b768673b9c3132b172aa01ec9c666598d10f2ac968a58c92ab9ce7fb3bd50d8200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840174f2976ee75a1b2129c4330f022863e5a4572247f18e2d4437f5b2c711506c23732d64f14ba44ba980364430ad1eca7d3b222828db2048d8e67c6224958d102'
 
     assert.equal(tx.txBody, expectedTxBody)
     mockNet.clean()
@@ -298,7 +298,7 @@ describe('test transaction submission', () => {
     const result = await wallet.submitTx(tx)
 
     assert.deepEqual(result, {
-      txHash: '5e3c57744fb9b134589cb006db3d6536cd6471a2bde542149326dd92859f0a93',
+      txHash: 'fbc75523d969d65caf94e9ab4e689e220ee3d7380319db75cef90273f3ad68dc',
     })
     mockNet.clean()
   })
