@@ -165,6 +165,7 @@ const ShelleyBlockchainExplorer = (config) => {
     getPoolInfo: (url) => be.getPoolInfo(url),
     getStakingHistory: be.getStakingHistory,
     getBestSlot,
+    getRewardDetails: be.getRewardDetails,
   }
 }
 const ShelleyWallet = ({
@@ -358,7 +359,7 @@ const ShelleyWallet = ({
   async function getWalletInfo() {
     const {validStakepools} = await getValidStakepools()
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
-    const shelleyAccountInfo = await getAccountInfo()
+    const shelleyAccountInfo = await getAccountInfo(validStakepools)
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
@@ -405,10 +406,18 @@ const ShelleyWallet = ({
     )
   }
 
-  async function getAccountInfo() {
+  async function getAccountInfo(validStakepools) {
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
-    const accountInfo = await blockchainExplorer.getAccountInfo(accountPubkeyHex)
+    const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getAccountInfo(
+      accountPubkeyHex
+    )
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
+    const rewardDetails = await blockchainExplorer.getRewardDetails(
+      nextRewardDetails,
+      accountInfo.delegation.poolHash,
+      validStakepools
+    )
+
     return {
       accountPubkeyHex,
       ...accountInfo,
@@ -416,6 +425,7 @@ const ShelleyWallet = ({
         ...accountInfo.delegation,
         ...poolInfo,
       },
+      rewardDetails,
       value: accountInfo.rewards || 0,
     }
   }

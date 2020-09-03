@@ -136,6 +136,10 @@ p.hey {
   text-align: center;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 /* COMMON */
 .epoch-date-time {
   color: rgba(96, 106, 113, 0.64);
@@ -1367,8 +1371,16 @@ li.main-tab input + label.selected:after {
   font-weight: bold;
 }
 
+.card-title.margin-top {
+  margin-top: 24px;
+}
+
 .card-title.no-margin {
   margin-bottom: unset;
+}
+
+.card-title.small-margin {
+  margin-bottom: 12px;
 }
 
 /* AUTHENTICATION */
@@ -2396,10 +2408,6 @@ li.main-tab input + label.selected:after {
 
 .staking-history-item .wrapper {
   margin-left: 12px;
-}
-
-.staking-history-item .bold {
-  font-weight: bold;
 }
 
 /* COPY */

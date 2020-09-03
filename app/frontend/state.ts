@@ -120,9 +120,17 @@ export interface State {
   delegationValidationError?: any
   gettingPoolInfo: boolean
   shelleyAccountInfo?: {
+    accountPubkeyHex: string
+    currentEpoch: number
     delegation: any
-    value: number
     hasStakingKey: boolean
+    rewards: number
+    rewardDetails: {
+      upcoming: any
+      nearest: any
+      currentDelegation: any
+    }
+    value: number
   }
   txConfirmType: string
   txSuccessTab: string
@@ -206,9 +214,17 @@ const initialState: State = {
     rewardsAccountBalance: 0,
   },
   shelleyAccountInfo: {
+    accountPubkeyHex: '',
+    currentEpoch: 0,
     delegation: {},
-    value: 0,
     hasStakingKey: false,
+    rewards: 0,
+    rewardDetails: {
+      upcoming: null,
+      nearest: null,
+      currentDelegation: null,
+    },
+    value: 0,
   },
   txConfirmType: '',
   txSuccessTab: '',

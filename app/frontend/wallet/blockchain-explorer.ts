@@ -309,6 +309,34 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     ].sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime()) // sort by time, newest first
   }
 
+  async function getRewardDetails(nextRewardDetails, currentDelegationPoolHash, validStakepools) {
+    const nextRewardDetailsWithMetaData: any[] = await Promise.all(
+      nextRewardDetails.map(async (nextRewardDetail) => ({
+        ...nextRewardDetail,
+        pool: nextRewardDetail.poolHash
+          ? validStakepools[nextRewardDetail.poolHash]
+            ? await getPoolInfo(validStakepools[nextRewardDetail.poolHash].url).catch(
+              () => UNKNOWN_POOL_NAME
+            )
+            : {name: UNKNOWN_POOL_NAME}
+          : {},
+      }))
+    )
+    const nearestRewardDetails = nextRewardDetailsWithMetaData
+      .filter((rewardDetails) => rewardDetails.poolHash != null)
+      .sort((a, b) => a.forEpoch - b.forEpoch)[0]
+    const currentDelegationRewardDetails = nextRewardDetailsWithMetaData
+      .filter((rewardDetails) => rewardDetails.poolHash != null)
+      .sort((a, b) => a.forEpoch - b.forEpoch)
+      .find((rewardDetails) => rewardDetails.poolHash === currentDelegationPoolHash)
+
+    return {
+      upcoming: nextRewardDetailsWithMetaData,
+      nearest: nearestRewardDetails,
+      currentDelegation: currentDelegationRewardDetails,
+    }
+  }
+
   return {
     getTxHistory,
     fetchTxRaw,
@@ -320,6 +348,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     filterUsedAddresses,
     getPoolInfo,
     getStakingHistory,
+    getRewardDetails,
   }
 }
 
