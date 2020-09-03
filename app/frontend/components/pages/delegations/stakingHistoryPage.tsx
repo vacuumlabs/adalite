@@ -2,10 +2,10 @@ import {h, Component} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {CopyPoolId} from './common'
-import toLocalDate from '../../../helpers/toLocalDate'
 import {Lovelace} from '../../../state'
 import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
+import {EpochDateTime} from '../common'
 
 export enum StakingHistoryItemType {
   StakeDelegation,
@@ -31,19 +31,13 @@ export interface StakeDelegation extends StakingHistoryObject {
   txid: string
 }
 
-const EpochDateTime = ({epoch, dateTime}: {epoch: number; dateTime: Date}) => {
-  return (
-    <div className="grey margin-bottom">
-      Epoch {epoch}, {toLocalDate(dateTime)}
-    </div>
-  )
-}
-
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
   return (
     <li className="staking-history-item">
       <div className="label">Stake delegation</div>
-      <EpochDateTime epoch={stakeDelegation.epoch} dateTime={stakeDelegation.dateTime} />
+      <div className="margin-bottom">
+        <EpochDateTime epoch={stakeDelegation.epoch} dateTime={stakeDelegation.dateTime} />
+      </div>
       <div>
         New pool: <span className="bold">{stakeDelegation.newStakePool.name}</span>
         <CopyPoolId value={stakeDelegation.newStakePool.id} />
@@ -75,7 +69,9 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
     <li className="staking-history-item">
       <div>
         <div className="label">Staking reward</div>
-        <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
+        <div className="margin-bottom">
+          <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
+        </div>
       </div>
       <div>
         <div>Reward: {printAda(stakingReward.reward)}</div>
@@ -99,7 +95,9 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
       <div className="space-between">
         <div>
           <div className="label">Reward withdrawal</div>
-          <EpochDateTime epoch={rewardWithdrawal.epoch} dateTime={rewardWithdrawal.dateTime} />
+          <div className="margin-bottom">
+            <EpochDateTime epoch={rewardWithdrawal.epoch} dateTime={rewardWithdrawal.dateTime} />
+          </div>
         </div>
         <div>
           <div className="transaction-amount credit">{printAda(rewardWithdrawal.credit)}</div>
@@ -128,10 +126,12 @@ const StakingKeyRegistrationItem = ({
   return (
     <li className="staking-history-item">
       <div className="label">Staking key {stakingKeyRegistration.action}</div>
-      <EpochDateTime
-        epoch={stakingKeyRegistration.epoch}
-        dateTime={stakingKeyRegistration.dateTime}
-      />
+      <div className="margin-bottom">
+        <EpochDateTime
+          epoch={stakingKeyRegistration.epoch}
+          dateTime={stakingKeyRegistration.dateTime}
+        />
+      </div>
       <div>
         Staking key: {formatStakingKey(stakingKeyRegistration.stakingKey, 8)}
         <CopyOnClick

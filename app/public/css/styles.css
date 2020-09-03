@@ -122,6 +122,25 @@ p.hey {
   justify-content: space-between;
 }
 
+.center-horizontally {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.center-vertically {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.center-text {
+  text-align: center;
+}
+
+/* COMMON */
+.epoch-date-time {
+  color: rgba(96, 106, 113, 0.64);
+}
+
 /* SELECTABILITY */
 
 .one-click-select {
@@ -2381,10 +2400,6 @@ li.main-tab input + label.selected:after {
 
 .staking-history-item .bold {
   font-weight: bold;
-}
-
-.staking-history-item .grey {
-  color: rgba(96, 106, 113, 0.64);
 }
 
 /* COPY */
