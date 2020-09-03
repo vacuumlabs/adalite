@@ -1,3 +1,5 @@
+import moment = require('moment')
+
 export const HARDENED_THRESHOLD = 0x80000000
 export const MAX_INT32 = 2147483647
 export const MAX_ADDRESS_INFO_AGE = 10000
@@ -115,3 +117,6 @@ export const RECOMMENDED_LEDGER_APP_VERSION = {
 }
 
 export const UNKNOWN_POOL_NAME = '<Unknown pool>'
+export const EPOCH_LENGTH = 432000
+export const EPOCHS_TO_REWARD_DISTRIBUTION = 4
+export const EPOCH_212_END = moment.utc('2020-08-23 21:44:00')
