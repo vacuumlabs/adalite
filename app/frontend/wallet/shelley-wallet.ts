@@ -1,4 +1,3 @@
-import debugLog from '../helpers/debugLog'
 import AddressManager from './address-manager'
 import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
@@ -256,7 +255,6 @@ const ShelleyWallet = ({
     const signedTx = await cryptoProvider
       .signTx(txAux, [], myAddresses.fixedPathMapper())
       .catch((e) => {
-        debugLog(e)
         throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
       })
     return signedTx
