@@ -550,7 +550,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const plan = await wallet.getTxPlan(args)
     if (plan.error) {
       stopLoadingAction(state, {})
-      resetAmountFields(state)
       resetDelegationWithoutHash(state)
       setState({
         calculatingDelegationFee: false,
