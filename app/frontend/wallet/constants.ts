@@ -35,6 +35,7 @@ export const NETWORKS = {
       eraStartDateTime: Date.parse('29 Jul 2020 21:44:51 UTC'),
       ttl: 3600,
       epochsToRewardDistribution: 4,
+      minimalOutput: 1000000,
     },
     HASKELL_TESTNET: {
       name: 'htn',

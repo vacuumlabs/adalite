@@ -151,6 +151,7 @@ interface TxPlan {
 
 interface NoTxPlan {
   estimatedFee: Lovelace
+  error: {code: string}
 }
 
 const checkOutputs = (outputs, fee) => {
@@ -305,5 +306,8 @@ export function selectMinimalTxPlan(
     if (plan) return plan
   }
 
-  return {estimatedFee: computeRequiredTxFee(inputs, outputs, certs, withdrawals)}
+  return {
+    estimatedFee: computeRequiredTxFee(inputs, outputs, certs, withdrawals),
+    error: {code: 'OutputTooSmall'},
+  }
 }

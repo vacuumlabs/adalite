@@ -22,10 +22,8 @@ const translations = {
 
   InvalidStakepoolIdentifier: () => 'Stakepool id is invalid.',
   RedundantStakePool: () => 'This stake pool is already chosen.',
-  DelegationAccountBalanceError: () => 'Not enough funds to pay the delegation fee.',
+  DelegationBalanceError: () => 'Not enough funds to pay the delegation fee.',
   DelegationFeeError: () => 'Unsuccessful delegation fee calculation.',
-  NonStakingConversionError: () =>
-    'Insufficient balance: Not enough funds to pay the conversion fee.',
   RewardsBalanceTooLow: () =>
     'Rewards account balance lower than the fee required to pay for the transacion.',
 
@@ -67,6 +65,7 @@ const translations = {
 
   CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
   OutputTooSmall: () => 'Output amount too low. Minimum output amount is 1 ADA.',
+  SendAmountTooLow: () => 'Amount too low. Minimum amount to send is 1 ADA',
   SendAmountBalanceTooLow: () => 'Minimum output amount is 1 ADA.',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
   NetworkError: () =>

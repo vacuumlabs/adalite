@@ -4,6 +4,7 @@ import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
 import {Lovelace, Ada} from '../state'
+import {NETWORKS} from '../wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace
@@ -21,6 +22,7 @@ const sendAddressValidator = (fieldValue) =>
 const sendAmountValidator = (fieldValue, coins, balance) => {
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
+  const minAmount = NETWORKS.SHELLEY.MAINNET.minimalOutput
 
   if (fieldValue === '') {
     return null
@@ -49,15 +51,8 @@ const sendAmountValidator = (fieldValue, coins, balance) => {
   if (balance < 1000000) {
     return {code: 'SendAmountBalanceTooLow'}
   }
-  return null
-}
-
-const redemptionAmountValidator = (balance, rewards, fee) => {
-  if (fee >= balance) {
-    return {code: 'SendAmountCantSendAnyFunds', message: ''}
-  }
-  if (fee >= rewards) {
-    return {code: 'RewardsBalanceTooLow', message: ''}
+  if (coins < minAmount) {
+    return {code: 'SendAmountTooLow'}
   }
   return null
 }
@@ -73,15 +68,11 @@ const donationAmountValidator = (fieldValue, coins, balance) => {
   return null
 }
 
-const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
+const txPlanValidator = (sendAmount, balance, txPlan, donationAmount = 0) => {
+  const transactionFee = txPlan.fee || txPlan.estimatedFee
+
   if (transactionFee >= balance) {
     return {code: 'SendAmountCantSendAnyFunds'}
-  }
-  if (donationAmount > 0 && sendAmount + transactionFee + donationAmount > balance) {
-    return {
-      code: 'DonationInsufficientBalance',
-      params: {balance},
-    }
   }
   if (sendAmount + transactionFee > balance) {
     return {
@@ -89,17 +80,36 @@ const feeValidator = (sendAmount, transactionFee, donationAmount, balance) => {
       params: {balance},
     }
   }
-  return null
-}
-
-const delegationFeeValidator = (fee, deposit, balance) => {
-  if (fee + deposit > balance) {
+  if (donationAmount > 0 && sendAmount + transactionFee + donationAmount > balance) {
     return {
-      code: 'DelegationAccountBalanceError',
+      code: 'DonationInsufficientBalance',
       params: {balance},
     }
   }
+  if (txPlan.error) return txPlan.error
   return null
+}
+
+const delegationPlanValidator = (balance, txPlan) => {
+  const transactionFee = txPlan.fee || txPlan.estimatedFee
+  const deposit = txPlan.deposit || 0
+  if (transactionFee + deposit > balance) {
+    return {
+      code: 'DelegationBalanceError',
+      params: {balance},
+    }
+  }
+  const txPlanError = txPlanValidator(0, balance, txPlan)
+  return txPlanError || null
+}
+
+const withdrawalPlanValidator = (sendAmount, balance, txPlan) => {
+  const transactionFee = txPlan.fee || txPlan.estimatedFee
+  if (transactionFee >= sendAmount) {
+    return {code: 'RewardsBalanceTooLow', message: ''}
+  }
+  const txPlanError = txPlanValidator(sendAmount, balance, txPlan)
+  return txPlanError || null
 }
 
 const mnemonicValidator = (mnemonic) => {
@@ -127,10 +137,10 @@ export {
   parseToLovelace as parseCoins,
   sendAddressValidator,
   sendAmountValidator,
-  feeValidator,
-  delegationFeeValidator,
+  txPlanValidator,
+  delegationPlanValidator,
+  withdrawalPlanValidator,
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
-  redemptionAmountValidator,
 }

@@ -5,12 +5,12 @@ import {
   parseCoins,
   sendAddressValidator,
   sendAmountValidator,
-  feeValidator,
+  txPlanValidator,
+  delegationPlanValidator,
+  withdrawalPlanValidator,
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
-  delegationFeeValidator,
-  redemptionAmountValidator,
 } from './helpers/validators'
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
@@ -547,15 +547,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const prepareTxPlan = async (args) => {
     const state = getState()
-    let plan
-    try {
-      plan = await wallet.getTxPlan(args)
-      // TODO: refactor getTxPlan to explicitly acknowledge
-      // about failure to estimate the tx fee and its reason
-      if (!plan.fee) {
-        throw NamedError('OutputTooSmall')
-      }
-    } catch (e) {
+    const plan = await wallet.getTxPlan(args)
+    if (plan.error) {
       stopLoadingAction(state, {})
       resetAmountFields(state)
       resetDelegationWithoutHash(state)
@@ -563,7 +556,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         calculatingDelegationFee: false,
         calculatingFee: false,
       })
-      throw e
     }
     return plan
   }
@@ -580,13 +572,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const coins = state.sendAmount.coins as Lovelace
     const donationAmount = state.donationAmount.coins as Lovelace
     const address = state.sendAddress.fieldValue
-    let plan
-    try {
-      plan = await prepareTxPlan({address, coins, donationAmount, txType: 'sendAda'})
-    } catch (e) {
-      setErrorState('sendAmountValidationError', {code: e.name})
-      return
-    }
+    const plan = await prepareTxPlan({address, coins, donationAmount, txType: 'sendAda'})
     const newState = getState() // if the values changed meanwhile
     if (
       newState.sendAmount.fieldValue !== state.sendAmount.fieldValue ||
@@ -595,20 +581,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     ) {
       return
     }
-    setState({
-      transactionFee: plan.fee || plan.estimatedFee,
-    })
-    const validationError = feeValidator(
-      coins,
-      plan.fee != null ? plan.fee : plan.estimatedFee,
-      donationAmount,
-      state.balance
-    )
+    const validationError = txPlanValidator(coins, state.balance, plan, donationAmount)
     setErrorState('sendAmountValidationError', validationError)
-    setTransactionSummary('send', plan, coins, donationAmount)
+    if (!validationError) {
+      setTransactionSummary('send', plan, coins, donationAmount)
+    }
     setState({
       calculatingFee: false,
       txSuccessTab: '',
+      transactionFee: plan.fee || 0,
     })
   }
 
@@ -807,24 +788,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const address = await wallet.getChangeAddress()
     const maxAmount = await wallet.getMaxNonStakingAmount(address)
     const coins = maxAmount && maxAmount.sendAmount
-    const balance = state.balance
-    let plan
-    try {
-      plan = await prepareTxPlan({
-        address,
-        coins,
-        donationAmount: null,
-        txType: 'convert',
-      })
-    } catch (e) {
-      setErrorState('transactionSubmissionError', e, {
-        shouldShowTransactionErrorModal: true,
-      })
-      return
-    }
-    if (balance < (plan.fee || plan.estimatedFee)) {
-      setErrorState('transactionSubmissionError', NamedError('NonStakingConversionError'))
-      setState({
+    const plan = await prepareTxPlan({address, coins, txType: 'convert'})
+    const validationError = txPlanValidator(coins, state.balance, plan)
+    if (validationError) {
+      setErrorState('transactionSubmissionError', NamedError(validationError.code), {
         shouldShowTransactionErrorModal: true,
       })
       stopLoadingAction(state, {})
@@ -841,30 +808,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const redeemRewards = async (state) => {
     loadingAction(state, 'Preparing transaction...')
     const rewards = state.shelleyBalances.rewardsAccountBalance
-    const balance = state.balance
-    let plan
-    try {
-      plan = await prepareTxPlan({
-        rewards,
-        txType: 'redeem',
-      })
-    } catch (e) {
-      setErrorState('transactionSubmissionError', e, {
-        shouldShowTransactionErrorModal: true,
-      })
-      return
-    }
-    // const cryptoProviderVersionError = wallet.checkCryptoProviderVersion()
+    const plan = await prepareTxPlan({rewards, txType: 'redeem'})
     const redemptionValidationError =
-      redemptionAmountValidator(balance, rewards, plan.fee) || wallet.checkCryptoProviderVersion()
+      withdrawalPlanValidator(rewards, state.balance, plan) || wallet.checkCryptoProviderVersion()
     if (redemptionValidationError) {
       setErrorState(
         'transactionSubmissionError',
-        NamedError(redemptionValidationError.code, {message: redemptionValidationError.message})
+        NamedError(redemptionValidationError.code, {message: redemptionValidationError.message}),
+        {shouldShowTransactionErrorModal: true}
       )
-      setState({
-        shouldShowTransactionErrorModal: true,
-      })
       stopLoadingAction(state, {})
       return
     }
@@ -935,57 +887,34 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const calculateDelegationFee = async (revoke?: boolean) => {
-    const newState = getState()
-    setPoolInfo(newState)
-    const poolHash = newState.shelleyDelegation.selectedPool.poolHash
-    const stakingKeyRegistered = newState.shelleyAccountInfo.hasStakingKey
-    const balance = newState.balance
-    let plan
-    try {
-      plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: 'delegate'})
-    } catch (e) {
-      if (!revoke) {
-        setErrorState('delegationValidationError', {code: e.name})
-      } else {
-        setErrorState('transactionSubmissionError', e, {
-          shouldShowTransactionErrorModal: true,
-        })
-      }
-      return
-    }
+  const calculateDelegationFee = async () => {
     const state = getState()
-    if (hasPoolIdentifiersChanged(state)) {
+    setPoolInfo(state)
+    const poolHash = state.shelleyDelegation.selectedPool.poolHash
+    const stakingKeyRegistered = state.shelleyAccountInfo.hasStakingKey
+    const plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: 'delegate'})
+    const newState = getState()
+    if (hasPoolIdentifiersChanged(newState)) {
       return
     }
-    const validationError = delegationFeeValidator(
-      plan.fee || plan.estimatedFee,
-      plan.deposit,
-      balance
-    )
-    setErrorState('delegationValidationError', validationError)
-    if (!validationError) {
-      const delegationFee = plan && !!plan.fee ? plan.fee : plan.estimatedFee
-      setState({
-        shelleyDelegation: {
-          ...state.shelleyDelegation,
-          delegationFee: delegationFee ? delegationFee + plan.deposit : 0,
-          // TODO: we probably want to show deposit in separate field
-        },
+    const validationError = delegationPlanValidator(newState.balance, plan)
+    if (validationError) {
+      setErrorState('delegationValidationError', validationError, {
+        calculatingDelegationFee: false,
       })
-      setTransactionSummary('stake', plan)
+      return
     }
     setState({
-      calculatingDelegationFee: false,
-      txSuccessTab: state.txSuccessTab === 'send' ? state.txSuccessTab : '',
+      shelleyDelegation: {
+        ...newState.shelleyDelegation,
+        delegationFee: plan.fee + (plan.deposit || 0),
+      },
     })
-  }
-
-  const revokeDelegation = async (state) => {
-    loadingAction(state, 'Preparing transaction...')
-    await calculateDelegationFee(true)
-    stopLoadingAction(state, {})
-    await confirmTransaction(getState(), 'revoke')
+    setTransactionSummary('stake', plan)
+    setState({
+      calculatingDelegationFee: false,
+      txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
+    })
   }
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
@@ -1290,7 +1219,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     closeStakingBanner,
     updateStakePoolIdentifier,
     toggleDisplayStakingPage,
-    revokeDelegation,
     selectAdaliteStakepool,
     convertNonStakingUtxos,
     loadErrorBannerContent,
