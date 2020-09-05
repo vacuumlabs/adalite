@@ -390,10 +390,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
         const retriedState = getState()
         txAux = await wallet.prepareTxAux(retriedState.sendTransactionSummary.plan)
-        stopLoadingAction(state, {})
       }
     } catch (e) {
       throw NamedError('TransactionCorrupted', {causedBy: e})
+    } finally {
+      stopLoadingAction(state, {})
     }
 
     setState({
