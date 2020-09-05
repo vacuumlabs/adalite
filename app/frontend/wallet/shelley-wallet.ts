@@ -317,28 +317,7 @@ const ShelleyWallet = ({
     return plan
   }
 
-  type accountArgs = {
-    address: string
-    coins: Lovelace
-    accountBalance: Lovelace
-    counter: number
-    txType: string
-  }
-
-  // const accountTxPlanner = (args: accountArgs, accountAddress: string) => {
-  //   const {address, coins, accountBalance, counter} = args
-  //   const plan = computeAccountTxPlan(
-  //     cryptoProvider.network.chainConfig,
-  //     coins,
-  //     address,
-  //     accountAddress,
-  //     counter,
-  //     accountBalance
-  //   )
-  //   return plan
-  // }
-
-  async function getTxPlan(args: utxoArgs | accountArgs) {
+  async function getTxPlan(args: utxoArgs) {
     // TODO: passing accountAddress to plan is useless, as well as this function
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const txPlanners = {
@@ -362,7 +341,6 @@ const ShelleyWallet = ({
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
-    // getWithdrawalHistory
     return {
       validStakepools,
       balance,

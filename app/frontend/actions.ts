@@ -975,27 +975,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const selectAdaliteStakepool = () => {
-    // const state = getState()
-    // const poolInfo =
-    //   state.validStakepools && state.validStakepools[ADALITE_CONFIG.ADALITE_STAKE_POOL_ID]
-    // setState({
-    //   shelleyDelegation: {
-    //     ...state.shelleyDelegation,
-    //     selectedPool: {
-    //       validationError: !poolInfo,
-    //       ...poolInfo,
-    //     },
-    //   },
-    // })
-    // validateDelegationAndCalculateFee()
     updateStakePoolIdentifier(getState(), null, ADALITE_CONFIG.ADALITE_STAKE_POOL_ID)
   }
-
-  // const resetDelegationToAdalite = () => {
-  //   if (ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley') {
-  //     selectAdaliteStakepool()
-  //   }
-  // }
 
   /* SUBMIT TX */
 
