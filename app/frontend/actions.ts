@@ -743,7 +743,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       sendResponse: '',
       sendAmount: {
         fieldValue: printAda(maxAmounts.sendAmount),
-        coins: maxAmounts.sendAmount || 0,
+        coins: maxAmounts.sendAmount || null,
       },
       maxDonationAmount: maxAmounts.donationAmount || state.donationAmount.coins,
     })
@@ -755,7 +755,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         percentageDonationText: '0.2%',
         donationAmount: {
           fieldValue: printAda(maxAmounts.donationAmount),
-          coins: maxAmounts.donationAmount || 0,
+          coins: maxAmounts.donationAmount || null,
         },
       })
     }

@@ -60,6 +60,7 @@ interface Props {
   conversionRates: any
   sendTransactionSummary: any
   transactionFee: any
+  balance: any
 }
 
 class SendAdaPage extends Component<Props> {
@@ -91,6 +92,7 @@ class SendAdaPage extends Component<Props> {
     sendTransactionSummary: summary,
     transactionFee,
     txSuccessTab,
+    balance,
   }) {
     const sendFormValidationError =
       sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
@@ -144,7 +146,7 @@ class SendAdaPage extends Component<Props> {
             <button
               className="button send-max"
               onClick={sendMaxFunds}
-              disabled={!isSendAddressValid}
+              disabled={!isSendAddressValid || !balance}
             >
               Max
             </button>
@@ -235,6 +237,7 @@ export default connect(
     sendTransactionSummary: state.sendTransactionSummary,
     transactionFee: state.transactionFee,
     txSuccessTab: state.txSuccessTab,
+    balance: state.balance,
   }),
   actions
 )(SendAdaPage)

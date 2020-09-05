@@ -28,7 +28,7 @@ const sendAmountValidator = (fieldValue, coins, balance) => {
     return null
   }
   if (coins === null) {
-    return {code: 'SendAmountCantSendAnyFunds'} // TODO: never used, delete
+    return {code: 'SendAmountCantSendAnyFunds'}
   }
   if (!floatRegex.test(fieldValue) || isNaN(coins)) {
     return {code: 'SendAmountIsNan'}
