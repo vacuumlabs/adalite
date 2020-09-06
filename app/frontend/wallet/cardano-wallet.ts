@@ -111,8 +111,10 @@ const CardanoWallet = (options) => {
 
   const blockchainExplorer = BlockchainExplorer(config)
 
+  const accountIndex = 0
+
   const myAddresses = MyAddresses({
-    accountIndex: 0,
+    accountIndex,
     cryptoProvider,
     gapLimit: config.ADALITE_GAP_LIMIT,
     defaultAddressCount: config.ADALITE_DEFAULT_ADDRESS_COUNT,
@@ -282,6 +284,7 @@ const CardanoWallet = (options) => {
     getPoolInfo,
     checkCryptoProviderVersion,
     getPoolOwnerCredentials: () => ({}),
+    accountIndex,
   }
 }
 

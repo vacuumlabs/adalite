@@ -36,6 +36,8 @@ import {ShelleyWallet} from './wallet/shelley-wallet'
 // import loadWasmModule from './helpers/wasmLoader'
 import getDonationAddress from './helpers/getDonationAddress'
 let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
+const wallets = new Map()
+let cryptoProvider
 
 const debounceEvent = (callback, time) => {
   let interval
@@ -118,6 +120,42 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* LOADING WALLET */
 
+  const loadWalletInfo = async (state) => {
+    // console.log(accountIndex)
+    const walletInfo = await wallet.getWalletInfo()
+    setState({
+      accounts: {
+        ...state.accounts,
+        [wallet.accountIndex]: walletInfo,
+      },
+    })
+    stopLoadingAction(state, {})
+  }
+
+  const loadNewAccount = async (state: State, accountIndex: number) => {
+    loadingAction(state, 'Loading another account')
+    const newWallet = await ShelleyWallet({
+      config: ADALITE_CONFIG,
+      cryptoProvider,
+      isShelleyCompatible: true,
+      accountIndex,
+    })
+    wallets.set(accountIndex, newWallet)
+    wallet = wallets.get(accountIndex)
+    await loadWalletInfo(state)
+  }
+
+  const setWalletInfo = async (state, accountIndex: number) => {
+    if (!wallets.has(accountIndex)) {
+      await loadNewAccount(state, accountIndex)
+    }
+    wallet = wallets.get(accountIndex)
+    const walletInfo = getState().accounts[accountIndex]
+    setState({
+      ...walletInfo,
+    })
+  }
+
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef, isWebUSB}) => {
     // loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     loadingAction(state, 'Loading wallet data...', {
@@ -140,7 +178,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           break
         }
         case 'shelley': {
-          const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
+          cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
             cryptoProviderType,
             {
               walletSecretDef,
@@ -150,11 +188,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
             }
           )
 
-          wallet = await ShelleyWallet({
+          const newWallet = await ShelleyWallet({
             config: ADALITE_CONFIG,
             cryptoProvider,
             isShelleyCompatible,
+            accountIndex: 0,
           })
+          wallets.set(0, newWallet)
+          wallet = wallets.get(0)
           break
         }
         default:
@@ -172,6 +213,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const autoLogin = state.autoLogin
       const ticker2Id = null
       setState({
+        accounts: {
+          0: walletInfo,
+        },
         walletIsLoaded: true,
         ...walletInfo,
         loading: false,
@@ -219,6 +263,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       // timeout setting loading state, so that loading shows even if everything was cached
       setTimeout(() => setState({loading: false}), 500)
       setState({
+        accounts: {
+          ...state.accounts,
+          [wallet.accountIndex]: walletInfo,
+        },
         ...walletInfo,
       })
       await fetchConversionRates(conversionRates)
@@ -1296,6 +1344,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction,
     stopLoadingAction,
     setAuthMethod,
+    setWalletInfo,
     loadWallet,
     logout,
     exportJsonWallet,

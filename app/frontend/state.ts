@@ -143,6 +143,8 @@ export interface State {
   txConfirmType: string
   txSuccessTab: string
   poolRegTxError?: any
+
+  accounts: any
 }
 
 const initialState: State = {
@@ -246,6 +248,8 @@ const initialState: State = {
     signature: null,
     plan: null,
   },
+
+  accounts: {},
 }
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State
