@@ -1,5 +1,3 @@
-import moment = require('moment')
-
 export const HARDENED_THRESHOLD = 0x80000000
 export const MAX_INT32 = 2147483647
 export const MAX_ADDRESS_INFO_AGE = 10000

@@ -11,8 +11,8 @@ const CurrentDelegationPage = ({
   revokeDelegation,
   delegationValidationError,
   calculatingDelegationFee,
-  nearestRewardDetails,
-  currentDelegationRewardDetails,
+  nearestReward,
+  currentDelegationReward,
 }) => {
   return (
     <div className="current-delegation card">
@@ -46,8 +46,8 @@ const CurrentDelegationPage = ({
             <div className="current-delegation-id">
               Next reward:{' '}
               <EpochDateTime
-                epoch={currentDelegationRewardDetails.distributionEpoch}
-                dateTime={new Date(currentDelegationRewardDetails.rewardDate)}
+                epoch={currentDelegationReward.distributionEpoch}
+                dateTime={new Date(currentDelegationReward.rewardDate)}
               />
             </div>
           </div>
@@ -62,25 +62,24 @@ const CurrentDelegationPage = ({
       ) : (
         <p>The funds are currently undelegated. Delegate now.</p>
       )}
-      {nearestRewardDetails &&
-        nearestRewardDetails.distributionEpoch !==
-          currentDelegationRewardDetails.distributionEpoch && (
-          <Fragment>
+      {nearestReward &&
+        nearestReward.distributionEpoch !== currentDelegationReward.distributionEpoch && (
+        <Fragment>
           <h2 className="card-title margin-top small-margin">Reward from previous pool</h2>
           <div className="current-delegation-wrapper">
-              <div className="current-delegation-name">
-              <span className="bold">{nearestRewardDetails.pool.name}</span>
-              <CopyPoolId value={nearestRewardDetails.poolHash} />
+            <div className="current-delegation-name">
+              <span className="bold">{nearestReward.pool.name}</span>
+              <CopyPoolId value={nearestReward.poolHash} />
             </div>
-              <div className="current-delegation-id">{nearestRewardDetails.poolHash}</div>
-              <div className="current-delegation-id">
+            <div className="current-delegation-id">{nearestReward.poolHash}</div>
+            <div className="current-delegation-id">
                 Next reward:{' '}
               <EpochDateTime
-                  epoch={nearestRewardDetails.distributionEpoch}
-                  dateTime={new Date(nearestRewardDetails.rewardDate)}
-                />
+                epoch={nearestReward.distributionEpoch}
+                dateTime={new Date(nearestReward.rewardDate)}
+              />
             </div>
-            </div>
+          </div>
         </Fragment>
       )}
     </div>
@@ -92,8 +91,8 @@ export default connect(
     pool: state.shelleyAccountInfo.delegation,
     delegationValidationError: state.delegationValidationError,
     calculatingDelegationFee: state.calculatingDelegationFee,
-    nearestRewardDetails: state.shelleyAccountInfo.rewardDetails.nearest,
-    currentDelegationRewardDetails: state.shelleyAccountInfo.rewardDetails.currentDelegation,
+    nearestReward: state.shelleyAccountInfo.rewardDetails.nearest,
+    currentDelegationReward: state.shelleyAccountInfo.rewardDetails.currentDelegation,
   }),
   actions
 )(CurrentDelegationPage)
