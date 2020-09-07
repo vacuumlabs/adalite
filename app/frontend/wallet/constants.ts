@@ -36,6 +36,7 @@ export const NETWORKS = {
       eraStartSlot: 4492800, // 21600 slot x 208 epochs
       eraStartDateTime: Date.parse('29 Jul 2020 21:44:51 UTC'),
       ttl: 3600,
+      epochsToRewardDistribution: 4,
     },
     HASKELL_TESTNET: {
       name: 'htn',
@@ -117,6 +118,3 @@ export const RECOMMENDED_LEDGER_APP_VERSION = {
 }
 
 export const UNKNOWN_POOL_NAME = '<Unknown pool>'
-export const EPOCH_LENGTH = 432000
-export const EPOCHS_TO_REWARD_DISTRIBUTION = 4
-export const EPOCH_212_END = moment.utc('2020-08-23 21:44:00')

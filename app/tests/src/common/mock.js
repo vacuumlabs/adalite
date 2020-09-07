@@ -50,6 +50,7 @@ const mock = (ADALITE_CONFIG) => {
       delegation: {},
       value: 0,
       hasStakingKey: false,
+      nextRewardDetails: [{forEpoch: 212}, {forEpoch: 213}, {forEpoch: 214}, {forEpoch: 215}],
     }
 
     fetchMock.mock({
