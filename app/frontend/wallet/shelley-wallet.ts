@@ -415,7 +415,8 @@ const ShelleyWallet = ({
     const rewardDetails = await blockchainExplorer.getRewardDetails(
       nextRewardDetails,
       accountInfo.delegation.poolHash,
-      validStakepools
+      validStakepools,
+      cryptoProvider.network.epochsToRewardDistribution
     )
 
     return {

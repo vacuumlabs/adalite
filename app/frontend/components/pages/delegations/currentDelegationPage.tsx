@@ -5,7 +5,6 @@ import printAda from '../../../helpers/printAda'
 import {Lovelace} from '../../../state'
 import {CopyPoolId} from './common'
 import {EpochDateTime} from '../common'
-import {NETWORKS} from '../../../../frontend/wallet/constants'
 
 const CurrentDelegationPage = ({
   pool,
@@ -47,10 +46,7 @@ const CurrentDelegationPage = ({
             <div className="current-delegation-id">
               Next reward:{' '}
               <EpochDateTime
-                epoch={
-                  currentDelegationRewardDetails.forEpoch +
-                  NETWORKS.SHELLEY.MAINNET.epochsToRewardDistribution
-                }
+                epoch={currentDelegationRewardDetails.distributionEpoch}
                 dateTime={new Date(currentDelegationRewardDetails.rewardDate)}
               />
             </div>
@@ -67,26 +63,24 @@ const CurrentDelegationPage = ({
         <p>The funds are currently undelegated. Delegate now.</p>
       )}
       {nearestRewardDetails &&
-        nearestRewardDetails.forEpoch !== currentDelegationRewardDetails.forEpoch && (
-        <Fragment>
+        nearestRewardDetails.distributionEpoch !==
+          currentDelegationRewardDetails.distributionEpoch && (
+          <Fragment>
           <h2 className="card-title margin-top small-margin">Reward from previous pool</h2>
           <div className="current-delegation-wrapper">
-            <div className="current-delegation-name">
+              <div className="current-delegation-name">
               <span className="bold">{nearestRewardDetails.pool.name}</span>
               <CopyPoolId value={nearestRewardDetails.poolHash} />
             </div>
-            <div className="current-delegation-id">{nearestRewardDetails.poolHash}</div>
-            <div className="current-delegation-id">
+              <div className="current-delegation-id">{nearestRewardDetails.poolHash}</div>
+              <div className="current-delegation-id">
                 Next reward:{' '}
               <EpochDateTime
-                epoch={
-                  nearestRewardDetails.forEpoch +
-                    NETWORKS.SHELLEY.MAINNET.epochsToRewardDistribution
-                }
-                dateTime={new Date(nearestRewardDetails.rewardDate)}
-              />
+                  epoch={nearestRewardDetails.distributionEpoch}
+                  dateTime={new Date(nearestRewardDetails.rewardDate)}
+                />
             </div>
-          </div>
+            </div>
         </Fragment>
       )}
     </div>

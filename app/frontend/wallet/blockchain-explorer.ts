@@ -309,13 +309,19 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     ].sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime()) // sort by time, newest first
   }
 
-  async function getRewardDetails(nextRewardDetails, currentDelegationPoolHash, validStakepools) {
+  async function getRewardDetails(
+    nextRewardDetails,
+    currentDelegationPoolHash,
+    validStakepools,
+    epochsToRewardDistribution
+  ) {
     const nextRewardDetailsWithMetaData: any[] = await Promise.all(
       nextRewardDetails.map(async (nextRewardDetail) => {
         const poolHash = nextRewardDetail.poolHash
         if (poolHash) {
           return {
             ...nextRewardDetail,
+            distributionEpoch: nextRewardDetail.forEpoch + epochsToRewardDistribution,
             pool: validStakepools[poolHash]
               ? await getPoolInfo(validStakepools[poolHash].url).catch(() => UNKNOWN_POOL_NAME)
               : {name: UNKNOWN_POOL_NAME},
