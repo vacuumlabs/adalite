@@ -2,6 +2,8 @@ import {h, Component} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import {ADALITE_CONFIG} from '../../../config'
+import range from '../../../../frontend/wallet/helpers/range'
+import {ACCOUNT_COUNT} from '../../../../frontend/wallet/constants'
 const APP_VERSION = ADALITE_CONFIG.ADALITE_APP_VERSION
 
 interface Router {
@@ -14,9 +16,15 @@ interface Props {
   logout: () => void
   openWelcome: any
   openInfoModal: any
+  selectedAccount: number
+  selectAccount: (state, selectedAccount) => void
 }
 
 class NavbarAuth extends Component<Props, {}> {
+  state: {
+    hideAccountDropdown: false
+  }
+
   scrollDestination: any
 
   constructor(props) {
@@ -42,7 +50,7 @@ class NavbarAuth extends Component<Props, {}> {
     }
   }
 
-  render({isDemoWallet, logout, openWelcome, openInfoModal}) {
+  render({isDemoWallet, logout, openWelcome, openInfoModal, selectedAccount, selectAccount}) {
     return (
       <nav
         className={`navbar authed ${isDemoWallet ? 'demo' : ''}`}
@@ -99,6 +107,31 @@ class NavbarAuth extends Component<Props, {}> {
               Help
             </a>
           </div>
+          <div className="account-dropdown">
+            <button
+              className="account-dropdown-button"
+              onMouseEnter={() => this.setState({hideAccountDropdown: false})}
+            >
+              Account {selectedAccount}
+            </button>
+            <div
+              className={`account-dropdown-content ${
+                this.state.hideAccountDropdown ? 'hide' : 'show'
+              }`}
+            >
+              {range(0, ACCOUNT_COUNT).map((i) => (
+                <a
+                  key={i}
+                  onClick={() => {
+                    selectAccount(i)
+                    this.setState({hideAccountDropdown: true})
+                  }}
+                >
+                  Account {i}
+                </a>
+              ))}
+            </div>
+          </div>
           <button className="button secondary logout" onClick={() => setTimeout(logout, 100)}>
             Logout
           </button>
@@ -112,6 +145,7 @@ export default connect(
   (state) => ({
     isDemoWallet: state.isDemoWallet,
     router: state.router,
+    selectedAccount: state.selectedAccount,
   }),
   actions
 )(NavbarAuth)

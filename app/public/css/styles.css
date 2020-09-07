@@ -3528,6 +3528,54 @@ input:checked + .slider:before {
   border: none;
 }
 
+/* ACCOUNT DROPDOWN */
+.account-dropdown-button {
+  background-color: var(--color-brand);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px 16px;
+  margin-right: 20px;
+  font-size: 14px;
+}
+
+.account-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.account-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+.account-dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.account-dropdown-content a:hover {
+  background-color: #f1f1f1
+}
+
+.account-dropdown:hover .account-dropdown-content.show {
+  display: block;
+}
+
+.account-dropdown-content.hide {
+  display: none;
+}
+
+.account-dropdown:hover .account-dropdown-button {
+  background-color: var(--color-brand);
+}
+
 /* FORM GLOBAL */
 
 .form-row {
