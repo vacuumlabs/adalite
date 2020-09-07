@@ -311,16 +311,22 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
   async function getRewardDetails(nextRewardDetails, currentDelegationPoolHash, validStakepools) {
     const nextRewardDetailsWithMetaData: any[] = await Promise.all(
-      nextRewardDetails.map(async (nextRewardDetail) => ({
-        ...nextRewardDetail,
-        pool: nextRewardDetail.poolHash
-          ? validStakepools[nextRewardDetail.poolHash]
-            ? await getPoolInfo(validStakepools[nextRewardDetail.poolHash].url).catch(
-              () => UNKNOWN_POOL_NAME
-            )
-            : {name: UNKNOWN_POOL_NAME}
-          : {},
-      }))
+      nextRewardDetails.map(async (nextRewardDetail) => {
+        const poolHash = nextRewardDetail.poolHash
+        if (poolHash) {
+          return {
+            ...nextRewardDetail,
+            pool: validStakepools[poolHash]
+              ? await getPoolInfo(validStakepools[poolHash].url).catch(() => UNKNOWN_POOL_NAME)
+              : {name: UNKNOWN_POOL_NAME},
+          }
+        } else {
+          return {
+            ...nextRewardDetail,
+            pool: {},
+          }
+        }
+      })
     )
     const nearestRewardDetails = nextRewardDetailsWithMetaData
       .filter((rewardDetails) => rewardDetails.poolHash != null)
