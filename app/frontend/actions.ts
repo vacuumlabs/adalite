@@ -805,23 +805,23 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     stopLoadingAction(state, {})
   }
 
-  const redeemRewards = async (state) => {
+  const withdrawRewards = async (state) => {
     loadingAction(state, 'Preparing transaction...')
     const rewards = state.shelleyBalances.rewardsAccountBalance
-    const plan = await prepareTxPlan({rewards, txType: 'redeem'})
-    const redemptionValidationError =
+    const plan = await prepareTxPlan({rewards, txType: 'withdraw'})
+    const withdrawalValidationError =
       withdrawalPlanValidator(rewards, state.balance, plan) || wallet.checkCryptoProviderVersion()
-    if (redemptionValidationError) {
+    if (withdrawalValidationError) {
       setErrorState(
         'transactionSubmissionError',
-        NamedError(redemptionValidationError.code, {message: redemptionValidationError.message}),
+        NamedError(withdrawalValidationError.code, {message: withdrawalValidationError.message}),
         {shouldShowTransactionErrorModal: true}
       )
       stopLoadingAction(state, {})
       return
     }
     setTransactionSummary('stake', plan, rewards)
-    await confirmTransaction(getState(), 'redeem')
+    await confirmTransaction(getState(), 'withdraw')
     stopLoadingAction(state, {})
   }
 
@@ -1203,7 +1203,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     selectAdaliteStakepool,
     convertNonStakingUtxos,
     loadErrorBannerContent,
-    redeemRewards,
+    withdrawRewards,
     openInfoModal,
     closeInfoModal,
   }

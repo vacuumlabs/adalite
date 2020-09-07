@@ -103,12 +103,12 @@ const delegationPlanValidator = (balance, txPlan) => {
   return txPlanError || null
 }
 
-const withdrawalPlanValidator = (sendAmount, balance, txPlan) => {
+const withdrawalPlanValidator = (rewardsAmount, balance, txPlan) => {
   const transactionFee = txPlan.fee || txPlan.estimatedFee
-  if (transactionFee >= sendAmount) {
+  if (transactionFee >= rewardsAmount) {
     return {code: 'RewardsBalanceTooLow', message: ''}
   }
-  const txPlanError = txPlanValidator(sendAmount, balance, txPlan)
+  const txPlanError = txPlanValidator(rewardsAmount, balance, txPlan)
   return txPlanError || null
 }
 

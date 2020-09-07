@@ -322,7 +322,7 @@ const ShelleyWallet = ({
       sendAda: utxoTxPlanner,
       convert: utxoTxPlanner,
       delegate: utxoTxPlanner,
-      redeem: utxoTxPlanner,
+      withdraw: utxoTxPlanner,
     }
     return await txPlanners[args.txType](args, accountAddress)
   }

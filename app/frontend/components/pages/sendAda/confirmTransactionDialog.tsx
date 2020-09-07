@@ -40,7 +40,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     const totalAmount = summary.amount + summary.donation + summary.fee + summary.deposit
     const totalAmounts = {
       convert: summary.amount,
-      redeem: summary.amount - summary.fee,
+      withdraw: summary.amount - summary.fee,
     }
     const total = totalAmounts[txConfirmType] || totalAmount
     const titleMap = {
@@ -48,7 +48,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
       revoke: 'Delegation revocation review',
       send: 'Transaction review',
       convert: 'Stakable balance conversion review',
-      redeem: 'Rewards redemption review',
+      withdraw: 'Rewards withdrawal review',
     }
     return (
       // TODO: make separate fragments into constants and then build specific types from them
@@ -59,10 +59,10 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             your first staking address
           </div>
         )}
-        {txConfirmType === 'redeem' && (
+        {txConfirmType === 'withdraw' && (
           <div>
-            We are creating transaction that will redeem all funds from your rewards account balance
-            to your first staking address
+            We are creating transaction that will withdraw all funds from your rewards account
+            balance to your first staking address
           </div>
         )}
         <div className="review">
@@ -97,7 +97,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             </Fragment>
           )}
 
-          {txConfirmType === 'redeem' && ( // TODO: add address verification for hw wallets
+          {txConfirmType === 'withdraw' && ( // TODO: add address verification for hw wallets
             <Fragment>
               <div className="review-label">Address</div>
               <div className="review-address">

@@ -12,7 +12,7 @@ const shelleyBalances = ({
   balance,
   reloadWalletInfo,
   convertNonStakingUtxos,
-  redeemRewards,
+  withdrawRewards,
   calculatingDelegationFee,
   hwWalletName,
   isShelleyCompatible,
@@ -62,7 +62,7 @@ const shelleyBalances = ({
         <button
           disabled={calculatingDelegationFee}
           className="button secondary balance withdraw"
-          onClick={redeemRewards}
+          onClick={withdrawRewards}
         >
           Withdraw
         </button>
