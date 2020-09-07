@@ -36,15 +36,15 @@ module.exports = function(app, env) {
         })
       }
 
+      const errorMessage = await response.text()
       // eslint-disable-next-line no-console
       console.error(
-        `Submission of tx ${txHash} failed with status ${
-          response.status
-        } and message ${await response.text()}`
+        `Submission of tx ${txHash} failed with status ${response.status} and message ${errorMessage}`
       )
 
       return res.json({
-        Left: 'Transaction rejected by network',
+        Left: `Transaction rejected by network - ${errorMessage}`,
+        statusCode: response.status,
       })
     } catch (err) {
       // eslint-disable-next-line no-console

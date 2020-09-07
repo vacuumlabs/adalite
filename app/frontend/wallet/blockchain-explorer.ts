@@ -145,7 +145,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     )
     if (!response.Right) {
       debugLog(`Unexpected tx submission response: ${JSON.stringify(response)}`)
-      throw NamedError('ServerError')
+      if (response.statusCode && response.statusCode === 400) {
+        throw NamedError('TransactionRejectedByNetwork', {message: response.Left})
+      } else {
+        throw NamedError('ServerError')
+      }
     }
 
     return response.Right
