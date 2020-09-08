@@ -116,7 +116,7 @@ export function estimateTxSize(
   * because it may have more than 1 byte of overhead
   * if more than 16 elements are present
   */
-  const slack = 200 // TODO: this is too much
+  const slack = 250 // TODO: this is too much
 
   return txSizeInBytes + slack
 }
