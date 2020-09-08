@@ -37,20 +37,29 @@ import {
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
 import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
-import {captureException} from '@sentry/browser'
 
-const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
-  const legacyExtManager = AddressManager({
-    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
-    gapLimit,
-    blockchainExplorer,
-  })
+const MyAddresses = ({
+  accountIndex,
+  cryptoProvider,
+  gapLimit,
+  blockchainExplorer,
+  loadByronAddresses,
+}) => {
+  const legacyExtManager =
+    loadByronAddresses &&
+    AddressManager({
+      addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
+      gapLimit,
+      blockchainExplorer,
+    })
 
-  const legacyIntManager = AddressManager({
-    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
-    gapLimit,
-    blockchainExplorer,
-  })
+  const legacyIntManager =
+    loadByronAddresses &&
+    AddressManager({
+      addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
+      gapLimit,
+      blockchainExplorer,
+    })
 
   const accountAddrManager = AddressManager({
     addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
@@ -73,8 +82,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   async function discoverAllAddresses() {
     const baseInt = await baseIntAddrManager.discoverAddresses()
     const baseExt = await baseExtAddrManager.discoverAddresses()
-    const legacyInt = await legacyIntManager.discoverAddresses()
-    const legacyExt = await legacyExtManager.discoverAddresses()
+    const legacyInt = loadByronAddresses ? await legacyIntManager.discoverAddresses() : []
+    const legacyExt = loadByronAddresses ? await legacyExtManager.discoverAddresses() : []
     const accountAddr = await accountAddrManager._deriveAddress(accountIndex)
 
     const isV1scheme = cryptoProvider.getDerivationScheme().type === 'v1'
@@ -88,8 +97,8 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   function getAddressToAbsPathMapper() {
     const mapping = Object.assign(
       {},
-      legacyIntManager.getAddressToAbsPathMapping(),
-      legacyExtManager.getAddressToAbsPathMapping(),
+      loadByronAddresses ? legacyIntManager.getAddressToAbsPathMapping() : {},
+      loadByronAddresses ? legacyExtManager.getAddressToAbsPathMapping() : {},
       baseIntAddrManager.getAddressToAbsPathMapping(),
       baseExtAddrManager.getAddressToAbsPathMapping(),
       accountAddrManager.getAddressToAbsPathMapping()
@@ -98,10 +107,12 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   }
 
   function fixedPathMapper() {
-    const mappingLegacy = {
-      ...legacyIntManager.getAddressToAbsPathMapping(),
-      ...legacyExtManager.getAddressToAbsPathMapping(),
-    }
+    const mappingLegacy = loadByronAddresses
+      ? {
+        ...legacyIntManager.getAddressToAbsPathMapping(),
+        ...legacyExtManager.getAddressToAbsPathMapping(),
+      }
+      : {}
     const mappingShelley = {
       ...baseIntAddrManager.getAddressToAbsPathMapping(),
       ...baseExtAddrManager.getAddressToAbsPathMapping(),
@@ -173,6 +184,7 @@ const ShelleyWallet = ({
   randomChangeSeed,
   cryptoProvider,
   isShelleyCompatible,
+  loadByronAddresses,
 }: any) => {
   const {
     getMaxDonationAmount: _getMaxDonationAmount,
@@ -195,6 +207,7 @@ const ShelleyWallet = ({
     cryptoProvider,
     gapLimit: config.ADALITE_GAP_LIMIT,
     blockchainExplorer,
+    loadByronAddresses,
   })
 
   const addressToHex = (

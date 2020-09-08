@@ -30,7 +30,6 @@ const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
 
 interface Props {
   closeStakingBanner: () => void
-  loadWallet: any
   loadDemoWallet: any
   walletLoadingError: any
   authMethod: '' | 'mnemonic' | 'hw-wallet' | 'file'
@@ -73,7 +72,6 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
 
   render(
     {
-      loadWallet,
       loadDemoWallet,
       walletLoadingError,
       authMethod,
@@ -163,7 +161,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
           </ul>
         </div>
         {authMethod === 'mnemonic' && <MnemonicAuth />}
-        {authMethod === 'hw-wallet' && <HardwareAuth loadWallet={loadWallet} />}
+        {authMethod === 'hw-wallet' && <HardwareAuth />}
         {authMethod === 'file' && <KeyFileAuth />}
       </div>
     )

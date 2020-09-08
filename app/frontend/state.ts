@@ -126,6 +126,7 @@ export interface State {
   }
   txConfirmType: string
   txSuccessTab: string
+  loadByronAddresses: boolean
 }
 
 const initialState: State = {
@@ -213,6 +214,7 @@ const initialState: State = {
   txConfirmType: '',
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
+  loadByronAddresses: true,
 }
 
 export {initialState}

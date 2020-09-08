@@ -153,6 +153,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
             config: ADALITE_CONFIG,
             cryptoProvider,
             isShelleyCompatible,
+            loadByronAddresses: state.loadByronAddresses,
           })
           break
         }
@@ -1247,6 +1248,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const toggleLoadByronAddresses = (state) =>
+    setState({loadByronAddresses: !state.loadByronAddresses})
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -1297,5 +1301,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     redeemRewards,
     openInfoModal,
     closeInfoModal,
+    toggleLoadByronAddresses,
   }
 }

@@ -1386,6 +1386,7 @@ li.main-tab input + label.selected:after {
 
 .authentication-content.hardware {
   display: flex;
+  flex-direction: column;
   padding: 0;
 }
 
@@ -1421,13 +1422,18 @@ li.main-tab input + label.selected:after {
   margin-top: 24px;
 }
 
+.authentication-wallet-row {
+  display: flex;
+  flex-direction: row;
+}
+
 .authentication-wallet {
   position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 56px 48px;
+  padding: 56px 48px 20px 48px;
 }
 
 .authentication-wallet:first-child::after {
@@ -1466,8 +1472,14 @@ li.main-tab input + label.selected:after {
 .authentication-wallet .authentication-image {
   margin-bottom: 24px;
 }
+
 .authentication-buttons {
   display: none;
+}
+
+.authentication-hw-byron-public-export {
+  padding-bottom: 24px;
+  margin: auto;
 }
 
 /* AUTHENTICATION TABS */
