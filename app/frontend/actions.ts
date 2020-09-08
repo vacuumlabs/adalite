@@ -791,7 +791,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const plan = await prepareTxPlan({address, coins, txType: 'convert'})
     const validationError = txPlanValidator(coins, state.balance, plan)
     if (validationError) {
-      setErrorState('transactionSubmissionError', NamedError(validationError.code), {
+      setErrorState('transactionSubmissionError', validationError, {
         shouldShowTransactionErrorModal: true,
       })
       stopLoadingAction(state, {})
@@ -812,11 +812,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const withdrawalValidationError =
       withdrawalPlanValidator(rewards, state.balance, plan) || wallet.checkCryptoProviderVersion()
     if (withdrawalValidationError) {
-      setErrorState(
-        'transactionSubmissionError',
-        NamedError(withdrawalValidationError.code, {message: withdrawalValidationError.message}),
-        {shouldShowTransactionErrorModal: true}
-      )
+      setErrorState('transactionSubmissionError', withdrawalValidationError, {
+        shouldShowTransactionErrorModal: true,
+      })
       stopLoadingAction(state, {})
       return
     }

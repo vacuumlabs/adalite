@@ -108,7 +108,7 @@ const withdrawalPlanValidator = (rewardsAmount, balance, txPlan) => {
   if (transactionFee >= rewardsAmount) {
     return {code: 'RewardsBalanceTooLow', message: ''}
   }
-  const txPlanError = txPlanValidator(rewardsAmount, balance, txPlan)
+  const txPlanError = txPlanValidator(0, balance, txPlan)
   return txPlanError || null
 }
 
