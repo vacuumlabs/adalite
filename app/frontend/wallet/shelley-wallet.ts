@@ -37,6 +37,7 @@ import {
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
 import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
+import DummyAddressManager from './shelley/dummy-address-manager'
 
 const MyAddresses = ({
   accountIndex,
@@ -45,21 +46,21 @@ const MyAddresses = ({
   blockchainExplorer,
   loadByronAddresses,
 }) => {
-  const legacyExtManager =
-    loadByronAddresses &&
-    AddressManager({
+  const legacyExtManager = loadByronAddresses
+    ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
       gapLimit,
       blockchainExplorer,
     })
+    : DummyAddressManager()
 
-  const legacyIntManager =
-    loadByronAddresses &&
-    AddressManager({
+  const legacyIntManager = loadByronAddresses
+    ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
       gapLimit,
       blockchainExplorer,
     })
+    : DummyAddressManager()
 
   const accountAddrManager = AddressManager({
     addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
@@ -82,8 +83,8 @@ const MyAddresses = ({
   async function discoverAllAddresses() {
     const baseInt = await baseIntAddrManager.discoverAddresses()
     const baseExt = await baseExtAddrManager.discoverAddresses()
-    const legacyInt = loadByronAddresses ? await legacyIntManager.discoverAddresses() : []
-    const legacyExt = loadByronAddresses ? await legacyExtManager.discoverAddresses() : []
+    const legacyInt = await legacyIntManager.discoverAddresses()
+    const legacyExt = await legacyExtManager.discoverAddresses()
     const accountAddr = await accountAddrManager._deriveAddress(accountIndex)
 
     const isV1scheme = cryptoProvider.getDerivationScheme().type === 'v1'
@@ -97,8 +98,8 @@ const MyAddresses = ({
   function getAddressToAbsPathMapper() {
     const mapping = Object.assign(
       {},
-      loadByronAddresses ? legacyIntManager.getAddressToAbsPathMapping() : {},
-      loadByronAddresses ? legacyExtManager.getAddressToAbsPathMapping() : {},
+      legacyIntManager.getAddressToAbsPathMapping(),
+      legacyExtManager.getAddressToAbsPathMapping(),
       baseIntAddrManager.getAddressToAbsPathMapping(),
       baseExtAddrManager.getAddressToAbsPathMapping(),
       accountAddrManager.getAddressToAbsPathMapping()
@@ -107,12 +108,10 @@ const MyAddresses = ({
   }
 
   function fixedPathMapper() {
-    const mappingLegacy = loadByronAddresses
-      ? {
-        ...legacyIntManager.getAddressToAbsPathMapping(),
-        ...legacyExtManager.getAddressToAbsPathMapping(),
-      }
-      : {}
+    const mappingLegacy = {
+      ...legacyIntManager.getAddressToAbsPathMapping(),
+      ...legacyExtManager.getAddressToAbsPathMapping(),
+    }
     const mappingShelley = {
       ...baseIntAddrManager.getAddressToAbsPathMapping(),
       ...baseExtAddrManager.getAddressToAbsPathMapping(),
