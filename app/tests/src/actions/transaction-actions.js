@@ -42,7 +42,7 @@ it('Calculate fee - shelley', async () => {
 
   await action.calculateFee()
 
-  assert.equal(state.transactionFee, 181222)
+  assert.equal(state.transactionFee, 183419)
 
   mockNet.clean()
 })
