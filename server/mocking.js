@@ -76,7 +76,9 @@ module.exports = function(app, env) {
     )
   })
 
-  app.post('/api/*', async (req, res) => {
+  app.post('/api/*', async (req, res, next) => {
+    if (req.url === '/api/poolMeta') return next()
+
     return res.json(
       await request(
         `${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`,
