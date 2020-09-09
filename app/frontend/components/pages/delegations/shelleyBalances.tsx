@@ -4,6 +4,7 @@ import {AdaIcon} from '../../common/svg'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import tooltip from '../../common/tooltip'
+import toLocalDate from '../../../../frontend/helpers/toLocalDate'
 
 const shelleyBalances = ({
   stakingBalance,
@@ -16,6 +17,7 @@ const shelleyBalances = ({
   calculatingDelegationFee,
   hwWalletName,
   isShelleyCompatible,
+  nearestReward,
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">
@@ -57,6 +59,11 @@ const shelleyBalances = ({
           ? rewardsAccountBalance
           : `${printAda(rewardsAccountBalance)}`}
         <AdaIcon />
+        {nearestReward && (
+          <div className="staking-balance-next-reward">
+            Next reward: {toLocalDate(new Date(nearestReward.rewardDate))}
+          </div>
+        )}
       </div>
       {!!rewardsAccountBalance && (
         <button
@@ -131,6 +138,7 @@ export default connect(
     calculatingDelegationFee: state.calculatingDelegationFee,
     hwWalletName: state.hwWalletName,
     isShelleyCompatible: state.isShelleyCompatible,
+    nearestReward: state.shelleyAccountInfo.rewardDetails.nearest,
   }),
   actions
 )(shelleyBalances)
