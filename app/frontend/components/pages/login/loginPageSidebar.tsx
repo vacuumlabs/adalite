@@ -65,7 +65,7 @@ const MnemonicContent = () => (
           >
             Daedalus-type
           </a>{' '}
-          mnemonics (12 words).
+          mnemonics (12, 24 or 27 words).
         </p>
       </Alert>
     </div>
