@@ -53,7 +53,8 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     }
     const response = await TrezorConnect.cardanoGetAddress({
       addressParameters,
-      networkId: 1,
+      networkId: network.networkId,
+      protocolMagic: network.protocolMagic,
       showOnTrezor: true,
     })
 

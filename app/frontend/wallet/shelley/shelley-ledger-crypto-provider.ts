@@ -1,6 +1,6 @@
 import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
 import LedgerTransportWebusb from '@ledgerhq/hw-transport-webusb'
-import Ledger from '@cardano-foundation/ledgerjs-hw-app-cardano'
+import Ledger, {AddressTypeNibbles} from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import {encode} from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
@@ -85,7 +85,12 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
 
   async function displayAddressForPath(absDerivationPath, stakingPath?) {
     try {
-      await ledger.showAddress(0, 1, absDerivationPath, stakingPath)
+      await ledger.showAddress(
+        AddressTypeNibbles.BASE,
+        network.networkId,
+        absDerivationPath,
+        stakingPath
+      )
     } catch (err) {
       throw NamedError('LedgerOperationError', {message: `${err.name}: ${err.message}`})
     }
