@@ -56,7 +56,7 @@
     "express-basic-auth": "^1.2.0",
     "express-ipfilter": "^1.1.2",
     "express-mung": "^0.5.1",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "moment": "^2.27.0",
     "normalize-url": "^4.0.0",
     "redis": "^2.8.0",
