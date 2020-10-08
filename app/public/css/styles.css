@@ -1298,14 +1298,14 @@ button[data-balloon] {
 }
 
 .tabinator li {
-  display: unset;
+  display: inline-block;
   position: relative;
 }
 
 .tabinator li.primary:after {
   content: '';
   position: absolute;
-  top: -8px;
+  top: 10px;
   right: 14px;
   width: 6px;
   height: 6px;
@@ -1322,7 +1322,7 @@ li.main-tab label {
   display: inline-block;
   padding: 15px 25px;
   color: var(--color-grey);
-  width: 50%;
+  width: 100%;
   text-align: center;
 }
 
@@ -4327,12 +4327,21 @@ input:checked + .slider:before {
     box-shadow: unset;
   }
 
+  .tabinator li {
+    display: unset;
+  }
+
   .tabinator label:before {
     display: none;
   }
 
-  li.main-tab:first-child input + label {
-    border-right: 1px transparent;
+  li.main-tab label {
+    box-sizing: border-box;
+    display: inline-block;
+    padding: 15px 25px;
+    color: var(--color-grey);
+    width: calc(100% / 3);
+    text-align: center;
   }
 
   li.main-tab:last-child input + label {
@@ -4378,7 +4387,7 @@ input:checked + .slider:before {
   .tabinator li.primary:after {
     content: '';
     position: absolute;
-    top: -6px;
+    top: -12px;
     right: calc(50% + -36px);
     width: 6px;
     height: 6px;
@@ -4730,6 +4739,14 @@ input:checked + .slider:before {
     height: 6px;
     background-color: var(--color-brand);
     border-radius: 50%;
+  }
+
+  li.main-tab label {
+    width: calc(100% / 3);
+  }
+
+  .tabinator li {
+    display: unset;
   }
 
   /* TRANSACTIONS */

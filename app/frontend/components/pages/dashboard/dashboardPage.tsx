@@ -15,10 +15,11 @@ import {MainTab, SubTab} from './tabs'
 import InfoModal from '../../common/infoModal'
 import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
 import DashboardErrorBanner from './dashboardErrorBanner'
+import Keys from '../advanced/keys'
 
 interface Props {
   displayStakingPage: any
-  toggleDisplayStakingPage?: (value: boolean) => void
+  toggleDisplayStakingPage?: (value: string) => void
 }
 
 const StakingPage = () => {
@@ -52,6 +53,16 @@ const SendingPage = ({shouldShowExportOption}) => {
   )
 }
 
+const AdvancedPage = () => {
+  return (
+    <Fragment>
+      <div className="dashboard-column">
+        <Keys />
+      </div>
+    </Fragment>
+  )
+}
+
 class DashboardPage extends Component<Props> {
   constructor(props) {
     super(props)
@@ -65,7 +76,7 @@ class DashboardPage extends Component<Props> {
     this.setState({
       selectedMainTab: name,
     })
-    this.props.toggleDisplayStakingPage(name === 'Staking')
+    this.props.toggleDisplayStakingPage(name)
   }
 
   render(
@@ -78,7 +89,17 @@ class DashboardPage extends Component<Props> {
     },
     {selectedMainTab}
   ) {
-    const mainTabs = ['Sending', 'Staking']
+    const mainTabs = ['Sending', 'Staking', 'Advanced']
+    const displayedPages = {
+      Sending: <SendingPage shouldShowExportOption={shouldShowExportOption} />,
+      Staking: <StakingPage />,
+      Advanced: <AdvancedPage />,
+    }
+    const displayedSubPages = {
+      Sending: <Balance />,
+      Staking: <ShelleyBalances />,
+      Advanced: <Keys />,
+    }
     return (
       <div className="page-wrapper">
         {isShelleyCompatible && displayInfoModal && <InfoModal />}
@@ -96,18 +117,12 @@ class DashboardPage extends Component<Props> {
             ))}
           </ul>
         )}
-        <div className="dashboard desktop">
-          {!displayStakingPage ? (
-            <SendingPage shouldShowExportOption={shouldShowExportOption} />
-          ) : (
-            <StakingPage />
-          )}
-        </div>
+        <div className="dashboard desktop">{displayedPages[displayStakingPage]}</div>
 
         <div className="dashboard mobile">
-          {displayStakingPage ? <ShelleyBalances /> : <Balance />}
+          {displayedSubPages[displayStakingPage]}
           <DashboardMobileContent displayStakingPage={displayStakingPage} />
-          {!displayStakingPage && shouldShowExportOption && <ExportCard />}
+          {displayStakingPage === 'Sending' && shouldShowExportOption && <ExportCard />}
         </div>
       </div>
     )
@@ -117,12 +132,17 @@ class DashboardPage extends Component<Props> {
 class DashboardMobileContent extends Component<Props> {
   constructor(props) {
     super(props)
+    const selectedSubTabs = {
+      Sending: 'Transactions',
+      Staking: 'Delegate ADA',
+      Advanced: 'Keys',
+    }
     this.state = {
-      selectedSubTab: !this.props.displayStakingPage ? 'Transactions' : 'Delegate ADA',
+      selectedSubTab: selectedSubTabs[this.props.displayStakingPage],
     }
     this.selectSubTab = this.selectSubTab.bind(this)
   }
-  selectSubTab(name) {
+  selectSubTab(name, state) {
     this.setState({selectedSubTab: name})
   }
   pages = {
@@ -132,21 +152,28 @@ class DashboardMobileContent extends Component<Props> {
     'Send ADA': SendAdaPage,
     'Transactions': TransactionHistory,
     'Recieve ADA': MyAddresses,
+    Keys,
   }
+  stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
+  sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
+  advancedTabs = ['Keys']
   render({displayStakingPage}, {selectedSubTab}) {
-    const stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
-    const sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
-    if (displayStakingPage && sendingTabs.includes(selectedSubTab)) {
-      this.selectSubTab('Delegate ADA')
-    }
-    if (!displayStakingPage && stakingTabs.includes(selectedSubTab)) {
-      this.selectSubTab('Transactions')
-    }
+    // if (displayStakingPage === 'Sending' && stakingTabs.includes(selectedSubTab)) {
+    //   this.selectSubTab('Delegate ADA')
+    // }
+    // if (displayStakingPage === 'Staking' && sendingTabs.includes(selectedSubTab)) {
+    //   this.selectSubTab('Transactions')
+    // }
     const Page = this.pages[selectedSubTab]
+    const tabs = {
+      Sending: this.sendingTabs,
+      Staking: this.stakingTabs,
+      Advanced: this.advancedTabs,
+    }
     return (
       <div className="dashboard-content">
         <ul className="dashboard-tabs">
-          {(displayStakingPage ? stakingTabs : sendingTabs).map((name, i) => (
+          {tabs[displayStakingPage].map((name, i) => (
             <SubTab
               key={i}
               name={name}
