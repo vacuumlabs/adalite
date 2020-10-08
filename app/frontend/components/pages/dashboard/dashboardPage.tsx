@@ -123,7 +123,7 @@ class DashboardPage extends Component<Props> {
         <div className="dashboard desktop">{displayedPages[displayStakingPage]}</div>
 
         <div className="dashboard mobile">
-          {displayedSubPages[displayStakingPage]}
+          {displayedSubPages[selectedMainTab]}
           <DashboardMobileContent displayStakingPage={displayStakingPage} />
           {displayStakingPage === 'Sending' && shouldShowExportOption && <ExportCard />}
         </div>
@@ -135,13 +135,8 @@ class DashboardPage extends Component<Props> {
 class DashboardMobileContent extends Component<Props, {selectedSubTab}> {
   constructor(props) {
     super(props)
-    const selectedSubTabs = {
-      Sending: 'Transactions',
-      Staking: 'Delegate ADA',
-      Advanced: 'Keys',
-    }
     this.state = {
-      selectedSubTab: selectedSubTabs[this.props.displayStakingPage],
+      selectedSubTab: 'Transactions',
     }
     this.selectSubTab = this.selectSubTab.bind(this)
   }
@@ -159,23 +154,23 @@ class DashboardMobileContent extends Component<Props, {selectedSubTab}> {
     'Recieve ADA': MyAddresses,
     Keys,
   }
+  // TODO: refactor
   stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
   sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
   advancedTabs = ['Keys']
   render({displayStakingPage}, {selectedSubTab}) {
+    const selectedDefultSubTabs = {
+      Sending: 'Transactions',
+      Staking: 'Delegate ADA',
+      Advanced: 'Keys',
+    }
     const tabs = {
       Sending: this.sendingTabs,
       Staking: this.stakingTabs,
       Advanced: this.advancedTabs,
     }
-    if (displayStakingPage === 'Sending') {
-      this.selectSubTab(selectedSubTab)
-    }
-    if (displayStakingPage === 'Staking') {
-      this.selectSubTab(selectedSubTab)
-    }
-    if (displayStakingPage === 'Advanced') {
-      this.selectSubTab(selectedSubTab)
+    if (!tabs[displayStakingPage].includes(selectedSubTab)) {
+      this.selectSubTab(selectedDefultSubTabs[displayStakingPage])
     }
     const Page = this.pages[selectedSubTab]
     return (
