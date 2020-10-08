@@ -121,7 +121,8 @@ export interface State {
   gettingPoolInfo: boolean
   shelleyAccountInfo?: {
     accountPubkeyHex: string
-    stakePubKeyHex: string
+    shelleyXpub: any
+    byronXpub: any
     currentEpoch: number
     delegation: any
     hasStakingKey: boolean
@@ -216,7 +217,8 @@ const initialState: State = {
   },
   shelleyAccountInfo: {
     accountPubkeyHex: '',
-    stakePubKeyHex: '',
+    shelleyXpub: '',
+    byronXpub: '',
     currentEpoch: 0,
     delegation: {},
     hasStakingKey: false,

@@ -169,13 +169,13 @@ class DashboardMobileContent extends Component<Props, {selectedSubTab}> {
       Advanced: this.advancedTabs,
     }
     if (displayStakingPage === 'Sending') {
-      this.selectSubTab('Delegate ADA')
+      this.selectSubTab(selectedSubTab)
     }
     if (displayStakingPage === 'Staking') {
-      this.selectSubTab('Transactions')
+      this.selectSubTab(selectedSubTab)
     }
     if (displayStakingPage === 'Advanced') {
-      this.selectSubTab('Keys')
+      this.selectSubTab(selectedSubTab)
     }
     const Page = this.pages[selectedSubTab]
     return (

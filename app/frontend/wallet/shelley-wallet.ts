@@ -6,7 +6,7 @@ import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
 import {
   stakeAccountPubkeyHex,
-  stakePubKey,
+  accountXpub as accoutXpubShelley,
   ShelleyStakingAccountProvider,
   ShelleyBaseAddressProvider,
 } from './shelley/shelley-address-provider'
@@ -18,7 +18,7 @@ import {
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
-import {ByronAddressProvider} from './byron/byron-address-provider'
+import {ByronAddressProvider, accountXpub as accoutXpubByron} from './byron/byron-address-provider'
 import {
   isShelleyFormat,
   bechAddressToHex,
@@ -337,7 +337,6 @@ const ShelleyWallet = ({
     const {validStakepools} = await getValidStakepools()
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getAccountInfo(validStakepools)
-    console.log(shelleyAccountInfo, shelleyAccountInfo.stakePubKeyHex)
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
@@ -385,7 +384,8 @@ const ShelleyWallet = ({
   }
 
   async function getAccountInfo(validStakepools) {
-    const stakePubKeyHex = await stakePubKey(cryptoProvider, accountIndex)
+    const shelleyXpub = await accoutXpubShelley(cryptoProvider)
+    const byronXpub = await accoutXpubByron(cryptoProvider)
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
     const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getAccountInfo(
       accountPubkeyHex
@@ -400,7 +400,8 @@ const ShelleyWallet = ({
 
     return {
       accountPubkeyHex,
-      stakePubKeyHex,
+      shelleyXpub,
+      byronXpub,
       ...accountInfo,
       delegation: {
         ...accountInfo.delegation,

@@ -31,7 +31,6 @@ function CachedDeriveXpubFactory(derivationScheme, deriveXpubHardenedFn) {
   async function deriveXpubNonhardenedFn(derivationPath) {
     const lastIndex = derivationPath.slice(-1)[0]
     const parentXpub = await deriveXpub(derivationPath.slice(0, -1))
-
     return deriveChildXpub(parentXpub, lastIndex, derivationScheme.ed25519Mode)
   }
 

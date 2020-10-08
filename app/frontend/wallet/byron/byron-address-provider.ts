@@ -19,6 +19,25 @@ const v2Path = (account: number, isChange: boolean, addrIdx: number) => {
   ]
 }
 
+export const accountXpub = async (cryptoProvider) => {
+  const scheme = cryptoProvider.getDerivationScheme()
+  const pathMapper = {
+    v1: v1Path,
+    v2: v2Path,
+  }
+  const path = pathMapper[scheme.type](0, 0, 0).slice(0, 3)
+  const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
+
+  return {
+    path: [
+      path[0] - HARDENED_THRESHOLD,
+      path[1] - HARDENED_THRESHOLD,
+      path[2] - HARDENED_THRESHOLD,
+    ],
+    xpub,
+  }
+}
+
 export const ByronAddressProvider = (
   cryptoProvider,
   accountIndex: number,
