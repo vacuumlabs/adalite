@@ -16,6 +16,7 @@ import InfoModal from '../../common/infoModal'
 import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
 import DashboardErrorBanner from './dashboardErrorBanner'
 import Keys from '../advanced/keys'
+import PoolOwner from '../advanced/poolOwner'
 
 interface Props {
   displayStakingPage: any
@@ -60,7 +61,7 @@ const AdvancedPage = () => {
         <Keys />
       </div>
       <div className="dashboard-column">
-        <div />
+        <PoolOwner />
       </div>
     </Fragment>
   )
@@ -92,6 +93,7 @@ class DashboardPage extends Component<Props> {
     },
     {selectedMainTab}
   ) {
+    // TODO: this approach doesnt allow multi-word tabs
     const mainTabs = ['Sending', 'Staking', 'Advanced']
     const displayedPages = {
       Sending: <SendingPage shouldShowExportOption={shouldShowExportOption} />,
@@ -153,11 +155,12 @@ class DashboardMobileContent extends Component<Props, {selectedSubTab}> {
     'Transactions': TransactionHistory,
     'Recieve ADA': MyAddresses,
     Keys,
+    'Certificate': PoolOwner,
   }
   // TODO: refactor
   stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
   sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
-  advancedTabs = ['Keys']
+  advancedTabs = ['Keys', 'Certificate']
   render({displayStakingPage}, {selectedSubTab}) {
     const selectedDefultSubTabs = {
       Sending: 'Transactions',
