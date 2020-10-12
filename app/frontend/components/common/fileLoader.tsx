@@ -1,6 +1,6 @@
 import {h} from 'preact'
-import {connect} from '../../../helpers/connect'
-import actions from '../../../actions'
+import {connect} from '../../helpers/connect'
+import actions from '../../actions'
 
 interface Props {
   fileName: string

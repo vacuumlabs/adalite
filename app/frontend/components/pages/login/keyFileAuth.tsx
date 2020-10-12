@@ -4,7 +4,7 @@ import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import debugLog from '../../../helpers/debugLog'
 import tooltip from '../../common/tooltip'
-import FileLoader from './fileLoader'
+import FileLoader from '../../common/fileLoader'
 
 import * as KeypassJson from '../../../wallet/keypass-json'
 import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
