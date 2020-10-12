@@ -25,7 +25,7 @@ import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
-import {State, Ada, Lovelace} from './state'
+import {State, Ada, Lovelace, GetStateFn, SetStateFn} from './state'
 import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 
@@ -45,8 +45,6 @@ const debounceEvent = (callback, time) => {
   }
 }
 
-type SetStateFn = (newState: Partial<State>) => void
-type GetStateFn = () => State
 export default ({setState, getState}: {setState: SetStateFn; getState: GetStateFn}) => {
   const loadingAction = (state, message: string, optionalArgsObj?: any) => {
     return setState(

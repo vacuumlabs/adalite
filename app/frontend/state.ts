@@ -234,5 +234,7 @@ const initialState: State = {
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
 }
+export type SetStateFn = (newState: Partial<State>) => void
+export type GetStateFn = () => State
 
 export {initialState}
