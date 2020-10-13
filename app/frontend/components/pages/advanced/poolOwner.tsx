@@ -5,6 +5,7 @@ import actions from '../../../actions'
 import FileLoader from '../../common/fileLoader'
 import tooltip from '../../common/tooltip'
 import debugLog from '../../../helpers/debugLog'
+import * as poolCertUtils from '../../../helpers/poolCertificateUtils'
 
 interface Props {
   loadingAction: any
@@ -39,9 +40,8 @@ const PoolOwnerCard = ({loadingAction, stopLoadingAction}: Props) => {
       return async (e) => {
         try {
           const parsedFile = await JSON.parse(e.target.result)
-          // TODO: validate content here
-          console.log(parsedFile)
-          setCertFile(parsedFile)
+          const deserializedCert = poolCertUtils.deserializeCertificate(parsedFile)
+          setCertFile(deserializedCert)
           stopLoadingAction()
           setCertFileError(undefined)
         } catch (err) {
@@ -59,11 +59,21 @@ const PoolOwnerCard = ({loadingAction, stopLoadingAction}: Props) => {
   const error = certFileError
   return (
     <div className="card">
-      <h2 className="card-title small-margin">Pool registration certificate</h2>
+      <h2 className="card-title small-margin">
+        Pool registration certificate transaction
+        <a
+          {...tooltip(
+            'Pool owners using hardware wallets can sign pool registration transactions by supplying the transaction file which contains a valid stake pool registration certificate in cardano-cli format.',
+            true
+          )}
+        >
+          <span className="show-info">{''}</span>
+        </a>
+      </h2>
       <FileLoader
         fileName={fileName}
         readFile={readFile}
-        fileDescription="certificate"
+        fileDescription="transaction"
         acceptedFiles="*"
         error
       />
