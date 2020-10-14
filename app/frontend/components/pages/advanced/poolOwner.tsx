@@ -2,11 +2,8 @@ import {h} from 'preact'
 import {useState} from 'preact/hooks'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
-import poolOwnerActions from '../../../poolOwnerActions'
 import FileLoader from '../../common/fileLoader'
 import tooltip from '../../common/tooltip'
-import debugLog from '../../../helpers/debugLog'
-import * as poolCertUtils from '../../../helpers/poolCertificateUtils'
 import {getTranslation} from '../../../translations'
 
 interface Props {
@@ -24,7 +21,6 @@ const PoolOwnerCard = ({
 }: Props) => {
   const [fileName, setFileName] = useState<string>('')
   const [certFile, setCertFile] = useState<any>(undefined)
-  const [certFileError, setCertFileError] = useState<string>('')
 
   const signCertificateFile = async () => {
     loadingAction('Signing certificate file')
@@ -33,14 +29,12 @@ const PoolOwnerCard = ({
       console.log(certFile)
     } catch (e) {
       stopLoadingAction()
-      setCertFileError('An error occured while signing certificate.')
     }
   }
 
   const readFile = async (targetFile) => {
     setFileName(targetFile.name)
     setCertFile(undefined)
-    setCertFileError(undefined)
 
     const reader = new FileReader()
     await reader.readAsText(targetFile)

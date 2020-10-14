@@ -138,7 +138,7 @@ function ShelleyTxOutput(address, coins, isChange, spendingPath = null, stakingP
   }
 }
 
-function ShelleyTxCert(type, accountAddress, poolHash) {
+function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
   function encodeCBOR(encoder) {
     const accountAddressHash = bech32.decode(accountAddress).data.slice(1)
     let hash
@@ -148,6 +148,18 @@ function ShelleyTxCert(type, accountAddress, poolHash) {
       0: [type, account],
       1: [type, account],
       2: [type, account, hash],
+      3: [
+        type,
+        poolParams.poolPubKey, //pool cold key
+        poolParams.operatorPubKey, //vrf
+        poolParams.fixedCost, //pledge
+        poolParams.margin, //cost
+        poolParams.tagged, //new Tagged(30, poolParams.numerator, poolParams.denominator,
+        poolParams.rewardAddressBuff,
+        poolParams.ownerPubKeys,
+        poolParams.s1,
+        poolParams.s2,
+      ], // z cbor.me, cbor tag new Tagged(24, encode([extendedPublicKey, signature]), null)])
     }
     return encoder.pushAny(encodedCertsTypes[type])
   }

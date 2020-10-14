@@ -231,14 +231,14 @@ const ShelleyWallet = ({
     }
   }
 
-  async function prepareTxAux(plan) {
+  async function prepareTxAux(plan, ttl?) {
     const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
     const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
-    const txCerts = plan.certs.map(({type, accountAddress, poolHash}) =>
-      ShelleyTxCert(type, accountAddress, poolHash)
+    const txCerts = plan.certs.map(({type, accountAddress, poolHash, poolParams}) =>
+      ShelleyTxCert(type, accountAddress, poolHash, poolParams)
     )
     const txFee = ShelleyFee(plan.fee)
-    const txTtl = ShelleyTtl(await calculateTtl())
+    const txTtl = ShelleyTtl(!ttl ? await calculateTtl() : ttl)
     const txWithdrawals = plan.withdrawals.map(({accountAddress, rewards}) => {
       return ShelleyWitdrawal(accountAddress, rewards)
     })

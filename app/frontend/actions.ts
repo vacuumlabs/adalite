@@ -1212,13 +1212,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }
       console.log(deserializedTx)
       const poolTxPlan = unsignedPoolTxToTxPlan(deserializedTx)
-
+      const txAux = await wallet.prepareTxAux(poolTxPlan, deserializedTx.ttl)
       console.log(poolTxPlan)
+      console.log(txAux)
 
       stopLoadingAction(state, {})
       // setCertFileError(undefined)
     } catch (err) {
-      console.log(err)
       debugLog(`Certificate file parsing failure: ${err}`)
       stopLoadingAction(state, {})
       setErrorState('poolRegTxError', err)
