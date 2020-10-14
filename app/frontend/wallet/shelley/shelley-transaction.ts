@@ -148,18 +148,20 @@ function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
       0: [type, account],
       1: [type, account],
       2: [type, account, hash],
-      3: [
-        type,
-        poolParams.poolPubKey, //pool cold key
-        poolParams.operatorPubKey, //vrf
-        poolParams.fixedCost, //pledge
-        poolParams.margin, //cost
-        poolParams.tagged, //new Tagged(30, poolParams.numerator, poolParams.denominator,
-        poolParams.rewardAddressBuff,
-        poolParams.ownerPubKeys,
-        poolParams.s1,
-        poolParams.s2,
-      ], // z cbor.me, cbor tag new Tagged(24, encode([extendedPublicKey, signature]), null)])
+      3: poolParams
+        ? [
+          type,
+          poolParams.poolPubKey, //pool cold key
+          poolParams.operatorPubKey, //vrf
+          poolParams.fixedCost, //pledge
+          poolParams.margin, //cost
+          poolParams.tagged, //new Tagged(30, poolParams.numerator, poolParams.denominator,
+          poolParams.rewardAddressBuff,
+          poolParams.ownerPubKeys,
+          poolParams.s1,
+          poolParams.s2,
+        ]
+        : undefined,
     }
     return encoder.pushAny(encodedCertsTypes[type])
   }
