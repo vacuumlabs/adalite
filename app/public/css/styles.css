@@ -1992,6 +1992,10 @@ li.main-tab input + label.selected:after {
   width: 100%;
 }
 
+.validation-row.pool-owner {
+  margin-top: 32px;
+}
+
 .validation-error-field {
   padding: 12px 16px;
   margin: -24px 0px 8px;

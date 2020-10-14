@@ -66,7 +66,7 @@ const PoolOwnerCard = ({
         error
       />
 
-      <div className="validation-row">
+      <div className="validation-row pool-owner">
         <button
           disabled={fileName === '' || !!error}
           onClick={signCertificateFile}
