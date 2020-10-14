@@ -1,6 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {saveAs} from './libs/file-saver'
-import {encode} from 'borc'
+import {encode, decode} from 'borc'
 import {
   parseCoins,
   sendAddressValidator,
@@ -11,6 +11,7 @@ import {
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
+  validatePoolRegUnsignedTx,
 } from './helpers/validators'
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
@@ -28,6 +29,9 @@ import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace, GetStateFn, SetStateFn} from './state'
 import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
+import {parseUnsignedTx} from './helpers/parser.tsx'
+import {buf2hex} from './wallet/shelley/helpers/chainlib-wrapper.ts'
+import {TxPlan} from './wallet/shelley/shelley-transaction-planner.ts'
 
 import {ShelleyWallet} from './wallet/shelley-wallet'
 // import loadWasmModule from './helpers/wasmLoader'
@@ -1153,6 +1157,78 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  /* Pool Owner */
+
+  const deserializeTransaction = (file) => {
+    if (!file || file.type !== 'TxUnsignedShelley' || !file.cborHex) {
+      throw NamedError('PoolRegInvalidFileFormat')
+    }
+
+    const unsignedTxDecoded = decode(file.cborHex)
+    const parsedTx = parseUnsignedTx(unsignedTxDecoded)
+    return parsedTx
+  }
+
+  const unsignedPoolTxToTxPlan = (unsignedTx): TxPlan => ({
+    inputs: unsignedTx.inputs.map((input) => ({
+      outputIndex: input.outputIndex,
+      txHash: buf2hex(input.txHash),
+      address: null,
+      coins: null,
+      // path
+    })),
+    outputs: unsignedTx.outputs.map((output) => ({
+      coins: output.coins,
+      address: buf2hex(output.address),
+      accountAddress: null,
+    })),
+    change: null,
+    certs: unsignedTx.certificates.map((cert) => ({
+      type: cert.type,
+      accountAddress: null,
+      poolHash: null,
+      poolParams: {
+        ...cert,
+      },
+    })),
+    deposit: null,
+    fee: unsignedTx.fee,
+    withdrawals: unsignedTx.withdrawals,
+  })
+
+  const loadPoolCertificateTx = async (state, fileObj) => {
+    try {
+      loadingAction(state, 'Loading pool registration certificate...', {
+        poolRegTxError: undefined,
+      })
+      const fileJson = await JSON.parse(fileObj)
+      const deserializedTx = deserializeTransaction(fileJson)
+      // setCertFile(deserializedCert)
+      const poolTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
+      if (poolTxValidationError) {
+        setErrorState('poolRegTxError', poolTxValidationError)
+        stopLoadingAction(state, {})
+        return
+      }
+      console.log(deserializedTx)
+      const poolTxPlan = unsignedPoolTxToTxPlan(deserializedTx)
+
+      console.log(poolTxPlan)
+
+      stopLoadingAction(state, {})
+      // setCertFileError(undefined)
+    } catch (err) {
+      console.log(err)
+      debugLog(`Certificate file parsing failure: ${err}`)
+      stopLoadingAction(state, {})
+      setErrorState('poolRegTxError', err)
+      // setCertFileError(
+      //   'Provided file is incorrect. To continue, load a valid JSON certificate file.'
+      // )
+    }
+    // return true
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -1202,5 +1278,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     withdrawRewards,
     openInfoModal,
     closeInfoModal,
+    loadPoolCertificateTx,
   }
 }

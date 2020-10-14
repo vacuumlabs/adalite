@@ -136,6 +136,7 @@ export interface State {
   }
   txConfirmType: string
   txSuccessTab: string
+  poolRegTxError?: any
 }
 
 const initialState: State = {

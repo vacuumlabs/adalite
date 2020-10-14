@@ -133,6 +133,20 @@ const poolIdValidator = (poolId, validStakepools) => {
   return null
 }
 
+const validatePoolRegUnsignedTx = (unsignedTx) => {
+  // TODO:kamil pool cert enum
+  if (!unsignedTx || !unsignedTx.certificates || unsignedTx.certificates.length !== 1) {
+    return {code: 'PoolRegInvalidNumCerts'}
+  }
+  if (unsignedTx.certificates[0].type !== 3) {
+    return {code: 'PoolRegInvalidType'}
+  }
+  if (unsignedTx.withdrawals.lengh > 0) {
+    return {code: 'PoolRegWithdrawalDetected'}
+  }
+  return null
+}
+
 export {
   parseToLovelace as parseCoins,
   sendAddressValidator,
@@ -143,4 +157,5 @@ export {
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
+  validatePoolRegUnsignedTx,
 }

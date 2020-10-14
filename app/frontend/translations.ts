@@ -84,6 +84,12 @@ const translations = {
     }.${RECOMMENDED_LEDGER_APP_VERSION.minor}.${
       RECOMMENDED_LEDGER_APP_VERSION.patch
     }. For more information how to do this, please refer to https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps`,
+  PoolRegInvalidNumCerts: () =>
+    'The transaction must include exactly one certificate, being the pool registration.',
+  PoolRegInvalidType: () => 'The certificate in transaction is not a pool registration.',
+  PoolRegWithdrawalDetected: () => 'The transaction must not include withdrawals.',
+  PoolRegInvalidFileFormat: () =>
+    'Specified file is not a cli-format pool registration certificate transaction.',
 }
 
 function getTranslation(code, params = {}) {

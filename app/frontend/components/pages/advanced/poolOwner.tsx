@@ -2,17 +2,26 @@ import {h} from 'preact'
 import {useState} from 'preact/hooks'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
+import poolOwnerActions from '../../../poolOwnerActions'
 import FileLoader from '../../common/fileLoader'
 import tooltip from '../../common/tooltip'
 import debugLog from '../../../helpers/debugLog'
 import * as poolCertUtils from '../../../helpers/poolCertificateUtils'
+import {getTranslation} from '../../../translations'
 
 interface Props {
   loadingAction: any
   stopLoadingAction: any
+  loadPoolCertificateTx: any
+  poolRegTxError: any
 }
 
-const PoolOwnerCard = ({loadingAction, stopLoadingAction}: Props) => {
+const PoolOwnerCard = ({
+  loadingAction,
+  stopLoadingAction,
+  loadPoolCertificateTx,
+  poolRegTxError,
+}: Props) => {
   const [fileName, setFileName] = useState<string>('')
   const [certFile, setCertFile] = useState<any>(undefined)
   const [certFileError, setCertFileError] = useState<string>('')
@@ -37,26 +46,11 @@ const PoolOwnerCard = ({loadingAction, stopLoadingAction}: Props) => {
     await reader.readAsText(targetFile)
 
     reader.onload = ((theFile) => {
-      return async (e) => {
-        try {
-          const parsedFile = await JSON.parse(e.target.result)
-          const deserializedCert = poolCertUtils.deserializeCertificate(parsedFile)
-          setCertFile(deserializedCert)
-          stopLoadingAction()
-          setCertFileError(undefined)
-        } catch (err) {
-          debugLog(`Certificate file parsing failure: ${err}`)
-          stopLoadingAction()
-          setCertFileError(
-            'Provided file is incorrect. To continue, load a valid JSON certificate file.'
-          )
-        }
-        return true
-      }
+      return async (e) => await loadPoolCertificateTx(e.target.result)
     })(targetFile)
   }
 
-  const error = certFileError
+  const error = poolRegTxError
   return (
     <div className="card">
       <h2 className="card-title small-margin">
@@ -93,13 +87,17 @@ const PoolOwnerCard = ({loadingAction, stopLoadingAction}: Props) => {
         >
           Sign
         </button>
-        {error && <div className="validation-message error">{error}</div>}
+        {error && (
+          <div className="validation-message error">{getTranslation(error.code, error.params)}</div>
+        )}
       </div>
     </div>
   )
 }
 
 export default connect(
-  undefined,
+  (state) => ({
+    poolRegTxError: state.poolRegTxError,
+  }),
   actions
 )(PoolOwnerCard)
