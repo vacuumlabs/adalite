@@ -1229,6 +1229,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     // return true
   }
 
+  const downloadPoolSignature = (state) => {
+    const signatureExport = JSON.stringify({})
+    const blob = new Blob([signatureExport], {
+      type: 'application/json;charset=utf-8',
+    })
+    saveAs(blob, 'PoolSignature.json')
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -1279,5 +1287,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     openInfoModal,
     closeInfoModal,
     loadPoolCertificateTx,
+    downloadPoolSignature,
   }
 }

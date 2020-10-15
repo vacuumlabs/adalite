@@ -11,6 +11,7 @@ interface Props {
   stopLoadingAction: any
   loadPoolCertificateTx: any
   poolRegTxError: any
+  downloadPoolSignature: any
 }
 
 const PoolOwnerCard = ({
@@ -18,6 +19,7 @@ const PoolOwnerCard = ({
   stopLoadingAction,
   loadPoolCertificateTx,
   poolRegTxError,
+  downloadPoolSignature,
 }: Props) => {
   const [fileName, setFileName] = useState<string>('')
   const [certFile, setCertFile] = useState<any>(undefined)
@@ -66,7 +68,12 @@ const PoolOwnerCard = ({
         error
       />
 
-      <div className="validation-row pool-owner">
+      {error && (
+        <div className="validation-error-field">
+          <div className="validation-message error">{getTranslation(error.code, error.params)}</div>
+        </div>
+      )}
+      <div className="pool-owner-content-bottom">
         <button
           disabled={fileName === '' || !!error}
           onClick={signCertificateFile}
@@ -81,9 +88,17 @@ const PoolOwnerCard = ({
         >
           Sign
         </button>
-        {error && (
-          <div className="validation-message error">{getTranslation(error.code, error.params)}</div>
-        )}
+        <button
+          className="button secondary"
+          disabled //
+          {...tooltip(
+            'You have to sign the certificate\nto be able to download it.',
+            true //
+          )}
+          onClick={downloadPoolSignature}
+        >
+          Download signature
+        </button>
       </div>
     </div>
   )

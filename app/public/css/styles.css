@@ -301,6 +301,24 @@ p.hey {
   font-size: 14px;
 }
 
+.button.secondary:disabled {
+  border-color: var(--color-border);
+  color: var(--color-placeholder);
+}
+
+.button.secondary:disabled svg path {
+  fill: var(--color-placeholder);
+}
+
+.button.secondary:disabled:hover {
+  background-color: var(--color-brand-light);
+  color: #fff;
+}
+
+.button.secondary:disabled:hover svg path {
+  fill: #fff;
+}
+
 .button.secondary:hover {
   color: var(--color-brand);
 }
@@ -1992,10 +2010,6 @@ li.main-tab input + label.selected:after {
   width: 100%;
 }
 
-.validation-row.pool-owner {
-  margin-top: 32px;
-}
-
 .validation-error-field {
   padding: 12px 16px;
   margin: -24px 0px 8px;
@@ -3576,6 +3590,18 @@ input:checked + .slider:before {
 .dashboard-tab:hover {
   cursor: pointer;
 }
+
+/* Pool Owner */
+.pool-owner-content-bottom {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.pool-owner-content-bottom .button + .button {
+  margin-left: 24px;
+}
+
 
 @media screen and (min-width: 1024px) and (max-width: 1112px) {
   .button.secondary.refresh {
