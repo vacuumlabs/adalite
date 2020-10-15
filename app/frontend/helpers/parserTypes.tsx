@@ -48,15 +48,15 @@ export type _StakingKeyDeregistrationCert = {
 
 export type _StakepoolRegistrationCert = {
   type: TxCertificateKeys.STAKEPOOL_REGISTRATION
-  poolPubKey: Buffer
-  operatorPubKey: Buffer
-  fixedCost: any
+  poolKeyHashHex: Buffer
+  vrfKeyHashHex: Buffer
+  pledgeStr: string
+  costStr: string
   margin: any
-  tagged: any
-  rewardAddressBuff: Buffer
-  ownerPubKeys: Array<any>
-  s1: any
-  s2: any
+  rewardAccountKeyHash: Buffer
+  poolOwners: Array<any>
+  relays: Array<any>
+  metadata: Array<any>
 }
 
 export type _Certificates = Array<

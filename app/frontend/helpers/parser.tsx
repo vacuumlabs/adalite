@@ -40,27 +40,27 @@ function parseTxCerts(txCertificates: any[]): _Certificates {
 
   const stakepoolRegistrationCertParser = ([
     type,
-    poolPubKey,
-    operatorPubKey,
-    fixedCost,
+    poolKeyHashHex,
+    vrfKeyHashHex,
+    pledgeStr,
+    costStr,
     margin,
-    tagged,
-    rewardAddressBuff,
-    ownerPubKeys,
-    s1,
-    s2,
+    rewardAccountKeyHash,
+    poolOwners,
+    relays,
+    metadata,
   ]: any): _StakepoolRegistrationCert => ({
     // TODO: check whether this is accurate and which of these we actually need{
     type,
-    poolPubKey,
-    operatorPubKey,
-    fixedCost,
+    poolKeyHashHex,
+    vrfKeyHashHex,
+    pledgeStr,
+    costStr,
     margin,
-    tagged,
-    rewardAddressBuff,
-    ownerPubKeys,
-    s1,
-    s2,
+    rewardAccountKeyHash,
+    poolOwners,
+    relays,
+    metadata,
   })
 
   type certficateParser =
