@@ -73,6 +73,11 @@ export interface State {
   shouldShowTransactionErrorModal?: boolean
   shouldShowThanksForDonation?: boolean
   shouldShowContactFormModal?: boolean
+  poolCertTxVars: {
+    shouldShowPoolCertSignModal: boolean
+    deserializedTx: any
+    signature: any
+  }
 
   calculatingFee?: boolean
   transactionFee?: any
@@ -234,6 +239,11 @@ const initialState: State = {
   txConfirmType: '',
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
+  poolCertTxVars: {
+    shouldShowPoolCertSignModal: false,
+    deserializedTx: null,
+    signature: null,
+  },
 }
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State

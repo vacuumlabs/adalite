@@ -1203,30 +1203,80 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       const fileJson = await JSON.parse(fileObj)
       const deserializedTx = deserializeTransaction(fileJson)
-      // setCertFile(deserializedCert)
       const poolTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
       if (poolTxValidationError) {
         setErrorState('poolRegTxError', poolTxValidationError)
         stopLoadingAction(state, {})
         return
       }
-      console.log(deserializedTx)
-      const poolTxPlan = unsignedPoolTxToTxPlan(deserializedTx)
-      const txAux = await wallet.prepareTxAux(poolTxPlan, deserializedTx.ttl)
-      console.log(poolTxPlan)
-      console.log(txAux)
-
+      setState({
+        poolCertTxVars: {
+          shouldShowPoolCertSignModal: false,
+          deserializedTx,
+          signature: null,
+        },
+      })
       stopLoadingAction(state, {})
-      // setCertFileError(undefined)
     } catch (err) {
       debugLog(`Certificate file parsing failure: ${err}`)
       stopLoadingAction(state, {})
       setErrorState('poolRegTxError', err)
-      // setCertFileError(
-      //   'Provided file is incorrect. To continue, load a valid JSON certificate file.'
-      // )
     }
-    // return true
+  }
+
+  const openPoolCertificateTxModal = (state) => {
+    setState({
+      poolCertTxVars: {
+        ...state.poolCertTxVars,
+        shouldShowPoolCertSignModal: true,
+      },
+    })
+  }
+
+  const closePoolCertificateTxModal = (state) => {
+    setState({
+      poolCertTxVars: {
+        ...state.poolCertTxVars,
+        shouldShowPoolCertSignModal: false,
+      },
+    })
+  }
+
+  const resetPoolCertificateTxVars = (state) => {
+    setState({
+      poolCertTxVars: {
+        shouldShowPoolCertSignModal: false,
+        deserializedTx: null,
+        signature: null,
+      },
+    })
+  }
+
+  const signPoolCertificateTx = async (state) => {
+    setState({waitingForHwWallet: true})
+    loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+    try {
+      const deserializedTx = state.poolCertTxVars.deserializedTx
+      const poolTxPlan = unsignedPoolTxToTxPlan(deserializedTx)
+      const txAux = await wallet.prepareTxAux(poolTxPlan, deserializedTx.ttl)
+      const signature = await wallet.signTxAux(txAux)
+
+      setState({
+        poolCertTxVars: {
+          ...state.poolCertTxVars,
+          shouldShowPoolCertSignModal: false,
+          signature,
+        },
+      })
+    } catch (e) {
+    } finally {
+      setState({
+        poolCertTxVars: {
+          ...state.poolCertTxVars,
+          shouldShowPoolCertSignModal: false,
+        },
+      })
+    }
   }
 
   const downloadPoolSignature = (state) => {
@@ -1235,6 +1285,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       type: 'application/json;charset=utf-8',
     })
     saveAs(blob, 'PoolSignature.json')
+    resetPoolCertificateTxVars(state)
   }
 
   return {
@@ -1288,5 +1339,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     closeInfoModal,
     loadPoolCertificateTx,
     downloadPoolSignature,
+    openPoolCertificateTxModal,
+    closePoolCertificateTxModal,
   }
 }

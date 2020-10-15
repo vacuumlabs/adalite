@@ -12,6 +12,10 @@ interface Props {
   loadPoolCertificateTx: any
   poolRegTxError: any
   downloadPoolSignature: any
+  openPoolCertificateTxModal: any
+  shouldShowPoolCertSignModal: boolean
+  deserializedTx: any
+  signature: any
 }
 
 const PoolOwnerCard = ({
@@ -20,23 +24,20 @@ const PoolOwnerCard = ({
   loadPoolCertificateTx,
   poolRegTxError,
   downloadPoolSignature,
+  openPoolCertificateTxModal,
+  shouldShowPoolCertSignModal,
+  deserializedTx,
+  signature,
 }: Props) => {
   const [fileName, setFileName] = useState<string>('')
-  const [certFile, setCertFile] = useState<any>(undefined)
 
-  const signCertificateFile = async () => {
-    loadingAction('Signing certificate file')
-    try {
-      // TODO: sign
-      console.log(certFile)
-    } catch (e) {
-      stopLoadingAction()
-    }
+  const signCertificateHandler = () => {
+    loadingAction('Loading modal...')
+    openPoolCertificateTxModal()
   }
 
   const readFile = async (targetFile) => {
     setFileName(targetFile.name)
-    setCertFile(undefined)
 
     const reader = new FileReader()
     await reader.readAsText(targetFile)
@@ -75,8 +76,8 @@ const PoolOwnerCard = ({
       )}
       <div className="pool-owner-content-bottom">
         <button
-          disabled={fileName === '' || !!error}
-          onClick={signCertificateFile}
+          disabled={fileName === '' || !!error || !deserializedTx}
+          onClick={signCertificateHandler}
           className="button primary"
           {...tooltip(
             'Please insert a valid certificate\nJSON file before proceeding.',
@@ -90,7 +91,7 @@ const PoolOwnerCard = ({
         </button>
         <button
           className="button secondary"
-          disabled //
+          disabled={!signature} //
           {...tooltip(
             'You have to sign the certificate\nto be able to download it.',
             true //
@@ -107,6 +108,9 @@ const PoolOwnerCard = ({
 export default connect(
   (state) => ({
     poolRegTxError: state.poolRegTxError,
+    shouldShowPoolCertSignModal: state.poolCertTxVars.shouldShowPoolCertSignModal,
+    deserializedTx: state.poolCertTxVars.deserializedTx,
+    signature: state.poolCertTxVars.signature,
   }),
   actions
 )(PoolOwnerCard)
