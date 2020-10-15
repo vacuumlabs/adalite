@@ -1204,6 +1204,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const fileJson = await JSON.parse(fileObj)
       const deserializedTx = deserializeTransaction(fileJson)
       const poolTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
+      console.log(deserializedTx)
       if (poolTxValidationError) {
         setErrorState('poolRegTxError', poolTxValidationError)
         stopLoadingAction(state, {})
@@ -1341,5 +1342,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     downloadPoolSignature,
     openPoolCertificateTxModal,
     closePoolCertificateTxModal,
+    signPoolCertificateTx,
   }
 }

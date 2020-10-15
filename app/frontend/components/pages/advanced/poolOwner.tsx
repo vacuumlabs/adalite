@@ -5,6 +5,7 @@ import actions from '../../../actions'
 import FileLoader from '../../common/fileLoader'
 import tooltip from '../../common/tooltip'
 import {getTranslation} from '../../../translations'
+import SignPoolCertTxModal from './signPoolCertTxModal'
 
 interface Props {
   loadingAction: any
@@ -32,7 +33,6 @@ const PoolOwnerCard = ({
   const [fileName, setFileName] = useState<string>('')
 
   const signCertificateHandler = () => {
-    loadingAction('Loading modal...')
     openPoolCertificateTxModal()
   }
 
@@ -101,6 +101,7 @@ const PoolOwnerCard = ({
           Download signature
         </button>
       </div>
+      {shouldShowPoolCertSignModal && <SignPoolCertTxModal />}
     </div>
   )
 }
