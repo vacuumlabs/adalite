@@ -37,7 +37,7 @@ type Cert = {
   type: number
   accountAddress: any
   poolHash: string | null
-  poolParams?: any
+  poolRegistrationParams?: any
 }
 
 type Withdrawal = {

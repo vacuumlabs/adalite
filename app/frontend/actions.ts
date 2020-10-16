@@ -32,6 +32,7 @@ import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provid
 import {parseUnsignedTx} from './helpers/parser.tsx'
 import {buf2hex} from './wallet/shelley/helpers/chainlib-wrapper.ts'
 import {TxPlan} from './wallet/shelley/shelley-transaction-planner.ts'
+import bech32 from './wallet/shelley/helpers/bech32.ts'
 
 import {ShelleyWallet} from './wallet/shelley-wallet'
 // import loadWasmModule from './helpers/wasmLoader'
@@ -1169,32 +1170,101 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     return parsedTx
   }
 
-  const unsignedPoolTxToTxPlan = (unsignedTx): TxPlan => ({
-    inputs: unsignedTx.inputs.map((input) => ({
-      outputIndex: input.outputIndex,
-      txHash: buf2hex(input.txHash),
-      address: null,
-      coins: null,
-      // path
-    })),
-    outputs: unsignedTx.outputs.map((output) => ({
-      coins: output.coins,
-      address: buf2hex(output.address),
-      accountAddress: null,
-    })),
-    change: null,
-    certs: unsignedTx.certificates.map((cert) => ({
-      type: cert.type,
-      accountAddress: null,
-      poolHash: null,
-      poolParams: {
-        ...cert,
-      },
-    })),
-    deposit: null,
-    fee: unsignedTx.fee,
-    withdrawals: unsignedTx.withdrawals,
+  // TODO: kamil extract
+  const transformPoolParamsTypes = (
+    {
+      type,
+      poolKeyHashHex,
+      vrfKeyHashHex,
+      pledgeStr,
+      costStr,
+      margin,
+      rewardAccountKeyHash,
+      poolOwners,
+      relays,
+      metadata,
+    },
+    ownerCredentials
+  ) => ({
+    poolKeyHashHex: buf2hex(poolKeyHashHex),
+    vrfKeyHashHex: buf2hex(vrfKeyHashHex),
+    pledgeStr: pledgeStr.toString(),
+    costStr: costStr.toString(),
+    margin: {
+      numeratorStr: margin.value[0].toString(),
+      denominatorStr: margin.value[1].toString(),
+    },
+    rewardAccountKeyHash: buf2hex(rewardAccountKeyHash),
+    poolOwners: poolOwners.map((owner) => {
+      const ownerHash = buf2hex(owner)
+      if (ownerHash === ownerCredentials.pubKeyHex) {
+        return {stakingPath: ownerCredentials.path}
+      }
+      return {stakingKeyHashHex: ownerHash}
+    }),
+    relays: relays.map((relay) => {
+      let params
+      switch (relay[0]) {
+        case 0:
+          params = {
+            portNumber: relay[1],
+            ipv4Hex: relay[2] ? buf2hex(relay[2]) : null,
+            ipv6Hex: relay[3] ? buf2hex(relay[3]) : null,
+          }
+          break
+        case 1:
+          params = {
+            portNumber: relay[1],
+            dnsName: relay[2],
+          }
+          break
+        case 2:
+          params = {
+            dnsName: relay[1],
+          }
+          break
+        default:
+          throw NamedError('PoolRegInvalidRelay')
+      }
+      return {
+        type: relay[0],
+        params,
+      }
+    }),
+    metadata: {
+      metadataUrl: metadata.length ? metadata[0] : null,
+      metadataHashHex: metadata.length ? buf2hex(metadata[1]) : null,
+    },
   })
+
+  // TODO: kamil extract
+  const unsignedPoolTxToTxPlan = async (unsignedTx): Promise<TxPlan> => {
+    const ownerCredentials = await wallet.getPoolOwnerCredentials()
+    return {
+      inputs: unsignedTx.inputs.map((input) => ({
+        outputIndex: input.outputIndex,
+        txHash: buf2hex(input.txHash),
+        address: null,
+        coins: null,
+        // path
+      })),
+      outputs: unsignedTx.outputs.map((output) => ({
+        coins: output.coins,
+        address: bech32.encode({prefix: 'addr', data: output.address}),
+        accountAddress: null,
+      })),
+      change: null,
+      certs: unsignedTx.certificates.map((cert) => ({
+        type: cert.type,
+        accountAddress: null,
+        poolHash: null,
+        poolRegistrationParams: transformPoolParamsTypes(cert, ownerCredentials),
+      })),
+      deposit: null,
+      fee: unsignedTx.fee,
+      withdrawals: unsignedTx.withdrawals,
+    }
+  }
 
   const loadPoolCertificateTx = async (state, fileObj) => {
     try {
@@ -1258,7 +1328,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     try {
       const deserializedTx = state.poolCertTxVars.deserializedTx
-      const poolTxPlan = unsignedPoolTxToTxPlan(deserializedTx)
+      const poolTxPlan = await unsignedPoolTxToTxPlan(deserializedTx)
       const txAux = await wallet.prepareTxAux(poolTxPlan, deserializedTx.ttl)
       const signature = await wallet.signTxAux(txAux)
 
