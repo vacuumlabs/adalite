@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
-import {encode} from 'borc'
+import {encode, Tagged} from 'borc'
 import {blake2b, base58} from 'cardano-crypto.js'
 import bech32 from './helpers/bech32'
 import {isShelleyFormat} from './helpers/addresses'
@@ -140,7 +140,7 @@ function ShelleyTxOutput(address, coins, isChange, spendingPath = null, stakingP
 
 function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
   function encodeCBOR(encoder) {
-    const accountAddressHash = bech32.decode(accountAddress).data.slice(1)
+    const accountAddressHash = accountAddress ? bech32.decode(accountAddress).data.slice(1) : null
     let hash
     if (poolHash) hash = Buffer.from(poolHash, 'hex')
     const account = [0, accountAddressHash]
@@ -148,20 +148,47 @@ function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
       0: [type, account],
       1: [type, account],
       2: [type, account, hash],
-      3: poolParams
-        ? [
-          type,
-          poolParams.poolPubKey, //pool cold key
-          poolParams.operatorPubKey, //vrf
-          poolParams.fixedCost, //pledge
-          poolParams.margin, //cost
-          poolParams.tagged, //new Tagged(30, poolParams.numerator, poolParams.denominator,
-          poolParams.rewardAddressBuff,
-          poolParams.ownerPubKeys,
-          poolParams.s1,
-          poolParams.s2,
-        ]
-        : undefined,
+      3: [
+        type,
+        Buffer.from(poolParams.poolKeyHashHex, 'hex'),
+        Buffer.from(poolParams.vrfKeyHashHex, 'hex'),
+        parseInt(poolParams.pledgeStr, 10),
+        parseInt(poolParams.costStr, 10),
+        new Tagged(
+          30,
+          [
+            parseInt(poolParams.margin.numeratorStr, 10),
+            parseInt(poolParams.margin.denominatorStr, 10),
+          ],
+          null
+        ),
+        Buffer.from(poolParams.rewardAccountKeyHash, 'hex'),
+        poolParams.poolOwners.map((ownerObj) => {
+          if (ownerObj.stakingKeyHashHex) {
+            return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
+          }
+          // else is a path owner and has pubKeyHex
+          return Buffer.from(ownerObj.pubKeyHex, 'hex')
+        }),
+        poolParams.relays.map((relay) => {
+          switch (relay.type) {
+            case 0:
+              return [
+                relay.type,
+                relay.params.portNumber,
+                relay.params.ipv4Hex ? Buffer.from(relay.params.ipv4Hex, 'hex') : null,
+                relay.params.ipv6Hex ? Buffer.from(relay.params.ipv6Hex, 'hex') : null,
+              ]
+            case 1:
+              return [relay.type, relay.params.portNumber, relay.params.dnsName]
+            case 2:
+              return [relay.type, relay.params.dnsName]
+            default:
+              return []
+          }
+        }),
+        [poolParams.metadata.metadataUrl, Buffer.from(poolParams.metadata.metadataHashHex, 'hex')],
+      ],
     }
     return encoder.pushAny(encodedCertsTypes[type])
   }
@@ -171,6 +198,7 @@ function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
     type,
     accountAddress,
     poolHash,
+    poolRegistrationParams: poolParams,
     encodeCBOR,
   }
 }

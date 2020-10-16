@@ -1198,7 +1198,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     poolOwners: poolOwners.map((owner) => {
       const ownerHash = buf2hex(owner)
       if (ownerHash === ownerCredentials.pubKeyHex) {
-        return {stakingPath: ownerCredentials.path}
+        return {
+          stakingPath: ownerCredentials.path,
+          pubKeyHex: ownerCredentials.pubKeyHex, // retain key hex for inverse operation
+        }
       }
       return {stakingKeyHashHex: ownerHash}
     }),
@@ -1261,7 +1264,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         poolRegistrationParams: transformPoolParamsTypes(cert, ownerCredentials),
       })),
       deposit: null,
-      fee: unsignedTx.fee,
+      fee: parseInt(unsignedTx.fee, 10),
       withdrawals: unsignedTx.withdrawals,
     }
   }
@@ -1274,7 +1277,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const fileJson = await JSON.parse(fileObj)
       const deserializedTx = deserializeTransaction(fileJson)
       const poolTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
-      console.log(deserializedTx)
       if (poolTxValidationError) {
         setErrorState('poolRegTxError', poolTxValidationError)
         stopLoadingAction(state, {})
@@ -1329,9 +1331,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     try {
       const deserializedTx = state.poolCertTxVars.deserializedTx
       const poolTxPlan = await unsignedPoolTxToTxPlan(deserializedTx)
-      const txAux = await wallet.prepareTxAux(poolTxPlan, deserializedTx.ttl)
+      console.log('PLAN', poolTxPlan)
+      const txAux = await wallet.prepareTxAux(poolTxPlan, parseInt(deserializedTx.ttl, 10))
+      console.log('TXAUX', txAux)
       const signature = await wallet.signTxAux(txAux)
+      console.log('SIGNATURE:', signature)
 
+      stopLoadingAction(state, {})
       setState({
         poolCertTxVars: {
           ...state.poolCertTxVars,
@@ -1341,17 +1347,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
     } catch (e) {
     } finally {
-      setState({
-        poolCertTxVars: {
-          ...state.poolCertTxVars,
-          shouldShowPoolCertSignModal: false,
-        },
-      })
+      // setState({
+      //   poolCertTxVars: {
+      //     ...state.poolCertTxVars,
+      //     shouldShowPoolCertSignModal: false,
+      //   },
+      // })
     }
   }
 
   const downloadPoolSignature = (state) => {
-    const signatureExport = JSON.stringify({})
+    const signatureExport = JSON.stringify(state.poolCertTxVars.signature)
     const blob = new Blob([signatureExport], {
       type: 'application/json;charset=utf-8',
     })
