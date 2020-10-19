@@ -10,6 +10,7 @@ import {Lovelace} from '../../state'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
+import {buf2hex} from './helpers/chainlib-wrapper.ts'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
@@ -310,5 +311,101 @@ export function selectMinimalTxPlan(
   return {
     estimatedFee: computeRequiredTxFee(inputs, outputs, certs, withdrawals),
     error: {code: 'OutputTooSmall'},
+  }
+}
+
+const transformPoolParamsTypes = (
+  {
+    type,
+    poolKeyHashHex,
+    vrfKeyHashHex,
+    pledgeStr,
+    costStr,
+    margin,
+    rewardAccountKeyHash,
+    poolOwners,
+    relays,
+    metadata,
+  },
+  ownerCredentials
+) => ({
+  poolKeyHashHex: buf2hex(poolKeyHashHex),
+  vrfKeyHashHex: buf2hex(vrfKeyHashHex),
+  pledgeStr: pledgeStr.toString(),
+  costStr: costStr.toString(),
+  margin: {
+    numeratorStr: margin.value[0].toString(),
+    denominatorStr: margin.value[1].toString(),
+  },
+  rewardAccountKeyHash: buf2hex(rewardAccountKeyHash),
+  poolOwners: poolOwners.map((owner) => {
+    const ownerHash = buf2hex(owner)
+    if (ownerHash === ownerCredentials.pubKeyHex) {
+      return {
+        stakingPath: ownerCredentials.path,
+        pubKeyHex: ownerCredentials.pubKeyHex, // retain key hex for inverse operation
+      }
+    }
+    return {stakingKeyHashHex: ownerHash}
+  }),
+  relays: relays.map((relay) => {
+    let params
+    switch (relay[0]) {
+      case 0:
+        params = {
+          portNumber: relay[1],
+          ipv4Hex: relay[2] ? buf2hex(relay[2]) : null,
+          ipv6Hex: relay[3] ? buf2hex(relay[3]) : null,
+        }
+        break
+      case 1:
+        params = {
+          portNumber: relay[1],
+          dnsName: relay[2],
+        }
+        break
+      case 2:
+        params = {
+          dnsName: relay[1],
+        }
+        break
+      default:
+        throw NamedError('PoolRegInvalidRelay')
+    }
+    return {
+      type: relay[0],
+      params,
+    }
+  }),
+  metadata: {
+    metadataUrl: metadata.length ? metadata[0] : null,
+    metadataHashHex: metadata.length ? buf2hex(metadata[1]) : null,
+  },
+})
+
+export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => {
+  return {
+    inputs: unsignedTx.inputs.map((input) => ({
+      outputIndex: input.outputIndex,
+      txHash: buf2hex(input.txHash),
+      address: null,
+      coins: null,
+      // path
+    })),
+    outputs: unsignedTx.outputs.map((output) => ({
+      coins: output.coins,
+      address: bech32.encode({prefix: 'addr', data: output.address}),
+      accountAddress: null,
+    })),
+    change: null,
+    certs: unsignedTx.certificates.map((cert) => ({
+      type: cert.type,
+      accountAddress: null,
+      poolHash: null,
+      poolRegistrationParams: transformPoolParamsTypes(cert, ownerCredentials),
+    })),
+    deposit: null,
+    fee: parseInt(unsignedTx.fee, 10) as Lovelace,
+    withdrawals: unsignedTx.withdrawals,
   }
 }
