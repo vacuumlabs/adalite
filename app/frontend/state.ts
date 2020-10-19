@@ -75,8 +75,9 @@ export interface State {
   shouldShowContactFormModal?: boolean
   poolCertTxVars: {
     shouldShowPoolCertSignModal: boolean
-    deserializedTx: any
+    ttl: any
     signature: any
+    plan: any
   }
 
   calculatingFee?: boolean
@@ -241,8 +242,9 @@ const initialState: State = {
   keepConfirmationDialogOpen: false,
   poolCertTxVars: {
     shouldShowPoolCertSignModal: false,
-    deserializedTx: null,
+    ttl: 0,
     signature: null,
+    plan: null,
   },
 }
 export type SetStateFn = (newState: Partial<State>) => void

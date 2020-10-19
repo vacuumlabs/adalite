@@ -1181,11 +1181,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         stopLoadingAction(state, {})
         return
       }
+      const ownerCredentials = await wallet.getPoolOwnerCredentials()
+      const poolTxPlan: TxPlan = unsignedPoolTxToTxPlan(deserializedTx, ownerCredentials)
+      console.log('PLAN', poolTxPlan)
       setState({
         poolCertTxVars: {
           shouldShowPoolCertSignModal: false,
-          deserializedTx,
+          ttl: deserializedTx.ttl,
           signature: null,
+          plan: poolTxPlan,
         },
       })
       stopLoadingAction(state, {})
@@ -1218,8 +1222,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       poolCertTxVars: {
         shouldShowPoolCertSignModal: false,
-        deserializedTx: null,
+        ttl: 0,
         signature: null,
+        plan: null,
       },
     })
   }
@@ -1228,12 +1233,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({waitingForHwWallet: true})
     loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     try {
-      const deserializedTx = state.poolCertTxVars.deserializedTx
-      const ownerCredentials = await wallet.getPoolOwnerCredentials()
-      const poolTxPlan: TxPlan = unsignedPoolTxToTxPlan(deserializedTx, ownerCredentials)
-      console.log('PLAN', poolTxPlan)
-      // @ts-ignore (Fix byron-shelley formats later)
-      const txAux = await wallet.prepareTxAux(poolTxPlan, parseInt(deserializedTx.ttl, 10))
+      const txAux = await wallet.prepareTxAux(
+        state.poolCertTxVars.plan, // @ts-ignore (Fix byron-shelley formats later)
+        parseInt(state.poolCertTxVars.ttl, 10)
+      )
       console.log('TXAUX', txAux)
       const signature = await wallet.signTxAux(txAux)
       console.log('SIGNATURE:', signature)

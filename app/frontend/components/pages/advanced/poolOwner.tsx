@@ -15,7 +15,7 @@ interface Props {
   downloadPoolSignature: any
   openPoolCertificateTxModal: any
   shouldShowPoolCertSignModal: boolean
-  deserializedTx: any
+  poolTxPlan: any
   signature: any
 }
 
@@ -27,7 +27,7 @@ const PoolOwnerCard = ({
   downloadPoolSignature,
   openPoolCertificateTxModal,
   shouldShowPoolCertSignModal,
-  deserializedTx,
+  poolTxPlan,
   signature,
 }: Props) => {
   const [fileName, setFileName] = useState<string>('')
@@ -76,7 +76,7 @@ const PoolOwnerCard = ({
       )}
       <div className="pool-owner-content-bottom">
         <button
-          disabled={fileName === '' || !!error || !deserializedTx}
+          disabled={fileName === '' || !!error || !poolTxPlan}
           onClick={signCertificateHandler}
           className="button primary"
           {...tooltip(
@@ -94,7 +94,7 @@ const PoolOwnerCard = ({
           disabled={!signature} //
           {...tooltip(
             'You have to sign the certificate\nto be able to download it.',
-            true //
+            !signature //
           )}
           onClick={downloadPoolSignature}
         >
@@ -110,7 +110,7 @@ export default connect(
   (state) => ({
     poolRegTxError: state.poolRegTxError,
     shouldShowPoolCertSignModal: state.poolCertTxVars.shouldShowPoolCertSignModal,
-    deserializedTx: state.poolCertTxVars.deserializedTx,
+    poolTxPlan: state.poolCertTxVars.plan,
     signature: state.poolCertTxVars.signature,
   }),
   actions

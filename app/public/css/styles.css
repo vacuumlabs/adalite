@@ -3602,6 +3602,10 @@ input:checked + .slider:before {
   margin-left: 24px;
 }
 
+.review.pool-owner {
+  grid-template-columns: 120px 1fr;
+}
+
 
 @media screen and (min-width: 1024px) and (max-width: 1112px) {
   .button.secondary.refresh {

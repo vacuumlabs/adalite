@@ -11,9 +11,16 @@ import AddressVerification from '../../common/addressVerification'
 interface Props {
   closePoolCertificateTxModal: any
   signPoolCertificateTx: any
+  poolCert: any
+  ttl: any
 }
 
-const SignPoolCertTxModal = ({closePoolCertificateTxModal, signPoolCertificateTx}: Props) => {
+const SignPoolCertTxModal = ({
+  closePoolCertificateTxModal,
+  signPoolCertificateTx,
+  poolCert,
+  ttl,
+}: Props) => {
   const cancelTx = useRef(null)
 
   useEffect(() => {
@@ -21,39 +28,44 @@ const SignPoolCertTxModal = ({closePoolCertificateTxModal, signPoolCertificateTx
   }, [])
 
   return (
-    // TODO: make separate fragments into constants and then build specific types from them
     <Modal onRequestClose={closePoolCertificateTxModal} title={'Sign pool certificate transaction'}>
       <div>
         We are creating a hardware wallet signature of the given pool registration certificate
         transaction
       </div>
-      {/* <div className="review">
+      <div className="review pool-owner">
         <Fragment>
-          <div className="review-label">Pool ID</div>
-          <div className="review-amount">{stakePool.poolHash}</div>
-          <div className="review-label">Pool Name</div>
-          <div className="review-amount">{stakePool.name}</div>
-          <div className="review-label">Ticker</div>
-          <div className="review-amount">{stakePool.ticker}</div>
-          <div className="review-label">Tax</div>
+          <div className="review-label">Key hash</div>
+          <div className="review-amount">{poolCert.poolKeyHashHex}</div>
+          <div className="review-label">Vrf hash</div>
+          <div className="review-amount">{poolCert.vrfKeyHashHex}</div>
+          <div className="review-label">Reward address</div>
+          <div className="review-amount">{poolCert.rewardAccountKeyHash}</div>
+          <div className="ada-label">Fixed Cost</div>
           <div className="review-amount">
-            {stakePool.margin && stakePool.margin * 100}
-            %
+            {printAda(parseInt(poolCert.costStr, 10) as Lovelace)}
           </div>
-          <div className="review-label">Fixed cost</div>
+          <div className="ada-label">Pledge</div>
           <div className="review-amount">
-            {stakePool.fixedCost && printAda(stakePool.fixedCost)}
+            {printAda(parseInt(poolCert.pledgeStr, 10) as Lovelace)}
           </div>
-          <div className="review-label">Homepage</div>
-          <div className="review-amount">{stakePool.homepage}</div>
-          <div className="ada-label">Deposit</div>
-          <div className="review-fee">{printAda(summary.plan.deposit)}</div>
+          <div className="review-label">Margin</div>
+          <div className="review-amount">
+            {poolCert.margin.numeratorStr}/{poolCert.margin.denominatorStr}
+          </div>
+          {poolCert.poolOwners.map((owner, i) => (
+            <Fragment key={i}>
+              <div className="review-label">Owner #{i}</div>
+              <div className="review-amount">{owner.stakingKeyHashHex || owner.pubKeyHex}</div>
+            </Fragment>
+          ))}
+          <div className="review-label">Metadata url</div>
+          <div className="review-amount">{poolCert.metadata.metadataUrl}</div>
+          <div className="review-label">Metadata hash</div>
+          <div className="review-amount">{poolCert.metadata.metadataHashHex}</div>
+          {/* relays */}
         </Fragment>
-        <div className="ada-label">Fee</div>
-        <div className="review-fee">{printAda(summary.fee as Lovelace)}</div>
-        <div className="ada-label">Total</div>
-        <div className="review-total">{printAda(total)}</div>
-      </div> */}
+      </div>
 
       <div className="review-bottom">
         <button className="button primary" onClick={signPoolCertificateTx}>
@@ -76,11 +88,8 @@ const SignPoolCertTxModal = ({closePoolCertificateTxModal, signPoolCertificateTx
 
 export default connect(
   (state) => ({
-    sendAddress: state.sendAddress.fieldValue,
-    summary: state.sendTransactionSummary,
-    rawTransactionOpen: state.rawTransactionOpen,
-    stakePool: state.shelleyDelegation.selectedPool,
-    txConfirmType: state.txConfirmType,
+    poolCert: state.poolCertTxVars.plan.certs[0].poolRegistrationParams,
+    ttl: state.poolCertTxVars.ttl,
   }),
   actions
 )(SignPoolCertTxModal)
