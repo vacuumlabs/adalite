@@ -1,5 +1,5 @@
 import {h} from 'preact'
-import {useState} from 'preact/hooks'
+import {useState, useEffect} from 'preact/hooks'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import FileLoader from '../../common/fileLoader'
@@ -47,6 +47,16 @@ const PoolOwnerCard = ({
     })(targetFile)
   }
 
+  useEffect(
+    () => {
+      // reset file name after pool tx plan is reset
+      if (poolTxPlan === null) {
+        setFileName('')
+      }
+    },
+    [poolTxPlan]
+  )
+
   const error = poolRegTxError
   return (
     <div className="card">
@@ -70,8 +80,10 @@ const PoolOwnerCard = ({
       />
 
       {error && (
-        <div className="validation-error-field">
-          <div className="validation-message error">{getTranslation(error.code, error.params)}</div>
+        <div className="validation-error-field pool-owner">
+          <div className="validation-message error pool-owner">
+            {getTranslation(error.code, error.params)}
+          </div>
         </div>
       )}
       <div className="pool-owner-content-bottom">

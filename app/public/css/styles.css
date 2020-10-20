@@ -3592,6 +3592,14 @@ input:checked + .slider:before {
 }
 
 /* Pool Owner */
+.validation-error-field.pool-owner {
+  margin: 0px 0px -24px;
+}
+
+.validation-message.pool-owner {
+  padding-left: 0;
+}
+
 .pool-owner-content-bottom {
   margin-top: 32px;
   display: flex;
