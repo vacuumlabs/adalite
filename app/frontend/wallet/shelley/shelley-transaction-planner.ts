@@ -11,6 +11,7 @@ import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {buf2hex} from './helpers/chainlib-wrapper.ts'
+import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
@@ -313,75 +314,6 @@ export function selectMinimalTxPlan(
     error: {code: 'OutputTooSmall'},
   }
 }
-
-const transformPoolParamsTypes = (
-  {
-    type,
-    poolKeyHashHex,
-    vrfKeyHashHex,
-    pledgeStr,
-    costStr,
-    margin,
-    rewardAccountKeyHash,
-    poolOwners,
-    relays,
-    metadata,
-  },
-  ownerCredentials
-) => ({
-  poolKeyHashHex: buf2hex(poolKeyHashHex),
-  vrfKeyHashHex: buf2hex(vrfKeyHashHex),
-  pledgeStr: pledgeStr.toString(),
-  costStr: costStr.toString(),
-  margin: {
-    numeratorStr: margin.value[0].toString(),
-    denominatorStr: margin.value[1].toString(),
-  },
-  rewardAccountKeyHash: buf2hex(rewardAccountKeyHash),
-  poolOwners: poolOwners.map((owner) => {
-    const ownerHash = buf2hex(owner)
-    if (ownerHash === ownerCredentials.pubKeyHex) {
-      return {
-        stakingPath: ownerCredentials.path,
-        pubKeyHex: ownerCredentials.pubKeyHex, // retain key hex for inverse operation
-      }
-    }
-    return {stakingKeyHashHex: ownerHash}
-  }),
-  relays: relays.map((relay) => {
-    let params
-    switch (relay[0]) {
-      case 0:
-        params = {
-          portNumber: relay[1],
-          ipv4Hex: relay[2] ? buf2hex(relay[2]) : null,
-          ipv6Hex: relay[3] ? buf2hex(relay[3]) : null,
-        }
-        break
-      case 1:
-        params = {
-          portNumber: relay[1],
-          dnsName: relay[2],
-        }
-        break
-      case 2:
-        params = {
-          dnsName: relay[1],
-        }
-        break
-      default:
-        throw NamedError('PoolRegInvalidRelay')
-    }
-    return {
-      type: relay[0],
-      params,
-    }
-  }),
-  metadata: {
-    metadataUrl: metadata.length ? metadata[0] : null,
-    metadataHashHex: metadata.length ? buf2hex(metadata[1]) : null,
-  },
-})
 
 export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => {
   return {

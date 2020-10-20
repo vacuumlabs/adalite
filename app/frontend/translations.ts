@@ -90,6 +90,16 @@ const translations = {
   PoolRegWithdrawalDetected: () => 'The transaction must not include withdrawals.',
   PoolRegInvalidFileFormat: () =>
     'Specified file is not a cli-format pool registration certificate transaction.',
+  PoolRegIncorrectBufferLength: ({message}) =>
+    `Given property has incorrect byte length: ${message}.`,
+  PoolRegInvalidNumber: ({message}) => `Given property is not a valid number: ${message}.`,
+  PoolRegDuplicateOwners: () => 'The certificate contains duplicate owner hashes.',
+  PoolRegNotTheOwner: () =>
+    'This HW device is not an owner of the pool stated in registration certificate.',
+  PoolRegInvalidMargin: () => 'The given pool margin is not valid.',
+  PoolRegInvalidRelay: () => 'Relay type is incorrect.',
+  PoolRegInvalidMetadata: () =>
+    'Pool metadata must be either empty or contain both url and metadata hash.',
 }
 
 function getTranslation(code, params = {}) {
