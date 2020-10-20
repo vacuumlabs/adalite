@@ -1251,13 +1251,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         },
       })
     } catch (e) {
-    } finally {
-      // setState({
-      //   poolCertTxVars: {
-      //     ...state.poolCertTxVars,
-      //     shouldShowPoolCertSignModal: false,
-      //   },
-      // })
+      debugLog(`Certificate transaction file signing failure: ${e}`)
+      stopLoadingAction(state, {})
+      setErrorState(
+        'poolRegTxError',
+        NamedError('TransactionRejectedWhileSigning', {
+          message: 'An unexpected error occured.',
+        })
+      )
+      resetPoolCertificateTxVars(state)
     }
   }
 
