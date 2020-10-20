@@ -1182,6 +1182,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         return
       }
       const ownerCredentials = await wallet.getPoolOwnerCredentials()
+      console.log('CREDENTIALS', ownerCredentials)
       const poolTxPlan: TxPlan = unsignedPoolTxToTxPlan(deserializedTx, ownerCredentials)
       console.log('PLAN', poolTxPlan)
       setState({
