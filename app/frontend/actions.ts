@@ -1158,7 +1158,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* Pool Owner */
 
-  const deserializeTransaction = (file) => {
+  const deserializeTransactionFile = (file) => {
     if (!file || file.type !== 'TxUnsignedShelley' || !file.cborHex) {
       throw NamedError('PoolRegInvalidFileFormat')
     }
@@ -1174,7 +1174,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         poolRegTxError: undefined,
       })
       const fileJson = await JSON.parse(fileObj)
-      const deserializedTx = deserializeTransaction(fileJson)
+      const deserializedTx = deserializeTransactionFile(fileJson)
       const poolTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
       if (poolTxValidationError) {
         setErrorState('poolRegTxError', poolTxValidationError)
@@ -1261,8 +1261,23 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  // vacuumlabs/cardano-hw-cli
+  const transformSignatureToCliFormat = (signedTxCborHex) => {
+    const [, witnesses] = decode(signedTxCborHex)
+    // there can be only one witness since only one signing file was passed
+    const [key, [data]]: any = Array.from(witnesses)[0]
+    // enum TxWitnessKeys
+    const type = key === 0 ? 0 : 2
+    return {
+      type,
+      description: '',
+      cborHex: encode([key, data]).toString('hex'),
+    }
+  }
+
   const downloadPoolSignature = (state) => {
-    const signatureExport = JSON.stringify(state.poolCertTxVars.signature)
+    const cliFormatWitness = transformSignatureToCliFormat(state.poolCertTxVars.signature.txBody)
+    const signatureExport = JSON.stringify(cliFormatWitness)
     const blob = new Blob([signatureExport], {
       type: 'application/json;charset=utf-8',
     })
