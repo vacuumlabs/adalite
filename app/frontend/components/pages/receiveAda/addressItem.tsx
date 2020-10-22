@@ -86,15 +86,15 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
                 >
                   CardanoScan
                 </a>
-                <span> | </span>
-                <a
+                {/* <span> | </span> */}
+                {/* <a
                   className="address-link"
-                  href={`https://adascan.net/address/${address}`}
+                  href={`https://explorer.cardano.org/en/address?address=${address}`}
                   target="_blank"
                   rel="noopener"
                 >
-                  AdaScan
-                </a>
+                  CardanoExplorer
+                </a> */}
               </span>
             )}
           </div>
