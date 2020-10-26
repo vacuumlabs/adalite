@@ -11,6 +11,53 @@ const enum PoolParamsByteLengths {
   METADATA_HASH = 32,
 }
 
+export type PoolOwnerParams = {
+  stakingPath?: any //BIP32Path
+  stakingKeyHashHex?: string
+}
+
+export type SingleHostIPRelay = {
+  portNumber?: number
+  ipv4Hex?: string
+  ipv6Hex?: string
+}
+
+export type SingleHostNameRelay = {
+  portNumber?: number
+  dnsName: string
+}
+
+export type MultiHostNameRelay = {
+  dnsName: string
+}
+
+export type RelayParams = {
+  type: number // single host ip = 0, single hostname = 1, multi host name = 2
+  params: SingleHostIPRelay | SingleHostNameRelay | MultiHostNameRelay
+}
+
+export type PoolMetadataParams = {
+  metadataUrl: string
+  metadataHashHex: string
+}
+
+export type Margin = {
+  numeratorStr: string
+  denominatorStr: string
+}
+
+export type PoolParams = {
+  poolKeyHashHex: string
+  vrfKeyHashHex: string
+  pledgeStr: string
+  costStr: string
+  margin: Margin
+  rewardAccountKeyHash: string
+  poolOwners: Array<PoolOwnerParams>
+  relays: Array<RelayParams>
+  metadata: PoolMetadataParams
+}
+
 const buf2hexLengthCheck = (buffer, correctByteLength, variableName) => {
   if (!Buffer.isBuffer(buffer) || Buffer.byteLength(buffer) !== correctByteLength) {
     throw NamedError('PoolRegIncorrectBufferLength', {message: variableName})

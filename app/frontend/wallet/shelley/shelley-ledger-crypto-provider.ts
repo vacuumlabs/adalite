@@ -11,6 +11,7 @@ import {
 } from './shelley-transaction'
 import * as platform from 'platform'
 import {hasMinimalVersion} from './helpers/version-check'
+import {PoolParams} from './helpers/poolCertificateUtils.ts'
 
 // import {PROTOCOL_MAGIC_KEY} from '../constants'
 
@@ -129,54 +130,6 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     amountStr: string
     stakingPath?: any //BIP32Path,
     stakingKeyHashHex?: string
-  }
-
-  // TODO:kamil extract
-  type PoolOwnerParams = {
-    stakingPath?: any //BIP32Path
-    stakingKeyHashHex?: string
-  }
-
-  type SingleHostIPRelay = {
-    portNumber?: number
-    ipv4Hex?: string
-    ipv6Hex?: string
-  }
-
-  type SingleHostNameRelay = {
-    portNumber?: number
-    dnsName: string
-  }
-
-  type MultiHostNameRelay = {
-    dnsName: string
-  }
-
-  type RelayParams = {
-    type: number // single host ip = 0, single hostname = 1, multi host name = 2
-    params: SingleHostIPRelay | SingleHostNameRelay | MultiHostNameRelay
-  }
-
-  type PoolMetadataParams = {
-    metadataUrl: string
-    metadataHashHex: string
-  }
-
-  type Margin = {
-    numeratorStr: string
-    denominatorStr: string
-  }
-
-  type PoolParams = {
-    poolKeyHashHex: string
-    vrfKeyHashHex: string
-    pledgeStr: string
-    costStr: string
-    margin: Margin
-    rewardAccountKeyHash: string
-    poolOwners: Array<PoolOwnerParams>
-    relays: Array<RelayParams>
-    metadata: PoolMetadataParams
   }
 
   type Certificate = {
