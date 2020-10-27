@@ -1,12 +1,10 @@
-import {h, Component, Fragment} from 'preact'
-import {useState, useEffect, useRef} from 'preact/hooks'
+import {h, Fragment} from 'preact'
+import {useEffect, useRef} from 'preact/hooks'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
-// import roundNumber from '../../../helpers/roundNumber'
 import {Lovelace} from '../../../state'
-import AddressVerification from '../../common/addressVerification'
 
 interface Props {
   closePoolCertificateTxModal: any
@@ -51,7 +49,7 @@ const SignPoolCertTxModal = ({
           </div>
           <div className="review-label">Margin</div>
           <div className="review-amount">
-            {poolCert.margin.numeratorStr}/{poolCert.margin.denominatorStr}
+            {poolCert.margin.numeratorStr}/{poolCert.margin.denominatorStr}%
           </div>
           {poolCert.poolOwners.map((owner, i) => (
             <Fragment key={i}>
@@ -59,10 +57,14 @@ const SignPoolCertTxModal = ({
               <div className="review-amount">{owner.stakingKeyHashHex || owner.pubKeyHex}</div>
             </Fragment>
           ))}
-          <div className="review-label">Metadata url</div>
-          <div className="review-amount">{poolCert.metadata.metadataUrl}</div>
-          <div className="review-label">Metadata hash</div>
-          <div className="review-amount">{poolCert.metadata.metadataHashHex}</div>
+          {poolCert.metadata && (
+            <Fragment>
+              <div className="review-label">Metadata url</div>
+              <div className="review-amount">{poolCert.metadata.metadataUrl}</div>
+              <div className="review-label">Metadata hash</div>
+              <div className="review-amount">{poolCert.metadata.metadataHashHex}</div>
+            </Fragment>
+          )}
           {/* relays */}
         </Fragment>
       </div>

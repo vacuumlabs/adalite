@@ -189,10 +189,12 @@ function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
                 return []
             }
           }),
-          [
-            poolParams.metadata.metadataUrl,
-            Buffer.from(poolParams.metadata.metadataHashHex, 'hex'),
-          ],
+          poolParams.metadata
+            ? [
+              poolParams.metadata.metadataUrl,
+              Buffer.from(poolParams.metadata.metadataHashHex, 'hex'),
+            ]
+            : null,
         ]
         : [],
     }

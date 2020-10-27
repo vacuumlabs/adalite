@@ -133,7 +133,7 @@ const parseTxCerts = (txCertificates: any[]): _Certificate[] => {
       rewardAddress,
       poolOwnersPubKeyHashes,
       relays,
-      [metadataUrl, metadataHash],
+      metadata,
     ] = txCertificate
     return {
       type,
@@ -145,7 +145,12 @@ const parseTxCerts = (txCertificates: any[]): _Certificate[] => {
       rewardAddress,
       poolOwnersPubKeyHashes,
       relays: relays.map(parseRelay),
-      metadata: {metadataUrl, metadataHash},
+      metadata: metadata
+        ? {
+          metadataUrl: metadata[0],
+          metadataHash: metadata[1],
+        }
+        : null,
     }
   }
 
