@@ -1231,8 +1231,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const signPoolCertificateTx = async (state) => {
-    setState({waitingForHwWallet: true})
-    loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+    if (state.usingHwWallet) {
+      setState({waitingForHwWallet: true})
+      loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+    } else {
+      throw NamedError('PoolRegNoHwWallet')
+    }
+
     try {
       const txAux = await wallet.prepareTxAux(
         state.poolCertTxVars.plan, // @ts-ignore (Fix byron-shelley formats later)

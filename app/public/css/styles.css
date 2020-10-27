@@ -3614,6 +3614,11 @@ input:checked + .slider:before {
   grid-template-columns: 120px 1fr;
 }
 
+label.button.primary.disabled {
+  background-color: var(--color-brand-light);
+  color: white;
+}
+
 
 @media screen and (min-width: 1024px) and (max-width: 1112px) {
   .button.secondary.refresh {

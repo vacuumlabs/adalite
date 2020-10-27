@@ -17,6 +17,7 @@ interface Props {
   shouldShowPoolCertSignModal: boolean
   poolTxPlan: any
   signature: any
+  usingHwWallet: boolean
 }
 
 const PoolOwnerCard = ({
@@ -29,6 +30,7 @@ const PoolOwnerCard = ({
   shouldShowPoolCertSignModal,
   poolTxPlan,
   signature,
+  usingHwWallet,
 }: Props) => {
   const [fileName, setFileName] = useState<string>('')
 
@@ -58,6 +60,7 @@ const PoolOwnerCard = ({
   )
 
   const error = poolRegTxError
+  const hwWalletLimitation = 'Only hardware wallet users can use this feature.'
   return (
     <div className="card">
       <h2 className="card-title small-margin">
@@ -77,6 +80,8 @@ const PoolOwnerCard = ({
         fileDescription="transaction"
         acceptedFiles="*"
         error
+        isDisabled={!usingHwWallet}
+        disabledReason={hwWalletLimitation}
       />
 
       {error && (
@@ -88,13 +93,14 @@ const PoolOwnerCard = ({
       )}
       <div className="pool-owner-content-bottom">
         <button
-          disabled={fileName === '' || !!error || !poolTxPlan}
+          disabled={!usingHwWallet || fileName === '' || !!error || !poolTxPlan}
           onClick={signCertificateHandler}
           className="button primary"
           {...tooltip(
             'Please insert a valid certificate\nJSON file before proceeding.',
-            fileName === ''
+            usingHwWallet && fileName === ''
           )}
+          {...tooltip(hwWalletLimitation, !usingHwWallet)}
           onKeyDown={(e) => {
             e.key === 'Enter' && (e.target as HTMLButtonElement).click()
           }}
@@ -124,6 +130,7 @@ export default connect(
     shouldShowPoolCertSignModal: state.poolCertTxVars.shouldShowPoolCertSignModal,
     poolTxPlan: state.poolCertTxVars.plan,
     signature: state.poolCertTxVars.signature,
+    usingHwWallet: state.usingHwWallet,
   }),
   actions
 )(PoolOwnerCard)

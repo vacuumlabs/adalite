@@ -100,6 +100,9 @@ const translations = {
   PoolRegInvalidRelay: () => 'Relay type is incorrect.',
   PoolRegInvalidMetadata: () =>
     'Pool metadata must be either empty or contain both url and metadata hash.',
+  PoolRegNoHwWallet: () => {
+    'Only hardware wallet users can use this feature.'
+  },
 }
 
 function getTranslation(code, params = {}) {

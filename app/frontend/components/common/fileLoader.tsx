@@ -1,6 +1,7 @@
 import {h} from 'preact'
 import {connect} from '../../helpers/connect'
 import actions from '../../actions'
+import tooltip from './tooltip'
 
 interface Props {
   fileName: string
@@ -10,6 +11,8 @@ interface Props {
   error: any
   loadingAction: any
   stopLoadingAction: any
+  isDisabled?: boolean
+  disabledReason?: string
 }
 
 const FileLoader = ({
@@ -20,11 +23,17 @@ const FileLoader = ({
   error,
   loadingAction,
   stopLoadingAction,
+  isDisabled,
+  disabledReason,
 }: Props) => {
   const NoFileContent = () => (
     <div className="dropzone-content">
       <p className="dropzone-paragraph">Drop a {fileDescription} file here</p>
-      <label className="button primary small" htmlFor="loadFile">
+      <label
+        className={`button primary small ${isDisabled ? 'disabled' : ''}`}
+        htmlFor="loadFile"
+        {...tooltip(`${disabledReason}`, isDisabled)}
+      >
         Select a {fileDescription} file
       </label>
     </div>
@@ -40,6 +49,9 @@ const FileLoader = ({
   )
 
   const selectFile = (e) => {
+    if (isDisabled) {
+      return
+    }
     loadingAction('Reading file')
     const file = e.target.files[0]
     e.target.value = null
@@ -47,6 +59,9 @@ const FileLoader = ({
   }
 
   const drop = (e) => {
+    if (isDisabled) {
+      return
+    }
     e.stopPropagation()
     e.preventDefault()
     loadingAction('Reading file')
@@ -55,6 +70,9 @@ const FileLoader = ({
   }
 
   const dragOver = (e) => {
+    if (isDisabled) {
+      return
+    }
     e.stopPropagation()
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy'
@@ -69,6 +87,7 @@ const FileLoader = ({
         accept={acceptedFiles}
         multiple={false}
         onChange={selectFile}
+        disabled={isDisabled}
       />
       {fileName === '' ? <NoFileContent /> : <SelectedFileContent />}
     </div>
