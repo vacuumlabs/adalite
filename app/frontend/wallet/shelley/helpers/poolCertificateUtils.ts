@@ -18,8 +18,8 @@ export type PoolOwnerParams = {
 
 export type SingleHostIPRelay = {
   portNumber?: number
-  ipv4Hex?: string
-  ipv6Hex?: string
+  ipv4?: string
+  ipv6?: string
 }
 
 export type SingleHostNameRelay = {
@@ -52,7 +52,7 @@ export type PoolParams = {
   pledgeStr: string
   costStr: string
   margin: Margin
-  rewardAccountKeyHash: string
+  rewardAccountHex: string
   poolOwners: Array<PoolOwnerParams>
   relays: Array<RelayParams>
   metadata: PoolMetadataParams
@@ -102,98 +102,116 @@ const transformPoolOwners = (poolOwners, ownerCredentials) => {
 const transformMargin = (marginObj) => {
   if (
     !marginObj ||
-    !marginObj.value ||
-    marginObj.value.length !== 2 ||
-    marginObj.value.some((e) => typeof e !== 'number' || marginObj.value[1] > marginObj.value[0])
+    !marginObj.denominator ||
+    !marginObj.numerator ||
+    !checkNumber(marginObj.numerator, 'Numerator') ||
+    !checkNumber(marginObj.denominator, 'Denominator') ||
+    marginObj.numerator > marginObj.denominator
   ) {
     throw NamedError('PoolRegInvalidMargin')
   }
   return {
-    numeratorStr: checkNumber(marginObj.value[0], 'Numerator').toString(),
-    denominatorStr: checkNumber(marginObj.value[1], 'Denominator').toString(),
+    numeratorStr: marginObj.numerator.toString(),
+    denominatorStr: marginObj.denominator.toString(),
   }
+}
+
+const ipv4BufToAddress = (ipv4Buf) => Array.from(new Uint8Array(ipv4Buf)).join('.')
+const ipv6BufToAddress = (ipv6Buf) => {
+  const copy = Buffer.from(ipv6Buf)
+  const endianSwappedBuf = copy.swap32()
+  const ipv6Hex = buf2hexLengthCheck(endianSwappedBuf, PoolParamsByteLengths.IPV6, 'Ipv6 Relay')
+  const ipv6AddressSemicolons = ipv6Hex.replace(/(.{4})/g, '$1:').slice(0, -1)
+  return ipv6AddressSemicolons
+}
+
+export const ipv4AddressToBuf = (ipv4Address: string) => {
+  const splitAddressNumbers = ipv4Address.split('.').map((x) => +x)
+  return Buffer.from(splitAddressNumbers)
+}
+
+export const ipv6AddressToBuf = (ipv6Address: string) => {
+  const ipv6NoSemicolons = ipv6Address.replace(/:/g, '')
+  const ipv6Buf = Buffer.from(ipv6NoSemicolons, 'hex')
+  const copy = Buffer.from(ipv6Buf)
+  const endianSwappedBuf = copy.swap32()
+  return endianSwappedBuf
 }
 
 const transformRelays = (relays) =>
   relays.map((relay) => {
     let params
-    switch (relay[0]) {
+    switch (relay.type) {
       case 0:
         params = {
-          portNumber: relay[1] ? checkNumber(relay[1], 'Port number') : null,
-          ipv4Hex: relay[2]
-            ? buf2hexLengthCheck(relay[2], PoolParamsByteLengths.IPV4, 'Ipv4 Relay')
-            : null,
-          ipv6Hex: relay[3]
-            ? buf2hexLengthCheck(relay[3], PoolParamsByteLengths.IPV6, 'Ipv6 Relay')
-            : null,
+          portNumber: checkNumber(relay.portNumber, 'Port number'),
+          ipv4: relay.ipv4 ? ipv4BufToAddress(relay.ipv4) : null,
+          ipv6: relay.ipv6 ? ipv6BufToAddress(relay.ipv6) : null,
         }
         break
       case 1:
         params = {
-          portNumber: relay[1] ? checkNumber(relay[1], 'Port number') : null,
-          dnsName: relay[2],
+          portNumber: checkNumber(relay.portNumber, 'Port number'),
+          dnsName: relay.dnsName,
         }
         break
       case 2:
         params = {
-          dnsName: relay[1],
+          dnsName: relay.dnsName,
         }
         break
       default:
         throw NamedError('PoolRegInvalidRelay')
     }
     return {
-      type: relay[0],
+      type: relay.type,
       params,
     }
   })
 
 const transformMetadata = (metadata) => {
-  if (metadata.length === 0) {
+  if (!metadata) {
     return null
   }
-  if (metadata.length !== 2) {
+  if (!metadata.metadataHash || !metadata.metadataUrl) {
     throw NamedError('PoolRegInvalidMetadata')
   }
   return {
-    metadataUrl: metadata.length ? metadata[0] : null,
-    metadataHashHex: metadata.length
-      ? buf2hexLengthCheck(metadata[1], PoolParamsByteLengths.METADATA_HASH, 'Metadata hash')
-      : null,
+    metadataUrl: metadata.metadataUrl,
+    metadataHashHex: buf2hexLengthCheck(
+      metadata.metadataHash,
+      PoolParamsByteLengths.METADATA_HASH,
+      'Metadata hash'
+    ),
   }
 }
 
 export const transformPoolParamsTypes = (
   {
     type,
-    poolKeyHashHex,
-    vrfKeyHashHex,
-    pledgeStr,
-    costStr,
+    poolKeyHash,
+    vrfPubKeyHash,
+    pledge,
+    cost,
     margin,
-    rewardAccountKeyHash,
-    poolOwners,
+    rewardAddress,
+    poolOwnersPubKeyHashes,
     relays,
     metadata,
   },
   ownerCredentials
 ) => ({
-  poolKeyHashHex: buf2hexLengthCheck(
-    poolKeyHashHex,
-    PoolParamsByteLengths.POOL_HASH,
-    'Pool key hash'
-  ),
-  vrfKeyHashHex: buf2hexLengthCheck(vrfKeyHashHex, PoolParamsByteLengths.VRF, 'VRF key hash'),
-  pledgeStr: checkNumber(pledgeStr, 'Pledge').toString(),
-  costStr: checkNumber(costStr, 'Fixed cost').toString(),
+  poolKeyHashHex: buf2hexLengthCheck(poolKeyHash, PoolParamsByteLengths.POOL_HASH, 'Pool key hash'),
+  vrfKeyHashHex: buf2hexLengthCheck(vrfPubKeyHash, PoolParamsByteLengths.VRF, 'VRF key hash'),
+  pledgeStr: checkNumber(pledge, 'Pledge').toString(),
+  costStr: checkNumber(cost, 'Fixed cost').toString(),
   margin: transformMargin(margin),
-  rewardAccountKeyHash: buf2hexLengthCheck(
-    rewardAccountKeyHash,
+  rewardAccountHex: buf2hexLengthCheck(
+    rewardAddress,
     PoolParamsByteLengths.REWARD,
     'Reward account'
   ),
-  poolOwners: transformPoolOwners(poolOwners, ownerCredentials),
+  poolOwners: transformPoolOwners(poolOwnersPubKeyHashes, ownerCredentials),
   relays: transformRelays(relays),
   metadata: transformMetadata(metadata),
 })

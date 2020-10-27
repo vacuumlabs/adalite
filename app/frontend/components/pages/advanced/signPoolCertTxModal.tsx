@@ -40,7 +40,7 @@ const SignPoolCertTxModal = ({
           <div className="review-label">Vrf hash</div>
           <div className="review-amount">{poolCert.vrfKeyHashHex}</div>
           <div className="review-label">Reward address</div>
-          <div className="review-amount">{poolCert.rewardAccountKeyHash}</div>
+          <div className="review-amount">{poolCert.rewardAccountHex}</div>
           <div className="ada-label">Fixed Cost</div>
           <div className="review-amount">
             {printAda(parseInt(poolCert.costStr, 10) as Lovelace)}

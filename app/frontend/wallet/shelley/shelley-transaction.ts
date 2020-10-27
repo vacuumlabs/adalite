@@ -4,6 +4,7 @@ import {encode, Tagged} from 'borc'
 import {blake2b, base58} from 'cardano-crypto.js'
 import bech32 from './helpers/bech32'
 import {isShelleyFormat} from './helpers/addresses'
+import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
 
 function ShelleyTxAux(inputs, outputs, fee, ttl, certs?, withdrawals?) {
   function getId() {
@@ -163,7 +164,7 @@ function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
             ],
             null
           ),
-          Buffer.from(poolParams.rewardAccountKeyHash, 'hex'),
+          Buffer.from(poolParams.rewardAccountHex, 'hex'),
           poolParams.poolOwners.map((ownerObj) => {
             if (ownerObj.stakingKeyHashHex) {
               return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
@@ -177,8 +178,8 @@ function ShelleyTxCert(type, accountAddress, poolHash, poolParams?) {
                 return [
                   relay.type,
                   relay.params.portNumber,
-                  relay.params.ipv4Hex ? Buffer.from(relay.params.ipv4Hex, 'hex') : null,
-                  relay.params.ipv6Hex ? Buffer.from(relay.params.ipv6Hex, 'hex') : null,
+                  relay.params.ipv4 ? ipv4AddressToBuf(relay.params.ipv4) : null,
+                  relay.params.ipv6 ? ipv6AddressToBuf(relay.params.ipv6) : null,
                 ]
               case 1:
                 return [relay.type, relay.params.portNumber, relay.params.dnsName]

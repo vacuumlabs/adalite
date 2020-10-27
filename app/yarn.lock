@@ -9,9 +9,9 @@
   dependencies:
     regenerator-runtime "^0.12.0"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v2.0.2-rc.0/cardano-foundation-ledgerjs-hw-app-cardano-2.0.1.tgz":
-  version "2.0.1"
-  resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v2.0.2-rc.0/cardano-foundation-ledgerjs-hw-app-cardano-2.0.1.tgz#ddea7416fa3da9e75b37d4e76f01eda735d154b1"
+"@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v2.0.2-rc.1/cardano-foundation-ledgerjs-hw-app-cardano-2.0.2-rc.1.tgz":
+  version "2.0.2-rc.1"
+  resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v2.0.2-rc.1/cardano-foundation-ledgerjs-hw-app-cardano-2.0.2-rc.1.tgz#4586ac3712a285bd6d77d26c9191891820d2dcde"
   dependencies:
     "@ledgerhq/hw-transport" "^5.12.0"
     babel-polyfill "^6.26.0"
