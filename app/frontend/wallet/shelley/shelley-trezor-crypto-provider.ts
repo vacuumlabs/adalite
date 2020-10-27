@@ -4,6 +4,7 @@ import {ADALITE_SUPPORT_EMAIL} from '../constants'
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
+import bech32 from './helpers/bech32'
 
 const CardanoTrezorCryptoProvider = ({network, config}) => {
   const derivationScheme = derivationSchemes.v2
@@ -67,7 +68,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   }
 
   type CardanoInput = {
-    path: string | number[]
+    path?: string | number[]
     // eslint-disable-next-line camelcase
     prev_hash: string
     // eslint-disable-next-line camelcase
@@ -84,8 +85,9 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
       }
   type CardanoCertificate = {
     type: number
-    path: string | number[]
+    path?: string | number[]
     pool?: string
+    poolParameters?: any
   }
 
   type CardanoWithdrawal = {
@@ -95,7 +97,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
 
   function prepareInput(input, addressToAbsPathMapper): CardanoInput {
     const data = {
-      path: addressToAbsPathMapper(input.address),
+      ...(input.address && {path: addressToAbsPathMapper(input.address)}),
       prev_hash: input.txid,
       prev_index: input.outputNo,
     }
@@ -121,17 +123,56 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     }
   }
 
+  function poolCertToTrezorFormat(cert) {
+    return {
+      poolId: cert.poolKeyHashHex,
+      vrfKeyHash: cert.vrfKeyHashHex,
+      pledge: cert.pledgeStr,
+      cost: cert.costStr,
+      margin: {
+        numerator: cert.margin.numeratorStr,
+        denominator: cert.margin.denominatorStr,
+      },
+      rewardAccount: bech32.encode({
+        prefix: 'stake',
+        data: Buffer.from(cert.rewardAccountHex, 'hex'),
+      }),
+      owners: cert.poolOwners.map((owner) => ({
+        ...(owner.stakingKeyHashHex && {
+          stakingKeyHash: owner.stakingKeyHashHex,
+        }),
+        ...(owner.stakingPath && {
+          stakingKeyPath: owner.stakingPath,
+          stakingKeyHash: undefined,
+        }),
+      })),
+      relays: cert.relays.map((relay) => ({
+        type: relay.type,
+        ...(relay.type === 0 && {
+          ipv4Address: relay.params.ipv4,
+          ipv6Address: relay.params.ipv6,
+        }),
+        ...(relay.type < 2 && {port: relay.params.portNumber}),
+        ...(relay.type > 0 && {hostName: relay.params.dnsName}),
+      })),
+      metadata: cert.metadata
+        ? {
+          url: cert.metadata.metadataUrl,
+          hash: cert.metadata.metadataHashHex,
+        }
+        : null,
+    }
+  }
+
   function prepareCertificate(cert, addressToAbsPathMapper): CardanoCertificate {
-    return cert.poolHash
-      ? {
-        type: cert.type,
-        path: addressToAbsPathMapper(cert.accountAddress),
-        pool: cert.poolHash,
-      }
-      : {
-        type: cert.type,
-        path: addressToAbsPathMapper(cert.accountAddress),
-      }
+    return {
+      type: cert.type,
+      path: !cert.poolRegistrationParams ? addressToAbsPathMapper(cert.accountAddress) : undefined,
+      pool: cert.poolHash ? cert.poolHash : undefined,
+      poolParameters: cert.poolRegistrationParams
+        ? poolCertToTrezorFormat(cert.poolRegistrationParams)
+        : undefined,
+    }
   }
 
   function prepareWithdrawal(withdrawal, addressToAbsPathMapper): CardanoWithdrawal {
