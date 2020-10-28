@@ -100,9 +100,7 @@ const translations = {
   PoolRegInvalidRelay: () => 'Relay type is incorrect.',
   PoolRegInvalidMetadata: () =>
     'Pool metadata must be either empty or contain both url and metadata hash.',
-  PoolRegNoHwWallet: () => {
-    'Only hardware wallet users can use this feature.'
-  },
+  PoolRegNoHwWallet: () => 'Only hardware wallet users can use this feature.',
   PoolRegTxParserError: ({message}) => `Parser error: ${message}`,
 }
 

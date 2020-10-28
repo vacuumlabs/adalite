@@ -1170,6 +1170,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const loadPoolCertificateTx = async (state, fileObj) => {
     try {
+      if (!state.usingHwWallet) {
+        throw NamedError('PoolRegNoHwWallet')
+      }
       loadingAction(state, 'Loading pool registration certificate...', {
         poolRegTxError: undefined,
       })
@@ -1191,15 +1194,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           plan: poolTxPlan,
         },
       })
-      stopLoadingAction(state, {})
     } catch (err) {
       // err from parser
       if (err.name === 'Error') {
         err.name = 'PoolRegTxParserError'
       }
       debugLog(`Certificate file parsing failure: ${err}`)
-      stopLoadingAction(state, {})
       setErrorState('poolRegTxError', err)
+    } finally {
+      stopLoadingAction(state, {})
     }
   }
 
@@ -1233,14 +1236,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const signPoolCertificateTx = async (state) => {
-    if (state.usingHwWallet) {
-      setState({waitingForHwWallet: true})
-      loadingAction(state, `Waiting for ${state.hwWalletName}...`)
-    } else {
-      throw NamedError('PoolRegNoHwWallet')
-    }
-
     try {
+      if (state.usingHwWallet) {
+        setState({waitingForHwWallet: true})
+        loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+      } else {
+        throw NamedError('PoolRegNoHwWallet')
+      }
+
       const txAux = await wallet.prepareTxAux(
         state.poolCertTxVars.plan, // @ts-ignore (Fix byron-shelley formats later)
         parseInt(state.poolCertTxVars.ttl, 10)
@@ -1249,7 +1252,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const signature = await wallet.signTxAux(txAux)
       console.log('SIGNATURE:', signature)
 
-      stopLoadingAction(state, {})
       setState({
         poolCertTxVars: {
           ...state.poolCertTxVars,
@@ -1259,14 +1261,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
     } catch (e) {
       debugLog(`Certificate transaction file signing failure: ${e}`)
-      stopLoadingAction(state, {})
-      setErrorState(
-        'poolRegTxError',
-        NamedError('TransactionRejectedWhileSigning', {
-          message: 'An unexpected error occured.',
-        })
-      )
+      setErrorState('poolRegTxError', e)
       resetPoolCertificateTxVars(state)
+    } finally {
+      stopLoadingAction(state, {})
     }
   }
 
