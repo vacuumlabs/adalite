@@ -2889,6 +2889,18 @@ input:checked + .slider:before {
   word-break: break-all;
 }
 
+/* ADVANCED */
+.advanced-label {
+  font-weight: bold;
+}
+
+.advanced-value {
+  margin-left: 12px;
+  margin-bottom: 4px;
+  color: rgba(96, 106, 113, 0.64);
+  word-break: break-all;
+}
+
 /* TRANSACTIONS */
 
 .transactions {
