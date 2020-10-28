@@ -116,7 +116,11 @@ const transformMargin = (marginObj) => {
   }
 }
 
-const ipv4BufToAddress = (ipv4Buf) => Array.from(new Uint8Array(ipv4Buf)).join('.')
+const ipv4BufToAddress = (ipv4Buf) => {
+  buf2hexLengthCheck(ipv4Buf, PoolParamsByteLengths.IPV4, 'Ipv4 Relay')
+  return Array.from(new Uint8Array(ipv4Buf)).join('.')
+}
+
 const ipv6BufToAddress = (ipv6Buf) => {
   const copy = Buffer.from(ipv6Buf)
   const endianSwappedBuf = copy.swap32()

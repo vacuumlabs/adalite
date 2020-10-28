@@ -3,7 +3,7 @@ import bech32 from './helpers/bech32'
 
 import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
 
-import {TX_WITNESS_SIZES} from '../constants'
+import {TX_WITNESS_SIZES, CERTIFICATES_ENUM} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
 import {Lovelace} from '../../state'
@@ -255,9 +255,9 @@ export function isUtxoProfitable(utxo: UTxO) {
 
 function createCert(type, accountAddress, poolHash) {
   const certTypes = {
-    staking_key_registration: 0,
-    staking_key_deregistration: 1,
-    delegation: 2,
+    staking_key_registration: CERTIFICATES_ENUM.STAKING_KEY_REGISTRATION,
+    staking_key_deregistration: CERTIFICATES_ENUM.STAKING_KEY_DEREGISTRATION,
+    delegation: CERTIFICATES_ENUM.DELEGATION,
   }
   return {
     type: certTypes[type],

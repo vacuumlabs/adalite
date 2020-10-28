@@ -12,6 +12,7 @@ import {
 import * as platform from 'platform'
 import {hasMinimalVersion} from './helpers/version-check'
 import {PoolParams} from './helpers/poolCertificateUtils.ts'
+import {CERTIFICATES_ENUM} from '../constants'
 
 // import {PROTOCOL_MAGIC_KEY} from '../constants'
 
@@ -145,10 +146,12 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
   }
 
   function _prepareCert(cert, addressToAbsPathMapper): Certificate {
-    //TODO: kamil
     return {
       type: cert.type,
-      path: cert.type < 3 ? addressToAbsPathMapper(cert.accountAddress) : null,
+      path:
+        cert.type < CERTIFICATES_ENUM.STAKEPOOL_REGISTRATION
+          ? addressToAbsPathMapper(cert.accountAddress)
+          : null,
       poolKeyHashHex: cert.poolHash,
       poolRegistrationParams: cert.poolRegistrationParams,
     }

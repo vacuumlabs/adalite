@@ -10,14 +10,12 @@ interface Props {
   closePoolCertificateTxModal: any
   signPoolCertificateTx: any
   poolCert: any
-  ttl: any
 }
 
 const SignPoolCertTxModal = ({
   closePoolCertificateTxModal,
   signPoolCertificateTx,
   poolCert,
-  ttl,
 }: Props) => {
   const cancelTx = useRef(null)
 
@@ -93,7 +91,6 @@ export default connect(
     poolCert: state.poolCertTxVars.plan
       ? state.poolCertTxVars.plan.certs[0].poolRegistrationParams
       : {},
-    ttl: state.poolCertTxVars.ttl,
   }),
   actions
 )(SignPoolCertTxModal)
