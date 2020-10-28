@@ -103,6 +103,7 @@ const translations = {
   PoolRegNoHwWallet: () => {
     'Only hardware wallet users can use this feature.'
   },
+  PoolRegTxParserError: ({message}) => `Parser error: ${message}`,
 }
 
 function getTranslation(code, params = {}) {

@@ -1177,9 +1177,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const deserializedTx = deserializeTransactionFile(fileJson)
       const deserializedTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
       if (deserializedTxValidationError) {
-        setErrorState('poolRegTxError', deserializedTxValidationError)
-        stopLoadingAction(state, {})
-        return
+        throw deserializedTxValidationError
       }
       const ownerCredentials = await wallet.getPoolOwnerCredentials()
       console.log('CREDENTIALS', ownerCredentials)
@@ -1195,6 +1193,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       stopLoadingAction(state, {})
     } catch (err) {
+      // err from parser
+      if (err.name === 'Error') {
+        err.name = 'PoolRegTxParserError'
+      }
       debugLog(`Certificate file parsing failure: ${err}`)
       stopLoadingAction(state, {})
       setErrorState('poolRegTxError', err)
