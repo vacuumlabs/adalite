@@ -1280,6 +1280,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         signature: null,
         plan: null,
       },
+      poolRegTxError: undefined,
     })
   }
 
