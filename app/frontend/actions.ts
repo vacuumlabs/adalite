@@ -1315,12 +1315,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         ...state.accounts,
         [wallet.accountIndex]: walletInfo,
       },
+      selectedAccount: wallet.accountIndex,
     })
     stopLoadingAction(state, {})
   }
 
   const loadNewAccount = async (state: State, accountIndex: number) => {
-    loadingAction(state, 'Loading another account')
+    loadingAction(state, 'Loading account')
     const newWallet = await ShelleyWallet({
       config: ADALITE_CONFIG,
       cryptoProvider,

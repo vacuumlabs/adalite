@@ -16,8 +16,8 @@ interface Props {
   logout: () => void
   openWelcome: any
   openInfoModal: any
+  setWalletInfo: any
   selectedAccount: number
-  selectAccount: (state, selectedAccount) => void
 }
 
 class NavbarAuth extends Component<Props, {}> {
@@ -50,7 +50,7 @@ class NavbarAuth extends Component<Props, {}> {
     }
   }
 
-  render({isDemoWallet, logout, openWelcome, openInfoModal, selectedAccount, selectAccount}) {
+  render({isDemoWallet, logout, openWelcome, openInfoModal, setWalletInfo, selectedAccount}) {
     return (
       <nav
         className={`navbar authed ${isDemoWallet ? 'demo' : ''}`}
@@ -123,7 +123,7 @@ class NavbarAuth extends Component<Props, {}> {
                 <a
                   key={i}
                   onClick={() => {
-                    selectAccount(i)
+                    setWalletInfo(i)
                     this.setState({hideAccountDropdown: true})
                   }}
                 >

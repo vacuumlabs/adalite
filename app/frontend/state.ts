@@ -145,6 +145,7 @@ export interface State {
   poolRegTxError?: any
 
   accounts: any
+  selectedAccount: number
 }
 
 const initialState: State = {
@@ -250,6 +251,7 @@ const initialState: State = {
   },
 
   accounts: {},
+  selectedAccount: 0,
 }
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State

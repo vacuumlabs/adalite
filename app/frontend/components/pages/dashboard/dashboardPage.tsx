@@ -17,7 +17,6 @@ import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
 import DashboardErrorBanner from './dashboardErrorBanner'
 import Keys from '../advanced/keys'
 import PoolOwner from '../advanced/poolOwner'
-import AccountBar from './accountBar'
 
 interface Props {
   displayStakingPage: any
@@ -108,7 +107,6 @@ class DashboardPage extends Component<Props> {
     }
     return (
       <div className="page-wrapper">
-        <AccountBar />
         {isShelleyCompatible && displayInfoModal && <InfoModal />}
         {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
         {!isShelleyCompatible && <DashboardErrorBanner />}
