@@ -19,13 +19,13 @@ const v2Path = (account: number, isChange: boolean, addrIdx: number) => {
   ]
 }
 
-export const accountXpub = async (cryptoProvider) => {
+export const accountXpub = async (cryptoProvider, accountIndex) => {
   const scheme = cryptoProvider.getDerivationScheme()
   const pathMapper = {
     v1: v1Path,
     v2: v2Path,
   }
-  const path = pathMapper[scheme.type](0, 0, 0).slice(0, 3)
+  const path = pathMapper[scheme.type](accountIndex, 0, 0).slice(0, 3)
   const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
 
   return {

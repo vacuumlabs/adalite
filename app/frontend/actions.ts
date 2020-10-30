@@ -30,7 +30,7 @@ import {State, Ada, Lovelace, GetStateFn, SetStateFn} from './state'
 import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 import {parseUnsignedTx} from './helpers/cliParser/parser'
-import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner.ts'
+import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 
 import {ShelleyWallet} from './wallet/shelley-wallet'
 // import loadWasmModule from './helpers/wasmLoader'
@@ -119,42 +119,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   /* LOADING WALLET */
-
-  const loadWalletInfo = async (state) => {
-    // console.log(accountIndex)
-    const walletInfo = await wallet.getWalletInfo()
-    setState({
-      accounts: {
-        ...state.accounts,
-        [wallet.accountIndex]: walletInfo,
-      },
-    })
-    stopLoadingAction(state, {})
-  }
-
-  const loadNewAccount = async (state: State, accountIndex: number) => {
-    loadingAction(state, 'Loading another account')
-    const newWallet = await ShelleyWallet({
-      config: ADALITE_CONFIG,
-      cryptoProvider,
-      isShelleyCompatible: true,
-      accountIndex,
-    })
-    wallets.set(accountIndex, newWallet)
-    wallet = wallets.get(accountIndex)
-    await loadWalletInfo(state)
-  }
-
-  const setWalletInfo = async (state, accountIndex: number) => {
-    if (!wallets.has(accountIndex)) {
-      await loadNewAccount(state, accountIndex)
-    }
-    wallet = wallets.get(accountIndex)
-    const walletInfo = getState().accounts[accountIndex]
-    setState({
-      ...walletInfo,
-    })
-  }
 
   const loadWallet = async (state, {cryptoProviderType, walletSecretDef, isWebUSB}) => {
     // loadingAction(state, `Waiting for ${state.hwWalletName}...`)
@@ -537,6 +501,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       sendAmount: {fieldValue: '', coins: 0},
       sendAddress: {fieldValue: ''},
+      sendAddressValidationError: null,
+      sendAmountValidationError: null,
     })
     resetAmountFields(state)
   }
@@ -1339,6 +1305,47 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
     saveAs(blob, 'PoolSignature.json')
     resetPoolCertificateTxVars(state)
+  }
+
+  const loadWalletInfo = async (state) => {
+    // console.log(accountIndex)
+    const walletInfo = await wallet.getWalletInfo()
+    setState({
+      accounts: {
+        ...state.accounts,
+        [wallet.accountIndex]: walletInfo,
+      },
+    })
+    stopLoadingAction(state, {})
+  }
+
+  const loadNewAccount = async (state: State, accountIndex: number) => {
+    loadingAction(state, 'Loading another account')
+    const newWallet = await ShelleyWallet({
+      config: ADALITE_CONFIG,
+      cryptoProvider,
+      isShelleyCompatible: true,
+      accountIndex,
+    })
+    wallets.set(accountIndex, newWallet)
+    wallet = wallets.get(accountIndex)
+    await loadWalletInfo(state)
+  }
+
+  const setWalletInfo = async (state, accountIndex: number) => {
+    if (!wallets.has(accountIndex)) {
+      await loadNewAccount(state, accountIndex)
+    }
+    wallet = wallets.get(accountIndex)
+    const newState = getState()
+    const walletInfo = newState.accounts[accountIndex]
+    setState({
+      ...walletInfo,
+    })
+    resetSendFormFields(newState)
+    selectAdaliteStakepool()
+    resetTransactionSummary(newState)
+    resetPoolCertificateTxVars(newState)
   }
 
   return {

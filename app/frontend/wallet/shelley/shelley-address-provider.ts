@@ -31,8 +31,8 @@ export const stakeAccountPubkeyHex = async (cryptoProvider, accountIndex: number
   return accountHexAddressFromXpub(stakeXpub, cryptoProvider.network.networkId)
 }
 
-export const accountXpub = async (cryptoProvider) => {
-  const path = shelleyStakeAccountPath(0).slice(0, 3)
+export const accountXpub = async (cryptoProvider, accountIndex) => {
+  const path = shelleyStakeAccountPath(accountIndex).slice(0, 3)
 
   const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
   return {
