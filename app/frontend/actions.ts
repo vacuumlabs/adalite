@@ -1276,8 +1276,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
     } catch (e) {
       debugLog(`Certificate transaction file signing failure: ${e}`)
-      setErrorState('poolRegTxError', e)
       resetPoolCertificateTxVars(state)
+      setErrorState('poolRegTxError', e)
     } finally {
       stopLoadingAction(state, {})
     }
@@ -1315,7 +1315,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         ...state.accounts,
         [wallet.accountIndex]: walletInfo,
       },
-      selectedAccount: wallet.accountIndex,
     })
     stopLoadingAction(state, {})
   }
@@ -1342,6 +1341,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const walletInfo = newState.accounts[accountIndex]
     setState({
       ...walletInfo,
+      selectedAccount: accountIndex,
     })
     resetSendFormFields(newState)
     selectAdaliteStakepool()
