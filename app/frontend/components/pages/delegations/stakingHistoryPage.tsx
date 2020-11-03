@@ -28,7 +28,7 @@ export interface StakePool {
 export interface StakeDelegation extends StakingHistoryObject {
   newStakePool: StakePool
   oldStakePool?: StakePool
-  txid: string
+  txHash: string
 }
 
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
@@ -51,7 +51,7 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
         ''
       )}
       <ViewOnCardanoScan
-        txid={stakeDelegation.txid}
+        txHash={stakeDelegation.txHash}
         suffix="?tab=delegations"
         className="margin-top"
       />
@@ -60,6 +60,7 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
 }
 
 export interface StakingReward extends StakingHistoryObject {
+  forEpoch: number
   reward: Lovelace
   stakePool: StakePool
 }
@@ -67,17 +68,23 @@ export interface StakingReward extends StakingHistoryObject {
 const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
   return (
     <li className="staking-history-item">
-      <div>
-        <div className="label">Staking reward</div>
-        <div className="margin-bottom">
-          <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
+      <div className="space-between">
+        <div>
+          <div>
+            <div className="label">Reward for epoch {stakingReward.forEpoch}</div>
+            <div className="margin-bottom">
+              <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
+            </div>
+          </div>
+          <div>
+            <div className="grey">
+              {stakingReward.stakePool.name}
+              <CopyPoolId value={stakingReward.stakePool.id} />
+            </div>
+          </div>
         </div>
-      </div>
-      <div>
-        <div>Reward: {printAda(stakingReward.reward)}</div>
-        <div className="grey">
-          {stakingReward.stakePool.name}
-          <CopyPoolId value={stakingReward.stakePool.id} />
+        <div>
+          <div className="transaction-amount credit">{printAda(stakingReward.reward)}</div>
         </div>
       </div>
     </li>
@@ -85,8 +92,8 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
 }
 
 export interface RewardWithdrawal extends StakingHistoryObject {
-  credit: Lovelace
-  txid: string
+  amount: Lovelace
+  txHash: string
 }
 
 const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithdrawal}) => {
@@ -100,10 +107,10 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
           </div>
         </div>
         <div>
-          <div className="transaction-amount credit">{printAda(rewardWithdrawal.credit)}</div>
+          <div className="transaction-amount debit">{printAda(rewardWithdrawal.amount)}</div>
         </div>
       </div>
-      <ViewOnCardanoScan txid={rewardWithdrawal.txid} suffix="?tab=withdrawals" />
+      <ViewOnCardanoScan txHash={rewardWithdrawal.txHash} suffix="?tab=withdrawals" />
     </li>
   )
 }
@@ -111,7 +118,7 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
 export interface StakingKeyRegistration extends StakingHistoryObject {
   action: string
   stakingKey: string
-  txid: string
+  txHash: string
 }
 
 const formatStakingKey = (str: string, n: number) =>
@@ -143,7 +150,7 @@ const StakingKeyRegistrationItem = ({
         </CopyOnClick>
       </div>
       <ViewOnCardanoScan
-        txid={stakingKeyRegistration.txid}
+        txHash={stakingKeyRegistration.txHash}
         suffix="?tab=stakecertificates"
         className="margin-top"
       />
@@ -151,14 +158,14 @@ const StakingKeyRegistrationItem = ({
   )
 }
 
-const ViewOnCardanoScan = ({txid, suffix, className = ''}) => {
+const ViewOnCardanoScan = ({txHash, suffix, className = ''}) => {
   return (
     <div className={`blockexplorer-link ${className}`}>
       <span>View on </span>
       <span>
         <a
           className="transaction-address"
-          href={`https://cardanoscan.io/transaction/${txid}${suffix}`}
+          href={`https://cardanoscan.io/transaction/${txHash}${suffix}`}
           target="_blank"
           rel="noopener"
         >
