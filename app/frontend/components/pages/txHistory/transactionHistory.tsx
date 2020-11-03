@@ -5,6 +5,7 @@ import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import toLocalDate from '../../../helpers/toLocalDate'
+import {StakingHistoryItemType} from '../delegations/stakingHistoryPage'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {
@@ -74,51 +75,92 @@ interface Props {
   transactionHistory: any
 }
 
-const ExportCSV = ({transactionHistory}) => {
-  const formatTransactionDate = (ctbTimeIssued) =>
-    moment.utc(new Date(ctbTimeIssued * 1000)).format('MM/DD/YYYY hh:mm A [UTC]')
+const ExportCSV = ({transactionHistory, stakingHistory}) => {
+  const withdrawalHistoryTxHashes = stakingHistory
+    .filter((item) => item.type === StakingHistoryItemType.RewardWithdrawal)
+    .map((withdrawal) => withdrawal.txHash)
+
+  const stakingRewards = stakingHistory.filter(
+    (item) => item.type === StakingHistoryItemType.StakingReward
+  )
 
   const delimiter = ','
   const rowsDelimiter = '\n'
 
-  const headers =
-    `Type${delimiter}` +
-    `Received amount${delimiter}` +
-    `Received currency${delimiter}` +
-    `Sent amount${delimiter}` +
-    `Sent currency${delimiter}` +
-    `Fee amount${delimiter}` +
-    `Fee currency${delimiter}` +
-    `Transaction ID${delimiter}` +
-    `Date${delimiter}`
+  const headers = [
+    'Type',
+    'Received amount',
+    'Received currency',
+    'Sent amount',
+    'Sent currency',
+    'Fee amount',
+    'Fee currency',
+    'Transaction ID',
+    'Date',
+  ]
+    .map((header) => `${header}${delimiter}`)
+    .join('')
 
-  const rows = transactionHistory.map((transaction) => {
-    if (transaction.effect > 0) {
-      return (
-        `${'Received'}${delimiter}` +
-        `${printAda(transaction.effect as Lovelace)}${delimiter}` +
-        `ADA${delimiter}` +
-        `${delimiter}` +
-        `${delimiter}` +
-        `${delimiter}` +
-        `${delimiter}` +
-        `${transaction.ctbId}${delimiter}` +
-        `${formatTransactionDate(transaction.ctbTimeIssued)}${delimiter}`
-      )
+  const transactionTypes = {
+    received: 'Received',
+    sent: 'Sent',
+    rewardAwarded: 'Reward awarded',
+    rewardWithdrawal: 'Reward withdrawal',
+  }
+
+  const transactionsEntries = transactionHistory.map((transaction) => {
+    const common = {
+      txHash: transaction.ctbId,
+      dateTime: moment.utc(new Date(transaction.ctbTimeIssued * 1000)),
+    }
+
+    if (withdrawalHistoryTxHashes.includes(transaction.ctbId)) {
+      return {
+        ...common,
+        type: transactionTypes.rewardWithdrawal,
+        fee: transaction.fee,
+      }
+    } else if (transaction.effect > 0) {
+      return {
+        ...common,
+        type: transactionTypes.received,
+        received: transaction.effect,
+      }
     } else {
-      return (
-        `${'Sent'}${delimiter}` +
-        `${delimiter}` +
-        `${delimiter}` +
-        `${printAda((Math.abs(transaction.effect) - transaction.fee) as Lovelace)}${delimiter}` +
-        `ADA${delimiter}` +
-        `${printAda(transaction.fee as Lovelace)}${delimiter}` +
-        `ADA${delimiter}` +
-        `${transaction.ctbId}${delimiter}` +
-        `${formatTransactionDate(transaction.ctbTimeIssued)}${delimiter}`
-      )
+      return {
+        ...common,
+        type: transactionTypes.sent,
+        sent: Math.abs(transaction.effect) - transaction.fee,
+        fee: transaction.fee,
+      }
     }
   })
+
+  const rewardsEntries = stakingRewards.map((stakingReward) => ({
+    type: transactionTypes.rewardAwarded,
+    dateTime: moment(stakingReward.dateTime),
+    received: stakingReward.reward,
+  }))
+
+  const entries = [...transactionsEntries, ...rewardsEntries].sort(
+    (a, b) => b.dateTime - a.dateTime
+  )
+
+  const rows = entries.map((entry) =>
+    [
+      entry.type,
+      entry.received && printAda(entry.received as Lovelace),
+      entry.received !== undefined ? 'ADA' : undefined,
+      entry.sent && printAda(entry.sent as Lovelace),
+      entry.sent !== undefined ? 'ADA' : undefined,
+      entry.fee && printAda(entry.fee as Lovelace),
+      entry.fee !== undefined ? 'ADA' : undefined,
+      entry.txHash,
+      entry.dateTime.format('MM/DD/YYYY hh:mm A [UTC]'),
+    ]
+      .map((value) => (value === undefined ? delimiter : `${value}${delimiter}`))
+      .join('')
+  )
 
   const fileContents = `${headers}${rowsDelimiter}${rows.join(rowsDelimiter)}`
   const filename = 'transactions.csv'
@@ -134,7 +176,7 @@ const ExportCSV = ({transactionHistory}) => {
 }
 
 class TransactionHistory extends Component<Props> {
-  render({transactionHistory}) {
+  render({transactionHistory, stakingHistory}) {
     const formatDate = (date) => toLocalDate(new Date(date * 1000))
 
     return (
@@ -142,7 +184,7 @@ class TransactionHistory extends Component<Props> {
         <div className="transactions-header">
           <h2 className="card-title">Transaction History</h2>
           <div className="download-transaction">
-            <ExportCSV transactionHistory={transactionHistory} />
+            <ExportCSV transactionHistory={transactionHistory} stakingHistory={stakingHistory} />
           </div>
         </div>
         {transactionHistory.length === 0 ? (
@@ -167,6 +209,7 @@ class TransactionHistory extends Component<Props> {
 export default connect(
   (state) => ({
     transactionHistory: state.transactionHistory,
+    stakingHistory: state.stakingHistory,
   }),
   actions
 )(TransactionHistory)
