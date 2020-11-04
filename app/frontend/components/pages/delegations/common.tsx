@@ -12,3 +12,15 @@ export const CopyPoolId = ({value}) => {
     </CopyOnClick>
   )
 }
+
+export const LinkIcon = ({url}) => {
+  return (
+    <span className="link">
+      <a className="link-icon" href={url} target="_blank" rel="noopener" />
+    </span>
+  )
+}
+
+export const LinkIconToPool = ({poolHash}) => (
+  <LinkIcon url={`https://cardanoscan.io/pool/${poolHash}`} />
+)

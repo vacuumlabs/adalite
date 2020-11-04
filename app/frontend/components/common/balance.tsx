@@ -27,7 +27,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
     {conversionRates && <Conversions balance={balance} conversionRates={conversionRates} />}
     <div className="buy-ada-partner-wrapper">
       <a
-        className="button primary outline link buy-ada-partner-link"
+        className="button primary outline buy-ada-partner-link"
         href="https://exchange.adalite.io/"
         target="_blank"
       >

@@ -2443,6 +2443,37 @@ li.main-tab input + label.selected:after {
   background-image: url('../assets/copy_symbol_active.svg');
 }
 
+/* LINK ICON */
+
+.link {
+  margin-left: 8px;
+}
+
+.link-icon {
+  position: relative;
+  padding-left: 21px;
+  color: var(--color-grey);
+}
+
+.link-icon::before {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  left: 0;
+  top: 0;
+  bottom: 4px;
+  margin: auto;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/link_icon.svg');
+}
+
+.link:hover .link-icon::before {
+  background-image: url('../assets/link_icon_active.svg');
+}
+
 /* DOWNLOAD TRANSACTIONS */
 
 .download-transaction {

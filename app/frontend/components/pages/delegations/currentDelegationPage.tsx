@@ -3,7 +3,7 @@ import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import {Lovelace} from '../../../state'
-import {CopyPoolId} from './common'
+import {LinkIconToPool} from './common'
 import {EpochDateTime} from '../common'
 
 const CurrentDelegationPage = ({
@@ -22,7 +22,7 @@ const CurrentDelegationPage = ({
           <div className="current-delegation-wrapper">
             <div className="current-delegation-name">
               {pool.name || 'Pool'}
-              <CopyPoolId value={pool.poolHash} />
+              <LinkIconToPool poolHash={pool.poolHash} />
             </div>
             <div className="current-delegation-id">{pool.poolHash}</div>
             <div className="current-delegation-id">Ticker: {pool.ticker || ''}</div>
@@ -69,7 +69,7 @@ const CurrentDelegationPage = ({
           <div className="current-delegation-wrapper">
             <div className="current-delegation-name">
               <span className="bold">{nearestReward.pool.name}</span>
-              <CopyPoolId value={nearestReward.poolHash} />
+              <LinkIconToPool poolHash={nearestReward.poolHash} />
             </div>
             <div className="current-delegation-id">{nearestReward.poolHash}</div>
             <div className="current-delegation-id">

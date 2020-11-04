@@ -1,7 +1,7 @@
 import {h, Component} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
-import {CopyPoolId} from './common'
+import {LinkIconToPool} from './common'
 import {Lovelace} from '../../../state'
 import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
@@ -40,12 +40,12 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
       </div>
       <div>
         New pool: <span className="bold">{stakeDelegation.newStakePool.name}</span>
-        <CopyPoolId value={stakeDelegation.newStakePool.id} />
+        <LinkIconToPool poolHash={stakeDelegation.newStakePool.id} />
       </div>
       {stakeDelegation.oldStakePool ? (
         <div>
           Previous pool: {stakeDelegation.oldStakePool.name}
-          <CopyPoolId value={stakeDelegation.oldStakePool.id} />
+          <LinkIconToPool poolHash={stakeDelegation.oldStakePool.id} />
         </div>
       ) : (
         ''
@@ -79,7 +79,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
           <div>
             <div className="grey">
               {stakingReward.stakePool.name}
-              <CopyPoolId value={stakingReward.stakePool.id} />
+              <LinkIconToPool poolHash={stakingReward.stakePool.id} />
             </div>
           </div>
         </div>
