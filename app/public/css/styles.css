@@ -2964,6 +2964,10 @@ input:checked + .slider:before {
   color: var(--color-error);
 }
 
+.transaction-amount.withdraw {
+  color: var(--color-staking-dark);
+}
+
 .transaction-address {
   justify-self: start;
   color: rgba(96, 106, 113, 0.64);

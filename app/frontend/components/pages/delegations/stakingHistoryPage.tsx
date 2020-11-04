@@ -107,7 +107,7 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
           </div>
         </div>
         <div>
-          <div className="transaction-amount debit">{printAda(rewardWithdrawal.amount)}</div>
+          <div className="transaction-amount withdraw">{printAda(rewardWithdrawal.amount)}</div>
         </div>
       </div>
       <ViewOnCardanoScan txHash={rewardWithdrawal.txHash} suffix="?tab=withdrawals" />
@@ -209,7 +209,7 @@ class StakingHistoryPage extends Component<Props> {
 
     return (
       <div className="staking-history card">
-        <h2 className="card-title">Staking History</h2>
+        <h2 className="card-title">Staking and Rewards History</h2>
         {stakingHistory.length === 0 ? (
           <div className="transactions-empty">No history found</div>
         ) : (

@@ -16,7 +16,7 @@ const CurrentDelegationPage = ({
 }) => {
   return (
     <div className="current-delegation card">
-      <h2 className="card-title small-margin">Current delegation</h2>
+      <h2 className="card-title small-margin">Current Delegation</h2>
       {Object.keys(pool).length ? (
         <div>
           <div className="current-delegation-wrapper">
