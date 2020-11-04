@@ -76,9 +76,11 @@ interface Props {
 }
 
 const ExportCSV = ({transactionHistory, stakingHistory}) => {
-  const withdrawalHistoryTxHashes = stakingHistory
-    .filter((item) => item.type === StakingHistoryItemType.RewardWithdrawal)
-    .map((withdrawal) => withdrawal.txHash)
+  const withdrawalHistoryTxHashes = new Set(
+    stakingHistory
+      .filter((item) => item.type === StakingHistoryItemType.RewardWithdrawal)
+      .map((withdrawal) => withdrawal.txHash)
+  )
 
   const stakingRewards = stakingHistory.filter(
     (item) => item.type === StakingHistoryItemType.StakingReward
@@ -114,7 +116,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}) => {
       dateTime: moment.utc(new Date(transaction.ctbTimeIssued * 1000)),
     }
 
-    if (withdrawalHistoryTxHashes.includes(transaction.ctbId)) {
+    if (withdrawalHistoryTxHashes.has(transaction.ctbId)) {
       return {
         ...common,
         type: transactionTypes.rewardWithdrawal,
