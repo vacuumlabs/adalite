@@ -5,7 +5,7 @@ import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import toLocalDate from '../../../helpers/toLocalDate'
-import {StakingHistoryItemType} from '../delegations/stakingHistoryPage'
+import {RewardWithdrawal, StakingHistoryItemType} from '../delegations/stakingHistoryPage'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {
@@ -76,11 +76,12 @@ interface Props {
 }
 
 const ExportCSV = ({transactionHistory, stakingHistory}) => {
-  const withdrawalHistoryTxHashes = new Set(
-    stakingHistory
-      .filter((item) => item.type === StakingHistoryItemType.RewardWithdrawal)
-      .map((withdrawal) => withdrawal.txHash)
-  )
+  const withdrawalHistory = stakingHistory
+    .filter((item) => item.type === StakingHistoryItemType.RewardWithdrawal)
+    .reduce((acc, withdrawal: RewardWithdrawal) => {
+      acc[withdrawal.txHash] = withdrawal.amount
+      return acc
+    }, {})
 
   const stakingRewards = stakingHistory.filter(
     (item) => item.type === StakingHistoryItemType.StakingReward
@@ -107,7 +108,6 @@ const ExportCSV = ({transactionHistory, stakingHistory}) => {
     received: 'Received',
     sent: 'Sent',
     rewardAwarded: 'Reward awarded',
-    rewardWithdrawal: 'Reward withdrawal',
   }
 
   const transactionsEntries = transactionHistory.map((transaction) => {
@@ -116,10 +116,11 @@ const ExportCSV = ({transactionHistory, stakingHistory}) => {
       dateTime: moment.utc(new Date(transaction.ctbTimeIssued * 1000)),
     }
 
-    if (withdrawalHistoryTxHashes.has(transaction.ctbId)) {
+    if (withdrawalHistory.hasOwnProperty(transaction.ctbId)) {
       return {
         ...common,
-        type: transactionTypes.rewardWithdrawal,
+        type: transactionTypes.sent,
+        sent: Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) - transaction.fee,
         fee: transaction.fee,
       }
     } else if (transaction.effect > 0) {

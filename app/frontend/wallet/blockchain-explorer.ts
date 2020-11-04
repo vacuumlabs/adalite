@@ -13,6 +13,7 @@ import {
 } from '../components/pages/delegations/stakingHistoryPage'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
+import {Lovelace} from '../state'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -271,7 +272,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         epoch: reward.epochNo,
         dateTime: new Date(reward.time),
         forEpoch: reward.forDelegationInEpoch,
-        reward: reward.amount,
+        reward: parseInt(reward.amount, 10) as Lovelace,
         stakePool: parseStakePool(reward),
       }
 
@@ -285,7 +286,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         txHash: withdrawal.txHash,
         epoch: withdrawal.epochNo,
         dateTime: new Date(withdrawal.time),
-        amount: withdrawal.amount,
+        amount: parseInt(withdrawal.amount, 10) as Lovelace,
       }
 
       return rewardWithdrawal
