@@ -1197,9 +1197,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         throw deserializedTxValidationError
       }
       const ownerCredentials = await wallet.getPoolOwnerCredentials()
-      console.log('CREDENTIALS', ownerCredentials)
       const poolTxPlan: TxPlan = unsignedPoolTxToTxPlan(deserializedTx, ownerCredentials)
-      console.log('PLAN', poolTxPlan)
       setState({
         poolCertTxVars: {
           shouldShowPoolCertSignModal: false,
@@ -1263,9 +1261,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         state.poolCertTxVars.plan, // @ts-ignore (Fix byron-shelley formats later)
         parseInt(state.poolCertTxVars.ttl, 10)
       )
-      console.log('TXAUX', txAux)
       const signature = await wallet.signTxAux(txAux)
-      console.log('SIGNATURE:', signature)
 
       setState({
         poolCertTxVars: {
@@ -1308,7 +1304,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const loadWalletInfo = async (state) => {
-    // console.log(accountIndex)
     const walletInfo = await wallet.getWalletInfo()
     setState({
       accounts: {
