@@ -45,7 +45,7 @@
     ]
   },
   "dependencies": {
-    "@sentry/browser": "5.5.0",
+    "@sentry/node": "^5.22.3",
     "body-parser": "^1.18.2",
     "borc": "^2.1.0",
     "check-types": "^8.0.2",
