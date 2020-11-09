@@ -4,6 +4,7 @@ const client = redis.createClient(process.env.REDIS_URL)
 const mung = require('express-mung')
 const normalizeUrl = require('normalize-url')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
+const {captureException} = require('@sentry/node')
 
 const knownIps = new Set()
 
@@ -66,6 +67,7 @@ const trackTxSubmissions = mung.json((body, req, res) => {
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e)
+        captureException(e)
       }
 
       incrCountersBy(`${txSubmissionType}:sentOut`, txOutAmount)

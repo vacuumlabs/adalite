@@ -8,6 +8,18 @@ const ipfilter = require('express-ipfilter').IpFilter
 const errorHandler = require('./middlewares/errorHandler')
 
 let app = express()
+const Sentry = require('@sentry/node')
+const dropSensitiveEventData = require('./helpers/dropSensitiveEventData')
+
+Sentry.init({
+  dsn: 'https://43eac31915bb40caa03798a51048e756@o150853.ingest.sentry.io/5421403',
+  tracesSampleRate: 0,
+  beforeSend(event) {
+    return dropSensitiveEventData(event)
+  },
+})
+
+app.use(Sentry.Handlers.requestHandler())
 
 express.static.mime.types.wasm = 'application/wasm'
 
@@ -114,6 +126,7 @@ app.get('*', (req, res) => {
     `)
 })
 
+app.use(Sentry.Handlers.errorHandler())
 app.use(errorHandler)
 
 /*

@@ -4,6 +4,7 @@ const normalizeUrl = require('normalize-url')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const ua = require('universal-analytics')
 const {backendConfig} = require('../helpers/loadConfig')
+const {captureException} = require('@sentry/node')
 
 const knownIps = new Set()
 
@@ -113,6 +114,7 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`Tracking event failed - ${err}`)
+      captureException(err)
     }
   }
 

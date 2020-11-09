@@ -1,5 +1,6 @@
 require('isomorphic-fetch')
 const {backendConfig} = require('./helpers/loadConfig')
+const {captureException} = require('@sentry/node')
 
 module.exports = function(app, env) {
   app.post('/api/emails/submit', async (req, res) => {
@@ -49,8 +50,9 @@ module.exports = function(app, env) {
         Left: 'Email submission rejected by network',
       })
     } catch (err) {
+      captureException(err)
       return res.json({
-        Left: 'An unexpected error has happened',
+        Left: 'An unexpected error has occurred.',
       })
     }
   })

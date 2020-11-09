@@ -1,6 +1,7 @@
 const redis = require('redis')
 const redisScan = require('redisscan')
 const client = redis.createClient(process.env.REDIS_URL)
+const {captureException} = require('@sentry/node')
 
 const getStats = async () => {
   const stats = {
@@ -161,6 +162,7 @@ module.exports = function(app, env) {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
+      captureException(e)
       return 'Something went wrong, bother the devs.'
     }
   })
