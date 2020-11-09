@@ -4,8 +4,8 @@ import {
   sign as signMsg,
   derivePrivate,
   xpubToHdPassphrase,
+  getBootstrapAddressAttributes,
   base58,
-  unpackBootstrapAddress,
 } from 'cardano-crypto.js'
 import {encode} from 'borc'
 
@@ -79,8 +79,7 @@ const ShelleyJsCryptoProvider = ({
   const build_byron_witness = async (tx_body_hash, sign, path, address) => {
     const signature = await sign(tx_body_hash, path)
     const xpub = await deriveXpub(path)
-    const hdPassphrase = await getHdPassphrase()
-    const addressAttributes = unpackBootstrapAddress(address, hdPassphrase)
+    const addressAttributes = getBootstrapAddressAttributes(base58.decode(address))
     return ShelleyTxWitnessByron(
       xpub.slice(0, 32),
       signature,

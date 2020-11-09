@@ -186,7 +186,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     const xpub = await deriveXpub(witness.path)
     const publicKey = xpub2pub(xpub)
     const chainCode = xpub.slice(32, 64) // TODO: move this somewhere
-    // we dont need to unpack address here since ledger addresses are not v1
+    // TODO: unless we create pathToAddressMapper we cant get this from cardano-crypto
     const addressAttributes = encode({})
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
     return ShelleyTxWitnessByron(publicKey, signature, chainCode, addressAttributes)
