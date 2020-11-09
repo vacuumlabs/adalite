@@ -83,6 +83,7 @@
   },
   "resolutions": {
     "lodash": "4.17.19",
+    "node-fetch": "^2.6.1",
     "minimist": "^1.2.2",
     "acorn": "^5.7.4",
     "kind-of": "^6.0.3",
