@@ -2,13 +2,15 @@ import {encode} from 'borc'
 
 import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
 
-import {TX_WITNESS_SIZES} from '../constants'
+import {TX_WITNESS_SIZES, CERTIFICATES_ENUM} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
 import {Lovelace} from '../../state'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
+import {buf2hex} from './helpers/chainlib-wrapper'
+import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
@@ -36,6 +38,7 @@ type Cert = {
   type: number
   accountAddress: any
   poolHash: string | null
+  poolRegistrationParams?: any
 }
 
 type Withdrawal = {
@@ -138,7 +141,7 @@ function computeRequiredDeposit(certs: Array<Cert>): Lovelace {
   return deposit as Lovelace
 }
 
-interface TxPlan {
+export interface TxPlan {
   inputs: Array<Input>
   outputs: Array<Output>
   change: Output | null
@@ -251,9 +254,9 @@ export function isUtxoProfitable(utxo: UTxO) {
 
 function createCert(type, accountAddress, poolHash) {
   const certTypes = {
-    staking_key_registration: 0,
-    staking_key_deregistration: 1,
-    delegation: 2,
+    staking_key_registration: CERTIFICATES_ENUM.STAKING_KEY_REGISTRATION,
+    staking_key_deregistration: CERTIFICATES_ENUM.STAKING_KEY_DEREGISTRATION,
+    delegation: CERTIFICATES_ENUM.DELEGATION,
   }
   return {
     type: certTypes[type],
@@ -308,5 +311,32 @@ export function selectMinimalTxPlan(
   return {
     estimatedFee: computeRequiredTxFee(inputs, outputs, certs, withdrawals),
     error: {code: 'OutputTooSmall'},
+  }
+}
+
+export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => {
+  return {
+    inputs: unsignedTx.inputs.map((input) => ({
+      outputIndex: input.outputIndex,
+      txHash: input.txHash.toString('hex'),
+      address: null,
+      coins: null,
+      // path
+    })),
+    outputs: unsignedTx.outputs.map((output) => ({
+      coins: output.coins,
+      address: bech32.encode('addr', output.address),
+      accountAddress: null,
+    })),
+    change: null,
+    certs: unsignedTx.certificates.map((cert) => ({
+      type: cert.type,
+      accountAddress: null,
+      poolHash: null,
+      poolRegistrationParams: transformPoolParamsTypes(cert, ownerCredentials),
+    })),
+    deposit: null,
+    fee: parseInt(unsignedTx.fee, 10) as Lovelace,
+    withdrawals: unsignedTx.withdrawals,
   }
 }

@@ -289,6 +289,7 @@ const CardanoWallet = (options) => {
     getPoolInfo,
     checkCryptoProviderVersion,
     getPoolRecommendation,
+    getPoolOwnerCredentials: () => ({}),
     accountIndex,
   }
 }

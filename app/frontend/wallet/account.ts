@@ -181,14 +181,14 @@ const Account = ({
     }
   }
 
-  async function prepareTxAux(plan) {
+  async function prepareTxAux(plan, ttl?) {
     const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
     const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
-    const txCerts = plan.certs.map(({type, accountAddress, poolHash}) =>
-      ShelleyTxCert(type, accountAddress, poolHash)
+    const txCerts = plan.certs.map(({type, accountAddress, poolHash, poolRegistrationParams}) =>
+      ShelleyTxCert(type, accountAddress, poolHash, poolRegistrationParams)
     )
     const txFee = ShelleyFee(plan.fee)
-    const txTtl = ShelleyTtl(await calculateTtl())
+    const txTtl = ShelleyTtl(!ttl ? await calculateTtl() : ttl)
     const txWithdrawals = plan.withdrawals.map(({accountAddress, rewards}) => {
       return ShelleyWitdrawal(accountAddress, rewards)
     })
@@ -425,6 +425,19 @@ const Account = ({
     }
   }
 
+  async function getPoolOwnerCredentials() {
+    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
+    const path = myAddresses.fixedPathMapper()(accountAddress)
+
+    const pubKeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
+    return {
+      pubKeyHex: Buffer.from(pubKeyHex, 'hex')
+        .slice(1)
+        .toString('hex'),
+      path,
+    }
+  }
+
   return {
     signTxAux,
     getBalance,
@@ -441,6 +454,7 @@ const Account = ({
     getAccountInfo,
     getStakingInfo,
     getPoolInfo,
+    getPoolOwnerCredentials,
     accountIndex,
     getPoolRecommendation,
     isAccountUsed,

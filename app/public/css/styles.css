@@ -3702,6 +3702,35 @@ input:checked + .slider:before {
   color: var(--color-error);
 }
 
+/* Pool Owner */
+.validation-error-field.pool-owner {
+  margin: 0px 0px -24px;
+}
+
+.validation-message.pool-owner {
+  padding-left: 0;
+}
+
+.pool-owner-content-bottom {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.pool-owner-content-bottom .button + .button {
+  margin-left: 24px;
+}
+
+.review.pool-owner {
+  grid-template-columns: 120px 1fr;
+}
+
+
+label.button.primary.disabled {
+  background-color: var(--color-brand-light);
+  color: white;
+}
+
 /* HINT */
 
 .hint {

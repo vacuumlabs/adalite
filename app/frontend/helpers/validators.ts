@@ -3,7 +3,7 @@ import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
 import {Lovelace, Ada} from '../state'
-import {NETWORKS} from '../wallet/constants'
+import {NETWORKS, CERTIFICATES_ENUM} from '../wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace
@@ -132,6 +132,19 @@ const poolIdValidator = (poolId, validStakepools) => {
   return null
 }
 
+const validatePoolRegUnsignedTx = (unsignedTx) => {
+  if (!unsignedTx || !unsignedTx.certificates || unsignedTx.certificates.length !== 1) {
+    return {code: 'PoolRegInvalidNumCerts'}
+  }
+  if (unsignedTx.certificates[0].type !== CERTIFICATES_ENUM.STAKEPOOL_REGISTRATION) {
+    return {code: 'PoolRegInvalidType'}
+  }
+  if (unsignedTx.withdrawals.lengh > 0) {
+    return {code: 'PoolRegWithdrawalDetected'}
+  }
+  return null
+}
+
 export {
   parseToLovelace as parseCoins,
   sendAddressValidator,
@@ -142,4 +155,5 @@ export {
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
+  validatePoolRegUnsignedTx,
 }

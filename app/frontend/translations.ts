@@ -98,6 +98,24 @@ const translations = {
     }.${LEDGER_VERSIONS.WITHDRAWAL.minor}.${
       LEDGER_VERSIONS.WITHDRAWAL.patch
     }. For more information how to do this, please refer to https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps`,
+  PoolRegInvalidNumCerts: () =>
+    'The transaction must include exactly one certificate, being the pool registration.',
+  PoolRegInvalidType: () => 'The certificate in transaction is not a pool registration.',
+  PoolRegWithdrawalDetected: () => 'The transaction must not include withdrawals.',
+  PoolRegInvalidFileFormat: () =>
+    'Specified file is not a cli-format pool registration certificate transaction.',
+  PoolRegIncorrectBufferLength: ({message}) =>
+    `Given property has incorrect byte length: ${message}.`,
+  PoolRegInvalidNumber: ({message}) => `Given property is not a valid number: ${message}.`,
+  PoolRegDuplicateOwners: () => 'The certificate contains duplicate owner hashes.',
+  PoolRegNotTheOwner: () =>
+    'This HW device is not an owner of the pool stated in registration certificate.',
+  PoolRegInvalidMargin: () => 'The given pool margin is not valid.',
+  PoolRegInvalidRelay: () => 'Relay type is incorrect.',
+  PoolRegInvalidMetadata: () =>
+    'Pool metadata must be either empty or contain both url and metadata hash.',
+  PoolRegNoHwWallet: () => 'Only hardware wallet users can use this feature.',
+  PoolRegTxParserError: ({message}) => `Parser error: ${message}`,
 }
 
 function getTranslation(code, params = {}) {

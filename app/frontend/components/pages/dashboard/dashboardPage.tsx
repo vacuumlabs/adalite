@@ -20,6 +20,7 @@ import SaturationErrorBanner from './saturationErrorBanner'
 import Keys from '../advanced/keys'
 import AccountsDashboard from '../accounts/accountsDashboard'
 import {State} from '../../../state'
+import PoolOwner from '../advanced/poolOwner'
 
 interface Props {
   selectedMainTab: any
@@ -64,7 +65,7 @@ const AdvancedPage = () => {
         <Keys />
       </div>
       <div className="dashboard-column">
-        <div />
+        <PoolOwner />
       </div>
     </Fragment>
   )
@@ -166,12 +167,13 @@ class DashboardMobileContent extends Component<Props, {selectedSubTab}> {
     'Recieve ADA': MyAddresses,
     Keys,
     'Accounts': AccountsDashboard,
+    'Certificate': PoolOwner,
   }
   // TODO: refactor
   accountsTabs = ['Accounts']
   stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
   sendingTabs = ['Send ADA', 'Transactions', 'Receive ADA']
-  advancedTabs = ['Keys']
+  advancedTabs = ['Keys', 'Certificate']
   render({selectedMainTab}, {selectedSubTab}) {
     const selectedDefultSubTabs = {
       Accounts: 'Accounts',

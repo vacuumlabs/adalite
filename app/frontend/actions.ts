@@ -1,6 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {saveAs} from './libs/file-saver'
-import {encode} from 'borc'
+import {encode, decode} from 'borc'
 import {
   parseCoins,
   sendAddressValidator,
@@ -11,6 +11,7 @@ import {
   mnemonicValidator,
   donationAmountValidator,
   poolIdValidator,
+  validatePoolRegUnsignedTx,
 } from './helpers/validators'
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
@@ -31,6 +32,8 @@ import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace, GetStateFn, SetStateFn, sourceAccountState} from './state'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 import {Wallet} from './wallet/wallet'
+import {parseUnsignedTx} from './helpers/cliParser/parser'
+import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
 
@@ -507,6 +510,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       sendAmount: {fieldValue: '', coins: 0},
       sendAddress: {fieldValue: ''},
+      sendAddressValidationError: null,
+      sendAmountValidationError: null,
     })
     resetAmountFields(state)
   }
@@ -1312,7 +1317,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       shouldShowUnexpectedErrorModal: false,
     })
   }
-
   const loadErrorBannerContent = (state) => {
     const errorBannerContent = ADALITE_CONFIG.ADALITE_ERROR_BANNER_CONTENT
     const shouldShowErrorBanner = !!errorBannerContent
@@ -1320,6 +1324,141 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       errorBannerContent,
       shouldShowStakingBanner: shouldShowErrorBanner ? false : state.shouldShowStakingBanner,
     })
+  }
+
+  /* Pool Owner */
+
+  const deserializeTransactionFile = (file) => {
+    if (!file || file.type !== 'TxUnsignedShelley' || !file.cborHex) {
+      throw NamedError('PoolRegInvalidFileFormat')
+    }
+
+    const unsignedTxDecoded = decode(file.cborHex)
+    const parsedTx = parseUnsignedTx(unsignedTxDecoded)
+    return parsedTx
+  }
+
+  const loadPoolCertificateTx = async (state: State, fileObj) => {
+    try {
+      if (!state.usingHwWallet) {
+        throw NamedError('PoolRegNoHwWallet')
+      }
+      loadingAction(state, 'Loading pool registration certificate...', {
+        poolRegTxError: undefined,
+      })
+      const fileJson = await JSON.parse(fileObj)
+      const deserializedTx = deserializeTransactionFile(fileJson)
+      const deserializedTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
+      if (deserializedTxValidationError) {
+        throw deserializedTxValidationError
+      }
+      const ownerCredentials = await wallet.accounts[
+        state.sourceAccountIndex
+      ].getPoolOwnerCredentials()
+      const poolTxPlan: TxPlan = unsignedPoolTxToTxPlan(deserializedTx, ownerCredentials)
+      setState({
+        poolCertTxVars: {
+          shouldShowPoolCertSignModal: false,
+          ttl: deserializedTx.ttl,
+          signature: null,
+          plan: poolTxPlan,
+        },
+      })
+    } catch (err) {
+      // err from parser
+      if (err.name === 'Error') {
+        err.name = 'PoolRegTxParserError'
+      }
+      debugLog(`Certificate file parsing failure: ${err}`)
+      setErrorState('poolRegTxError', err)
+    } finally {
+      stopLoadingAction(state, {})
+    }
+  }
+
+  const openPoolCertificateTxModal = (state) => {
+    setState({
+      poolCertTxVars: {
+        ...state.poolCertTxVars,
+        shouldShowPoolCertSignModal: true,
+      },
+    })
+  }
+
+  const closePoolCertificateTxModal = (state) => {
+    setState({
+      poolCertTxVars: {
+        ...state.poolCertTxVars,
+        shouldShowPoolCertSignModal: false,
+      },
+    })
+  }
+
+  const resetPoolCertificateTxVars = (state) => {
+    setState({
+      poolCertTxVars: {
+        shouldShowPoolCertSignModal: false,
+        ttl: 0,
+        signature: null,
+        plan: null,
+      },
+      poolRegTxError: undefined,
+    })
+  }
+
+  const signPoolCertificateTx = async (state) => {
+    try {
+      if (state.usingHwWallet) {
+        setState({waitingForHwWallet: true})
+        loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+      } else {
+        throw NamedError('PoolRegNoHwWallet')
+      }
+
+      const txAux = await wallet.accounts[state.sourceAccountIndex].prepareTxAux(
+        state.poolCertTxVars.plan, // @ts-ignore (Fix byron-shelley formats later)
+        parseInt(state.poolCertTxVars.ttl, 10)
+      )
+      const signature = await wallet.accounts[state.sourceAccountIndex].signTxAux(txAux)
+
+      setState({
+        poolCertTxVars: {
+          ...state.poolCertTxVars,
+          shouldShowPoolCertSignModal: false,
+          signature,
+        },
+      })
+    } catch (e) {
+      debugLog(`Certificate transaction file signing failure: ${e}`)
+      resetPoolCertificateTxVars(state)
+      setErrorState('poolRegTxError', e)
+    } finally {
+      stopLoadingAction(state, {})
+    }
+  }
+
+  // vacuumlabs/cardano-hw-cli
+  const transformSignatureToCliFormat = (signedTxCborHex) => {
+    const [, witnesses] = decode(signedTxCborHex)
+    // there can be only one witness since only one signing file was passed
+    const [key, [data]]: any = Array.from(witnesses)[0]
+    // enum TxWitnessKeys
+    const type = key === 0 ? 'TxWitnessShelley' : 'TxWitnessByron'
+    return {
+      type,
+      description: '',
+      cborHex: encode([key, data]).toString('hex'),
+    }
+  }
+
+  const downloadPoolSignature = (state) => {
+    const cliFormatWitness = transformSignatureToCliFormat(state.poolCertTxVars.signature.txBody)
+    const signatureExport = JSON.stringify(cliFormatWitness)
+    const blob = new Blob([signatureExport], {
+      type: 'application/json;charset=utf-8',
+    })
+    saveAs(blob, 'PoolSignature.json')
+    resetPoolCertificateTxVars(state)
   }
 
   return {
@@ -1381,5 +1520,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setSourceAccount,
     exploreNewAccount,
     switchSourceAndTargetAccounts,
+    loadPoolCertificateTx,
+    downloadPoolSignature,
+    openPoolCertificateTxModal,
+    closePoolCertificateTxModal,
+    signPoolCertificateTx,
   }
 }

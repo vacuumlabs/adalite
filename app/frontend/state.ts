@@ -73,6 +73,12 @@ export interface State {
   shouldShowThanksForDonation?: boolean
   shouldShowContactFormModal?: boolean
   shouldShowPremiumBanner?: boolean
+  poolCertTxVars: {
+    shouldShowPoolCertSignModal: boolean
+    ttl: any
+    signature: any
+    plan: any
+  }
 
   calculatingFee?: boolean
   transactionFee?: any
@@ -161,6 +167,7 @@ export interface State {
   shouldShowDelegationModal: boolean
   sendTransactionTitle: string
   delegationTitle: string
+  poolRegTxError?: any
 }
 
 const initialState: State = {
@@ -287,6 +294,12 @@ const initialState: State = {
   shouldShowDelegationModal: false,
   sendTransactionTitle: '',
   delegationTitle: '',
+  poolCertTxVars: {
+    shouldShowPoolCertSignModal: false,
+    ttl: 0,
+    signature: null,
+    plan: null,
+  },
 }
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State
