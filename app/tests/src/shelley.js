@@ -8,10 +8,10 @@ import {buildTransaction} from '../../frontend/wallet/shelley/helpers/chainlib-w
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import loadWasmModule from './loadWasmModule'
 
-const getCryptoProvider = async (mnemonic, discriminator) => {
+const getCryptoProvider = async (mnemonic, networkId) => {
   const walletSecretDef = await mnemonicToWalletSecretDef(mnemonic)
   const network = {
-    addressDiscriminator: discriminator,
+    networkId,
   }
   return ShelleyJsCryptoProvider({walletSecretDef, network})
 }
@@ -24,9 +24,8 @@ describe('shelley address derivation', () => {
   const mnemonic15Words =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
   it('should derive base address from 15-words mnemonic', async () => {
-    const cp = await getCryptoProvider(mnemonic15Words, 'mainnet') //TODO: change discriminator to networkId for shelley
+    const cp = await getCryptoProvider(mnemonic15Words, 0) //TODO: change discriminator to networkId for shelley
     const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
-
     const {address} = await addrGen(0)
     const expected =
       'addr1qzz6hulv54gzf2suy2u5gkvmt6ysasfdlvvegy3fmf969y7r3y3kdut55a40jff00qmg74686vz44v6k363md06qkq0qk0f2ud'
@@ -39,7 +38,7 @@ describe('shelley address derivation', () => {
   // 12-word (legacy Daedalus) mnemonics should not be used in prod to derive base addresses at all
   // we just want to test that the V1 derivation scheme is applied for 12 word mnemonics
   it('should derive base address from 12-words mnemonic', async () => {
-    const cp = await getCryptoProvider(mnemonic12Words, 'mainnet') //TODO: change discriminator to networkId for shelley
+    const cp = await getCryptoProvider(mnemonic12Words, 0) //TODO: change discriminator to networkId for shelley
     const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
 
     const {address} = await addrGen(0)
