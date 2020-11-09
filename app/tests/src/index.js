@@ -25,4 +25,7 @@ describe('AdaLite Test Suite', () => {
   describe('Shelley testnet', () => {
     require('./shelley')
   })
+  describe('Dynamic text formatter', () => {
+    require('./dynamicTextFormatter')
+  })
 })
