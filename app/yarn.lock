@@ -717,10 +717,10 @@ camelcase@^5.0.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-5.3.1.tgz#e3c9b31569e106811df242f715725a1f4c494320"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
-cardano-crypto.js@5.3.6-rc.2:
-  version "5.3.6-rc.2"
-  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-5.3.6-rc.2.tgz#944635a24bb420866daed684b778475ae6d0e8ea"
-  integrity sha512-5uSpdp75H8MBbxspEL20CN5w9fB8hOt5Y94m2AMp9vKDHQA11YsExwIloNxUppwT+HJ5315UzMhp4pt+pzn91g==
+cardano-crypto.js@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-6.0.0.tgz#6aac02c54e0047e47477e88cebb02acd2c168616"
+  integrity sha512-r9wcFFfW+bq5+bn6ZBueMkLbUiySP901zHoyM8HNN8hfHEAkO3GHUMkzJutqpIG07qR84mQDqq0WjktMsqO8AA==
   dependencies:
     bech32 "^1.1.4"
     bip39 "^3.0.2"
