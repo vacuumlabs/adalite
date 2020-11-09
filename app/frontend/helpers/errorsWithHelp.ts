@@ -4,7 +4,6 @@ const errorsWithHelp = new Set([
   'CryptoProviderError',
   'TrezorSignTxError',
   'TrezorError',
-  'TransactionRejectedByNetwork',
 ])
 
 function errorHasHelp(code) {

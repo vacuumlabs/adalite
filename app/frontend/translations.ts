@@ -43,7 +43,7 @@ const translations = {
   },
 
   TransactionRejectedByNetwork: () =>
-    'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed.',
+    'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
   TransactionRejectedWhileSigning: ({message}) =>
     `Transaction rejected while signing${
       message
