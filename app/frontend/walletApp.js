@@ -59,6 +59,7 @@ init({
   environment: ADALITE_CONFIG.ADALITE_ENV,
   // debug: true,
   beforeSend(event) {
+    if (!event.exception) return event
     return new Promise((resolve) => {
       store.setState({
         sendSentry: {

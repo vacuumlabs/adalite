@@ -14,6 +14,7 @@ import {
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
 import {Lovelace} from '../state'
+import {captureMessage} from '@sentry/browser'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -68,6 +69,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
 
     for (const t of Object.values(transactions)) {
+      if (!t.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(t)}`)
       t.fee = parseInt(t.fee, 10)
       let effect = 0 //effect on wallet balance accumulated
       for (const input of t.ctbInputs || []) {

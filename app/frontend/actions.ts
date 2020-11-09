@@ -28,10 +28,9 @@ import captureBySentry from './helpers/captureBySentry'
 import {State, Ada, Lovelace} from './state'
 import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
-
 import {ShelleyWallet} from './wallet/shelley-wallet'
-// import loadWasmModule from './helpers/wasmLoader'
 import getDonationAddress from './helpers/getDonationAddress'
+
 let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
 
 const debounceEvent = (callback, time) => {
