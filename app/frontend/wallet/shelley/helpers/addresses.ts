@@ -1,10 +1,10 @@
-import bech32 from './bech32'
 import {
   packBaseAddress,
   packRewardAddress,
   getAddressType,
   AddressTypes,
   base58,
+  bech32,
   getPubKeyBlake2b224Hash,
 } from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../../constants'
@@ -37,7 +37,7 @@ export const base58AddressToHex = (address: string): HexString => {
 
 export const accountAddressFromXpub = (stakeXpub: Xpub, networkId): string => {
   const addrBuffer = packRewardAddress(xpub2blake2b224Hash(stakeXpub), networkId)
-  return bech32.encode({prefix: 'addr', data: addrBuffer})
+  return bech32.encode('addr', addrBuffer)
 }
 
 export const accountHexAddressFromXpub = (stakeXpub: Xpub, networkId): HexString => {
@@ -51,7 +51,7 @@ export const baseAddressFromXpub = (spendXpub: Xpub, stakeXpub: Xpub, networkId)
     xpub2blake2b224Hash(stakeXpub),
     networkId
   )
-  return bech32.encode({prefix: 'addr', data: addrBuffer})
+  return bech32.encode('addr', addrBuffer)
 }
 
 export const isShelleyFormat = (address: string): boolean => {

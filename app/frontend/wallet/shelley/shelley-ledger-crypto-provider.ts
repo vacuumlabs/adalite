@@ -12,8 +12,6 @@ import {
 import * as platform from 'platform'
 import {hasMinimalVersion} from './helpers/version-check'
 
-// import {PROTOCOL_MAGIC_KEY} from '../constants'
-
 import {
   bechAddressToHex,
   isShelleyPath,

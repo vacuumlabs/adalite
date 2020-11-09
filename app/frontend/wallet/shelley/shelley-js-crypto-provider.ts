@@ -16,7 +16,6 @@ import {
   ShelleyTxWitnessByron,
 } from './shelley-transaction'
 
-// import {PROTOCOL_MAGIC_KEY} from '../constants'
 import {isShelleyPath} from './helpers/addresses'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 
@@ -93,7 +92,6 @@ const ShelleyJsCryptoProvider = ({
     const _byronWitnesses = []
     inputs.forEach((input) => {
       const inputPath = addressToAbsPathMapper(input.address)
-      // console.log(inputPath)await getHdPassphrase()
       isShelleyPath(inputPath)
         ? _shelleyWitnesses.push(build_shelley_witness(tx_body_hash, inputPath, sign))
         : _byronWitnesses.push(build_byron_witness(tx_body_hash, sign, inputPath, input.address))

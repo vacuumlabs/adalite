@@ -1,5 +1,4 @@
 import {encode} from 'borc'
-import bech32 from './helpers/bech32'
 
 import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
 
@@ -8,7 +7,7 @@ import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArra
 import NamedError from '../../helpers/NamedError'
 import {Lovelace} from '../../state'
 import getDonationAddress from '../../helpers/getDonationAddress'
-import {base58} from 'cardano-crypto.js'
+import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
