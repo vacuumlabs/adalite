@@ -37,6 +37,14 @@ export const ByronAddressProvider = (
 
   return {
     path,
-    address: base58.encode(packBootstrapAddress(path, xpub, hdPassphrase, scheme.ed25519Mode)),
+    address: base58.encode(
+      packBootstrapAddress(
+        path,
+        xpub,
+        hdPassphrase,
+        scheme.ed25519Mode,
+        cryptoProvider.network.protocolMagic
+      )
+    ),
   }
 }

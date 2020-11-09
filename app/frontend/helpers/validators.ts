@@ -1,5 +1,4 @@
-import {isValidAddress as isValidByronAddress} from 'cardano-crypto.js'
-import {isValidShelleyAddress} from '../wallet/shelley/helpers/addresses'
+import {isValidBootstrapAddress, isValidShelleyAddress} from 'cardano-crypto.js'
 import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
@@ -10,8 +9,8 @@ const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace
 
 const _sendAddressValidators = {
-  byron: isValidByronAddress,
-  shelley: (address) => isValidShelleyAddress(address) || isValidByronAddress(address),
+  byron: isValidBootstrapAddress,
+  shelley: (address) => isValidShelleyAddress(address) || isValidBootstrapAddress(address),
 }
 
 const sendAddressValidator = (fieldValue) =>

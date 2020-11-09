@@ -1,7 +1,13 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
-import {sign as signMsg, derivePrivate, xpubToHdPassphrase, base58} from 'cardano-crypto.js'
-import {encode, decode} from 'borc'
+import {
+  sign as signMsg,
+  derivePrivate,
+  xpubToHdPassphrase,
+  base58,
+  unpackBootstrapAddress,
+} from 'cardano-crypto.js'
+import {encode} from 'borc'
 
 import HdNode from '../helpers/hd-node'
 import {
@@ -73,14 +79,13 @@ const ShelleyJsCryptoProvider = ({
   const build_byron_witness = async (tx_body_hash, sign, path, address) => {
     const signature = await sign(tx_body_hash, path)
     const xpub = await deriveXpub(path)
-    const addressAsBuffer = decode(base58.decode(address))[0].value // TODO get from cardano-crypto
-    const addressData = decode(addressAsBuffer)
-    const address_attributes = addressData[1]
+    const hdPassphrase = await getHdPassphrase()
+    const addressAttributes = unpackBootstrapAddress(address, hdPassphrase)
     return ShelleyTxWitnessByron(
       xpub.slice(0, 32),
       signature,
       xpub.slice(32, 64),
-      encode(address_attributes)
+      encode(addressAttributes)
     )
   }
 
@@ -89,7 +94,7 @@ const ShelleyJsCryptoProvider = ({
     const _byronWitnesses = []
     inputs.forEach((input) => {
       const inputPath = addressToAbsPathMapper(input.address)
-      // console.log(inputPath)
+      // console.log(inputPath)await getHdPassphrase()
       isShelleyPath(inputPath)
         ? _shelleyWitnesses.push(build_shelley_witness(tx_body_hash, inputPath, sign))
         : _byronWitnesses.push(build_byron_witness(tx_body_hash, sign, inputPath, input.address))

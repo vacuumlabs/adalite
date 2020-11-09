@@ -124,6 +124,7 @@ const CardanoWalletSecretCryptoProvider = ({
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
     _signTxGetStructured: signTxGetStructured,
+    network,
   }
 }
 
