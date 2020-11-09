@@ -18,19 +18,18 @@ const UnexpectedErrorModal = ({sendSentry, closeUnexpectedErrorModal}: Props) =>
 
   const closeAndResolve = useCallback(
     (shouldSend: boolean) => {
-      // first tell sentry to send the event
-      sendSentry.resolve(shouldSend)
-
-      // second, send additional data
+      const email = userEmail || 'user@email.com'
+      const name = userName || 'user'
       if (shouldSend) {
-        submitFeedbackToSentry(
-          userComments,
-          userEmail || 'user@email.com',
-          userName || 'user',
-          sendSentry.event.event_id
-        )
+        submitFeedbackToSentry(userComments, email, name, sendSentry.event.event_id)
+        sendSentry.resolve({
+          name,
+          email,
+          comment: userComments || 'no comment',
+        })
+      } else {
+        sendSentry.resolve(false)
       }
-
       closeUnexpectedErrorModal()
     },
     [userComments, userEmail, userName, sendSentry, closeUnexpectedErrorModal]

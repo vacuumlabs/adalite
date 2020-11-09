@@ -67,8 +67,9 @@ init({
         },
         shouldShowUnexpectedErrorModal: true,
       })
-    }).then((res) => {
-      return res === true ? event : null
+    }).then((tags) => {
+      if (tags) event.tags = tags
+      return tags ? event : null
     })
   },
 })
