@@ -169,7 +169,7 @@ p.hey {
     box-shadow var(--transition-easing) var(--transition-time);
 }
 
-.input:focus {
+.input:focus, .input.focus {
   outline: none;
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.06);
 }
@@ -256,6 +256,21 @@ p.hey {
 
 .textarea {
   font-family: JTMarnie, Arial, Helvetica, sans-serif;
+}
+
+.mnemonic-placeholder::before {
+  content: "Enter your wallet mnemonic";
+  color: var(--color-grey-medium);
+}
+
+.mnemonic-text-field {
+  outline: none;
+  cursor: text;
+  overflow: hidden;
+}
+
+.mnemonic-text-field span.not-bip-39 {
+  border-bottom: 1px solid red;
 }
 
 /* BUTTONS */

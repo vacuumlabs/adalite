@@ -314,8 +314,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const updateMnemonic = (state: State, e) => {
-    const mnemonicInputValue = e.target.value
+  const updateMnemonic = (state: State, mnemonic) => {
+    const mnemonicInputValue = mnemonic
     const sanitizedMnemonic = sanitizeMnemonic(mnemonicInputValue)
     const formIsValid = sanitizedMnemonic && mnemonicValidator(sanitizedMnemonic) === null
 

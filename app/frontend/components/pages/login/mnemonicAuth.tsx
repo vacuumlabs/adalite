@@ -8,33 +8,21 @@ import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import sanitizeMnemonic from '../../../helpers/sanitizeMnemonic'
 import {ADALITE_CONFIG} from '../../../config'
+import MnemonicField from './mnemonicField'
 
 const {ADALITE_DEMO_WALLET_MNEMONIC} = ADALITE_CONFIG
 
 interface Props {
   formData: any
-  updateMnemonic: (e: any) => void
-  updateMnemonicValidationError: () => void
-  //
   loadWallet: any
   shouldShowMnemonicInfoAlert: boolean
   openGenerateMnemonicDialog: () => void
   autoLogin: boolean
-  displayWelcome: boolean
-  shouldShowDemoWalletWarningDialog: boolean
 }
 
 class LoadByMnemonicSectionClass extends Component<Props> {
-  mnemonicField: HTMLInputElement
+  mnemonicField: any = {}
   goBtn: HTMLButtonElement
-
-  componentDidUpdate() {
-    const shouldFormFocus =
-      !this.props.formData.mnemonicInputValue &&
-      !this.props.displayWelcome &&
-      !this.props.shouldShowDemoWalletWarningDialog
-    shouldFormFocus && this.mnemonicField.focus()
-  }
 
   // meant only for development in order to speed up the process of unlocking wallet
   async autoLogin() {
@@ -51,14 +39,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
     }
   }
 
-  render({
-    formData,
-    updateMnemonic,
-    updateMnemonicValidationError,
-    loadWallet,
-    shouldShowMnemonicInfoAlert,
-    openGenerateMnemonicDialog,
-  }) {
+  render({formData, loadWallet, shouldShowMnemonicInfoAlert, openGenerateMnemonicDialog}) {
     const sanitizedMnemonic = sanitizeMnemonic(formData.mnemonicInputValue)
 
     return (
@@ -68,23 +49,16 @@ class LoadByMnemonicSectionClass extends Component<Props> {
             Here you can use your mnemonic to access your new wallet.
           </Alert>
         )}
-        <label className="authentication-label" htmlFor="mnemonic-submitted">
+        <label className="authentication-label">
           Enter the 12, 15, 24 or 27-word wallet mnemonic seed phrase
         </label>
-        <input
-          type="text"
-          className="input fullwidth auth"
-          id="mnemonic-submitted"
-          name="mnemonic-submitted"
-          placeholder="Enter your wallet mnemonic"
-          value={formData.mnemonicInputValue}
-          onInput={updateMnemonic}
-          onBlur={updateMnemonicValidationError}
-          autoComplete="off"
-          ref={(element) => {
-            this.mnemonicField = element
+        <MnemonicField
+          onEnterKeyDown={(e) => this.goBtn.click()}
+          onTabKeyDown={(e) => {
+            e.preventDefault()
+            this.goBtn.focus()
           }}
-          onKeyDown={(e) => e.key === 'Enter' && this.goBtn.click()}
+          expose={this.mnemonicField}
         />
         <div className="validation-row">
           <button
@@ -137,8 +111,6 @@ class LoadByMnemonicSectionClass extends Component<Props> {
 export default connect(
   (state) => ({
     formData: state.mnemonicAuthForm,
-    displayWelcome: state.displayWelcome,
-    shouldShowDemoWalletWarningDialog: state.shouldShowDemoWalletWarningDialog,
     shouldShowMnemonicInfoAlert: state.shouldShowMnemonicInfoAlert,
     autoLogin: state.autoLogin,
   }),

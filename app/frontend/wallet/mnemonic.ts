@@ -43,9 +43,14 @@ function mnemonicToList(mnemonic) {
   return mnemonic.split(' ')
 }
 
+function isBip39Word(word) {
+  return wordlists.EN.includes(word)
+}
+
 export {
   generateMnemonic,
   validateMnemonic,
   validatePaperWalletMnemonic,
   isMnemonicInPaperWalletFormat,
+  isBip39Word,
 }

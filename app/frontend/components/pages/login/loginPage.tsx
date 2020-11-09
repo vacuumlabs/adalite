@@ -176,10 +176,7 @@ class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
           <main className="page-main">
             {authMethod === '' ? <AuthCardInitial /> : <AuthCard />}
             <div className="page-demo">
-              Try the{' '}
-              <a href="#" onMouseDown={(e) => isLeftClick(e, loadDemoWallet)}>
-                demo wallet
-              </a>
+              Try the <a onMouseDown={(e) => isLeftClick(e, loadDemoWallet)}>demo wallet</a>
             </div>
           </main>
           <LoginPageSidebar />
