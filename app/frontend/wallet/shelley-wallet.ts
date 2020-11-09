@@ -402,7 +402,7 @@ const ShelleyWallet = ({
         ...poolInfo,
       },
       rewardDetails,
-      value: accountInfo.rewards || 0,
+      value: accountInfo.rewards ? parseInt(accountInfo.rewards, 10) : 0,
     }
   }
 

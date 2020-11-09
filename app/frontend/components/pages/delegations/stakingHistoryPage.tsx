@@ -71,7 +71,11 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
       <div className="space-between">
         <div>
           <div>
-            <div className="label">Reward for epoch {stakingReward.forEpoch}</div>
+            {stakingReward.forEpoch ? (
+              <div className="label">Reward for epoch {stakingReward.forEpoch}</div>
+            ) : (
+              <div className="label">Reward for ITN</div>
+            )}
             <div className="margin-bottom">
               <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
             </div>
