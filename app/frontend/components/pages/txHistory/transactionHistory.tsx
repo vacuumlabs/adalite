@@ -66,6 +66,15 @@ const Transaction = ({txid}) => (
         >
           CardanoExplorer
         </a> */}
+        <span> | </span>
+        <a
+          className="transaction-address"
+          href={`https://adaex.org/${txid}`}
+          target="_blank"
+          rel="noopener"
+        >
+          ADAex
+        </a>
       </span>
     )}
   </div>

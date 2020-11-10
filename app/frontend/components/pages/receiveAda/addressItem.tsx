@@ -95,6 +95,15 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
                 >
                   CardanoExplorer
                 </a> */}
+                <span> | </span>
+                <a
+                  className="address-link"
+                  href={`https://adaex.org/${address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  ADAex
+                </a>
               </span>
             )}
           </div>
