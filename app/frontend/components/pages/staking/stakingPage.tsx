@@ -5,9 +5,14 @@ import submitEmailRaw from '../../../helpers/submitEmailRaw'
 import NamedError from '../../../helpers/NamedError'
 import debugLog from '../../../helpers/debugLog'
 
-const ADLT3Hash = '92229dcf782ce8a82050fdeecb9334cc4d906c6eb66cdbdcea86fb5f'
-const ADLT2Hash = 'ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d'
-const ADLTHash = '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438'
+const newPools = new Set(['ADLT4', 'ADLT5'])
+const ADLTPools = [
+  ['ADLT5', '936f24e391afc0738c816ae1f1388957b977de3d0e065dc9ba38af8d'],
+  ['ADLT4', 'd785ff6a030ae9d521770c00f264a2aa423e928c85fc620b13d46eda'],
+  ['ADLT3', '92229dcf782ce8a82050fdeecb9334cc4d906c6eb66cdbdcea86fb5f'],
+  ['ADLT2', 'ce19882fd62e79faa113fcaef93950a4f0a5913b20a0689911b6f62d'],
+  ['ADLT', '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438'],
+]
 
 const isValidEmail = (email) => {
   // eslint-disable-next-line max-len
@@ -115,40 +120,32 @@ const StakingPage = () => {
 
         {window.innerWidth > 767 && (
           <div className="stakepool-info">
-            <p>
-              <a href={`https://pooltool.io/pool/${ADLT3Hash}`} target="_blank">
-                {' '}
-                ADLT3
-              </a>: <b>{ADLT3Hash} (NEW)</b>
-            </p>
-            <p>
-              <a href={`https://pooltool.io/pool/${ADLT2Hash}`} target="_blank">
-                {' '}
-                ADLT2
-              </a>: <b>{ADLT2Hash}</b>
-            </p>
-            <p>
-              <a href={`https://pooltool.io/pool/${ADLTHash}`} target="_blank">
-                ADLT
-              </a>: <b>{ADLTHash}</b>
-            </p>
+            {ADLTPools.map(([ticker, hash], i) => (
+              <p key={i}>
+                <a href={`https://pooltool.io/pool/${hash}`} target="_blank">
+                  {` ${ticker}`}
+                </a>:{' '}
+                <b>
+                  {hash}
+                  {newPools.has(ticker) && ' (NEW)'}
+                </b>
+              </p>
+            ))}
           </div>
         )}
         {window.innerWidth <= 767 && (
           <p className="staking-text">
             You can check out our pools on pooltool with tickers{' '}
-            <a href={`https://pooltool.io/pool/${ADLT3Hash}`} target="_blank">
-              ADLT3
-            </a>{' '}
-            <b>(NEW)</b>
-            {', '}
-            <a href={`https://pooltool.io/pool/${ADLT2Hash}`} target="_blank">
-              ADLT2
-            </a>
-            {' AND '}
-            <a href={`https://pooltool.io/pool/${ADLTHash}`} target="_blank">
-              ADLT
-            </a>.
+            {ADLTPools.map(([ticker, hash], i) => (
+              <span key={i}>
+                {i === ADLTPools.length - 1 && 'and '}
+                <a href={`https://pooltool.io/pool/${hash}`} target="_blank">
+                  {ticker}
+                </a>
+                {newPools.has(ticker) && <b> (NEW)</b>}
+                {i === ADLTPools.length - 1 ? '.' : ', '}
+              </span>
+            ))}
           </p>
         )}
 
