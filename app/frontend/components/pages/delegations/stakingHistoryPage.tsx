@@ -83,7 +83,9 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
           <div>
             <div className="grey">
               {stakingReward.stakePool.name}
-              <LinkIconToPool poolHash={stakingReward.stakePool.id} />
+              {stakingReward.stakePool.id && (
+                <LinkIconToPool poolHash={stakingReward.stakePool.id} />
+              )}
             </div>
           </div>
         </div>
