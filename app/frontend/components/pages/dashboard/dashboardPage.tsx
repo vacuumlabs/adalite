@@ -15,6 +15,7 @@ import {MainTab, SubTab} from './tabs'
 import InfoModal from '../../common/infoModal'
 import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
 import DashboardErrorBanner from './dashboardErrorBanner'
+import PremiumBanner from './premiumBanner'
 
 interface Props {
   displayStakingPage: any
@@ -75,6 +76,7 @@ class DashboardPage extends Component<Props> {
       isShelleyCompatible,
       shouldShowNonShelleyCompatibleDialog,
       displayInfoModal,
+      shouldShowPremiumBanner,
     },
     {selectedMainTab}
   ) {
@@ -84,6 +86,7 @@ class DashboardPage extends Component<Props> {
         {isShelleyCompatible && displayInfoModal && <InfoModal />}
         {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
         {!isShelleyCompatible && <DashboardErrorBanner />}
+        {shouldShowPremiumBanner && <PremiumBanner />}
         {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
           <ul className="tabinator">
             {mainTabs.map((name, i) => (
@@ -168,6 +171,7 @@ export default connect(
     displayInfoModal: state.displayInfoModal,
     isShelleyCompatible: state.isShelleyCompatible,
     shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
+    shouldShowPremiumBanner: state.shouldShowPremiumBanner,
   }),
   actions
 )(DashboardPage)

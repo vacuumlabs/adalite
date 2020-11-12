@@ -1173,6 +1173,13 @@ button[data-balloon] {
   background-color: var(--color-error);
 }
 
+
+.banner.premium {
+  background-color: cornflowerblue;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
 .banner-text {
   flex: 1;
   padding-left: 40px;
@@ -1180,6 +1187,11 @@ button[data-balloon] {
 }
 
 .banner.error > .banner-text {
+  font-weight: bold;
+  color: white;
+}
+
+.banner.premium > .banner-text {
   font-weight: bold;
   color: white;
 }

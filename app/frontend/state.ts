@@ -73,6 +73,7 @@ export interface State {
   shouldShowTransactionErrorModal?: boolean
   shouldShowThanksForDonation?: boolean
   shouldShowContactFormModal?: boolean
+  shouldShowPremiumBanner?: boolean
 
   calculatingFee?: boolean
   transactionFee?: any
@@ -153,6 +154,7 @@ const initialState: State = {
   shouldShowStakingBanner: !(
     window.localStorage.getItem('dontShowStakingBannerTestnet3') === 'true'
   ),
+  shouldShowPremiumBanner: !(window.localStorage.getItem('dontShowPremiumBanner') === 'true'),
   displayInfoModal: !(window.localStorage.getItem('dontShowInfoModal') === 'true'),
   errorBannerContent: '',
   visibleAddresses: [],

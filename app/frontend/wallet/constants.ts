@@ -117,3 +117,5 @@ export const RECOMMENDED_LEDGER_APP_VERSION = {
 }
 
 export const UNKNOWN_POOL_NAME = '<Unknown pool>'
+
+export const PREMIUM_MEMBER_BALANCE_TRESHHOLD = 2500000000000

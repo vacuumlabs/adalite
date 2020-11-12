@@ -16,7 +16,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
-import {NETWORKS} from './wallet/constants'
+import {NETWORKS, PREMIUM_MEMBER_BALANCE_TRESHHOLD} from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
 import {CardanoWallet} from './wallet/cardano-wallet'
@@ -169,6 +169,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
       const ticker2Id = null
+      const shouldShowPremiumBanner =
+        state.shouldShowPremiumBanner && walletInfo.balance > PREMIUM_MEMBER_BALANCE_TRESHHOLD
       setState({
         walletIsLoaded: true,
         ...walletInfo,
@@ -193,6 +195,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         // shelley
         ticker2Id,
         isShelleyCompatible,
+        shouldShowPremiumBanner,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
@@ -1115,6 +1118,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const closePremiumBanner = (state) => {
+    window.localStorage.setItem('dontShowPremiumBanner', 'true')
+    setState({
+      shouldShowPremiumBanner: false,
+    })
+  }
+
   const shouldShowContactFormModal = (state) => {
     setState({
       shouldShowContactFormModal: true,
@@ -1203,5 +1213,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     withdrawRewards,
     openInfoModal,
     closeInfoModal,
+    closePremiumBanner,
   }
 }
