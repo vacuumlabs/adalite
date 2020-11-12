@@ -104,6 +104,15 @@ class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
                 >
                   ADAex
                 </a>
+                <span> | </span>
+                <a
+                  className="address-link"
+                  href={`https://adastat.net/addresses/${address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  AdaStat
+                </a>
               </span>
             )}
           </div>

@@ -75,6 +75,15 @@ const Transaction = ({txid}) => (
         >
           ADAex
         </a>
+        <span> | </span>
+        <a
+          className="transaction-address"
+          href={`https://adastat.net/transactions/${txid}`}
+          target="_blank"
+          rel="noopener"
+        >
+          AdaStat
+        </a>
       </span>
     )}
   </div>

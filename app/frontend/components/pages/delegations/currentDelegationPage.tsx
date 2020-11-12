@@ -42,6 +42,13 @@ const CurrentDelegationPage = ({
               >
                 CardanoScan
               </a>
+              <span> | </span>
+              <a
+                className="transaction-address"
+                href={`https://adastat.net/pools/${pool.poolHash}`}
+              >
+                AdaStat
+              </a>
             </div>
             <div className="current-delegation-id">
               Next reward:{' '}
