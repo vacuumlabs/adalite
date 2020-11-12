@@ -132,7 +132,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return balance
   }
 
-  async function submitTxRaw(txHash, txBody) {
+  async function submitTxRaw(txHash, txBody, params) {
     const token = ADALITE_CONFIG.ADALITE_BACKEND_TOKEN
     const response = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/txs/submit`,
@@ -143,6 +143,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       }),
       {
         'Content-Type': 'application/json',
+        ...params,
         ...(token ? {token} : {}),
       }
     )

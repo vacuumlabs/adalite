@@ -77,6 +77,7 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
         ? 'txSubmissions'
         : 'otherTxSubmissions'
     const txSubmissionSuccess = body.Right ? 'successful' : 'unsuccessful'
+    const txWalletType = req.get('walletType')
 
     try {
       const baseEventData = {
@@ -84,6 +85,13 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
         path: req.hostname,
         originTestSuccess: tokenMatched,
       }
+
+      await trackEvent({
+        ...baseEventData,
+        action: `${txSubmissionType}:${txWalletType}`,
+        label: 'Wallet type',
+        value: undefined,
+      })
 
       if (txSubmissionSuccess === 'successful') {
         const {txBody} = req.body

@@ -54,7 +54,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
   checkVersion()
 
   const isHwWallet = () => true
-  const getHwWalletName = () => 'Ledger'
+  const getWalletName = () => 'Ledger'
 
   const deriveXpub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
     const response = await ledger.getExtendedPublicKey(absDerivationPath)
@@ -256,7 +256,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
     displayAddressForPath,
     deriveXpub,
     isHwWallet,
-    getHwWalletName,
+    getWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
     checkVersion,

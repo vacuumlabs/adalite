@@ -30,6 +30,8 @@ const ShelleyJsCryptoProvider = ({
 
   const isHwWallet = () => false
 
+  const getWalletName = () => 'Mnemonic'
+
   const getWalletSecret = () => masterHdNode.toBuffer()
 
   const getDerivationScheme = () => derivationScheme
@@ -132,6 +134,7 @@ const ShelleyJsCryptoProvider = ({
     network,
     signTx,
     getWalletSecret,
+    getWalletName,
     getDerivationScheme,
     deriveXpub,
     isHwWallet,

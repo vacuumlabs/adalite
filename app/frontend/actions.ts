@@ -161,7 +161,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const walletInfo = await wallet.getWalletInfo()
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
-      const hwWalletName = usingHwWallet ? wallet.getHwWalletName() : undefined
+      const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC

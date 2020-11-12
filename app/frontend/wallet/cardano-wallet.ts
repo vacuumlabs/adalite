@@ -123,13 +123,13 @@ const CardanoWallet = (options) => {
     return cryptoProvider.isHwWallet()
   }
 
-  function getHwWalletName() {
+  function getWalletName() {
     return isHwWallet ? (cryptoProvider as any).getHwWalletName() : undefined
   }
 
   function submitTx(signedTx): Promise<any> {
     const {txBody, txHash} = signedTx
-    return blockchainExplorer.submitTxRaw(txHash, txBody)
+    return blockchainExplorer.submitTxRaw(txHash, txBody, {})
   }
 
   function getWalletSecretDef() {
@@ -261,7 +261,7 @@ const CardanoWallet = (options) => {
 
   return {
     isHwWallet,
-    getHwWalletName,
+    getWalletName,
     getWalletSecretDef,
     submitTx,
     signTxAux,

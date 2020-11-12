@@ -204,13 +204,14 @@ const ShelleyWallet = ({
     return cryptoProvider.isHwWallet()
   }
 
-  function getHwWalletName() {
-    return isHwWallet ? (cryptoProvider as any).getHwWalletName() : undefined
+  function getWalletName() {
+    return cryptoProvider.getWalletName()
   }
 
   function submitTx(signedTx): Promise<any> {
+    const params = {walletType: getWalletName()}
     const {txBody, txHash} = signedTx
-    return blockchainExplorer.submitTxRaw(txHash, txBody)
+    return blockchainExplorer.submitTxRaw(txHash, txBody, params)
   }
 
   function getWalletSecretDef() {
@@ -472,7 +473,7 @@ const ShelleyWallet = ({
 
   return {
     isHwWallet,
-    getHwWalletName,
+    getWalletName,
     getWalletSecretDef,
     submitTx,
     signTxAux,
