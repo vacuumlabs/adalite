@@ -2,9 +2,9 @@ const redis = require('redis')
 const device = require('device')
 const client = redis.createClient(process.env.REDIS_URL)
 const mung = require('express-mung')
-const normalizeUrl = require('normalize-url')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const {captureException} = require('@sentry/node')
+const {isSameOrigin, tokenMatches} = require('../helpers/checkOrigin')
 
 const knownIps = new Set()
 
@@ -14,15 +14,6 @@ function getSlicedDate() {
     .split('T')[0]
     .split('-')
 }
-
-const isSameOrigin = (urlString1, urlString2) => {
-  return (
-    normalizeUrl(urlString1, {stripProtocol: true}) ===
-    normalizeUrl(urlString2, {stripProtocol: true})
-  )
-}
-
-const tokenMatches = (token) => token === process.env.ADALITE_BACKEND_TOKEN
 
 const incrCountersBy = (key, value) => {
   const [year, month, day] = getSlicedDate()

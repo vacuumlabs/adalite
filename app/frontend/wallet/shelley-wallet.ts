@@ -208,8 +208,11 @@ const ShelleyWallet = ({
     return cryptoProvider.getWalletName()
   }
 
-  function submitTx(signedTx): Promise<any> {
-    const params = {walletType: getWalletName()}
+  async function submitTx(signedTx): Promise<any> {
+    const params = {
+      stakeKey: await stakeAccountPubkeyHex(cryptoProvider, accountIndex),
+      walletType: getWalletName(),
+    }
     const {txBody, txHash} = signedTx
     return blockchainExplorer.submitTxRaw(txHash, txBody, params)
   }

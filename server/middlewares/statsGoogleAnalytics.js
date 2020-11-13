@@ -1,21 +1,12 @@
 const device = require('device')
 const mung = require('express-mung')
-const normalizeUrl = require('normalize-url')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const ua = require('universal-analytics')
 const {backendConfig} = require('../helpers/loadConfig')
 const {captureException} = require('@sentry/node')
+const {isSameOrigin, tokenMatches} = require('../helpers/checkOrigin')
 
 const knownIps = new Set()
-
-const isSameOrigin = (urlString1, urlString2) => {
-  return (
-    normalizeUrl(urlString1, {stripProtocol: true}) ===
-    normalizeUrl(urlString2, {stripProtocol: true})
-  )
-}
-
-const tokenMatches = (token) => token === process.env.ADALITE_BACKEND_TOKEN
 
 const initVisitor = (trackingID) => {
   return ua({

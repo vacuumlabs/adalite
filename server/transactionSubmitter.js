@@ -1,5 +1,6 @@
 require('isomorphic-fetch')
 const Sentry = require('@sentry/node')
+const {isSameOrigin, tokenMatches} = require('./helpers/checkOrigin')
 
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
@@ -44,9 +45,14 @@ module.exports = function(app, env) {
         `Submission of tx ${txHash} failed with status ${response.status} and message ${errorMessage}`
       )
 
-      Sentry.captureException(new Error('TransactionSubmissionFailed'), {
-        contexts: [{...JSON.parse(errorMessage)}],
-      })
+      if (
+        tokenMatches(req.get('token')) &&
+        isSameOrigin(req.get('origin'), process.env.ADALITE_SERVER_URL)
+      ) {
+        Sentry.captureException(new Error('TransactionSubmissionFailed'), {
+          contexts: [{...JSON.parse(errorMessage)}],
+        })
+      }
 
       return res.json({
         Left: `Transaction rejected by network - ${errorMessage}`,
@@ -55,7 +61,7 @@ module.exports = function(app, env) {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`Submission of tx ${txHash} failed with an unexpected error: ${err.stack}`)
-      Sentry.captureException(e)
+      Sentry.captureException(err)
       return res.json({
         Left: 'An unexpected error has occurred',
       })
