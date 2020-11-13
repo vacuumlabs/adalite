@@ -2627,6 +2627,16 @@ li.main-tab input + label.selected:after {
   background-image: url('../assets/checkbox_checked.svg');
 }
 
+.info-date {
+  font-size: large;
+  margin-bottom: -32px;
+  margin-top: 48px;
+}
+
+.info-separator {
+  margin: 42px 0;
+}
+
 /* STAKING PAGE */
 
 .staking-wrapper {

@@ -48,7 +48,15 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
       <Modal>
         <section className="welcome">
           <div className="welcome-body">
-            <h2 className="welcome-title">AdaLite News 8/19/2020</h2>
+            <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">11/13/2020</h3>
+            <Article title="Rewards withdrawal" icon="">
+              Some users are currently experiencing problems with withdrawing their rewards. This is
+              a temporary issue and your rewards are safe. We will resolve this issue as soon as
+              possible.
+            </Article>
+            <hr className="info-separator" />
+            <h3 className="info-date">8/19/2020</h3>
             <Article title="Staking and Rewards" icon="">
               Staking was introduced to Cardano in a recent Shelley update. You can now delegate
               your ADA to a stake pool that will be mining blocks and you will receive rewards for
