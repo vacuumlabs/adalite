@@ -30,6 +30,7 @@ import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 import {ShelleyWallet} from './wallet/shelley-wallet'
 import getDonationAddress from './helpers/getDonationAddress'
+import {localStorageVars} from './localStorage'
 
 let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
 
@@ -1091,7 +1092,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const closeWelcome = (state, dontShowDisclaimer) => {
     // we may get an ignored click event as the second argument, check only against booleans
-    window.localStorage.setItem('dontShowDisclaimer', dontShowDisclaimer)
+    window.localStorage.setItem(localStorageVars.WELCOME, dontShowDisclaimer)
     setState({
       displayWelcome: false,
     })
@@ -1103,23 +1104,23 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const closeInfoModal = (state, dontShowDisclaimer) => {
+  const closeInfoModal = (state, dontShowInfoModal) => {
     // we may get an ignored click event as the second argument, check only against booleans
-    window.localStorage.setItem('dontShowInfoModal', dontShowDisclaimer)
+    window.localStorage.setItem(localStorageVars.INFO_MODAL, dontShowInfoModal)
     setState({
       displayInfoModal: false,
     })
   }
 
   const closeStakingBanner = (state) => {
-    window.localStorage.setItem('dontShowStakingBannerTestnet3', 'true')
+    window.localStorage.setItem(localStorageVars.STAKING_BANNER, 'true')
     setState({
       shouldShowStakingBanner: false,
     })
   }
 
   const closePremiumBanner = (state) => {
-    window.localStorage.setItem('dontShowPremiumBanner', 'true')
+    window.localStorage.setItem(localStorageVars.PREMIUM_BANNER, 'true')
     setState({
       shouldShowPremiumBanner: false,
     })
