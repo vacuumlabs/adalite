@@ -49,6 +49,61 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">11/16/2020</h3>
+            <Article title="Decreased saturation level from 6th December" icon="">
+              IOHK decided to increase the K parameter for staking to 500 on December 6th. This will
+              result in a decreased saturation level of pools (~62 million ADA). Therefore starting
+              this date, all pools that will have more than 62 million ADA delegated to them will
+              receive a penalty on rewards.
+            </Article>
+            <Alert alertType="news">
+              <b>
+                {' '}
+                ADA holders should make sure that the pool they are delegating to is not over the
+                saturation level before the 234 epoch boundary at 21:44 UTC on December 6.
+              </b>{' '}
+              You can redelegate at any point between now and the change. Over the following week,
+              we will implement new features to inform users about the Live Stake of the pool they
+              are delegating to. Also, as the date of the change will be closing, we will be
+              displaying warnings to users that are delegating to a pool that could possibly be
+              oversaturated.
+            </Alert>
+            <Article title="AdaLite Stake Pools delegators" icon="">
+              We have already set up two new pools ADLT4 and ADLT5 in order to support this change.
+              We encourage delegators from ADLT, ADLT2 and ADLT3 pools to slowly migrate to any of
+              the new pools. We will create new pools as needed.
+            </Article>
+            <Article title="VIP staking services" icon="">
+              We are offering special personalized services to delegators that want to work with us
+              and have holdings over 5 million ADA. We will assign you a dedicated account manager
+              and provide you with priority support. We will proactively inform you about any
+              important developments in the Cardano ecosystem. Additionally, you can consult with us
+              anything that is Cardano related. Just for this occasion, to help you manage the
+              saturation level change, we are lowering the volume to access these VIP services to 3
+              million ADA. Drop me a line to{' '}
+              <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a>. If you
+              want to stay anonymous, you can contact me on{' '}
+              <a href="https://t.me/AdaLite" target="_blank" rel="noopener">
+                Telegram
+              </a>.
+            </Article>
+            <Article title="AdaLite stakepools performance" icon="">
+              All our pools are showing stable appropriate performance and ROI variance is within
+              the expected limits. Long term ROI our pools are achieving:
+              <br />ADLT - 5.40%
+              <br />ADLT2 - 5.24%
+              <br />ADLT3 - 5.71%
+            </Article>
+            <Article title="AdaLite now shows rewards history" icon="">
+              Latest AdaLite release brought rewards per epoch history (Staking screen &gt; Staking
+              and Rewards History tab) and few other small changes. Rewards history was also
+              included in the history export CSV file.
+            </Article>
+            <Article title="Rewards withdrawal issue" icon="">
+              The issue with withdrawing rewards that some of our users are currently experiencing,
+              has not been solved yet and IOHK is working on a fix.
+            </Article>
+            <hr className="info-separator" />
             <h3 className="info-date">11/13/2020</h3>
             <Article title="Rewards withdrawal" icon="">
               Some users are currently experiencing problems with withdrawing their rewards. This is
