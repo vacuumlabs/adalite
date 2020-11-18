@@ -164,6 +164,7 @@ const ShelleyBlockchainExplorer = (config) => {
     getStakingHistory: be.getStakingHistory,
     getBestSlot,
     getRewardDetails: be.getRewardDetails,
+    getPoolRecommendation: be.getPoolRecommendation,
   }
 }
 const ShelleyWallet = ({
@@ -343,6 +344,10 @@ const ShelleyWallet = ({
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
+    const poolRecommendation = await getPoolRecommendation(
+      shelleyAccountInfo.delegation,
+      stakingBalance
+    )
     return {
       validStakepools,
       balance,
@@ -355,6 +360,7 @@ const ShelleyWallet = ({
       transactionHistory,
       stakingHistory,
       visibleAddresses,
+      poolRecommendation,
     }
   }
 
@@ -474,6 +480,17 @@ const ShelleyWallet = ({
     return null
   }
 
+  async function getPoolRecommendation(pool: any, stake: number): Promise<any> {
+    const poolHash = pool ? pool.poolHash : null
+    const poolRecommendation = await blockchainExplorer.getPoolRecommendation(poolHash, stake)
+    const delegatesToRecommended = poolRecommendation.recommendedPoolHash === pool.poolHash
+    return {
+      ...poolRecommendation,
+      shouldShowSaturatedBanner:
+        !delegatesToRecommended && poolRecommendation.status === 'GivenPoolSaturated',
+    }
+  }
+
   return {
     isHwWallet,
     getWalletName,
@@ -497,6 +514,7 @@ const ShelleyWallet = ({
     getWalletInfo,
     getPoolInfo,
     checkCryptoProviderVersion,
+    getPoolRecommendation,
   }
 }
 

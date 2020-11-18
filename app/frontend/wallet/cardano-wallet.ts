@@ -12,6 +12,7 @@ import {computeRequiredTxFee, selectMinimalTxPlan, isUtxoProfitable} from './byr
 import {MaxAmountCalculator} from './max-amount-calculator'
 // eslint-disable-next-line no-unused-vars
 import {TxPlan} from './shelley/build-transaction'
+import {ADALITE_CONFIG} from '../config'
 
 const {
   getMaxDonationAmount: _getMaxDonationAmount,
@@ -259,6 +260,10 @@ const CardanoWallet = (options) => {
     return {code: 'UnsupportedOperation', message: ''}
   }
 
+  function getPoolRecommendation() {
+    return ADALITE_CONFIG.ADALITE_STAKE_POOL_ID
+  }
+
   return {
     isHwWallet,
     getWalletName,
@@ -281,6 +286,7 @@ const CardanoWallet = (options) => {
     getMaxNonStakingAmount,
     getPoolInfo,
     checkCryptoProviderVersion,
+    getPoolRecommendation,
   }
 }
 

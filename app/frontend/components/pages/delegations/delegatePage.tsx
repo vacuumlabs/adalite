@@ -8,7 +8,7 @@ import TransactionErrorModal from '../../pages/sendAda/transactionErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
-import {Lovelace} from '../../../state'
+import {Lovelace, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import Accordion from '../../common/accordion'
 
@@ -85,6 +85,7 @@ interface Props {
   shouldShowConfirmTransactionDialog: any
   txSuccessTab: any
   gettingPoolInfo: boolean
+  poolRecommendation: any
   pool: any
 }
 
@@ -112,6 +113,7 @@ class Delegate extends Component<Props> {
     shouldShowConfirmTransactionDialog,
     txSuccessTab,
     gettingPoolInfo,
+    poolRecommendation,
     pool,
   }) {
     const delegationHandler = async () => {
@@ -123,7 +125,9 @@ class Delegate extends Component<Props> {
     return (
       <div className="delegate card">
         <Accordion
-          initialVisibility={!Object.keys(pool).length}
+          initialVisibility={
+            poolRecommendation.shouldShowSaturatedBanner || !Object.keys(pool).length
+          }
           header={<h2 className="card-title no-margin">Delegate Stake</h2>}
           body={
             <Fragment>
@@ -200,7 +204,7 @@ class Delegate extends Component<Props> {
 }
 
 export default connect(
-  (state) => ({
+  (state: State) => ({
     stakePool: state.shelleyDelegation.selectedPool,
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
@@ -211,6 +215,7 @@ export default connect(
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,
     isShelleyCompatible: state.isShelleyCompatible,
+    poolRecommendation: state.poolRecommendation,
     pool: state.shelleyAccountInfo.delegation,
   }),
   actions

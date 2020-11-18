@@ -975,8 +975,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateDelegationAndCalculateFee()
   }
 
-  const selectAdaliteStakepool = () => {
-    updateStakePoolIdentifier(getState(), null, ADALITE_CONFIG.ADALITE_STAKE_POOL_ID)
+  const selectAdaliteStakepool = (state: State) => {
+    updateStakePoolIdentifier(getState(), null, state.poolRecommendation.recommendedPoolHash)
   }
 
   /* SUBMIT TX */
@@ -1060,7 +1060,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetAmountFields(state)
       wallet.generateNewSeeds()
       await reloadWalletInfo(state)
-      selectAdaliteStakepool()
+      selectAdaliteStakepool(state)
       setState({
         waitingForHwWallet: false,
         txSuccessTab: sendResponse && sendResponse.success ? txTab : '',

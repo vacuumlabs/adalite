@@ -357,6 +357,17 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     }
   }
 
+  function getPoolRecommendation(poolHash: string, stake: number): Promise<any> {
+    const url = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stake}`
+    return request(url).catch(() => ({
+      recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
+      isInRecommendedPoolSet: true,
+      status: 'GivedPoolOk',
+    }))
+  }
+
   return {
     getTxHistory,
     fetchTxRaw,
@@ -369,6 +380,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     getPoolInfo,
     getStakingHistory,
     getRewardDetails,
+    getPoolRecommendation,
   }
 }
 

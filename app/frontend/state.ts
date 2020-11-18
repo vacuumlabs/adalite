@@ -136,6 +136,12 @@ export interface State {
   }
   txConfirmType: string
   txSuccessTab: string
+  poolRecommendation: {
+    isInRecommendedPoolSet: boolean
+    recommendedPoolHash: string
+    status: string
+    shouldShowSaturatedBanner: boolean
+  }
 }
 
 const initialState: State = {
@@ -234,6 +240,12 @@ const initialState: State = {
   txConfirmType: '',
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
+  poolRecommendation: {
+    isInRecommendedPoolSet: true,
+    recommendedPoolHash: '',
+    status: '',
+    shouldShowSaturatedBanner: false,
+  },
 }
 
 export {initialState}
