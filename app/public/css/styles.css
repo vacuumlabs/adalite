@@ -1173,6 +1173,10 @@ button[data-balloon] {
   background-color: var(--color-error);
 }
 
+.banner.saturation {
+  background-color: var(--color-grey-dark);
+}
+
 
 .banner.premium {
   background-color: cornflowerblue;
@@ -1196,6 +1200,11 @@ button[data-balloon] {
   color: white;
 }
 
+.banner.saturation > .banner-text {
+  font-weight: bold;
+  color: white;
+}
+
 .banner-text::before {
   content: '';
   width: 24px;
@@ -1211,6 +1220,10 @@ button[data-balloon] {
 }
 
 .banner.error > .banner-text::before {
+  display: none;
+}
+
+.banner.saturation > .banner-text::before {
   display: none;
 }
 
@@ -2922,6 +2935,11 @@ input:checked + .slider:before {
   grid-column-start: 1;
   grid-column-end: 3;
   word-break: break-all;
+}
+
+.current-delegation-id span.error {
+  color: red;
+  font-weight: bold;
 }
 
 /* TRANSACTIONS */

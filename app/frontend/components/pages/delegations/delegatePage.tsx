@@ -61,7 +61,9 @@ const StakePoolInfo = ({pool, gettingPoolInfo}) => {
           </div>
           <div>
             {'Homepage: '}
-            <a href={homepage || ''}>{homepage || ''}</a>
+            <a target="_blank" href={homepage || ''}>
+              {homepage || ''}
+            </a>
           </div>
         </div>
       )}

@@ -6,10 +6,17 @@ import {Lovelace} from '../../../state'
 import {LinkIconToPool} from './common'
 import {EpochDateTime} from '../common'
 import roundNumber from './../../../helpers/roundNumber'
+import {SATURATION_POINT} from '../../../wallet/constants'
 
 const SaturationInfo = (pool) => {
-  const saturationPercentage = roundNumber(pool.saturatedPercentage * 100, 2)
-  return <div className="current-delegation-id">Saturation percentage: {saturationPercentage}%</div>
+  const liveStake = parseFloat(pool.liveStake)
+  const saturationPercentage = roundNumber((liveStake / SATURATION_POINT) * 100, 2)
+  return (
+    <div className="current-delegation-id">
+      Saturation percentage after 6th of December:
+      <span className={saturationPercentage >= 99 ? 'error' : ''}> {saturationPercentage}%</span>
+    </div>
+  )
 }
 
 const CurrentDelegationPage = ({
@@ -36,15 +43,21 @@ const CurrentDelegationPage = ({
             <div className="current-delegation-id">
               Fixed cost: {printAda(parseInt(pool.fixedCost, 10) as Lovelace)}
             </div>
-            {pool.roa !== '0' && <div className="current-delegation-id">ROA: {pool.roa}</div>}
+            {pool.roa !== '0' && <div className="current-delegation-id">ROA 30d: {pool.roa}%</div>}
             {SaturationInfo(pool)}
             <div className="current-delegation-id">
+              Live stake: {parseFloat(printAda(pool.liveStake as Lovelace)).toLocaleString('en')}
+            </div>
+            <div className="current-delegation-id">
               {'Homepage: '}
-              <a href={pool.url}>{pool.url}</a>
+              <a target="_blank" href={pool.homepage}>
+                {pool.homepage}
+              </a>
             </div>
             <div className="current-delegation-id">
               {'View on '}
               <a
+                target="_blank"
                 className="transaction-address"
                 href={`https://cardanoscan.io/pool/${pool.poolHash}`}
               >

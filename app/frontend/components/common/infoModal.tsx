@@ -21,7 +21,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
   constructor(props) {
     super(props)
     this.state = {
-      dontShowAgainCheckbox: window.localStorage.getItem('dontShowInfoModal') === 'true',
+      dontShowAgainCheckbox: !(window.localStorage.getItem('dontShowInfoModal') === 'true'),
       shouldShowImage: false,
     }
     this.checkboxClick = this.checkboxClick.bind(this)
@@ -49,6 +49,20 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">11/23/2020</h3>
+            <Alert alertType="news">
+              <b> WARNING: </b> According to latest information from IOHK, users should check the
+              saturation level of their pools and redelegate if their pool is saturated before{' '}
+              <b> December 1, 21:44 UTC.</b> The k parameter change will become effective on 6th
+              December and therefore the delegation changes need to be done 1 epoch in advance.
+            </Alert>
+            <Article title="Pool saturation" icon="">
+              For users that are delegating to a saturated pool, we display a warning and also
+              recommend and prefill one of the AdaLite pools with optimal saturation level. Latest
+              release also brought some additional information to "Current delegation" tab,
+              including Live stake, ROI and Saturation percentage.
+            </Article>
+            <hr className="info-separator" />
             <h3 className="info-date">11/16/2020</h3>
             <Article title="Decreased saturation level from 6th December" icon="">
               IOHK decided to increase the K parameter for staking to 500 on December 6th. This will
@@ -57,16 +71,18 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
               receive a penalty on rewards.
             </Article>
             <Alert alertType="news">
-              <b>
-                {' '}
-                ADA holders should make sure that the pool they are delegating to is not over the
-                saturation level before the 234 epoch boundary at 21:44 UTC on December 6.
-              </b>{' '}
-              You can redelegate at any point between now and the change. Over the following week,
-              we will implement new features to inform users about the Live Stake of the pool they
-              are delegating to. Also, as the date of the change will be closing, we will be
-              displaying warnings to users that are delegating to a pool that could possibly be
-              oversaturated.
+              <s>
+                <b>
+                  {' '}
+                  ADA holders should make sure that the pool they are delegating to is not over the
+                  saturation level before the 234 epoch boundary at 21:44 UTC on December 6.
+                </b>{' '}
+                You can redelegate at any point between now and the change.
+              </s>{' '}
+              Over the following week, we will implement new features to inform users about the Live
+              Stake of the pool they are delegating to. Also, as the date of the change will be
+              closing, we will be displaying warnings to users that are delegating to a pool that
+              could possibly be oversaturated.
             </Alert>
             <Article title="AdaLite Stake Pools delegators" icon="">
               We have already set up two new pools ADLT4 and ADLT5 in order to support this change.
