@@ -73,6 +73,11 @@ init({
       return tags ? event : null
     })
   },
+  ignoreErrors: [
+    // FF 83.0 specific error to be ignored
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1678243
+    'XDR encoding failure',
+  ],
 })
 
 const Wrapper = h(HooksStoreProvider, {value: store}, h(UnistoreStoreProvider, {store}, h(App)))
