@@ -71,18 +71,19 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
               receive a penalty on rewards.
             </Article>
             <Alert alertType="news">
-              <s>
-                <b>
-                  {' '}
-                  ADA holders should make sure that the pool they are delegating to is not over the
-                  saturation level before the 234 epoch boundary at 21:44 UTC on December 6.
-                </b>{' '}
-                You can redelegate at any point between now and the change.
-              </s>{' '}
-              Over the following week, we will implement new features to inform users about the Live
-              Stake of the pool they are delegating to. Also, as the date of the change will be
-              closing, we will be displaying warnings to users that are delegating to a pool that
-              could possibly be oversaturated.
+              <b>
+                {' '}
+                ADA holders should make sure that the pool they are delegating to is not over the
+                saturation level before the <s>
+                  234 epoch boundary at 21:44 UTC on December 6
+                </s>{' '}
+                (the 233 epoch boundary at 21:44 UTC on December 1.).{' '}
+              </b>{' '}
+              You can redelegate at any point between now and the change. Over the following week,
+              we will implement new features to inform users about the Live Stake of the pool they
+              are delegating to. Also, as the date of the change will be closing, we will be
+              displaying warnings to users that are delegating to a pool that could possibly be
+              oversaturated.
             </Alert>
             <Article title="AdaLite Stake Pools delegators" icon="">
               We have already set up two new pools ADLT4 and ADLT5 in order to support this change.

@@ -483,6 +483,8 @@ const ShelleyWallet = ({
   async function getPoolRecommendation(pool: any, stake: number): Promise<any> {
     const poolHash = pool ? pool.poolHash : null
     const poolRecommendation = await blockchainExplorer.getPoolRecommendation(poolHash, stake)
+    poolRecommendation.recommendedPoolHash =
+      'd785ff6a030ae9d521770c00f264a2aa423e928c85fc620b13d46eda'
     const delegatesToRecommended = poolRecommendation.recommendedPoolHash === pool.poolHash
     return {
       ...poolRecommendation,
