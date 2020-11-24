@@ -5,8 +5,9 @@ import submitEmailRaw from '../../../helpers/submitEmailRaw'
 import NamedError from '../../../helpers/NamedError'
 import debugLog from '../../../helpers/debugLog'
 
-const newPools = new Set(['ADLT4', 'ADLT5'])
+const newPools = new Set(['ADLT4', 'ADLT5', 'ADLT6'])
 const ADLTPools = [
+  ['ADLT6', 'cf69a3eca039d537acd46d5864a54dd8953f0c14be957350905834aa'],
   ['ADLT5', '936f24e391afc0738c816ae1f1388957b977de3d0e065dc9ba38af8d'],
   ['ADLT4', 'd785ff6a030ae9d521770c00f264a2aa423e928c85fc620b13d46eda'],
   ['ADLT3', '92229dcf782ce8a82050fdeecb9334cc4d906c6eb66cdbdcea86fb5f'],
