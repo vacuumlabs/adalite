@@ -4,6 +4,7 @@ import actions from '../../actions'
 import Modal from './modal'
 import Alert from './alert'
 import Branding from './branding'
+import {localStorageVars} from '../../localStorage'
 
 const Article = ({children, title, icon}) => (
   <article className="article">
@@ -31,7 +32,7 @@ class Welcome extends Component<WelcomeProps, {dontShowAgainCheckbox: boolean}> 
   constructor(props) {
     super(props)
     this.state = {
-      dontShowAgainCheckbox: window.localStorage.getItem('dontShowDisclaimer') === 'true',
+      dontShowAgainCheckbox: window.localStorage.getItem(localStorageVars.WELCOME) === 'true',
     }
     this.checkboxClick = this.checkboxClick.bind(this)
     this.closeWelcome = this.closeWelcome.bind(this)

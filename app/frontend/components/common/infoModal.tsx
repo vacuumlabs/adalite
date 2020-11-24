@@ -4,6 +4,7 @@ import actions from '../../actions'
 import Modal from './modal'
 import Alert from './alert'
 import ImageModal from './imageModal'
+import {localStorageVars} from '../../localStorage'
 
 const Article = ({children, title, icon}) => (
   <article className="article">
@@ -21,7 +22,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
   constructor(props) {
     super(props)
     this.state = {
-      dontShowAgainCheckbox: !(window.localStorage.getItem('dontShowInfoModal') === 'true'),
+      dontShowAgainCheckbox: window.localStorage.getItem(localStorageVars.INFO_MODAL) === 'true',
       shouldShowImage: false,
     }
     this.checkboxClick = this.checkboxClick.bind(this)
@@ -34,7 +35,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
   }
 
   closeInfoModal() {
-    this.props.closeInfoModal(this.state.dontShowAgainCheckbox) // TODO: true
+    this.props.closeInfoModal(this.state.dontShowAgainCheckbox)
   }
 
   toggleImage(shouldShowImage) {
