@@ -59,9 +59,9 @@ const CurrentDelegationPage = ({
               <a
                 target="_blank"
                 className="transaction-address"
-                href={`https://cardanoscan.io/pool/${pool.poolHash}`}
+                href={`https://adapools.org/pool/${pool.poolHash}`}
               >
-                CardanoScan
+                ADApools
               </a>
             </div>
             <div className="current-delegation-id">
