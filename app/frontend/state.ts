@@ -142,6 +142,7 @@ export interface State {
     status: string
     shouldShowSaturatedBanner: boolean
   }
+  isBigDelegator: boolean
 }
 
 const initialState: State = {
@@ -246,6 +247,7 @@ const initialState: State = {
     status: '',
     shouldShowSaturatedBanner: false,
   },
+  isBigDelegator: false,
 }
 
 export {initialState}

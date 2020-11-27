@@ -1177,6 +1177,21 @@ button[data-balloon] {
   background-color: var(--color-grey-dark);
 }
 
+.banner.delegation-offer {
+  margin: -32px 0 24px 0px;
+  background-color: #408c40;
+  opacity: 80%;
+  padding: 12px 12px;
+}
+
+.delegation-offer-text {
+  color: white;
+  display: block;
+}
+
+.delegation-offer-text > a {
+  color: white;
+}
 
 .banner.premium {
   background-color: cornflowerblue;

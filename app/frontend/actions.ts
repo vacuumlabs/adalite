@@ -16,7 +16,11 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
-import {NETWORKS, PREMIUM_MEMBER_BALANCE_TRESHHOLD} from './wallet/constants'
+import {
+  NETWORKS,
+  PREMIUM_MEMBER_BALANCE_TRESHHOLD,
+  BIG_DELEGATOR_THRESHOLD,
+} from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
 import {CardanoWallet} from './wallet/cardano-wallet'
@@ -172,6 +176,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const ticker2Id = null
       const shouldShowPremiumBanner =
         state.shouldShowPremiumBanner && walletInfo.balance > PREMIUM_MEMBER_BALANCE_TRESHHOLD
+      const isBigDelegator = walletInfo.balance > BIG_DELEGATOR_THRESHOLD
       setState({
         walletIsLoaded: true,
         ...walletInfo,
@@ -197,6 +202,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         ticker2Id,
         isShelleyCompatible,
         shouldShowPremiumBanner,
+        isBigDelegator,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
