@@ -71,6 +71,17 @@ const StakePoolInfo = ({pool, gettingPoolInfo}) => {
   )
 }
 
+const BigDelegatorOffer = () => (
+  <div className="banner delegation-offer delegation-offer-text">
+    Due to factors such as pool saturation, maximizing staking rewards is no easy task for high
+    balance wallets like yours. Get our premium assistance via{' '}
+    <a href="https://t.me/AdaLite" target="_blank" rel="noopener">
+      Telegram
+    </a>{' '}
+    or at <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a>.
+  </div>
+)
+
 interface Props {
   updateStakePoolIdentifier: any
   removeStakePool: any
@@ -89,6 +100,7 @@ interface Props {
   gettingPoolInfo: boolean
   poolRecommendation: any
   pool: any
+  isBigDelegator: boolean
 }
 
 class Delegate extends Component<Props> {
@@ -117,6 +129,7 @@ class Delegate extends Component<Props> {
     gettingPoolInfo,
     poolRecommendation,
     pool,
+    isBigDelegator,
   }) {
     const delegationHandler = async () => {
       await confirmTransaction('delegate')
@@ -136,6 +149,7 @@ class Delegate extends Component<Props> {
               <div className="stake-pool">
                 <ul className="stake-pool-list">
                   <li className="stake-pool-item">
+                    {isBigDelegator && <BigDelegatorOffer />}
                     <input
                       type="text"
                       className="input stake-pool-id"
@@ -219,6 +233,7 @@ export default connect(
     isShelleyCompatible: state.isShelleyCompatible,
     poolRecommendation: state.poolRecommendation,
     pool: state.shelleyAccountInfo.delegation,
+    isBigDelegator: state.isBigDelegator,
   }),
   actions
 )(Delegate)
