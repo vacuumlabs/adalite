@@ -75,7 +75,7 @@ const BigDelegatorOffer = () => (
   <div className="banner delegation-offer delegation-offer-text">
     Due to factors such as pool saturation, maximizing staking rewards is no easy task for high
     balance wallets like yours. Get our premium assistance via{' '}
-    <a href="https://t.me/AdaLite" target="_blank" rel="noopener">
+    <a href="https://t.me/pepo6969" target="_blank" rel="noopener">
       Telegram
     </a>{' '}
     or at <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a>.
