@@ -7,6 +7,7 @@ import RawTransactionModal from './rawTransactionModal'
 // import roundNumber from '../../../helpers/roundNumber'
 import {Lovelace} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
+import tooltip from '../../common/tooltip'
 
 interface Props {
   sendAddress: any
@@ -135,7 +136,17 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               <div className="review-label">Homepage</div>
               <div className="review-amount">{stakePool.homepage}</div>
               <div className="ada-label">Deposit</div>
-              <div className="review-fee">{printAda(summary.plan.deposit)}</div>
+              <div className="review-fee">
+                {printAda(summary.plan.deposit)}
+                <a
+                  {...tooltip(
+                    'Required deposit for address stake key registration is 2 ADA. Deposit is made with your first delegation. Further delegations do not require any additional deposits.',
+                    true
+                  )}
+                >
+                  <span className="show-info">{''}</span>
+                </a>
+              </div>
             </Fragment>
           )}
           <div className="ada-label">Fee</div>
