@@ -13,7 +13,7 @@ const SaturationInfo = (pool) => {
   const saturationPercentage = roundNumber((liveStake / SATURATION_POINT) * 100, 2)
   return (
     <div className="current-delegation-id">
-      Saturation percentage after 6th of December:
+      Saturation percentage:
       <span className={saturationPercentage >= 99 ? 'error' : ''}> {saturationPercentage}%</span>
     </div>
   )
