@@ -37,7 +37,7 @@ export const base58AddressToHex = (address: string): HexString => {
 
 export const accountAddressFromXpub = (stakeXpub: Xpub, networkId): string => {
   const addrBuffer = packRewardAddress(xpub2blake2b224Hash(stakeXpub), networkId)
-  return bech32.encode('addr', addrBuffer)
+  return bech32.encode('stake', addrBuffer)
 }
 
 export const accountHexAddressFromXpub = (stakeXpub: Xpub, networkId): HexString => {

@@ -36,12 +36,17 @@ export const accountXpub = async (cryptoProvider, accountIndex) => {
 
   const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
   return {
-    path: [
-      path[0] - HARDENED_THRESHOLD,
-      path[1] - HARDENED_THRESHOLD,
-      path[2] - HARDENED_THRESHOLD,
-    ],
+    path,
     xpub,
+  }
+}
+
+export const StakingKey = async (cryptoProvider, accountIndex: number) => {
+  const path = shelleyStakeAccountPath(accountIndex)
+  const xpub: Buffer = await cryptoProvider.deriveXpub(path)
+  return {
+    path,
+    pub: xpub.slice(0, 32),
   }
 }
 

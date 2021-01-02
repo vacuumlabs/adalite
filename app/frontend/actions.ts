@@ -1437,6 +1437,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  // TODO: move these below somewhere else since it has nothing to do with state
+
   // vacuumlabs/cardano-hw-cli
   const transformSignatureToCliFormat = (signedTxCborHex) => {
     const [, witnesses] = decode(signedTxCborHex)

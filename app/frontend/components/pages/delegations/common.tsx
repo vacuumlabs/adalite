@@ -24,3 +24,7 @@ export const LinkIcon = ({url}) => {
 export const LinkIconToPool = ({poolHash}) => (
   <LinkIcon url={`https://cardanoscan.io/pool/${poolHash}`} />
 )
+
+export const LinkIconToKey = ({stakeKey}) => (
+  <LinkIcon url={`https://cardanoscan.io/stakekey/${stakeKey}`} />
+)

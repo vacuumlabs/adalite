@@ -29,11 +29,7 @@ export const accountXpub = async (cryptoProvider, accountIndex) => {
   const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
 
   return {
-    path: [
-      path[0] - HARDENED_THRESHOLD,
-      path[1] - HARDENED_THRESHOLD,
-      path[2] - HARDENED_THRESHOLD,
-    ],
+    path,
     xpub,
   }
 }

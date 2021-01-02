@@ -134,6 +134,8 @@ export interface State {
       accountPubkeyHex: string
       shelleyXpub: any
       byronXpub: any
+      stakingKey: {path: []; pub: Buffer} | null
+      stakingAccountAddress: string
       currentEpoch: number
       delegation: any
       hasStakingKey: boolean
@@ -260,6 +262,8 @@ const initialState: State = {
         accountPubkeyHex: '',
         shelleyXpub: '',
         byronXpub: '',
+        stakingKey: null,
+        stakingAccountAddress: '',
         currentEpoch: 0,
         delegation: {},
         hasStakingKey: false,

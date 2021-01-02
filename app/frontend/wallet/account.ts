@@ -8,6 +8,7 @@ import {
   accountXpub as accoutXpubShelley,
   ShelleyStakingAccountProvider,
   ShelleyBaseAddressProvider,
+  StakingKey,
 } from './shelley/shelley-address-provider'
 
 import {
@@ -347,11 +348,15 @@ const Account = ({
       validStakepools,
       cryptoProvider.network.epochsToRewardDistribution
     )
+    const stakingKey = await StakingKey(cryptoProvider, accountIndex)
+    const stakingAccountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
 
     return {
       accountPubkeyHex,
       shelleyXpub,
       byronXpub,
+      stakingKey,
+      stakingAccountAddress,
       ...accountInfo,
       delegation: {
         ...accountInfo.delegation,

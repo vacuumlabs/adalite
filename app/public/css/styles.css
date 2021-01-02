@@ -2748,6 +2748,31 @@ li.main-tab input + label.selected:after {
   background-image: url('../assets/csv_icon_active.svg');
 }
 
+.download-key {
+  margin: 4px 16px 0px 0px;
+}
+
+.download-key-text {
+  position: relative;
+  padding-left: 21px;
+  color: rgba(96, 106, 113, 0.64);
+}
+
+.download-key-text::before {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/download-icon.svg');
+}
+
 /* WELCOME MODAL */
 
 .welcome-title {
