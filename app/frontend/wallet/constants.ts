@@ -137,4 +137,5 @@ export const enum CERTIFICATES_ENUM {
   DELEGATION = 2,
   STAKEPOOL_REGISTRATION = 3,
 }
-export const ACCOUNT_COUNT = 5
+
+export const MAX_ACCOUNT_COUNT = 100

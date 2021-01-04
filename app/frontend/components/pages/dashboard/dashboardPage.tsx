@@ -21,6 +21,7 @@ import Keys from '../advanced/keys'
 import AccountsDashboard from '../accounts/accountsDashboard'
 import {State} from '../../../state'
 import PoolOwner from '../advanced/poolOwner'
+import ErrorModals from './errorModals'
 
 interface Props {
   selectedMainTab: any
@@ -113,6 +114,7 @@ class DashboardPage extends Component<Props> {
     }
     return (
       <div className="page-wrapper">
+        <ErrorModals />
         {isShelleyCompatible && displayInfoModal && <InfoModal />}
         {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
         {!isShelleyCompatible && <DashboardErrorBanner />}

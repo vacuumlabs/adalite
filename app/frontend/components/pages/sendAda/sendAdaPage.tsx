@@ -3,12 +3,10 @@ import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 
 import {getTranslation} from '../../../translations'
-import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import printAda from '../../../helpers/printAda'
 
 import ConfirmTransactionDialog from './confirmTransactionDialog'
 import DonateThanksModal from './donateThanksModal'
-import TransactionErrorModal from './transactionErrorModal'
 import DonationButtons from './donationButtons'
 import CustomDonationInput from './customDonationInput'
 import Conversions from '../../common/conversions'
@@ -39,7 +37,6 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
   )
 
 interface Props {
-  transactionSubmissionError: any
   sendResponse: any
   sendAddress: any
   sendAddressValidationError: any
@@ -54,8 +51,6 @@ interface Props {
   sendMaxFunds: any
   shouldShowThanksForDonation: any
   closeThanksForDonationModal: any
-  closeTransactionErrorModal: any
-  shouldShowTransactionErrorModal: any
   coinsAmount: any
   shouldShowCustomDonationInput: any
   maxDonationAmount: any
@@ -78,7 +73,6 @@ class SendAdaPage extends Component<Props> {
   submitTxBtn: HTMLButtonElement
 
   render({
-    transactionSubmissionError,
     sendResponse,
     sendAddress,
     sendAddressValidationError,
@@ -93,8 +87,6 @@ class SendAdaPage extends Component<Props> {
     sendMaxFunds,
     shouldShowThanksForDonation,
     closeThanksForDonationModal,
-    closeTransactionErrorModal,
-    shouldShowTransactionErrorModal,
     coinsAmount,
     shouldShowCustomDonationInput,
     maxDonationAmount,
@@ -237,16 +229,6 @@ class SendAdaPage extends Component<Props> {
             />
           )}
         </div>
-        {shouldShowTransactionErrorModal && ( // TODO: move to dashboardPage
-          <TransactionErrorModal
-            onRequestClose={closeTransactionErrorModal}
-            errorMessage={getTranslation(
-              transactionSubmissionError.code,
-              transactionSubmissionError.params
-            )}
-            showHelp={errorHasHelp(transactionSubmissionError.code)}
-          />
-        )}
         {shouldShowConfirmTransactionDialog && !isModal && <ConfirmTransactionDialog />}
         {shouldShowThanksForDonation && (
           <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
@@ -264,7 +246,6 @@ SendAdaPage.defaultProps = {
 
 export default connect(
   (state: State) => ({
-    transactionSubmissionError: state.transactionSubmissionError,
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddressValidationError,
     sendAddress: state.sendAddress.fieldValue,
@@ -272,7 +253,6 @@ export default connect(
     sendAmount: state.sendAmount.fieldValue,
     donationAmountValidationError: state.donationAmountValidationError,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
-    shouldShowTransactionErrorModal: state.shouldShowTransactionErrorModal,
     feeRecalculating: state.calculatingFee,
     shouldShowThanksForDonation: state.shouldShowThanksForDonation,
     coinsAmount: state.sendAmount.coins,

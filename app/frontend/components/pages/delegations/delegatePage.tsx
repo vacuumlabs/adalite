@@ -4,9 +4,7 @@ import actions from '../../../actions'
 import tooltip from '../../common/tooltip'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
-import TransactionErrorModal from '../../pages/sendAda/transactionErrorModal'
 import {getTranslation} from '../../../translations'
-import {errorHasHelp} from '../../../helpers/errorsWithHelp'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
 import {sourceAccountState, Lovelace, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
@@ -91,9 +89,6 @@ interface Props {
   delegationValidationError: any
   isShelleyCompatible: any
   confirmTransaction: any
-  closeTransactionErrorModal: any
-  transactionSubmissionError: any
-  shouldShowTransactionErrorModal: any
   selectAdaliteStakepool: any
   shouldShowConfirmTransactionDialog: any
   txSuccessTab: any
@@ -125,9 +120,6 @@ class Delegate extends Component<Props, {dropShadow: boolean}> {
     delegationValidationError,
     isShelleyCompatible,
     confirmTransaction,
-    closeTransactionErrorModal,
-    transactionSubmissionError,
-    shouldShowTransactionErrorModal,
     shouldShowConfirmTransactionDialog,
     txSuccessTab,
     gettingPoolInfo,
@@ -208,16 +200,6 @@ class Delegate extends Component<Props, {dropShadow: boolean}> {
             ),
           ]}
         </div>
-        {shouldShowTransactionErrorModal && (
-          <TransactionErrorModal
-            onRequestClose={closeTransactionErrorModal}
-            errorMessage={getTranslation(
-              transactionSubmissionError.code,
-              transactionSubmissionError.params
-            )}
-            showHelp={errorHasHelp(transactionSubmissionError.code)}
-          />
-        )}
         {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
       </Fragment>
     )
@@ -254,8 +236,6 @@ export default connect(
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
-    shouldShowTransactionErrorModal: state.shouldShowTransactionErrorModal,
-    transactionSubmissionError: state.transactionSubmissionError,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,

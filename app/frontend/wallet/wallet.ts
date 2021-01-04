@@ -1,6 +1,7 @@
 import NamedError from '../helpers/NamedError'
 import {Account} from './account'
 import BlockchainExplorer from './blockchain-explorer'
+import {MAX_ACCOUNT_COUNT} from './constants'
 
 const Wallet = ({config, cryptoProvider}) => {
   const blockchainExplorer = BlockchainExplorer(config)
@@ -25,7 +26,8 @@ const Wallet = ({config, cryptoProvider}) => {
       const newAccount = accounts[accountIndex] || discoverNewAccount()
       const isAccountUsed = await newAccount.isAccountUsed()
 
-      shouldExplore = isAccountUsed && config.shouldExportPubKeyBulk && accounts.length < 100
+      shouldExplore =
+        isAccountUsed && config.shouldExportPubKeyBulk && accounts.length < MAX_ACCOUNT_COUNT
       accountIndex += 1
     }
   }
@@ -33,7 +35,7 @@ const Wallet = ({config, cryptoProvider}) => {
   async function exploreNewAccount() {
     const isLastAccountUsed = await accounts[accounts.length - 1].isAccountUsed()
     if (!isLastAccountUsed) {
-      throw NamedError('AccountExlorationError')
+      throw NamedError('AccountExplorationError')
     }
     return discoverNewAccount()
   }

@@ -8,47 +8,26 @@ import Alert from '../../common/alert'
 import SendTransactionModal from './sendTransactionModal'
 import DelegationModal from './delegationModal'
 import ConfirmTransactionDialog from '../../../../frontend/components/pages/sendAda/confirmTransactionDialog'
-import {errorHasHelp} from '../../../../frontend/helpers/errorsWithHelp'
-import TransactionErrorModal from '../sendAda/transactionErrorModal'
-import {getTranslation} from '../../../../frontend/translations'
 import AccountTile from './accountTile'
 
 type DashboardProps = {
   accountsInfo: Array<any>
-  setActiveAccount: any
-  exploreNewAccount: any
   reloadWalletInfo: any
-  showSendTransactionModal: boolean
-  showDelegationModal: boolean
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean
-  activeAccountIndex: number
   totalWalletBalance: number
   totalRewardsBalance: number
   shouldShowConfirmTransactionDialog: boolean
-  shouldShowTransactionErrorModal: boolean
-  transactionSubmissionError: any
-  closeTransactionErrorModal: any
-  accountIndexOffset: number
 }
 
 const AccountsDashboard = ({
   accountsInfo,
-  setActiveAccount,
-  exploreNewAccount,
   reloadWalletInfo,
-  showSendTransactionModal,
-  showDelegationModal,
   shouldShowSendTransactionModal,
   shouldShowDelegationModal,
-  activeAccountIndex,
   totalWalletBalance,
   totalRewardsBalance,
   shouldShowConfirmTransactionDialog,
-  shouldShowTransactionErrorModal,
-  transactionSubmissionError,
-  closeTransactionErrorModal,
-  accountIndexOffset,
 }: DashboardProps) => {
   const InfoAlert = () => (
     <Fragment>
@@ -119,10 +98,7 @@ const AccountsDashboard = ({
                   key={accountInfo.accountIndex}
                   accountIndex={accountInfo.accountIndex}
                   ticker={accountInfo.shelleyAccountInfo.delegation.ticker}
-                  availableBalance={
-                    accountInfo.shelleyBalances.stakingBalance +
-                    accountInfo.shelleyBalances.nonStakingBalance
-                  } // TODO: this should be in state}
+                  availableBalance={accountInfo.balance}
                   rewardsBalance={accountInfo.shelleyBalances.rewardsAccountBalance}
                   shouldShowAccountInfo
                 />
@@ -142,16 +118,6 @@ const AccountsDashboard = ({
           </div>
         </div>
       </div>
-      {shouldShowTransactionErrorModal && (
-        <TransactionErrorModal
-          onRequestClose={closeTransactionErrorModal}
-          errorMessage={getTranslation(
-            transactionSubmissionError.code,
-            transactionSubmissionError.params
-          )}
-          showHelp={errorHasHelp(transactionSubmissionError.code)}
-        />
-      )}
       {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
     </Fragment>
   )
@@ -167,8 +133,6 @@ export default connect(
     totalRewardsBalance: state.totalRewardsBalance,
     totalWalletBalance: state.totalWalletBalance,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
-    shouldShowTransactionErrorModal: state.shouldShowTransactionErrorModal,
-    transactionSubmissionError: state.transactionSubmissionError,
     accountIndexOffset: state.accountIndexOffset,
   }),
   actions

@@ -26,7 +26,7 @@ export const isV1Address = (address: string) => address.startsWith('D')
 
 export const bechAddressToHex = (address: string): HexString => {
   const parsed = bech32.decode(address)
-  if (parsed.prefix !== 'addr') throw Error('Invalid address')
+  if (parsed.prefix !== 'addr' && parsed.prefix !== 'stake') throw Error('Invalid address')
   return parsed.data.toString('hex')
 }
 
