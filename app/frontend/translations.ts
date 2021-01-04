@@ -30,7 +30,14 @@ const translations = {
   InvalidMnemonic: () => 'Invalid mnemonic, check your mnemonic for typos and try again.',
   DaedalusMnemonic: () => '',
 
-  TransportOpenUserCancelled: ({message}) => `TransportCanceledByUser: ${message}`,
+  TransportOpenUserCancelled: ({message}) => {
+    const errors = {
+      'navigator.usb is undefined':
+        'Your browser does not support WebUSB, use e.g. Google Chrome instead.',
+    }
+
+    return `TransportCanceledByUser: ${message}. ${errors[message] || ''}`
+  },
   TransportError: ({message}) =>
     `TransportError: ${message}.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.`,
   TransportStatusError: ({message}) => {
@@ -40,6 +47,13 @@ const translations = {
       'Ledger device: Device is locked': 'Please unlock your device.',
     }
     return `TransportStatusError: ${message}. ${errors[message] || ''}`
+  },
+  TransportInterfaceNotAvailable: ({message}) => {
+    const errors = {
+      'Unable to claim interface.':
+        'Please make sure that no other web page/app is interacting with your Ledger device at the same time.',
+    }
+    return `TransportInterfaceNotAvailable: ${message} ${errors[message] || ''}`
   },
 
   TransactionRejectedByNetwork: () =>

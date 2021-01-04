@@ -27,11 +27,15 @@ const isWebUsbSupported = async () => {
   return isSupported && platform.os.family !== 'Windows' && platform.name !== 'Opera'
 }
 
-const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
+const getLedgerTransport = async (forceWebUsb: boolean): Promise<any> => {
+  if (forceWebUsb) {
+    return await LedgerTransportWebusb.create()
+  }
+
   let transport
   try {
     const support = await isWebUsbSupported()
-    if (support || isWebUSB) {
+    if (support) {
       transport = await LedgerTransportWebusb.create()
     } else {
       transport = await LedgerTransportU2F.create()
@@ -45,6 +49,12 @@ const ShelleyLedgerCryptoProvider = async ({network, config, isWebUSB}) => {
       throw hwTransportError
     }
   }
+
+  return transport
+}
+
+const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
+  const transport = await getLedgerTransport(forceWebUsb)
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
   const derivationScheme = derivationSchemes.v2

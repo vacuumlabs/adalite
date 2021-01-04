@@ -75,10 +75,13 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
             <LedgerLogoWhite />
           </div>
         </button>
+        <div className="authentication-paragraph small">
+          alternatively, if the above does not work:
+        </div>
         <button
           className="button secondary"
           onClick={() =>
-            loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER, isWebUSB: true})
+            loadWallet({cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER, forceWebUsb: true})
           }
         >
           Connect with WebUSB
