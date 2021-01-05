@@ -4,18 +4,20 @@ import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import {Lovelace, State} from '../../../state'
 import {AdaIcon} from '../../common/svg'
+import tooltip from '../../common/tooltip'
 
 type TileProps = {
   accountIndex: number
   ticker: string | null
   availableBalance: Lovelace | null
   rewardsBalance: Lovelace | null
+  shouldShowSaturatedBanner: boolean
   setActiveAccount: any
   exploreNewAccount: any
   activeAccountIndex: number
   showDelegationModal: any
   showSendTransactionModal: any
-  accountIndexOffset: number
+  shouldNumberAccountsFromOne: boolean
   shouldShowAccountInfo?: boolean
 }
 
@@ -24,16 +26,19 @@ const AccountTile = ({
   ticker,
   availableBalance,
   rewardsBalance,
+  shouldShowSaturatedBanner,
   setActiveAccount,
   exploreNewAccount,
   activeAccountIndex,
   showDelegationModal,
   showSendTransactionModal,
-  accountIndexOffset,
+  shouldNumberAccountsFromOne,
   shouldShowAccountInfo,
 }: TileProps) => {
   const isActive = activeAccountIndex === accountIndex
-  const displayedAccountIndex = accountIndex + accountIndexOffset
+  const accountLabel = shouldNumberAccountsFromOne
+    ? `Account #${accountIndex + 1}`
+    : `Account ${accountIndex}`
 
   const Balance = ({value}: {value: Lovelace}) =>
     value !== null ? (
@@ -92,12 +97,10 @@ const AccountTile = ({
   return (
     <div key={accountIndex} className={`card account ${isActive ? 'selected' : ''}`}>
       <div className="header-wrapper mobile">
-        <h2 className="card-title small-margin">Account #{displayedAccountIndex}</h2>
+        <h2 className="card-title small-margin">{accountLabel}</h2>
       </div>
       <div className="card-column account-button-wrapper">
-        <h2 className="card-title small-margin account-header desktop">
-          Account #{displayedAccountIndex}
-        </h2>
+        <h2 className="card-title small-margin account-header desktop">{accountLabel}</h2>
         {shouldShowAccountInfo ? <ActivationButton /> : <ExplorationButton />}
       </div>
       <div className="card-column account-item-info-wrapper">
@@ -121,7 +124,19 @@ const AccountTile = ({
       </div>
       <div className="card-column account-item-info-wrapper">
         <h2 className="card-title small-margin">Delegation</h2>
-        <div className="delegation-account item">{ticker || '-'}</div>
+        <div className="delegation-account item">
+          {ticker || '-'}
+          {shouldShowSaturatedBanner && (
+            <a
+              {...tooltip(
+                'This pool is saturated. Delegate to a different pool to earn the most rewards.',
+                true
+              )}
+            >
+              <span className="show-warning">{''}</span>
+            </a>
+          )}
+        </div>
         <div className="mobile">
           {shouldShowAccountInfo && (
             <div className="account-action-buttons">
@@ -144,11 +159,10 @@ const AccountTile = ({
 
 export default connect(
   (state: State) => ({
-    accountsInfo: state.accountsInfo,
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
     activeAccountIndex: state.activeAccountIndex,
-    accountIndexOffset: state.accountIndexOffset,
+    shouldNumberAccountsFromOne: state.shouldNumberAccountsFromOne,
   }),
   actions
 )(AccountTile)

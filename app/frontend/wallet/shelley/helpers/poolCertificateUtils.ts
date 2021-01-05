@@ -1,5 +1,4 @@
 import NamedError from '../../../helpers/NamedError'
-import {buf2hex} from './chainlib-wrapper.ts'
 
 const enum PoolParamsByteLengths {
   POOL_HASH = 28,
@@ -62,7 +61,7 @@ const buf2hexLengthCheck = (buffer, correctByteLength, variableName) => {
   if (!Buffer.isBuffer(buffer) || Buffer.byteLength(buffer) !== correctByteLength) {
     throw NamedError('PoolRegIncorrectBufferLength', {message: variableName})
   }
-  return buf2hex(buffer)
+  return buffer.toString('hex')
 }
 
 const checkNumber = (number, variableName) => {

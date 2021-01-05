@@ -95,7 +95,7 @@ class DashboardPage extends Component<Props> {
     shouldShowPremiumBanner,
     shouldShowSaturatedBanner,
     activeAccountIndex,
-    accountIndexOffset,
+    shouldNumberAccountsFromOne,
   }) {
     // TODO: this approach doesnt allow multi-word tabs
     const mainTabs = ['Accounts', 'Sending', 'Staking', 'Advanced']
@@ -129,7 +129,10 @@ class DashboardPage extends Component<Props> {
                 selectedTab={selectedMainTab}
                 selectTab={this.selectMainTab}
                 displayName={
-                  name === 'Accounts' && `Account #${activeAccountIndex + accountIndexOffset}`
+                  name === 'Accounts' &&
+                  (shouldNumberAccountsFromOne
+                    ? `Account #${activeAccountIndex + 1}`
+                    : `Account ${activeAccountIndex}`)
                 }
               />
             ))}
@@ -221,7 +224,7 @@ export default connect(
     shouldShowPremiumBanner: state.shouldShowPremiumBanner,
     shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
     activeAccountIndex: state.activeAccountIndex,
-    accountIndexOffset: state.accountIndexOffset,
+    shouldNumberAccountsFromOne: state.shouldNumberAccountsFromOne,
   }),
   actions
 )(DashboardPage)

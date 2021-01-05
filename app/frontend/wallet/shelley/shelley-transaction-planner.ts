@@ -9,7 +9,6 @@ import {Lovelace} from '../../state'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
-import {buf2hex} from './helpers/chainlib-wrapper'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {

@@ -34,16 +34,18 @@ const AccountsDashboard = ({
       <div className="dashboard-column account sidebar-item info">
         <Alert alertType="info sidebar">
           <p>
-            <strong>Accounts</strong> offer a way to split your funds. You are able to delegate to
-            different pool from each account. Each account has different set of addresses and keys.
+            <strong>Accounts</strong> offer a way to split your funds. You can delegate to different
+            stakepool from each account. Each account has different balance, set of addresses and
+            keys.
           </p>
         </Alert>
       </div>
       <div className="dashboard-column account sidebar-item info">
         <Alert alertType="info sidebar">
           <p>
-            Click explore/activate button to load data for related account. If you are using
-            hardware wallet, you will be requested to export public key.
+            Click explore/activate button to load data for related account. If you are using a
+            hardware wallet, you will be requested to export public key. Note that content on all
+            tabs corresponds to currently active account.
           </p>
         </Alert>
       </div>
@@ -100,6 +102,9 @@ const AccountsDashboard = ({
                   ticker={accountInfo.shelleyAccountInfo.delegation.ticker}
                   availableBalance={accountInfo.balance}
                   rewardsBalance={accountInfo.shelleyBalances.rewardsAccountBalance}
+                  shouldShowSaturatedBanner={
+                    accountInfo.poolRecommendation.shouldShowSaturatedBanner
+                  }
                   shouldShowAccountInfo
                 />
               ))}
@@ -109,6 +114,7 @@ const AccountsDashboard = ({
                   ticker={null}
                   availableBalance={null}
                   rewardsBalance={null}
+                  shouldShowSaturatedBanner={false}
                 />
               )}
             </div>
@@ -125,7 +131,6 @@ const AccountsDashboard = ({
 
 export default connect(
   (state: State) => ({
-    isDemoWallet: state.isDemoWallet,
     accountsInfo: state.accountsInfo,
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
@@ -133,7 +138,6 @@ export default connect(
     totalRewardsBalance: state.totalRewardsBalance,
     totalWalletBalance: state.totalWalletBalance,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
-    accountIndexOffset: state.accountIndexOffset,
   }),
   actions
 )(AccountsDashboard)

@@ -599,7 +599,7 @@ p.hey {
   background-image: url('../assets/switch-icon.svg');
   text-indent: -9999px;
   background-position: center;
-  background-size: 20px;
+  background-size: 16px;
   background-position: center;
   background-position-x: right;
   background-repeat: no-repeat;
@@ -1583,6 +1583,21 @@ li.main-tab input + label.selected:after {
 .account-button .show-info::after {
   left: 72px;
   top: -4px;
+}
+
+.show-warning::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 16px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin-left: 5px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url('../assets/alert_icon_warning.svg');
 }
 
 .account-action-buttons {

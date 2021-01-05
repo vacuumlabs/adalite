@@ -146,14 +146,14 @@ class SendAdaPage extends Component<Props> {
           </div>
         )}
         <div className="send-values">
-          <label className="ada-label amount" htmlFor="send-amount">
+          <label className="ada-label amount" htmlFor={`${isModal ? 'account' : ''}send-amount`}>
             Amount
           </label>
           <div className="input-wrapper">
             <input
               className="input send-amount"
-              id="send-amount"
-              name="send-amount"
+              id={`${isModal ? 'account' : ''}send-amount`}
+              name={`${isModal ? 'account' : ''}send-amount`}
               placeholder="0.000000"
               value={sendAmount}
               onInput={updateAmount}
