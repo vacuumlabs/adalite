@@ -7,9 +7,9 @@ describe('AdaLite Test Suite', () => {
   // describe('Mnemonic Crypto Provider', () => {
   //   require('./cardano-wallet-secret-crypto-provider')
   // })
-  describe('Address Manager', () => {
-    require('./address-manager')
-  })
+  // describe('Address Manager', () => {
+  //   require('./address-manager')
+  // })
   // describe('Blockchain Explorer', () => {
   //   require('./blockchain-explorer')
   // })
@@ -25,4 +25,7 @@ describe('AdaLite Test Suite', () => {
   // describe('Shelley testnet', () => {
   //   require('./shelley')
   // })
+  describe('Address manager', () => {
+    require('./wallet/address-manager')
+  })
 })

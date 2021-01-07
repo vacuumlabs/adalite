@@ -4,7 +4,10 @@ import derivationSchemes from '../../frontend/wallet/helpers/derivation-schemes'
 import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/byron/cardano-wallet-secret-crypto-provider'
 import AddressManager from '../../frontend/wallet/address-manager'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
-import cryptoProviderSettings from './common/crypto-provider-settings'
+import {
+  byronAddressManagerSettings,
+  addressManagerSettings,
+} from './common/address-manager-settings'
 import BlockchainExplorer from '../../frontend/wallet/blockchain-explorer'
 
 import mockNetwork from './common/mock'
@@ -23,56 +26,6 @@ const blockchainExplorer = BlockchainExplorer(mockConfig, {})
 
 const byronAddressManagers = []
 const addressManagers = []
-
-const byronAddressManagerSettings = [
-  {
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[0],
-  },
-  {
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[1],
-  },
-  {
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[2],
-  },
-  {
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[3],
-  },
-  {
-    isChange: true,
-    cryptoSettings: cryptoProviderSettings[3],
-  },
-]
-
-const addressManagerSettings = [
-  {
-    accountIndex: 0,
-    isChange: true,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-  {
-    accountIndex: 0,
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-  {
-    accountIndex: 1,
-    isChange: true,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-  {
-    accountIndex: 1,
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-]
 
 const initAddressManager = async (settings, i) => {
   const {accountIndex, isChange, cryptoSettings, shouldExportPubKeyBulk} = settings
