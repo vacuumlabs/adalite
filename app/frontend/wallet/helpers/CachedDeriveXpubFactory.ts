@@ -7,7 +7,7 @@ const BYRON_V2_PATH = [HARDENED_THRESHOLD + 44, HARDENED_THRESHOLD + 1815, HARDE
 type BIP32Path = number[]
 
 function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriveXpubFn) {
-  const derivedXpubs = {}
+  let derivedXpubs = {}
 
   async function deriveXpub(absDerivationPath: BIP32Path) {
     const memoKey = JSON.stringify(absDerivationPath)
@@ -68,12 +68,24 @@ function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriv
     const _derivedXpubs = {}
     xPubBulk.forEach((xpub: Buffer, i: number) => {
       const memoKey = JSON.stringify(paths[i])
-      _derivedXpubs[memoKey] = xpub
+      _derivedXpubs[memoKey] = Promise.resolve(xpub)
     })
     return _derivedXpubs
   }
 
-  return deriveXpub
+  function cleanXpubCache() {
+    const _derivedXpubs = {}
+    Object.entries(derivedXpubs).map(([key, xpubPromise]: [string, Promise<Buffer>]) => {
+      xpubPromise
+        .then((xpub) => {
+          _derivedXpubs[key] = Promise.resolve(xpub)
+        })
+        .catch((e) => null)
+    })
+    derivedXpubs = _derivedXpubs
+  }
+
+  return {deriveXpub, cleanXpubCache}
 }
 
 export default CachedDeriveXpubFactory

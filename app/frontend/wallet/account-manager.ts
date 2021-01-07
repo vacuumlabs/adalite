@@ -33,7 +33,8 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
   }
 
   async function discoverAccounts() {
-    // TODO: remove rejected promises from pubkey cache
+    // remove rejected promises from pubkey cache
+    cryptoProvider.cleanXpubCache()
     async function _discoverNewAccount(accountIndex: number) {
       const newAccount = accounts[accountIndex] || discoverNewAccount()
       const isAccountUsed = await newAccount.isAccountUsed()
@@ -47,7 +48,8 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
   }
 
   async function exploreNewAccount() {
-    // TODO: remove rejected promises from pubkey cache
+    // remove rejected promises from pubkey cache
+    cryptoProvider.cleanXpubCache()
     const newAccount = discoverNewAccount()
     await addNewAccount(newAccount)
     return newAccount

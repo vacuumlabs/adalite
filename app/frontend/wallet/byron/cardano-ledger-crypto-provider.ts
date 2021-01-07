@@ -28,11 +28,15 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
   const isHwWallet = () => true
   const getHwWalletName = () => 'Ledger'
 
-  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, false, async (absDerivationPath) => {
-    const response = await ledger.getExtendedPublicKeys(absDerivationPath)
-    const xpubHex = response.publicKeyHex + response.chainCodeHex
-    return Buffer.from(xpubHex, 'hex')
-  })
+  const {deriveXpub, cleanXpubCache} = CachedDeriveXpubFactory(
+    derivationScheme,
+    false,
+    async (absDerivationPath) => {
+      const response = await ledger.getExtendedPublicKeys(absDerivationPath)
+      const xpubHex = response.publicKeyHex + response.chainCodeHex
+      return Buffer.from(xpubHex, 'hex')
+    }
+  )
 
   function deriveHdNode(childIndex) {
     throw NamedError('UnsupportedOperationError', {
@@ -137,6 +141,7 @@ const CardanoLedgerCryptoProvider = async ({config}) => {
     getHwWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
+    cleanXpubCache,
   }
 }
 
