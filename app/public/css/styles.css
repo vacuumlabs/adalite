@@ -422,6 +422,14 @@ p.hey {
   background-image: url('../assets/logout_symbol_active.svg');
 }
 
+.button.secondary.ledger-webusb {
+  margin-top: 0px;
+}
+
+.authentication-paragraph.small.ledger-webusb {
+  margin-top: 8px;
+}
+
 .button.trezor {
   position: relative;
   padding-right: 119px;
