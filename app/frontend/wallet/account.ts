@@ -36,6 +36,7 @@ const DummyAddressManager = () => {
     discoverAddresses: () => [],
     discoverAddressesWithMeta: () => [],
     getAddressToAbsPathMapping: () => ({}),
+    _deriveAddress: () => ({}),
   }
 }
 
@@ -171,6 +172,12 @@ const Account = ({
     gapLimit: config.ADALITE_GAP_LIMIT,
     blockchainExplorer,
   })
+
+  async function init() {
+    // get first address to ensure that public keys were exported
+    await myAddresses.legacyExtManager._deriveAddress(0)
+    await myAddresses.baseExtAddrManager._deriveAddress(0)
+  }
 
   async function calculateTtl() {
     try {
@@ -463,6 +470,7 @@ const Account = ({
     accountIndex,
     getPoolRecommendation,
     isAccountUsed,
+    init,
   }
 }
 

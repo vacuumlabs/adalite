@@ -29,15 +29,16 @@ import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
-import {State, Ada, Lovelace, GetStateFn, SetStateFn, sourceAccountState} from './state'
+import {State, Ada, Lovelace, GetStateFn, SetStateFn, getSourceAccountInfo} from './state'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
-import {Wallet} from './wallet/wallet'
+import {ShelleyWallet} from './wallet/shelley-wallet'
 import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
+import {AccountInfo} from './types'
 
-let wallet: ReturnType<typeof Wallet>
+let wallet: ReturnType<typeof ShelleyWallet>
 
 const debounceEvent = (callback, time) => {
   let interval
@@ -118,6 +119,26 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  const getWalletInfo = (accountsInfo: Array<AccountInfo>) => {
+    const totalWalletBalance = accountsInfo.reduce(
+      (a, {shelleyBalances}) =>
+        shelleyBalances.stakingBalance + shelleyBalances.nonStakingBalance + a,
+      0
+    )
+    const totalRewardsBalance = accountsInfo.reduce(
+      (a, {shelleyBalances}) => shelleyBalances.rewardsAccountBalance + a,
+      0
+    )
+    const shouldShowSaturatedBanner = accountsInfo.some(
+      ({poolRecommendation}) => poolRecommendation.shouldShowSaturatedBanner
+    )
+    return {
+      totalWalletBalance,
+      totalRewardsBalance,
+      shouldShowSaturatedBanner,
+    }
+  }
+
   /* LOADING WALLET */
 
   const loadWallet = async (
@@ -140,18 +161,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         }
       )
 
-      wallet = await Wallet({
+      wallet = await ShelleyWallet({
         config,
         cryptoProvider,
       })
 
-      const {validStakepools} = await wallet.getValidStakepools()
-      const {accountsInfo} = await wallet.getAccountsInfo(validStakepools)
-      const {
-        totalRewardsBalance,
-        totalWalletBalance,
-        shouldShowSaturatedBanner,
-      } = wallet.getWalletInfo(accountsInfo)
+      const validStakepools = await wallet.getValidStakepools()
+      const accountsInfo = await wallet.getAccountsInfo(validStakepools)
+      const {totalRewardsBalance, totalWalletBalance, shouldShowSaturatedBanner} = getWalletInfo(
+        accountsInfo
+      )
 
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
@@ -216,14 +235,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const reloadWalletInfo = async (state: State) => {
     loadingAction(state, 'Reloading wallet info...')
     try {
-      const {accountsInfo} = await wallet.getAccountsInfo(state.validStakepools)
+      const accountsInfo = await wallet.getAccountsInfo(state.validStakepools)
       const conversionRates = getConversionRates(state)
 
       // timeout setting loading state, so that loading shows even if everything was cached
       setTimeout(() => setState({loading: false}), 500)
       setState({
         accountsInfo,
-        ...wallet.getWalletInfo(accountsInfo),
+        ...getWalletInfo(accountsInfo),
       })
       await fetchConversionRates(conversionRates)
     } catch (e) {
@@ -539,7 +558,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       sendAmountValidator(
         state.sendAmount.fieldValue,
         state.sendAmount.coins,
-        sourceAccountState(state).balance
+        getSourceAccountInfo(state).balance
       )
     )
     setErrorState(
@@ -547,7 +566,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       donationAmountValidator(
         state.donationAmount.fieldValue,
         state.donationAmount.coins,
-        sourceAccountState(state).balance
+        getSourceAccountInfo(state).balance
       )
     )
   }
@@ -610,7 +629,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
     const validationError = txPlanValidator(
       coins,
-      sourceAccountState(state).balance, // TODO: get new balance
+      getSourceAccountInfo(state).balance, // TODO: get new balance
       plan,
       donationAmount
     )
@@ -825,7 +844,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       .getMaxNonStakingAmount(address)
     const coins = maxAmount && maxAmount.sendAmount
     const plan = await prepareTxPlan({address, coins, txType: 'convert'})
-    const validationError = txPlanValidator(coins, sourceAccountState(state).balance, plan)
+    const validationError = txPlanValidator(coins, getSourceAccountInfo(state).balance, plan)
     if (validationError) {
       setErrorState('transactionSubmissionError', validationError, {
         shouldShowTransactionErrorModal: true,
@@ -841,10 +860,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const withdrawRewards = async (state) => {
     loadingAction(state, 'Preparing transaction...')
     // TODO: get reward and normal balance from be not from state
-    const rewards = sourceAccountState(state).shelleyBalances.rewardsAccountBalance
+    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance
     const plan = await prepareTxPlan({rewards, txType: 'withdraw'})
     const withdrawalValidationError =
-      withdrawalPlanValidator(rewards, sourceAccountState(state).balance, plan) ||
+      withdrawalPlanValidator(rewards, getSourceAccountInfo(state).balance, plan) ||
       wallet.checkCryptoProviderVersion('WITHDRAWAL')
     if (withdrawalValidationError) {
       setErrorState('transactionSubmissionError', withdrawalValidationError, {
@@ -926,13 +945,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const state = getState()
     setPoolInfo(state)
     const poolHash = state.shelleyDelegation.selectedPool.poolHash
-    const stakingKeyRegistered = sourceAccountState(state).shelleyAccountInfo.hasStakingKey
+    const stakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
     const plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: 'delegate'})
     const newState = getState()
     if (hasPoolIdentifiersChanged(newState)) {
       return
     }
-    const validationError = delegationPlanValidator(sourceAccountState(state).balance, plan)
+    const validationError = delegationPlanValidator(getSourceAccountInfo(state).balance, plan)
     if (validationError) {
       setErrorState('delegationValidationError', validationError, {
         calculatingDelegationFee: false,
@@ -1014,7 +1033,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     updateStakePoolIdentifier(
       newState,
       null,
-      sourceAccountState(newState).poolRecommendation.recommendedPoolHash
+      getSourceAccountInfo(newState).poolRecommendation.recommendedPoolHash
     )
   }
 
@@ -1043,7 +1062,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const accountsInfo = [...state.accountsInfo, accountInfo]
       setState({
         accountsInfo,
-        ...wallet.getWalletInfo(accountsInfo),
+        ...getWalletInfo(accountsInfo),
       })
       setActiveAccount(state, newAccount.accountIndex)
     } catch (e) {

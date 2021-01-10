@@ -1,7 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {localStorageVars} from './localStorage'
-
-interface Transaction {}
+import {AccountInfo} from './types'
 
 type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
 export type Ada = number & {__typeAda: any}
@@ -122,43 +121,7 @@ export interface State {
   txSuccessTab: string
   shouldShowSaturatedBanner?: boolean
   isBigDelegator: boolean
-  accountsInfo: Array<{
-    balance: number
-    shelleyBalances: {
-      stakingBalance?: number
-      nonStakingBalance?: number
-      rewardsAccountBalance?: number
-    }
-    stakePubkeyHex: string
-    shelleyAccountInfo: {
-      accountPubkeyHex: string
-      shelleyXpub: any
-      byronXpub: any
-      stakingKey: {path: []; pub: Buffer} | null
-      stakingAccountAddress: string
-      currentEpoch: number
-      delegation: any
-      hasStakingKey: boolean
-      rewards: number
-      rewardDetails: {
-        upcoming: any
-        nearest: any
-        currentDelegation: any
-      }
-      value: number
-    }
-    transactionHistory: Array<Transaction>
-    stakingHistory: any
-    visibleAddresses: Array<any>
-    poolRecommendation: {
-      isInRecommendedPoolSet: boolean
-      recommendedPoolHash: string
-      status: string
-      shouldShowSaturatedBanner: boolean
-    }
-    isUsed: boolean
-    accountIndex: number
-  }>
+  accountsInfo: Array<AccountInfo>
   shouldNumberAccountsFromOne: boolean
   sourceAccountIndex: number
   activeAccountIndex: number
@@ -308,7 +271,7 @@ const initialState: State = {
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State
 
-export const sourceAccountState = (state: State) => state.accountsInfo[state.sourceAccountIndex]
-export const activeAccountState = (state: State) => state.accountsInfo[state.activeAccountIndex]
+export const getSourceAccountInfo = (state: State) => state.accountsInfo[state.sourceAccountIndex]
+export const getActiveAccountInfo = (state: State) => state.accountsInfo[state.activeAccountIndex]
 
 export {initialState}

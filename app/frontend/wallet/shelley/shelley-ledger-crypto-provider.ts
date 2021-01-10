@@ -63,7 +63,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
 
   const version = await ledger.getVersion()
 
-  checkVersion('MINIMAL')
+  ensureFeatureIsSupported('MINIMAL')
 
   const isHwWallet = () => true
   const getWalletName = () => 'Ledger'
@@ -88,14 +88,14 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     }
   )
 
-  function checkVersion(requiredVersionType: string) {
-    if (!hasRequiredVersion(version, requiredVersionType)) {
+  function ensureFeatureIsSupported(featureName: string) {
+    if (!hasRequiredVersion(version, featureName)) {
       const versionErrors = {
         MINIMAL: 'OutdatedCardanoAppError',
         WITHDRAWAL: 'NotRecommendedCardanoAppVerion',
         BULK_EXPORT: 'BulkExportNotSupported',
       }
-      throw NamedError(versionErrors[requiredVersionType], {
+      throw NamedError(versionErrors[featureName], {
         message: `${version.major}.${version.minor}.${version.patch}`,
       })
     }
@@ -294,7 +294,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     getWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
-    checkVersion,
+    ensureFeatureIsSupported,
     cleanXpubCache,
   }
 }

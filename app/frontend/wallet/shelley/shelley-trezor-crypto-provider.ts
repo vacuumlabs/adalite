@@ -252,7 +252,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     }
   }
 
-  function checkVersion() {
+  function ensureFeatureIsSupported(featureName: string) {
     return
   }
 
@@ -268,7 +268,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     _sign: sign,
     _deriveHdNode: deriveHdNode,
     network,
-    checkVersion,
+    ensureFeatureIsSupported,
   }
 }
 

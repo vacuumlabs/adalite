@@ -75,10 +75,10 @@ function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriv
 
   function cleanXpubCache() {
     const _derivedXpubs = {}
-    Object.entries(derivedXpubs).map(([key, xpubPromise]: [string, Promise<Buffer>]) => {
+    Object.entries(derivedXpubs).map(([memoKey, xpubPromise]: [string, Promise<Buffer>]) => {
       xpubPromise
         .then((xpub) => {
-          _derivedXpubs[key] = Promise.resolve(xpub)
+          _derivedXpubs[memoKey] = Promise.resolve(xpub)
         })
         .catch((e) => null)
     })

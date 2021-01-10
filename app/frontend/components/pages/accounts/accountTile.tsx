@@ -9,8 +9,8 @@ import tooltip from '../../common/tooltip'
 type TileProps = {
   accountIndex: number
   ticker: string | null
-  availableBalance: Lovelace | null
-  rewardsBalance: Lovelace | null
+  availableBalance: number | null
+  rewardsBalance: number | null
   shouldShowSaturatedBanner: boolean
   setActiveAccount: any
   exploreNewAccount: any
@@ -106,7 +106,7 @@ const AccountTile = ({
       <div className="card-column account-item-info-wrapper">
         <h2 className="card-title small-margin">Available balance</h2>
         <div className="balance-amount small item">
-          <Balance value={availableBalance} />
+          <Balance value={availableBalance as Lovelace} />
         </div>
         <div className="mobile">
           {shouldShowAccountInfo && (
@@ -119,7 +119,7 @@ const AccountTile = ({
       <div className="card-column account-item-info-wrapper tablet-offset">
         <h2 className="card-title small-margin">Rewards balance</h2>
         <div className="balance-amount small item">
-          <Balance value={rewardsBalance} />
+          <Balance value={rewardsBalance as Lovelace} />
         </div>
       </div>
       <div className="card-column account-item-info-wrapper">

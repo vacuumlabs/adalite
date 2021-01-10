@@ -1,7 +1,7 @@
 import {Fragment, h} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
-import {State, activeAccountState} from '../../../state'
+import {State, getActiveAccountInfo} from '../../../state'
 import {parsePath} from '../../../helpers/pathParser'
 import {encode} from 'borc'
 import {LinkIconToKey} from '../delegations/common'
@@ -56,11 +56,11 @@ const Keys = ({byronXpub, shelleyXpub, accountPubkeyHex, stakingKey, stakingAcco
 
 export default connect(
   (state: State) => ({
-    shelleyXpub: activeAccountState(state).shelleyAccountInfo.shelleyXpub,
-    byronXpub: activeAccountState(state).shelleyAccountInfo.byronXpub,
-    accountPubkeyHex: activeAccountState(state).shelleyAccountInfo.accountPubkeyHex,
-    stakingKey: activeAccountState(state).shelleyAccountInfo.stakingKey,
-    stakingAccountAddress: activeAccountState(state).shelleyAccountInfo.stakingAccountAddress,
+    shelleyXpub: getActiveAccountInfo(state).shelleyAccountInfo.shelleyXpub,
+    byronXpub: getActiveAccountInfo(state).shelleyAccountInfo.byronXpub,
+    accountPubkeyHex: getActiveAccountInfo(state).shelleyAccountInfo.accountPubkeyHex,
+    stakingKey: getActiveAccountInfo(state).shelleyAccountInfo.stakingKey,
+    stakingAccountAddress: getActiveAccountInfo(state).shelleyAccountInfo.stakingAccountAddress,
   }),
   actions
 )(Keys)

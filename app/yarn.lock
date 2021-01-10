@@ -21,17 +21,6 @@
     bech32 "^1.1.4"
     node-int64 "^0.4.0"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v2.0.2-rc.3/cardano-foundation-ledgerjs-hw-app-cardano-2.0.2-rc.3.tgz":
-  version "2.0.2-rc.3"
-  resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v2.0.2-rc.3/cardano-foundation-ledgerjs-hw-app-cardano-2.0.2-rc.3.tgz#adcf4e9b55a7a97baf972f2ffe0078782fea0c98"
-  dependencies:
-    "@ledgerhq/hw-transport" "^5.12.0"
-    babel-polyfill "^6.26.0"
-    babel-runtime "^6.26.0"
-    base-x "^3.0.5"
-    bech32 "^1.1.4"
-    node-int64 "^0.4.0"
-
 "@emurgo/js-chain-libs@https://github.com/SebastienGllmt/js-chain-libs-pkg":
   version "0.6.1"
   resolved "https://github.com/SebastienGllmt/js-chain-libs-pkg#69701be6644927b324d380df6a9510c0fa2d4e1a"

@@ -1,7 +1,8 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
+import {AccountInfo} from '../types'
 
-const Wallet = ({config, cryptoProvider}) => {
+const ShelleyWallet = ({config, cryptoProvider}) => {
   const blockchainExplorer = BlockchainExplorer(config)
 
   const accountManager = AccountManager({config, cryptoProvider, blockchainExplorer})
@@ -17,7 +18,7 @@ const Wallet = ({config, cryptoProvider}) => {
   function submitTx(signedTx): Promise<any> {
     const params = {
       walletType: getWalletName(),
-      // TODO: stakeKey
+      // TODO: add stake key for debugging purposes
     }
     const {txBody, txHash} = signedTx
     return blockchainExplorer.submitTxRaw(txHash, txBody, params)
@@ -34,43 +35,18 @@ const Wallet = ({config, cryptoProvider}) => {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  function checkCryptoProviderVersion(type: string) {
+  function checkCryptoProviderVersion(featureName: string) {
     try {
-      cryptoProvider.checkVersion(type)
+      cryptoProvider.ensureFeatureIsSupported(featureName)
     } catch (e) {
       return {code: e.name, message: e.message}
     }
     return null
   }
 
-  const getWalletInfo = (accountsInfo) => {
-    const totalWalletBalance = accountsInfo.reduce(
-      (a, {shelleyBalances}) =>
-        shelleyBalances.stakingBalance + shelleyBalances.nonStakingBalance + a,
-      0
-    )
-    const totalRewardsBalance = accountsInfo.reduce(
-      (a, {shelleyBalances}) => shelleyBalances.rewardsAccountBalance + a,
-      0
-    )
-    const shouldShowSaturatedBanner = accountsInfo.some(
-      ({poolRecommendation}) => poolRecommendation.shouldShowSaturatedBanner
-    )
-    return {
-      totalWalletBalance,
-      totalRewardsBalance,
-      shouldShowSaturatedBanner,
-    }
-  }
-
-  async function getAccountsInfo(validStakepools) {
+  async function getAccountsInfo(validStakepools): Promise<Array<AccountInfo>> {
     const accounts = await accountManager.discoverAccounts()
-    const accountsInfo = await Promise.all(
-      accounts.map((account) => account.getAccountInfo(validStakepools))
-    )
-    return {
-      accountsInfo,
-    }
+    return Promise.all(accounts.map((account) => account.getAccountInfo(validStakepools)))
   }
 
   function getValidStakepools(): Promise<any> {
@@ -85,11 +61,10 @@ const Wallet = ({config, cryptoProvider}) => {
     fetchTxInfo,
     checkCryptoProviderVersion,
     getAccountsInfo,
-    getWalletInfo,
     getValidStakepools,
     getAccount: accountManager.getAccount,
     exploreNewAccount: accountManager.exploreNewAccount,
   }
 }
 
-export {Wallet}
+export {ShelleyWallet}

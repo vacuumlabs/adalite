@@ -9,9 +9,10 @@ import SendTransactionModal from './sendTransactionModal'
 import DelegationModal from './delegationModal'
 import ConfirmTransactionDialog from '../../../../frontend/components/pages/sendAda/confirmTransactionDialog'
 import AccountTile from './accountTile'
+import {AccountInfo} from '../../../../frontend/types'
 
 type DashboardProps = {
-  accountsInfo: Array<any>
+  accountsInfo: Array<AccountInfo>
   reloadWalletInfo: any
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean

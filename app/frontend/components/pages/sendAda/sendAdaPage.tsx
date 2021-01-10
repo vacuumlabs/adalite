@@ -15,7 +15,7 @@ import {toCoins} from '../../../helpers/adaConverters'
 
 import tooltip from '../../common/tooltip'
 import AccountDropdown from '../accounts/accountDropdown'
-import {sourceAccountState, State} from '../../../state'
+import {getSourceAccountInfo, State} from '../../../state'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -262,7 +262,7 @@ export default connect(
     sendTransactionSummary: state.sendTransactionSummary,
     transactionFee: state.transactionFee,
     txSuccessTab: state.txSuccessTab,
-    balance: sourceAccountState(state).balance,
+    balance: getSourceAccountInfo(state).balance,
     sourceAccountIndex: state.sourceAccountIndex,
     targetAccountIndex: state.targetAccountIndex,
   }),

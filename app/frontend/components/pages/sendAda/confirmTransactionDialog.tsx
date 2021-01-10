@@ -89,11 +89,6 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
                 {summary.plan.outputs[0].address}
                 <AddressVerification address={summary.plan.outputs[0].address} />
               </div>
-            </Fragment>
-          )}
-
-          {txConfirmType === 'convert' && (
-            <Fragment>
               <div className="ada-label">Amount</div>
               <div className="review-amount">{printAda(totalAmount)}</div>
             </Fragment>

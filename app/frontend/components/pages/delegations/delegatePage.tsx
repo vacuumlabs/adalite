@@ -6,7 +6,7 @@ import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 import {getTranslation} from '../../../translations'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
-import {sourceAccountState, Lovelace, State} from '../../../state'
+import {getSourceAccountInfo, Lovelace, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import Accordion from '../../common/accordion'
 
@@ -240,8 +240,8 @@ export default connect(
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,
     isShelleyCompatible: state.isShelleyCompatible,
-    poolRecommendation: sourceAccountState(state).poolRecommendation,
-    pool: sourceAccountState(state).shelleyAccountInfo.delegation,
+    poolRecommendation: getSourceAccountInfo(state).poolRecommendation,
+    pool: getSourceAccountInfo(state).shelleyAccountInfo.delegation,
     isBigDelegator: state.isBigDelegator,
   }),
   actions

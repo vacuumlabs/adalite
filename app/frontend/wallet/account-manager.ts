@@ -19,7 +19,7 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
   }
 
   async function addNewAccount(account) {
-    await account.isAccountUsed() // To ensure user exported pubkey
+    await account.init() // To ensure user exported pubkey
     const isLastAccountUsed =
       accounts.length > 0 ? await accounts[accounts.length - 1].isAccountUsed() : true
     if (

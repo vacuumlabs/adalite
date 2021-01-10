@@ -377,14 +377,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response
   }
 
-  async function getValidStakepools() {
+  function getValidStakepools(): Promise<any> {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-    const validStakepools = await request(url)
-
-    return {validStakepools}
+    return request(url)
   }
 
-  function getBestSlot() {
+  function getBestSlot(): Promise<any> {
     return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
   }
 
