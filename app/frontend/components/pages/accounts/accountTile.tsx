@@ -13,7 +13,7 @@ type TileProps = {
   rewardsBalance: number | null
   shouldShowSaturatedBanner: boolean
   setActiveAccount: any
-  exploreNewAccount: any
+  exploreNextAccount: any
   activeAccountIndex: number
   showDelegationModal: any
   showSendTransactionModal: any
@@ -28,7 +28,7 @@ const AccountTile = ({
   rewardsBalance,
   shouldShowSaturatedBanner,
   setActiveAccount,
-  exploreNewAccount,
+  exploreNextAccount,
   activeAccountIndex,
   showDelegationModal,
   showSendTransactionModal,
@@ -87,7 +87,7 @@ const AccountTile = ({
     <button
       className="button primary nowrap"
       onClick={() => {
-        exploreNewAccount()
+        exploreNextAccount()
       }}
     >
       Explore

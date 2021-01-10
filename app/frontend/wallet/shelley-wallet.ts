@@ -64,7 +64,7 @@ const ShelleyWallet = ({config, cryptoProvider}) => {
     getAccountsInfo,
     getValidStakepools,
     getAccount: accountManager.getAccount,
-    exploreNewAccount: accountManager.exploreNewAccount,
+    exploreNextAccount: accountManager.exploreNextAccount,
   }
 }
 

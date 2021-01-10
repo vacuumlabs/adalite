@@ -86,7 +86,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
 
   const {deriveXpub, cleanXpubCache} = CachedDeriveXpubFactory(
     derivationScheme,
-    config.shouldExportPubKeyBulk,
+    config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeatures.BULK_EXPORT),
     async (derivationPaths) => {
       const response = await exportPublicKeys(derivationPaths)
       return response.map((res) => Buffer.from(res.publicKeyHex + res.chainCodeHex, 'hex'))

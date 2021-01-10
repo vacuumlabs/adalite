@@ -1055,17 +1055,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const exploreNewAccount = async (state: State) => {
+  const exploreNextAccount = async (state: State) => {
     try {
       loadingAction(state, 'Loading account')
-      const newAccount = await wallet.exploreNewAccount()
-      const accountInfo = await newAccount.getAccountInfo(state.validStakepools)
+      const nextAccount = await wallet.exploreNextAccount()
+      const accountInfo = await nextAccount.getAccountInfo(state.validStakepools)
       const accountsInfo = [...state.accountsInfo, accountInfo]
       setState({
         accountsInfo,
         ...getWalletInfo(accountsInfo),
       })
-      setActiveAccount(state, newAccount.accountIndex)
+      setActiveAccount(state, nextAccount.accountIndex)
     } catch (e) {
       setErrorState('walletLoadingError', e)
       setState({
@@ -1545,7 +1545,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setActiveAccount,
     setTargetAccount,
     setSourceAccount,
-    exploreNewAccount,
+    exploreNextAccount,
     switchSourceAndTargetAccounts,
     loadPoolCertificateTx,
     downloadPoolSignature,
