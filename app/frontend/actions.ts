@@ -21,6 +21,7 @@ import {
   NETWORKS,
   PREMIUM_MEMBER_BALANCE_TRESHOLD,
   BIG_DELEGATOR_THRESHOLD,
+  CryptoProviderFeatures,
 } from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
@@ -864,7 +865,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const plan = await prepareTxPlan({rewards, txType: 'withdraw'})
     const withdrawalValidationError =
       withdrawalPlanValidator(rewards, getSourceAccountInfo(state).balance, plan) ||
-      wallet.checkCryptoProviderVersion('WITHDRAWAL')
+      wallet.ensureFeatureIsSupported(CryptoProviderFeatures.WITHDRAWAL)
     if (withdrawalValidationError) {
       setErrorState('transactionSubmissionError', withdrawalValidationError, {
         shouldShowTransactionErrorModal: true,

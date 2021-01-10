@@ -1,6 +1,7 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
 import {AccountInfo} from '../types'
+import {CryptoProviderFeatures} from './constants'
 
 const ShelleyWallet = ({config, cryptoProvider}) => {
   const blockchainExplorer = BlockchainExplorer(config)
@@ -35,11 +36,11 @@ const ShelleyWallet = ({config, cryptoProvider}) => {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  function checkCryptoProviderVersion(featureName: string) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
     try {
-      cryptoProvider.ensureFeatureIsSupported(featureName)
+      cryptoProvider.ensureFeatureIsSupported(feature)
     } catch (e) {
-      return {code: e.name, message: e.message}
+      return {code: e.name, params: {message: e.message}}
     }
     return null
   }
@@ -59,7 +60,7 @@ const ShelleyWallet = ({config, cryptoProvider}) => {
     submitTx,
     getWalletSecretDef,
     fetchTxInfo,
-    checkCryptoProviderVersion,
+    ensureFeatureIsSupported,
     getAccountsInfo,
     getValidStakepools,
     getAccount: accountManager.getAccount,

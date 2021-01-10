@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
-import {ADALITE_SUPPORT_EMAIL} from '../constants'
+import {ADALITE_SUPPORT_EMAIL, CryptoProviderFeatures} from '../constants'
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
@@ -252,8 +252,12 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     }
   }
 
-  function ensureFeatureIsSupported(featureName: string) {
-    return
+  function isFeatureSupported(feature: CryptoProviderFeatures) {
+    return true
+  }
+
+  function ensureFeatureIsSupported(features: CryptoProviderFeatures) {
+    return true
   }
 
   return {
@@ -269,6 +273,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     _deriveHdNode: deriveHdNode,
     network,
     ensureFeatureIsSupported,
+    isFeatureSupported,
   }
 }
 

@@ -1,19 +1,21 @@
-import {LEDGER_VERSIONS} from '../../constants'
-
 interface Version {
   major: string
   minor: string
   patch: string
 }
 
-export const hasRequiredVersion = (currentVersionStr: Version, requiredVersionType: string) => {
+export const hasRequiredVersion = (currentVersionStr: Version, requiredVersionStr) => {
   const current = {
     major: parseInt(currentVersionStr.major, 10),
     minor: parseInt(currentVersionStr.minor, 10),
     patch: parseInt(currentVersionStr.patch, 10),
   }
 
-  const required = LEDGER_VERSIONS[requiredVersionType]
+  const required = {
+    major: parseInt(requiredVersionStr.major, 10),
+    minor: parseInt(requiredVersionStr.minor, 10),
+    patch: parseInt(requiredVersionStr.patch, 10),
+  }
 
   return (
     current.major > required.major ||

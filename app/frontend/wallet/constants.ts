@@ -104,24 +104,6 @@ export const CRYPTO_PROVIDER_TYPES = {
 export const SENTRY_USER_FEEDBACK_API =
   'https://sentry.io/api/0/projects/vacuumlabs-sro/adalite-frontend/user-feedback/'
 
-export const LEDGER_VERSIONS = {
-  MINIMAL: {
-    major: 2,
-    minor: 0,
-    patch: 2,
-  },
-  WITHDRAWAL: {
-    major: 2,
-    minor: 0,
-    patch: 4,
-  },
-  BULK_EXPORT: {
-    major: 2,
-    minor: 1,
-    patch: 0,
-  },
-}
-
 export const UNKNOWN_POOL_NAME = '<Unknown pool>'
 
 export const PREMIUM_MEMBER_BALANCE_TRESHOLD = 2500000000000
@@ -136,6 +118,43 @@ export const enum CERTIFICATES_ENUM {
   STAKING_KEY_DEREGISTRATION = 1,
   DELEGATION = 2,
   STAKEPOOL_REGISTRATION = 3,
+}
+
+export const enum CryptoProviderFeatures {
+  MINIMAL,
+  WITHDRAWAL,
+  BULK_EXPORT,
+  POOL_OWNER,
+}
+
+export const LEDGER_VERSIONS = {
+  [CryptoProviderFeatures.MINIMAL]: {
+    major: 2,
+    minor: 0,
+    patch: 2,
+  },
+  [CryptoProviderFeatures.WITHDRAWAL]: {
+    major: 2,
+    minor: 0,
+    patch: 4,
+  },
+  [CryptoProviderFeatures.BULK_EXPORT]: {
+    major: 2,
+    minor: 1,
+    patch: 0,
+  },
+  [CryptoProviderFeatures.POOL_OWNER]: {
+    major: 2,
+    minor: 1,
+    patch: 0,
+  },
+}
+
+export const LEDGER_ERRORS = {
+  [CryptoProviderFeatures.MINIMAL]: 'LedgerOutdatedCardanoAppError',
+  [CryptoProviderFeatures.WITHDRAWAL]: 'LedgerWithdrawalNotSupported',
+  [CryptoProviderFeatures.BULK_EXPORT]: 'LedgerBulkExportNotSupported',
+  [CryptoProviderFeatures.POOL_OWNER]: 'LedgerPoolRegNotSupported',
 }
 
 export const MAX_ACCOUNT_COUNT = 100

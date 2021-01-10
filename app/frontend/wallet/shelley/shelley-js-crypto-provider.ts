@@ -129,8 +129,12 @@ const ShelleyJsCryptoProvider = ({
     return ShelleySignedTransactionStructured(txAux, witnesses, meta)
   }
 
-  function ensureFeatureIsSupported(featureName: string) {
-    return
+  function isFeatureSupported(feature) {
+    return true
+  }
+
+  function ensureFeatureIsSupported(feature) {
+    return true
   }
 
   return {
@@ -146,6 +150,7 @@ const ShelleyJsCryptoProvider = ({
     _deriveHdNodeFromRoot: deriveHdNode,
     _deriveChildHdNode: deriveChildHdNode,
     ensureFeatureIsSupported,
+    isFeatureSupported,
     cleanXpubCache,
   }
 }

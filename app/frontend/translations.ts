@@ -2,7 +2,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
 import {Lovelace} from './state'
-import {LEDGER_VERSIONS} from './wallet/constants'
+import {LEDGER_VERSIONS, CryptoProviderFeatures} from './wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -86,18 +86,24 @@ const translations = {
     'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
   ServerError: () =>
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
-  OutdatedCardanoAppError: ({message}) =>
-    `OutdatedCardanoAppError: Your cardano application is running on an outdated version ${message}. Please update your cardano application to the version ${
-      LEDGER_VERSIONS.MINIMAL.major
-    }.${LEDGER_VERSIONS.MINIMAL.minor}.${
-      LEDGER_VERSIONS.MINIMAL.patch
+  LedgerOutdatedCardanoAppError: ({message}) =>
+    `LedgerOutdatedCardanoAppError: Your cardano application is running on an outdated version ${message}. Please update your cardano application to the version ${
+      LEDGER_VERSIONS[CryptoProviderFeatures.MINIMAL].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeatures.MINIMAL].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeatures.MINIMAL].patch
     } or later. See https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps for more information.`,
-  NotRecommendedCardanoAppVerion: ({message}) =>
+  LedgerWithdrawalNotSupported: ({message}) =>
     `RewardsWithdrawalNotSupported: There was a bug in Ledger Cardano app 2.0.3 that didn't allow rewards withdrawals. To withdraw rewards, you need to update your Ledger firmware and your Ledger Cardano app. You need to update to firmware version 1.6.1 for Ledger Nano S and to firmware version 1.2.4-4 for Nano X. For more information how to do this please refer to https://support.ledger.com/hc/en-us/articles/360005885733-Update-device-firmware. After your ledger firmware is updated please install the latest version of the the Ledger Cardano app. Your current version is ${message} and the required version is ${
-      LEDGER_VERSIONS.WITHDRAWAL.major
-    }.${LEDGER_VERSIONS.WITHDRAWAL.minor}.${
-      LEDGER_VERSIONS.WITHDRAWAL.patch
+      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].patch
     }. For more information how to do this, please refer to https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps`,
+  LedgerPoolRegNotSupported: ({message}) =>
+    `Pool registration is not supported on this device. Your current version is ${message} and the required version is ${
+      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].patch
+    }`,
   PoolRegInvalidNumCerts: () =>
     'The transaction must include exactly one certificate, being the pool registration.',
   PoolRegInvalidType: () => 'The certificate in transaction is not a pool registration.',

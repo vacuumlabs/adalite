@@ -12,7 +12,12 @@ import {
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
 import {PoolParams} from './helpers/poolCertificateUtils'
-import {CERTIFICATES_ENUM} from '../constants'
+import {
+  CERTIFICATES_ENUM,
+  LEDGER_VERSIONS,
+  CryptoProviderFeatures,
+  LEDGER_ERRORS,
+} from '../constants'
 
 import {
   bechAddressToHex,
@@ -63,13 +68,13 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
 
   const version = await ledger.getVersion()
 
-  ensureFeatureIsSupported('MINIMAL')
+  ensureFeatureIsSupported(CryptoProviderFeatures.MINIMAL)
 
   const isHwWallet = () => true
   const getWalletName = () => 'Ledger'
 
   const exportPublicKeys = async (derivationPaths) => {
-    if (hasRequiredVersion(version, 'BULK_EXPORT')) {
+    if (isFeatureSupported(CryptoProviderFeatures.BULK_EXPORT)) {
       return await ledger.getExtendedPublicKeys(derivationPaths)
     }
     const response = []
@@ -88,14 +93,13 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     }
   )
 
-  function ensureFeatureIsSupported(featureName: string) {
-    if (!hasRequiredVersion(version, featureName)) {
-      const versionErrors = {
-        MINIMAL: 'OutdatedCardanoAppError',
-        WITHDRAWAL: 'NotRecommendedCardanoAppVerion',
-        BULK_EXPORT: 'BulkExportNotSupported',
-      }
-      throw NamedError(versionErrors[featureName], {
+  function isFeatureSupported(feature: CryptoProviderFeatures) {
+    return hasRequiredVersion(version, LEDGER_VERSIONS[feature])
+  }
+
+  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
+    if (!isFeatureSupported(feature)) {
+      throw NamedError(LEDGER_ERRORS[feature], {
         message: `${version.major}.${version.minor}.${version.patch}`,
       })
     }
@@ -294,8 +298,9 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     getWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
-    ensureFeatureIsSupported,
     cleanXpubCache,
+    isFeatureSupported,
+    ensureFeatureIsSupported,
   }
 }
 

@@ -258,7 +258,7 @@ const CardanoWallet = (options) => {
     return {}
   }
 
-  function checkCryptoProviderVersion() {
+  function checkCryptoProviderVersion(feature) {
     return {code: 'UnsupportedOperation', message: ''}
   }
 
