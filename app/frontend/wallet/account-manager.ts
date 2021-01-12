@@ -36,13 +36,14 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
     const isBulkExportSupported = cryptoProvider.isFeatureSupported(
       CryptoProviderFeatures.BULK_EXPORT
     )
+    const shouldExplore =
+      config.shouldExportPubKeyBulk && config.isShelleyCompatible && isBulkExportSupported
     async function _discoverNextAccount(accountIndex: number) {
       const newAccount = accounts[accountIndex] || discoverNextAccount()
       const isAccountUsed = await newAccount.isAccountUsed()
       if (accountIndex === accounts.length) await addNextAccount(newAccount)
-      const shouldExplore = isAccountUsed && config.shouldExportPubKeyBulk && isBulkExportSupported
 
-      return shouldExplore && (await _discoverNextAccount(accountIndex + 1))
+      return shouldExplore && isAccountUsed && (await _discoverNextAccount(accountIndex + 1))
     }
     await _discoverNextAccount(Math.max(0, accounts.length - 1))
     return accounts

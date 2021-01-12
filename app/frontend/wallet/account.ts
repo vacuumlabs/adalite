@@ -280,7 +280,7 @@ const Account = ({
   }
 
   function isAccountUsed(): Promise<boolean> {
-    return myAddresses.areAddressesUsed()
+    return config.isShelleyCompatible && myAddresses.areAddressesUsed()
   }
 
   async function getAccountInfo(validStakepools) {
