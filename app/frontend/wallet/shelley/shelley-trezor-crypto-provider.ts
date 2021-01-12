@@ -1,14 +1,20 @@
 // eslint-disable-next-line import/no-unresolved
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
-import {ADALITE_SUPPORT_EMAIL, CryptoProviderFeatures} from '../constants'
+import {
+  ADALITE_SUPPORT_EMAIL,
+  CryptoProviderFeatures,
+  TREZOR_ERRORS,
+  TREZOR_VERSIONS,
+} from '../constants'
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
 import {bech32} from 'cardano-crypto.js'
+import {hasRequiredVersion} from './helpers/version-check'
 
 type BIP32Path = number[]
 
-const CardanoTrezorCryptoProvider = ({network, config}) => {
+const CardanoTrezorCryptoProvider = async ({network, config}) => {
   const derivationScheme = derivationSchemes.v2
 
   const TrezorConnect = require('trezor-connect').default
@@ -17,6 +23,14 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
     email: ADALITE_SUPPORT_EMAIL,
     appUrl: config.ADALITE_SERVER_URL,
   })
+
+  const getVersion = async (): Promise<any> => {
+    const {payload: features} = await TrezorConnect.getFeatures()
+    const {major_version: major, minor_version: minor, patch_version: patch} = features
+    return {major, minor, patch}
+  }
+
+  const version = await getVersion()
 
   const isHwWallet = () => true
   const getWalletName = () => 'Trezor'
@@ -33,6 +47,18 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
       return response.payload.map(({publicKey}) => Buffer.from(publicKey, 'hex'))
     }
   )
+
+  function isFeatureSupported(feature: CryptoProviderFeatures) {
+    return TREZOR_VERSIONS[feature] ? hasRequiredVersion(version, TREZOR_VERSIONS[feature]) : true
+  }
+
+  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
+    if (!isFeatureSupported(feature)) {
+      throw NamedError(TREZOR_ERRORS[feature], {
+        message: `${version.major}.${version.minor}.${version.patch}`,
+      })
+    }
+  }
 
   function deriveHdNode(childIndex) {
     throw NamedError('UnsupportedOperationError', {
@@ -250,14 +276,6 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
           'Trezor operation failed, please make sure ad blockers are switched off for this site and you are using the latest version of Trezor firmware',
       })
     }
-  }
-
-  function isFeatureSupported(feature: CryptoProviderFeatures) {
-    return true
-  }
-
-  function ensureFeatureIsSupported(features: CryptoProviderFeatures) {
-    return true
   }
 
   return {

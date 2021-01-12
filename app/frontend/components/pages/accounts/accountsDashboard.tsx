@@ -54,8 +54,8 @@ const AccountsDashboard = ({
         <Alert alertType="warning sidebar">
           <p>
             This feature might not be supported on other wallets yet. If you decide to move your
-            funds to <strong>account</strong> other then <strong>account 0</strong>, you might not
-            see your funds in other wallets.
+            funds to <strong>account</strong> other then the first account, you might not see your
+            funds in other wallets.
           </p>
         </Alert>
       </div>

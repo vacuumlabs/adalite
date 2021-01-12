@@ -3242,6 +3242,10 @@ input:checked + .slider:before {
   word-break: break-all;
 }
 
+.pool-registration-instructions .advanced-label {
+  margin-top: 28px;
+}
+
 /* TRANSACTIONS */
 
 .transactions {

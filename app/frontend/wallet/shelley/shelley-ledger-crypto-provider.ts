@@ -94,7 +94,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
   )
 
   function isFeatureSupported(feature: CryptoProviderFeatures) {
-    return hasRequiredVersion(version, LEDGER_VERSIONS[feature])
+    return LEDGER_VERSIONS[feature] ? hasRequiredVersion(version, LEDGER_VERSIONS[feature]) : true
   }
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {

@@ -2,7 +2,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
 import {Lovelace} from './state'
-import {LEDGER_VERSIONS, CryptoProviderFeatures} from './wallet/constants'
+import {LEDGER_VERSIONS, CryptoProviderFeatures, TREZOR_VERSIONS} from './wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -57,7 +57,7 @@ const translations = {
   },
 
   TransactionRejectedByNetwork: () =>
-    'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.Currently, there is an issue with one of the Cardano components. We will inform you when the problem is fixed. ',
+    'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
   TransactionRejectedWhileSigning: ({message}) =>
     `Transaction rejected while signing${
       message
@@ -100,9 +100,15 @@ const translations = {
     }. For more information how to do this, please refer to https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps`,
   LedgerPoolRegNotSupported: ({message}) =>
     `Pool registration is not supported on this device. Your current version is ${message} and the required version is ${
-      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].major
-    }.${LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].minor}.${
-      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].patch
+      LEDGER_VERSIONS[CryptoProviderFeatures.POOL_OWNER].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeatures.POOL_OWNER].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeatures.POOL_OWNER].patch
+    }`,
+  TrezorPoolRegNotSupported: ({message}) =>
+    `Pool registration is not supported on this device. Your current version is ${message} and the required version is ${
+      TREZOR_VERSIONS[CryptoProviderFeatures.POOL_OWNER].major
+    }.${TREZOR_VERSIONS[CryptoProviderFeatures.POOL_OWNER].minor}.${
+      TREZOR_VERSIONS[CryptoProviderFeatures.POOL_OWNER].patch
     }`,
   PoolRegInvalidNumCerts: () =>
     'The transaction must include exactly one certificate, being the pool registration.',

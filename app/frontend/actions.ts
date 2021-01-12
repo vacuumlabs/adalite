@@ -1433,6 +1433,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const signPoolCertificateTx = async (state) => {
     try {
+      // TODO: refactor
+      const supportError = wallet.ensureFeatureIsSupported(CryptoProviderFeatures.POOL_OWNER)
+      if (supportError) throw NamedError(supportError.code, {message: supportError.params.message})
       if (state.usingHwWallet) {
         setState({waitingForHwWallet: true})
         loadingAction(state, `Waiting for ${state.hwWalletName}...`)

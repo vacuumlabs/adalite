@@ -111,8 +111,6 @@ export const BIG_DELEGATOR_THRESHOLD = 10000000000000
 
 export const SATURATION_POINT = 62224967000000
 
-export const MAX_BULK_EXPORT_AMOUNT = 5
-
 export const enum CERTIFICATES_ENUM {
   STAKING_KEY_REGISTRATION = 0,
   STAKING_KEY_DEREGISTRATION = 1,
@@ -157,4 +155,17 @@ export const LEDGER_ERRORS = {
   [CryptoProviderFeatures.POOL_OWNER]: 'LedgerPoolRegNotSupported',
 }
 
-export const MAX_ACCOUNT_COUNT = 100
+export const TREZOR_VERSIONS = {
+  [CryptoProviderFeatures.POOL_OWNER]: {
+    major: 2,
+    minor: 3,
+    patch: 5,
+  },
+}
+
+export const TREZOR_ERRORS = {
+  [CryptoProviderFeatures.POOL_OWNER]: 'TrezorPoolRegNotSupported',
+}
+
+export const MAX_ACCOUNT_COUNT = 30
+export const MAX_BULK_EXPORT_AMOUNT = 5

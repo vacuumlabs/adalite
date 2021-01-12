@@ -119,6 +119,13 @@ const PoolOwnerCard = ({
           Download signature
         </button>
       </div>
+      <div className="pool-registration-instructions">
+        <div className="advanced-label">To become a pool owner</div>
+        <ol>
+          <li>Download Staking CBOR hex in the keys tab.</li>
+          <li>TODO: the rest and description</li>
+        </ol>
+      </div>
       {shouldShowPoolCertSignModal && <SignPoolCertTxModal />}
     </div>
   )
