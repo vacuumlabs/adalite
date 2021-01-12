@@ -1,4 +1,3 @@
-import range from './helpers/range'
 import {toBip32StringPath} from './helpers/bip32'
 import NamedError from '../helpers/NamedError'
 
@@ -20,7 +19,11 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}) => {
   }
 
   async function deriveAddressesBlock(beginIndex: number, endIndex: number) {
-    return await Promise.all(range(beginIndex, endIndex).map(cachedDeriveAddress))
+    const derivedAddresses = []
+    for (let i = beginIndex; i < endIndex; i += 1) {
+      derivedAddresses.push(await cachedDeriveAddress(i))
+    }
+    return derivedAddresses
   }
 
   async function discoverAddresses() {

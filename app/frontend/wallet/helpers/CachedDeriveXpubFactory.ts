@@ -7,8 +7,8 @@ const BYRON_V2_PATH = [HARDENED_THRESHOLD + 44, HARDENED_THRESHOLD + 1815, HARDE
 
 type BIP32Path = number[]
 
-function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriveXpubsFn) {
-  let derivedXpubs = {}
+function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriveXpubsHardenedFn) {
+  const derivedXpubs = {}
 
   async function deriveXpub(absDerivationPath: BIP32Path) {
     const memoKey = JSON.stringify(absDerivationPath)
@@ -23,22 +23,24 @@ function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriv
       */
 
       if (deriveHardened) {
-        const derivationPathsBulk =
+        const derivationPaths =
           shouldExportPubKeyBulk && isShelleyPath(absDerivationPath)
             ? createPathBulk(absDerivationPath)
             : [absDerivationPath]
-        const pubKeys = await deriveXpubsHardenedFn(derivationPathsBulk)
+        const pubKeys = await _deriveXpubsHardenedFn(derivationPaths)
         Object.assign(derivedXpubs, pubKeys)
       } else {
-        derivedXpubs[memoKey] = deriveXpubNonhardenedFn(absDerivationPath)
+        derivedXpubs[memoKey] = await deriveXpubNonhardenedFn(absDerivationPath)
       }
     }
 
     /*
-    * the derivedXpubs map stores promises instead of direct results
-    * to deal with concurrent requests to derive the same xpub
+    * we await the derivation of the key so in case the derivation fails
+    * the key is not added to the cache
+    * this approach depends on the key derivation happening sychronously
     */
-    return await derivedXpubs[memoKey]
+
+    return derivedXpubs[memoKey]
   }
 
   async function deriveXpubNonhardenedFn(derivationPath: BIP32Path) {
@@ -52,47 +54,36 @@ function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriv
     const accountIndex = derivationPath[2] - HARDENED_THRESHOLD
     const currentAccountPage = Math.floor(accountIndex / MAX_BULK_EXPORT_AMOUNT)
 
-    /*
-    * in case of the account 0 we append also the byron path
-    * since during byron era only the first account was used
-    */
-    if (accountIndex === 0) paths.push(BYRON_V2_PATH)
-
     for (let i = 0; i < MAX_BULK_EXPORT_AMOUNT; i += 1) {
       const nextAccountIndex = currentAccountPage * MAX_BULK_EXPORT_AMOUNT + i + HARDENED_THRESHOLD
       const nextAccountPath = [...derivationPath.slice(0, -1), nextAccountIndex]
       paths.push(nextAccountPath)
     }
+
+    /*
+    * in case of the account 0 we append also the byron path
+    * since during byron era only the first account was used
+    */
+    if (accountIndex === 0 && !paths.includes(BYRON_V2_PATH)) paths.push(BYRON_V2_PATH)
+
     return paths
   }
 
-  async function deriveXpubsHardenedFn(derivationPaths: BIP32Path[]): Promise<any> {
-    const xPubBulk = await deriveXpubsFn(derivationPaths)
+  /*
+  * on top of the original deriveXpubHardenedFn this is priming
+  * the cache of derived keys to minimize the number of prompts on hardware wallets
+  */
+  async function _deriveXpubsHardenedFn(derivationPaths: BIP32Path[]): Promise<any> {
+    const xPubBulk = await deriveXpubsHardenedFn(derivationPaths)
     const _derivedXpubs = {}
     xPubBulk.forEach((xpub: Buffer, i: number) => {
       const memoKey = JSON.stringify(derivationPaths[i])
-      _derivedXpubs[memoKey] = Promise.resolve(xpub)
+      _derivedXpubs[memoKey] = xpub
     })
     return _derivedXpubs
   }
 
-  /*
-  * in case a promise is rejected we need to remove this promise from
-  * the cache otherwise user would never be able to export the pubKey again
-  */
-  function cleanXpubCache() {
-    const _derivedXpubs = {}
-    Object.entries(derivedXpubs).map(([memoKey, xpubPromise]: [string, Promise<Buffer>]) => {
-      xpubPromise
-        .then((xpub) => {
-          _derivedXpubs[memoKey] = Promise.resolve(xpub)
-        })
-        .catch((e) => null)
-    })
-    derivedXpubs = _derivedXpubs
-  }
-
-  return {deriveXpub, cleanXpubCache}
+  return deriveXpub
 }
 
 export default CachedDeriveXpubFactory

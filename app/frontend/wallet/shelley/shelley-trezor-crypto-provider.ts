@@ -21,7 +21,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   const isHwWallet = () => true
   const getWalletName = () => 'Trezor'
 
-  const {deriveXpub, cleanXpubCache} = CachedDeriveXpubFactory(
+  const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk,
     async (absDerivationPaths: BIP32Path[]) => {
@@ -261,7 +261,6 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   }
 
   return {
-    cleanXpubCache,
     getWalletSecret,
     getDerivationScheme,
     signTx,

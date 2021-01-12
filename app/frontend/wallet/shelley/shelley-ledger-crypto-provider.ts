@@ -84,7 +84,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     return response
   }
 
-  const {deriveXpub, cleanXpubCache} = CachedDeriveXpubFactory(
+  const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeatures.BULK_EXPORT),
     async (derivationPaths) => {
@@ -298,7 +298,6 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     getWalletName,
     _sign: sign,
     _deriveHdNode: deriveHdNode,
-    cleanXpubCache,
     isFeatureSupported,
     ensureFeatureIsSupported,
   }

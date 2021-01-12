@@ -36,7 +36,7 @@ const ShelleyJsCryptoProvider = ({
 
   const getDerivationScheme = () => derivationScheme
 
-  const {deriveXpub, cleanXpubCache} = CachedDeriveXpubFactory(
+  const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk,
     (derivationPaths) => {
@@ -151,7 +151,6 @@ const ShelleyJsCryptoProvider = ({
     _deriveChildHdNode: deriveChildHdNode,
     ensureFeatureIsSupported,
     isFeatureSupported,
-    cleanXpubCache,
   }
 }
 

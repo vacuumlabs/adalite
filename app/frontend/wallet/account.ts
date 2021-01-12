@@ -173,7 +173,7 @@ const Account = ({
     blockchainExplorer,
   })
 
-  async function init() {
+  async function ensureXpubIsExported() {
     // get first address to ensure that public key was exported
     await myAddresses.baseExtAddrManager._deriveAddress(0)
   }
@@ -469,7 +469,7 @@ const Account = ({
     accountIndex,
     getPoolRecommendation,
     isAccountUsed,
-    init,
+    ensureXpubIsExported,
   }
 }
 

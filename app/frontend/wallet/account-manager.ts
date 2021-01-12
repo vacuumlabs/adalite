@@ -19,7 +19,7 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
   }
 
   async function addNextAccount(account) {
-    await account.init() // To ensure user exported pubkey
+    await account.ensureXpubIsExported() // To ensure user exported pubkey
     const isLastAccountUsed =
       accounts.length > 0 ? await accounts[accounts.length - 1].isAccountUsed() : true
     if (
@@ -33,8 +33,6 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
   }
 
   async function discoverAccounts() {
-    // remove rejected promises from pubkey cache
-    cryptoProvider.cleanXpubCache()
     const isBulkExportSupported = cryptoProvider.isFeatureSupported(
       CryptoProviderFeatures.BULK_EXPORT
     )
@@ -51,8 +49,6 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
   }
 
   async function exploreNextAccount() {
-    // remove rejected promises from pubkey cache
-    cryptoProvider.cleanXpubCache()
     const nextAccount = discoverNextAccount()
     await addNextAccount(nextAccount)
     return nextAccount
