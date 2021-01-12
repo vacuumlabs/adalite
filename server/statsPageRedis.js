@@ -49,6 +49,7 @@ const getStats = async () => {
   await new Promise((resolve, reject) => {
     redisScan({
       redis: client,
+      count_amt: 1024,
       each_callback(type, key, subkey, length, value, next) {
         response.push([key, value])
         next()
