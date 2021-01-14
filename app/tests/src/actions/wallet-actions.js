@@ -13,7 +13,6 @@ beforeEach(() => {
 
 const expectedStateChanges = {
   walletIsLoaded: true,
-  balance: 1500000,
   loading: false,
   mnemonicAuthForm: {
     mnemonicInputValue: '',
@@ -62,7 +61,6 @@ it('Should properly load shelley wallet', async () => {
       },
     },
   ]
-  expectedStateChanges.balance = 0
 
   await action.loadWallet(state, {
     cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
@@ -71,7 +69,7 @@ it('Should properly load shelley wallet', async () => {
     ),
   })
   assertPropertiesEqual(state, expectedStateChanges)
-  assert.equal(state.visibleAddresses.length, 20)
+  assert.equal(state.accountsInfo[0].visibleAddresses.length, 20)
 
   mockNet.clean()
 })

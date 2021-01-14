@@ -2529,6 +2529,139 @@ const singleAddressesMock = {
       caTxList: [],
     },
   },
+  // SHELLEY
+  'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3': {
+    Right: {
+      caAddresses: [
+        'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+      ],
+      caTxNum: 1,
+      caBalance: {
+        getCoin: '0',
+      },
+      caTxList: [
+        {
+          ctbId: '07d72bc0d4a647f3728a34910300fb014158bc233e335f262a6cb7f1cc667793',
+          ctbTimeIssued: 1608650746,
+          ctbInputs: [
+            [
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+              {
+                getCoin: '4347427',
+              },
+            ],
+          ],
+          ctbOutputs: [
+            [
+              'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
+              {
+                getCoin: '4170160',
+              },
+            ],
+          ],
+          ctbInputSum: {
+            getCoin: '4347427',
+          },
+          ctbOutputSum: {
+            getCoin: '4170160',
+          },
+          fee: '177267',
+        },
+      ],
+    },
+  },
+  'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z': {
+    Right: {
+      caAddresses: [
+        'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
+      ],
+      caTxNum: 1,
+      caBalance: {
+        getCoin: '0',
+      },
+      caTxList: [
+        {
+          ctbId: '28535832e257c50da17a768338e346a8a43cf73822fb950957885e1dd46221cf',
+          ctbTimeIssued: 1609758778,
+          ctbInputs: [
+            [
+              'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
+              {
+                getCoin: '5630669',
+              },
+            ],
+          ],
+          ctbOutputs: [
+            [
+              'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
+              {
+                getCoin: '5453402',
+              },
+            ],
+          ],
+          ctbInputSum: {
+            getCoin: '5630669',
+          },
+          ctbOutputSum: {
+            getCoin: '5453402',
+          },
+          fee: '177267',
+        },
+      ],
+    },
+  },
+  'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt': {
+    Right: {
+      caAddresses: [
+        'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
+      ],
+      caTxNum: 1,
+      caBalance: {
+        getCoin: '0',
+      },
+      caTxList: [
+        {
+          ctbId: 'f9b8c2b2c54906d365c0b4977a97e5b073acebdf0c32705172fc2b840a78b90c',
+          ctbTimeIssued: 1610057261,
+          ctbInputs: [
+            [
+              'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
+              {
+                getCoin: '5453402',
+              },
+            ],
+          ],
+          ctbOutputs: [
+            [
+              'addr1qyvq5pd222nrjw6d6ez4jhtmldxgdwhfwkhtp6kj5ytepyvysz7frly4e360jj66ml07y3y3ugduw0j4pqjnrntyk6gs5a483h',
+              {
+                getCoin: '5276135',
+              },
+            ],
+          ],
+          ctbInputSum: {
+            getCoin: '5453402',
+          },
+          ctbOutputSum: {
+            getCoin: '5276135',
+          },
+          fee: '177267',
+        },
+      ],
+    },
+  },
+  'addr1qyqm2s8jrcv38rqqjvewdg5s3mrnahwqk323n2aej25lun402ythnad4nejm38jcmlm0k9upcnhqgn2tezvlz3z7wrwqqt9knw': {
+    Right: {
+      caAddresses: [
+        'addr1qyqm2s8jrcv38rqqjvewdg5s3mrnahwqk323n2aej25lun402ythnad4nejm38jcmlm0k9upcnhqgn2tezvlz3z7wrwqqt9knw',
+      ],
+      caTxNum: 0,
+      caBalance: {
+        getCoin: '0',
+      },
+      caTxList: [],
+    },
+  },
   '*': {},
 }
 

@@ -1,6 +1,6 @@
 import NamedError from '../helpers/NamedError'
 import {Account} from './account'
-import {CryptoProviderFeatures, MAX_ACCOUNT_COUNT} from './constants'
+import {CryptoProviderFeatures, MAX_ACCOUNT_INDEX} from './constants'
 
 const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
   const accounts: Array<ReturnType<typeof Account>> = []
@@ -25,7 +25,7 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
     if (
       account.accountIndex !== accounts.length ||
       !isLastAccountUsed ||
-      account.accountIndex > MAX_ACCOUNT_COUNT
+      account.accountIndex > MAX_ACCOUNT_INDEX
     ) {
       throw NamedError('AccountExplorationError')
     }

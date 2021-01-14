@@ -5,11 +5,13 @@ const cryptoProviderSettings = [
     secret: 'cruise bike bar reopen mimic title style fence race solar million clean',
     network: NETWORKS.BYRON.MAINNET,
     type: 'mnemonic',
+    isShelleyCompatible: false,
   },
   {
     secret: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
     network: NETWORKS.BYRON.MAINNET,
     type: 'mnemonic',
+    isShelleyCompatible: false,
   },
   {
     secret:
@@ -17,18 +19,38 @@ const cryptoProviderSettings = [
     network: NETWORKS.BYRON.MAINNET,
     type: 'walletSecretDef',
     derivationSchemeType: 'v1',
+    isShelleyCompatible: false,
   },
   {
     secret:
       'cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh',
     network: NETWORKS.BYRON.MAINNET,
     type: 'mnemonic',
+    isShelleyCompatible: false,
   },
+  // SHELLEY
   {
+    description: '',
     secret:
       'odor match funny accuse spatial copper purse milk quote wine salute three drip weasel fall',
     network: NETWORKS.SHELLEY.MAINNET,
     type: 'mnemonic',
+    isShelleyCompatible: true,
+  },
+  {
+    description: '',
+    secret: 'cruise bike bar reopen mimic title style fence race solar million clean',
+    network: NETWORKS.SHELLEY.MAINNET,
+    type: 'mnemonic',
+    isShelleyCompatible: false,
+  },
+  {
+    description: '',
+    secret:
+      'hazard circle fossil diamond oxygen ankle tribe broken must comic duck chef bacon truly dish',
+    network: NETWORKS.SHELLEY.MAINNET,
+    type: 'mnemonic',
+    isShelleyCompatible: true,
   },
 ]
 

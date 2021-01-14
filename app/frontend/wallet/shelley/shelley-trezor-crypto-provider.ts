@@ -2,6 +2,7 @@
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {
   ADALITE_SUPPORT_EMAIL,
+  CERTIFICATES_ENUM,
   CryptoProviderFeatures,
   TREZOR_ERRORS,
   TREZOR_VERSIONS,
@@ -194,14 +195,25 @@ const CardanoTrezorCryptoProvider = async ({network, config}) => {
   }
 
   function prepareCertificate(cert, addressToAbsPathMapper): CardanoCertificate {
-    return {
-      type: cert.type,
-      path: !cert.poolRegistrationParams ? addressToAbsPathMapper(cert.accountAddress) : undefined,
-      pool: cert.poolHash ? cert.poolHash : undefined,
-      poolParameters: cert.poolRegistrationParams
-        ? poolCertToTrezorFormat(cert.poolRegistrationParams)
-        : undefined,
-    }
+    // TODO: refactor, for some reason trezor cant have the pool parameter undefined
+    // but dont mind having poolParameters undefined
+    return cert.type === CERTIFICATES_ENUM.DELEGATION
+      ? {
+        type: cert.type,
+        path: !cert.poolRegistrationParams
+          ? addressToAbsPathMapper(cert.accountAddress)
+          : undefined,
+        pool: cert.poolHash,
+      }
+      : {
+        type: cert.type,
+        path: !cert.poolRegistrationParams
+          ? addressToAbsPathMapper(cert.accountAddress)
+          : undefined,
+        poolParameters: cert.poolRegistrationParams
+          ? poolCertToTrezorFormat(cert.poolRegistrationParams)
+          : undefined,
+      }
   }
 
   function prepareWithdrawal(withdrawal, addressToAbsPathMapper): CardanoWithdrawal {
