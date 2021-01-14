@@ -2,7 +2,7 @@ import {h, Component} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {LinkIconToPool} from './common'
-import {Lovelace} from '../../../state'
+import {activeAccountState, Lovelace, State} from '../../../state'
 import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
@@ -227,8 +227,8 @@ class StakingHistoryPage extends Component<Props> {
 }
 
 export default connect(
-  (state) => ({
-    stakingHistory: state.stakingHistory,
+  (state: State) => ({
+    stakingHistory: activeAccountState(state).stakingHistory,
   }),
   actions
 )(StakingHistoryPage)

@@ -368,6 +368,26 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     }))
   }
 
+  async function getStakingInfo(accountPubkeyHex) {
+    // TODO: not pubkey, address
+    const url = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/account/info/${accountPubkeyHex}`
+    const response = await request(url)
+    return response
+  }
+
+  async function getValidStakepools() {
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
+    const validStakepools = await request(url)
+
+    return {validStakepools}
+  }
+
+  function getBestSlot() {
+    return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
+  }
+
   return {
     getTxHistory,
     fetchTxRaw,
@@ -381,6 +401,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     getStakingHistory,
     getRewardDetails,
     getPoolRecommendation,
+    getStakingInfo,
+    getBestSlot,
+    getValidStakepools,
   }
 }
 

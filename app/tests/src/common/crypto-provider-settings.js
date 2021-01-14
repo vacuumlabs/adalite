@@ -24,6 +24,12 @@ const cryptoProviderSettings = [
     network: NETWORKS.BYRON.MAINNET,
     type: 'mnemonic',
   },
+  {
+    secret:
+      'odor match funny accuse spatial copper purse milk quote wine salute three drip weasel fall',
+    network: NETWORKS.SHELLEY.MAINNET,
+    type: 'mnemonic',
+  },
 ]
 
 export default cryptoProviderSettings

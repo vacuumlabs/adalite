@@ -18,25 +18,23 @@ import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
 import {
   NETWORKS,
-  PREMIUM_MEMBER_BALANCE_TRESHHOLD,
+  PREMIUM_MEMBER_BALANCE_TRESHOLD,
   BIG_DELEGATOR_THRESHOLD,
 } from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
-import {CardanoWallet} from './wallet/cardano-wallet'
 import mnemonicToWalletSecretDef from './wallet/helpers/mnemonicToWalletSecretDef'
 import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
-import {State, Ada, Lovelace} from './state'
-import CryptoProviderFactory from './wallet/byron/crypto-provider-factory'
+import {State, Ada, Lovelace, GetStateFn, SetStateFn, sourceAccountState} from './state'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
-import {ShelleyWallet} from './wallet/shelley-wallet'
+import {Wallet} from './wallet/wallet'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
 
-let wallet: ReturnType<typeof CardanoWallet | typeof ShelleyWallet>
+let wallet: ReturnType<typeof Wallet>
 
 const debounceEvent = (callback, time) => {
   let interval
@@ -49,8 +47,6 @@ const debounceEvent = (callback, time) => {
   }
 }
 
-type SetStateFn = (newState: Partial<State>) => void
-type GetStateFn = () => State
 export default ({setState, getState}: {setState: SetStateFn; getState: GetStateFn}) => {
   const loadingAction = (state, message: string, optionalArgsObj?: any) => {
     return setState(
@@ -121,52 +117,43 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* LOADING WALLET */
 
-  const loadWallet = async (state, {cryptoProviderType, walletSecretDef, forceWebUsb}) => {
-    // loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+  const loadWallet = async (
+    state: State,
+    {cryptoProviderType, walletSecretDef, forceWebUsb, shouldExportPubKeyBulk}
+  ) => {
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,
     })
     const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
+    const config = {...ADALITE_CONFIG, isShelleyCompatible, shouldExportPubKeyBulk}
     try {
-      switch (ADALITE_CONFIG.ADALITE_CARDANO_VERSION) {
-        case 'byron': {
-          const cryptoProvider = await CryptoProviderFactory.getCryptoProvider(cryptoProviderType, {
-            walletSecretDef,
-            network: NETWORKS.BYRON.MAINNET,
-            config: ADALITE_CONFIG,
-          })
-
-          wallet = CardanoWallet({
-            cryptoProvider,
-            config: ADALITE_CONFIG,
-          })
-          break
+      const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
+        cryptoProviderType,
+        {
+          walletSecretDef,
+          network: NETWORKS.SHELLEY[ADALITE_CONFIG.ADALITE_NETWORK],
+          config,
+          forceWebUsb, // TODO: into config
         }
-        case 'shelley': {
-          const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
-            cryptoProviderType,
-            {
-              walletSecretDef,
-              network: NETWORKS.SHELLEY[ADALITE_CONFIG.ADALITE_NETWORK],
-              config: ADALITE_CONFIG,
-              forceWebUsb,
-            }
-          )
+      )
 
-          wallet = await ShelleyWallet({
-            config: ADALITE_CONFIG,
-            cryptoProvider,
-            isShelleyCompatible,
-          })
-          break
-        }
-        default:
-          throw Error('bad cardano version')
-      }
-      const walletInfo = await wallet.getWalletInfo()
+      wallet = await Wallet({
+        config,
+        cryptoProvider,
+      })
+
+      const {validStakepools} = await wallet.getValidStakepools()
+      const {accountsInfo} = await wallet.getAccountsInfo(validStakepools)
+      const {
+        totalRewardsBalance,
+        totalWalletBalance,
+        shouldShowSaturatedBanner,
+      } = wallet.getWalletInfo(accountsInfo)
+
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
+      const accountIndexOffset = hwWalletName === 'Trezor' ? 1 : 0
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (await mnemonicToWalletSecretDef(
         ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
@@ -175,11 +162,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const autoLogin = state.autoLogin
       const ticker2Id = null
       const shouldShowPremiumBanner =
-        state.shouldShowPremiumBanner && walletInfo.balance > PREMIUM_MEMBER_BALANCE_TRESHHOLD
-      const isBigDelegator = walletInfo.balance > BIG_DELEGATOR_THRESHOLD
+        state.shouldShowPremiumBanner && PREMIUM_MEMBER_BALANCE_TRESHOLD < totalWalletBalance
+      const isBigDelegator = totalWalletBalance > BIG_DELEGATOR_THRESHOLD
       setState({
+        validStakepools,
+        accountsInfo,
+        totalWalletBalance,
+        totalRewardsBalance,
+        shouldShowSaturatedBanner,
+        accountIndexOffset,
         walletIsLoaded: true,
-        ...walletInfo,
         loading: false,
         mnemonicAuthForm: {
           mnemonicInputValue: '',
@@ -218,16 +210,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     return true
   }
 
-  const reloadWalletInfo = async (state) => {
+  const reloadWalletInfo = async (state: State) => {
     loadingAction(state, 'Reloading wallet info...')
     try {
-      const walletInfo = await wallet.getWalletInfo()
+      const {accountsInfo} = await wallet.getAccountsInfo(state.validStakepools)
       const conversionRates = getConversionRates(state)
 
       // timeout setting loading state, so that loading shows even if everything was cached
       setTimeout(() => setState({loading: false}), 500)
       setState({
-        ...walletInfo,
+        accountsInfo,
+        ...wallet.getWalletInfo(accountsInfo),
       })
       await fetchConversionRates(conversionRates)
     } catch (e) {
@@ -351,7 +344,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           waitingForHwWallet: true,
           addressVerificationError: false,
         })
-        await wallet.verifyAddress(address || newState.showAddressDetail.address)
+        await wallet.accounts[state.targetAccountIndex].verifyAddress(
+          address || newState.showAddressDetail.address
+        )
         setState({
           waitingForHwWallet: false,
         })
@@ -382,23 +377,26 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       showAddressDetail: undefined,
       addressVerificationError: undefined,
-      shouldShowAddressVerification: undefined,
     })
   }
 
   /* TRANSACTION */
 
-  const confirmTransaction = async (state, txConfirmType) => {
+  const confirmTransaction = async (state: State, txConfirmType) => {
     let txAux
     const newState = getState()
     try {
       if (newState.sendTransactionSummary.plan) {
-        txAux = await wallet.prepareTxAux(newState.sendTransactionSummary.plan)
+        txAux = await wallet.accounts[state.sourceAccountIndex].prepareTxAux(
+          newState.sendTransactionSummary.plan
+        )
       } else {
         loadingAction(state, 'Preparing transaction plan...')
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
         const retriedState = getState()
-        txAux = await wallet.prepareTxAux(retriedState.sendTransactionSummary.plan)
+        txAux = await wallet.accounts[state.sourceAccountIndex].prepareTxAux(
+          retriedState.sendTransactionSummary.plan
+        )
       }
     } catch (e) {
       throw NamedError('TransactionCorrupted', {causedBy: e})
@@ -406,9 +404,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       stopLoadingAction(state, {})
     }
 
+    // TODO: implement tx differenciation here and drop the txConfirmType
+
+    const isTxBetweenAccounts = state.selectedMainTab === 'Accounts' && txConfirmType === 'send'
+    // TODO: refactor
+    const keepConfirmationDialogOpen =
+      isTxBetweenAccounts || txConfirmType === 'convert' || txConfirmType === 'withdraw'
+
     setState({
       shouldShowConfirmTransactionDialog: true,
-      txConfirmType,
+      txConfirmType: isTxBetweenAccounts ? 'crossAccount' : txConfirmType,
+      keepConfirmationDialogOpen,
       // TODO: maybe do this only on demand
       rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
       rawTransactionOpen: false,
@@ -424,6 +430,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const cancelTransaction = () => ({
     shouldShowConfirmTransactionDialog: false,
+    shouldShowSendTransactionModal: false,
+    shouldShowDelegationModal: false,
   })
 
   const setRawTransactionOpen = (state, open) => {
@@ -476,12 +484,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const resetAmountFields = (state) => {
     setState({
+      sendAmount: {fieldValue: '', coins: 0},
       donationAmount: {fieldValue: '', coins: 0},
       transactionFee: 0, // TODO(merc): call resetDonation instead?
       maxDonationAmount: Infinity,
       checkedDonationType: '',
       shouldShowCustomDonationInput: false,
     })
+    setErrorState('sendAmountValidationError', null)
     resetPercentageDonation()
   }
 
@@ -523,14 +533,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
     setErrorState(
       'sendAmountValidationError',
-      sendAmountValidator(state.sendAmount.fieldValue, state.sendAmount.coins, state.balance)
+      sendAmountValidator(
+        state.sendAmount.fieldValue,
+        state.sendAmount.coins,
+        sourceAccountState(state).balance
+      )
     )
     setErrorState(
       'donationAmountValidationError',
       donationAmountValidator(
         state.donationAmount.fieldValue,
         state.donationAmount.coins,
-        state.balance
+        sourceAccountState(state).balance
       )
     )
   }
@@ -557,7 +571,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const prepareTxPlan = async (args) => {
     const state = getState()
-    const plan = await wallet.getTxPlan(args)
+    const plan: any = await wallet.accounts[state.sourceAccountIndex].getTxPlan(args)
+    // FIXME: this cant be any
     if (plan.error) {
       stopLoadingAction(state, {})
       resetDelegationWithoutHash(state)
@@ -590,7 +605,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     ) {
       return
     }
-    const validationError = txPlanValidator(coins, state.balance, plan, donationAmount)
+    const validationError = txPlanValidator(
+      coins,
+      sourceAccountState(state).balance, // TODO: get new balance
+      plan,
+      donationAmount
+    )
     setErrorState('sendAmountValidationError', validationError)
     if (!validationError) {
       setTransactionSummary('send', plan, coins, donationAmount)
@@ -697,7 +717,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const calculateMaxDonationAmount = async () => {
     const state = getState()
-    await wallet
+    await wallet.accounts[state.sourceAccountIndex]
       .getMaxDonationAmount(state.sendAddress.fieldValue, state.sendAmount.coins as Lovelace)
       .then((maxDonationAmount) => {
         let newMaxDonationAmount
@@ -718,11 +738,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
   }
 
-  const updateAddress = (state, e) => {
+  const updateAddress = (state, e, address?: string) => {
     setState({
       sendResponse: '',
       sendAddress: Object.assign({}, state.sendAddress, {
-        fieldValue: e.target.value,
+        fieldValue: address || e.target.value,
       }),
     })
     validateSendFormAndCalculateFee()
@@ -773,7 +793,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const sendMaxFunds = async (state) => {
     setState({calculatingFee: true})
-    await wallet
+    await wallet.accounts[state.sourceAccountIndex]
       .getMaxSendableAmount(
         state.sendAddress.fieldValue,
         state.donationAmount.fieldValue !== '',
@@ -794,11 +814,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const convertNonStakingUtxos = async (state) => {
     loadingAction(state, 'Preparing transaction...')
-    const address = await wallet.getChangeAddress()
-    const maxAmount = await wallet.getMaxNonStakingAmount(address)
+    const address = await wallet.accounts[state.sourceAccountIndex].getChangeAddress()
+    const maxAmount = await wallet.accounts[state.sourceAccountIndex].getMaxNonStakingAmount(
+      address
+    )
     const coins = maxAmount && maxAmount.sendAmount
     const plan = await prepareTxPlan({address, coins, txType: 'convert'})
-    const validationError = txPlanValidator(coins, state.balance, plan)
+    const validationError = txPlanValidator(coins, sourceAccountState(state).balance, plan)
     if (validationError) {
       setErrorState('transactionSubmissionError', validationError, {
         shouldShowTransactionErrorModal: true,
@@ -806,9 +828,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       stopLoadingAction(state, {})
       return
     }
-    setState({
-      keepConfirmationDialogOpen: true,
-    })
     setTransactionSummary('stake', plan, coins)
     await confirmTransaction(getState(), 'convert')
     stopLoadingAction(state, {})
@@ -816,10 +835,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const withdrawRewards = async (state) => {
     loadingAction(state, 'Preparing transaction...')
-    const rewards = state.shelleyBalances.rewardsAccountBalance
+    // TODO: get reward and normal balance from be not from state
+    const rewards = sourceAccountState(state).shelleyBalances.rewardsAccountBalance
     const plan = await prepareTxPlan({rewards, txType: 'withdraw'})
     const withdrawalValidationError =
-      withdrawalPlanValidator(rewards, state.balance, plan) || wallet.checkCryptoProviderVersion()
+      withdrawalPlanValidator(rewards, sourceAccountState(state).balance, plan) ||
+      wallet.checkCryptoProviderVersion('WITHDRAWAL')
     if (withdrawalValidationError) {
       setErrorState('transactionSubmissionError', withdrawalValidationError, {
         shouldShowTransactionErrorModal: true,
@@ -876,7 +897,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const poolInfo = await wallet.getPoolInfo(state.shelleyDelegation.selectedPool.url)
+    const poolInfo = await wallet.accounts[state.sourceAccountIndex].getPoolInfo(
+      state.shelleyDelegation.selectedPool.url
+    )
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
@@ -898,13 +921,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const state = getState()
     setPoolInfo(state)
     const poolHash = state.shelleyDelegation.selectedPool.poolHash
-    const stakingKeyRegistered = state.shelleyAccountInfo.hasStakingKey
+    const stakingKeyRegistered = sourceAccountState(state).shelleyAccountInfo.hasStakingKey
     const plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: 'delegate'})
     const newState = getState()
     if (hasPoolIdentifiersChanged(newState)) {
       return
     }
-    const validationError = delegationPlanValidator(newState.balance, plan)
+    const validationError = delegationPlanValidator(sourceAccountState(state).balance, plan)
     if (validationError) {
       setErrorState('delegationValidationError', validationError, {
         calculatingDelegationFee: false,
@@ -982,7 +1005,127 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const selectAdaliteStakepool = (state: State) => {
-    updateStakePoolIdentifier(getState(), null, state.poolRecommendation.recommendedPoolHash)
+    const newState = getState()
+    updateStakePoolIdentifier(
+      newState,
+      null,
+      sourceAccountState(newState).poolRecommendation.recommendedPoolHash
+    )
+  }
+
+  /* MULTIPLE ACCOUNTS */
+
+  const resetAccountIndexes = (state: State) => {
+    setState({
+      targetAccountIndex: state.activeAccountIndex,
+      sourceAccountIndex: state.activeAccountIndex,
+    })
+  }
+  const setActiveAccount = (state: State, accountIndex: number) => {
+    setState({
+      activeAccountIndex: accountIndex,
+      targetAccountIndex: accountIndex,
+      sourceAccountIndex: accountIndex,
+      txSuccessTab: '',
+    })
+  }
+
+  const exploreNewAccount = async (state: State) => {
+    try {
+      loadingAction(state, 'Loading account')
+      const newAccount = await wallet.exploreNewAccount()
+      const accountInfo = await newAccount.getAccountInfo(state.validStakepools)
+      const accountsInfo = [...state.accountsInfo, accountInfo]
+      setState({
+        accountsInfo,
+        ...wallet.getWalletInfo(accountsInfo),
+      })
+      setActiveAccount(state, newAccount.accountIndex)
+    } catch (e) {
+      setErrorState('walletLoadingError', e)
+      setState({
+        shouldShowWalletLoadingErrorModal: true,
+      })
+    } finally {
+      stopLoadingAction(state, {})
+    }
+  }
+
+  const setTargetAccount = async (state: State, accountIndex: number) => {
+    const targetAddress = await wallet.accounts[accountIndex].getChangeAddress()
+    setState({
+      targetAccountIndex: accountIndex,
+    })
+    updateAddress(state, null, targetAddress)
+  }
+
+  const setSourceAccount = async (state: State, accountIndex: number) => {
+    resetTransactionSummary(state)
+    setState({
+      sourceAccountIndex: accountIndex,
+    })
+    const targetAddress = await wallet.accounts[getState().targetAccountIndex].getChangeAddress()
+    updateAddress(state, null, targetAddress)
+  }
+
+  const showSendTransactionModal = async (
+    state: State,
+    sourceAccountIndex: number,
+    targetAccountIndex: number
+  ) => {
+    resetTransactionSummary(state)
+    setState({
+      sourceAccountIndex,
+      targetAccountIndex,
+      sendTransactionTitle: 'Transfer funds between accounts',
+      shouldShowSendTransactionModal: true,
+      txSuccessTab: '',
+      sendAmount: {fieldValue: '', coins: 0},
+      transactionFee: 0,
+    })
+    const targetAddress = await wallet.accounts[targetAccountIndex].getChangeAddress()
+    updateAddress(getState(), null, targetAddress)
+  }
+
+  const closeSendTransactionModal = (state: State) => {
+    resetTransactionSummary(state)
+    resetAccountIndexes(state)
+    setState({
+      sendAddress: {fieldValue: ''},
+      sendAmount: {fieldValue: '', coins: 0},
+      transactionFee: 0,
+      shouldShowSendTransactionModal: false,
+    })
+  }
+
+  const switchSourceAndTargetAccounts = async (state: State) => {
+    const targetAccountIndex = state.sourceAccountIndex
+    const sourceAccountIndex = state.targetAccountIndex
+    resetTransactionSummary(state)
+    setState({
+      sourceAccountIndex,
+      targetAccountIndex,
+    })
+    const targetAddress = await wallet.accounts[targetAccountIndex].getChangeAddress()
+    updateAddress(state, null, targetAddress)
+  }
+
+  const showDelegationModal = (state: State, sourceAccountIndex: number) => {
+    setState({
+      sourceAccountIndex,
+      delegationTitle: `Delegate Account #${sourceAccountIndex} Stake`,
+      shouldShowDelegationModal: true,
+      txSuccessTab: '',
+    })
+    selectAdaliteStakepool(state)
+  }
+
+  const closeDelegationModal = (state: State) => {
+    resetDelegation()
+    resetAccountIndexes(state)
+    setState({
+      shouldShowDelegationModal: false,
+    })
   }
 
   /* SUBMIT TX */
@@ -1013,6 +1156,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const submitTransaction = async (state) => {
+    setState({
+      shouldShowSendTransactionModal: false,
+      shouldShowDelegationModal: false,
+    })
     if (!state.keepConfirmationDialogOpen) {
       setState({
         shouldShowConfirmTransactionDialog: false,
@@ -1028,8 +1175,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     let txSubmitResult
     const txTab = state.sendTransactionSummary.tab
     try {
-      const txAux = await wallet.prepareTxAux(state.sendTransactionSummary.plan)
-      const signedTx = await wallet.signTxAux(txAux)
+      const txAux = await wallet.accounts[state.sourceAccountIndex].prepareTxAux(
+        state.sendTransactionSummary.plan
+      )
+      const signedTx = await wallet.accounts[state.sourceAccountIndex].signTxAux(txAux)
 
       if (state.usingHwWallet) {
         setState({waitingForHwWallet: false})
@@ -1064,8 +1213,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetSendFormFields(state)
       resetSendFormState(state)
       resetAmountFields(state)
-      wallet.generateNewSeeds()
       await reloadWalletInfo(state)
+      wallet.accounts[state.sourceAccountIndex].generateNewSeeds()
+      resetAccountIndexes(state)
       selectAdaliteStakepool(state)
       setState({
         waitingForHwWallet: false,
@@ -1150,8 +1300,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const toggleDisplayStakingPage = (state, value) => {
-    setState({displayStakingPage: value})
+  const selectMainTab = (state: State, value) => {
+    resetAccountIndexes(state)
+    setState({selectedMainTab: value})
     resetTransactionSummary(state)
     resetSendFormFields(state)
   }
@@ -1213,7 +1364,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetDonation,
     closeStakingBanner,
     updateStakePoolIdentifier,
-    toggleDisplayStakingPage,
+    selectMainTab,
     selectAdaliteStakepool,
     convertNonStakingUtxos,
     loadErrorBannerContent,
@@ -1221,5 +1372,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     openInfoModal,
     closeInfoModal,
     closePremiumBanner,
+    showSendTransactionModal,
+    closeSendTransactionModal,
+    showDelegationModal,
+    closeDelegationModal,
+    setActiveAccount,
+    setTargetAccount,
+    setSourceAccount,
+    exploreNewAccount,
+    switchSourceAndTargetAccounts,
   }
 }

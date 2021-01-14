@@ -5,6 +5,8 @@ import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
 
+type BIP32Path = number[]
+
 const CardanoTrezorCryptoProvider = ({network, config}) => {
   const derivationScheme = derivationSchemes.v2
 
@@ -18,14 +20,18 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   const isHwWallet = () => true
   const getWalletName = () => 'Trezor'
 
-  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
-    const response = await TrezorConnect.cardanoGetPublicKey({
-      path: absDerivationPath,
-      showOnTrezor: false,
-    })
-    throwIfNotSuccess(response)
-    return Buffer.from(response.payload.publicKey, 'hex')
-  })
+  const deriveXpub = CachedDeriveXpubFactory(
+    derivationScheme,
+    config.shouldExportPubKeyBulk,
+    async (absDerivationPaths: BIP32Path[]) => {
+      const bundle = absDerivationPaths.map((path: BIP32Path) => ({path, showOnTrezor: false}))
+      const response = await TrezorConnect.cardanoGetPublicKey({
+        bundle,
+      })
+      throwIfNotSuccess(response)
+      return response.payload.map(({publicKey}) => Buffer.from(publicKey, 'hex'))
+    }
+  )
 
   function deriveHdNode(childIndex) {
     throw NamedError('UnsupportedOperationError', {
@@ -60,7 +66,6 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
 
     throwIfNotSuccess(response)
   }
-
   type CardanoCertificatePointer = {
     blockIndex: number
     txIndex: number

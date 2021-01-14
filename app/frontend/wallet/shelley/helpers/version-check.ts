@@ -1,7 +1,4 @@
-import {
-  MINIMAL_LEDGER_APP_VERSION as minimalVersion,
-  RECOMMENDED_LEDGER_APP_VERSION as recommendedVersion,
-} from '../../constants'
+import {LEDGER_VERSIONS} from '../../constants'
 
 interface Version {
   major: string
@@ -9,14 +6,14 @@ interface Version {
   patch: string
 }
 
-export const hasMinimalVersion = (currentVersionStr: Version, recommended: boolean) => {
+export const hasRequiredVersion = (currentVersionStr: Version, requiredVersionType: string) => {
   const current = {
     major: parseInt(currentVersionStr.major, 10),
     minor: parseInt(currentVersionStr.minor, 10),
     patch: parseInt(currentVersionStr.patch, 10),
   }
 
-  const required = recommended ? recommendedVersion : minimalVersion
+  const required = LEDGER_VERSIONS[requiredVersionType]
 
   return (
     current.major > required.major ||

@@ -38,7 +38,10 @@ const ShelleyJsCryptoProvider = ({
 
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
-    (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
+    config.shouldExportPubKeyBulk,
+    (derivationPaths) => {
+      return derivationPaths.map((path) => deriveHdNode(path).extendedPublicKey)
+    }
   )
 
   function deriveHdNode(derivationPath) {

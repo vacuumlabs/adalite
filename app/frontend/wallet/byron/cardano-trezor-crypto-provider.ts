@@ -20,7 +20,7 @@ const CardanoTrezorCryptoProvider = ({network, config}) => {
   const isHwWallet = () => true
   const getHwWalletName = () => 'Trezor'
 
-  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
+  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, false, async (absDerivationPath) => {
     const response = await TrezorConnect.cardanoGetPublicKey({
       path: absDerivationPath,
       showOnTrezor: false,

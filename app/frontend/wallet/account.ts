@@ -1,11 +1,11 @@
 import AddressManager from './address-manager'
-import BlockchainExplorer from './blockchain-explorer'
 import PseudoRandom from './helpers/PseudoRandom'
 import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../state'
 import {
   stakeAccountPubkeyHex,
+  accountXpub as accoutXpubShelley,
   ShelleyStakingAccountProvider,
   ShelleyBaseAddressProvider,
 } from './shelley/shelley-address-provider'
@@ -17,15 +17,8 @@ import {
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
-import {ByronAddressProvider} from './byron/byron-address-provider'
-import {
-  isShelleyFormat,
-  bechAddressToHex,
-  isBase,
-  base58AddressToHex,
-} from './shelley/helpers/addresses'
-import request from './helpers/request'
-import {ADALITE_CONFIG} from '../config'
+import {ByronAddressProvider, accountXpub as accoutXpubByron} from './byron/byron-address-provider'
+import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresses'
 import {
   ShelleyTxAux,
   ShelleyTxInputFromUtxo,
@@ -37,18 +30,34 @@ import {
 } from './shelley/shelley-transaction'
 import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
 
-const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
-  const legacyExtManager = AddressManager({
-    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
-    gapLimit,
-    blockchainExplorer,
-  })
+const DummyAddressManager = () => {
+  return {
+    discoverAddresses: () => [],
+    discoverAddressesWithMeta: () => [],
+    getAddressToAbsPathMapping: () => ({}),
+  }
+}
 
-  const legacyIntManager = AddressManager({
-    addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
-    gapLimit,
-    blockchainExplorer,
-  })
+export default DummyAddressManager
+
+const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
+  const legacyExtManager =
+    accountIndex === 0
+      ? AddressManager({
+        addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
+        gapLimit,
+        blockchainExplorer,
+      })
+      : DummyAddressManager()
+
+  const legacyIntManager =
+    accountIndex === 0
+      ? AddressManager({
+        addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
+        gapLimit,
+        blockchainExplorer,
+      })
+      : DummyAddressManager()
 
   const accountAddrManager = AddressManager({
     addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
@@ -110,8 +119,18 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     for (const key in mappingShelley) {
       fixedShelley[bechAddressToHex(key)] = mappingShelley[key]
     }
+    return (address) => {
+      return mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
+    }
+  }
 
-    return (address) => mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
+  async function areAddressesUsed() {
+    const baseInt = await baseIntAddrManager.discoverAddresses()
+    const baseExt = await baseExtAddrManager.discoverAddresses()
+    return (
+      (await blockchainExplorer.isSomeAddressUsed(baseInt)) ||
+      (await blockchainExplorer.isSomeAddressUsed(baseExt))
+    )
   }
 
   return {
@@ -122,57 +141,16 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     baseExtAddrManager,
     accountAddrManager,
     legacyExtManager,
+    areAddressesUsed,
   }
 }
-
-const ShelleyBlockchainExplorer = (config) => {
-  // TODO: move methods to blockchain-explorer file
-  const be = BlockchainExplorer(config)
-
-  async function getAccountInfo(accountPubkeyHex) {
-    // TODO: not pubkey, address
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/info/${accountPubkeyHex}`
-    const response = await request(url)
-    return response
-  }
-
-  async function getValidStakepools() {
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-    const validStakepools = await request(url)
-
-    return {validStakepools}
-  }
-
-  function getBestSlot() {
-    return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
-  }
-
-  return {
-    getTxHistory: (addresses) => be.getTxHistory(addresses),
-    fetchTxRaw: be.fetchTxRaw,
-    fetchUnspentTxOutputs: (addresses) => be.fetchUnspentTxOutputs(addresses),
-    isSomeAddressUsed: (addresses) => be.isSomeAddressUsed(addresses),
-    submitTxRaw: be.submitTxRaw,
-    getBalance: (addresses) => be.getBalance(addresses),
-    fetchTxInfo: be.fetchTxInfo,
-    filterUsedAddresses: (addresses) => be.filterUsedAddresses(addresses),
-    getAccountInfo,
-    getValidStakepools,
-    getPoolInfo: (url) => be.getPoolInfo(url),
-    getStakingHistory: be.getStakingHistory,
-    getBestSlot,
-    getRewardDetails: be.getRewardDetails,
-    getPoolRecommendation: be.getPoolRecommendation,
-  }
-}
-const ShelleyWallet = ({
+const Account = ({
   config,
   randomInputSeed,
   randomChangeSeed,
   cryptoProvider,
-  isShelleyCompatible,
+  blockchainExplorer,
+  accountIndex,
 }: any) => {
   const {
     getMaxDonationAmount: _getMaxDonationAmount,
@@ -186,44 +164,12 @@ const ShelleyWallet = ({
 
   generateNewSeeds()
 
-  const blockchainExplorer = ShelleyBlockchainExplorer(config)
-
-  const accountIndex = 0
-
   const myAddresses = MyAddresses({
     accountIndex,
     cryptoProvider,
     gapLimit: config.ADALITE_GAP_LIMIT,
     blockchainExplorer,
   })
-
-  const addressToHex = (
-    address // TODO: move to addresses
-  ) => (isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address))
-
-  function isHwWallet() {
-    return cryptoProvider.isHwWallet()
-  }
-
-  function getWalletName() {
-    return cryptoProvider.getWalletName()
-  }
-
-  async function submitTx(signedTx): Promise<any> {
-    const params = {
-      stakeKey: await stakeAccountPubkeyHex(cryptoProvider, accountIndex),
-      walletType: getWalletName(),
-    }
-    const {txBody, txHash} = signedTx
-    return blockchainExplorer.submitTxRaw(txHash, txBody, params)
-  }
-
-  function getWalletSecretDef() {
-    return {
-      rootSecret: cryptoProvider.getWalletSecret(),
-      derivationScheme: cryptoProvider.getDerivationScheme(),
-    }
-  }
 
   async function calculateTtl() {
     try {
@@ -291,7 +237,8 @@ const ShelleyWallet = ({
     rewards: any
   }
 
-  const utxoTxPlanner = async (args: utxoArgs, accountAddress) => {
+  const getTxPlan = async (args: utxoArgs) => {
+    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType, rewards} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
@@ -320,27 +267,18 @@ const ShelleyWallet = ({
     return plan
   }
 
-  async function getTxPlan(args: utxoArgs) {
-    // TODO: passing accountAddress to plan is useless, as well as this function
-    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
-    const txPlanners = {
-      sendAda: utxoTxPlanner,
-      convert: utxoTxPlanner,
-      delegate: utxoTxPlanner,
-      withdraw: utxoTxPlanner,
-    }
-    return await txPlanners[args.txType](args, accountAddress)
-  }
-
   async function getPoolInfo(url) {
     const poolInfo = await blockchainExplorer.getPoolInfo(url)
     return poolInfo
   }
 
-  async function getWalletInfo() {
-    const {validStakepools} = await getValidStakepools()
+  function isAccountUsed(): Promise<boolean> {
+    return myAddresses.areAddressesUsed()
+  }
+
+  async function getAccountInfo(validStakepools) {
     const {stakingBalance, nonStakingBalance, balance} = await getBalance()
-    const shelleyAccountInfo = await getAccountInfo(validStakepools)
+    const shelleyAccountInfo = await getStakingInfo(validStakepools)
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getHistory()
     const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
@@ -348,19 +286,23 @@ const ShelleyWallet = ({
       shelleyAccountInfo.delegation,
       stakingBalance
     )
+    const isUsed = await isAccountUsed()
+
     return {
-      validStakepools,
       balance,
       shelleyBalances: {
         nonStakingBalance,
         stakingBalance: stakingBalance + shelleyAccountInfo.value,
         rewardsAccountBalance: shelleyAccountInfo.value,
       },
+      stakePubkeyHex: shelleyAccountInfo.stakePubKeyHex,
       shelleyAccountInfo,
       transactionHistory,
       stakingHistory,
       visibleAddresses,
       poolRecommendation,
+      isUsed,
+      accountIndex,
     }
   }
 
@@ -391,9 +333,11 @@ const ShelleyWallet = ({
     )
   }
 
-  async function getAccountInfo(validStakepools) {
+  async function getStakingInfo(validStakepools) {
+    const shelleyXpub = await accoutXpubShelley(cryptoProvider, accountIndex)
+    const byronXpub = accountIndex === 0 && (await accoutXpubByron(cryptoProvider, accountIndex))
     const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
-    const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getAccountInfo(
+    const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getStakingInfo(
       accountPubkeyHex
     )
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
@@ -406,6 +350,8 @@ const ShelleyWallet = ({
 
     return {
       accountPubkeyHex,
+      shelleyXpub,
+      byronXpub,
       ...accountInfo,
       delegation: {
         ...accountInfo.delegation,
@@ -414,14 +360,6 @@ const ShelleyWallet = ({
       rewardDetails,
       value: accountInfo.rewards ? parseInt(accountInfo.rewards, 10) : 0,
     }
-  }
-
-  function getValidStakepools(): Promise<any> {
-    return blockchainExplorer.getValidStakepools()
-  }
-
-  async function fetchTxInfo(txHash) {
-    return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
   async function getChangeAddress() {
@@ -446,7 +384,7 @@ const ShelleyWallet = ({
   }
 
   async function getVisibleAddresses() {
-    const addresses = isShelleyCompatible
+    const addresses = config.isShelleyCompatible
       ? await myAddresses.baseExtAddrManager.discoverAddressesWithMeta()
       : await myAddresses.legacyExtManager.discoverAddressesWithMeta()
     return addresses
@@ -471,21 +409,12 @@ const ShelleyWallet = ({
     }
   }
 
-  function checkCryptoProviderVersion() {
-    try {
-      cryptoProvider.checkVersion(true)
-    } catch (e) {
-      return {code: e.name, message: e.message}
-    }
-    return null
-  }
-
   async function getPoolRecommendation(pool: any, stake: number): Promise<any> {
     const poolHash = pool ? pool.poolHash : null
     const poolRecommendation = await blockchainExplorer.getPoolRecommendation(poolHash, stake)
     if (!poolRecommendation.recommendedPoolHash || config.ADALITE_ENFORCE_STAKEPOOL) {
       Object.assign(poolRecommendation, {
-        recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
+        recommendedPoolHash: config.ADALITE_STAKE_POOL_ID,
       })
     }
     const delegatesToRecommended = poolRecommendation.recommendedPoolHash === pool.poolHash
@@ -497,10 +426,6 @@ const ShelleyWallet = ({
   }
 
   return {
-    isHwWallet,
-    getWalletName,
-    getWalletSecretDef,
-    submitTx,
     signTxAux,
     getBalance,
     getChangeAddress,
@@ -512,15 +437,14 @@ const ShelleyWallet = ({
     getVisibleAddresses,
     prepareTxAux,
     verifyAddress,
-    fetchTxInfo,
     generateNewSeeds,
     getAccountInfo,
-    getValidStakepools,
-    getWalletInfo,
+    getStakingInfo,
     getPoolInfo,
-    checkCryptoProviderVersion,
+    accountIndex,
     getPoolRecommendation,
+    isAccountUsed,
   }
 }
 
-export {ShelleyWallet}
+export {Account}

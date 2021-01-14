@@ -75,28 +75,3 @@ it('Should properly load shelley wallet', async () => {
 
   mockNet.clean()
 })
-
-it('Should properly load byron wallet', async () => {
-  ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'byron'
-
-  const mockNet = mockNetwork(ADALITE_CONFIG)
-  mockNet.mockBulkAddressSummaryEndpoint()
-  mockNet.mockGetAccountInfo()
-  mockNet.mockGetStakePools()
-  mockNet.mockGetConversionRates()
-
-  expectedStateChanges.validStakepools = null
-  expectedStateChanges.ticker2Id = null
-  expectedStateChanges.balance = 1500000
-
-  await action.loadWallet(state, {
-    cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
-    walletSecretDef: await mnemonicToWalletSecretDef(
-      'blame matrix water coil diet seat nerve street movie turkey jump bundle'
-    ),
-  })
-
-  mockNet.clean()
-  assertPropertiesEqual(state, expectedStateChanges)
-  assert.equal(state.visibleAddresses.length, 10)
-})

@@ -1,5 +1,5 @@
-import {h, Component} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {h, Component, Fragment} from 'preact'
+import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 
 import {getTranslation} from '../../../translations'
@@ -16,6 +16,8 @@ import {ADALITE_CONFIG} from '../../../config'
 import {toCoins} from '../../../helpers/adaConverters'
 
 import tooltip from '../../common/tooltip'
+import AccountDropdown from '../accounts/accountDropdown'
+import {sourceAccountState, State} from '../../../state'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -61,6 +63,14 @@ interface Props {
   sendTransactionSummary: any
   transactionFee: any
   balance: any
+  showDonationFields: boolean
+  isModal: boolean
+  title: string
+  sourceAccountIndex: number
+  targetAccountIndex: number
+  setSourceAccount: any
+  setTargetAccount: any
+  switchSourceAndTargetAccounts: any
 }
 
 class SendAdaPage extends Component<Props> {
@@ -93,6 +103,14 @@ class SendAdaPage extends Component<Props> {
     transactionFee,
     txSuccessTab,
     balance,
+    showDonationFields,
+    isModal, // TODO: remove
+    title,
+    sourceAccountIndex,
+    targetAccountIndex,
+    setSourceAccount,
+    setTargetAccount,
+    switchSourceAndTargetAccounts,
   }) {
     const sendFormValidationError =
       sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
@@ -108,18 +126,33 @@ class SendAdaPage extends Component<Props> {
 
     return (
       <div className="send card">
-        <h2 className="card-title">Send ADA</h2>
-        <input
-          type="text"
-          id="send-address"
-          className="input send-address fullwidth"
-          name="send-address"
-          placeholder="Receiving address"
-          value={sendAddress}
-          onInput={updateAddress}
-          autoComplete="off"
-          onKeyDown={(e) => e.key === 'Enter' && this.amountField.focus()}
-        />
+        <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
+        {!isModal && (
+          <input
+            type="text"
+            id="send-address"
+            className={`input ${isModal ? '' : 'send-address'} fullwidth`}
+            name="send-address"
+            placeholder="Receiving address"
+            value={sendAddress}
+            onInput={updateAddress}
+            autoComplete="off"
+            onKeyDown={(e) => e.key === 'Enter' && this.amountField.focus()}
+            disabled={isModal}
+          />
+        )}
+        {isModal && (
+          <div className="send-values dropdowns">
+            <label className="account-label">From</label>
+            <AccountDropdown accountIndex={sourceAccountIndex} setAccountFunc={setSourceAccount} />
+            <button className="button account-switch" onClick={switchSourceAndTargetAccounts}>
+              Switch
+            </button>
+            <div />
+            <label className="account-label">To</label>
+            <AccountDropdown accountIndex={targetAccountIndex} setAccountFunc={setTargetAccount} />
+          </div>
+        )}
         <div className="send-values">
           <label className="ada-label amount" htmlFor="send-amount">
             Amount
@@ -151,23 +184,29 @@ class SendAdaPage extends Component<Props> {
               Max
             </button>
           </div>
-          <label className="ada-label amount donation" htmlFor="donation-amount">
-            Donate<a
-              {...tooltip(
-                'Your donation is very much appreciated and will be used for further development of AdaLite',
-                true
+          {showDonationFields && (
+            <Fragment>
+              <label className="ada-label amount donation" htmlFor="donation-amount">
+                Donate<a
+                  {...tooltip(
+                    'Your donation is very much appreciated and will be used for further development of AdaLite',
+                    true
+                  )}
+                >
+                  <span className="show-info">{''}</span>
+                </a>
+              </label>
+              {!isDonationSufficient && (
+                <div className="send-donate-msg">Insufficient balance for a donation.</div>
               )}
-            >
-              <span className="show-info">{''}</span>
-            </a>
-          </label>
-          {!isDonationSufficient && (
-            <div className="send-donate-msg">Insufficient balance for a donation.</div>
+              {!shouldShowCustomDonationInput &&
+                isDonationSufficient && <DonationButtons isSendAddressValid={isSendAddressValid} />}
+              {shouldShowCustomDonationInput &&
+                isDonationSufficient && (
+                <CustomDonationInput isSendAddressValid={isSendAddressValid} />
+              )}
+            </Fragment>
           )}
-          {!shouldShowCustomDonationInput &&
-            isDonationSufficient && <DonationButtons isSendAddressValid={isSendAddressValid} />}
-          {shouldShowCustomDonationInput &&
-            isDonationSufficient && <CustomDonationInput isSendAddressValid={isSendAddressValid} />}
           <div className="ada-label">Fee</div>
           <div className="send-fee">{printAda(transactionFee)}</div>
         </div>
@@ -198,7 +237,7 @@ class SendAdaPage extends Component<Props> {
             />
           )}
         </div>
-        {shouldShowTransactionErrorModal && (
+        {shouldShowTransactionErrorModal && ( // TODO: move to dashboardPage
           <TransactionErrorModal
             onRequestClose={closeTransactionErrorModal}
             errorMessage={getTranslation(
@@ -208,7 +247,7 @@ class SendAdaPage extends Component<Props> {
             showHelp={errorHasHelp(transactionSubmissionError.code)}
           />
         )}
-        {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
+        {shouldShowConfirmTransactionDialog && !isModal && <ConfirmTransactionDialog />}
         {shouldShowThanksForDonation && (
           <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
         )}
@@ -217,8 +256,14 @@ class SendAdaPage extends Component<Props> {
   }
 }
 
+SendAdaPage.defaultProps = {
+  showDonationFields: true,
+  isModal: false,
+  title: 'Send ADA',
+}
+
 export default connect(
-  (state) => ({
+  (state: State) => ({
     transactionSubmissionError: state.transactionSubmissionError,
     sendResponse: state.sendResponse,
     sendAddressValidationError: state.sendAddressValidationError,
@@ -237,7 +282,9 @@ export default connect(
     sendTransactionSummary: state.sendTransactionSummary,
     transactionFee: state.transactionFee,
     txSuccessTab: state.txSuccessTab,
-    balance: state.balance,
+    balance: sourceAccountState(state).balance,
+    sourceAccountIndex: state.sourceAccountIndex,
+    targetAccountIndex: state.targetAccountIndex,
   }),
   actions
 )(SendAdaPage)

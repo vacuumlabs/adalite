@@ -82,6 +82,7 @@ class LoadKeyFileClass extends Component<Props, State> {
       this.props.loadWallet({
         cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
         walletSecretDef,
+        shouldExportPubKeyBulk: true,
       })
     } catch (e) {
       this.props.stopLoadingAction()
@@ -144,6 +145,7 @@ class LoadKeyFileClass extends Component<Props, State> {
             this.props.loadWallet({
               cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
               walletSecretDef,
+              shouldExportPubKeyBulk: true,
             })
             this.setState({keyfileError: undefined})
           }

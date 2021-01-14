@@ -5,7 +5,7 @@ import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 import RawTransactionModal from './rawTransactionModal'
 // import roundNumber from '../../../helpers/roundNumber'
-import {Lovelace} from '../../../state'
+import {Lovelace, State} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
 
@@ -50,6 +50,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
       send: 'Transaction review',
       convert: 'Stakable balance conversion review',
       withdraw: 'Rewards withdrawal review',
+      crossAccount: 'Transaction between accounts review',
     }
     return (
       // TODO: make separate fragments into constants and then build specific types from them
@@ -67,27 +68,27 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
           </div>
         )}
         <div className="review">
-          {txConfirmType === 'send' && (
+          {(txConfirmType === 'send' || txConfirmType === 'crossAccount') && (
             <Fragment>
               <div className="review-label">Address</div>
-              <div className="review-address">{sendAddress}</div>
+              <div className="review-address">
+                {sendAddress}
+                {txConfirmType === 'crossAccount' && <AddressVerification address={sendAddress} />}
+              </div>
+              <div className="ada-label">Amount</div>
+              <div className="review-amount">{printAda(summary.amount)}</div>
+              <div className="ada-label">Donation</div>
+              <div className="review-amount">{printAda(summary.donation)}</div>
             </Fragment>
           )}
 
-          {txConfirmType === 'convert' && ( // TODO: make address validation into component
+          {txConfirmType === 'convert' && (
             <Fragment>
               <div className="review-label">Address</div>
               <div className="review-address">
                 {summary.plan.outputs[0].address}
                 <AddressVerification address={summary.plan.outputs[0].address} />
               </div>
-            </Fragment>
-          )}
-
-          {txConfirmType === 'send' && (
-            <Fragment>
-              <div className="ada-label">Amount</div>
-              <div className="review-amount">{printAda(summary.amount)}</div>
             </Fragment>
           )}
 
@@ -98,7 +99,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             </Fragment>
           )}
 
-          {txConfirmType === 'withdraw' && ( // TODO: add address verification for hw wallets
+          {txConfirmType === 'withdraw' && (
             <Fragment>
               <div className="review-label">Address</div>
               <div className="review-address">
@@ -110,12 +111,6 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
             </Fragment>
           )}
 
-          {txConfirmType === 'send' && (
-            <Fragment>
-              <div className="ada-label">Donation</div>
-              <div className="review-amount">{printAda(summary.donation)}</div>
-            </Fragment>
-          )}
           {txConfirmType === 'delegate' && (
             <Fragment>
               <div className="review-label">Pool ID</div>
@@ -182,7 +177,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
 }
 
 export default connect(
-  (state) => ({
+  (state: State) => ({
     sendAddress: state.sendAddress.fieldValue,
     summary: state.sendTransactionSummary,
     rawTransactionOpen: state.rawTransactionOpen,

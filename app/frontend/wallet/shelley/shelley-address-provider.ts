@@ -31,7 +31,20 @@ export const stakeAccountPubkeyHex = async (cryptoProvider, accountIndex: number
   return accountHexAddressFromXpub(stakeXpub, cryptoProvider.network.networkId)
 }
 
-// TODO: this is probably useless
+export const accountXpub = async (cryptoProvider, accountIndex) => {
+  const path = shelleyStakeAccountPath(accountIndex).slice(0, 3)
+
+  const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
+  return {
+    path: [
+      path[0] - HARDENED_THRESHOLD,
+      path[1] - HARDENED_THRESHOLD,
+      path[2] - HARDENED_THRESHOLD,
+    ],
+    xpub,
+  }
+}
+
 export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => async () => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)

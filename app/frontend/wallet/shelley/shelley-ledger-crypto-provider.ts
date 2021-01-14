@@ -10,7 +10,7 @@ import {
   ShelleySignedTransactionStructured,
 } from './shelley-transaction'
 import * as platform from 'platform'
-import {hasMinimalVersion} from './helpers/version-check'
+import {hasRequiredVersion} from './helpers/version-check'
 
 import {
   bechAddressToHex,
@@ -61,21 +61,39 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
 
   const version = await ledger.getVersion()
 
-  checkVersion()
+  checkVersion('MINIMAL')
 
   const isHwWallet = () => true
   const getWalletName = () => 'Ledger'
 
-  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, async (absDerivationPath) => {
-    const response = await ledger.getExtendedPublicKey(absDerivationPath)
-    const xpubHex = response.publicKeyHex + response.chainCodeHex
-    return Buffer.from(xpubHex, 'hex')
-  })
+  const exportPublicKeys = async (derivationPaths) => {
+    if (hasRequiredVersion(version, 'BULK_EXPORT')) {
+      return await ledger.getExtendedPublicKeys(derivationPaths)
+    }
+    const response = []
+    for (const path of derivationPaths) {
+      response.push(await ledger.getExtendedPublicKey(path))
+    }
+    return response
+  }
 
-  function checkVersion(recommended: boolean = false) {
-    if (!hasMinimalVersion(version, recommended)) {
-      const errorName = recommended ? 'NotRecommendedCardanoAppVerion' : 'OutdatedCardanoAppError'
-      throw NamedError(errorName, {
+  const deriveXpub = CachedDeriveXpubFactory(
+    derivationScheme,
+    config.shouldExportPubKeyBulk,
+    async (derivationPaths) => {
+      const response = await exportPublicKeys(derivationPaths)
+      return response.map((res) => Buffer.from(res.publicKeyHex + res.chainCodeHex, 'hex'))
+    }
+  )
+
+  function checkVersion(requiredVersionType: string) {
+    if (!hasRequiredVersion(version, requiredVersionType)) {
+      const versionErrors = {
+        MINIMAL: 'OutdatedCardanoAppError',
+        WITHDRAWAL: 'NotRecommendedCardanoAppVerion',
+        BULK_EXPORT: 'BulkExportNotSupported',
+      }
+      throw NamedError(versionErrors[requiredVersionType], {
         message: `${version.major}.${version.minor}.${version.patch}`,
       })
     }

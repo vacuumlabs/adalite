@@ -28,10 +28,9 @@ const CardanoWalletSecretCryptoProvider = ({
     return derivationScheme
   }
 
-  const deriveXpub = CachedDeriveXpubFactory(
-    derivationScheme,
-    (derivationPath) => deriveHdNode(derivationPath).extendedPublicKey
-  )
+  const deriveXpub = CachedDeriveXpubFactory(derivationScheme, false, (derivationPaths) => {
+    return derivationPaths.map((path) => deriveHdNode(path).extendedPublicKey)
+  })
 
   function getHdPassphrase() {
     return xpubToHdPassphrase(masterHdNode.extendedPublicKey)

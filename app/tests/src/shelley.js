@@ -13,7 +13,7 @@ const getCryptoProvider = async (mnemonic, networkId) => {
   const network = {
     networkId,
   }
-  return ShelleyJsCryptoProvider({walletSecretDef, network})
+  return ShelleyJsCryptoProvider({walletSecretDef, network, config: {shouldExportPubKeyBulk: true}})
 }
 
 // inform mocha global leak detector

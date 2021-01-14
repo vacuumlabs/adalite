@@ -2,7 +2,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
 import {Lovelace} from './state'
-import {RECOMMENDED_LEDGER_APP_VERSION} from './wallet/constants'
+import {LEDGER_VERSIONS} from './wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -88,15 +88,15 @@ const translations = {
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
   OutdatedCardanoAppError: ({message}) =>
     `OutdatedCardanoAppError: Your cardano application is running on an outdated version ${message}. Please update your cardano application to the version ${
-      RECOMMENDED_LEDGER_APP_VERSION.major
-    }.${RECOMMENDED_LEDGER_APP_VERSION.minor}.${
-      RECOMMENDED_LEDGER_APP_VERSION.patch
+      LEDGER_VERSIONS.MINIMAL.major
+    }.${LEDGER_VERSIONS.MINIMAL.minor}.${
+      LEDGER_VERSIONS.MINIMAL.patch
     } or later. See https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps for more information.`,
   NotRecommendedCardanoAppVerion: ({message}) =>
     `RewardsWithdrawalNotSupported: There was a bug in Ledger Cardano app 2.0.3 that didn't allow rewards withdrawals. To withdraw rewards, you need to update your Ledger firmware and your Ledger Cardano app. You need to update to firmware version 1.6.1 for Ledger Nano S and to firmware version 1.2.4-4 for Nano X. For more information how to do this please refer to https://support.ledger.com/hc/en-us/articles/360005885733-Update-device-firmware. After your ledger firmware is updated please install the latest version of the the Ledger Cardano app. Your current version is ${message} and the required version is ${
-      RECOMMENDED_LEDGER_APP_VERSION.major
-    }.${RECOMMENDED_LEDGER_APP_VERSION.minor}.${
-      RECOMMENDED_LEDGER_APP_VERSION.patch
+      LEDGER_VERSIONS.WITHDRAWAL.major
+    }.${LEDGER_VERSIONS.WITHDRAWAL.minor}.${
+      LEDGER_VERSIONS.WITHDRAWAL.patch
     }. For more information how to do this, please refer to https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps`,
 }
 

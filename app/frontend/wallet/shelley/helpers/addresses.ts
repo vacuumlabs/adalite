@@ -66,3 +66,6 @@ export const isBase = (address: string): boolean => {
 export const isByron = (address: string): boolean => {
   return getAddressType(Buffer.from(address, 'hex')) === AddressTypes.BOOTSTRAP
 }
+
+export const addressToHex = (address: string): HexString =>
+  isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address)
