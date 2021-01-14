@@ -17,10 +17,13 @@ import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
 import DashboardErrorBanner from './dashboardErrorBanner'
 import PremiumBanner from './premiumBanner'
 import SaturationErrorBanner from './saturationErrorBanner'
+import Keys from '../advanced/keys'
+import AccountsDashboard from '../accounts/accountsDashboard'
+import {State} from '../../../state'
 
 interface Props {
-  displayStakingPage: any
-  toggleDisplayStakingPage?: (value: boolean) => void
+  selectedMainTab: any
+  selectMainTab?: (value: string) => void
 }
 
 const StakingPage = () => {
@@ -54,35 +57,59 @@ const SendingPage = ({shouldShowExportOption}) => {
   )
 }
 
+const AdvancedPage = () => {
+  return (
+    <Fragment>
+      <div className="dashboard-column">
+        <Keys />
+      </div>
+      <div className="dashboard-column">
+        <div />
+      </div>
+    </Fragment>
+  )
+}
+
+const AccountsPage = () => {
+  return <AccountsDashboard />
+}
+
 class DashboardPage extends Component<Props> {
   constructor(props) {
     super(props)
-    this.state = {
-      selectedMainTab: 'Sending',
-    }
     this.selectMainTab = this.selectMainTab.bind(this)
   }
 
   selectMainTab(name) {
-    this.setState({
-      selectedMainTab: name,
-    })
-    this.props.toggleDisplayStakingPage(name === 'Staking')
+    this.props.selectMainTab(name)
   }
 
-  render(
-    {
-      shouldShowExportOption,
-      displayStakingPage,
-      isShelleyCompatible,
-      shouldShowNonShelleyCompatibleDialog,
-      displayInfoModal,
-      shouldShowPremiumBanner,
-      shouldShowSaturatedBanner,
-    },
-    {selectedMainTab}
-  ) {
-    const mainTabs = ['Sending', 'Staking']
+  render({
+    shouldShowExportOption,
+    selectedMainTab,
+    isShelleyCompatible,
+    shouldShowNonShelleyCompatibleDialog,
+    displayInfoModal,
+    shouldShowPremiumBanner,
+    shouldShowSaturatedBanner,
+    activeAccountIndex,
+    accountIndexOffset,
+  }) {
+    // TODO: this approach doesnt allow multi-word tabs
+    const mainTabs = ['Accounts', 'Sending', 'Staking', 'Advanced']
+    // TODO: refactor this ^ to array of objects
+    const displayedPages = {
+      Accounts: <AccountsPage />,
+      Sending: <SendingPage shouldShowExportOption={shouldShowExportOption} />,
+      Staking: <StakingPage />,
+      Advanced: <AdvancedPage />,
+    }
+    const displayedSubPages = {
+      Accounts: <div />,
+      Sending: <Balance />,
+      Staking: <ShelleyBalances />,
+      Advanced: <div />,
+    }
     return (
       <div className="page-wrapper">
         {isShelleyCompatible && displayInfoModal && <InfoModal />}
@@ -98,38 +125,37 @@ class DashboardPage extends Component<Props> {
                 name={name}
                 selectedTab={selectedMainTab}
                 selectTab={this.selectMainTab}
+                displayName={
+                  name === 'Accounts' && `Account #${activeAccountIndex + accountIndexOffset}`
+                }
               />
             ))}
           </ul>
         )}
-        <div className="dashboard desktop">
-          {!displayStakingPage ? (
-            <SendingPage shouldShowExportOption={shouldShowExportOption} />
-          ) : (
-            <StakingPage />
-          )}
-        </div>
+        <div className="dashboard desktop">{displayedPages[selectedMainTab]}</div>
 
         <div className="dashboard mobile">
-          {displayStakingPage ? <ShelleyBalances /> : <Balance />}
-          <DashboardMobileContent displayStakingPage={displayStakingPage} />
-          {!displayStakingPage && shouldShowExportOption && <ExportCard />}
+          {displayedSubPages[selectedMainTab]}
+          <DashboardMobileContent selectedMainTab={selectedMainTab} />
+          {selectedMainTab === 'Sending' && shouldShowExportOption && <ExportCard />}
         </div>
       </div>
     )
   }
 }
 
-class DashboardMobileContent extends Component<Props> {
+class DashboardMobileContent extends Component<Props, {selectedSubTab}> {
   constructor(props) {
     super(props)
     this.state = {
-      selectedSubTab: !this.props.displayStakingPage ? 'Transactions' : 'Delegate ADA',
+      selectedSubTab: 'Transactions',
     }
     this.selectSubTab = this.selectSubTab.bind(this)
   }
   selectSubTab(name) {
-    this.setState({selectedSubTab: name})
+    if (this.state.selectedSubTab !== name) {
+      this.setState({selectedSubTab: name})
+    }
   }
   pages = {
     'Delegate ADA': DelegatePage,
@@ -138,21 +164,35 @@ class DashboardMobileContent extends Component<Props> {
     'Send ADA': SendAdaPage,
     'Transactions': TransactionHistory,
     'Recieve ADA': MyAddresses,
+    Keys,
+    'Accounts': AccountsDashboard,
   }
-  render({displayStakingPage}, {selectedSubTab}) {
-    const stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
-    const sendingTabs = ['Send ADA', 'Transactions', 'Recieve ADA']
-    if (displayStakingPage && sendingTabs.includes(selectedSubTab)) {
-      this.selectSubTab('Delegate ADA')
+  // TODO: refactor
+  accountsTabs = ['Accounts']
+  stakingTabs = ['Delegate ADA', 'Current Delegation', 'Staking history']
+  sendingTabs = ['Send ADA', 'Transactions', 'Receive ADA']
+  advancedTabs = ['Keys']
+  render({selectedMainTab}, {selectedSubTab}) {
+    const selectedDefultSubTabs = {
+      Accounts: 'Accounts',
+      Sending: 'Transactions',
+      Staking: 'Delegate ADA',
+      Advanced: 'Keys',
     }
-    if (!displayStakingPage && stakingTabs.includes(selectedSubTab)) {
-      this.selectSubTab('Transactions')
+    const tabs = {
+      Accounts: this.accountsTabs,
+      Sending: this.sendingTabs,
+      Staking: this.stakingTabs,
+      Advanced: this.advancedTabs,
+    }
+    if (!tabs[selectedMainTab].includes(selectedSubTab)) {
+      this.selectSubTab(selectedDefultSubTabs[selectedMainTab])
     }
     const Page = this.pages[selectedSubTab]
     return (
       <div className="dashboard-content">
         <ul className="dashboard-tabs">
-          {(displayStakingPage ? stakingTabs : sendingTabs).map((name, i) => (
+          {tabs[selectedMainTab].map((name, i) => (
             <SubTab
               key={i}
               name={name}
@@ -168,14 +208,16 @@ class DashboardMobileContent extends Component<Props> {
 }
 
 export default connect(
-  (state) => ({
+  (state: State) => ({
     shouldShowExportOption: state.shouldShowExportOption,
-    displayStakingPage: state.displayStakingPage,
+    selectedMainTab: state.selectedMainTab,
     displayInfoModal: state.displayInfoModal,
     isShelleyCompatible: state.isShelleyCompatible,
     shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
     shouldShowPremiumBanner: state.shouldShowPremiumBanner,
-    shouldShowSaturatedBanner: state.poolRecommendation.shouldShowSaturatedBanner,
+    shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
+    activeAccountIndex: state.activeAccountIndex,
+    accountIndexOffset: state.accountIndexOffset,
   }),
   actions
 )(DashboardPage)
