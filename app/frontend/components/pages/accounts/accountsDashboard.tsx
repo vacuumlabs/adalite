@@ -10,6 +10,7 @@ import DelegationModal from './delegationModal'
 import ConfirmTransactionDialog from '../../../../frontend/components/pages/sendAda/confirmTransactionDialog'
 import AccountTile from './accountTile'
 import {AccountInfo} from '../../../../frontend/types'
+import Conversions from '../../common/conversions'
 
 type DashboardProps = {
   accountsInfo: Array<AccountInfo>
@@ -19,6 +20,7 @@ type DashboardProps = {
   totalWalletBalance: number
   totalRewardsBalance: number
   shouldShowConfirmTransactionDialog: boolean
+  conversionRates: any
 }
 
 const AccountsDashboard = ({
@@ -29,24 +31,48 @@ const AccountsDashboard = ({
   totalWalletBalance,
   totalRewardsBalance,
   shouldShowConfirmTransactionDialog,
+  conversionRates,
 }: DashboardProps) => {
   const InfoAlert = () => (
     <Fragment>
       <div className="dashboard-column account sidebar-item info">
         <Alert alertType="info sidebar">
           <p>
-            <strong>Accounts</strong> offer a way to split your funds. You can delegate to different
-            stakepool from each account. Each account has different balance, set of addresses and
-            keys.
+            <strong>Accounts</strong> offer the possibility to split the funds on your wallet. You
+            can delegate to different stakepool from each account. Each account has its own balance,
+            set of addresses and keys.
           </p>
         </Alert>
       </div>
       <div className="dashboard-column account sidebar-item info">
         <Alert alertType="info sidebar">
           <p>
-            Click explore/activate button to load data for related account. If you are using a
-            hardware wallet, you will be requested to export public key. Note that content on all
+            Please read our{' '}
+            <a
+              href="https://adalite.medium.com/multi-account-support-and-partial-delegation-fd96aa793f9d"
+              target="_blank"
+              rel="noopener"
+            >
+              comprehensive guide to accounts
+            </a>{' '}
+            and make sure you understand how it works before using this feature.
+          </p>
+        </Alert>
+      </div>
+      <div className="dashboard-column account sidebar-item info">
+        <Alert alertType="info sidebar">
+          <p>
+            Click <b>Activate/Explore</b> button to load data for related account. If you are using
+            a hardware wallet, you will be requested to export public key. Note that content on all
             tabs corresponds to currently active account.
+          </p>
+        </Alert>
+      </div>
+      <div className="dashboard-column account sidebar-item info">
+        <Alert alertType="info sidebar">
+          <p>
+            Click <b>Transfer</b> to move funds from one account to another. Select the source and
+            the destination accounts, amount of ADA and tranfer your funds.
           </p>
         </Alert>
       </div>
@@ -70,18 +96,30 @@ const AccountsDashboard = ({
         <div className="card account-aggregated">
           <div className="balance">
             <div className="item">
-              <h2 className="card-title small-margin">Total balance</h2>
+              <h2 className="card-title small-margin">Wallet available balance</h2>
               <div className="balance-amount">
                 {printAda(totalWalletBalance as Lovelace)}
                 <AdaIcon />
               </div>
+              {conversionRates && (
+                <Conversions
+                  balance={totalWalletBalance as Lovelace}
+                  conversionRates={conversionRates}
+                />
+              )}
             </div>
             <div className="item">
-              <h2 className="card-title small-margin">Total rewards balance</h2>
+              <h2 className="card-title small-margin">Wallet rewards balance</h2>
               <div className="balance-amount">
                 {printAda(totalRewardsBalance as Lovelace)}
                 <AdaIcon />
               </div>
+              {conversionRates && (
+                <Conversions
+                  balance={totalRewardsBalance as Lovelace}
+                  conversionRates={conversionRates}
+                />
+              )}
             </div>
           </div>
           <div className="refresh-wrapper">
@@ -139,6 +177,8 @@ export default connect(
     totalRewardsBalance: state.totalRewardsBalance,
     totalWalletBalance: state.totalWalletBalance,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
+    // TODO: refactor to get .data elsewhere
+    conversionRates: state.conversionRates && state.conversionRates.data,
   }),
   actions
 )(AccountsDashboard)

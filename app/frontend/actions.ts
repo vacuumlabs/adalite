@@ -121,11 +121,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   const getWalletInfo = (accountsInfo: Array<AccountInfo>) => {
-    const totalWalletBalance = accountsInfo.reduce(
-      (a, {shelleyBalances}) =>
-        shelleyBalances.stakingBalance + shelleyBalances.nonStakingBalance + a,
-      0
-    )
+    const totalWalletBalance = accountsInfo.reduce((a, {balance}) => balance + a, 0)
     const totalRewardsBalance = accountsInfo.reduce(
       (a, {shelleyBalances}) => shelleyBalances.rewardsAccountBalance + a,
       0

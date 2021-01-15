@@ -122,9 +122,22 @@ const PoolOwnerCard = ({
       <div className="pool-registration-instructions">
         <div className="advanced-label">To become a pool owner</div>
         <ol>
-          <li>Download Staking CBOR hex in the keys tab.</li>
-          <li>TODO: the rest and description</li>
+          <li>Download Staking CBOR hex in the keys tab and send it to the Operator.</li>
+          <li>
+            Request a stake pool registration transaction from the Operator and upload it here.
+          </li>
+          <li>Press the "Sign" button and review the pool registration attributes.</li>
+          <li>Proceed by signing the transaction using your HW wallet.</li>
+          <li>Press the "Download signature" button and send the signature the pool operator.</li>
+          <li>Works with Ledger Nano S/X, Trezor coming on 10.2.2021.</li>
         </ol>
+        <a
+          href="https://adalite.medium.com/cardano-stake-pool-owners-hw-support-6d9278dba0ba"
+          target="_blank"
+          rel="noopener"
+        >
+          Read more
+        </a>
       </div>
       {shouldShowPoolCertSignModal && <SignPoolCertTxModal />}
     </div>

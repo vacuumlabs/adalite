@@ -1526,6 +1526,12 @@ li.main-tab input + label.selected:after {
 
 .card.account-aggregated > .balance {
   display: flex;
+  width: 100%;
+}
+
+.card.account-aggregated > .balance .item {
+  width: 26%;
+  align-self: center;
 }
 
 .card.account-aggregated .refresh-wrapper {
@@ -1565,6 +1571,7 @@ li.main-tab input + label.selected:after {
   flex: 1 1 auto;
   padding-left: 40px;
   margin-left: 20px;
+  padding-right: 24px;
 }
 
 .account.info .alert-content {
@@ -3133,6 +3140,7 @@ input:checked + .slider:before {
 .delegation-input-label {
   padding-top: 2px;
   padding-right: 4px;
+  color: var(--color-grey)
 }
 
 .stake-pool-info {
@@ -5336,6 +5344,11 @@ label.button.primary.disabled {
     margin-bottom: 48px;
   }
 
+  .dashboard.mobile .send.card,
+  .dashboard.mobile .delegate.card {
+    margin-bottom: 0px;
+  }
+
   /* MAIN TABS */
 
   .tabinator {
@@ -5544,6 +5557,10 @@ label.button.primary.disabled {
 
   .card-column > button {
     width: 22%;
+  }
+
+  .card.account-aggregated > .balance .item {
+    width: 50%;
   }
 }
 

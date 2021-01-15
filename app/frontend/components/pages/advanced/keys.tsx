@@ -40,7 +40,12 @@ const Keys = ({byronXpub, shelleyXpub, accountPubkeyHex, stakingKey, stakingAcco
       <div className="advanced-label">
         Staking key CBOR hex ({parsePath(stakingKey.path)})
         <DownloadKey cborHex={encode(stakingKey.pub).toString('hex')} />
-        <a {...tooltip('Staking key is needed for creating the pool ownership certificate.', true)}>
+        <a
+          {...tooltip(
+            'Staking key is needed for creating the stake pool ownership certificate.',
+            true
+          )}
+        >
           <span className="show-info">{''}</span>
         </a>
       </div>

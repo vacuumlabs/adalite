@@ -129,7 +129,7 @@ const AccountTile = ({
           {shouldShowSaturatedBanner && (
             <a
               {...tooltip(
-                'This pool is saturated. Delegate to a different pool to earn the most rewards.',
+                'This pool is saturated. Delegate to a different pool to earn optimal rewards.',
                 true
               )}
             >

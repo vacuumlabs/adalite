@@ -50,6 +50,50 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">01/14/2021</h3>
+            <Article title="Multi-account support and partial delegation" icon="">
+              AdaLite is introducing the concept of wallet accounts. Apart from other benefits, this
+              should allow the users to delegate to multiple staking pools from a single wallet.
+              When compared to standard banking products, accounts in cryptocurrency wallets work
+              similarly as sub-accounts to your main bank account.
+            </Article>
+            <Alert alertType="news">
+              Please note, as of now, the accounts are supported only on AdaLite and you won’t be
+              able to access funds transferred to accounts other than the first account on different
+              wallets such as Daedalus and Yoroi. But it is very likely that this concept will be
+              introduced to other wallets in the future too.
+            </Alert>
+            <Article title="New features" icon="">
+              With the latest update, AdaLite adds two new tabs, the Account tab, and the Advanced
+              tab. <b>Advanced tab</b> shows some public keys related information about your wallet
+              and also interface for support of stake pool owners for Trezor and Ledger. For more
+              information about stakepool owner support read{' '}
+              <a
+                href="https://adalite.medium.com/cardano-stake-pool-owners-hw-support-6d9278dba0ba"
+                target="_blank"
+                rel="noopener"
+              >
+                here
+              </a>.
+            </Article>
+            <Article title="Account tab" icon="">
+              The main purpose of the <b>Accounts tab</b> is to enable users to switch between
+              accounts, transfer funds between them easily, and also to serve as a dashboard for
+              them. At the top of the page, you can see your total balance and total rewards balance
+              which is a sum of balances on all accounts. Please notice, the label of the Account
+              tab always displays the index of the currently active account. All the other content
+              (transaction history, balances, etc.) on the Sending, Staking, and Advanced tab always
+              corresponds to the currently active account. For more information about accounts, how
+              they work and how to use them on AdaLite, read here{' '}
+              <a
+                href="https://adalite.medium.com/multi-account-support-and-partial-delegation-fd96aa793f9d"
+                target="_blank"
+                rel="noopener"
+              >
+                here
+              </a>.
+            </Article>
+            <hr className="info-separator" />
             <h3 className="info-date">11/23/2020</h3>
             <Alert alertType="news">
               <b> WARNING: </b> According to latest information from IOHK, users should check the
