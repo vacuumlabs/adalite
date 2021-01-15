@@ -14,6 +14,7 @@ import Conversions from '../../common/conversions'
 
 type DashboardProps = {
   accountsInfo: Array<AccountInfo>
+  maxAccountIndex: number
   reloadWalletInfo: any
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean
@@ -25,6 +26,7 @@ type DashboardProps = {
 
 const AccountsDashboard = ({
   accountsInfo,
+  maxAccountIndex,
   reloadWalletInfo,
   shouldShowSendTransactionModal,
   shouldShowDelegationModal,
@@ -149,7 +151,8 @@ const AccountsDashboard = ({
                   shouldShowAccountInfo
                 />
               ))}
-              {accountsInfo[accountsInfo.length - 1].isUsed && (
+              {accountsInfo[accountsInfo.length - 1].isUsed &&
+                accountsInfo.length - 1 < maxAccountIndex && (
                 <AccountTile
                   accountIndex={accountsInfo.length}
                   ticker={null}
@@ -173,6 +176,7 @@ const AccountsDashboard = ({
 export default connect(
   (state: State) => ({
     accountsInfo: state.accountsInfo,
+    maxAccountIndex: state.maxAccountIndex,
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
     activeAccountIndex: state.activeAccountIndex,

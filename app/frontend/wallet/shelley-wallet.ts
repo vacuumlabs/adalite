@@ -1,12 +1,23 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
 import {AccountInfo} from '../types'
-import {CryptoProviderFeatures} from './constants'
+import {CryptoProviderFeatures, MAX_ACCOUNT_INDEX} from './constants'
 
 const ShelleyWallet = ({config, cryptoProvider}) => {
   const blockchainExplorer = BlockchainExplorer(config)
 
-  const accountManager = AccountManager({config, cryptoProvider, blockchainExplorer})
+  let maxAccountIndex = MAX_ACCOUNT_INDEX
+  if (cryptoProvider.getWalletName() === 'Trezor') {
+    // hotfix because of https://github.com/vacuumlabs/trezor-firmware/issues/43
+    maxAccountIndex = 20
+  }
+
+  const accountManager = AccountManager({
+    config,
+    cryptoProvider,
+    blockchainExplorer,
+    maxAccountIndex,
+  })
 
   function isHwWallet() {
     return cryptoProvider.isHwWallet()
@@ -50,6 +61,10 @@ const ShelleyWallet = ({config, cryptoProvider}) => {
     return Promise.all(accounts.map((account) => account.getAccountInfo(validStakepools)))
   }
 
+  function getMaxAccountIndex() {
+    return maxAccountIndex
+  }
+
   function getValidStakepools(): Promise<any> {
     return blockchainExplorer.getValidStakepools()
   }
@@ -65,6 +80,7 @@ const ShelleyWallet = ({config, cryptoProvider}) => {
     getValidStakepools,
     getAccount: accountManager.getAccount,
     exploreNextAccount: accountManager.exploreNextAccount,
+    getMaxAccountIndex,
   }
 }
 

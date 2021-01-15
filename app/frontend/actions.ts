@@ -171,6 +171,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
+      const maxAccountIndex = wallet.getMaxAccountIndex()
       const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       const shouldNumberAccountsFromOne = hwWalletName === 'Trezor'
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
@@ -186,6 +187,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         validStakepools,
         accountsInfo,
+        maxAccountIndex,
         totalWalletBalance,
         totalRewardsBalance,
         shouldShowSaturatedBanner,

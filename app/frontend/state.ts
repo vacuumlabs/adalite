@@ -122,6 +122,7 @@ export interface State {
   shouldShowSaturatedBanner?: boolean
   isBigDelegator: boolean
   accountsInfo: Array<AccountInfo>
+  maxAccountIndex: number
   shouldNumberAccountsFromOne: boolean
   sourceAccountIndex: number
   activeAccountIndex: number
@@ -251,6 +252,7 @@ const initialState: State = {
       accountIndex: 0,
     },
   ],
+  maxAccountIndex: 0,
   shouldNumberAccountsFromOne: false,
   sourceAccountIndex: 0,
   activeAccountIndex: 0,

@@ -1,8 +1,8 @@
 import NamedError from '../helpers/NamedError'
 import {Account} from './account'
-import {CryptoProviderFeatures, MAX_ACCOUNT_INDEX} from './constants'
+import {CryptoProviderFeatures} from './constants'
 
-const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
+const AccountManager = ({config, cryptoProvider, blockchainExplorer, maxAccountIndex}) => {
   const accounts: Array<ReturnType<typeof Account>> = []
 
   function getAccount(accountIndex: number) {
@@ -25,7 +25,7 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
     if (
       account.accountIndex !== accounts.length ||
       !isLastAccountUsed ||
-      account.accountIndex > MAX_ACCOUNT_INDEX
+      account.accountIndex > maxAccountIndex
     ) {
       throw NamedError('AccountExplorationError')
     }
@@ -43,7 +43,12 @@ const AccountManager = ({config, cryptoProvider, blockchainExplorer}) => {
       const isAccountUsed = await newAccount.isAccountUsed()
       if (accountIndex === accounts.length) await addNextAccount(newAccount)
 
-      return shouldExplore && isAccountUsed && (await _discoverNextAccount(accountIndex + 1))
+      return (
+        shouldExplore &&
+        isAccountUsed &&
+        accountIndex < maxAccountIndex &&
+        (await _discoverNextAccount(accountIndex + 1))
+      )
     }
     await _discoverNextAccount(Math.max(0, accounts.length - 1))
     return accounts

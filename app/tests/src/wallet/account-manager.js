@@ -23,6 +23,7 @@ const initAccountManager = async (settings, i) => {
     network,
     shouldExportPubKeyBulk,
     isShelleyCompatible,
+    maxAccountIndex,
   } = settings
   const config = {...ADALITE_CONFIG, isShelleyCompatible, shouldExportPubKeyBulk}
   // console.log(JSON.stringify(settings))
@@ -44,7 +45,9 @@ const initAccountManager = async (settings, i) => {
     config,
   })
 
-  accountManagers.push(AccountManager({config, cryptoProvider, blockchainExplorer}))
+  accountManagers.push(
+    AccountManager({config, cryptoProvider, blockchainExplorer, maxAccountIndex})
+  )
 }
 
 before(async () => {
