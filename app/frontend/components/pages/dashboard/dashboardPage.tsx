@@ -169,7 +169,7 @@ class DashboardMobileContent extends Component<Props, {selectedSubTab}> {
     'Staking history': StakingHistoryPage,
     'Send ADA': SendAdaPage,
     'Transactions': TransactionHistory,
-    'Recieve ADA': MyAddresses,
+    'Receive ADA': MyAddresses,
     Keys,
     'Accounts': AccountsDashboard,
     'Certificate': PoolOwner,
