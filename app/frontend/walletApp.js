@@ -1,3 +1,4 @@
+// import 'preact/debug' // uncomment to use preact dev tools
 import {h, render} from 'preact'
 import {Provider as UnistoreStoreProvider} from './libs/unistore/preact'
 import {StoreProvider as HooksStoreProvider} from './libs/preact-hooks-unistore'

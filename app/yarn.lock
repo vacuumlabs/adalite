@@ -2710,10 +2710,10 @@ posix-character-classes@^0.1.0:
   resolved "https://registry.yarnpkg.com/posix-character-classes/-/posix-character-classes-0.1.1.tgz#01eac0fe3b5af71a2a6c02feabb8c1fef7e00eab"
   integrity sha1-AerA/jta9xoqbAL+q7jB/vfgDqs=
 
-preact@^10.1.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.1.0.tgz#e90771c3fec23926bbd32ff4e9e62e4d79845f8b"
-  integrity sha512-TKPqDMstuxDkZydQ05vrLHSxpo+tG2jtyQXxp5HEGhr17Qgo3KQnD5Dq4xzX0+YFQJCETy4pnyPqLA/sgtpp/w==
+preact@^10.5.11:
+  version "10.5.11"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.5.11.tgz#2c8a431f16613e442901068175771806cf1cc0f6"
+  integrity sha512-BdtFePVilR1430kDuzh3VkkZktCmp8RTqHOjG8qesyGZXHNYJjdrjEBuc2f7O/vthhVENxJd0/aTjWtYeH46aw==
 
 prettier@^1.13.7:
   version "1.13.7"
