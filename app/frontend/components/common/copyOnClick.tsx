@@ -68,7 +68,7 @@ class CopyOnClick extends Component<Props, {copied: boolean}> {
     return (
       <span
         className={`${elementClass} thin-data-balloon`}
-        onClick={copy && this.copyTextToClipboard}
+        onClick={copy ? this.copyTextToClipboard : () => null}
         {...tooltip(tooltipMessage, true, copied && enableTooltip)}
       >
         {children}

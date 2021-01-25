@@ -1,21 +1,32 @@
+import {MainTabs, SubTabs} from '../../../constants'
 import {h} from 'preact'
 
-export const MainTab = ({name, selectedTab, selectTab, displayName = null}) => {
+type MainTabProps = {
+  name: MainTabs
+  setActiveTab: (name: MainTabs) => void
+  isActive: boolean
+  displayName: string | null
+}
+
+export const MainTab = ({name, setActiveTab, isActive, displayName = null}: MainTabProps) => {
   return (
-    <li className={`main-tab ${name === 'Staking' ? 'primary' : ''}`}>
-      <input type="radio" id={name} name="tabs" onClick={() => selectTab(name)} />
-      <label className={name === selectedTab ? 'selected' : ''} htmlFor={name}>
+    <li className={`main-tab ${name === MainTabs.STAKING ? 'primary' : ''}`}>
+      <input type="radio" id={name} name="tabs" onClick={() => setActiveTab(name)} />
+      <label className={isActive ? 'selected' : ''} htmlFor={name}>
         {displayName || name}
       </label>
     </li>
   )
 }
 
-export const SubTab = ({name, selectedTab, selectTab}) => (
-  <li
-    className={`dashboard-tab ${name === selectedTab ? 'selected' : ''}`}
-    onClick={() => selectTab(name)}
-  >
+type SubTabProps = {
+  name: SubTabs
+  setActiveTab: (name: SubTabs) => void
+  isActive: boolean
+}
+
+export const SubTab = ({name, setActiveTab, isActive}: SubTabProps) => (
+  <li className={`dashboard-tab ${isActive ? 'selected' : ''}`} onClick={() => setActiveTab(name)}>
     {name}
   </li>
 )

@@ -38,6 +38,7 @@ import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transacti
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
 import {AccountInfo, Ada, Lovelace, CryptoProviderFeature} from './types'
+import {MainTabs} from './constants'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 
@@ -437,7 +438,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
     // TODO: implement tx differenciation here and drop the txConfirmType
 
-    const isTxBetweenAccounts = state.selectedMainTab === 'Accounts' && txConfirmType === 'send'
+    const isTxBetweenAccounts = state.activeMainTab === MainTabs.ACCOUNT && txConfirmType === 'send'
     // TODO: refactor
     const keepConfirmationDialogOpen =
       isTxBetweenAccounts || txConfirmType === 'convert' || txConfirmType === 'withdraw'
@@ -1338,9 +1339,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const selectMainTab = (state: State, value) => {
+  const setActiveMainTab = (state: State, mainTab: MainTabs) => {
     resetAccountIndexes(state)
-    setState({selectedMainTab: value})
+    setState({activeMainTab: mainTab})
     resetTransactionSummary(state)
     resetSendFormFields(state)
   }
@@ -1541,7 +1542,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetDonation,
     closeStakingBanner,
     updateStakePoolIdentifier,
-    selectMainTab,
+    setActiveMainTab,
     selectAdaliteStakepool,
     convertNonStakingUtxos,
     loadErrorBannerContent,

@@ -1,4 +1,5 @@
 import {ADALITE_CONFIG} from './config'
+import {MainTabs} from './constants'
 import {localStorageVars} from './localStorage'
 import {AccountInfo, AuthMethod, Lovelace} from './types'
 export interface SendTransactionSummary {
@@ -105,7 +106,7 @@ export interface State {
     selectedPool?: any
     delegationFee?: any
   }
-  selectedMainTab: string
+  activeMainTab: MainTabs
   currentDelegation?: {
     stakePool?: any
   }
@@ -197,7 +198,7 @@ const initialState: State = {
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
 
   // shelley
-  selectedMainTab: 'Sending',
+  activeMainTab: MainTabs.SENDING,
   shelleyDelegation: {
     delegationFee: 0.0,
     selectedPool: {
