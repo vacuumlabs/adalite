@@ -1,5 +1,6 @@
-import {h, Component} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {h} from 'preact'
+import {useState, useEffect} from 'preact/hooks'
+import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import isLeftClick from '../../../helpers/isLeftClick'
 
@@ -16,190 +17,198 @@ import Tag from '../../common/tag'
 import WalletLoadingErrorModal from './walletLoadingErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
-// import {ADALITE_CONFIG} from '../../../config'
+import {AuthMethodEnum, State} from '../../../state'
 
+// TODO: extract from dashboardPage after rebase
+const useViewport = () => {
+  const [isViewportSmall, setIsViewportSmall] = useState(false)
+
+  const handleScreenResize = () => {
+    setIsViewportSmall(window.innerWidth < 1024)
+  }
+  useEffect(() => {
+    handleScreenResize()
+    window.addEventListener('resize', handleScreenResize)
+
+    return () => window.removeEventListener('resize', handleScreenResize)
+  }, [])
+
+  return isViewportSmall
+}
+
+// TODO: extract to app/frontend/constants.ts after rebase
 const AUTH_METHOD_NAMES = {
   'mnemonic': 'Mnemonic',
   'hw-wallet': 'Hardware Wallet',
   'file': 'Key file',
 }
+const getAuthMethodName = (authMethod: AuthMethodEnum): string => AUTH_METHOD_NAMES[authMethod]
 
-const ENABLE_HW_WALLETS = true
+const CurrentDropdownItem = ({
+  authMethod,
+  toggleDropdown,
+}: {
+  authMethod: AuthMethodEnum
+  toggleDropdown: () => void
+}) => (
+  <div
+    className={`dropdown-item current ${authMethod} ${
+      authMethod === 'hw-wallet' ? 'recommended' : ''
+    }`}
+    onClick={toggleDropdown}
+  >
+    <span className="dropdown-item-text">{getAuthMethodName(authMethod)}</span>
+  </div>
+)
 
-const getAuthMethodName = (authMethod) => AUTH_METHOD_NAMES[authMethod]
-
-interface Props {
-  closeStakingBanner: () => void
-  loadWallet: any
-  loadDemoWallet: any
-  walletLoadingError: any
-  authMethod: '' | 'mnemonic' | 'hw-wallet' | 'file'
-  setAuthMethod: (option: string) => void
-  shouldShowDemoWalletWarningDialog: boolean
-  logoutNotificationOpen: boolean
-  shouldShowGenerateMnemonicDialog: boolean
-  shouldShowWalletLoadingErrorModal: boolean
-  closeWalletLoadingErrorModal: any
-  shouldShowStakingBanner: boolean
-  autoLogin: boolean
-  errorBannerContent: any
-  loadErrorBannerContent: any
+const DropdownItem = ({
+  authMethod,
+  toggleDropdown,
+  tabName,
+  recommended = false,
+}: {
+  authMethod: AuthMethodEnum
+  toggleDropdown: () => void
+  tabName: AuthMethodEnum
+  recommended?: boolean
+}) => {
+  const {setAuthMethod} = useActions(actions)
+  return (
+    <li
+      className={`dropdown-item ${tabName} ${authMethod === tabName ? 'selected' : ''} ${
+        recommended ? 'recommended' : ''
+      }`}
+      onClick={() => {
+        toggleDropdown()
+        setAuthMethod(tabName)
+      }}
+    >
+      <span className={`dropdown-item-text ${tabName}`}>{getAuthMethodName(tabName)}</span>
+    </li>
+  )
 }
 
-class LoginPage extends Component<Props, {isDropdownOpen: boolean}> {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isDropdownOpen: false,
-    }
-    this.toggleDropdown = this.toggleDropdown.bind(this)
-    this.closeStakingBannerClick = this.closeStakingBannerClick.bind(this)
-  }
+const AuthTab = ({
+  authMethod,
+  tabName,
+  recommended = false,
+}: {
+  authMethod: AuthMethodEnum
+  tabName: AuthMethodEnum
+  recommended?: boolean
+}) => {
+  const {setAuthMethod} = useActions(actions)
+  return (
+    <li
+      className={`auth-tab ${tabName} ${authMethod === tabName ? 'selected' : ''} ${
+        recommended ? 'recommended' : ''
+      }`}
+      onClick={() => setAuthMethod(tabName)}
+    >
+      <span className={`auth-tab-text ${tabName}`}>{getAuthMethodName(tabName)}</span>
+    </li>
+  )
+}
 
-  componentDidMount() {
-    if (this.props.autoLogin && this.props.authMethod !== 'mnemonic') {
-      this.props.setAuthMethod('mnemonic')
-    }
-    this.props.loadErrorBannerContent()
-  }
+const AuthOption = ({
+  tabName,
+  texts,
+  tag,
+}: {
+  tabName: AuthMethodEnum
+  texts: Array<string>
+  tag: string
+}) => {
+  const {setAuthMethod} = useActions(actions)
+  return (
+    <div className={`auth-option ${tabName}`} onClick={() => setAuthMethod(tabName)}>
+      {tag && <Tag type={`auth ${tag}`} text={tag} />}
+      <h3 className="auth-option-title">{getAuthMethodName(tabName)}</h3>
+      {texts.map((text, i) => (
+        <p key={i} className="auth-option-text">
+          {text}
+        </p>
+      ))}
+    </div>
+  )
+}
 
-  closeStakingBannerClick() {
-    this.props.closeStakingBanner()
-  }
-
-  toggleDropdown() {
-    this.setState({isDropdownOpen: !this.state.isDropdownOpen})
-  }
-
-  render(
-    {
-      loadDemoWallet,
-      walletLoadingError,
-      authMethod,
-      setAuthMethod,
-      shouldShowDemoWalletWarningDialog,
-      logoutNotificationOpen,
-      shouldShowGenerateMnemonicDialog,
-      shouldShowWalletLoadingErrorModal,
-      closeWalletLoadingErrorModal,
-      shouldShowStakingBanner,
-      errorBannerContent,
-    },
-    {isDropdownOpen}
-  ) {
-    const CurrentDropdownItem = (authMethod) => (
-      <div
-        className={`dropdown-item current ${authMethod} ${
-          authMethod === 'hw-wallet' ? 'recommended' : ''
-        }`}
-        onClick={this.toggleDropdown}
-      >
-        <span className="dropdown-item-text">{getAuthMethodName(authMethod)}</span>
-      </div>
-    )
-    const DropdownItem = (name, recommended = false) => (
-      <li
-        className={`dropdown-item ${name} ${authMethod === name ? 'selected' : ''} ${
-          recommended ? 'recommended' : ''
-        }`}
-        onClick={() => {
-          this.toggleDropdown()
-          setAuthMethod(name)
-        }}
-      >
-        <span className={`dropdown-item-text ${name}`}>{getAuthMethodName(name)}</span>
-      </li>
-    )
-    const AuthTab = (name, recommended = false) => (
-      <li
-        className={`auth-tab ${name} ${authMethod === name ? 'selected' : ''} ${
-          recommended ? 'recommended' : ''
-        }`}
-        onClick={() => setAuthMethod(name)}
-      >
-        <span className={`auth-tab-text ${name}`}>{getAuthMethodName(name)}</span>
-      </li>
-    )
-    const AuthOption = (type, texts, tag) => (
-      <div className={`auth-option ${type}`} onClick={() => setAuthMethod(type)}>
-        {tag && <Tag type={`auth ${tag}`} text={tag} />}
-        <h3 className="auth-option-title">{getAuthMethodName(type)}</h3>
-        {texts.map((text, i) => (
-          <p key={i} className="auth-option-text">
-            {text}
-          </p>
-        ))}
-      </div>
-    )
-    const AuthCardInitial = () => (
-      <div className="authentication card initial">
-        <h2 className="authentication-title">How do you want to access your Cardano Wallet?</h2>
-        <div className="auth-options">
-          {AuthOption('mnemonic', ['12, 15, 24 or 27 word passphrase'], 'fastest')}
-          {ENABLE_HW_WALLETS &&
-            AuthOption(
-              'hw-wallet',
-              ['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger'],
-              'recommended'
-            )}
-          {AuthOption('file', ['Encrypted .JSON file'], '')}
-        </div>
-      </div>
-    )
-    const AuthCard = () => (
-      <div className="authentication card">
-        <ul className="auth-tabs">
-          {AuthTab('mnemonic')}
-          {ENABLE_HW_WALLETS && AuthTab('hw-wallet', true)}
-          {AuthTab('file')}
+const AuthCardInitial = () => (
+  <div className="authentication card initial">
+    <h2 className="authentication-title">How do you want to access your Cardano Wallet?</h2>
+    <div className="auth-options">
+      <AuthOption
+        tabName={'mnemonic'}
+        texts={['12, 15, 24 or 27 word passphrase']}
+        tag={'fastest'}
+      />
+      <AuthOption
+        tabName={'hw-wallet'}
+        texts={['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger']}
+        tag={'recommended'}
+      />
+      <AuthOption tabName={'file'} texts={['Encrypted .JSON file']} tag={''} />
+    </div>
+  </div>
+)
+const AuthCard = ({
+  authMethod,
+  isViewportSmall,
+  isDropdownOpen,
+  toggleDropdown,
+}: {
+  authMethod: AuthMethodEnum
+  isViewportSmall: boolean
+  isDropdownOpen: boolean
+  toggleDropdown: () => void
+}) => (
+  <div className="authentication card">
+    {isViewportSmall ? (
+      <div className={`dropdown auth ${isDropdownOpen ? 'open' : ''}`}>
+        <CurrentDropdownItem authMethod={authMethod} toggleDropdown={toggleDropdown} />
+        <ul className="dropdown-items">
+          <DropdownItem
+            authMethod={authMethod}
+            tabName={'mnemonic'}
+            toggleDropdown={toggleDropdown}
+          />
+          <DropdownItem
+            tabName={'hw-wallet'}
+            toggleDropdown={toggleDropdown}
+            authMethod={authMethod}
+            recommended
+          />
+          <DropdownItem authMethod={authMethod} tabName={'file'} toggleDropdown={toggleDropdown} />
         </ul>
-        <div className={`dropdown auth ${isDropdownOpen ? 'open' : ''}`}>
-          {CurrentDropdownItem(authMethod)}
-          <ul className="dropdown-items">
-            {DropdownItem('mnemonic')}
-            {ENABLE_HW_WALLETS && DropdownItem('hw-wallet')}
-            {DropdownItem('file')}
-          </ul>
-        </div>
-        {authMethod === 'mnemonic' && <MnemonicAuth />}
-        {authMethod === 'hw-wallet' && <HardwareAuth />}
-        {authMethod === 'file' && <KeyFileAuth />}
       </div>
-    )
-    // getErrorBannerContent()
-    return (
-      <div className="page-wrapper">
-        {shouldShowStakingBanner && <StakingBanner onRequestClose={this.closeStakingBannerClick} />}
-        {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
-        <div className="page-inner">
-          <main className="page-main">
-            {authMethod === '' ? <AuthCardInitial /> : <AuthCard />}
-            <div className="page-demo">
-              Try the{' '}
-              <a href="#" onMouseDown={(e) => isLeftClick(e, loadDemoWallet)}>
-                demo wallet
-              </a>
-            </div>
-          </main>
-          <LoginPageSidebar />
-          {shouldShowDemoWalletWarningDialog && <DemoWalletWarningDialog />}
-          {shouldShowGenerateMnemonicDialog && <GenerateMnemonicDialog />}
-          {logoutNotificationOpen && <LogoutNotification />}
-          {shouldShowWalletLoadingErrorModal && (
-            <WalletLoadingErrorModal
-              onRequestClose={closeWalletLoadingErrorModal}
-              errorMessage={getTranslation(walletLoadingError.code, walletLoadingError.params)}
-              showHelp={errorHasHelp(walletLoadingError.code)}
-            />
-          )}
-        </div>
-      </div>
-    )
-  }
-}
+    ) : (
+      <ul className="auth-tabs">
+        <AuthTab tabName={'mnemonic'} authMethod={authMethod} />
+        <AuthTab tabName={'hw-wallet'} authMethod={authMethod} recommended />
+        <AuthTab tabName={'file'} authMethod={authMethod} />
+      </ul>
+    )}
+    {authMethod === 'mnemonic' && <MnemonicAuth />}
+    {authMethod === 'hw-wallet' && <HardwareAuth />}
+    {authMethod === 'file' && <KeyFileAuth />}
+  </div>
+)
 
-export default connect(
-  (state) => ({
+const LoginPage = () => {
+  const isViewportSmall = useViewport()
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
+  const {
+    authMethod,
+    shouldShowDemoWalletWarningDialog,
+    logoutNotificationOpen,
+    walletLoadingError,
+    shouldShowGenerateMnemonicDialog,
+    shouldShowWalletLoadingErrorModal,
+    shouldShowStakingBanner,
+    autoLogin,
+    errorBannerContent,
+  } = useSelector((state: State) => ({
     authMethod: state.authMethod,
     shouldShowDemoWalletWarningDialog: state.shouldShowDemoWalletWarningDialog,
     logoutNotificationOpen: state.logoutNotificationOpen,
@@ -209,6 +218,59 @@ export default connect(
     shouldShowStakingBanner: state.shouldShowStakingBanner,
     autoLogin: state.autoLogin,
     errorBannerContent: state.errorBannerContent,
-  }),
-  actions
-)(LoginPage)
+  }))
+  const {
+    closeStakingBanner,
+    loadDemoWallet,
+    setAuthMethod,
+    closeWalletLoadingErrorModal,
+    loadErrorBannerContent,
+  } = useActions(actions)
+
+  useEffect(() => {
+    if (autoLogin && authMethod !== 'mnemonic') {
+      setAuthMethod('mnemonic')
+    }
+    loadErrorBannerContent()
+  })
+
+  return (
+    <div className="page-wrapper">
+      {shouldShowStakingBanner && <StakingBanner onRequestClose={() => closeStakingBanner()} />}
+      {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
+      <div className="page-inner">
+        <main className="page-main">
+          {authMethod === '' ? (
+            <AuthCardInitial />
+          ) : (
+            <AuthCard
+              authMethod={authMethod}
+              isViewportSmall={isViewportSmall}
+              isDropdownOpen={isDropdownOpen}
+              toggleDropdown={toggleDropdown}
+            />
+          )}
+          <div className="page-demo">
+            Try the{' '}
+            <a href="#" onMouseDown={(e) => isLeftClick(e, loadDemoWallet)}>
+              demo wallet
+            </a>
+          </div>
+        </main>
+        <LoginPageSidebar />
+        {shouldShowDemoWalletWarningDialog && <DemoWalletWarningDialog />}
+        {shouldShowGenerateMnemonicDialog && <GenerateMnemonicDialog />}
+        {logoutNotificationOpen && <LogoutNotification />}
+        {shouldShowWalletLoadingErrorModal && (
+          <WalletLoadingErrorModal
+            onRequestClose={closeWalletLoadingErrorModal}
+            errorMessage={getTranslation(walletLoadingError.code, walletLoadingError.params)}
+            showHelp={errorHasHelp(walletLoadingError.code)}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default LoginPage

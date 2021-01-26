@@ -101,7 +101,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const setAuthMethod = (state, option) => {
+  const setAuthMethod = (state: State, option: AuthMethodEnum): void => {
     setState({
       authMethod: option,
       shouldShowExportOption: option === 'mnemonic' || option === 'file',
