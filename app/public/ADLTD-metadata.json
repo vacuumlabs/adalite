@@ -1,0 +1,7 @@
+{
+  "name": "AdaLite Stake Pool D",
+  "description": "AdaLite web wallet stake pool",
+  "ticker": "ADLTD",
+  "homepage": "https://adalite.io/",
+  "extended": "https://adalite.io/extended-metadata.json"
+}
