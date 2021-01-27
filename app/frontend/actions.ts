@@ -1352,7 +1352,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   /* Pool Owner */
 
   const deserializeTransactionFile = (file) => {
-    if (!file || file.type !== 'TxUnsignedShelley' || !file.cborHex) {
+    if (!file || !file.cborHex) {
       throw NamedError('PoolRegInvalidFileFormat')
     }
 
