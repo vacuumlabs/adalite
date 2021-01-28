@@ -1,9 +1,11 @@
+import {HexString, _PubKeyCbor, _XPubKey} from '../../types'
 import {HARDENED_THRESHOLD} from '../constants'
 import {
-  accountAddressFromXpub,
+  stakingAddressFromXpub,
   baseAddressFromXpub,
-  accountHexAddressFromXpub,
+  stakingAddressHexFromXpub,
 } from './helpers/addresses'
+import {encode} from 'borc'
 
 const shelleyPath = (account: number, isChange: boolean, addrIdx: number) => {
   return [
@@ -25,38 +27,45 @@ const shelleyStakeAccountPath = (account: number) => {
   ]
 }
 
-export const stakeAccountPubkeyHex = async (cryptoProvider, accountIndex: number) => {
+export const getStakingAddressHex = async (
+  cryptoProvider,
+  accountIndex: number
+): Promise<HexString> => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
-  return accountHexAddressFromXpub(stakeXpub, cryptoProvider.network.networkId)
+  return stakingAddressHexFromXpub(stakeXpub, cryptoProvider.network.networkId)
 }
 
-export const accountXpub = async (cryptoProvider, accountIndex) => {
+export const getAccountXpub = async (cryptoProvider, accountIndex: number): Promise<_XPubKey> => {
   const path = shelleyStakeAccountPath(accountIndex).slice(0, 3)
 
-  const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
+  const xpubHex: HexString = (await cryptoProvider.deriveXpub(path)).toString('hex')
   return {
     path,
-    xpub,
+    xpubHex,
   }
 }
 
-export const StakingKey = async (cryptoProvider, accountIndex: number) => {
+export const getStakingKeyCborHex = async (
+  cryptoProvider,
+  accountIndex: number
+): Promise<_PubKeyCbor> => {
   const path = shelleyStakeAccountPath(accountIndex)
-  const xpub: Buffer = await cryptoProvider.deriveXpub(path)
+  const pubKey: HexString = (await cryptoProvider.deriveXpub(path)).slice(0, 32)
+  const cborHex: HexString = encode(pubKey).toString('hex')
   return {
     path,
-    pub: xpub.slice(0, 32),
+    cborHex,
   }
 }
 
-export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex) => async () => {
+export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex: number) => async () => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
 
   return {
     path: pathStake,
-    address: accountAddressFromXpub(stakeXpub, cryptoProvider.network.networkId),
+    address: stakingAddressFromXpub(stakeXpub, cryptoProvider.network.networkId),
   }
 }
 

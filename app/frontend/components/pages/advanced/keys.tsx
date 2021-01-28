@@ -3,9 +3,9 @@ import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import {State, getActiveAccountInfo} from '../../../state'
 import {parsePath} from '../../../helpers/pathParser'
-import {encode} from 'borc'
 import {LinkIconToKey} from '../delegations/common'
 import tooltip from '../../common/tooltip'
+import {HexString, _PubKeyCbor, _XPubKey} from '../../../types'
 
 const DownloadKey = ({cborHex}) => {
   const fileContents = {
@@ -21,25 +21,39 @@ const DownloadKey = ({cborHex}) => {
   return <a href={dataURI} download={filename} className="download-key-text" />
 }
 
-const Keys = ({byronXpub, shelleyXpub, accountPubkeyHex, stakingKey, stakingAccountAddress}) => {
+type Props = {
+  byronAccountXpub: _XPubKey
+  shelleyAccountXpub: _XPubKey
+  stakingAddressHex: HexString
+  stakingKeyCborHex: _PubKeyCbor
+  stakingAddress: string
+}
+
+const Keys = ({
+  byronAccountXpub,
+  shelleyAccountXpub,
+  stakingAddressHex,
+  stakingKeyCborHex,
+  stakingAddress,
+}: Props) => {
   return (
     <div className="card">
       <h2 className="card-title small-margin">Keys</h2>
-      {byronXpub && (
+      {byronAccountXpub && (
         <Fragment>
           <div className="advanced-label">
-            Byron extended public key ({parsePath(byronXpub.path)})
+            Byron extended public key ({parsePath(byronAccountXpub.path)})
           </div>
-          <div className="advanced-value">{byronXpub.xpub}</div>
+          <div className="advanced-value">{byronAccountXpub.xpubHex}</div>
         </Fragment>
       )}
       <div className="advanced-label">
-        Shelley extended public key ({parsePath(shelleyXpub.path)})
+        Shelley extended public key ({parsePath(shelleyAccountXpub.path)})
       </div>
-      <div className="advanced-value">{shelleyXpub.xpub}</div>
+      <div className="advanced-value">{shelleyAccountXpub.xpubHex}</div>
       <div className="advanced-label">
-        Staking key CBOR hex ({parsePath(stakingKey.path)})
-        <DownloadKey cborHex={encode(stakingKey.pub).toString('hex')} />
+        Staking key CBOR hex ({parsePath(stakingKeyCborHex.path)})
+        <DownloadKey cborHex={stakingKeyCborHex.cborHex} />
         <a
           {...tooltip(
             'Staking key is needed for creating the stake pool ownership certificate.',
@@ -49,27 +63,27 @@ const Keys = ({byronXpub, shelleyXpub, accountPubkeyHex, stakingKey, stakingAcco
           <span className="show-info">{''}</span>
         </a>
       </div>
-      <div className="advanced-value">{encode(stakingKey.pub).toString('hex')}</div>
+      <div className="advanced-value">{stakingKeyCborHex.cborHex}</div>
       {}
       <div className="advanced-label">
-        Reward address <LinkIconToKey stakeKey={stakingAccountAddress} />
+        Reward address <LinkIconToKey stakeKey={stakingAddress} />
       </div>
-      <div className="advanced-value">{stakingAccountAddress}</div>
+      <div className="advanced-value">{stakingAddress}</div>
       <div className="advanced-label">
-        Staking key hex <LinkIconToKey stakeKey={accountPubkeyHex.slice(2)} />
+        Staking key hex <LinkIconToKey stakeKey={stakingAddressHex.slice(2)} />
       </div>
-      <div className="advanced-value">{accountPubkeyHex.slice(2)}</div>
+      <div className="advanced-value">{stakingAddressHex.slice(2)}</div>
     </div>
   )
 }
 
 export default connect(
   (state: State) => ({
-    shelleyXpub: getActiveAccountInfo(state).shelleyAccountInfo.shelleyXpub,
-    byronXpub: getActiveAccountInfo(state).shelleyAccountInfo.byronXpub,
-    accountPubkeyHex: getActiveAccountInfo(state).shelleyAccountInfo.accountPubkeyHex,
-    stakingKey: getActiveAccountInfo(state).shelleyAccountInfo.stakingKey,
-    stakingAccountAddress: getActiveAccountInfo(state).shelleyAccountInfo.stakingAccountAddress,
+    shelleyAccountXpub: getActiveAccountInfo(state).keys.shelleyAccountXpub,
+    byronAccountXpub: getActiveAccountInfo(state).keys.byronAccountXpub,
+    stakingAddressHex: getActiveAccountInfo(state).keys.stakingAddressHex,
+    stakingKeyCborHex: getActiveAccountInfo(state).keys.stakingKeyCborHex,
+    stakingAddress: getActiveAccountInfo(state).keys.stakingAddress,
   }),
   actions
 )(Keys)

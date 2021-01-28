@@ -4,11 +4,11 @@ import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {Lovelace} from '../types'
 import {
-  stakeAccountPubkeyHex,
-  accountXpub as accoutXpubShelley,
+  getStakingAddressHex,
+  getAccountXpub as getAccoutXpubShelley,
   ShelleyStakingAccountProvider,
   ShelleyBaseAddressProvider,
-  StakingKey,
+  getStakingKeyCborHex,
 } from './shelley/shelley-address-provider'
 
 import {
@@ -18,7 +18,10 @@ import {
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
-import {ByronAddressProvider, accountXpub as accoutXpubByron} from './byron/byron-address-provider'
+import {
+  ByronAddressProvider,
+  getAccountXpub as getAccoutXpubByron,
+} from './byron/byron-address-provider'
 import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresses'
 import {
   ShelleyTxAux,
@@ -146,6 +149,7 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
     areAddressesUsed,
   }
 }
+
 const Account = ({
   config,
   randomInputSeed,
@@ -179,6 +183,7 @@ const Account = ({
   }
 
   async function calculateTtl() {
+    // TODO: move to wallet
     try {
       const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
       return bestSlot + cryptoProvider.network.ttl
@@ -189,6 +194,7 @@ const Account = ({
   }
 
   async function prepareTxAux(plan, ttl?) {
+    // TODO: move to wallet
     const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
     const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
     const txCerts = plan.certs.map(({type, accountAddress, poolHash, poolRegistrationParams}) =>
@@ -284,22 +290,24 @@ const Account = ({
   }
 
   async function getAccountInfo(validStakepools) {
-    const {stakingBalance, nonStakingBalance, balance} = await getBalance()
+    const keys = await getKeys()
+    const {baseAddressBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getStakingInfo(validStakepools)
+    const stakingHistory = await getStakingHistory(validStakepools)
     const visibleAddresses = await getVisibleAddresses()
-    const transactionHistory = await getHistory()
-    const stakingHistory = await getStakingHistory(shelleyAccountInfo, validStakepools)
+    const transactionHistory = await getTxHistory()
     const poolRecommendation = await getPoolRecommendation(
       shelleyAccountInfo.delegation,
-      stakingBalance
+      baseAddressBalance
     )
     const isUsed = await isAccountUsed()
 
     return {
+      keys,
       balance,
       shelleyBalances: {
         nonStakingBalance,
-        stakingBalance: stakingBalance + shelleyAccountInfo.value,
+        stakingBalance: baseAddressBalance + shelleyAccountInfo.value,
         rewardsAccountBalance: shelleyAccountInfo.value,
       },
       stakePubkeyHex: shelleyAccountInfo.stakePubKeyHex,
@@ -316,36 +324,43 @@ const Account = ({
   async function getBalance() {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
     const nonStakingBalance = await blockchainExplorer.getBalance(legacy)
-    const stakingBalance = await blockchainExplorer.getBalance(base)
+    const baseAddressBalance = await blockchainExplorer.getBalance(base)
     return {
-      stakingBalance,
+      baseAddressBalance,
       nonStakingBalance,
-      balance: nonStakingBalance + stakingBalance,
+      balance: nonStakingBalance + baseAddressBalance,
     }
   }
 
-  async function getHistory(): Promise<any> {
-    // TODO: refactor to getTxHistory? or add delegation history or rewards history
+  async function getTxHistory(): Promise<any> {
     const {legacy, base, account} = await myAddresses.discoverAllAddresses()
     return blockchainExplorer.getTxHistory([...base, ...legacy, account])
   }
 
-  async function getStakingHistory(
-    shelleyAccountInfo,
-    validStakepools
-  ): Promise<StakingHistoryObject[]> {
-    return await blockchainExplorer.getStakingHistory(
-      shelleyAccountInfo.accountPubkeyHex,
-      validStakepools
-    )
+  async function getStakingHistory(validStakepools): Promise<StakingHistoryObject[]> {
+    const stakingAddressHex = await getStakingAddressHex(cryptoProvider, accountIndex)
+    return blockchainExplorer.getStakingHistory(stakingAddressHex, validStakepools)
+  }
+
+  async function getKeys() {
+    const shelleyAccountXpub = await getAccoutXpubShelley(cryptoProvider, accountIndex)
+    const byronAccountXpub = await getAccoutXpubByron(cryptoProvider, accountIndex)
+    const stakingKeyCborHex = await getStakingKeyCborHex(cryptoProvider, accountIndex)
+    const stakingAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
+    const stakingAddressHex = await getStakingAddressHex(cryptoProvider, accountIndex)
+    return {
+      shelleyAccountXpub,
+      byronAccountXpub,
+      stakingKeyCborHex,
+      stakingAddress,
+      stakingAddressHex,
+    }
   }
 
   async function getStakingInfo(validStakepools) {
-    const shelleyXpub = await accoutXpubShelley(cryptoProvider, accountIndex)
-    const byronXpub = accountIndex === 0 && (await accoutXpubByron(cryptoProvider, accountIndex))
-    const accountPubkeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
+    const stakingAddressHex = await getStakingAddressHex(cryptoProvider, accountIndex)
     const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getStakingInfo(
-      accountPubkeyHex
+      stakingAddressHex
     )
     const poolInfo = await getPoolInfo(accountInfo.delegation.url)
     const rewardDetails = await blockchainExplorer.getRewardDetails(
@@ -354,15 +369,8 @@ const Account = ({
       validStakepools,
       cryptoProvider.network.epochsToRewardDistribution
     )
-    const stakingKey = await StakingKey(cryptoProvider, accountIndex)
-    const stakingAccountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
 
     return {
-      accountPubkeyHex,
-      shelleyXpub,
-      byronXpub,
-      stakingKey,
-      stakingAccountAddress,
       ...accountInfo,
       delegation: {
         ...accountInfo.delegation,
@@ -439,8 +447,8 @@ const Account = ({
   async function getPoolOwnerCredentials() {
     const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const path = myAddresses.fixedPathMapper()(accountAddress)
-
-    const pubKeyHex = await stakeAccountPubkeyHex(cryptoProvider, accountIndex)
+    // TODO: this is not pubkeyHex, its staking address hex
+    const pubKeyHex = await getStakingAddressHex(cryptoProvider, accountIndex)
     return {
       pubKeyHex: Buffer.from(pubKeyHex, 'hex')
         .slice(1)
@@ -457,7 +465,7 @@ const Account = ({
     getMaxDonationAmount,
     getMaxNonStakingAmount,
     getTxPlan,
-    getHistory,
+    getTxHistory,
     getVisibleAddresses,
     prepareTxAux,
     verifyAddress,

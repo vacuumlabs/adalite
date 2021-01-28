@@ -214,9 +214,9 @@ const initialState: State = {
       keys: {
         shelleyAccountXpub: null,
         byronAccountXpub: null,
-        stakingKey: null,
-        stakingAccountAddress: '',
-        stakingAccountPubkeyHex: null,
+        stakingKeyCborHex: null,
+        stakingAddress: '',
+        stakingAddressHex: '',
       },
       balance: 0,
       shelleyBalances: {

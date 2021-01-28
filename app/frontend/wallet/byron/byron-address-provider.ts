@@ -1,3 +1,4 @@
+import {HexString, _XPubKey} from '../../types'
 import {packBootstrapAddress, base58} from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../constants'
 
@@ -19,18 +20,19 @@ const v2Path = (account: number, isChange: boolean, addrIdx: number) => {
   ]
 }
 
-export const accountXpub = async (cryptoProvider, accountIndex) => {
+export const getAccountXpub = async (cryptoProvider, accountIndex: number): Promise<_XPubKey> => {
+  if (accountIndex !== 0) return null
   const scheme = cryptoProvider.getDerivationScheme()
   const pathMapper = {
     v1: v1Path,
     v2: v2Path,
   }
   const path = pathMapper[scheme.type](accountIndex, 0, 0).slice(0, 3)
-  const xpub = (await cryptoProvider.deriveXpub(path)).toString('hex')
+  const xpubHex: HexString = (await cryptoProvider.deriveXpub(path)).toString('hex')
 
   return {
     path,
-    xpub,
+    xpubHex,
   }
 }
 

@@ -368,11 +368,10 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     }))
   }
 
-  async function getStakingInfo(accountPubkeyHex) {
-    // TODO: not pubkey, address
+  async function getStakingInfo(stakingKeyHashHex: HexString) {
     const url = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/info/${accountPubkeyHex}`
+    }/api/account/info/${stakingKeyHashHex}`
     const response = await request(url)
     return response
   }
