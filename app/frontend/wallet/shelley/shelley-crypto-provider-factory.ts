@@ -1,4 +1,4 @@
-import {CRYPTO_PROVIDER_TYPES} from '../constants'
+import {CryptoProviderType} from '../constants'
 import ShelleyJsCryptoProvider from './shelley-js-crypto-provider'
 import ShelleyTrezorCryptoProvider from './shelley-trezor-crypto-provider'
 import ShelleyLedgerCryptoProvider from './shelley-ledger-crypto-provider'
@@ -7,17 +7,17 @@ import {CryptoProvider} from '../../types'
 
 const ShelleyCryptoProviderFactory = (() => {
   const getCryptoProvider = (
-    cryptoProviderType: CRYPTO_PROVIDER_TYPES,
+    cryptoProviderType: CryptoProviderType,
     options: any
   ): Promise<CryptoProvider> => {
     switch (cryptoProviderType) {
-      case CRYPTO_PROVIDER_TYPES.TREZOR:
+      case CryptoProviderType.TREZOR:
         return ShelleyTrezorCryptoProvider(options)
 
-      case CRYPTO_PROVIDER_TYPES.LEDGER:
+      case CryptoProviderType.LEDGER:
         return ShelleyLedgerCryptoProvider(options)
 
-      case CRYPTO_PROVIDER_TYPES.WALLET_SECRET:
+      case CryptoProviderType.WALLET_SECRET:
         return ShelleyJsCryptoProvider(options)
 
       default:

@@ -2,7 +2,7 @@ import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
 import {LEDGER_VERSIONS, TREZOR_VERSIONS} from './wallet/constants'
-import {Lovelace, CryptoProviderFeatures} from './types'
+import {Lovelace, CryptoProviderFeature} from './types'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -88,27 +88,27 @@ const translations = {
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
   LedgerOutdatedCardanoAppError: ({message}) =>
     `LedgerOutdatedCardanoAppError: Your cardano application is running on an outdated version ${message}. Please update your cardano application to the version ${
-      LEDGER_VERSIONS[CryptoProviderFeatures.MINIMAL].major
-    }.${LEDGER_VERSIONS[CryptoProviderFeatures.MINIMAL].minor}.${
-      LEDGER_VERSIONS[CryptoProviderFeatures.MINIMAL].patch
+      LEDGER_VERSIONS[CryptoProviderFeature.MINIMAL].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeature.MINIMAL].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeature.MINIMAL].patch
     } or later. See https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps for more information.`,
   LedgerWithdrawalNotSupported: ({message}) =>
     `RewardsWithdrawalNotSupported: There was a bug in Ledger Cardano app 2.0.3 that didn't allow rewards withdrawals. To withdraw rewards, you need to update your Ledger firmware and your Ledger Cardano app. You need to update to firmware version 1.6.1 for Ledger Nano S and to firmware version 1.2.4-4 for Nano X. For more information how to do this please refer to https://support.ledger.com/hc/en-us/articles/360005885733-Update-device-firmware. After your ledger firmware is updated please install the latest version of the the Ledger Cardano app. Your current version is ${message} and the required version is ${
-      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].major
-    }.${LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].minor}.${
-      LEDGER_VERSIONS[CryptoProviderFeatures.WITHDRAWAL].patch
+      LEDGER_VERSIONS[CryptoProviderFeature.WITHDRAWAL].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeature.WITHDRAWAL].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeature.WITHDRAWAL].patch
     }. For more information how to do this, please refer to https://support.ledger.com/hc/en-us/articles/360006523674-Install-uninstall-and-update-apps`,
   LedgerPoolRegNotSupported: ({message}) =>
     `Pool registration is not supported on this device. Your current version is ${message} and the required version is ${
-      LEDGER_VERSIONS[CryptoProviderFeatures.POOL_OWNER].major
-    }.${LEDGER_VERSIONS[CryptoProviderFeatures.POOL_OWNER].minor}.${
-      LEDGER_VERSIONS[CryptoProviderFeatures.POOL_OWNER].patch
+      LEDGER_VERSIONS[CryptoProviderFeature.POOL_OWNER].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeature.POOL_OWNER].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeature.POOL_OWNER].patch
     }`,
   TrezorPoolRegNotSupported: ({message}) =>
     `Pool registration is not supported on this device. Your current version is ${message} and the required version is ${
-      TREZOR_VERSIONS[CryptoProviderFeatures.POOL_OWNER].major
-    }.${TREZOR_VERSIONS[CryptoProviderFeatures.POOL_OWNER].minor}.${
-      TREZOR_VERSIONS[CryptoProviderFeatures.POOL_OWNER].patch
+      TREZOR_VERSIONS[CryptoProviderFeature.POOL_OWNER].major
+    }.${TREZOR_VERSIONS[CryptoProviderFeature.POOL_OWNER].minor}.${
+      TREZOR_VERSIONS[CryptoProviderFeature.POOL_OWNER].patch
     }`,
   PoolRegInvalidNumCerts: () =>
     'The transaction must include exactly one certificate, being the pool registration.',

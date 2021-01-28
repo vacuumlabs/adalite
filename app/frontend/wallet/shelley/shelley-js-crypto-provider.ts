@@ -18,7 +18,7 @@ import {
 
 import {isShelleyPath} from './helpers/addresses'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
-import {BIP32Path, CryptoProvider, CryptoProviderFeatures, HexString} from '../../types'
+import {BIP32Path, CryptoProvider, CryptoProviderFeature, HexString} from '../../types'
 import NamedError from '../../helpers/NamedError'
 
 const ShelleyJsCryptoProvider = async ({
@@ -130,11 +130,11 @@ const ShelleyJsCryptoProvider = async ({
     return ShelleySignedTransactionStructured(txAux, witnesses, meta)
   }
 
-  function isFeatureSupported(feature: CryptoProviderFeatures) {
+  function isFeatureSupported(feature: CryptoProviderFeature) {
     return true
   }
 
-  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
     return true
   }
 

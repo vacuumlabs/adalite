@@ -1,6 +1,6 @@
 import NamedError from '../helpers/NamedError'
 import {Account} from './account'
-import {CryptoProvider, CryptoProviderFeatures} from '../types'
+import {CryptoProvider, CryptoProviderFeature} from '../types'
 import blockchainExplorer from './blockchain-explorer'
 
 type AccountManagerParams = {
@@ -47,7 +47,7 @@ const AccountManager = ({
 
   async function discoverAccounts() {
     const isBulkExportSupported = cryptoProvider.isFeatureSupported(
-      CryptoProviderFeatures.BULK_EXPORT
+      CryptoProviderFeature.BULK_EXPORT
     )
     const shouldExplore =
       config.shouldExportPubKeyBulk && config.isShelleyCompatible && isBulkExportSupported

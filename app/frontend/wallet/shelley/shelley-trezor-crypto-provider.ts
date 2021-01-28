@@ -8,8 +8,8 @@ import {bech32} from 'cardano-crypto.js'
 import {hasRequiredVersion} from './helpers/version-check'
 import {
   CryptoProvider,
-  CERTIFICATES_ENUM,
-  CryptoProviderFeatures,
+  CertificateType,
+  CryptoProviderFeature,
   BIP32Path,
   HexString,
 } from '../../types'
@@ -48,11 +48,11 @@ const ShelleyTrezorCryptoProvider = async ({network, config}): Promise<CryptoPro
     }
   )
 
-  function isFeatureSupported(feature: CryptoProviderFeatures) {
+  function isFeatureSupported(feature: CryptoProviderFeature) {
     return TREZOR_VERSIONS[feature] ? hasRequiredVersion(version, TREZOR_VERSIONS[feature]) : true
   }
 
-  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
     if (!isFeatureSupported(feature)) {
       throw NamedError(TREZOR_ERRORS[feature], {
         message: `${version.major}.${version.minor}.${version.patch}`,
@@ -78,9 +78,10 @@ const ShelleyTrezorCryptoProvider = async ({network, config}): Promise<CryptoPro
     certificatePointer?: CardanoCertificatePointer
   }
 
+  // we should pass the addressType as an argument here and retrieve it from the address
   async function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath?: BIP32Path) {
     const addressParameters: CardanoAddressParameters = {
-      addressType: 0, // TODO: get from cardano-crypto
+      addressType: 0, // TODO: retrieve from the address
       path: absDerivationPath,
       stakingPath,
     }
@@ -196,7 +197,7 @@ const ShelleyTrezorCryptoProvider = async ({network, config}): Promise<CryptoPro
   function prepareCertificate(cert, addressToAbsPathMapper): CardanoCertificate {
     // TODO: refactor, for some reason trezor cant have the pool parameter undefined
     // but dont mind having poolParameters undefined
-    return cert.type === CERTIFICATES_ENUM.DELEGATION
+    return cert.type === CertificateType.DELEGATION
       ? {
         type: cert.type,
         path: !cert.poolRegistrationParams

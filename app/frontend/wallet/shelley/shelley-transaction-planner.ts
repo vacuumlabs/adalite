@@ -5,7 +5,7 @@ import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley
 import {TX_WITNESS_SIZES} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
-import {Lovelace, CERTIFICATES_ENUM} from '../../types'
+import {Lovelace, CertificateType} from '../../types'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
@@ -253,9 +253,9 @@ export function isUtxoProfitable(utxo: UTxO) {
 
 function createCert(type, accountAddress, poolHash) {
   const certTypes = {
-    staking_key_registration: CERTIFICATES_ENUM.STAKING_KEY_REGISTRATION,
-    staking_key_deregistration: CERTIFICATES_ENUM.STAKING_KEY_DEREGISTRATION,
-    delegation: CERTIFICATES_ENUM.DELEGATION,
+    staking_key_registration: CertificateType.STAKING_KEY_REGISTRATION,
+    staking_key_deregistration: CertificateType.STAKING_KEY_DEREGISTRATION,
+    delegation: CertificateType.DELEGATION,
   }
   return {
     type: certTypes[type],

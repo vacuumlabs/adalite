@@ -1,6 +1,6 @@
 import mockNetwork from '../common/mock'
 import {ADALITE_CONFIG} from '../../../frontend/config'
-import {CRYPTO_PROVIDER_TYPES} from '../../../frontend/wallet/constants'
+import {CryptoProviderType} from '../../../frontend/wallet/constants'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import assert from 'assert'
 import {assertPropertiesEqual, setupInitialState} from './actions'
@@ -63,7 +63,7 @@ it('Should properly load shelley wallet', async () => {
   ]
 
   await action.loadWallet(state, {
-    cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+    cryptoProviderType: CryptoProviderType.WALLET_SECRET,
     walletSecretDef: await mnemonicToWalletSecretDef(
       'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
     ),

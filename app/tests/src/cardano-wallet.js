@@ -7,7 +7,7 @@ import {txFeeFunction} from '../../frontend/wallet/byron/byron-tx-planner'
 
 import mockNetwork from './common/mock'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
-import {CRYPTO_PROVIDER_TYPES, NETWORKS} from '../../frontend/wallet/constants'
+import {CryptoProviderType, NETWORKS} from '../../frontend/wallet/constants'
 
 const testSeed = 39
 
@@ -26,7 +26,7 @@ const mockConfig2 = {
 }
 
 const unusedWalletConfig = {
-  cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+  cryptoProviderType: CryptoProviderType.WALLET_SECRET,
   mnemonic: 'rain flame hip basic extend capable chair oppose gorilla fun aunt emotion',
   config: mockConfig1,
   randomInputSeed: testSeed,
@@ -35,7 +35,7 @@ const unusedWalletConfig = {
 }
 
 const usedWalletConfig = {
-  cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+  cryptoProviderType: CryptoProviderType.WALLET_SECRET,
   mnemonic: 'logic easily waste eager injury oval sentence wine bomb embrace gossip supreme',
   config: mockConfig2,
   randomInputSeed: testSeed,
@@ -44,7 +44,7 @@ const usedWalletConfig = {
 }
 
 const smallUtxosWalletConfig = {
-  cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+  cryptoProviderType: CryptoProviderType.WALLET_SECRET,
   mnemonic: 'blame matrix water coil diet seat nerve street movie turkey jump bundle',
   config: mockConfig1,
   randomInputSeed: testSeed,
@@ -53,7 +53,7 @@ const smallUtxosWalletConfig = {
 }
 
 const usedV2WalletConfig = {
-  cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+  cryptoProviderType: CryptoProviderType.WALLET_SECRET,
   mnemonic:
     'cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh',
   config: mockConfig1,

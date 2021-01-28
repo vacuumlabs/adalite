@@ -1,6 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, AuthMethodEnum, Lovelace} from './types'
+import {AccountInfo, AuthMethod, Lovelace} from './types'
 export interface SendTransactionSummary {
   amount?: Lovelace
   donation?: Lovelace
@@ -39,7 +39,7 @@ export interface State {
   isShelleyCompatible: any
   shouldShowNonShelleyCompatibleDialog: any
 
-  authMethod: AuthMethodEnum
+  authMethod: AuthMethod
   shouldShowDemoWalletWarningDialog: boolean
   logoutNotificationOpen: boolean
   rawTransactionOpen: boolean

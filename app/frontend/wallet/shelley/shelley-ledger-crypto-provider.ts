@@ -25,8 +25,8 @@ import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import {
   CryptoProvider,
-  CryptoProviderFeatures,
-  CERTIFICATES_ENUM,
+  CryptoProviderFeature,
+  CertificateType,
   BIP32Path,
   HexString,
 } from '../../types'
@@ -74,13 +74,13 @@ const ShelleyLedgerCryptoProvider = async ({
 
   const version = await ledger.getVersion()
 
-  ensureFeatureIsSupported(CryptoProviderFeatures.MINIMAL)
+  ensureFeatureIsSupported(CryptoProviderFeature.MINIMAL)
 
   const isHwWallet = () => true
   const getWalletName = () => 'Ledger'
 
   const exportPublicKeys = async (derivationPaths: BIP32Path[]) => {
-    if (isFeatureSupported(CryptoProviderFeatures.BULK_EXPORT)) {
+    if (isFeatureSupported(CryptoProviderFeature.BULK_EXPORT)) {
       return await ledger.getExtendedPublicKeys(derivationPaths)
     }
     const response = []
@@ -92,18 +92,18 @@ const ShelleyLedgerCryptoProvider = async ({
 
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
-    config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeatures.BULK_EXPORT),
+    config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeature.BULK_EXPORT),
     async (derivationPaths: BIP32Path[]) => {
       const response = await exportPublicKeys(derivationPaths)
       return response.map((res) => Buffer.from(res.publicKeyHex + res.chainCodeHex, 'hex'))
     }
   )
 
-  function isFeatureSupported(feature: CryptoProviderFeatures) {
+  function isFeatureSupported(feature: CryptoProviderFeature) {
     return LEDGER_VERSIONS[feature] ? hasRequiredVersion(version, LEDGER_VERSIONS[feature]) : true
   }
 
-  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
     if (!isFeatureSupported(feature)) {
       throw NamedError(LEDGER_ERRORS[feature], {
         message: `${version.major}.${version.minor}.${version.patch}`,
@@ -185,7 +185,7 @@ const ShelleyLedgerCryptoProvider = async ({
     return {
       type: cert.type,
       path:
-        cert.type < CERTIFICATES_ENUM.STAKEPOOL_REGISTRATION
+        cert.type < CertificateType.STAKEPOOL_REGISTRATION
           ? addressToAbsPathMapper(cert.accountAddress)
           : null,
       poolKeyHashHex: cert.poolHash,

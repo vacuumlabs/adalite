@@ -1,4 +1,4 @@
-import {CRYPTO_PROVIDER_TYPES} from '../constants'
+import {CryptoProviderType} from '../constants'
 import CardanoWalletSecretCryptoProvider from './cardano-wallet-secret-crypto-provider'
 import CardanoTrezorCryptoProvider from './cardano-trezor-crypto-provider'
 import CardanoLedgerCryptoProvider from './cardano-ledger-crypto-provider'
@@ -7,13 +7,13 @@ import NamedError from '../../helpers/NamedError'
 const CryptoProviderFactory = (() => {
   const getCryptoProvider = (cryptoProviderType, options) => {
     switch (cryptoProviderType) {
-      case CRYPTO_PROVIDER_TYPES.TREZOR:
+      case CryptoProviderType.TREZOR:
         return CardanoTrezorCryptoProvider(options)
 
-      case CRYPTO_PROVIDER_TYPES.LEDGER:
+      case CryptoProviderType.LEDGER:
         return CardanoLedgerCryptoProvider(options)
 
-      case CRYPTO_PROVIDER_TYPES.WALLET_SECRET:
+      case CryptoProviderType.WALLET_SECRET:
         return CardanoWalletSecretCryptoProvider(options)
 
       default:

@@ -1,4 +1,4 @@
-import {CryptoProviderFeatures} from '../types'
+import {CryptoProviderFeature} from '../types'
 export const HARDENED_THRESHOLD = 0x80000000
 export const MAX_INT32 = 2147483647
 export const MAX_ADDRESS_INFO_AGE = 10000
@@ -97,7 +97,7 @@ export const NETWORKS = {
 
 export const DELAY_AFTER_TOO_MANY_REQUESTS = 2000
 export const ADALITE_SUPPORT_EMAIL = 'adalite@vacuumlabs.com'
-export const enum CRYPTO_PROVIDER_TYPES {
+export const enum CryptoProviderType {
   LEDGER = 'LEDGER',
   TREZOR = 'TREZOR',
   WALLET_SECRET = 'WALLET_SECRET',
@@ -113,22 +113,22 @@ export const BIG_DELEGATOR_THRESHOLD = 10000000000000
 export const SATURATION_POINT = 62224967000000
 
 export const LEDGER_VERSIONS = {
-  [CryptoProviderFeatures.MINIMAL]: {
+  [CryptoProviderFeature.MINIMAL]: {
     major: 2,
     minor: 0,
     patch: 2,
   },
-  [CryptoProviderFeatures.WITHDRAWAL]: {
+  [CryptoProviderFeature.WITHDRAWAL]: {
     major: 2,
     minor: 0,
     patch: 4,
   },
-  [CryptoProviderFeatures.BULK_EXPORT]: {
+  [CryptoProviderFeature.BULK_EXPORT]: {
     major: 2,
     minor: 1,
     patch: 0,
   },
-  [CryptoProviderFeatures.POOL_OWNER]: {
+  [CryptoProviderFeature.POOL_OWNER]: {
     major: 2,
     minor: 1,
     patch: 0,
@@ -136,14 +136,14 @@ export const LEDGER_VERSIONS = {
 }
 
 export const LEDGER_ERRORS = {
-  [CryptoProviderFeatures.MINIMAL]: 'LedgerOutdatedCardanoAppError',
-  [CryptoProviderFeatures.WITHDRAWAL]: 'LedgerWithdrawalNotSupported',
-  [CryptoProviderFeatures.BULK_EXPORT]: 'LedgerBulkExportNotSupported',
-  [CryptoProviderFeatures.POOL_OWNER]: 'LedgerPoolRegNotSupported',
+  [CryptoProviderFeature.MINIMAL]: 'LedgerOutdatedCardanoAppError',
+  [CryptoProviderFeature.WITHDRAWAL]: 'LedgerWithdrawalNotSupported',
+  [CryptoProviderFeature.BULK_EXPORT]: 'LedgerBulkExportNotSupported',
+  [CryptoProviderFeature.POOL_OWNER]: 'LedgerPoolRegNotSupported',
 }
 
 export const TREZOR_VERSIONS = {
-  [CryptoProviderFeatures.POOL_OWNER]: {
+  [CryptoProviderFeature.POOL_OWNER]: {
     major: 2,
     minor: 3,
     patch: 5,
@@ -151,7 +151,7 @@ export const TREZOR_VERSIONS = {
 }
 
 export const TREZOR_ERRORS = {
-  [CryptoProviderFeatures.POOL_OWNER]: 'TrezorPoolRegNotSupported',
+  [CryptoProviderFeature.POOL_OWNER]: 'TrezorPoolRegNotSupported',
 }
 
 export const MAX_ACCOUNT_INDEX = 30

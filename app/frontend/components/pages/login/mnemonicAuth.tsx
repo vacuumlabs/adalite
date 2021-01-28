@@ -3,7 +3,7 @@ import {getTranslation} from '../../../translations'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import mnemonicToWalletSecretDef from '../../../wallet/helpers/mnemonicToWalletSecretDef'
-import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
+import {CryptoProviderType} from '../../../wallet/constants'
 import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import sanitizeMnemonic from '../../../helpers/sanitizeMnemonic'
@@ -40,7 +40,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
   async autoLogin() {
     const sanitizedMnemonic = sanitizeMnemonic(ADALITE_DEMO_WALLET_MNEMONIC)
     await this.props.loadWallet({
-      cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+      cryptoProviderType: CryptoProviderType.WALLET_SECRET,
       walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
       shouldExportPubKeyBulk: true,
     })
@@ -93,7 +93,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
             disabled={!formData.formIsValid}
             onClick={async () =>
               loadWallet({
-                cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+                cryptoProviderType: CryptoProviderType.WALLET_SECRET,
                 // TODO(ppershing): get rid of mnemonic sanitization in this component
                 walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
                 shouldExportPubKeyBulk: true,

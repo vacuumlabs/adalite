@@ -7,7 +7,7 @@ import tooltip from '../../common/tooltip'
 import FileLoader from '../../common/fileLoader'
 
 import * as KeypassJson from '../../../wallet/keypass-json'
-import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
+import {CryptoProviderType} from '../../../wallet/constants'
 
 interface Props {
   loadingAction: any
@@ -56,7 +56,7 @@ const LoadKeyFile = ({loadingAction, loadWallet, stopLoadingAction}: Props) => {
       const walletSecretDef = await KeypassJson.importWalletSecretDef(keyFile, password)
       setPasswordError(undefined)
       loadWallet({
-        cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+        cryptoProviderType: CryptoProviderType.WALLET_SECRET,
         walletSecretDef,
         shouldExportPubKeyBulk: true,
       })
@@ -90,7 +90,7 @@ const LoadKeyFile = ({loadingAction, loadWallet, stopLoadingAction}: Props) => {
             const walletSecretDef = await KeypassJson.importWalletSecretDef(walletExport, '')
 
             loadWallet({
-              cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+              cryptoProviderType: CryptoProviderType.WALLET_SECRET,
               walletSecretDef,
               shouldExportPubKeyBulk: true,
             })

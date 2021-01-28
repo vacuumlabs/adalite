@@ -1,6 +1,6 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
-import {AccountInfo, CryptoProvider, CryptoProviderFeatures} from '../types'
+import {AccountInfo, CryptoProvider, CryptoProviderFeature} from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
 
 type WalletParams = {
@@ -52,7 +52,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     return await blockchainExplorer.fetchTxInfo(txHash)
   }
 
-  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
     try {
       cryptoProvider.ensureFeatureIsSupported(feature)
     } catch (e) {

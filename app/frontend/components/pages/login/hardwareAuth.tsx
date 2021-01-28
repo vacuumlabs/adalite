@@ -1,5 +1,5 @@
 import {Fragment, h} from 'preact'
-import {CRYPTO_PROVIDER_TYPES} from '../../../wallet/constants'
+import {CryptoProviderType} from '../../../wallet/constants'
 import {TrezorLogoWhite, LedgerLogoWhite} from '../../common/svg'
 import {ADALITE_CONFIG} from '../../../config'
 import tooltip from '../../common/tooltip'
@@ -60,7 +60,7 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
             className="button primary trezor thin-data-balloon"
             onClick={() =>
               loadWallet({
-                cryptoProviderType: CRYPTO_PROVIDER_TYPES.TREZOR,
+                cryptoProviderType: CryptoProviderType.TREZOR,
                 shouldExportPubKeyBulk: enableBulkExport,
               })
             }
@@ -92,7 +92,7 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
             className="button primary ledger thin-data-balloon"
             onClick={() =>
               loadWallet({
-                cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER,
+                cryptoProviderType: CryptoProviderType.LEDGER,
                 shouldExportPubKeyBulk: enableBulkExport,
               })
             }
@@ -108,7 +108,7 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
             className="button secondary ledger-webusb"
             onClick={() =>
               loadWallet({
-                cryptoProviderType: CRYPTO_PROVIDER_TYPES.LEDGER,
+                cryptoProviderType: CryptoProviderType.LEDGER,
                 forceWebUsb: true,
                 shouldExportPubKeyBulk: enableBulkExport,
               })

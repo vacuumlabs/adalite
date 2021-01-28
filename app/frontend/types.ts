@@ -14,19 +14,19 @@ export interface CryptoProvider {
   isHwWallet: () => boolean
   getHdPassphrase: () => Buffer | void
   _sign: (message: HexString, absDerivationPath: BIP32Path) => void
-  ensureFeatureIsSupported: (feature: CryptoProviderFeatures) => void
-  isFeatureSupported: (feature: CryptoProviderFeatures) => boolean
+  ensureFeatureIsSupported: (feature: CryptoProviderFeature) => void
+  isFeatureSupported: (feature: CryptoProviderFeature) => boolean
   displayAddressForPath: (absDerivationPath: BIP32Path, stakingPath: BIP32Path) => void
 }
 
-export const enum CERTIFICATES_ENUM {
+export const enum CertificateType {
   STAKING_KEY_REGISTRATION = 0,
   STAKING_KEY_DEREGISTRATION = 1,
   DELEGATION = 2,
   STAKEPOOL_REGISTRATION = 3,
 }
 
-export const enum CryptoProviderFeatures {
+export const enum CryptoProviderFeature {
   MINIMAL,
   WITHDRAWAL,
   BULK_EXPORT,
@@ -61,7 +61,7 @@ export type _Address = {
   address: string
 }
 
-export type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
+export type AuthMethod = '' | 'hw-wallet' | 'mnemonic' // TODO
 export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
 

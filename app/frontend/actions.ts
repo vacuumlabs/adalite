@@ -21,7 +21,7 @@ import {
   NETWORKS,
   PREMIUM_MEMBER_BALANCE_TRESHOLD,
   BIG_DELEGATOR_THRESHOLD,
-  CRYPTO_PROVIDER_TYPES,
+  CryptoProviderType,
 } from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
@@ -37,7 +37,7 @@ import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, Ada, Lovelace, CryptoProviderFeatures} from './types'
+import {AccountInfo, Ada, Lovelace, CryptoProviderFeature} from './types'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 
@@ -146,7 +146,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       forceWebUsb,
       shouldExportPubKeyBulk,
     }: {
-      cryptoProviderType: CRYPTO_PROVIDER_TYPES
+      cryptoProviderType: CryptoProviderType
       walletSecretDef: any
       forceWebUsb: boolean
       shouldExportPubKeyBulk: boolean
@@ -873,7 +873,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const plan = await prepareTxPlan({rewards, txType: 'withdraw'})
     const withdrawalValidationError =
       withdrawalPlanValidator(rewards, getSourceAccountInfo(state).balance, plan) ||
-      wallet.ensureFeatureIsSupported(CryptoProviderFeatures.WITHDRAWAL)
+      wallet.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
     if (withdrawalValidationError) {
       setErrorState('transactionSubmissionError', withdrawalValidationError, {
         shouldShowTransactionErrorModal: true,
@@ -1442,7 +1442,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const signPoolCertificateTx = async (state) => {
     try {
       // TODO: refactor
-      const supportError = wallet.ensureFeatureIsSupported(CryptoProviderFeatures.POOL_OWNER)
+      const supportError = wallet.ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)
       if (supportError) throw NamedError(supportError.code, {message: supportError.params.message})
       if (state.usingHwWallet) {
         setState({waitingForHwWallet: true})
