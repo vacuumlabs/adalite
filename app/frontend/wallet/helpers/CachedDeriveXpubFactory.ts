@@ -2,15 +2,14 @@ import indexIsHardened from './indexIsHardened'
 import {HARDENED_THRESHOLD, MAX_BULK_EXPORT_AMOUNT} from './../constants'
 import {derivePublic as deriveChildXpub} from 'cardano-crypto.js'
 import {isShelleyPath} from '../../wallet/shelley/helpers/addresses'
+import {BIP32Path} from '../../types'
 
 const BYRON_V2_PATH = [HARDENED_THRESHOLD + 44, HARDENED_THRESHOLD + 1815, HARDENED_THRESHOLD]
-
-type BIP32Path = number[]
 
 function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriveXpubsHardenedFn) {
   const derivedXpubs = {}
 
-  async function deriveXpub(absDerivationPath: BIP32Path) {
+  async function deriveXpub(absDerivationPath: BIP32Path): Promise<Buffer> {
     const memoKey = JSON.stringify(absDerivationPath)
 
     if (!derivedXpubs[memoKey]) {

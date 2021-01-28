@@ -1,9 +1,14 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
-import {AccountInfo} from '../types'
-import {CryptoProviderFeatures, MAX_ACCOUNT_INDEX} from './constants'
+import {AccountInfo, CryptoProvider, CryptoProviderFeatures} from '../types'
+import {MAX_ACCOUNT_INDEX} from './constants'
 
-const ShelleyWallet = ({config, cryptoProvider}) => {
+type WalletParams = {
+  config: any
+  cryptoProvider: CryptoProvider
+}
+
+const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   const blockchainExplorer = BlockchainExplorer(config)
 
   let maxAccountIndex = MAX_ACCOUNT_INDEX

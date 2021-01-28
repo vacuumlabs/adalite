@@ -2,7 +2,7 @@ import AddressManager from './address-manager'
 import PseudoRandom from './helpers/PseudoRandom'
 import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
-import {Lovelace} from '../types'
+import {CryptoProvider, Lovelace} from '../types'
 import {
   getStakingAddressHex,
   getAccountXpub as getAccoutXpubShelley,
@@ -33,6 +33,7 @@ import {
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
 import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
+import blockchainExplorer from './blockchain-explorer'
 
 const DummyAddressManager = () => {
   return {
@@ -45,7 +46,19 @@ const DummyAddressManager = () => {
 
 export default DummyAddressManager
 
-const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer}) => {
+type MyAddressesParams = {
+  accountIndex: number
+  cryptoProvider: CryptoProvider
+  gapLimit: number
+  blockchainExplorer: ReturnType<typeof blockchainExplorer>
+}
+
+const MyAddresses = ({
+  accountIndex,
+  cryptoProvider,
+  gapLimit,
+  blockchainExplorer,
+}: MyAddressesParams) => {
   const legacyExtManager =
     accountIndex === 0
       ? AddressManager({
@@ -150,6 +163,15 @@ const MyAddresses = ({accountIndex, cryptoProvider, gapLimit, blockchainExplorer
   }
 }
 
+type AccountParams = {
+  config: any
+  randomInputSeed?: any
+  randomChangeSeed?: any
+  cryptoProvider: CryptoProvider
+  blockchainExplorer: ReturnType<typeof blockchainExplorer>
+  accountIndex: number
+}
+
 const Account = ({
   config,
   randomInputSeed,
@@ -157,7 +179,7 @@ const Account = ({
   cryptoProvider,
   blockchainExplorer,
   accountIndex,
-}: any) => {
+}: AccountParams) => {
   const {
     getMaxDonationAmount: _getMaxDonationAmount,
     getMaxSendableAmount: _getMaxSendableAmount,

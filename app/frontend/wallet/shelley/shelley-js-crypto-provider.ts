@@ -18,14 +18,15 @@ import {
 
 import {isShelleyPath} from './helpers/addresses'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
+import {BIP32Path, CryptoProvider, CryptoProviderFeatures, HexString} from '../../types'
+import NamedError from '../../helpers/NamedError'
 
-type HexString = string & {__typeHexString: any}
-
-const ShelleyJsCryptoProvider = ({
+const ShelleyJsCryptoProvider = async ({
   walletSecretDef: {rootSecret, derivationScheme},
   network,
   config,
-}) => {
+  // eslint-disable-next-line require-await
+}): Promise<CryptoProvider> => {
   const masterHdNode = HdNode(rootSecret)
 
   const isHwWallet = () => false
@@ -39,12 +40,12 @@ const ShelleyJsCryptoProvider = ({
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk,
-    (derivationPaths) => {
+    (derivationPaths: BIP32Path[]) => {
       return derivationPaths.map((path) => deriveHdNode(path).extendedPublicKey)
     }
   )
 
-  function deriveHdNode(derivationPath) {
+  function deriveHdNode(derivationPath: BIP32Path) {
     return derivationPath.reduce(deriveChildHdNode, masterHdNode)
   }
 
@@ -54,7 +55,7 @@ const ShelleyJsCryptoProvider = ({
     return HdNode(result)
   }
 
-  async function sign(message, keyDerivationPath) {
+  async function sign(message: HexString, keyDerivationPath: BIP32Path) {
     const hdNode = await deriveHdNode(keyDerivationPath)
     const messageToSign = Buffer.from(message, 'hex')
     return signMsg(messageToSign, hdNode.toBuffer())
@@ -129,12 +130,16 @@ const ShelleyJsCryptoProvider = ({
     return ShelleySignedTransactionStructured(txAux, witnesses, meta)
   }
 
-  function isFeatureSupported(feature) {
+  function isFeatureSupported(feature: CryptoProviderFeatures) {
     return true
   }
 
-  function ensureFeatureIsSupported(feature) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeatures) {
     return true
+  }
+
+  function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath: BIP32Path) {
+    throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
   return {
@@ -147,10 +152,9 @@ const ShelleyJsCryptoProvider = ({
     isHwWallet,
     getHdPassphrase,
     _sign: sign,
-    _deriveHdNodeFromRoot: deriveHdNode,
-    _deriveChildHdNode: deriveChildHdNode,
     ensureFeatureIsSupported,
     isFeatureSupported,
+    displayAddressForPath,
   }
 }
 

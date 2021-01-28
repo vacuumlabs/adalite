@@ -40,7 +40,7 @@ const initAddressManager = async (settings, i) => {
     walletSecretDef = await mnemonicToWalletSecretDef(cryptoSettings.secret)
   }
 
-  const cryptoProvider = ShelleyJsCryptoProvider({
+  const cryptoProvider = await ShelleyJsCryptoProvider({
     walletSecretDef,
     network: cryptoSettings.network,
     config: {shouldExportPubKeyBulk},

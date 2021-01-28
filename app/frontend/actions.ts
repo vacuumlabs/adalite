@@ -21,7 +21,7 @@ import {
   NETWORKS,
   PREMIUM_MEMBER_BALANCE_TRESHOLD,
   BIG_DELEGATOR_THRESHOLD,
-  CryptoProviderFeatures,
+  CRYPTO_PROVIDER_TYPES,
 } from './wallet/constants'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
@@ -37,7 +37,7 @@ import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, Ada, Lovelace} from './types'
+import {AccountInfo, Ada, Lovelace, CryptoProviderFeatures} from './types'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 
@@ -140,7 +140,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const loadWallet = async (
     state: State,
-    {cryptoProviderType, walletSecretDef, forceWebUsb, shouldExportPubKeyBulk}
+    {
+      cryptoProviderType,
+      walletSecretDef,
+      forceWebUsb,
+      shouldExportPubKeyBulk,
+    }: {
+      cryptoProviderType: CRYPTO_PROVIDER_TYPES
+      walletSecretDef: any
+      forceWebUsb: boolean
+      shouldExportPubKeyBulk: boolean
+    }
   ) => {
     loadingAction(state, 'Loading wallet data...', {
       walletLoadingError: undefined,

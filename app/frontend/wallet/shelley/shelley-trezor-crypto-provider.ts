@@ -1,21 +1,20 @@
 // eslint-disable-next-line import/no-unresolved
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
-import {
-  ADALITE_SUPPORT_EMAIL,
-  CERTIFICATES_ENUM,
-  CryptoProviderFeatures,
-  TREZOR_ERRORS,
-  TREZOR_VERSIONS,
-} from '../constants'
+import {ADALITE_SUPPORT_EMAIL, TREZOR_ERRORS, TREZOR_VERSIONS} from '../constants'
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
 import {bech32} from 'cardano-crypto.js'
 import {hasRequiredVersion} from './helpers/version-check'
+import {
+  CryptoProvider,
+  CERTIFICATES_ENUM,
+  CryptoProviderFeatures,
+  BIP32Path,
+  HexString,
+} from '../../types'
 
-type BIP32Path = number[]
-
-const CardanoTrezorCryptoProvider = async ({network, config}) => {
+const ShelleyTrezorCryptoProvider = async ({network, config}): Promise<CryptoProvider> => {
   const derivationScheme = derivationSchemes.v2
 
   const TrezorConnect = require('trezor-connect').default
@@ -61,13 +60,13 @@ const CardanoTrezorCryptoProvider = async ({network, config}) => {
     }
   }
 
-  function deriveHdNode(childIndex) {
+  function getHdPassphrase() {
     throw NamedError('UnsupportedOperationError', {
       message: 'This operation is not supported on TrezorCryptoProvider!',
     })
   }
 
-  function sign(message, absDerivationPath) {
+  function sign(message: HexString, absDerivationPath: BIP32Path) {
     throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
@@ -79,9 +78,9 @@ const CardanoTrezorCryptoProvider = async ({network, config}) => {
     certificatePointer?: CardanoCertificatePointer
   }
 
-  async function displayAddressForPath(absDerivationPath, stakingPath?) {
+  async function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath?: BIP32Path) {
     const addressParameters: CardanoAddressParameters = {
-      addressType: 0,
+      addressType: 0, // TODO: get from cardano-crypto
       path: absDerivationPath,
       stakingPath,
     }
@@ -299,11 +298,11 @@ const CardanoTrezorCryptoProvider = async ({network, config}) => {
     isHwWallet,
     getWalletName,
     _sign: sign,
-    _deriveHdNode: deriveHdNode,
     network,
     ensureFeatureIsSupported,
     isFeatureSupported,
+    getHdPassphrase,
   }
 }
 
-export default CardanoTrezorCryptoProvider
+export default ShelleyTrezorCryptoProvider

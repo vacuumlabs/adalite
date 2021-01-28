@@ -1,3 +1,4 @@
+import {CryptoProviderFeatures} from '../types'
 export const HARDENED_THRESHOLD = 0x80000000
 export const MAX_INT32 = 2147483647
 export const MAX_ADDRESS_INFO_AGE = 10000
@@ -96,10 +97,10 @@ export const NETWORKS = {
 
 export const DELAY_AFTER_TOO_MANY_REQUESTS = 2000
 export const ADALITE_SUPPORT_EMAIL = 'adalite@vacuumlabs.com'
-export const CRYPTO_PROVIDER_TYPES = {
-  LEDGER: 'LEDGER',
-  TREZOR: 'TREZOR',
-  WALLET_SECRET: 'WALLET_SECRET',
+export const enum CRYPTO_PROVIDER_TYPES {
+  LEDGER = 'LEDGER',
+  TREZOR = 'TREZOR',
+  WALLET_SECRET = 'WALLET_SECRET',
 }
 export const SENTRY_USER_FEEDBACK_API =
   'https://sentry.io/api/0/projects/vacuumlabs-sro/adalite-frontend/user-feedback/'
@@ -110,20 +111,6 @@ export const PREMIUM_MEMBER_BALANCE_TRESHOLD = 2500000000000
 export const BIG_DELEGATOR_THRESHOLD = 10000000000000
 
 export const SATURATION_POINT = 62224967000000
-
-export const enum CERTIFICATES_ENUM {
-  STAKING_KEY_REGISTRATION = 0,
-  STAKING_KEY_DEREGISTRATION = 1,
-  DELEGATION = 2,
-  STAKEPOOL_REGISTRATION = 3,
-}
-
-export const enum CryptoProviderFeatures {
-  MINIMAL,
-  WITHDRAWAL,
-  BULK_EXPORT,
-  POOL_OWNER,
-}
 
 export const LEDGER_VERSIONS = {
   [CryptoProviderFeatures.MINIMAL]: {

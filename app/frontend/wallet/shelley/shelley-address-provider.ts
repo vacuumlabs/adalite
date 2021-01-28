@@ -1,4 +1,4 @@
-import {HexString, _PubKeyCbor, _XPubKey} from '../../types'
+import {CryptoProvider, HexString, _PubKeyCbor, _XPubKey} from '../../types'
 import {HARDENED_THRESHOLD} from '../constants'
 import {
   stakingAddressFromXpub,
@@ -28,7 +28,7 @@ const shelleyStakeAccountPath = (account: number) => {
 }
 
 export const getStakingAddressHex = async (
-  cryptoProvider,
+  cryptoProvider: CryptoProvider,
   accountIndex: number
 ): Promise<HexString> => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
@@ -36,7 +36,10 @@ export const getStakingAddressHex = async (
   return stakingAddressHexFromXpub(stakeXpub, cryptoProvider.network.networkId)
 }
 
-export const getAccountXpub = async (cryptoProvider, accountIndex: number): Promise<_XPubKey> => {
+export const getAccountXpub = async (
+  cryptoProvider: CryptoProvider,
+  accountIndex: number
+): Promise<_XPubKey> => {
   const path = shelleyStakeAccountPath(accountIndex).slice(0, 3)
 
   const xpubHex: HexString = (await cryptoProvider.deriveXpub(path)).toString('hex')
@@ -47,11 +50,11 @@ export const getAccountXpub = async (cryptoProvider, accountIndex: number): Prom
 }
 
 export const getStakingKeyCborHex = async (
-  cryptoProvider,
+  cryptoProvider: CryptoProvider,
   accountIndex: number
 ): Promise<_PubKeyCbor> => {
   const path = shelleyStakeAccountPath(accountIndex)
-  const pubKey: HexString = (await cryptoProvider.deriveXpub(path)).slice(0, 32)
+  const pubKey: Buffer = (await cryptoProvider.deriveXpub(path)).slice(0, 32)
   const cborHex: HexString = encode(pubKey).toString('hex')
   return {
     path,
@@ -59,7 +62,10 @@ export const getStakingKeyCborHex = async (
   }
 }
 
-export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex: number) => async () => {
+export const ShelleyStakingAccountProvider = (
+  cryptoProvider: CryptoProvider,
+  accountIndex: number
+) => async () => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
 
@@ -70,7 +76,7 @@ export const ShelleyStakingAccountProvider = (cryptoProvider, accountIndex: numb
 }
 
 export const ShelleyBaseAddressProvider = (
-  cryptoProvider,
+  cryptoProvider: CryptoProvider,
   accountIndex: number,
   isChange: boolean
 ) => async (i: number) => {

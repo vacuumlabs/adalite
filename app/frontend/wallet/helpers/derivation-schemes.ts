@@ -1,8 +1,4 @@
-export interface DerivationScheme {
-  type: 'v1' | 'v2'
-  ed25519Mode: number
-  keyfileVersion: string
-}
+import {DerivationScheme} from '../../types'
 
 const derivationSchemes: {[key: string]: DerivationScheme} = {
   v1: {

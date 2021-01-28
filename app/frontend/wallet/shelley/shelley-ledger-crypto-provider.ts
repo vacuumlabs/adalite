@@ -12,12 +12,7 @@ import {
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
 import {PoolParams} from './helpers/poolCertificateUtils'
-import {
-  CERTIFICATES_ENUM,
-  LEDGER_VERSIONS,
-  CryptoProviderFeatures,
-  LEDGER_ERRORS,
-} from '../constants'
+import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
 
 import {
   bechAddressToHex,
@@ -28,6 +23,13 @@ import {
 
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
+import {
+  CryptoProvider,
+  CryptoProviderFeatures,
+  CERTIFICATES_ENUM,
+  BIP32Path,
+  HexString,
+} from '../../types'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -60,7 +62,11 @@ const getLedgerTransport = async (forceWebUsb: boolean): Promise<any> => {
   return transport
 }
 
-const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
+const ShelleyLedgerCryptoProvider = async ({
+  network,
+  config,
+  forceWebUsb,
+}): Promise<CryptoProvider> => {
   const transport = await getLedgerTransport(forceWebUsb)
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
@@ -73,7 +79,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
   const isHwWallet = () => true
   const getWalletName = () => 'Ledger'
 
-  const exportPublicKeys = async (derivationPaths) => {
+  const exportPublicKeys = async (derivationPaths: BIP32Path[]) => {
     if (isFeatureSupported(CryptoProviderFeatures.BULK_EXPORT)) {
       return await ledger.getExtendedPublicKeys(derivationPaths)
     }
@@ -87,7 +93,7 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeatures.BULK_EXPORT),
-    async (derivationPaths) => {
+    async (derivationPaths: BIP32Path[]) => {
       const response = await exportPublicKeys(derivationPaths)
       return response.map((res) => Buffer.from(res.publicKeyHex + res.chainCodeHex, 'hex'))
     }
@@ -105,17 +111,17 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     }
   }
 
-  function deriveHdNode(childIndex) {
+  function getHdPassphrase() {
     throw NamedError('UnsupportedOperationError', {
       message: 'This operation is not supported on LedgerCryptoProvider!',
     })
   }
 
-  function sign(message, absDerivationPath) {
+  function sign(message: HexString, absDerivationPath: BIP32Path) {
     throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
-  async function displayAddressForPath(absDerivationPath, stakingPath?) {
+  async function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath?: BIP32Path) {
     try {
       await ledger.showAddress(
         AddressTypeNibbles.BASE,
@@ -292,12 +298,12 @@ const ShelleyLedgerCryptoProvider = async ({network, config, forceWebUsb}) => {
     getWalletSecret,
     getDerivationScheme,
     signTx,
+    getHdPassphrase,
     displayAddressForPath,
     deriveXpub,
     isHwWallet,
     getWalletName,
     _sign: sign,
-    _deriveHdNode: deriveHdNode,
     isFeatureSupported,
     ensureFeatureIsSupported,
   }

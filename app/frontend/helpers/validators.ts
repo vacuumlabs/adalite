@@ -2,8 +2,8 @@ import {isValidBootstrapAddress, isValidShelleyAddress} from 'cardano-crypto.js'
 import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
-import {Lovelace, Ada} from '../types'
-import {NETWORKS, CERTIFICATES_ENUM} from '../wallet/constants'
+import {Lovelace, Ada, CERTIFICATES_ENUM} from '../types'
+import {NETWORKS} from '../wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace

@@ -3,9 +3,13 @@ import ShelleyJsCryptoProvider from './shelley-js-crypto-provider'
 import ShelleyTrezorCryptoProvider from './shelley-trezor-crypto-provider'
 import ShelleyLedgerCryptoProvider from './shelley-ledger-crypto-provider'
 import NamedError from '../../helpers/NamedError'
+import {CryptoProvider} from '../../types'
 
 const ShelleyCryptoProviderFactory = (() => {
-  const getCryptoProvider = (cryptoProviderType, options) => {
+  const getCryptoProvider = (
+    cryptoProviderType: CRYPTO_PROVIDER_TYPES,
+    options: any
+  ): Promise<CryptoProvider> => {
     switch (cryptoProviderType) {
       case CRYPTO_PROVIDER_TYPES.TREZOR:
         return ShelleyTrezorCryptoProvider(options)

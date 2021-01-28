@@ -1,3 +1,43 @@
+export type BIP32Path = number[]
+
+export interface CryptoProvider {
+  network: any
+  signTx: (
+    unsignedTx: any,
+    rawInputTxs: any,
+    addressToAbsPathMapper: any
+  ) => Promise<{txHash: HexString; txBody: HexString}>
+  getWalletSecret: () => Buffer | void
+  getWalletName: () => string
+  getDerivationScheme: () => DerivationScheme
+  deriveXpub: (derivationPath: BIP32Path) => Promise<Buffer>
+  isHwWallet: () => boolean
+  getHdPassphrase: () => Buffer | void
+  _sign: (message: HexString, absDerivationPath: BIP32Path) => void
+  ensureFeatureIsSupported: (feature: CryptoProviderFeatures) => void
+  isFeatureSupported: (feature: CryptoProviderFeatures) => boolean
+  displayAddressForPath: (absDerivationPath: BIP32Path, stakingPath: BIP32Path) => void
+}
+
+export const enum CERTIFICATES_ENUM {
+  STAKING_KEY_REGISTRATION = 0,
+  STAKING_KEY_DEREGISTRATION = 1,
+  DELEGATION = 2,
+  STAKEPOOL_REGISTRATION = 3,
+}
+
+export const enum CryptoProviderFeatures {
+  MINIMAL,
+  WITHDRAWAL,
+  BULK_EXPORT,
+  POOL_OWNER,
+}
+export type DerivationScheme = {
+  type: 'v1' | 'v2'
+  ed25519Mode: number
+  keyfileVersion: string
+}
+
 export type Transaction = {}
 export type HexString = string
 

@@ -1,8 +1,21 @@
 import NamedError from '../helpers/NamedError'
 import {Account} from './account'
-import {CryptoProviderFeatures} from './constants'
+import {CryptoProvider, CryptoProviderFeatures} from '../types'
+import blockchainExplorer from './blockchain-explorer'
 
-const AccountManager = ({config, cryptoProvider, blockchainExplorer, maxAccountIndex}) => {
+type AccountManagerParams = {
+  config: any
+  cryptoProvider: CryptoProvider
+  blockchainExplorer: ReturnType<typeof blockchainExplorer>
+  maxAccountIndex: number
+}
+
+const AccountManager = ({
+  config,
+  cryptoProvider,
+  blockchainExplorer,
+  maxAccountIndex,
+}: AccountManagerParams) => {
   const accounts: Array<ReturnType<typeof Account>> = []
 
   function getAccount(accountIndex: number) {

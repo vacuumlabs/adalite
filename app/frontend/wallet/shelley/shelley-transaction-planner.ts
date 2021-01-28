@@ -2,10 +2,10 @@ import {encode} from 'borc'
 
 import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
 
-import {TX_WITNESS_SIZES, CERTIFICATES_ENUM} from '../constants'
+import {TX_WITNESS_SIZES} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
-import {Lovelace} from '../../types'
+import {Lovelace, CERTIFICATES_ENUM} from '../../types'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
