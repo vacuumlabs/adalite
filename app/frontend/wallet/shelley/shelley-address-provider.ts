@@ -1,8 +1,8 @@
-import {CryptoProvider, HexString, _PubKeyCbor, _XPubKey} from '../../types'
+import {AddressProvider, BIP32Path, CryptoProvider, HexString, _XPubKey} from '../../types'
 import {HARDENED_THRESHOLD} from '../constants'
 import {stakingAddressFromXpub, baseAddressFromXpub} from './helpers/addresses'
 
-const shelleyPath = (account: number, isChange: boolean, addrIdx: number) => {
+const shelleyPath = (account: number, isChange: boolean, addrIdx: number): BIP32Path => {
   return [
     HARDENED_THRESHOLD + 1852,
     HARDENED_THRESHOLD + 1815,
@@ -12,7 +12,7 @@ const shelleyPath = (account: number, isChange: boolean, addrIdx: number) => {
   ]
 }
 
-const shelleyStakeAccountPath = (account: number) => {
+const shelleyStakeAccountPath = (account: number): BIP32Path => {
   return [
     HARDENED_THRESHOLD + 1852,
     HARDENED_THRESHOLD + 1815,
@@ -50,7 +50,7 @@ export const getAccountXpub = async (
 export const ShelleyStakingAccountProvider = (
   cryptoProvider: CryptoProvider,
   accountIndex: number
-) => async () => {
+): AddressProvider => async () => {
   const pathStake = shelleyStakeAccountPath(accountIndex)
   const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
 
@@ -64,7 +64,7 @@ export const ShelleyBaseAddressProvider = (
   cryptoProvider: CryptoProvider,
   accountIndex: number,
   isChange: boolean
-) => async (i: number) => {
+): AddressProvider => async (i: number) => {
   const pathSpend = shelleyPath(accountIndex, isChange, i)
   const spendXpub = await cryptoProvider.deriveXpub(pathSpend)
 

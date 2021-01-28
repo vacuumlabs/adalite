@@ -1,4 +1,4 @@
-import {CryptoProvider, HexString, _XPubKey} from '../../types'
+import {AddressProvider, CryptoProvider, HexString, _XPubKey} from '../../types'
 import {packBootstrapAddress, base58} from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../constants'
 
@@ -43,7 +43,7 @@ export const ByronAddressProvider = (
   cryptoProvider: CryptoProvider,
   accountIndex: number,
   isChange: boolean
-) => async (i: number) => {
+): AddressProvider => async (i: number) => {
   const scheme = cryptoProvider.getDerivationScheme()
   const pathMapper = {
     v1: v1Path,

@@ -1,14 +1,22 @@
 import {toBip32StringPath} from './helpers/bip32'
 import NamedError from '../helpers/NamedError'
+import {AddressProvider, BIP32Path, _Address} from '../types'
+import blockchainExplorer from './blockchain-explorer'
 
-const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}) => {
+type AddressManagerParams = {
+  addressProvider: AddressProvider
+  gapLimit: number
+  blockchainExplorer: ReturnType<typeof blockchainExplorer>
+}
+
+const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: AddressManagerParams) => {
   if (!gapLimit) {
     throw NamedError('ParamsValidationError', {message: `Invalid gap limit: ${gapLimit}`})
   }
 
-  const deriveAddressMemo = {}
+  const deriveAddressMemo: {[key: number]: {path: BIP32Path; address: _Address}} = {}
 
-  async function cachedDeriveAddress(index: number) {
+  async function cachedDeriveAddress(index: number): Promise<_Address> {
     const memoKey = index
 
     if (!deriveAddressMemo[memoKey]) {
@@ -18,16 +26,16 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}) => {
     return deriveAddressMemo[memoKey].address
   }
 
-  async function deriveAddressesBlock(beginIndex: number, endIndex: number) {
-    const derivedAddresses = []
+  async function deriveAddressesBlock(beginIndex: number, endIndex: number): Promise<_Address[]> {
+    const derivedAddresses: _Address[] = []
     for (let i = beginIndex; i < endIndex; i += 1) {
       derivedAddresses.push(await cachedDeriveAddress(i))
     }
     return derivedAddresses
   }
 
-  async function discoverAddresses() {
-    let addresses = []
+  async function discoverAddresses(): Promise<_Address[]> {
+    let addresses: _Address[] = []
     let from = 0
     let isGapBlock = false
 
@@ -59,10 +67,11 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}) => {
     })
   }
 
-  function getAddressToAbsPathMapping() {
+  // this is supposed to return {[key: _Address]: BIP32Path} but ts does support
+  // only strings and number as index signatures
+  function getAddressToAbsPathMapping(): {[key: string]: BIP32Path} {
     const result = {}
-    Object.keys(deriveAddressMemo).map((key) => {
-      const value = deriveAddressMemo[key]
+    Object.values(deriveAddressMemo).map((value) => {
       result[value.address] = value.path
     })
 

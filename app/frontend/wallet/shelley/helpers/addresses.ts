@@ -1,4 +1,4 @@
-import {HexString} from '../../../types'
+import {BIP32Path, HexString, _Address} from '../../../types'
 import {
   packBaseAddress,
   packRewardAddress,
@@ -17,7 +17,7 @@ const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
 const xpub2blake2b224Hash = (xpub: Buffer) => getPubKeyBlake2b224Hash(xpub2pub(xpub))
 
 // TODO: do this more precisely
-export const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852
+export const isShelleyPath = (path: BIP32Path) => path[0] - HARDENED_THRESHOLD === 1852
 
 // TODO: do this properly with cardano-crypto unpackAddress
 export const isV1Address = (address: string) => address.startsWith('D')
@@ -36,17 +36,16 @@ export const base58AddressToHex = (address: string): HexString => {
   return parsed.toString('hex')
 }
 
-export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId): string => {
+export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId: number): _Address => {
   const addrBuffer: Buffer = packRewardAddress(xpub2blake2b224Hash(stakeXpub), networkId)
   return bech32.encode('stake', addrBuffer)
 }
 
-export const stakingAddressHexFromXpub = (stakeXpub: Buffer, networkId): HexString => {
-  const addrBuffer: Buffer = packRewardAddress(xpub2blake2b224Hash(stakeXpub), networkId)
-  return Buffer.from(addrBuffer).toString('hex')
-}
-
-export const baseAddressFromXpub = (spendXpub: Buffer, stakeXpub: Buffer, networkId): string => {
+export const baseAddressFromXpub = (
+  spendXpub: Buffer,
+  stakeXpub: Buffer,
+  networkId: number
+): _Address => {
   const addrBuffer = packBaseAddress(
     xpub2blake2b224Hash(spendXpub),
     xpub2blake2b224Hash(stakeXpub),
