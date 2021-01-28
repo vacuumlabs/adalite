@@ -142,6 +142,9 @@ const validatePoolRegUnsignedTx = (unsignedTx) => {
   if (unsignedTx.withdrawals.lengh > 0) {
     return {code: 'PoolRegWithdrawalDetected'}
   }
+  if (!unsignedTx.ttl) {
+    return {code: 'PoolRegNoTtl'}
+  }
   return null
 }
 
