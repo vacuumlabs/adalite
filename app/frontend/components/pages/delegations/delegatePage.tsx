@@ -6,9 +6,10 @@ import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 import {getTranslation} from '../../../translations'
 import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
-import {getSourceAccountInfo, Lovelace, State} from '../../../state'
+import {getSourceAccountInfo, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import Accordion from '../../common/accordion'
+import {Lovelace} from '../../../types'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 

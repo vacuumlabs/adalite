@@ -1,5 +1,5 @@
 import {computeRequiredTxFee} from './helpers/chainlib-wrapper'
-import {Lovelace} from '../../state'
+import {Lovelace} from '../../types'
 import NamedError from '../../helpers/NamedError'
 import getDonationAddress from '../../helpers/getDonationAddress'
 

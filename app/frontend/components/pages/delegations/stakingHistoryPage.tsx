@@ -2,10 +2,11 @@ import {h, Component} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {LinkIconToPool} from './common'
-import {getActiveAccountInfo, Lovelace, State} from '../../../state'
+import {getActiveAccountInfo, State} from '../../../state'
 import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
+import {Lovelace} from '../../../types'
 
 export enum StakingHistoryItemType {
   StakeDelegation,

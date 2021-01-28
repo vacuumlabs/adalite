@@ -1,11 +1,12 @@
 import {h, Component} from 'preact'
 import printAda from '../../../helpers/printAda'
-import {getActiveAccountInfo, Lovelace, State} from '../../../state'
+import {getActiveAccountInfo, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import toLocalDate from '../../../helpers/toLocalDate'
 import {RewardWithdrawal, StakingHistoryItemType} from '../delegations/stakingHistoryPage'
+import {Lovelace} from '../../../types'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}) => {

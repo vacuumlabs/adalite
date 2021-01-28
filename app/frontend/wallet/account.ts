@@ -2,7 +2,7 @@ import AddressManager from './address-manager'
 import PseudoRandom from './helpers/PseudoRandom'
 import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
-import {Lovelace} from '../state'
+import {Lovelace} from '../types'
 import {
   stakeAccountPubkeyHex,
   accountXpub as accoutXpubShelley,

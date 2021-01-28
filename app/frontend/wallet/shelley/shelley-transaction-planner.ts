@@ -5,7 +5,7 @@ import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley
 import {TX_WITNESS_SIZES, CERTIFICATES_ENUM} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
-import {Lovelace} from '../../state'
+import {Lovelace} from '../../types'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'

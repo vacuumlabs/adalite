@@ -1,8 +1,8 @@
 import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import {ADALITE_CONFIG} from './config'
-import {Lovelace} from './state'
 import {LEDGER_VERSIONS, CryptoProviderFeatures, TREZOR_VERSIONS} from './wallet/constants'
+import {Lovelace} from './types'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 

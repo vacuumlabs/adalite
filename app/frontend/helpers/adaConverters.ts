@@ -1,4 +1,4 @@
-import {Lovelace, Ada} from '../state'
+import {Lovelace, Ada} from '../types'
 
 const toCoins = (value: Ada): Lovelace => (value * 1000000) as Lovelace
 const toAda = (value: Lovelace): Ada => (value * 0.000001) as Ada

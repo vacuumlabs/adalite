@@ -4,7 +4,7 @@ import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
-import {Lovelace} from '../../../state'
+import {Lovelace} from '../../../types'
 
 interface Props {
   closePoolCertificateTxModal: any

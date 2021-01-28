@@ -1,10 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {localStorageVars} from './localStorage'
-import {AccountInfo} from './types'
-
-type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
-export type Ada = number & {__typeAda: any}
-export type Lovelace = number & {__typeLovelace: any}
+import {AccountInfo, AuthMethodEnum, Lovelace} from './types'
 export interface SendTransactionSummary {
   amount?: Lovelace
   donation?: Lovelace
@@ -215,6 +211,13 @@ const initialState: State = {
   isBigDelegator: false,
   accountsInfo: [
     {
+      keys: {
+        shelleyAccountXpub: null,
+        byronAccountXpub: null,
+        stakingKey: null,
+        stakingAccountAddress: '',
+        stakingAccountPubkeyHex: null,
+      },
       balance: 0,
       shelleyBalances: {
         stakingBalance: 0,

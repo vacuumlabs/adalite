@@ -13,7 +13,7 @@ import {
 } from '../components/pages/delegations/stakingHistoryPage'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
-import {Lovelace} from '../state'
+import {HexString, Lovelace} from '../types'
 import {captureMessage} from '@sentry/browser'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {

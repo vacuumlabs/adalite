@@ -2,11 +2,12 @@ import {Fragment, h} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
-import {Lovelace, State, getActiveAccountInfo} from '../../../state'
+import {State, getActiveAccountInfo} from '../../../state'
 import {LinkIconToPool} from './common'
 import {EpochDateTime} from '../common'
 import roundNumber from './../../../helpers/roundNumber'
 import {SATURATION_POINT} from '../../../wallet/constants'
+import {Lovelace} from '../../../types'
 
 const SaturationInfo = (pool) => {
   const liveStake = parseFloat(pool.liveStake)

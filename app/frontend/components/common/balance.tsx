@@ -1,10 +1,11 @@
 import {h} from 'preact'
 import printAda from '../../helpers/printAda'
 import Conversions from './conversions'
-import {Lovelace, State, getActiveAccountInfo} from '../../state'
+import {State, getActiveAccountInfo} from '../../state'
 import {AdaIcon} from './svg'
 import actions from '../../actions'
 import {connect} from '../../libs/unistore/preact'
+import {Lovelace} from '../../types'
 
 interface Props {
   balance: Lovelace

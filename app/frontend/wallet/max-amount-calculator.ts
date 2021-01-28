@@ -1,5 +1,5 @@
 import {roundWholeAdas} from '../helpers/adaConverters'
-import {Lovelace} from '../state'
+import {Lovelace} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
 
 type UTxO = {

@@ -2,7 +2,7 @@ import {isValidBootstrapAddress, isValidShelleyAddress} from 'cardano-crypto.js'
 import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
-import {Lovelace, Ada} from '../state'
+import {Lovelace, Ada} from '../types'
 import {NETWORKS, CERTIFICATES_ENUM} from '../wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG

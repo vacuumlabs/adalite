@@ -6,7 +6,7 @@ import {TxInputFromUtxo} from './byron-transaction'
 import {TX_WITNESS_SIZES} from '../constants'
 import CborIndefiniteLengthArray from './helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
-import {Lovelace} from '../../state'
+import {Lovelace} from '../../types'
 import getDonationAddress from '../../helpers/getDonationAddress'
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {

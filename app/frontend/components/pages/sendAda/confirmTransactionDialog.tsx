@@ -4,10 +4,10 @@ import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 import RawTransactionModal from './rawTransactionModal'
-// import roundNumber from '../../../helpers/roundNumber'
-import {Lovelace, State} from '../../../state'
+import {State} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
+import {Lovelace} from '../../../types'
 
 interface Props {
   sendAddress: any

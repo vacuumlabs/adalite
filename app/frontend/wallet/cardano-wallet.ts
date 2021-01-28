@@ -7,7 +7,7 @@ import PseudoRandom from './helpers/PseudoRandom'
 import {MAX_INT32} from './constants'
 import shuffleArray from './helpers/shuffleArray'
 import NamedError from '../helpers/NamedError'
-import {Lovelace} from '../state'
+import {Lovelace} from '../types'
 import {computeRequiredTxFee, selectMinimalTxPlan, isUtxoProfitable} from './byron/byron-tx-planner'
 import {MaxAmountCalculator} from './max-amount-calculator'
 // eslint-disable-next-line no-unused-vars

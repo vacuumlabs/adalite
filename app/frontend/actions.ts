@@ -30,14 +30,14 @@ import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {initialState} from './store'
 import {toCoins, toAda, roundWholeAdas} from './helpers/adaConverters'
 import captureBySentry from './helpers/captureBySentry'
-import {State, Ada, Lovelace, GetStateFn, SetStateFn, getSourceAccountInfo} from './state'
+import {State, GetStateFn, SetStateFn, getSourceAccountInfo} from './state'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 import {ShelleyWallet} from './wallet/shelley-wallet'
 import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
-import {AccountInfo} from './types'
+import {AccountInfo, Ada, Lovelace} from './types'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 

@@ -1,5 +1,9 @@
 export type Transaction = {}
 
+export type AuthMethodEnum = '' | 'hw-wallet' | 'mnemonic' // TODO
+export type Ada = number & {__typeAda: any}
+export type Lovelace = number & {__typeLovelace: any}
+
 export type AccountInfo = {
   balance: number
   shelleyBalances: {

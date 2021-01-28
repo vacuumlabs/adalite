@@ -2,9 +2,10 @@ import {Fragment, h} from 'preact'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
-import {Lovelace, State} from '../../../state'
+import {State} from '../../../state'
 import {AdaIcon} from '../../common/svg'
 import tooltip from '../../common/tooltip'
+import {Lovelace} from '../../../types'
 
 type TileProps = {
   accountIndex: number
