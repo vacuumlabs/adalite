@@ -104,7 +104,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const setAuthMethod = (state: State, option: AuthMethodEnum): void => {
     setState({
       authMethod: option,
-      shouldShowExportOption: option === 'mnemonic' || option === 'file',
+      shouldShowExportOption:
+        option === AuthMethodEnum.Mnemonic || option === AuthMethodEnum.KeyFile,
     })
   }
 
@@ -273,7 +274,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       },
       walletLoadingError: undefined,
       shouldShowWalletLoadingErrorModal: false,
-      authMethod: 'mnemonic',
+      authMethod: AuthMethodEnum.Mnemonic,
       shouldShowExportOption: true,
     })
   }
@@ -326,7 +327,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         formIsValid: false,
       },
       shouldShowGenerateMnemonicDialog: true,
-      authMethod: 'mnemonic',
+      authMethod: AuthMethodEnum.Mnemonic,
       shouldShowMnemonicInfoAlert: true,
     })
   }

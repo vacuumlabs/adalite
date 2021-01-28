@@ -38,9 +38,9 @@ const useViewport = () => {
 
 // TODO: extract to app/frontend/constants.ts after rebase
 const AUTH_METHOD_NAMES = {
-  'mnemonic': 'Mnemonic',
-  'hw-wallet': 'Hardware Wallet',
-  'file': 'Key file',
+  [AuthMethodEnum.Mnemonic]: 'Mnemonic',
+  [AuthMethodEnum.HwWallet]: 'Hardware Wallet',
+  [AuthMethodEnum.KeyFile]: 'Key file',
 }
 const getAuthMethodName = (authMethod: AuthMethodEnum): string => AUTH_METHOD_NAMES[authMethod]
 
@@ -53,7 +53,7 @@ const CurrentDropdownItem = ({
 }) => (
   <div
     className={`dropdown-item current ${authMethod} ${
-      authMethod === 'hw-wallet' ? 'recommended' : ''
+      authMethod === AuthMethodEnum.HwWallet ? 'recommended' : ''
     }`}
     onClick={toggleDropdown}
   >
@@ -138,16 +138,16 @@ const AuthCardInitial = () => (
     <h2 className="authentication-title">How do you want to access your Cardano Wallet?</h2>
     <div className="auth-options">
       <AuthOption
-        tabName={'mnemonic'}
+        tabName={AuthMethodEnum.Mnemonic}
         texts={['12, 15, 24 or 27 word passphrase']}
         tag={'fastest'}
       />
       <AuthOption
-        tabName={'hw-wallet'}
+        tabName={AuthMethodEnum.HwWallet}
         texts={['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger']}
         tag={'recommended'}
       />
-      <AuthOption tabName={'file'} texts={['Encrypted .JSON file']} tag={''} />
+      <AuthOption tabName={AuthMethodEnum.KeyFile} texts={['Encrypted .JSON file']} tag={''} />
     </div>
   </div>
 )
@@ -169,28 +169,32 @@ const AuthCard = ({
         <ul className="dropdown-items">
           <DropdownItem
             authMethod={authMethod}
-            tabName={'mnemonic'}
+            tabName={AuthMethodEnum.Mnemonic}
             toggleDropdown={toggleDropdown}
           />
           <DropdownItem
-            tabName={'hw-wallet'}
+            tabName={AuthMethodEnum.HwWallet}
             toggleDropdown={toggleDropdown}
             authMethod={authMethod}
             recommended
           />
-          <DropdownItem authMethod={authMethod} tabName={'file'} toggleDropdown={toggleDropdown} />
+          <DropdownItem
+            authMethod={authMethod}
+            tabName={AuthMethodEnum.KeyFile}
+            toggleDropdown={toggleDropdown}
+          />
         </ul>
       </div>
     ) : (
       <ul className="auth-tabs">
-        <AuthTab tabName={'mnemonic'} authMethod={authMethod} />
-        <AuthTab tabName={'hw-wallet'} authMethod={authMethod} recommended />
-        <AuthTab tabName={'file'} authMethod={authMethod} />
+        <AuthTab tabName={AuthMethodEnum.Mnemonic} authMethod={authMethod} />
+        <AuthTab tabName={AuthMethodEnum.HwWallet} authMethod={authMethod} recommended />
+        <AuthTab tabName={AuthMethodEnum.KeyFile} authMethod={authMethod} />
       </ul>
     )}
-    {authMethod === 'mnemonic' && <MnemonicAuth />}
-    {authMethod === 'hw-wallet' && <HardwareAuth />}
-    {authMethod === 'file' && <KeyFileAuth />}
+    {authMethod === AuthMethodEnum.Mnemonic && <MnemonicAuth />}
+    {authMethod === AuthMethodEnum.HwWallet && <HardwareAuth />}
+    {authMethod === AuthMethodEnum.KeyFile && <KeyFileAuth />}
   </div>
 )
 
@@ -228,11 +232,11 @@ const LoginPage = () => {
   } = useActions(actions)
 
   useEffect(() => {
-    if (autoLogin && authMethod !== 'mnemonic') {
-      setAuthMethod('mnemonic')
+    if (autoLogin && authMethod !== AuthMethodEnum.Mnemonic) {
+      setAuthMethod(AuthMethodEnum.Mnemonic)
     }
     loadErrorBannerContent()
-  })
+  }, []) // eslint-disable-line
 
   return (
     <div className="page-wrapper">
@@ -240,7 +244,7 @@ const LoginPage = () => {
       {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
       <div className="page-inner">
         <main className="page-main">
-          {authMethod === '' ? (
+          {authMethod === AuthMethodEnum.Initial ? (
             <AuthCardInitial />
           ) : (
             <AuthCard

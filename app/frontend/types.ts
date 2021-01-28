@@ -71,7 +71,12 @@ export type _XPubKey = {
   xpubHex: HexString
 }
 
-export type AuthMethod = '' | 'hw-wallet' | 'mnemonic' // TODO
+export enum AuthMethodEnum {
+  Initial,
+  Mnemonic = 'mnemonic',
+  HwWallet = 'hw-wallet',
+  KeyFile = 'file',
+}
 export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
 

@@ -1,7 +1,7 @@
 import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, AuthMethod, Lovelace} from './types'
+import {AccountInfo, AuthMethodEnum, Lovelace} from './types'
 export interface SendTransactionSummary {
   amount?: Lovelace
   donation?: Lovelace
@@ -36,7 +36,7 @@ export interface State {
 
   // login / logout
   autoLogin: boolean
-  authMethod: AuthMethod
+  authMethod: AuthMethodEnum
   shouldShowDemoWalletWarningDialog: boolean
   logoutNotificationOpen: boolean
   walletIsLoaded: boolean
@@ -179,7 +179,9 @@ const initialState: State = {
   // login / logout
   autoLogin:
     ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
-  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
+  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash)
+    ? AuthMethodEnum.HwWallet
+    : AuthMethodEnum.Initial,
   shouldShowDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
   walletIsLoaded: false,
