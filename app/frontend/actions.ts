@@ -1471,7 +1471,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     // there can be only one witness since only one signing file was passed
     const [key, [data]]: any = Array.from(witnesses)[0]
     // enum TxWitnessKeys
-    const type = key === 0 ? 'TxWitnessShelley' : 'TxWitnessByron'
+    const type = key === 0 ? 'TxWitness AllegraEra' : 'TxWitnessByron'
     return {
       type,
       description: '',
