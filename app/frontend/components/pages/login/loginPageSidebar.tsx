@@ -1,6 +1,7 @@
 import {h} from 'preact'
 import {useSelector} from '../../../helpers/connect'
-import {AuthMethodEnum, State} from '../../../state'
+import {State} from '../../../state'
+import {AuthMethodType} from '../../../types'
 
 import Alert from '../../common/alert'
 
@@ -169,10 +170,10 @@ const LoginPageSidebar = () => {
   const {authMethod} = useSelector((state: State) => ({authMethod: state.authMethod}))
   return (
     <aside className="sidebar">
-      {authMethod === AuthMethodEnum.Initial && <InitialContent />}
-      {authMethod === AuthMethodEnum.Mnemonic && <MnemonicContent />}
-      {authMethod === AuthMethodEnum.HwWallet && <WalletContent />}
-      {authMethod === AuthMethodEnum.KeyFile && <FileContent />}
+      {authMethod === null && <InitialContent />}
+      {authMethod === AuthMethodType.MNEMONIC && <MnemonicContent />}
+      {authMethod === AuthMethodType.HW_WALLET && <WalletContent />}
+      {authMethod === AuthMethodType.KEY_FILE && <FileContent />}
     </aside>
   )
 }

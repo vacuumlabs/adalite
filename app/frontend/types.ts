@@ -71,12 +71,18 @@ export type _XPubKey = {
   xpubHex: HexString
 }
 
-export enum AuthMethodEnum {
-  Initial,
-  Mnemonic = 'mnemonic',
-  HwWallet = 'hw-wallet',
-  KeyFile = 'file',
+export enum AuthMethodType {
+  MNEMONIC = 'mnemonic',
+  HW_WALLET = 'hw-wallet',
+  KEY_FILE = 'file',
 }
+
+export enum ScreenType {
+  MOBILE,
+  TABLET,
+  DESKTOP,
+}
+
 export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
 

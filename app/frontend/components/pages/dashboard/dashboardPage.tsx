@@ -21,35 +21,18 @@ import AccountsDashboard from '../accounts/accountsDashboard'
 import {State} from '../../../state'
 import PoolOwner from '../advanced/poolOwner'
 import ErrorModals from './errorModals'
-import {useEffect, useState} from 'preact/hooks'
+import {useState} from 'preact/hooks'
 import {SubTabs, MainTabs} from '../../../constants'
+import {useViewport, isSmallerThanDesktop} from '../../common/viewPort'
+import {ScreenType} from '../../../types'
 
-// we could export this and use it in other places, in that case
-// we should optimalize it with context
-// https://blog.logrocket.com/developing-responsive-layouts-with-react-hooks/
-const useViewport = () => {
-  const [isViewportSmall, setIsViewportSmall] = useState(false)
-
-  const handleScreenResize = () => {
-    setIsViewportSmall(window.innerWidth <= 1024)
-  }
-  useEffect(() => {
-    handleScreenResize()
-    window.addEventListener('resize', handleScreenResize)
-
-    return () => window.removeEventListener('resize', handleScreenResize)
-  }, [])
-
-  return isViewportSmall
-}
-
-const StakingPage = ({isViewportSmall}: {isViewportSmall: boolean}) => {
+const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
   const defaultSubTab = SubTabs.DELEGATE_ADA
   const mainSubTab = SubTabs.SHELLEY_BALANCES
   return (
     <Fragment>
-      {isViewportSmall ? (
+      {isSmallerThanDesktop(screenType) ? (
         <div className="dashboard mobile">
           <DashboardMobileContent
             subTabs={subTabs}
@@ -75,17 +58,17 @@ const StakingPage = ({isViewportSmall}: {isViewportSmall: boolean}) => {
 
 const SendingPage = ({
   shouldShowExportOption,
-  isViewportSmall,
+  screenType,
 }: {
   shouldShowExportOption: boolean
-  isViewportSmall: boolean
+  screenType: ScreenType
 }) => {
   const subTabs = [SubTabs.SEND_ADA, SubTabs.TRANSACTIONS, SubTabs.ADDRESSES]
   const defaultSubTab = SubTabs.TRANSACTIONS
   const mainSubTab = SubTabs.BALANCE
   return (
     <Fragment>
-      {isViewportSmall ? (
+      {isSmallerThanDesktop(screenType) ? (
         <div className="dashboard mobile">
           <DashboardMobileContent
             subTabs={subTabs}
@@ -111,13 +94,13 @@ const SendingPage = ({
   )
 }
 
-const AdvancedPage = ({isViewportSmall}: {isViewportSmall: boolean}) => {
+const AdvancedPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.POOL_OWNER]
   const defaultSubTab = SubTabs.POOL_OWNER
   const mainSubTab = SubTabs.KEYS
   return (
     <Fragment>
-      {isViewportSmall ? (
+      {screenType < ScreenType.DESKTOP ? (
         <div className="dashboard mobile">
           <DashboardMobileContent
             subTabs={subTabs}
@@ -139,12 +122,12 @@ const AdvancedPage = ({isViewportSmall}: {isViewportSmall: boolean}) => {
   )
 }
 
-const AccountsPage = ({isViewportSmall}) => {
+const AccountsPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.ACCOUNTS]
   const defaultSubTab = SubTabs.ACCOUNTS
   return (
     <Fragment>
-      {isViewportSmall ? (
+      {isSmallerThanDesktop(screenType) ? (
         <div className="dashboard mobile">
           <DashboardMobileContent subTabs={subTabs} defaultSubTab={defaultSubTab} />
         </div>
@@ -196,18 +179,15 @@ const DashboardPage = ({
   shouldNumberAccountsFromOne,
   shouldShowExportOption,
 }: Props) => {
-  const isViewportSmall = useViewport()
+  const screenType = useViewport()
 
   const MainPages: {[key in MainTabs]: any} = {
-    [MainTabs.ACCOUNT]: <AccountsPage isViewportSmall={isViewportSmall} />,
-    [MainTabs.STAKING]: <StakingPage isViewportSmall={isViewportSmall} />,
+    [MainTabs.ACCOUNT]: <AccountsPage screenType={screenType} />,
+    [MainTabs.STAKING]: <StakingPage screenType={screenType} />,
     [MainTabs.SENDING]: (
-      <SendingPage
-        isViewportSmall={isViewportSmall}
-        shouldShowExportOption={shouldShowExportOption}
-      />
+      <SendingPage screenType={screenType} shouldShowExportOption={shouldShowExportOption} />
     ),
-    [MainTabs.ADVANCED]: <AdvancedPage isViewportSmall={isViewportSmall} />,
+    [MainTabs.ADVANCED]: <AdvancedPage screenType={screenType} />,
   }
   return (
     <div className="page-wrapper">

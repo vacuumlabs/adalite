@@ -3,7 +3,6 @@ import {useState, useEffect} from 'preact/hooks'
 import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import isLeftClick from '../../../helpers/isLeftClick'
-
 import KeyFileAuth from './keyFileAuth'
 import MnemonicAuth from './mnemonicAuth'
 import HardwareAuth from './hardwareAuth'
@@ -17,43 +16,23 @@ import Tag from '../../common/tag'
 import WalletLoadingErrorModal from './walletLoadingErrorModal'
 import {getTranslation} from '../../../translations'
 import {errorHasHelp} from '../../../helpers/errorsWithHelp'
-import {AuthMethodEnum, State} from '../../../state'
+import {State} from '../../../state'
+import {AuthMethodType, ScreenType} from '../../../types'
+import {AuthMethodNames} from '../../../constants'
+import {useViewport, isBiggerThanMobile} from '../../common/viewPort'
 
-// TODO: extract from dashboardPage after rebase
-const useViewport = () => {
-  const [isViewportSmall, setIsViewportSmall] = useState(false)
-
-  const handleScreenResize = () => {
-    setIsViewportSmall(window.innerWidth < 1024)
-  }
-  useEffect(() => {
-    handleScreenResize()
-    window.addEventListener('resize', handleScreenResize)
-
-    return () => window.removeEventListener('resize', handleScreenResize)
-  }, [])
-
-  return isViewportSmall
-}
-
-// TODO: extract to app/frontend/constants.ts after rebase
-const AUTH_METHOD_NAMES = {
-  [AuthMethodEnum.Mnemonic]: 'Mnemonic',
-  [AuthMethodEnum.HwWallet]: 'Hardware Wallet',
-  [AuthMethodEnum.KeyFile]: 'Key file',
-}
-const getAuthMethodName = (authMethod: AuthMethodEnum): string => AUTH_METHOD_NAMES[authMethod]
+const getAuthMethodName = (authMethod: AuthMethodType): string => AuthMethodNames[authMethod]
 
 const CurrentDropdownItem = ({
   authMethod,
   toggleDropdown,
 }: {
-  authMethod: AuthMethodEnum
+  authMethod: AuthMethodType
   toggleDropdown: () => void
 }) => (
   <div
     className={`dropdown-item current ${authMethod} ${
-      authMethod === AuthMethodEnum.HwWallet ? 'recommended' : ''
+      authMethod === AuthMethodType.HW_WALLET ? 'recommended' : ''
     }`}
     onClick={toggleDropdown}
   >
@@ -67,9 +46,9 @@ const DropdownItem = ({
   tabName,
   recommended = false,
 }: {
-  authMethod: AuthMethodEnum
+  authMethod: AuthMethodType
   toggleDropdown: () => void
-  tabName: AuthMethodEnum
+  tabName: AuthMethodType
   recommended?: boolean
 }) => {
   const {setAuthMethod} = useActions(actions)
@@ -93,8 +72,8 @@ const AuthTab = ({
   tabName,
   recommended = false,
 }: {
-  authMethod: AuthMethodEnum
-  tabName: AuthMethodEnum
+  authMethod: AuthMethodType
+  tabName: AuthMethodType
   recommended?: boolean
 }) => {
   const {setAuthMethod} = useActions(actions)
@@ -115,7 +94,7 @@ const AuthOption = ({
   texts,
   tag,
 }: {
-  tabName: AuthMethodEnum
+  tabName: AuthMethodType
   texts: Array<string>
   tag: string
 }) => {
@@ -138,68 +117,68 @@ const AuthCardInitial = () => (
     <h2 className="authentication-title">How do you want to access your Cardano Wallet?</h2>
     <div className="auth-options">
       <AuthOption
-        tabName={AuthMethodEnum.Mnemonic}
+        tabName={AuthMethodType.MNEMONIC}
         texts={['12, 15, 24 or 27 word passphrase']}
         tag={'fastest'}
       />
       <AuthOption
-        tabName={AuthMethodEnum.HwWallet}
+        tabName={AuthMethodType.HW_WALLET}
         texts={['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger']}
         tag={'recommended'}
       />
-      <AuthOption tabName={AuthMethodEnum.KeyFile} texts={['Encrypted .JSON file']} tag={''} />
+      <AuthOption tabName={AuthMethodType.KEY_FILE} texts={['Encrypted .JSON file']} tag={''} />
     </div>
   </div>
 )
 const AuthCard = ({
   authMethod,
-  isViewportSmall,
+  screenType,
   isDropdownOpen,
   toggleDropdown,
 }: {
-  authMethod: AuthMethodEnum
-  isViewportSmall: boolean
+  authMethod: AuthMethodType
+  screenType: ScreenType
   isDropdownOpen: boolean
   toggleDropdown: () => void
 }) => (
   <div className="authentication card">
-    {isViewportSmall ? (
+    {isBiggerThanMobile(screenType) ? (
+      <ul className="auth-tabs">
+        <AuthTab tabName={AuthMethodType.MNEMONIC} authMethod={authMethod} />
+        <AuthTab tabName={AuthMethodType.HW_WALLET} authMethod={authMethod} recommended />
+        <AuthTab tabName={AuthMethodType.KEY_FILE} authMethod={authMethod} />
+      </ul>
+    ) : (
       <div className={`dropdown auth ${isDropdownOpen ? 'open' : ''}`}>
         <CurrentDropdownItem authMethod={authMethod} toggleDropdown={toggleDropdown} />
         <ul className="dropdown-items">
           <DropdownItem
             authMethod={authMethod}
-            tabName={AuthMethodEnum.Mnemonic}
+            tabName={AuthMethodType.MNEMONIC}
             toggleDropdown={toggleDropdown}
           />
           <DropdownItem
-            tabName={AuthMethodEnum.HwWallet}
+            tabName={AuthMethodType.HW_WALLET}
             toggleDropdown={toggleDropdown}
             authMethod={authMethod}
             recommended
           />
           <DropdownItem
             authMethod={authMethod}
-            tabName={AuthMethodEnum.KeyFile}
+            tabName={AuthMethodType.KEY_FILE}
             toggleDropdown={toggleDropdown}
           />
         </ul>
       </div>
-    ) : (
-      <ul className="auth-tabs">
-        <AuthTab tabName={AuthMethodEnum.Mnemonic} authMethod={authMethod} />
-        <AuthTab tabName={AuthMethodEnum.HwWallet} authMethod={authMethod} recommended />
-        <AuthTab tabName={AuthMethodEnum.KeyFile} authMethod={authMethod} />
-      </ul>
     )}
-    {authMethod === AuthMethodEnum.Mnemonic && <MnemonicAuth />}
-    {authMethod === AuthMethodEnum.HwWallet && <HardwareAuth />}
-    {authMethod === AuthMethodEnum.KeyFile && <KeyFileAuth />}
+    {authMethod === AuthMethodType.MNEMONIC && <MnemonicAuth />}
+    {authMethod === AuthMethodType.HW_WALLET && <HardwareAuth />}
+    {authMethod === AuthMethodType.KEY_FILE && <KeyFileAuth />}
   </div>
 )
 
 const LoginPage = () => {
-  const isViewportSmall = useViewport()
+  const screenType = useViewport()
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
   const {
@@ -232,8 +211,8 @@ const LoginPage = () => {
   } = useActions(actions)
 
   useEffect(() => {
-    if (autoLogin && authMethod !== AuthMethodEnum.Mnemonic) {
-      setAuthMethod(AuthMethodEnum.Mnemonic)
+    if (autoLogin && authMethod !== AuthMethodType.MNEMONIC) {
+      setAuthMethod(AuthMethodType.MNEMONIC)
     }
     loadErrorBannerContent()
   }, []) // eslint-disable-line
@@ -244,12 +223,12 @@ const LoginPage = () => {
       {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
       <div className="page-inner">
         <main className="page-main">
-          {authMethod === AuthMethodEnum.Initial ? (
+          {authMethod === null ? (
             <AuthCardInitial />
           ) : (
             <AuthCard
               authMethod={authMethod}
-              isViewportSmall={isViewportSmall}
+              screenType={screenType}
               isDropdownOpen={isDropdownOpen}
               toggleDropdown={toggleDropdown}
             />

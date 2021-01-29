@@ -37,7 +37,7 @@ import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, Ada, Lovelace, CryptoProviderFeature, _Address, TxType} from './types'
+import {AccountInfo, Ada, Lovelace, CryptoProviderFeature, _Address, TxType, AuthMethodType} from './types'
 import {MainTabs} from './constants'
 
 let wallet: ReturnType<typeof ShelleyWallet>
@@ -101,11 +101,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const setAuthMethod = (state: State, option: AuthMethodEnum): void => {
+  const setAuthMethod = (state: State, option: AuthMethodType): void => {
     setState({
       authMethod: option,
       shouldShowExportOption:
-        option === AuthMethodEnum.Mnemonic || option === AuthMethodEnum.KeyFile,
+        option === AuthMethodType.MNEMONIC || option === AuthMethodType.KEY_FILE,
     })
   }
 
@@ -274,7 +274,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       },
       walletLoadingError: undefined,
       shouldShowWalletLoadingErrorModal: false,
-      authMethod: AuthMethodEnum.Mnemonic,
+      authMethod: AuthMethodType.MNEMONIC,
       shouldShowExportOption: true,
     })
   }
@@ -327,7 +327,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         formIsValid: false,
       },
       shouldShowGenerateMnemonicDialog: true,
-      authMethod: AuthMethodEnum.Mnemonic,
+      authMethod: AuthMethodType.MNEMONIC,
       shouldShowMnemonicInfoAlert: true,
     })
   }
