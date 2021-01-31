@@ -4,6 +4,7 @@ import {CryptoProviderType} from '../../../frontend/wallet/constants'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import assert from 'assert'
 import {assertPropertiesEqual, setupInitialState} from './actions'
+import {walletSettings} from '../common/wallet-settings'
 
 let state, action
 
@@ -30,6 +31,21 @@ const expectedStateChanges = {
   donationAmount: {fieldValue: '', coins: 0},
   sendResponse: '',
   ticker2Id: null,
+  validStakepools: [
+    {
+      pool_id: 'd4b1243dfc0bec57f146a90d85b478cdd3e0e646c43801c2bebd6792580a7db2',
+      owner: 'def7e265ec2c54e1cf00dae85ec407e823dd1374e6520cd59264df321513ffe5',
+      name: 'IOHK Stakepool',
+      description: null,
+      ticker: 'IOHK1',
+      homepage: 'https://staking.cardano.org',
+      rewards: {
+        fixed: 258251123,
+        ratio: [2, 25],
+        limit: null,
+      },
+    },
+  ],
 }
 
 it('Should properly load shelley wallet', async () => {
@@ -45,28 +61,13 @@ it('Should properly load shelley wallet', async () => {
   mockNet.mockAccountDelegationHistory()
   mockNet.mockAccountStakeRegistrationHistory()
   mockNet.mockWithdrawalHistory()
-
-  expectedStateChanges.validStakepools = [
-    {
-      pool_id: 'd4b1243dfc0bec57f146a90d85b478cdd3e0e646c43801c2bebd6792580a7db2',
-      owner: 'def7e265ec2c54e1cf00dae85ec407e823dd1374e6520cd59264df321513ffe5',
-      name: 'IOHK Stakepool',
-      description: null,
-      ticker: 'IOHK1',
-      homepage: 'https://staking.cardano.org',
-      rewards: {
-        fixed: 258251123,
-        ratio: [2, 25],
-        limit: null,
-      },
-    },
-  ]
+  mockNet.mockRewardHistory()
+  mockNet.mockPoolRecommendation()
 
   await action.loadWallet(state, {
-    cryptoProviderType: CryptoProviderType.WALLET_SECRET,
-    walletSecretDef: await mnemonicToWalletSecretDef(
-      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
-    ),
+    cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+    walletSecretDef: await mnemonicToWalletSecretDef(walletSettings[0].secret),
+    shouldExportPubKeyBulk: true,
   })
   assertPropertiesEqual(state, expectedStateChanges)
   assert.equal(state.accountsInfo[0].visibleAddresses.length, 20)

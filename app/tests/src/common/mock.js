@@ -54,9 +54,7 @@ const mock = (ADALITE_CONFIG) => {
     }
 
     fetchMock.mock({
-      matcher: `${
-        ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-      }/api/account/info/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
+      matcher: `begin:${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/info/`,
       response: {
         status: 200,
         body: acctInfoMock,
@@ -228,9 +226,9 @@ const mock = (ADALITE_CONFIG) => {
 
   function mockAccountDelegationHistory() {
     fetchMock.mock({
-      matcher: `${
+      matcher: `begin:${
         ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-      }/api/account/delegationHistory/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
+      }/api/account/delegationHistory/`,
       response: {
         status: 200,
         body: [
@@ -254,9 +252,9 @@ const mock = (ADALITE_CONFIG) => {
 
   function mockAccountStakeRegistrationHistory() {
     fetchMock.mock({
-      matcher: `${
+      matcher: `begin:${
         ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-      }/api/account/stakeRegistrationHistory/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
+      }/api/account/stakeRegistrationHistory/`,
       response: {
         status: 200,
         body: [
@@ -274,12 +272,40 @@ const mock = (ADALITE_CONFIG) => {
 
   function mockWithdrawalHistory() {
     fetchMock.mock({
-      matcher: `${
+      matcher: `begin:${
         ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-      }/api/account/withdrawalHistory/e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e`,
+      }/api/account/withdrawalHistory/`,
       response: {
         status: 200,
         body: [],
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockRewardHistory() {
+    fetchMock.mock({
+      matcher: `begin:${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/rewardHistory/`,
+      response: {
+        status: 200,
+        body: [],
+        sendAsJson: true,
+      },
+    })
+  }
+
+  function mockPoolRecommendation() {
+    fetchMock.mock({
+      matcher: `begin:${
+        ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+      }/api/account/poolRecommendation/`,
+      response: {
+        status: 200,
+        body: {
+          recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
+          isInRecommendedPoolSet: true,
+          status: 'GivedPoolOk',
+        },
         sendAsJson: true,
       },
     })
@@ -298,6 +324,8 @@ const mock = (ADALITE_CONFIG) => {
     mockAccountDelegationHistory,
     mockAccountStakeRegistrationHistory,
     mockWithdrawalHistory,
+    mockRewardHistory,
+    mockPoolRecommendation,
     clean,
   }
 }

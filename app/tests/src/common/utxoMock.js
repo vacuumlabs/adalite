@@ -57,13 +57,31 @@ const utxoMock = {
       cuCoins: {getCoin: '5000'},
     },
   ],
-  addr1qxckq52xs3lgpvllaryq9cak94wpje9q48prtzuqp7p40nkr3y3kdut55a40jff00qmg74686vz44v6k363md06qkq0qa69lwq: [
+  addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3: [
     {
       cuId: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
       cuOutIndex: 1,
       cuAddress:
-        'addr1qxckq52xs3lgpvllaryq9cak94wpje9q48prtzuqp7p40nkr3y3kdut55a40jff00qmg74686vz44v6k363md06qkq0qa69lwq',
+        'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
       cuCoins: {getCoin: '10000000'},
+    },
+  ],
+  addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z: [
+    {
+      cuId: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+      cuOutIndex: 1,
+      cuAddress:
+        'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
+      cuCoins: {getCoin: '5000000'},
+    },
+  ],
+  addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt: [
+    {
+      cuId: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+      cuOutIndex: 1,
+      cuAddress:
+        'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
+      cuCoins: {getCoin: '5000000'},
     },
   ],
 }

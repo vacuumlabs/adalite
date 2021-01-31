@@ -2537,7 +2537,7 @@ const singleAddressesMock = {
       ],
       caTxNum: 1,
       caBalance: {
-        getCoin: '0',
+        getCoin: '10000000',
       },
       caTxList: [
         {
@@ -2545,25 +2545,25 @@ const singleAddressesMock = {
           ctbTimeIssued: 1608650746,
           ctbInputs: [
             [
-              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+              'addr1q88w8sft932ckyuw0xtqvhw3y9ssygkn5ty2mrxy3s0m3y9hrpl88wzzxde89584pysyuhrmdypggxylltksmf6qqrms055em6',
               {
-                getCoin: '4347427',
+                getCoin: '10177267',
               },
             ],
           ],
           ctbOutputs: [
             [
-              'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
               {
-                getCoin: '4170160',
+                getCoin: '10000000',
               },
             ],
           ],
           ctbInputSum: {
-            getCoin: '4347427',
+            getCoin: '10177267',
           },
           ctbOutputSum: {
-            getCoin: '4170160',
+            getCoin: '10000000',
           },
           fee: '177267',
         },
@@ -2577,7 +2577,7 @@ const singleAddressesMock = {
       ],
       caTxNum: 1,
       caBalance: {
-        getCoin: '0',
+        getCoin: '5000000',
       },
       caTxList: [
         {
@@ -2585,25 +2585,25 @@ const singleAddressesMock = {
           ctbTimeIssued: 1609758778,
           ctbInputs: [
             [
-              'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
+              'addr1q88w8sft932ckyuw0xtqvhw3y9ssygkn5ty2mrxy3s0m3y9hrpl88wzzxde89584pysyuhrmdypggxylltksmf6qqrms055em6',
               {
-                getCoin: '5630669',
+                getCoin: '5177267',
               },
             ],
           ],
           ctbOutputs: [
             [
-              'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
+              'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
               {
-                getCoin: '5453402',
+                getCoin: '5000000',
               },
             ],
           ],
           ctbInputSum: {
-            getCoin: '5630669',
+            getCoin: '5177267',
           },
           ctbOutputSum: {
-            getCoin: '5453402',
+            getCoin: '5000000',
           },
           fee: '177267',
         },
@@ -2617,7 +2617,7 @@ const singleAddressesMock = {
       ],
       caTxNum: 1,
       caBalance: {
-        getCoin: '0',
+        getCoin: '5000000',
       },
       caTxList: [
         {
@@ -2625,25 +2625,25 @@ const singleAddressesMock = {
           ctbTimeIssued: 1610057261,
           ctbInputs: [
             [
-              'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
+              'addr1q88w8sft932ckyuw0xtqvhw3y9ssygkn5ty2mrxy3s0m3y9hrpl88wzzxde89584pysyuhrmdypggxylltksmf6qqrms055em6',
               {
-                getCoin: '5453402',
+                getCoin: '5177267',
               },
             ],
           ],
           ctbOutputs: [
             [
-              'addr1qyvq5pd222nrjw6d6ez4jhtmldxgdwhfwkhtp6kj5ytepyvysz7frly4e360jj66ml07y3y3ugduw0j4pqjnrntyk6gs5a483h',
+              'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
               {
-                getCoin: '5276135',
+                getCoin: '5000000',
               },
             ],
           ],
           ctbInputSum: {
-            getCoin: '5453402',
+            getCoin: '5177267',
           },
           ctbOutputSum: {
-            getCoin: '5276135',
+            getCoin: '5000000',
           },
           fee: '177267',
         },

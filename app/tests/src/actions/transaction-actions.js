@@ -4,6 +4,7 @@ import mockNetwork from '../common/mock'
 import {CryptoProviderType} from '../../../frontend/wallet/constants'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import assert from 'assert'
+import {walletSettings} from '../common/wallet-settings'
 
 let state, action
 
@@ -25,12 +26,12 @@ it('Calculate fee - shelley', async () => {
   mockNet.mockAccountDelegationHistory()
   mockNet.mockAccountStakeRegistrationHistory()
   mockNet.mockWithdrawalHistory()
+  mockNet.mockRewardHistory()
+  mockNet.mockPoolRecommendation()
 
   await action.loadWallet(state, {
-    cryptoProviderType: CryptoProviderType.WALLET_SECRET,
-    walletSecretDef: await mnemonicToWalletSecretDef(
-      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
-    ),
+    cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+    walletSecretDef: await mnemonicToWalletSecretDef(walletSettings[0].secret),
   })
 
   state.sendAddress.fieldValue =
