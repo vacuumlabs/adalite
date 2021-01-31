@@ -1,11 +1,6 @@
 import {CryptoProvider, HexString, _PubKeyCbor, _XPubKey} from '../../types'
 import {HARDENED_THRESHOLD} from '../constants'
-import {
-  stakingAddressFromXpub,
-  baseAddressFromXpub,
-  stakingAddressHexFromXpub,
-} from './helpers/addresses'
-import {encode} from 'borc'
+import {stakingAddressFromXpub, baseAddressFromXpub} from './helpers/addresses'
 
 const shelleyPath = (account: number, isChange: boolean, addrIdx: number) => {
   return [
@@ -27,13 +22,16 @@ const shelleyStakeAccountPath = (account: number) => {
   ]
 }
 
-export const getStakingAddressHex = async (
+export const getStakingXpub = async (
   cryptoProvider: CryptoProvider,
   accountIndex: number
-): Promise<HexString> => {
-  const pathStake = shelleyStakeAccountPath(accountIndex)
-  const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
-  return stakingAddressHexFromXpub(stakeXpub, cryptoProvider.network.networkId)
+): Promise<_XPubKey> => {
+  const path = shelleyStakeAccountPath(accountIndex)
+  const xpubHex = (await cryptoProvider.deriveXpub(path)).toString('hex')
+  return {
+    path,
+    xpubHex,
+  }
 }
 
 export const getAccountXpub = async (
@@ -46,19 +44,6 @@ export const getAccountXpub = async (
   return {
     path,
     xpubHex,
-  }
-}
-
-export const getStakingKeyCborHex = async (
-  cryptoProvider: CryptoProvider,
-  accountIndex: number
-): Promise<_PubKeyCbor> => {
-  const path = shelleyStakeAccountPath(accountIndex)
-  const pubKey: Buffer = (await cryptoProvider.deriveXpub(path)).slice(0, 32)
-  const cborHex: HexString = encode(pubKey).toString('hex')
-  return {
-    path,
-    cborHex,
   }
 }
 

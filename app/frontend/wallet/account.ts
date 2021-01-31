@@ -4,11 +4,10 @@ import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {CryptoProvider, Lovelace} from '../types'
 import {
-  getStakingAddressHex,
   getAccountXpub as getAccoutXpubShelley,
   ShelleyStakingAccountProvider,
   ShelleyBaseAddressProvider,
-  getStakingKeyCborHex,
+  getStakingXpub,
 } from './shelley/shelley-address-provider'
 
 import {
@@ -151,6 +150,10 @@ const MyAddresses = ({
     )
   }
 
+  async function getStakingAddress() {
+    return await accountAddrManager._deriveAddress(accountIndex)
+  }
+
   return {
     getAddressToAbsPathMapper,
     fixedPathMapper,
@@ -160,6 +163,7 @@ const MyAddresses = ({
     accountAddrManager,
     legacyExtManager,
     areAddressesUsed,
+    getStakingAddress,
   }
 }
 
@@ -273,7 +277,7 @@ const Account = ({
   }
 
   const getTxPlan = async (args: utxoArgs) => {
-    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
+    const stakingAddress = await myAddresses.getStakingAddress()
     const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType, rewards} = args
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
@@ -294,7 +298,7 @@ const Account = ({
       coins,
       donationAmount,
       changeAddress,
-      accountAddress,
+      stakingAddress,
       poolHash,
       !stakingKeyRegistered,
       rewards
@@ -312,7 +316,9 @@ const Account = ({
   }
 
   async function getAccountInfo(validStakepools) {
-    const keys = await getKeys()
+    const accountXpubs = await getAccountXpubs()
+    const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
+    const stakingAddress = await myAddresses.getStakingAddress()
     const {baseAddressBalance, nonStakingBalance, balance} = await getBalance()
     const shelleyAccountInfo = await getStakingInfo(validStakepools)
     const stakingHistory = await getStakingHistory(validStakepools)
@@ -325,7 +331,9 @@ const Account = ({
     const isUsed = await isAccountUsed()
 
     return {
-      keys,
+      accountXpubs,
+      stakingXpub,
+      stakingAddress,
       balance,
       shelleyBalances: {
         nonStakingBalance,
@@ -360,27 +368,21 @@ const Account = ({
   }
 
   async function getStakingHistory(validStakepools): Promise<StakingHistoryObject[]> {
-    const stakingAddressHex = await getStakingAddressHex(cryptoProvider, accountIndex)
-    return blockchainExplorer.getStakingHistory(stakingAddressHex, validStakepools)
+    const stakingAddress = await myAddresses.getStakingAddress()
+    return blockchainExplorer.getStakingHistory(bechAddressToHex(stakingAddress), validStakepools)
   }
 
-  async function getKeys() {
+  async function getAccountXpubs() {
     const shelleyAccountXpub = await getAccoutXpubShelley(cryptoProvider, accountIndex)
     const byronAccountXpub = await getAccoutXpubByron(cryptoProvider, accountIndex)
-    const stakingKeyCborHex = await getStakingKeyCborHex(cryptoProvider, accountIndex)
-    const stakingAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
-    const stakingAddressHex = await getStakingAddressHex(cryptoProvider, accountIndex)
     return {
       shelleyAccountXpub,
       byronAccountXpub,
-      stakingKeyCborHex,
-      stakingAddress,
-      stakingAddressHex,
     }
   }
 
   async function getStakingInfo(validStakepools) {
-    const stakingAddressHex = await getStakingAddressHex(cryptoProvider, accountIndex)
+    const stakingAddressHex = bechAddressToHex(await myAddresses.getStakingAddress())
     const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getStakingInfo(
       stakingAddressHex
     )
@@ -467,10 +469,10 @@ const Account = ({
   }
 
   async function getPoolOwnerCredentials() {
-    const accountAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
-    const path = myAddresses.fixedPathMapper()(accountAddress)
+    const stakingAddress = await myAddresses.getStakingAddress()
+    const path = myAddresses.fixedPathMapper()(stakingAddress)
     // TODO: this is not pubkeyHex, its staking address hex
-    const pubKeyHex = await getStakingAddressHex(cryptoProvider, accountIndex)
+    const pubKeyHex = bechAddressToHex(stakingAddress)
     return {
       pubKeyHex: Buffer.from(pubKeyHex, 'hex')
         .slice(1)
@@ -500,6 +502,7 @@ const Account = ({
     getPoolRecommendation,
     isAccountUsed,
     ensureXpubIsExported,
+    _getAccountXpubs: getAccountXpubs,
   }
 }
 

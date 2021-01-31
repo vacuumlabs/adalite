@@ -212,13 +212,12 @@ const initialState: State = {
   isBigDelegator: false,
   accountsInfo: [
     {
-      keys: {
+      accountXpubs: {
         shelleyAccountXpub: null,
         byronAccountXpub: null,
-        stakingKeyCborHex: null,
-        stakingAddress: '',
-        stakingAddressHex: '',
       },
+      stakingXpub: null,
+      stakingAddress: null,
       balance: 0,
       shelleyBalances: {
         stakingBalance: 0,

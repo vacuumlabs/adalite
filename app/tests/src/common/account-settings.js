@@ -52,6 +52,19 @@ export const accountSettings = [
       'addr1q98wuwmvcm2e608tvnjjawqrewhfh42cyt9hjpdw3d9elsc2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvps5etmj7',
       'addr1qx39zdl4lym6hjmz6yzq5y4jw02jfyvjkwpwve49may288c2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjrny7r',
     ],
+    accountXpubs: {
+      shelleyAccountXpub: {
+        path: [2147485500, 2147485463, 2147483648],
+        xpubHex:
+          '014db2d19cb1c54b57faedea5429107e59b0893a9940fd30a634e014d52bacf2d9dc81b2c64d78b7bf1d7c0c48ea5cc21f30172a578a3be9e17a6c1c5417e5f3',
+      },
+      byronAccountXpub: {
+        path: [2147483692, 2147485463, 2147483648],
+        xpubHex:
+          '47c924ddc8ff1e4356db0f7c65945c5b80835cc29841211751a703838baad0898addbcc307eff874cc448d41cdc254d78a384cdad586b961cad223b7b061da57',
+      },
+    },
+    stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
     ...accountManagerSettings[0],
   },
   {
@@ -103,6 +116,15 @@ export const accountSettings = [
       'addr1q9hsg6rjwpwj0d8hu9grcs2ta8u79qw6h0ezslzqtrv0s4h4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qx094f2',
       'addr1q9k6d04pff2mtccuyge6537042md4249u5gl9majlpk2de84nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qa6np3t',
     ],
+    accountXpubs: {
+      shelleyAccountXpub: {
+        path: [2147485500, 2147485463, 2147483649],
+        xpubHex:
+          '6d391177f3a5c7f1df994240058c8bc618b9015c1fec3b6d4c0d68d93f54bcd662563a8231105c71282afdd7f65fd49b338aa8aec484a402b2e017af741e417c',
+      },
+      byronAccountXpub: null,
+    },
+    stakingAddress: 'stake1u86eec2alffxa3udqtax7u6j967sdnezk9zuvxp0qm6xvns252x9a',
     ...accountManagerSettings[0],
   },
 ]

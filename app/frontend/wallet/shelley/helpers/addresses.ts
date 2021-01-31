@@ -9,6 +9,7 @@ import {
   getPubKeyBlake2b224Hash,
 } from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../../constants'
+import {encode} from 'borc'
 
 const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
 
@@ -20,6 +21,9 @@ export const isShelleyPath = (path) => path[0] - HARDENED_THRESHOLD === 1852
 
 // TODO: do this properly with cardano-crypto unpackAddress
 export const isV1Address = (address: string) => address.startsWith('D')
+
+export const xpubHexToCborPubHex = (xpubHex: HexString) =>
+  encode(Buffer.from(xpubHex, 'hex').slice(0, 32)).toString('hex')
 
 export const bechAddressToHex = (address: string): HexString => {
   const parsed = bech32.decode(address)

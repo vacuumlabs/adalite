@@ -65,7 +65,7 @@ it('Should properly load shelley wallet', async () => {
   mockNet.mockPoolRecommendation()
 
   await action.loadWallet(state, {
-    cryptoProviderType: CRYPTO_PROVIDER_TYPES.WALLET_SECRET,
+    cryptoProviderType: CryptoProviderType.WALLET_SECRET,
     walletSecretDef: await mnemonicToWalletSecretDef(walletSettings[0].secret),
     shouldExportPubKeyBulk: true,
   })

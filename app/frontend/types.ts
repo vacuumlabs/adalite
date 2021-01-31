@@ -46,33 +46,17 @@ export type _XPubKey = {
   xpubHex: HexString
 }
 
-export type _PubKey = {
-  path: number[]
-  pubHex: HexString
-}
-
-export type _PubKeyCbor = {
-  path: number[]
-  cborHex: HexString
-}
-
-export type _Address = {
-  path: number[]
-  address: string
-}
-
 export type AuthMethod = '' | 'hw-wallet' | 'mnemonic' // TODO
 export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
 
 export type AccountInfo = {
-  keys: {
+  accountXpubs: {
     shelleyAccountXpub: _XPubKey
     byronAccountXpub: _XPubKey
-    stakingKeyCborHex: _PubKeyCbor
-    stakingAddress: string
-    stakingAddressHex: HexString
   }
+  stakingXpub: _XPubKey
+  stakingAddress: _Address
   balance: number
   shelleyBalances: {
     stakingBalance?: number

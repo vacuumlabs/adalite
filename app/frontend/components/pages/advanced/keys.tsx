@@ -5,7 +5,8 @@ import {State, getActiveAccountInfo} from '../../../state'
 import {parsePath} from '../../../helpers/pathParser'
 import {LinkIconToKey} from '../delegations/common'
 import tooltip from '../../common/tooltip'
-import {HexString, _PubKeyCbor, _XPubKey} from '../../../types'
+import {_Address, _XPubKey} from '../../../types'
+import {bechAddressToHex, xpubHexToCborPubHex} from '../../../wallet/shelley/helpers/addresses'
 
 const DownloadKey = ({cborHex}) => {
   const fileContents = {
@@ -22,20 +23,13 @@ const DownloadKey = ({cborHex}) => {
 }
 
 type Props = {
-  byronAccountXpub: _XPubKey
   shelleyAccountXpub: _XPubKey
-  stakingAddressHex: HexString
-  stakingKeyCborHex: _PubKeyCbor
-  stakingAddress: string
+  byronAccountXpub: _XPubKey
+  stakingAddress: _Address
+  stakingXpub: _XPubKey
 }
 
-const Keys = ({
-  byronAccountXpub,
-  shelleyAccountXpub,
-  stakingAddressHex,
-  stakingKeyCborHex,
-  stakingAddress,
-}: Props) => {
+const Keys = ({byronAccountXpub, shelleyAccountXpub, stakingAddress, stakingXpub}: Props) => {
   return (
     <div className="card">
       <h2 className="card-title small-margin">Keys</h2>
@@ -52,8 +46,8 @@ const Keys = ({
       </div>
       <div className="advanced-value">{shelleyAccountXpub.xpubHex}</div>
       <div className="advanced-label">
-        Staking key CBOR hex ({parsePath(stakingKeyCborHex.path)})
-        <DownloadKey cborHex={stakingKeyCborHex.cborHex} />
+        Staking key CBOR hex ({parsePath(stakingXpub.path)})
+        <DownloadKey cborHex={xpubHexToCborPubHex(stakingXpub.xpubHex)} />
         <a
           {...tooltip(
             'Staking key is needed for creating the stake pool ownership certificate.',
@@ -63,27 +57,26 @@ const Keys = ({
           <span className="show-info">{''}</span>
         </a>
       </div>
-      <div className="advanced-value">{stakingKeyCborHex.cborHex}</div>
+      <div className="advanced-value">{xpubHexToCborPubHex(stakingXpub.xpubHex)}</div>
       {}
       <div className="advanced-label">
         Reward address <LinkIconToKey stakeKey={stakingAddress} />
       </div>
       <div className="advanced-value">{stakingAddress}</div>
       <div className="advanced-label">
-        Staking key hex <LinkIconToKey stakeKey={stakingAddressHex.slice(2)} />
+        Staking key hex <LinkIconToKey stakeKey={bechAddressToHex(stakingAddress)} />
       </div>
-      <div className="advanced-value">{stakingAddressHex.slice(2)}</div>
+      <div className="advanced-value">{bechAddressToHex(stakingAddress)}</div>
     </div>
   )
 }
 
 export default connect(
   (state: State) => ({
-    shelleyAccountXpub: getActiveAccountInfo(state).keys.shelleyAccountXpub,
-    byronAccountXpub: getActiveAccountInfo(state).keys.byronAccountXpub,
-    stakingAddressHex: getActiveAccountInfo(state).keys.stakingAddressHex,
-    stakingKeyCborHex: getActiveAccountInfo(state).keys.stakingKeyCborHex,
-    stakingAddress: getActiveAccountInfo(state).keys.stakingAddress,
+    shelleyAccountXpub: getActiveAccountInfo(state).accountXpubs.shelleyAccountXpub,
+    byronAccountXpub: getActiveAccountInfo(state).accountXpubs.byronAccountXpub,
+    stakingAddress: getActiveAccountInfo(state).stakingAddress,
+    stakingXpub: getActiveAccountInfo(state).stakingXpub,
   }),
   actions
 )(Keys)
