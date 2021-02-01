@@ -48,7 +48,7 @@ const mock = (ADALITE_CONFIG) => {
     fetchMock.config.overwriteRoutes = true
     const acctInfoMock = {
       delegation: {},
-      value: 0,
+      rewards: 5000000,
       hasStakingKey: false,
       nextRewardDetails: [{forEpoch: 212}, {forEpoch: 213}, {forEpoch: 214}, {forEpoch: 215}],
     }

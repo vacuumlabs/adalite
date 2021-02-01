@@ -1,4 +1,4 @@
-import {setupInitialState} from './actions'
+import {setStateFn, setupInitialState} from './actions'
 import {ADALITE_CONFIG} from '../../../frontend/config'
 import mockNetwork from '../common/mock'
 import {CryptoProviderType} from '../../../frontend/wallet/constants'
@@ -12,7 +12,7 @@ beforeEach(() => {
   ;[state, action] = setupInitialState()
 })
 
-it('Calculate fee - shelley', async () => {
+before(() => {
   ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
   ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
@@ -28,22 +28,99 @@ it('Calculate fee - shelley', async () => {
   mockNet.mockWithdrawalHistory()
   mockNet.mockRewardHistory()
   mockNet.mockPoolRecommendation()
+})
 
+const loadTestWallet = async () => {
   await action.loadWallet(state, {
     cryptoProviderType: CryptoProviderType.WALLET_SECRET,
     walletSecretDef: await mnemonicToWalletSecretDef(walletSettings.Shelley15Word.secret),
   })
+}
 
-  state.sendAddress.fieldValue =
-    'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0'
-  state.sendAmount.fieldValue = 1
-  state.sendAmount.coins = 1000000
-  state.donationAmount.fieldValue = 5
-  state.donationAmount.coins = 5000000
+const sendAdaTxSettings = {
+  donation: {
+    state: {
+      sendAddress: {
+        fieldValue:
+          'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
+      },
+      sendAmount: {fieldValue: 1, coins: 1000000},
+      donationAmount: {fieldValue: 5, coins: 5000000},
+    },
+    sendTransactionSummary: {
+      amount: 1000000,
+      donation: 5000000,
+      fee: 183419,
+      plan: {},
+      tab: 'send',
+      deposit: 0,
+    },
+  },
+}
 
-  await action.calculateFee()
+const delegationSettings = {
+  delegation: {
+    state: {
+      shelleyDelegation: {
+        selectedPool: {
+          poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
+        },
+      },
+    },
+    sendTransactionSummary: {
+      amount: 0,
+      donation: 0,
+      fee: 193878,
+      plan: {},
+      tab: 'stake',
+      deposit: 2000000,
+    },
+  },
+}
 
-  assert.equal(state.transactionFee, 183419)
+const withdrawalSettings = {
+  rewardWithdrawal: {
+    state: {},
+    sendTransactionSummary: {
+      amount: 0,
+      donation: 0,
+      fee: 185089,
+      plan: {},
+      tab: 'withdraw',
+      deposit: 0,
+    },
+  },
+}
 
-  mockNet.clean()
+describe('Send ADA fee calculation', () => {
+  Object.entries(sendAdaTxSettings).forEach(([name, setting]) =>
+    it(`should calculate fee for tx with ${name}`, async () => {
+      await loadTestWallet()
+      setStateFn(state, setting.state)
+      await action.calculateFee()
+      assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
+    })
+  )
+})
+
+describe('Delegation fee calculation', () => {
+  Object.entries(delegationSettings).forEach(([name, setting]) =>
+    it(`should calculate fee for tx with ${name}`, async () => {
+      await loadTestWallet()
+      setStateFn(state, setting.state)
+      await action.calculateDelegationFee()
+      assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
+    })
+  )
+})
+
+describe('Withdrawal fee calculation', () => {
+  Object.entries(withdrawalSettings).forEach(([name, setting]) =>
+    it(`should calculate fee for tx with ${name}`, async () => {
+      await loadTestWallet()
+      setStateFn(state, setting.state)
+      await action.withdrawRewards(state)
+      assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
+    })
+  )
 })

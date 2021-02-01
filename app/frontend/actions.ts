@@ -1511,6 +1511,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     openWelcome,
     closeWelcome,
     calculateFee,
+    calculateDelegationFee,
     confirmTransaction,
     cancelTransaction,
     submitTransaction,
