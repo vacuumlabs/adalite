@@ -1,0 +1,510 @@
+/* TABLET MEDIA QUERIES */
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  /* COMMON */
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: block;
+  }
+
+  /* PAGE MAIN */
+
+  .page-wrapper,
+  .page-inner {
+    display: block;
+    padding: 0;
+  }
+
+  .page-main {
+    width: 100%;
+  }
+
+  /* BANNER */
+
+  .banner {
+    margin-bottom: 0;
+  }
+
+  .banner-inner {
+    background-color: transparent;
+  }
+
+  /* SIDEBAR */
+
+  .sidebar {
+    margin: 0;
+    padding: 56px 32px 56px 56px;
+  }
+
+  .sidebar.export {
+    padding: 40px 16px;
+  }
+
+  .sidebar-item.spacy {
+    margin-bottom: 56px;
+  }
+
+  /* NAVBAR */
+
+  .navbar {
+    padding: 16px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .navbar.authed {
+    padding-bottom: 8px;
+  }
+
+  .navbar.demo {
+    padding-top: 48px;
+  }
+
+  .navbar.demo::before {
+    display: none;
+  }
+
+  .navbar-demo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 12px 16px;
+    text-align: center;
+    border-radius: 0;
+  }
+
+  /* FOOTER */
+
+  .footer {
+    padding: 56px 32px;
+    margin-top: 0;
+  }
+
+  .footer .branding {
+    margin-bottom: 56px;
+  }
+
+  .footer-row {
+    display: block;
+  }
+
+  .footer .social {
+    display: block;
+    width: 100%;
+    margin-bottom: 32px;
+  }
+
+  .footer .donations {
+    width: 100%;
+  }
+
+  .footer .conversion {
+    margin-top: 56px;
+    margin-bottom: 0;
+  }
+
+  .social-link {
+    display: inline-block;
+    width: 50%;
+  }
+
+  /* BUTTONS */
+
+  .button.navbar {
+    margin-left: 0;
+  }
+
+  /* ACCORDIONS */
+
+  .accordion {
+    cursor: unset;
+  }
+  
+  .accordion-panel.hidden, .accordion-panel.shown {
+    max-height: unset;
+  }
+  
+  .accordion-icon {
+    display: none;
+  }
+
+  /* MODALS */
+
+  .modal-body {
+    width: calc(100% - 32px);
+    max-height: calc(100% - 32px);
+  }
+
+  .modal-body.send {
+    width: calc(100% - 96px);
+  }
+
+  .modal-body.delegate {
+    width: calc(100% - 96px);
+  }
+
+  .modal-body .alert {
+    margin-top: 24px;
+  }
+
+  .modal-body .alert.news {
+    margin-top: 42px;
+  }
+
+  /* ALERTS */
+
+  .alert {
+    padding: 16px 24px 16px 60px;
+  }
+
+  /* AUTHENTICATION */
+
+  .authentication {
+    min-height: initial;
+    box-shadow: none;
+    padding: 40px 16px;
+    border-bottom: 1px solid var(--color-grey-light);
+  }
+
+  .authentication.initial {
+    padding: 64px 40px 80px 40px;
+  }
+
+  /* WELCOME MODAL */
+
+  .welcome-articles {
+    margin: 32px 0;
+    grid-template-columns: 1fr;
+    grid-row-gap: 24px;
+  }
+
+  .welcome-title {
+    margin-bottom: 8px;
+  }
+
+  .welcome .credits {
+    padding: 24px 0;
+  }
+
+  .welcome-footer {
+    margin-top: 32px;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 56px;
+  }
+
+  .welcome-footer .button {
+    margin-left: 0;
+    margin-top: 16px;
+  }
+
+  /* EXPORT */
+
+  .export.download {
+    position: relative;
+    margin-bottom: 24px;
+    margin-top: 48px;
+  }
+
+  .export.download .tag {
+    position: absolute;
+    top: 40px;
+    right: 56px;
+    max-width: 185px;
+  }
+
+  .export.download .export-title {
+    font-size: 24px;
+    line-height: 40px;
+    padding-right: 201px;
+  }
+
+  .export-content .validation-row {
+    margin-top: 16px;
+  }
+
+  .export-content .button {
+    width: 100%;
+  }
+
+  /* HINT */
+
+  .hint {
+    padding-left: 56px;
+    margin-bottom: 48px;
+  }
+
+  .hint::before {
+    left: 8px;
+  }
+
+  /* DASHBOARD */
+
+  .dashboard.desktop {
+    display: none;
+  }
+
+  .dashboard.mobile {
+    display: block;
+    padding: 48px 48px 0 48px;
+  }
+
+  .dashboard-tabs {
+    margin: 48px 0 32px 0;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+  }
+
+  .dashboard-tab {
+    border-width: 0 1px 0 0;
+    background-color: #fcfcfc;
+    color: var(--color-grey);
+    border-right-color: var(--color-border);
+    text-align: center;
+  }
+
+  .dashboard-tab.selected {
+    background-color: #ffffff;
+    color: var(--color-grey-dark);
+    border-left-color: var(--color-border);
+    border-right-color: var(--color-border);
+  }
+
+  .dashboard-tab:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .dashboard-tab:last-child {
+    border-radius: 0 4px 4px 0;
+    border-right-color: transparent;
+  }
+
+  .dashboard.mobile .card {
+    margin-bottom: 48px;
+  }
+
+  .dashboard.mobile .send.card,
+  .dashboard.mobile .delegate.card {
+    margin-bottom: 0px;
+  }
+
+  /* MAIN TABS */
+
+  .tabinator {
+    padding-bottom: unset;
+    margin: 32px 0 -12px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .tabinator label:before {
+    display: none;
+  }
+
+  li.main-tab:first-child input + label {
+    border-right: 1px transparent;
+  }
+
+  li.main-tab:last-child input + label {
+    border-right: 1px transparent;
+  }
+
+  li.main-tab input + label {
+    border: 1px solid var(--color-border);
+    box-shadow: unset;
+    border-radius: unset;
+  }
+
+  li.main-tab input + label.selected::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    box-shadow: unset;
+    border-radius: unset;
+  }
+
+  li.main-tab input + label.selected::before {
+    display: none;
+  }
+
+  li.main-tab input + label.selected {
+    border-radius: unset;
+    position: relative;
+    color: #000;
+    background: #fff;
+    box-shadow: unset;
+  }
+
+  .tabinator li.primary:after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: calc(50% + -36px);
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-brand);
+    border-radius: 50%;
+  }
+
+  li.main-tab label {
+    width: calc(100% / 4);
+  }
+
+  .tabinator li {
+    display: unset;
+  }
+
+  /* TRANSACTIONS */
+
+  .transactions {
+    padding-right: 56px;
+  }
+
+  .transactions::before {
+    display: none;
+  }
+
+  .transaction-item {
+    padding-right: 0;
+  }
+
+  .transaction-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .transactions-content {
+    max-height: initial;
+    overflow: hidden;
+  }
+
+  /* ADDRESS */
+
+  .addresses {
+    padding-right: 56px;
+  }
+
+  .addresses::before {
+    display: none;
+  }
+
+  .address {
+    padding-right: 0;
+  }
+
+  .address:last-child {
+    margin-bottom: 0;
+  }
+
+  .addresses-content {
+    max-height: initial;
+    overflow: hidden;
+  }
+
+  .detail-content {
+    margin-right: 32px;
+  }
+
+  .detail-content .address-copy {
+    display: none;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detail-row .detail-input {
+    margin-bottom: 24px;
+  }
+
+  /* STAKING HISTORY */
+  .staking-history-content {
+    max-height: initial;
+    overflow: hidden;
+  }
+
+  /* STAKING PAGE */
+
+  .staking-wrapper {
+    padding: 120px 0;
+  }
+
+  /* CARD */
+
+  .card-column > .item {
+    margin-top: unset;
+    margin-bottom: unset;
+    padding-left: unset;
+  }
+
+  .card-column {
+    width: unset;
+  }
+
+  .card-column.tablet-offset {
+    align-self: flex-start;
+  }
+
+  .card.account {
+    flex-wrap: wrap;
+  }
+
+  .card.account .header-wrapper {
+    flex: 0 0 100%;
+    margin-bottom: 8px;
+  }
+
+  .card.account .header-wrapper > h2 {
+    text-align: center;
+    font-size: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* ACCOUNTS */
+  .accounts-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .account.info {
+    margin-bottom: 32px;
+  }
+
+  .account-button-wrapper {
+    flex: 0 0 100%;
+    order: 4;
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .account-item-info-wrapper {
+    padding-left: 8px;
+    flex: 1 1 32%;
+  }
+
+  .account-item-info-wrapper {
+    text-align: center;
+  }
+
+  .account-item-info-wrapper > div {
+    display: flex;
+    justify-content: center;
+    padding: unset;
+  }
+
+  .card-column > button {
+    width: 22%;
+  }
+
+  .card.account-aggregated > .balance .item {
+    width: 50%;
+  }
+}
+  

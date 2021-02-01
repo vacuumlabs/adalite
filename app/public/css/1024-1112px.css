@@ -1,0 +1,35 @@
+@media screen and (min-width: 1024px) and (max-width: 1112px) {
+  .button.secondary.refresh {
+    text-indent: -9999em;
+    padding-left: 24px;
+  }
+
+  .button.secondary.refresh::before {
+    left: 0;
+    right: 0;
+  }
+
+  .button.secondary.withdraw {
+    text-indent: -9999em;
+    padding-left: 24px;
+  }
+
+  .button.secondary.withdraw::before {
+    left: 0;
+    right: 0;
+  }
+
+  .button.secondary.convert::before {
+    content: 'Convert'
+  }
+
+  .button.secondary.balance {
+    width: unset;
+  }
+
+  /* CARD */
+  .card.account {
+    padding: 20px 28px;
+  }
+}
+  
