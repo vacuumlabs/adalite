@@ -6,13 +6,13 @@ import {default as actions} from '../../../frontend/actions'
 window.wasm = null
 before(loadWasmModule)
 
-export const setStateFn = function(state, changes) {
+export const setMockState = function(state, changes) {
   for (const [key, val] of Object.entries(changes)) {
     state[key] = val
   }
 }
 
-export const getStateFn = function(state) {
+export const getMockState = function(state) {
   return state
 }
 
@@ -22,12 +22,12 @@ export function assertPropertiesEqual(state, expectedState) {
   }
 }
 
-export function setupInitialState() {
+export function setupInitialMockState() {
   const cloneDeep = require('lodash/fp/cloneDeep')
   const state = cloneDeep(initialState)
 
-  const getState = () => getStateFn(state)
-  const setState = (change) => setStateFn(state, change)
+  const getState = () => getMockState(state)
+  const setState = (change) => setMockState(state, change)
   const action = actions({setState, getState})
   return [state, action]
 }

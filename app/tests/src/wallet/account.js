@@ -51,7 +51,7 @@ const initAccount = async (settings, i) => {
   })
 }
 
-before(() => {
+before(async () => {
   ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
   ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
@@ -68,9 +68,12 @@ before(() => {
   mockNet.mockRewardHistory()
   mockNet.mockPoolRecommendation()
 
-  Object.entries(accountSettings).forEach(([name, setting]) => {
-    accounts[name] = initAccount(setting)
-  })
+  await Promise.all(
+    Object.entries(accountSettings).map(async ([name, setting]) => {
+      accounts[name] = await initAccount(setting)
+      return accounts[name]
+    })
+  )
 })
 
 describe('Account info', () => {

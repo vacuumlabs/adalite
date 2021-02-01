@@ -1,4 +1,4 @@
-import {setStateFn, setupInitialState} from './actions'
+import {setMockState, setupInitialMockState} from './actions'
 import {ADALITE_CONFIG} from '../../../frontend/config'
 import mockNetwork from '../common/mock'
 import {CryptoProviderType} from '../../../frontend/wallet/constants'
@@ -9,7 +9,7 @@ import {walletSettings} from '../common/wallet-settings'
 let state, action
 
 beforeEach(() => {
-  ;[state, action] = setupInitialState()
+  ;[state, action] = setupInitialMockState()
 })
 
 before(() => {
@@ -30,11 +30,12 @@ before(() => {
   mockNet.mockPoolRecommendation()
 })
 
-const loadTestWallet = async () => {
+const loadTestWallet = async (mockState) => {
   await action.loadWallet(state, {
     cryptoProviderType: CryptoProviderType.WALLET_SECRET,
     walletSecretDef: await mnemonicToWalletSecretDef(walletSettings.Shelley15Word.secret),
   })
+  setMockState(state, mockState)
 }
 
 const sendAdaTxSettings = {
@@ -95,8 +96,7 @@ const withdrawalSettings = {
 describe('Send ADA fee calculation', () => {
   Object.entries(sendAdaTxSettings).forEach(([name, setting]) =>
     it(`should calculate fee for tx with ${name}`, async () => {
-      await loadTestWallet()
-      setStateFn(state, setting.state)
+      await loadTestWallet(setting.state)
       await action.calculateFee()
       assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
     })
@@ -106,8 +106,7 @@ describe('Send ADA fee calculation', () => {
 describe('Delegation fee calculation', () => {
   Object.entries(delegationSettings).forEach(([name, setting]) =>
     it(`should calculate fee for tx with ${name}`, async () => {
-      await loadTestWallet()
-      setStateFn(state, setting.state)
+      await loadTestWallet(setting.state)
       await action.calculateDelegationFee()
       assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
     })
@@ -117,8 +116,7 @@ describe('Delegation fee calculation', () => {
 describe('Withdrawal fee calculation', () => {
   Object.entries(withdrawalSettings).forEach(([name, setting]) =>
     it(`should calculate fee for tx with ${name}`, async () => {
-      await loadTestWallet()
-      setStateFn(state, setting.state)
+      await loadTestWallet(setting.state)
       await action.withdrawRewards(state)
       assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
     })
