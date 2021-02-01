@@ -31,7 +31,7 @@ const useViewport = () => {
   const [isViewportSmall, setIsViewportSmall] = useState(false)
 
   const handleScreenResize = () => {
-    setIsViewportSmall(window.innerWidth < 1024)
+    setIsViewportSmall(window.innerWidth <= 1024)
   }
   useEffect(() => {
     handleScreenResize()

@@ -107,6 +107,11 @@ app.get('*', (req, res) => {
 
           <script src="js/init.js"></script>
           <link rel="stylesheet" type="text/css" href="css/styles.css">
+          <link rel="stylesheet" type="text/css" href="css/0-767px.css">
+          <link rel="stylesheet" type="text/css" href="css/0-1366px.css">
+          <link rel="stylesheet" type="text/css" href="css/767-1366px.css">
+          <link rel="stylesheet" type="text/css" href="css/768-1024px.css">
+          <link rel="stylesheet" type="text/css" href="css/1024-1112px.css">
           <link rel="icon" type="image/ico" href="assets/favicon.ico">
           ${
   backendConfig.ADALITE_TREZOR_CONNECT_URL

@@ -1,0 +1,16 @@
+@media screen and (max-width: 767px) and (max-height: 1366px) {
+  .welcome {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+
+  .welcome-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .welcome-footer {
+    bottom: -40px;
+    padding: 24px 16px;
+  }
+}
