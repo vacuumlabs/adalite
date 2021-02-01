@@ -5,6 +5,8 @@ import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonic
 import BlockchainExplorer from '../../../frontend/wallet/blockchain-explorer'
 import ShelleyJsCryptoProvider from '../../../frontend/wallet/shelley/shelley-js-crypto-provider'
 import {ADALITE_CONFIG} from '../../../frontend/config'
+import {transactionPlanSettings} from '../common/tx-plan-settings'
+import mockNetwork from '../common/mock'
 
 const accounts = {}
 
@@ -50,6 +52,22 @@ const initAccount = async (settings, i) => {
 }
 
 before(() => {
+  ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
+  ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
+  const mockNet = mockNetwork(ADALITE_CONFIG)
+  mockNet.mockBulkAddressSummaryEndpoint()
+  mockNet.mockGetAccountInfo()
+  mockNet.mockGetStakePools()
+  mockNet.mockGetConversionRates()
+  mockNet.mockUtxoEndpoint()
+  mockNet.mockPoolMeta()
+  mockNet.mockGetAccountState()
+  mockNet.mockAccountDelegationHistory()
+  mockNet.mockAccountStakeRegistrationHistory()
+  mockNet.mockWithdrawalHistory()
+  mockNet.mockRewardHistory()
+  mockNet.mockPoolRecommendation()
+
   Object.entries(accountSettings).forEach(([name, setting]) => {
     accounts[name] = initAccount(setting)
   })
@@ -61,6 +79,16 @@ describe('Account info', () => {
       const account = await accounts[name]
       const xpubs = await account._getAccountXpubs()
       assert.deepEqual(xpubs, setting.accountXpubs)
+    })
+  )
+})
+
+describe('Tx plan', () => {
+  Object.entries(transactionPlanSettings).forEach(([name, setting]) =>
+    it(`should create the right tx plan for tx with ${name}`, async () => {
+      const account = await accounts.ShelleyAccount0
+      const txPlan = await account.getTxPlan({...setting.args})
+      assert.deepEqual(txPlan, setting.plan)
     })
   )
 })
