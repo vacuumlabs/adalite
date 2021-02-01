@@ -24,35 +24,34 @@ const byronAddressManagerSettings = [
   },
 ]
 
-const addressManagerSettings = [
-  {
-    accountIndex: 0,
-    isChange: true,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-  {
-    accountIndex: 0,
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-  {
-    accountIndex: 1,
-    isChange: true,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-  {
-    accountIndex: 1,
-    isChange: false,
-    cryptoSettings: cryptoProviderSettings[4],
-    shouldExportPubKeyBulk: true,
-  },
-]
+// const addressManagerSettings = [
+//   {
+//     accountIndex: 0,
+//     isChange: true,
+//     cryptoSettings: cryptoProviderSettings[4],
+//     shouldExportPubKeyBulk: true,
+//   },
+//   {
+//     accountIndex: 0,
+//     isChange: false,
+//     cryptoSettings: cryptoProviderSettings[4],
+//     shouldExportPubKeyBulk: true,
+//   },
+//   {
+//     accountIndex: 1,
+//     isChange: true,
+//     cryptoSettings: cryptoProviderSettings[4],
+//     shouldExportPubKeyBulk: true,
+//   },
+//   {
+//     accountIndex: 1,
+//     isChange: false,
+//     cryptoSettings: cryptoProviderSettings[4],
+//     shouldExportPubKeyBulk: true,
+//   },
+// ]
 
-// these are used for the new tests
-const addressManagerSettings2 = {
+const addressManagerSettings = {
   changeAddressProviderForAccount0: {
     ...accountSettings.ShelleyAccount0,
     isChange: true,

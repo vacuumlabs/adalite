@@ -71,7 +71,6 @@ before(async () => {
   await Promise.all(
     Object.entries(accountSettings).map(async ([name, setting]) => {
       accounts[name] = await initAccount(setting)
-      return accounts[name]
     })
   )
 })

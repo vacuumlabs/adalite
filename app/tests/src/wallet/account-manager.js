@@ -46,7 +46,6 @@ before(async () => {
   await Promise.all(
     Object.entries(accountManagerSettings).map(async ([name, setting]) => {
       accountManagers[name] = await initAccountManager(setting)
-      return accountManagers[name]
     })
   )
 })
