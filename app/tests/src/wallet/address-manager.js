@@ -16,7 +16,7 @@ const mockConfig = {
 }
 
 const blockchainExplorer = BlockchainExplorer(mockConfig, {})
-const addressManagers = []
+const addressManagers = {}
 
 const initAddressManager = async (settings, i) => {
   const {
@@ -47,39 +47,26 @@ const initAddressManager = async (settings, i) => {
 
   const addressProvider = ShelleyBaseAddressProvider(cryptoProvider, accountIndex, isChange)
 
-  addressManagers[i] = AddressManager({
+  return AddressManager({
     addressProvider,
     gapLimit: mockConfig.ADALITE_GAP_LIMIT,
     blockchainExplorer,
   })
 }
 
-before(async () => {
-  await Promise.all(addressManagerSettings.map(initAddressManager))
+before(() => {
+  Object.entries(addressManagerSettings).forEach(([name, setting]) => {
+    addressManagers[name] = initAddressManager(setting)
+  })
 })
 
-describe('shelley wallet addresses derivation scheme V2', () => {
-  it('should derive the right sequence of change addresses from the root secret key', async () => {
-    const expectedAddresses = addressManagerSettings[0].internalAddresses
-    const walletAddresses = await addressManagers[0]._deriveAddresses(0, 20)
-    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedAddresses))
-  })
-
-  it('should derive the right sequence of addresses from the root secret key', async () => {
-    const expectedAddresses = addressManagerSettings[1].externalAddresses
-    const walletAddresses = await addressManagers[1]._deriveAddresses(0, 20)
-    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedAddresses))
-  })
-
-  it('should derive the right sequence of change addresses from Account 1', async () => {
-    const expectedAddresses = addressManagerSettings[2].internalAddresses
-    const walletAddresses = await addressManagers[2]._deriveAddresses(0, 20)
-    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedAddresses))
-  })
-
-  it('should derive the right sequence of addresses from Account 1', async () => {
-    const expectedAddresses = addressManagerSettings[3].externalAddresses
-    const walletAddresses = await addressManagers[3]._deriveAddresses(0, 20)
-    assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedAddresses))
-  })
+describe('Address derivation shelley', () => {
+  Object.entries(addressManagerSettings).forEach(([name, setting]) =>
+    it(`should derive the right sequence of addresses with ${name}`, async () => {
+      const addressManager = await addressManagers[name]
+      const expectedAddresses = setting.addresses
+      const walletAddresses = await addressManager._deriveAddresses(0, 20)
+      assert.equal(JSON.stringify(walletAddresses), JSON.stringify(expectedAddresses))
+    })
+  )
 })

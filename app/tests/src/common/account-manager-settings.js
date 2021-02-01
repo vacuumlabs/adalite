@@ -1,32 +1,28 @@
 import {walletSettings} from './wallet-settings'
 
-export const accountManagerSettings = [
-  {
-    ...walletSettings[0],
-    description: 'with multiple used accounts',
+export const accountManagerSettings = {
+  withMultipleUsedAccounts: {
+    ...walletSettings.Shelley15Word,
     shouldExportPubKeyBulk: true,
     numberOfDiscoveredAccounts: 4,
     maxAccountIndex: 30,
   },
-  {
-    ...walletSettings[0],
-    description: 'with disabled bulk export',
+  withDisabledBulkExport: {
+    ...walletSettings.Shelley15Word,
     shouldExportPubKeyBulk: false,
     numberOfDiscoveredAccounts: 1,
     maxAccountIndex: 30,
   },
-  {
-    ...walletSettings[1],
-    description: 'with shelley incompatible wallet',
+  withShelleyIncompatibleWallet: {
+    ...walletSettings.Byron12Word,
     shouldExportPubKeyBulk: true,
     numberOfDiscoveredAccounts: 1,
     maxAccountIndex: 30,
   },
-  {
-    ...walletSettings[2],
-    description: 'with shelley unused wallet',
+  withShelleyUnusedWallet: {
+    ...walletSettings.Shelley15WordUnused,
     shouldExportPubKeyBulk: true,
     numberOfDiscoveredAccounts: 1,
     maxAccountIndex: 30,
   },
-]
+}

@@ -1,16 +1,13 @@
-import cryptoProviderSettings from './crypto-provider-settings'
+import {shelleyCryptoProviderSettings} from './crypto-provider-settings'
 
-export const walletSettings = [
-  {
-    description: 'Shelley 15 word',
-    ...cryptoProviderSettings[4],
+export const walletSettings = {
+  Shelley15Word: {
+    ...shelleyCryptoProviderSettings.mnemonic15Word,
   },
-  {
-    description: 'Byron 12 word',
-    ...cryptoProviderSettings[5],
+  Byron12Word: {
+    ...shelleyCryptoProviderSettings.mnemonic12Word,
   },
-  {
-    description: 'Shelley 15 word not used',
-    ...cryptoProviderSettings[6],
+  Shelley15WordUnused: {
+    ...shelleyCryptoProviderSettings.mnemonic15WordUnused,
   },
-]
+}

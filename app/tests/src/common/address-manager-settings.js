@@ -1,5 +1,5 @@
 import {accountSettings} from './account-settings'
-import cryptoProviderSettings from './crypto-provider-settings'
+import {cryptoProviderSettings} from './crypto-provider-settings'
 
 const byronAddressManagerSettings = [
   {
@@ -51,23 +51,28 @@ const addressManagerSettings = [
   },
 ]
 
-const addressManagerSettings2 = [
-  {
+// these are used for the new tests
+const addressManagerSettings2 = {
+  changeAddressProviderForAccount0: {
+    ...accountSettings.ShelleyAccount0,
     isChange: true,
-    ...accountSettings[0],
+    addresses: accountSettings.ShelleyAccount0.internalAddresses,
   },
-  {
+  nonChangeAddressProviderForAccount0: {
+    ...accountSettings.ShelleyAccount0,
     isChange: false,
-    ...accountSettings[0],
+    addresses: accountSettings.ShelleyAccount0.externalAddresses,
   },
-  {
+  changeAddressProviderForAccount1: {
+    ...accountSettings.ShelleyAccount1,
     isChange: true,
-    ...accountSettings[0],
+    addresses: accountSettings.ShelleyAccount1.internalAddresses,
   },
-  {
+  nonChangeAddressProviderForAccount1: {
+    ...accountSettings.ShelleyAccount1,
     isChange: false,
-    ...accountSettings[0],
+    addresses: accountSettings.ShelleyAccount1.externalAddresses,
   },
-]
+}
 
 export {byronAddressManagerSettings, addressManagerSettings, addressManagerSettings2}

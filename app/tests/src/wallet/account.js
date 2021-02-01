@@ -1,12 +1,12 @@
+import assert from 'assert'
 import {accountSettings} from '../common/account-settings'
 import {Account} from '../../../frontend/wallet/account'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import BlockchainExplorer from '../../../frontend/wallet/blockchain-explorer'
 import ShelleyJsCryptoProvider from '../../../frontend/wallet/shelley/shelley-js-crypto-provider'
 import {ADALITE_CONFIG} from '../../../frontend/config'
-import assert from 'assert'
 
-const accounts = []
+const accounts = {}
 
 const initAccount = async (settings, i) => {
   const {
@@ -39,26 +39,27 @@ const initAccount = async (settings, i) => {
     config,
   })
 
-  accounts.push(
-    Account({
-      config,
-      randomInputSeed,
-      randomChangeSeed,
-      cryptoProvider,
-      blockchainExplorer,
-      accountIndex,
-    })
-  )
+  return Account({
+    config,
+    randomInputSeed,
+    randomChangeSeed,
+    cryptoProvider,
+    blockchainExplorer,
+    accountIndex,
+  })
 }
 
-before(async () => {
-  await Promise.all(accountSettings.map(initAccount))
+before(() => {
+  Object.entries(accountSettings).forEach(([name, setting]) => {
+    accounts[name] = initAccount(setting)
+  })
 })
 
 describe('Account info', () => {
-  accountSettings.map((setting, i) =>
-    it('should get the right account xpubs for account', async () => {
-      const xpubs = await accounts[i]._getAccountXpubs()
+  Object.entries(accountSettings).forEach(([name, setting]) =>
+    it(`should get the right account xpubs for ${name}`, async () => {
+      const account = await accounts[name]
+      const xpubs = await account._getAccountXpubs()
       assert.deepEqual(xpubs, setting.accountXpubs)
     })
   )

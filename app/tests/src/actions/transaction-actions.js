@@ -31,7 +31,7 @@ it('Calculate fee - shelley', async () => {
 
   await action.loadWallet(state, {
     cryptoProviderType: CryptoProviderType.WALLET_SECRET,
-    walletSecretDef: await mnemonicToWalletSecretDef(walletSettings[0].secret),
+    walletSecretDef: await mnemonicToWalletSecretDef(walletSettings.Shelley15Word.secret),
   })
 
   state.sendAddress.fieldValue =

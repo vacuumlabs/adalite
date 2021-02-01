@@ -2,8 +2,9 @@ import {accountManagerSettings} from './account-manager-settings'
 
 const testSeed = 39
 
-export const accountSettings = [
-  {
+export const accountSettings = {
+  ShelleyAccount0: {
+    ...accountManagerSettings.withMultipleUsedAccounts,
     description: '',
     accountIndex: 0,
     randomInputSeed: testSeed,
@@ -65,9 +66,9 @@ export const accountSettings = [
       },
     },
     stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
-    ...accountManagerSettings[0],
   },
-  {
+  ShelleyAccount1: {
+    ...accountManagerSettings.withMultipleUsedAccounts,
     description: '',
     accountIndex: 1,
     randomInputSeed: testSeed,
@@ -125,6 +126,5 @@ export const accountSettings = [
       byronAccountXpub: null,
     },
     stakingAddress: 'stake1u86eec2alffxa3udqtax7u6j967sdnezk9zuvxp0qm6xvns252x9a',
-    ...accountManagerSettings[0],
   },
-]
+}
