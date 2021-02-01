@@ -64,7 +64,7 @@ const buf2hexLengthCheck = (buffer, correctByteLength, variableName) => {
   return buffer.toString('hex')
 }
 
-const checkNumber = (number, variableName) => {
+const checkedNumber = (number, variableName) => {
   if (!Number.isInteger(number)) {
     throw NamedError('PoolRegInvalidNumber', {message: variableName})
   }
@@ -101,10 +101,10 @@ const transformPoolOwners = (poolOwners, ownerCredentials) => {
 const transformMargin = (marginObj) => {
   if (
     !marginObj ||
-    !marginObj.denominator ||
-    !marginObj.numerator ||
-    !checkNumber(marginObj.numerator, 'Numerator') ||
-    !checkNumber(marginObj.denominator, 'Denominator') ||
+    !marginObj.hasOwnProperty('denominator') ||
+    !marginObj.hasOwnProperty('numerator') ||
+    checkedNumber(marginObj.numerator, 'Numerator') < 0 ||
+    checkedNumber(marginObj.denominator, 'Denominator') <= 0 ||
     marginObj.numerator > marginObj.denominator
   ) {
     throw NamedError('PoolRegInvalidMargin')
@@ -147,14 +147,14 @@ const transformRelays = (relays) =>
     switch (relay.type) {
       case 0:
         params = {
-          portNumber: checkNumber(relay.portNumber, 'Port number'),
+          portNumber: checkedNumber(relay.portNumber, 'Port number'),
           ipv4: relay.ipv4 ? ipv4BufToAddress(relay.ipv4) : null,
           ipv6: relay.ipv6 ? ipv6BufToAddress(relay.ipv6) : null,
         }
         break
       case 1:
         params = {
-          portNumber: checkNumber(relay.portNumber, 'Port number'),
+          portNumber: checkedNumber(relay.portNumber, 'Port number'),
           dnsName: relay.dnsName,
         }
         break
@@ -206,8 +206,8 @@ export const transformPoolParamsTypes = (
 ) => ({
   poolKeyHashHex: buf2hexLengthCheck(poolKeyHash, PoolParamsByteLengths.POOL_HASH, 'Pool key hash'),
   vrfKeyHashHex: buf2hexLengthCheck(vrfPubKeyHash, PoolParamsByteLengths.VRF, 'VRF key hash'),
-  pledgeStr: checkNumber(pledge, 'Pledge').toString(),
-  costStr: checkNumber(cost, 'Fixed cost').toString(),
+  pledgeStr: checkedNumber(pledge, 'Pledge').toString(),
+  costStr: checkedNumber(cost, 'Fixed cost').toString(),
   margin: transformMargin(margin),
   rewardAccountHex: buf2hexLengthCheck(
     rewardAddress,
