@@ -4,6 +4,9 @@ const errorsWithHelp = new Set([
   'CryptoProviderError',
   'TrezorSignTxError',
   'TrezorError',
+  'DisconnectedDeviceDuringOperation',
+  'TransportWebUSBGestureRequired',
+  'Error',
 ])
 
 function errorHasHelp(code) {

@@ -616,6 +616,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }
       return plan
     } catch (e) {
+      if (e.name !== 'NetworkError' || e.name !== 'ServerError') {
+        throw e
+      }
+
       return {
         estimatedFee: 0,
         error: {code: e.name},

@@ -6,6 +6,9 @@ import {Lovelace, CryptoProviderFeature} from './types'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
+const ledgerTroubleshootingSuggestion =
+  'If you are using Ledger, please try connecting your device using the "Connect with WebUSB" functionality (the button underneath "Unlock with Ledger"). For more information please read the section concerning Ledger in our troubleshooting suggestions.'
+
 const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
   SendAmountIsNan: () => 'Invalid format: Amount has to be a number',
@@ -55,6 +58,10 @@ const translations = {
     }
     return `TransportInterfaceNotAvailable: ${message} ${errors[message] || ''}`
   },
+  DisconnectedDeviceDuringOperation: () =>
+    `DisconnectedDeviceDuringOperation: ${ledgerTroubleshootingSuggestion}`,
+  TransportWebUSBGestureRequired: () =>
+    `TransportWebUSBGestureRequired: ${ledgerTroubleshootingSuggestion}`,
 
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
@@ -130,6 +137,19 @@ const translations = {
   PoolRegNoTtl: () =>
     'TTL parameter is missing in the transaction. It is explicitly required even for the Allegra era.',
   PoolRegTxParserError: ({message}) => `Parser error: ${message}`,
+
+  Error: ({message}) => {
+    const errors = {
+      'NotFoundError: The device was disconnected.': `${message}${ledgerTroubleshootingSuggestion}`,
+      'AbortError: The transfer was cancelled.': `${message}${ledgerTroubleshootingSuggestion}`,
+      // an issue with CryptoToken extension allowing 2-step verification
+      // https://askubuntu.com/questions/844090/what-is-cryptotokenextension-in-chromium-extensions
+      "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'chrome-extension://kmendfapggjehodndflmmgagdbamhnfd' in a call to 'postMessage'": `${message}${ledgerTroubleshootingSuggestion}`,
+    }
+    // we return undefined in case of unmached message on purpose since we
+    // want to treat such errors as unexpected
+    return errors[message]
+  },
 }
 
 function getTranslation(code, params = {}) {
