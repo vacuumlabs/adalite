@@ -603,17 +603,24 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const prepareTxPlan = async (args) => {
     const state = getState()
-    const plan: any = await wallet.getAccount(state.sourceAccountIndex).getTxPlan(args)
-    // FIXME: this cant be any
-    if (plan.error) {
-      stopLoadingAction(state, {})
-      resetDelegationWithoutHash(state)
-      setState({
-        calculatingDelegationFee: false,
-        calculatingFee: false,
-      })
+    try {
+      const plan: any = await wallet.getAccount(state.sourceAccountIndex).getTxPlan(args)
+      // FIXME: this cant be any
+      if (plan.error) {
+        stopLoadingAction(state, {})
+        resetDelegationWithoutHash(state)
+        setState({
+          calculatingDelegationFee: false,
+          calculatingFee: false,
+        })
+      }
+      return plan
+    } catch (e) {
+      return {
+        estimatedFee: 0,
+        error: {code: e.name},
+      }
     }
-    return plan
   }
 
   const calculateFee = async () => {
