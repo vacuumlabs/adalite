@@ -13,8 +13,17 @@ import {
   BIP32Path,
   HexString,
 } from '../../types'
+import {Network} from '../types'
 
-const ShelleyTrezorCryptoProvider = async ({network, config}): Promise<CryptoProvider> => {
+type CryptoProviderParams = {
+  network: Network
+  config: any
+}
+
+const ShelleyTrezorCryptoProvider = async ({
+  network,
+  config,
+}: CryptoProviderParams): Promise<CryptoProvider> => {
   const derivationScheme = derivationSchemes.v2
 
   const TrezorConnect = require('trezor-connect').default

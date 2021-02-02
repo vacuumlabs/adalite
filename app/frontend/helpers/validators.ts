@@ -21,7 +21,10 @@ const sendAddressValidator = (fieldValue) =>
 const sendAmountValidator = (fieldValue, coins, balance) => {
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
   const maxAmount = Number.MAX_SAFE_INTEGER
-  const minAmount = NETWORKS.SHELLEY.MAINNET.minimalOutput
+  // TODO: we should not import NETWORK anywhere
+  // we should always get it from wallet/cryptoProvider
+  // and pass it as argument
+  const minAmount = NETWORKS.MAINNET.minimalOutput
 
   if (fieldValue === '') {
     return null

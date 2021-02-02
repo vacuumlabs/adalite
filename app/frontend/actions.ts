@@ -21,8 +21,8 @@ import {
   NETWORKS,
   PREMIUM_MEMBER_BALANCE_TRESHOLD,
   BIG_DELEGATOR_THRESHOLD,
-  CryptoProviderType,
 } from './wallet/constants'
+import {CryptoProviderType} from './wallet/types'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
 import mnemonicToWalletSecretDef from './wallet/helpers/mnemonicToWalletSecretDef'
@@ -163,7 +163,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         cryptoProviderType,
         {
           walletSecretDef,
-          network: NETWORKS.SHELLEY[ADALITE_CONFIG.ADALITE_NETWORK],
+          network: NETWORKS[ADALITE_CONFIG.ADALITE_NETWORK],
           config,
           forceWebUsb, // TODO: into config
         }

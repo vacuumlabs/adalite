@@ -212,10 +212,10 @@ const Account = ({
     // TODO: move to wallet
     try {
       const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
-      return bestSlot + cryptoProvider.network.ttl
+      return bestSlot + cryptoProvider.network.ttlSlots
     } catch (e) {
       const timePassed = Math.floor((Date.now() - cryptoProvider.network.eraStartDateTime) / 1000)
-      return cryptoProvider.network.eraStartSlot + timePassed + cryptoProvider.network.ttl
+      return cryptoProvider.network.eraStartSlot + timePassed + cryptoProvider.network.ttlSlots
     }
   }
 

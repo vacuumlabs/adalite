@@ -30,6 +30,7 @@ import {
   BIP32Path,
   HexString,
 } from '../../types'
+import {Network} from '../types'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -62,11 +63,17 @@ const getLedgerTransport = async (forceWebUsb: boolean): Promise<any> => {
   return transport
 }
 
+type CryptoProviderParams = {
+  network: Network
+  config: any
+  forceWebUsb: boolean
+}
+
 const ShelleyLedgerCryptoProvider = async ({
   network,
   config,
   forceWebUsb,
-}): Promise<CryptoProvider> => {
+}: CryptoProviderParams): Promise<CryptoProvider> => {
   const transport = await getLedgerTransport(forceWebUsb)
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)

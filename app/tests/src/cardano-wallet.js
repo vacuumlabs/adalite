@@ -7,7 +7,8 @@ import {txFeeFunction} from '../../frontend/wallet/byron/byron-tx-planner'
 
 import mockNetwork from './common/mock'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
-import {CryptoProviderType, NETWORKS} from '../../frontend/wallet/constants'
+import {NETWORKS} from '../../frontend/wallet/constants'
+import {CryptoProviderType} from '../../frontend/wallet/types'
 
 const testSeed = 39
 

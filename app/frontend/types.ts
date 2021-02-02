@@ -1,3 +1,5 @@
+import {Network} from './wallet/types'
+
 export type BIP32Path = number[]
 
 export type _Address = string & {__typeAddress: any}
@@ -10,7 +12,7 @@ export type AddressProvider = (
 }>
 
 export interface CryptoProvider {
-  network: any
+  network: Network
   signTx: (
     unsignedTx: any,
     rawInputTxs: any,

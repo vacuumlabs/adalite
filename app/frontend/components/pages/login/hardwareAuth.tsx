@@ -1,5 +1,5 @@
 import {Fragment, h} from 'preact'
-import {CryptoProviderType} from '../../../wallet/constants'
+import {CryptoProviderType} from '../../../wallet/types'
 import {TrezorLogoWhite, LedgerLogoWhite} from '../../common/svg'
 import {ADALITE_CONFIG} from '../../../config'
 import tooltip from '../../common/tooltip'

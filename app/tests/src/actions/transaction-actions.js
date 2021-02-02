@@ -1,7 +1,7 @@
 import {setMockState, setupInitialMockState} from './actions'
 import {ADALITE_CONFIG} from '../../../frontend/config'
 import mockNetwork from '../common/mock'
-import {CryptoProviderType} from '../../../frontend/wallet/constants'
+import {CryptoProviderType} from '../../../frontend/wallet/types'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import assert from 'assert'
 import {walletSettings} from '../common/wallet-settings'

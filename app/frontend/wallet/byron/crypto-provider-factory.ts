@@ -1,4 +1,4 @@
-import {CryptoProviderType} from '../constants'
+import {CryptoProviderType} from '../types'
 import CardanoWalletSecretCryptoProvider from './cardano-wallet-secret-crypto-provider'
 import CardanoTrezorCryptoProvider from './cardano-trezor-crypto-provider'
 import CardanoLedgerCryptoProvider from './cardano-ledger-crypto-provider'

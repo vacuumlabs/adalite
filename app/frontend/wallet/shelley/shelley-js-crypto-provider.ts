@@ -20,13 +20,20 @@ import {isShelleyPath} from './helpers/addresses'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {BIP32Path, CryptoProvider, CryptoProviderFeature, HexString} from '../../types'
 import NamedError from '../../helpers/NamedError'
+import {Network} from '../types'
+
+type CryptoProviderParams = {
+  walletSecretDef: any
+  network: Network
+  config: any
+}
 
 const ShelleyJsCryptoProvider = async ({
   walletSecretDef: {rootSecret, derivationScheme},
   network,
   config,
-  // eslint-disable-next-line require-await
-}): Promise<CryptoProvider> => {
+}: // eslint-disable-next-line require-await
+CryptoProviderParams): Promise<CryptoProvider> => {
   const masterHdNode = HdNode(rootSecret)
 
   const isHwWallet = () => false

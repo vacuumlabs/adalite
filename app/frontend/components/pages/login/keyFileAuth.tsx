@@ -7,7 +7,7 @@ import tooltip from '../../common/tooltip'
 import FileLoader from '../../common/fileLoader'
 
 import * as KeypassJson from '../../../wallet/keypass-json'
-import {CryptoProviderType} from '../../../wallet/constants'
+import {CryptoProviderType} from '../../../wallet/types'
 
 interface Props {
   loadingAction: any

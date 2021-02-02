@@ -9,6 +9,7 @@ import {
   getPubKeyBlake2b224Hash,
 } from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../../constants'
+import {NetworkId} from '../../types'
 import {encode} from 'borc'
 
 const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
@@ -36,7 +37,7 @@ export const base58AddressToHex = (address: string): HexString => {
   return parsed.toString('hex')
 }
 
-export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId: number): _Address => {
+export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId: NetworkId): _Address => {
   const addrBuffer: Buffer = packRewardAddress(xpub2blake2b224Hash(stakeXpub), networkId)
   return bech32.encode('stake', addrBuffer)
 }
@@ -44,7 +45,7 @@ export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId: number): _A
 export const baseAddressFromXpub = (
   spendXpub: Buffer,
   stakeXpub: Buffer,
-  networkId: number
+  networkId: NetworkId
 ): _Address => {
   const addrBuffer = packBaseAddress(
     xpub2blake2b224Hash(spendXpub),

@@ -1,4 +1,4 @@
-import {CryptoProviderType} from '../constants'
+import {CryptoProviderType} from '../types'
 import ShelleyJsCryptoProvider from './shelley-js-crypto-provider'
 import ShelleyTrezorCryptoProvider from './shelley-trezor-crypto-provider'
 import ShelleyLedgerCryptoProvider from './shelley-ledger-crypto-provider'
