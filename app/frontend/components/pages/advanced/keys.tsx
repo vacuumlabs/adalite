@@ -64,7 +64,7 @@ const Keys = ({byronAccountXpub, shelleyAccountXpub, stakingAddress, stakingXpub
       </div>
       <div className="advanced-value">{stakingAddress}</div>
       <div className="advanced-label">
-        Staking key hex <LinkIconToKey stakeKey={bechAddressToHex(stakingAddress)} />
+        Staking key hex <LinkIconToKey stakeKey={stakingAddress} />
       </div>
       <div className="advanced-value">{bechAddressToHex(stakingAddress)}</div>
     </div>
