@@ -340,7 +340,6 @@ const Account = ({
         stakingBalance: baseAddressBalance + shelleyAccountInfo.value,
         rewardsAccountBalance: shelleyAccountInfo.value,
       },
-      stakePubkeyHex: shelleyAccountInfo.stakePubKeyHex,
       shelleyAccountInfo,
       transactionHistory,
       stakingHistory,

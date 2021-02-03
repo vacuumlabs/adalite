@@ -63,6 +63,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
 
   async function getAccountsInfo(validStakepools): Promise<Array<AccountInfo>> {
     const accounts = await accountManager.discoverAccounts()
+    //@ts-ignore TODO: refactor type AccountInfo
     return Promise.all(accounts.map((account) => account.getAccountInfo(validStakepools)))
   }
 

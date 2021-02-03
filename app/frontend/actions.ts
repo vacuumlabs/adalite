@@ -1082,7 +1082,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const accountInfo = await nextAccount.getAccountInfo(state.validStakepools)
       const accountsInfo = [...state.accountsInfo, accountInfo]
       setState({
+        //@ts-ignore TODO: refactor type AccountInfo
         accountsInfo,
+        //@ts-ignore TODO: refactor type AccountInfo
         ...getWalletInfo(accountsInfo),
       })
       setActiveAccount(state, nextAccount.accountIndex)
