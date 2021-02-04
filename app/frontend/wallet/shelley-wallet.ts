@@ -2,7 +2,7 @@ import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
 import {AccountInfo, CryptoProvider, CryptoProviderFeature} from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
-import {ValidStakePools} from './explorer-types'
+import {ValidStakePoolsMapping} from './explorer-types'
 
 type WalletParams = {
   config: any
@@ -62,7 +62,9 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     return null
   }
 
-  async function getAccountsInfo(validStakepools: ValidStakePools): Promise<Array<AccountInfo>> {
+  async function getAccountsInfo(
+    validStakepools: ValidStakePoolsMapping
+  ): Promise<Array<AccountInfo>> {
     const accounts = await accountManager.discoverAccounts()
     //@ts-ignore TODO: refactor type AccountInfo
     return Promise.all(accounts.map((account) => account.getAccountInfo(validStakepools)))

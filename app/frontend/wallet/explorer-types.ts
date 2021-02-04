@@ -6,13 +6,16 @@ export type HostedPoolMetadata = {
   extended?: string
 }
 
-export type StakePoolInfoExtended = {
+type StakePoolInfo = {
   pledge: string
   margin: number
   fixedCost: string
   name: string
   ticker: string
   homepage: string
+}
+
+export type StakePoolInfoExtended = StakePoolInfo & {
   poolHash: string
   liveStake: string
   roa: string
@@ -48,15 +51,9 @@ export type StakeRegistrationHistoryEntry = {
   action: 'registration' | 'deregistration'
 }
 
-export type ValidStakePools = {
-  [poolId: string]: {
-    pledge: string
-    margin: number
-    fixedCost: string
+export type ValidStakePoolsMapping = {
+  [poolId: string]: StakePoolInfo & {
     url: string
-    name: string
-    ticker: string
-    homepage: string
   }
 }
 

@@ -26,7 +26,7 @@ import {
   WithdrawalsHistoryEntry,
   StakeRegistrationHistoryEntry,
   NextRewardDetail,
-  ValidStakePools,
+  ValidStakePoolsMapping,
   NextRewardDetailsFormatted,
   RewardWithMetadata,
   PoolRecommendationResponse,
@@ -354,7 +354,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   async function getRewardDetails(
     nextRewardDetails: Array<NextRewardDetail>,
     currentDelegationPoolHash: string,
-    validStakepools: ValidStakePools,
+    validStakepools: ValidStakePoolsMapping,
     epochsToRewardDistribution: number
   ): Promise<NextRewardDetailsFormatted> {
     const nextRewardDetailsWithMetaData: Array<RewardWithMetadata> = await Promise.all(
@@ -413,7 +413,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response
   }
 
-  function getValidStakepools(): Promise<ValidStakePools> {
+  function getValidStakepools(): Promise<ValidStakePoolsMapping> {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
     return request(url)
   }
