@@ -30,7 +30,7 @@ import {
   NextRewardDetailsFormatted,
   RewardWithMetadata,
   PoolRecommendationResponse,
-  AccountInfoResponse,
+  StakingInfoResponse,
   BestSlotResponse,
 } from './explorer-types'
 
@@ -134,7 +134,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   // TODO: we should have an endpoint for this
   async function filterUsedAddresses(addresses: Array<string>) {
     const txHistory = await getTxHistory(addresses)
-    const usedAddresses = new Set()
+    const usedAddresses = new Set<string>()
     txHistory.forEach((trx) => {
       ;(trx.ctbOutputs || []).forEach((output) => {
         usedAddresses.add(output[0])
@@ -409,7 +409,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const url = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/info/${stakingKeyHashHex}`
-    const response: AccountInfoResponse = await request(url)
+    const response: StakingInfoResponse = await request(url)
     return response
   }
 
