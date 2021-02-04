@@ -127,7 +127,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return Buffer.from(result.Right, 'hex')
   }
 
-  async function isSomeAddressUsed(addresses): Promise<boolean> {
+  async function isSomeAddressUsed(addresses: Array<string>): Promise<boolean> {
     return (await _getAddressInfos(addresses)).caTxNum > 0
   }
 
@@ -147,7 +147,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return usedAddresses
   }
 
-  async function getBalance(addresses) {
+  async function getBalance(addresses: Array<string>) {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
     const balance = (await Promise.all(
       chunks.map(async (index) => {
@@ -187,7 +187,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response.Right
   }
 
-  async function fetchUnspentTxOutputs(addresses) {
+  async function fetchUnspentTxOutputs(addresses: Array<string>) {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
 
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
