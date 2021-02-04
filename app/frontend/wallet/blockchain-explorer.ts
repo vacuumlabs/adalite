@@ -393,11 +393,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
   function getPoolRecommendation(
     poolHash: string,
-    stake: number
+    stakeAmount: Lovelace
   ): Promise<PoolRecommendationResponse> {
     const url = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stake}`
+    }/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stakeAmount}`
     return request(url).catch(() => ({
       recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
       isInRecommendedPoolSet: true,

@@ -451,9 +451,9 @@ const Account = ({
     }
   }
 
-  async function getPoolRecommendation(pool: any, stake: number): Promise<any> {
+  async function getPoolRecommendation(pool: any, stakeAmount: Lovelace): Promise<any> {
     const poolHash = pool ? pool.poolHash : null
-    const poolRecommendation = await blockchainExplorer.getPoolRecommendation(poolHash, stake)
+    const poolRecommendation = await blockchainExplorer.getPoolRecommendation(poolHash, stakeAmount)
     if (!poolRecommendation.recommendedPoolHash || config.ADALITE_ENFORCE_STAKEPOOL) {
       Object.assign(poolRecommendation, {
         recommendedPoolHash: config.ADALITE_STAKE_POOL_ID,
