@@ -62,7 +62,7 @@ export type NextRewardDetail = StakePoolInfoExtended & {
   rewardDate: string
 }
 
-export type AccountInfoResponse = {
+export type StakingInfoResponse = {
   currentEpoch: number
   delegation: StakePoolInfoExtended & {
     retiringEpoch: number | null
