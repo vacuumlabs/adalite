@@ -5,7 +5,7 @@ import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonic
 import BlockchainExplorer from '../../../frontend/wallet/blockchain-explorer'
 import ShelleyJsCryptoProvider from '../../../frontend/wallet/shelley/shelley-js-crypto-provider'
 import {ADALITE_CONFIG} from '../../../frontend/config'
-import {transactionPlanSettings} from '../common/tx-plan-settings'
+import {transactionSettings} from '../common/tx-settings'
 import mockNetwork from '../common/mock'
 
 const accounts = {}
@@ -86,11 +86,21 @@ describe('Account info', () => {
 })
 
 describe('Tx plan', () => {
-  Object.entries(transactionPlanSettings).forEach(([name, setting]) =>
+  Object.entries(transactionSettings).forEach(([name, setting]) =>
     it(`should create the right tx plan for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
       const txPlan = await account.getTxPlan({...setting.args})
       assert.deepEqual(txPlan, setting.plan)
+    })
+  )
+})
+
+describe('TxAux', () => {
+  Object.entries(transactionSettings).forEach(([name, setting]) =>
+    it(`should calcualte the right tx hash for tx with ${name}`, async () => {
+      const account = await accounts.ShelleyAccount0
+      const txHash = (await account.prepareTxAux(setting.plan, setting.ttl)).getId()
+      assert.deepEqual(txHash, setting.txHash)
     })
   )
 })

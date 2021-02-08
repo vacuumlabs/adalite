@@ -1,4 +1,6 @@
-const transactionPlanSettings = {
+const ttl = 8493834
+
+const transactionSettings = {
   donation: {
     args: {
       address:
@@ -42,6 +44,8 @@ const transactionPlanSettings = {
       fee: 183419,
       withdrawals: [],
     },
+    ttl,
+    txHash: '1ec20e39ecd3a4ecc0c53a7ff02a38492431a808eb4ed77c4f5cd73d1d234e5a',
   },
   delegation: {
     args: {
@@ -82,6 +86,8 @@ const transactionPlanSettings = {
       fee: 193878,
       withdrawals: [],
     },
+    ttl,
+    txHash: '14fbbd80cd9f04367cab3f81255816881629431bd54233c4c8bbf57001e352e0',
   },
   rewardWithdrawal: {
     args: {
@@ -115,7 +121,9 @@ const transactionPlanSettings = {
         },
       ],
     },
+    ttl,
+    txHash: '58d9451f5f28d6ee6e00c55cbd77645ea2888f155122619546f580a678ba24a4',
   },
 }
 
-export {transactionPlanSettings}
+export {transactionSettings}
