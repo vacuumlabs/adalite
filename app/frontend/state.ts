@@ -224,7 +224,6 @@ const initialState: State = {
         nonStakingBalance: 0,
         rewardsAccountBalance: 0,
       },
-      stakePubkeyHex: '',
       shelleyAccountInfo: {
         accountPubkeyHex: '',
         shelleyXpub: '',

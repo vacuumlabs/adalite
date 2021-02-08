@@ -15,6 +15,24 @@ import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
 import {HexString, Lovelace} from '../types'
 import {captureMessage} from '@sentry/browser'
+import {
+  BulkAddressesSummaryResponse,
+  TxSummaryResponse,
+  SubmitResponse,
+  BulkAdressesUtxoResponse,
+  HostedPoolMetadata,
+  DelegationHistoryEntry,
+  RewardsHistoryEntry,
+  WithdrawalsHistoryEntry,
+  StakeRegistrationHistoryEntry,
+  NextRewardDetail,
+  ValidStakePoolsMapping,
+  NextRewardDetailsFormatted,
+  RewardWithMetadata,
+  PoolRecommendationResponse,
+  StakingInfoResponse,
+  BestSlotResponse,
+} from './explorer-types'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -34,24 +52,30 @@ const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Func
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
 
-  async function _fetchBulkAddressInfo(addresses) {
+  async function _fetchBulkAddressInfo(addresses: Array<string>) {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`
-    const result = await request(url, 'POST', JSON.stringify(addresses), {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    })
+    const result: BulkAddressesSummaryResponse = await request(
+      url,
+      'POST',
+      JSON.stringify(addresses),
+      {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    )
+    // @ts-ignore (TODO, handle 'Left')
     return result.Right
   }
 
-  const getAddressInfos = cacheResults(5000)(_fetchBulkAddressInfo)
+  const _getAddressInfos = cacheResults(5000)(_fetchBulkAddressInfo)
 
-  async function getTxHistory(addresses) {
+  async function getTxHistory(addresses: Array<string>) {
     const transactions = []
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
     const cachedAddressInfos = (await Promise.all(
       chunks.map(async (index) => {
         const beginIndex = index * gapLimit
-        return await getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
+        return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )).reduce(
       (acc, elem) => {
@@ -87,13 +111,15 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
-  async function fetchTxInfo(txHash) {
+  async function fetchTxInfo(txHash: string) {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/summary/${txHash}`
-    const response = await request(url)
-
+    const response: TxSummaryResponse = await request(url)
+    // @ts-ignore (TODO, handle 'Left')
     return response.Right
   }
 
+  // TODO: delete, raw txs are no longer in the db sync database
+  // TODO: remove tests for byron which use this
   async function fetchTxRaw(txId) {
     // eslint-disable-next-line no-undef
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
@@ -101,14 +127,14 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return Buffer.from(result.Right, 'hex')
   }
 
-  async function isSomeAddressUsed(addresses) {
-    return (await getAddressInfos(addresses)).caTxNum > 0
+  async function isSomeAddressUsed(addresses: Array<string>): Promise<boolean> {
+    return (await _getAddressInfos(addresses)).caTxNum > 0
   }
 
   // TODO: we should have an endpoint for this
-  async function filterUsedAddresses(addresses: Array<String>) {
+  async function filterUsedAddresses(addresses: Array<string>) {
     const txHistory = await getTxHistory(addresses)
-    const usedAddresses = new Set()
+    const usedAddresses = new Set<string>()
     txHistory.forEach((trx) => {
       ;(trx.ctbOutputs || []).forEach((output) => {
         usedAddresses.add(output[0])
@@ -121,12 +147,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return usedAddresses
   }
 
-  async function getBalance(addresses) {
+  async function getBalance(addresses: Array<string>) {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
     const balance = (await Promise.all(
       chunks.map(async (index) => {
         const beginIndex = index * gapLimit
-        return await getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
+        return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )).reduce((acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10), 0)
     return balance
@@ -134,7 +160,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
   async function submitTxRaw(txHash, txBody, params) {
     const token = ADALITE_CONFIG.ADALITE_BACKEND_TOKEN
-    const response = await request(
+    const response: SubmitResponse = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/txs/submit`,
       'POST',
       JSON.stringify({
@@ -147,10 +173,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         ...(token ? {token} : {}),
       }
     )
-    if (!response.Right) {
+    if (!('Right' in response)) {
       debugLog(`Unexpected tx submission response: ${JSON.stringify(response)}`)
       if (response.statusCode && response.statusCode === 400) {
-        throw NamedError('TransactionRejectedByNetwork', {message: response.Left})
+        throw NamedError('TransactionRejectedByNetwork', {
+          message: response.Left,
+        })
       } else {
         throw NamedError('ServerError')
       }
@@ -159,14 +187,14 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response.Right
   }
 
-  async function fetchUnspentTxOutputs(addresses) {
+  async function fetchUnspentTxOutputs(addresses: Array<string>) {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
 
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
     const response = (await Promise.all(
       chunks.map(async (index) => {
         const beginIndex = index * gapLimit
-        const response = await request(
+        const response: BulkAdressesUtxoResponse = await request(
           url,
           'POST',
           JSON.stringify(addresses.slice(beginIndex, beginIndex + gapLimit)),
@@ -175,6 +203,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
             'Content-Type': 'application/json',
           }
         )
+        // @ts-ignore (TODO, handle 'Left')
         return response.Right
       })
     )).reduce((acc, cur) => acc.concat(cur), [])
@@ -189,8 +218,8 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
   }
 
-  async function getPoolInfo(url) {
-    const response = await request(
+  async function getPoolInfo(url: string) {
+    const response: HostedPoolMetadata = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
       'POST',
       JSON.stringify({poolUrl: url}),
@@ -216,7 +245,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/stakeRegistrationHistory/${accountPubkeyHex}`
 
-    const [delegations, rewards, withdrawals, stakingKeyRegistrations] = await Promise.all([
+    const [delegations, rewards, withdrawals, stakingKeyRegistrations]: [
+      Array<DelegationHistoryEntry>,
+      Array<RewardsHistoryEntry>,
+      Array<WithdrawalsHistoryEntry>,
+      Array<StakeRegistrationHistoryEntry>
+    ] = await Promise.all([
       request(delegationsUrl).catch(() => []),
       request(rewardsUrl).catch(() => []),
       request(withdrawalsUrl).catch(() => []),
@@ -318,13 +352,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   async function getRewardDetails(
-    nextRewardDetails,
-    currentDelegationPoolHash,
-    validStakepools,
-    epochsToRewardDistribution
-  ) {
-    const nextRewardDetailsWithMetaData: any[] = await Promise.all(
-      nextRewardDetails.map(async (nextRewardDetail) => {
+    nextRewardDetails: Array<NextRewardDetail>,
+    currentDelegationPoolHash: string,
+    validStakepools: ValidStakePoolsMapping,
+    epochsToRewardDistribution: number
+  ): Promise<NextRewardDetailsFormatted> {
+    const nextRewardDetailsWithMetaData: Array<RewardWithMetadata> = await Promise.all(
+      nextRewardDetails.map(async (nextRewardDetail: NextRewardDetail) => {
         const poolHash = nextRewardDetail.poolHash
         if (poolHash) {
           return {
@@ -337,18 +371,18 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         } else {
           return {
             ...nextRewardDetail,
-            pool: {},
+            pool: {}, // TODO: why does this not have {name: UNKNOWN_POOL_NAME}?
           }
         }
       })
     )
-    const nearestRewardDetails = nextRewardDetailsWithMetaData
-      .filter((rewardDetails) => rewardDetails.poolHash != null)
-      .sort((a, b) => a.forEpoch - b.forEpoch)[0]
-    const currentDelegationRewardDetails = nextRewardDetailsWithMetaData
-      .filter((rewardDetails) => rewardDetails.poolHash != null)
+    const sortedValidRewardDetails = nextRewardDetailsWithMetaData
+      .filter((rewardDetail) => rewardDetail.poolHash != null)
       .sort((a, b) => a.forEpoch - b.forEpoch)
-      .find((rewardDetails) => rewardDetails.poolHash === currentDelegationPoolHash)
+    const nearestRewardDetails = sortedValidRewardDetails[0]
+    const currentDelegationRewardDetails = sortedValidRewardDetails.find(
+      (rewardDetail) => rewardDetail.poolHash === currentDelegationPoolHash
+    )
 
     return {
       upcoming: nextRewardDetailsWithMetaData,
@@ -357,10 +391,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     }
   }
 
-  function getPoolRecommendation(poolHash: string, stake: number): Promise<any> {
+  function getPoolRecommendation(
+    poolHash: string,
+    stakeAmount: Lovelace
+  ): Promise<PoolRecommendationResponse> {
     const url = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stake}`
+    }/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stakeAmount}`
     return request(url).catch(() => ({
       recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
       isInRecommendedPoolSet: true,
@@ -372,16 +409,16 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const url = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/info/${stakingKeyHashHex}`
-    const response = await request(url)
+    const response: StakingInfoResponse = await request(url)
     return response
   }
 
-  function getValidStakepools(): Promise<any> {
+  function getValidStakepools(): Promise<ValidStakePoolsMapping> {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
     return request(url)
   }
 
-  function getBestSlot(): Promise<any> {
+  function getBestSlot(): Promise<BestSlotResponse> {
     return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
   }
 

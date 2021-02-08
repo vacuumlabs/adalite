@@ -60,6 +60,7 @@ export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
 
 export type AccountInfo = {
+  // TODO: refactor, update type
   accountXpubs: {
     shelleyAccountXpub: _XPubKey
     byronAccountXpub: _XPubKey
@@ -72,7 +73,6 @@ export type AccountInfo = {
     nonStakingBalance?: number
     rewardsAccountBalance?: number
   }
-  stakePubkeyHex: string
   shelleyAccountInfo: {
     accountPubkeyHex: string
     shelleyXpub: any
