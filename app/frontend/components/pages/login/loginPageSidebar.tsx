@@ -2,6 +2,7 @@ import {h} from 'preact'
 import {useSelector} from '../../../helpers/connect'
 import {State} from '../../../state'
 import {AuthMethodType} from '../../../types'
+import assertUnreachable from '../../../helpers/assertUnreachable'
 
 import Alert from '../../common/alert'
 
@@ -166,14 +167,26 @@ const FileContent = () => (
   </div>
 )
 
+const SidebarContentByAuthMethod = ({authMethod}: {authMethod: AuthMethodType}) => {
+  switch (authMethod) {
+    case null:
+      return <InitialContent />
+    case AuthMethodType.MNEMONIC:
+      return <MnemonicContent />
+    case AuthMethodType.HW_WALLET:
+      return <WalletContent />
+    case AuthMethodType.KEY_FILE:
+      return <FileContent />
+    default:
+      return assertUnreachable(authMethod)
+  }
+}
+
 const LoginPageSidebar = () => {
   const {authMethod} = useSelector((state: State) => ({authMethod: state.authMethod}))
   return (
     <aside className="sidebar">
-      {authMethod === null && <InitialContent />}
-      {authMethod === AuthMethodType.MNEMONIC && <MnemonicContent />}
-      {authMethod === AuthMethodType.HW_WALLET && <WalletContent />}
-      {authMethod === AuthMethodType.KEY_FILE && <FileContent />}
+      <SidebarContentByAuthMethod authMethod={authMethod} />
     </aside>
   )
 }
