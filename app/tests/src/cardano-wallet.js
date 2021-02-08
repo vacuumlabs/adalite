@@ -32,7 +32,7 @@ const unusedWalletConfig = {
   config: mockConfig1,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.BYRON.MAINNET,
+  network: NETWORKS.MAINNET,
 }
 
 const usedWalletConfig = {
@@ -41,7 +41,7 @@ const usedWalletConfig = {
   config: mockConfig2,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.BYRON.MAINNET,
+  network: NETWORKS.MAINNET,
 }
 
 const smallUtxosWalletConfig = {
@@ -50,7 +50,7 @@ const smallUtxosWalletConfig = {
   config: mockConfig1,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.BYRON.MAINNET,
+  network: NETWORKS.MAINNET,
 }
 
 const usedV2WalletConfig = {
@@ -60,7 +60,7 @@ const usedV2WalletConfig = {
   config: mockConfig1,
   randomInputSeed: testSeed,
   randomChangeSeed: testSeed,
-  network: NETWORKS.BYRON.MAINNET,
+  network: NETWORKS.MAINNET,
 }
 
 const wallets = {}
