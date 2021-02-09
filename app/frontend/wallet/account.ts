@@ -142,12 +142,8 @@ const MyAddresses = ({
   }
 
   async function areAddressesUsed() {
-    const baseInt = await baseIntAddrManager.discoverAddresses()
     const baseExt = await baseExtAddrManager.discoverAddresses()
-    return (
-      (await blockchainExplorer.isSomeAddressUsed(baseInt)) ||
-      (await blockchainExplorer.isSomeAddressUsed(baseExt))
-    )
+    return await blockchainExplorer.isSomeAddressUsed(baseExt)
   }
 
   async function getStakingAddress() {
