@@ -230,20 +230,19 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response
   }
 
-  async function getStakingHistory(accountPubkeyHex, validStakepools) {
-    // Urls
+  async function getStakingHistory(stakingKeyHashHex: HexString, validStakepools) {
     const delegationsUrl = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/delegationHistory/${accountPubkeyHex}`
+    }/api/account/delegationHistory/${stakingKeyHashHex}`
     const rewardsUrl = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/rewardHistory/${accountPubkeyHex}`
+    }/api/account/rewardHistory/${stakingKeyHashHex}`
     const withdrawalsUrl = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/withdrawalHistory/${accountPubkeyHex}`
+    }/api/account/withdrawalHistory/${stakingKeyHashHex}`
     const stakingKeyRegistrationUrl = `${
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/stakeRegistrationHistory/${accountPubkeyHex}`
+    }/api/account/stakeRegistrationHistory/${stakingKeyHashHex}`
 
     const [delegations, rewards, withdrawals, stakingKeyRegistrations]: [
       Array<DelegationHistoryEntry>,
@@ -261,7 +260,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       validStakepools[poolHash] ? validStakepools[poolHash].url : null
 
     const poolMetaUrls = distinct(
-      [...delegations, ...rewards].map(({poolHash}) => extractUrl(poolHash))
+      [...delegations, ...rewards]
+        .filter(({name}) => !name)
+        .map((historyEntry) => extractUrl(historyEntry.poolHash))
     ).filter((url) => url != null)
 
     const metaUrlToPoolNameMap = (await Promise.all(
@@ -276,9 +277,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const poolHashToPoolName = (poolHash) =>
       metaUrlToPoolNameMap[extractUrl(poolHash)] || UNKNOWN_POOL_NAME
 
-    const parseStakePool = (stakingHistoryObject): StakePool => ({
+    const parseStakePool = (stakingHistoryObject: any): StakePool => ({
       id: stakingHistoryObject.poolHash,
-      name: poolHashToPoolName(stakingHistoryObject.poolHash),
+      name: stakingHistoryObject.name || poolHashToPoolName(stakingHistoryObject.poolHash),
     })
 
     // Prepare delegations
@@ -338,7 +339,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         epoch: registration.epochNo,
         dateTime: new Date(registration.time),
         action: registration.action,
-        stakingKey: accountPubkeyHex,
+        stakingKey: stakingKeyHashHex,
       }
 
       return stakingKeyRegistration
@@ -365,9 +366,10 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
           return {
             ...nextRewardDetail,
             distributionEpoch: nextRewardDetail.forEpoch + epochsToRewardDistribution,
-            pool: validStakepools[poolHash]
-              ? await getPoolInfo(validStakepools[poolHash].url).catch(() => UNKNOWN_POOL_NAME)
-              : {name: UNKNOWN_POOL_NAME},
+            pool:
+              validStakepools[poolHash] && validStakepools[poolHash].name
+                ? validStakepools[poolHash]
+                : await getPoolInfo(validStakepools[poolHash].url).catch(() => UNKNOWN_POOL_NAME),
           }
         } else {
           return {
@@ -411,6 +413,17 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
     }/api/account/info/${stakingKeyHashHex}`
     const response: StakingInfoResponse = await request(url)
+    // if we fail to recieve poolMeta from backend
+    if (response.delegation.url && !response.delegation.name) {
+      const poolInfo = getPoolInfo(response.delegation.url)
+      return {
+        ...response,
+        delegation: {
+          ...response.delegation,
+          ...poolInfo,
+        },
+      }
+    }
     return response
   }
 

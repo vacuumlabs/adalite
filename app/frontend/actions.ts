@@ -938,20 +938,22 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     // maybe also check if tab changed
   }
 
-  const setPoolInfo = async (state) => {
+  const setPoolInfo = async (state: State) => {
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const poolInfo = await wallet
-      .getAccount(state.sourceAccountIndex)
-      .getPoolInfo(state.shelleyDelegation.selectedPool.url)
+    const poolInfo = !state.shelleyDelegation.selectedPool.name
+      ? await wallet
+        .getAccount(state.sourceAccountIndex)
+        .getPoolInfo(state.shelleyDelegation.selectedPool.url)
+      : {}
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
     const newState = getState()
     setState({
       shelleyDelegation: {
-        ...state.shelleyDelation,
+        ...state.shelleyDelegation,
         selectedPool: {
           ...state.shelleyDelegation.selectedPool,
           ...poolInfo,

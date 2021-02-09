@@ -381,7 +381,6 @@ const Account = ({
     const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getStakingInfo(
       stakingAddressHex
     )
-    const poolInfo = await getPoolInfo(accountInfo.delegation.url)
     const rewardDetails = await blockchainExplorer.getRewardDetails(
       nextRewardDetails,
       accountInfo.delegation.poolHash,
@@ -391,10 +390,6 @@ const Account = ({
 
     return {
       ...accountInfo,
-      delegation: {
-        ...accountInfo.delegation,
-        ...poolInfo,
-      },
       rewardDetails,
       value: accountInfo.rewards ? parseInt(accountInfo.rewards, 10) : 0,
     }
