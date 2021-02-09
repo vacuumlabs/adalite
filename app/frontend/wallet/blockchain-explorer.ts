@@ -311,6 +311,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         forEpoch: reward.forDelegationInEpoch,
         reward: parseInt(reward.amount, 10) as Lovelace,
         stakePool: parseStakePool(reward),
+        rewardType: reward.rewardType,
       }
 
       return stakingReward

@@ -30,11 +30,18 @@ export type DelegationHistoryEntry = StakePoolInfoExtended & {
   epochNo: number
 }
 
+export enum RewardType {
+  REGULAR = 'REGULAR',
+  ITN = 'ITN',
+  TREASURY = 'TREASURY',
+}
+
 export type RewardsHistoryEntry = StakePoolInfoExtended & {
   time: string
   epochNo: number
   forDelegationInEpoch: number
   amount: string
+  rewardType: RewardType
 }
 
 export type WithdrawalsHistoryEntry = {

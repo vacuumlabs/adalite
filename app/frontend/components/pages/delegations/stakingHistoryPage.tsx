@@ -7,6 +7,7 @@ import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
 import {Lovelace} from '../../../types'
+import {RewardType} from '../../../wallet/explorer-types'
 
 export enum StakingHistoryItemType {
   StakeDelegation,
@@ -64,6 +65,7 @@ export interface StakingReward extends StakingHistoryObject {
   forEpoch: number
   reward: Lovelace
   stakePool: StakePool
+  rewardType: RewardType
 }
 
 const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
@@ -72,10 +74,15 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
       <div className="space-between">
         <div>
           <div>
-            {stakingReward.forEpoch ? (
+            {/* TODO: Remake into exhaustive switch */}
+            {stakingReward.rewardType === RewardType.REGULAR && (
               <div className="label">Reward for epoch {stakingReward.forEpoch}</div>
-            ) : (
+            )}
+            {stakingReward.rewardType === RewardType.ITN && (
               <div className="label">Reward for ITN</div>
+            )}
+            {stakingReward.rewardType === RewardType.TREASURY && (
+              <div className="label">Reward for Catalyst</div>
             )}
             <div className="margin-bottom">
               <EpochDateTime epoch={stakingReward.epoch} dateTime={stakingReward.dateTime} />
@@ -83,7 +90,7 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
           </div>
           <div>
             <div className="grey">
-              {stakingReward.stakePool.name}
+              {stakingReward.rewardType === RewardType.REGULAR && stakingReward.stakePool.name}
               {stakingReward.stakePool.id && (
                 <LinkIconToPool poolHash={stakingReward.stakePool.id} />
               )}
