@@ -1,6 +1,6 @@
 import AddressManager from './address-manager'
 import PseudoRandom from './helpers/PseudoRandom'
-import {MAX_INT32} from './constants'
+import {DEFAULT_TTL_SLOTS, MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {
   AddressToPathMapping,
@@ -148,7 +148,9 @@ const MyAddresses = ({
     }
   }
 
-  async function areAddressesUsed() {
+  async function areAddressesUsed(): Promise<boolean> {
+    // we check only the external addresses since internal should not be used before external
+    // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit
     const baseExt = await baseExtAddrManager._deriveAddresses(0, gapLimit)
     return await blockchainExplorer.isSomeAddressUsed(baseExt)
   }
@@ -206,7 +208,7 @@ const Account = ({
     blockchainExplorer,
   })
 
-  async function ensureXpubIsExported() {
+  async function ensureXpubIsExported(): Promise<void> {
     // get first address to ensure that public key was exported
     await myAddresses.baseExtAddrManager._deriveAddress(0)
   }
@@ -215,10 +217,10 @@ const Account = ({
     // TODO: move to wallet
     try {
       const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
-      return bestSlot + cryptoProvider.network.ttlSlots
+      return bestSlot + DEFAULT_TTL_SLOTS
     } catch (e) {
       const timePassed = Math.floor((Date.now() - cryptoProvider.network.eraStartDateTime) / 1000)
-      return cryptoProvider.network.eraStartSlot + timePassed + cryptoProvider.network.ttlSlots
+      return cryptoProvider.network.eraStartSlot + timePassed + DEFAULT_TTL_SLOTS
     }
   }
 
@@ -315,6 +317,9 @@ const Account = ({
   }
 
   function isAccountUsed(): Promise<boolean> {
+    //TODO: we should decouple shelley compatibility from usedness
+    // in case the wallet is not shelley compatible we consider the
+    // the first account not used
     return config.isShelleyCompatible && myAddresses.areAddressesUsed()
   }
 

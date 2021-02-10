@@ -7,10 +7,27 @@ import {
   base58,
   bech32,
   getPubKeyBlake2b224Hash,
+  getShelleyAddressNetworkId,
 } from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../../constants'
 import {NetworkId} from '../../types'
 import {encode} from 'borc'
+
+export const encodeAddress = (address: Buffer): _Address => {
+  const addressType = getAddressType(address)
+  if (addressType === AddressTypes.BOOTSTRAP) {
+    return base58.encode(address)
+  }
+  const addressPrefixes: {[key: number]: string} = {
+    [AddressTypes.BASE]: 'addr',
+    [AddressTypes.POINTER]: 'addr',
+    [AddressTypes.ENTERPRISE]: 'addr',
+    [AddressTypes.REWARD]: 'stake',
+  }
+  const isTestnet = getShelleyAddressNetworkId(address) === NetworkId.TESTNET
+  const addressPrefix = `${addressPrefixes[addressType]}${isTestnet ? '_test' : ''}`
+  return bech32.encode(addressPrefix, address)
+}
 
 const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
 
@@ -26,9 +43,14 @@ export const isV1Address = (address: string) => address.startsWith('D')
 export const xpubHexToCborPubHex = (xpubHex: HexString) =>
   encode(Buffer.from(xpubHex, 'hex').slice(0, 32)).toString('hex')
 
+// TODO: replace this with isValidShelleyAddress from cardano-crypto.js
+export const isShelleyFormat = (address: string): boolean => {
+  return address.startsWith('addr') || address.startsWith('stake')
+}
+
 export const bechAddressToHex = (address: string): HexString => {
+  if (!isShelleyFormat(address)) throw Error('Invalid address')
   const parsed = bech32.decode(address)
-  if (parsed.prefix !== 'addr' && parsed.prefix !== 'stake') throw Error('Invalid address')
   return parsed.data.toString('hex')
 }
 
@@ -39,7 +61,7 @@ export const base58AddressToHex = (address: string): HexString => {
 
 export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId: NetworkId): _Address => {
   const addrBuffer: Buffer = packRewardAddress(xpub2blake2b224Hash(stakeXpub), networkId)
-  return bech32.encode('stake', addrBuffer)
+  return encodeAddress(addrBuffer)
 }
 
 export const baseAddressFromXpub = (
@@ -52,12 +74,7 @@ export const baseAddressFromXpub = (
     xpub2blake2b224Hash(stakeXpub),
     networkId
   )
-  return bech32.encode('addr', addrBuffer)
-}
-
-export const isShelleyFormat = (address: string): boolean => {
-  // TODO: should we remove this?
-  return address.startsWith('addr')
+  return encodeAddress(addrBuffer)
 }
 
 export const isBase = (address: HexString): boolean => {
@@ -69,4 +86,6 @@ export const isByron = (address: HexString): boolean => {
 }
 
 export const addressToHex = (address: string): HexString =>
+  // TODO: we should restrict the type of address to _Address and in that case
+  // we dont need to validate the address
   isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address)

@@ -26,11 +26,21 @@ export const NETWORKS: {[key: string]: Network} = {
     protocolMagic: ProtocolMagic.MAINNET,
     eraStartSlot: 4492800, // 21600 slot x 208 epochs
     eraStartDateTime: Date.parse('29 Jul 2020 21:44:51 UTC'),
-    ttlSlots: 3600,
+    epochsToRewardDistribution: 4,
+    minimalOutput: 1000000,
+  },
+  MARY_TESTNET: {
+    name: 'mary-testnet',
+    networkId: NetworkId.TESTNET,
+    protocolMagic: ProtocolMagic.MARY_TESTNET,
+    eraStartSlot: 0,
+    eraStartDateTime: Date.parse('24 Jul 2019 20:20:16 UTC'),
     epochsToRewardDistribution: 4,
     minimalOutput: 1000000,
   },
 }
+
+export const DEFAULT_TTL_SLOTS = 3600
 
 export const DELAY_AFTER_TOO_MANY_REQUESTS = 2000
 

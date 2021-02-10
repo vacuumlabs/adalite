@@ -1,11 +1,12 @@
 export const enum NetworkId {
   MAINNET = 1,
-  HASKELL_TESTNET = 0,
+  TESTNET = 0,
 }
 
 export const enum ProtocolMagic {
   MAINNET = 764824073,
   HASKELL_TESTNET = 42,
+  MARY_TESTNET = 1097911063,
 }
 
 export type Network = {
@@ -14,7 +15,6 @@ export type Network = {
   protocolMagic: ProtocolMagic
   eraStartSlot: number
   eraStartDateTime: number
-  ttlSlots: number
   epochsToRewardDistribution: number
   minimalOutput: number
 }

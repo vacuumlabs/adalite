@@ -1,6 +1,7 @@
 import {AddressProvider, CryptoProvider, HexString, _XPubKey} from '../../types'
-import {packBootstrapAddress, base58} from 'cardano-crypto.js'
+import {packBootstrapAddress} from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../constants'
+import {encodeAddress} from '../shelley/helpers/addresses'
 
 const v1Path = (account: number, isChange: boolean, addrIdx: number) => {
   return [
@@ -57,7 +58,7 @@ export const ByronAddressProvider = (
 
   return {
     path,
-    address: base58.encode(
+    address: encodeAddress(
       packBootstrapAddress(
         path,
         xpub,
