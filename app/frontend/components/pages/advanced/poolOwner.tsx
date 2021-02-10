@@ -129,7 +129,6 @@ const PoolOwnerCard = ({
           <li>Press the "Sign" button and review the pool registration attributes.</li>
           <li>Proceed by signing the transaction using your HW wallet.</li>
           <li>Press the "Download signature" button and send the signature the pool operator.</li>
-          <li>Works with Ledger Nano S/X, Trezor coming on 10.2.2021.</li>
         </ol>
         <a
           href="https://adalite.medium.com/cardano-stake-pool-owners-hw-support-6d9278dba0ba"

@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@babel/runtime@^7.11.0":
+"@babel/runtime@^7.11.0", "@babel/runtime@^7.12.5":
   version "7.11.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.11.2.tgz#f549c13c754cc40b87644b9fa9f09a6a95fe0736"
   integrity sha512-TeWkU52so0mPtDcaCTxNBI/IHiz0pZgr8VEFqXFtZWpYD08ZB6FaSwVAS8MKRQAP3bYKiVjwysOJgMFY28o6Tw==
@@ -3413,14 +3413,14 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
-trezor-connect@^8.1.12:
-  version "8.1.12"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.12.tgz#99beee082e4a27a72a64d0156874140363393b1e"
-  integrity sha512-2vnkL7T3wyozTiOUznCCEVOR4JfXUYivWGjxDVH2Wad8ngjqdg3KQjwIrrX4FIN7BQ5hBAuYY0JnmRaXdl4kIA==
+trezor-connect@^8.1.22:
+  version "8.1.22"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.22.tgz#a6b713c621fb9a108827a2b51253dd6baf05a7a1"
+  integrity sha512-majbYoNlUqNG6AncdXiOdyF02SS73rWkel1of4qHK1T1bNp92cIq8yZMoWXxil3p2b45qs5PA8pK1TBexZCQ9g==
   dependencies:
-    "@babel/runtime" "^7.11.0"
+    "@babel/runtime" "^7.12.5"
     events "^3.2.0"
-    whatwg-fetch "^3.3.1"
+    whatwg-fetch "^3.5.0"
 
 tslib@^1.9.0:
   version "1.9.3"
@@ -3637,10 +3637,10 @@ webpack@^4.1.1:
     watchpack "^1.5.0"
     webpack-sources "^1.0.1"
 
-whatwg-fetch@^3.3.1:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.4.0.tgz#e11de14f4878f773fbebcde8871b2c0699af8b30"
-  integrity sha512-rsum2ulz2iuZH08mJkT0Yi6JnKhwdw4oeyMjokgxd+mmqYSd9cPpOQf01TIWgjxG/U4+QR+AwKq6lSbXVxkyoQ==
+whatwg-fetch@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.5.0.tgz#605a2cd0a7146e5db141e29d1c62ab84c0c4c868"
+  integrity sha512-jXkLtsR42xhXg7akoDKvKWE40eJeI+2KZqcp2h3NsOrRnDvtWX36KcKl30dy+hxECivdk2BVUHVNrPtoMBUx6A==
 
 which-module@^2.0.0:
   version "2.0.0"
