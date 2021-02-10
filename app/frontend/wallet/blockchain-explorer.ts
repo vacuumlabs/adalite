@@ -262,7 +262,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const poolMetaUrls = distinct(
       [...delegations, ...rewards]
         .filter(({name}) => !name)
-        .map((historyEntry) => extractUrl(historyEntry.poolHash))
+        .map(({poolHash}) => extractUrl(poolHash))
     ).filter((url) => url != null)
 
     const metaUrlToPoolNameMap = (await Promise.all(

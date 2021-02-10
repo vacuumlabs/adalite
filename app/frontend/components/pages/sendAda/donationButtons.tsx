@@ -110,7 +110,8 @@ class DonationButtons extends Component<Props> {
 }
 
 export default connect(
-  (state) => ({
+  // TODO: hotfix until we refactor this to functional component
+  (state: any) => ({
     sendAmount: state.sendAmount.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,
     checkedDonationType: state.checkedDonationType,

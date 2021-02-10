@@ -6,7 +6,8 @@ import {Lovelace, Ada, CertificateType} from '../types'
 import {NETWORKS} from '../wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
-const parseToLovelace = (str): Lovelace => Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace
+const parseToLovelace = (str: string): Lovelace =>
+  Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace
 
 const _sendAddressValidators = {
   byron: isValidBootstrapAddress,

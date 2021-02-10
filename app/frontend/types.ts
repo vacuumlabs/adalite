@@ -11,6 +11,16 @@ export type AddressProvider = (
   address: _Address
 }>
 
+export type AddressWithMeta = {
+  address: _Address
+  bip32StringPath: string
+  isUsed: boolean
+}
+
+export type AddressToPathMapping = {
+  [key: string]: BIP32Path
+}
+
 export interface CryptoProvider {
   network: Network
   signTx: (
@@ -103,4 +113,11 @@ export type AccountInfo = {
   }
   isUsed: boolean
   accountIndex: number
+}
+
+export const enum TxType {
+  SEND_ADA,
+  CONVERT_LEGACY,
+  DELEGATE,
+  WITHDRAW,
 }

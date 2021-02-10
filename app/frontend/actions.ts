@@ -37,7 +37,7 @@ import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, Ada, Lovelace, CryptoProviderFeature} from './types'
+import {AccountInfo, Ada, Lovelace, CryptoProviderFeature, _Address, TxType} from './types'
 import {MainTabs} from './constants'
 
 let wallet: ReturnType<typeof ShelleyWallet>
@@ -191,7 +191,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
-      const ticker2Id = null
       const shouldShowPremiumBanner =
         state.shouldShowPremiumBanner && PREMIUM_MEMBER_BALANCE_TRESHOLD < totalWalletBalance
       const isBigDelegator = totalWalletBalance > BIG_DELEGATOR_THRESHOLD
@@ -218,12 +217,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         shouldShowGenerateMnemonicDialog: false,
         shouldShowAddressVerification: usingHwWallet,
         // send form
-        sendAmount: {fieldValue: '', coins: 0},
+        sendAmount: {fieldValue: '', coins: 0 as Lovelace},
         sendAddress: {fieldValue: ''},
-        donationAmount: {fieldValue: '', coins: 0},
+        donationAmount: {fieldValue: '', coins: 0 as Lovelace},
         sendResponse: '',
         // shelley
-        ticker2Id,
         isShelleyCompatible,
         shouldShowPremiumBanner,
         isBigDelegator,
@@ -514,9 +512,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const resetAmountFields = (state) => {
+  const resetAmountFields = (state: State) => {
     setState({
-      donationAmount: {fieldValue: '', coins: 0},
+      donationAmount: {fieldValue: '', coins: 0 as Lovelace},
       transactionFee: 0, // TODO(merc): call resetDonation instead?
       maxDonationAmount: Infinity,
       checkedDonationType: '',
@@ -525,7 +523,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetPercentageDonation()
   }
 
-  const resetSendFormState = (state) => {
+  const resetSendFormState = (state: State) => {
     setState({
       sendResponse: '',
       loading: false,
@@ -533,9 +531,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const resetSendFormFields = (state) => {
+  const resetSendFormFields = (state: State) => {
     setState({
-      sendAmount: {fieldValue: '', coins: 0},
+      sendAmount: {fieldValue: '', coins: 0 as Lovelace},
       sendAddress: {fieldValue: ''},
       sendAddressValidationError: null,
       sendAmountValidationError: null,
@@ -546,7 +544,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const resetDonation = () => {
     setState({
       checkedDonationType: '',
-      donationAmount: {fieldValue: '', coins: 0},
+      donationAmount: {fieldValue: '', coins: 0 as Lovelace},
     })
   }
 
@@ -561,7 +559,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const validateSendForm = (state) => {
+  const validateSendForm = (state: State) => {
     setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
     setErrorState(
       'sendAmountValidationError',
@@ -627,7 +625,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const calculateFee = async () => {
+  const calculateFee = async (): Promise<void> => {
     const state = getState()
     if (!isSendFormFilledAndValid(state)) {
       setState({
@@ -636,10 +634,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       return
     }
-    const coins = state.sendAmount.coins as Lovelace
-    const donationAmount = state.donationAmount.coins as Lovelace
-    const address = state.sendAddress.fieldValue
-    const plan = await prepareTxPlan({address, coins, donationAmount, txType: 'sendAda'})
+    const coins = state.sendAmount.coins
+    const donationAmount = state.donationAmount.coins
+    const address = state.sendAddress.fieldValue as _Address
+    const plan = await prepareTxPlan({address, coins, donationAmount, txType: TxType.SEND_ADA})
     const newState = getState() // if the values changed meanwhile
     if (
       newState.sendAmount.fieldValue !== state.sendAmount.fieldValue ||
@@ -762,7 +760,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const state = getState()
     await wallet
       .getAccount(state.sourceAccountIndex)
-      .getMaxDonationAmount(state.sendAddress.fieldValue, state.sendAmount.coins as Lovelace)
+      .getMaxDonationAmount(state.sendAddress.fieldValue, state.sendAmount.coins)
       .then((maxDonationAmount) => {
         let newMaxDonationAmount
         if (maxDonationAmount >= toCoins(ADALITE_CONFIG.ADALITE_MIN_DONATION_VALUE)) {
@@ -782,7 +780,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
   }
 
-  const updateAddress = (state, e, address?: string) => {
+  const updateAddress = (state: State, e, address?: string) => {
     setState({
       sendResponse: '',
       sendAddress: Object.assign({}, state.sendAddress, {
@@ -792,12 +790,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
-  const updateAmount = async (state, e) => {
+  const updateAmount = async (state: State, e) => {
     setState({
       sendResponse: '',
       sendAmount: Object.assign({}, state.sendAmount, {
         fieldValue: e.target.value,
-        coins: parseCoins(e.target.value) || 0,
+        coins: parseCoins(e.target.value) || (0 as Lovelace),
       }),
     })
 
@@ -857,14 +855,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
   }
 
-  const convertNonStakingUtxos = async (state) => {
+  const convertNonStakingUtxos = async (state: State): Promise<void> => {
     loadingAction(state, 'Preparing transaction...')
     const address = await wallet.getAccount(state.sourceAccountIndex).getChangeAddress()
     const maxAmount = await wallet
       .getAccount(state.sourceAccountIndex)
       .getMaxNonStakingAmount(address)
     const coins = maxAmount && maxAmount.sendAmount
-    const plan = await prepareTxPlan({address, coins, txType: 'convert'})
+    const plan = await prepareTxPlan({address, coins, txType: TxType.CONVERT_LEGACY})
     const validationError = txPlanValidator(coins, getSourceAccountInfo(state).balance, plan)
     if (validationError) {
       setErrorState('transactionSubmissionError', validationError, {
@@ -878,11 +876,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     stopLoadingAction(state, {})
   }
 
-  const withdrawRewards = async (state) => {
+  const withdrawRewards = async (state: State): Promise<void> => {
     loadingAction(state, 'Preparing transaction...')
     // TODO: get reward and normal balance from be not from state
-    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance
-    const plan = await prepareTxPlan({rewards, txType: 'withdraw'})
+    // TODO: rewards should be of type Lovelace
+    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
+    const plan = await prepareTxPlan({rewards, txType: TxType.WITHDRAW})
     const withdrawalValidationError =
       withdrawalPlanValidator(rewards, getSourceAccountInfo(state).balance, plan) ||
       wallet.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
@@ -906,7 +905,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         donationAmount: {
           fieldValue: e.target.value,
-          coins: parseCoins(e.target.value) || 0,
+          coins: parseCoins(e.target.value) || (0 as Lovelace),
         },
         checkedDonationType: e.target.id,
       })
@@ -964,12 +963,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const calculateDelegationFee = async () => {
+  const calculateDelegationFee = async (): Promise<void> => {
     const state = getState()
     setPoolInfo(state)
-    const poolHash = state.shelleyDelegation.selectedPool.poolHash
+    const poolHash = state.shelleyDelegation.selectedPool.poolHash as string
     const stakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
-    const plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: 'delegate'})
+    const plan = await prepareTxPlan({poolHash, stakingKeyRegistered, txType: TxType.DELEGATE})
     const newState = getState()
     if (hasPoolIdentifiersChanged(newState)) {
       return
@@ -1129,7 +1128,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       sendTransactionTitle: 'Transfer funds between accounts',
       shouldShowSendTransactionModal: true,
       txSuccessTab: '',
-      sendAmount: {fieldValue: '', coins: 0},
+      sendAmount: {fieldValue: '', coins: 0 as Lovelace},
       transactionFee: 0,
     })
     const targetAddress = await wallet.getAccount(targetAccountIndex).getChangeAddress()
@@ -1141,7 +1140,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetAccountIndexes(state)
     setState({
       sendAddress: {fieldValue: ''},
-      sendAmount: {fieldValue: '', coins: 0},
+      sendAmount: {fieldValue: '', coins: 0 as Lovelace},
       transactionFee: 0,
       shouldShowSendTransactionModal: false,
       sendAddressValidationError: null,

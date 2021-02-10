@@ -12,112 +12,122 @@ export interface SendTransactionSummary {
 }
 
 export interface State {
+  // general
   loading: boolean
   loadingMessage: string
   alert: any // TODO
-  displayWelcome: boolean
-  displayInfoModal: boolean
-  currentTab: 'wallet-info'
-  walletIsLoaded: boolean
-  shouldShowStakingBanner: boolean
-  errorBannerContent: string
-  sendAddress: any // TODO
-  sendAmount: any // TODO
-  keepConfirmationDialogOpen: boolean
-
-  sendTransactionSummary: SendTransactionSummary
-
-  router: {
-    pathname: string
-    hash: string
+  sendSentry: {
+    event?: any
+    resolve?: (shouldSend: boolean) => void
   }
+  errorBannerContent: string
+  shouldShowUnexpectedErrorModal: boolean
+  error?: any
+  activeMainTab: MainTabs
+  shouldShowContactFormModal?: boolean
+  shouldShowExportOption?: boolean
+  conversionRates?: {data: {USD: number; EUR: number}}
+
+  // cache
+  displayWelcome: boolean
+  shouldShowStakingBanner: boolean
+  displayInfoModal: boolean
+  shouldShowPremiumBanner?: boolean
+
+  // login / logout
+  autoLogin: boolean
+  authMethod: AuthMethod
+  shouldShowDemoWalletWarningDialog: boolean
+  logoutNotificationOpen: boolean
+  walletIsLoaded: boolean
+  isShelleyCompatible: any
+  shouldShowNonShelleyCompatibleDialog: any
+  walletLoadingError?: any
+  shouldShowWalletLoadingErrorModal?: boolean
+  usingHwWallet?: boolean
+  isBigDelegator: boolean
+  shouldShowSaturatedBanner?: boolean
   mnemonicAuthForm: {
     mnemonicInputValue: string
     mnemonicInputError: {code: string}
     formIsValid: boolean
   }
-
-  isShelleyCompatible: any
-  shouldShowNonShelleyCompatibleDialog: any
-
-  authMethod: AuthMethod
-  shouldShowDemoWalletWarningDialog: boolean
-  logoutNotificationOpen: boolean
-  rawTransactionOpen: boolean
-  rawTransaction: string
+  hwWalletName?: string
+  isDemoWallet?: boolean
+  shouldShowGenerateMnemonicDialog?: boolean
   shouldShowMnemonicInfoAlert: boolean
-  sendResponse: any // TODO
+
+  // send form
+  sendAddress: {
+    fieldValue: string
+  }
+  sendAmount: {
+    fieldValue: string
+    coins: Lovelace
+  }
+  sendAddressValidationError?: any
+  sendAmountValidationError?: any
+  calculatingFee?: boolean
+
+  // donation
+  donationAmount: {
+    fieldValue: string
+    coins: Lovelace
+  }
   checkedDonationType: string // TODO: enum
+  donationAmountValidationError?: any
   shouldShowCustomDonationInput: boolean
-  donationAmount: any // TODO
   maxDonationAmount: number
   percentageDonationValue: number
   percentageDonationText: string
   isThresholdAmountReached: boolean
 
-  shouldShowUnexpectedErrorModal: boolean
-  sendSentry: {
-    event?: any
-    resolve?: (shouldSend: boolean) => void
+  // delegation form
+  calculatingDelegationFee?: any
+  isDelegationValid?: any
+  shelleyDelegation?: {
+    selectedPool?: any
+    delegationFee?: any
   }
-  autoLogin: boolean
+  delegationValidationError?: any
+  gettingPoolInfo: boolean
 
-  // TODO
-  waitingForHwWallet?: boolean
+  // transaction
+  sendTransactionSummary: SendTransactionSummary
+  rawTransactionOpen: boolean
+  rawTransaction: string
+  transactionFee?: any
+  sendResponse: any // TODO
+  txConfirmType: string
+  txSuccessTab: string
+  transactionSubmissionError?: any
   shouldShowConfirmTransactionDialog?: boolean
   shouldShowTransactionErrorModal?: boolean
   shouldShowThanksForDonation?: boolean
-  shouldShowContactFormModal?: boolean
-  shouldShowPremiumBanner?: boolean
+  waitingForHwWallet?: boolean
+  keepConfirmationDialogOpen: boolean
+
+  // router
+  router: {
+    pathname: string
+    hash: string
+  }
+
+  // pool registration
   poolCertTxVars: {
     shouldShowPoolCertSignModal: boolean
     ttl: any
     signature: any
     plan: any
   }
+  poolRegTxError?: any
 
-  calculatingFee?: boolean
-  transactionFee?: any
-
-  sendAmountValidationError?: any
-  shouldShowExportOption?: boolean
-
-  conversionRates?: {data: {USD: number; EUR: number}}
-  shouldShowGenerateMnemonicDialog?: boolean
-
-  walletLoadingError?: any
-  shouldShowWalletLoadingErrorModal?: boolean
-  usingHwWallet?: boolean
+  // address detail
   addressVerificationError?: boolean
   showAddressDetail?: {address: string; bip32path: string; copyOnClick: boolean}
-  hwWalletName?: string
-  isDemoWallet?: boolean
-  error?: any
   shouldShowAddressVerification?: boolean
 
-  donationAmountValidationError?: any
-  sendAddressValidationError?: any
-  transactionSubmissionError?: any
-
-  calculatingDelegationFee?: any
-  isDelegationValid?: any
-
-  shelleyDelegation?: {
-    selectedPool?: any
-    delegationFee?: any
-  }
-  activeMainTab: MainTabs
-  currentDelegation?: {
-    stakePool?: any
-  }
-  validStakepools?: any | null
-  ticker2Id?: any | null
-  delegationValidationError?: any
-  gettingPoolInfo: boolean
-  txConfirmType: string
-  txSuccessTab: string
-  shouldShowSaturatedBanner?: boolean
-  isBigDelegator: boolean
+  // accounts info
   accountsInfo: Array<AccountInfo>
   maxAccountIndex: number
   shouldNumberAccountsFromOne: boolean
@@ -126,14 +136,21 @@ export interface State {
   targetAccountIndex: number
   totalWalletBalance: number
   totalRewardsBalance: number
+
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean
   sendTransactionTitle: string
   delegationTitle: string
-  poolRegTxError?: any
+
+  currentDelegation?: {
+    // TODO: probably useless
+    stakePool?: any
+  }
+  validStakepools?: any | null
 }
 
 const initialState: State = {
+  //general
   loading: false,
   loadingMessage: '',
   alert: {
@@ -142,11 +159,15 @@ const initialState: State = {
     title: 'Wrong mnemonic',
     hint: 'Hint: Ensure that your mnemonic is without mistake.',
   },
+  sendSentry: {},
+  errorBannerContent: '',
+  shouldShowUnexpectedErrorModal: false,
+  activeMainTab: MainTabs.SENDING,
+
+  // cache
   displayWelcome:
     !(window.localStorage.getItem(localStorageVars.WELCOME) === 'true') &&
     ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN !== 'true',
-  currentTab: 'wallet-info',
-  walletIsLoaded: false,
   shouldShowStakingBanner: !(
     window.localStorage.getItem(localStorageVars.STAKING_BANNER) === 'true'
   ),
@@ -154,51 +175,39 @@ const initialState: State = {
     window.localStorage.getItem(localStorageVars.PREMIUM_BANNER) === 'true'
   ),
   displayInfoModal: !(window.localStorage.getItem(localStorageVars.INFO_MODAL) === 'true'),
-  errorBannerContent: '',
-  // todo - object (sub-state) from send-ada form
-  sendAddress: {fieldValue: ''},
-  sendAmount: {fieldValue: 0, coins: 0},
-  transactionFee: 0,
-  sendTransactionSummary: {
-    amount: 0 as Lovelace,
-    fee: 0 as Lovelace,
-    donation: 0 as Lovelace,
-    plan: null,
-    deposit: 0,
-  },
-  router: {
-    pathname: window.location.pathname,
-    hash: window.location.hash,
-  },
+
+  // login / logout
+  autoLogin:
+    ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
+  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
+  shouldShowDemoWalletWarningDialog: false,
+  logoutNotificationOpen: false,
+  walletIsLoaded: false,
+  isShelleyCompatible: true,
+  shouldShowNonShelleyCompatibleDialog: false,
+  isBigDelegator: false,
   mnemonicAuthForm: {
     mnemonicInputValue: '',
     mnemonicInputError: null,
     formIsValid: false,
   },
-  isShelleyCompatible: true,
-  shouldShowNonShelleyCompatibleDialog: false,
-  authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash) ? 'hw-wallet' : '',
-  shouldShowDemoWalletWarningDialog: false,
-  logoutNotificationOpen: false,
-  rawTransactionOpen: false,
-  rawTransaction: '',
   shouldShowMnemonicInfoAlert: false,
-  sendResponse: {},
+
+  // send form
+  // todo - object (sub-state) from send-ada form
+  sendAddress: {fieldValue: ''},
+  sendAmount: {fieldValue: '0', coins: 0 as Lovelace},
+
+  // donation
+  donationAmount: {fieldValue: '0', coins: 0 as Lovelace},
   checkedDonationType: '',
   shouldShowCustomDonationInput: false,
-  donationAmount: {fieldValue: 0, coins: 0},
   maxDonationAmount: Infinity,
   percentageDonationValue: 0,
   percentageDonationText: '0.2%', // What is this and why it isn't in config?
   isThresholdAmountReached: false,
 
-  shouldShowUnexpectedErrorModal: false,
-  sendSentry: {},
-  autoLogin:
-    ADALITE_CONFIG.ADALITE_ENV === 'local' && ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN === 'true',
-
-  // shelley
-  activeMainTab: MainTabs.SENDING,
+  // delegation
   shelleyDelegation: {
     delegationFee: 0.0,
     selectedPool: {
@@ -206,10 +215,38 @@ const initialState: State = {
     },
   },
   gettingPoolInfo: false,
+
+  // transaction
+  sendTransactionSummary: {
+    amount: 0 as Lovelace,
+    fee: 0 as Lovelace,
+    donation: 0 as Lovelace,
+    plan: null,
+    deposit: 0,
+  },
+  rawTransactionOpen: false,
+  rawTransaction: '',
+  transactionFee: 0,
+  sendResponse: {},
   txConfirmType: '',
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
-  isBigDelegator: false,
+
+  // router
+  router: {
+    pathname: window.location.pathname,
+    hash: window.location.hash,
+  },
+
+  // pool registration
+  poolCertTxVars: {
+    shouldShowPoolCertSignModal: false,
+    ttl: 0,
+    signature: null,
+    plan: null,
+  },
+
+  // accounts info
   accountsInfo: [
     {
       accountXpubs: {
@@ -261,16 +298,11 @@ const initialState: State = {
   targetAccountIndex: 0,
   totalWalletBalance: 0,
   totalRewardsBalance: 0,
+
   shouldShowSendTransactionModal: false,
   shouldShowDelegationModal: false,
   sendTransactionTitle: '',
   delegationTitle: '',
-  poolCertTxVars: {
-    shouldShowPoolCertSignModal: false,
-    ttl: 0,
-    signature: null,
-    plan: null,
-  },
 }
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State

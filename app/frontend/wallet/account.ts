@@ -2,7 +2,14 @@ import AddressManager from './address-manager'
 import PseudoRandom from './helpers/PseudoRandom'
 import {MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
-import {CryptoProvider, Lovelace} from '../types'
+import {
+  AddressToPathMapping,
+  AddressWithMeta,
+  CryptoProvider,
+  Lovelace,
+  TxType,
+  _Address,
+} from '../types'
 import {
   getAccountXpub as getAccoutXpubShelley,
   ShelleyStakingAccountProvider,
@@ -36,10 +43,10 @@ import blockchainExplorer from './blockchain-explorer'
 
 const DummyAddressManager = () => {
   return {
-    discoverAddresses: () => [],
-    discoverAddressesWithMeta: () => [],
-    getAddressToAbsPathMapping: () => ({}),
-    _deriveAddress: () => ({}),
+    discoverAddresses: (): Promise<_Address[]> => Promise.resolve([]),
+    discoverAddressesWithMeta: (): Promise<AddressWithMeta[]> => Promise.resolve([]),
+    getAddressToAbsPathMapping: (): AddressToPathMapping => ({}),
+    _deriveAddress: (): Promise<_Address> => Promise.resolve(null),
   }
 }
 
@@ -252,7 +259,7 @@ const Account = ({
     return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
   }
 
-  async function getMaxDonationAmount(address, sendAmount: Lovelace) {
+  async function getMaxDonationAmount(address: string, sendAmount: Lovelace) {
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
@@ -268,7 +275,7 @@ const Account = ({
     coins?: Lovelace
     poolHash?: string
     stakingKeyRegistered?: boolean
-    txType?: string
+    txType?: TxType
     rewards: any
   }
 
@@ -282,7 +289,7 @@ const Account = ({
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
     // we shuffle non-staking utxos separately since we want them to be spend first
     const shuffledUtxos =
-      txType === 'convert'
+      txType === TxType.CONVERT_LEGACY
         ? shuffleArray(nonStakingUtxos, randomGenerator)
         : [
           ...shuffleArray(nonStakingUtxos, randomGenerator),
@@ -395,7 +402,7 @@ const Account = ({
     }
   }
 
-  async function getChangeAddress() {
+  async function getChangeAddress(): Promise<_Address> {
     /*
     * We use visible addresses as change addresses to mainintain
     * AdaLite original functionality which did not consider change addresses.

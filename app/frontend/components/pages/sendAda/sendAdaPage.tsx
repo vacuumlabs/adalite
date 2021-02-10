@@ -38,7 +38,7 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
 
 interface Props {
   sendResponse: any
-  sendAddress: any
+  sendAddress: string
   sendAddressValidationError: any
   sendAmount: any
   sendAmountValidationError: any

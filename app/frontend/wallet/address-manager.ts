@@ -1,6 +1,6 @@
 import {toBip32StringPath} from './helpers/bip32'
 import NamedError from '../helpers/NamedError'
-import {AddressProvider, BIP32Path, _Address} from '../types'
+import {AddressProvider, AddressToPathMapping, AddressWithMeta, BIP32Path, _Address} from '../types'
 import blockchainExplorer from './blockchain-explorer'
 
 type AddressManagerParams = {
@@ -54,7 +54,8 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: Address
 
   // TODO(ppershing): we can probably get this info more easily
   // just by testing filterUnusedAddresses() backend call
-  async function discoverAddressesWithMeta() {
+
+  async function discoverAddressesWithMeta(): Promise<AddressWithMeta[]> {
     const addresses = await discoverAddresses()
     const usedAddresses = await blockchainExplorer.filterUsedAddresses(addresses)
 
@@ -69,7 +70,8 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: Address
 
   // this is supposed to return {[key: _Address]: BIP32Path} but ts does support
   // only strings and number as index signatures
-  function getAddressToAbsPathMapping(): {[key: string]: BIP32Path} {
+
+  function getAddressToAbsPathMapping(): AddressToPathMapping {
     const result = {}
     Object.values(deriveAddressMemo).map((value) => {
       result[value.address] = value.path
