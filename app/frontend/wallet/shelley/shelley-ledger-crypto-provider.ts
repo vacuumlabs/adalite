@@ -13,6 +13,7 @@ import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
 import {PoolParams} from './helpers/poolCertificateUtils'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
+import {captureMessage} from '@sentry/browser'
 
 import {
   bechAddressToHex,
@@ -56,6 +57,12 @@ const getLedgerTransport = async (forceWebUsb: boolean): Promise<any> => {
       transport = await LedgerTransportU2F.create()
     } catch (u2fError) {
       debugLog(u2fError)
+      captureMessage(
+        JSON.stringify({
+          u2fError: {name: u2fError.name, message: u2fError.message},
+          hwTransportError: {name: hwTransportError.name, message: hwTransportError.message},
+        })
+      )
       throw hwTransportError
     }
   }
