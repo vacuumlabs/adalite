@@ -24,11 +24,11 @@
     "postinstall": "node ./helpers/removeChainLibsWasmImport"
   },
   "dependencies": {
-    "@cardano-foundation/ledgerjs-hw-app-cardano": "^2.1.0",
+    "@cardano-foundation/ledgerjs-hw-app-cardano": "^2.2.0",
     "@emurgo/js-chain-libs": "https://github.com/SebastienGllmt/js-chain-libs-pkg",
-    "@ledgerhq/hw-transport": "^5.36.0",
+    "@ledgerhq/hw-transport": "^5.43.0",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
-    "@ledgerhq/hw-transport-webusb": "^5.36.0",
+    "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "@sentry/browser": "5.22.3",
     "babel-regenerator-runtime": "^6.5.0",
     "bip39-light": "^1.0.7",
