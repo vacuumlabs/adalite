@@ -7,13 +7,14 @@ import {
   StakingHistoryItemType,
   RewardWithdrawal,
   StakeDelegation,
-  StakePool,
+  StakingHistoryStakePool,
   StakingReward,
   StakingKeyRegistration,
-} from '../components/pages/delegations/stakingHistoryPage'
+  HexString,
+  Lovelace,
+} from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
-import {HexString, Lovelace} from '../types'
 import {captureMessage} from '@sentry/browser'
 import {
   BulkAddressesSummaryResponse,
@@ -277,20 +278,20 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const poolHashToPoolName = (poolHash) =>
       metaUrlToPoolNameMap[extractUrl(poolHash)] || UNKNOWN_POOL_NAME
 
-    const parseStakePool = (stakingHistoryObject: any): StakePool => ({
+    const parseStakePool = (stakingHistoryObject: any): StakingHistoryStakePool => ({
       id: stakingHistoryObject.poolHash,
       name: stakingHistoryObject.name || poolHashToPoolName(stakingHistoryObject.poolHash),
     })
 
     // Prepare delegations
-    let oldPool: StakePool = null
+    let oldPool: StakingHistoryStakePool = null
     const parsedDelegations = delegations
       .map((delegation) => ({...delegation, time: new Date(delegation.time)}))
       .sort((a, b) => a.time.getTime() - b.time.getTime()) // sort by time, oldest first
       .map((delegation) => {
-        const stakePool: StakePool = parseStakePool(delegation)
+        const stakePool: StakingHistoryStakePool = parseStakePool(delegation)
         const stakeDelegation: StakeDelegation = {
-          type: StakingHistoryItemType.StakeDelegation,
+          type: StakingHistoryItemType.STAKE_DELEGATION,
           txHash: delegation.txHash,
           epoch: delegation.epochNo,
           dateTime: new Date(delegation.time),
@@ -306,7 +307,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     // Prepare rewards
     const parsedRewards = rewards.map((reward) => {
       const stakingReward: StakingReward = {
-        type: StakingHistoryItemType.StakingReward,
+        type: StakingHistoryItemType.STAKING_REWARD,
         epoch: reward.epochNo,
         dateTime: new Date(reward.time),
         forEpoch: reward.forDelegationInEpoch,
@@ -321,7 +322,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     // Prepare withdrawals
     const parsedWithdrawals = withdrawals.map((withdrawal) => {
       const rewardWithdrawal: RewardWithdrawal = {
-        type: StakingHistoryItemType.RewardWithdrawal,
+        type: StakingHistoryItemType.REWARD_WITHDRAWAL,
         txHash: withdrawal.txHash,
         epoch: withdrawal.epochNo,
         dateTime: new Date(withdrawal.time),
@@ -334,7 +335,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     // Prepare staking key registration
     const parsedStakingKeyRegistrations = stakingKeyRegistrations.map((registration) => {
       const stakingKeyRegistration: StakingKeyRegistration = {
-        type: StakingHistoryItemType.StakingKeyRegistration,
+        type: StakingHistoryItemType.STAKING_KEY_REGISTRATION,
         txHash: registration.txHash,
         epoch: registration.epochNo,
         dateTime: new Date(registration.time),

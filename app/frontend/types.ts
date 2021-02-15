@@ -1,4 +1,4 @@
-import {StakingHistoryObject} from './components/pages/delegations/stakingHistoryPage'
+import {CaTxEntry, RewardType} from './wallet/explorer-types'
 import {Network} from './wallet/types'
 
 export type BIP32Path = number[]
@@ -60,18 +60,8 @@ export type DerivationScheme = {
   keyfileVersion: string
 }
 
-type Coins = {getCoin: string}
-type Input = [_Address, Coins]
-type Output = [_Address, Coins]
-
 export type HexString = string
-export type Transaction = {
-  ctbId: HexString
-  ctbTimeIssued: number
-  ctbInputs: Array<Input>
-  ctbOutputs: Array<Output>
-  ctbInputSum: Coins
-  ctbOutputSum: Coins
+export type TxSummaryEntry = CaTxEntry & {
   fee: Lovelace
   effect: Lovelace
 }
@@ -116,7 +106,7 @@ export type AccountInfo = {
     }
     value: number
   }
-  transactionHistory: Array<Transaction>
+  transactionHistory: Array<CaTxEntry>
   stakingHistory: Array<StakingHistoryObject>
   visibleAddresses: Array<any>
   poolRecommendation: {
@@ -134,4 +124,46 @@ export const enum TxType {
   CONVERT_LEGACY,
   DELEGATE,
   WITHDRAW,
+}
+
+export enum StakingHistoryItemType {
+  STAKE_DELEGATION,
+  STAKING_REWARD,
+  REWARD_WITHDRAWAL,
+  STAKING_KEY_REGISTRATION,
+}
+
+export interface StakingHistoryObject {
+  type: StakingHistoryItemType
+  epoch: number
+  dateTime: Date
+}
+
+export interface StakingHistoryStakePool {
+  id: string
+  name: string
+}
+
+export interface StakeDelegation extends StakingHistoryObject {
+  newStakePool: StakingHistoryStakePool
+  oldStakePool?: StakingHistoryStakePool
+  txHash: string
+}
+
+export interface StakingReward extends StakingHistoryObject {
+  forEpoch: number
+  reward: Lovelace
+  stakePool: StakingHistoryStakePool
+  rewardType: RewardType
+}
+
+export interface RewardWithdrawal extends StakingHistoryObject {
+  amount: Lovelace
+  txHash: string
+}
+
+export interface StakingKeyRegistration extends StakingHistoryObject {
+  action: string
+  stakingKey: string
+  txHash: string
 }

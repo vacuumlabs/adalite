@@ -6,32 +6,15 @@ import {getActiveAccountInfo, State} from '../../../state'
 import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
-import {Lovelace} from '../../../types'
 import {RewardType} from '../../../wallet/explorer-types'
-
-export enum StakingHistoryItemType {
+import {
+  StakingHistoryItemType,
+  StakingHistoryObject,
   StakeDelegation,
   StakingReward,
   RewardWithdrawal,
   StakingKeyRegistration,
-}
-
-export interface StakingHistoryObject {
-  type: StakingHistoryItemType
-  epoch: number
-  dateTime: Date
-}
-
-export interface StakePool {
-  id: string
-  name: string
-}
-
-export interface StakeDelegation extends StakingHistoryObject {
-  newStakePool: StakePool
-  oldStakePool?: StakePool
-  txHash: string
-}
+} from '../../../types'
 
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
   return (
@@ -59,13 +42,6 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
       />
     </li>
   )
-}
-
-export interface StakingReward extends StakingHistoryObject {
-  forEpoch: number
-  reward: Lovelace
-  stakePool: StakePool
-  rewardType: RewardType
 }
 
 const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
@@ -105,11 +81,6 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
   )
 }
 
-export interface RewardWithdrawal extends StakingHistoryObject {
-  amount: Lovelace
-  txHash: string
-}
-
 const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithdrawal}) => {
   return (
     <li className="staking-history-item">
@@ -127,12 +98,6 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
       <ViewOnCardanoScan txHash={rewardWithdrawal.txHash} suffix="?tab=withdrawals" />
     </li>
   )
-}
-
-export interface StakingKeyRegistration extends StakingHistoryObject {
-  action: string
-  stakingKey: string
-  txHash: string
 }
 
 const formatStakingKey = (str: string, n: number) =>
@@ -195,20 +160,20 @@ interface Props {
 }
 
 const StakingHistoryObjectToItem = {
-  [StakingHistoryItemType.StakeDelegation]: (x: StakingHistoryObject) => (
+  [StakingHistoryItemType.STAKE_DELEGATION]: (x: StakingHistoryObject) => (
     <StakeDelegationItem stakeDelegation={x as StakeDelegation} />
   ),
-  [StakingHistoryItemType.StakingReward]: (x: StakingHistoryObject) => (
+  [StakingHistoryItemType.STAKING_REWARD]: (x: StakingHistoryObject) => (
     <StakingRewardItem stakingReward={x as StakingReward} />
   ),
-  [StakingHistoryItemType.RewardWithdrawal]: (x: StakingHistoryObject) => (
+  [StakingHistoryItemType.REWARD_WITHDRAWAL]: (x: StakingHistoryObject) => (
     <RewardWithdrawalItem rewardWithdrawal={x as RewardWithdrawal} />
   ),
   // Temporary disabled because of db-sync issue
   // [StakingHistoryItemType.StakingKeyRegistration]: (x: StakingHistoryObject) => (
   //   <StakingKeyRegistrationItem stakingKeyRegistration={x as StakingKeyRegistration} />
   // ),
-  [StakingHistoryItemType.StakingKeyRegistration]: (x: StakingHistoryObject) => '',
+  [StakingHistoryItemType.STAKING_KEY_REGISTRATION]: (x: StakingHistoryObject) => '',
 }
 
 class StakingHistoryPage extends Component<Props> {

@@ -7,6 +7,7 @@ import {
   AddressWithMeta,
   CryptoProvider,
   Lovelace,
+  StakingHistoryObject,
   TxType,
   _Address,
 } from '../types'
@@ -38,7 +39,6 @@ import {
   ShelleyTtl,
   ShelleyWitdrawal,
 } from './shelley/shelley-transaction'
-import {StakingHistoryObject} from '../components/pages/delegations/stakingHistoryPage'
 import blockchainExplorer from './blockchain-explorer'
 
 const DummyAddressManager = () => {

@@ -10,8 +10,10 @@ import {
   StakingHistoryItemType,
   StakingHistoryObject,
   StakingReward,
-} from '../delegations/stakingHistoryPage'
-import {HexString, Lovelace, Transaction} from '../../../types'
+  HexString,
+  Lovelace,
+  TxSummaryEntry,
+} from '../../../types'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -87,20 +89,20 @@ const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
 )
 
 interface Props {
-  transactionHistory: Array<Transaction>
+  transactionHistory: Array<TxSummaryEntry>
   stakingHistory: Array<StakingHistoryObject>
 }
 
 const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element => {
   const withdrawalHistory: {[key: string]: Lovelace} = stakingHistory
-    .filter((item) => item.type === StakingHistoryItemType.RewardWithdrawal)
+    .filter((item) => item.type === StakingHistoryItemType.REWARD_WITHDRAWAL)
     .reduce((acc, withdrawal: RewardWithdrawal) => {
       acc[withdrawal.txHash] = withdrawal.amount
       return acc
     }, {})
 
   const stakingRewards = stakingHistory.filter(
-    (item) => item.type === StakingHistoryItemType.StakingReward
+    (item) => item.type === StakingHistoryItemType.STAKING_REWARD
   ) as Array<StakingReward>
 
   const delimiter = ','
@@ -120,14 +122,14 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
     .map((header) => `${header}${delimiter}`)
     .join('')
 
-  const enum TransactionType {
-    received = 'Received',
-    sent = 'Sent',
-    rewardAwarded = 'Reward awarded',
+  const enum TxSummaryType {
+    RECEIVED = 'Received',
+    SENT = 'Sent',
+    REWARD_AWARDED = 'Reward awarded',
   }
 
-  type Entry = {
-    type: TransactionType
+  type TxEntry = {
+    type: TxSummaryType
     txHash?: string
     dateTime: moment.Moment
     sent?: Lovelace
@@ -135,43 +137,45 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
     fee?: Lovelace
   }
 
-  const transactionsEntries: Array<Entry> = transactionHistory.map((transaction: Transaction) => {
-    const common = {
-      txHash: transaction.ctbId,
-      dateTime: moment.utc(new Date(transaction.ctbTimeIssued * 1000)),
-    }
+  const transactionsEntries: Array<TxEntry> = transactionHistory.map(
+    (transaction: TxSummaryEntry) => {
+      const common = {
+        txHash: transaction.ctbId,
+        dateTime: moment.utc(new Date(transaction.ctbTimeIssued * 1000)),
+      }
 
-    if (withdrawalHistory.hasOwnProperty(transaction.ctbId)) {
-      return {
-        ...common,
-        type: TransactionType.sent,
-        sent: (Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) -
-          transaction.fee) as Lovelace,
-        fee: transaction.fee,
-      }
-    } else if (transaction.effect > 0) {
-      return {
-        ...common,
-        type: TransactionType.received,
-        received: transaction.effect,
-      }
-    } else {
-      return {
-        ...common,
-        type: TransactionType.sent,
-        sent: (Math.abs(transaction.effect) - transaction.fee) as Lovelace,
-        fee: transaction.fee,
+      if (withdrawalHistory.hasOwnProperty(transaction.ctbId)) {
+        return {
+          ...common,
+          type: TxSummaryType.SENT,
+          sent: (Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) -
+            transaction.fee) as Lovelace,
+          fee: transaction.fee,
+        }
+      } else if (transaction.effect > 0) {
+        return {
+          ...common,
+          type: TxSummaryType.RECEIVED,
+          received: transaction.effect,
+        }
+      } else {
+        return {
+          ...common,
+          type: TxSummaryType.SENT,
+          sent: (Math.abs(transaction.effect) - transaction.fee) as Lovelace,
+          fee: transaction.fee,
+        }
       }
     }
-  })
+  )
 
-  const rewardsEntries: Array<Entry> = stakingRewards.map((stakingReward: StakingReward) => ({
-    type: TransactionType.rewardAwarded,
+  const rewardsEntries: Array<TxEntry> = stakingRewards.map((stakingReward: StakingReward) => ({
+    type: TxSummaryType.REWARD_AWARDED,
     dateTime: moment(stakingReward.dateTime),
     received: stakingReward.reward,
   }))
 
-  const entries: Array<Entry> = [...transactionsEntries, ...rewardsEntries].sort(
+  const entries: Array<TxEntry> = [...transactionsEntries, ...rewardsEntries].sort(
     (a, b) => b.dateTime.unix() - a.dateTime.unix()
   )
 
@@ -216,7 +220,7 @@ const TransactionHistory = ({transactionHistory, stakingHistory}: Props): h.JSX.
       <div className="transactions-empty">No transactions found</div>
     ) : (
       <ul className="transactions-content">
-        {transactionHistory.map((transaction: Transaction) => (
+        {transactionHistory.map((transaction: TxSummaryEntry) => (
           <li key={transaction.ctbId} className="transaction-item">
             <div className="transaction-date">
               {toLocalDate(new Date(transaction.ctbTimeIssued * 1000))}
