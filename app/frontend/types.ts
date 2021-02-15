@@ -1,3 +1,4 @@
+import {StakingHistoryObject} from './components/pages/delegations/stakingHistoryPage'
 import {Network} from './wallet/types'
 
 export type BIP32Path = number[]
@@ -59,8 +60,21 @@ export type DerivationScheme = {
   keyfileVersion: string
 }
 
-export type Transaction = {}
+type Coins = {getCoin: string}
+type Input = [_Address, Coins]
+type Output = [_Address, Coins]
+
 export type HexString = string
+export type Transaction = {
+  ctbId: HexString
+  ctbTimeIssued: number
+  ctbInputs: Array<Input>
+  ctbOutputs: Array<Output>
+  ctbInputSum: Coins
+  ctbOutputSum: Coins
+  fee: Lovelace
+  effect: Lovelace
+}
 
 export type _XPubKey = {
   path: number[]
@@ -103,7 +117,7 @@ export type AccountInfo = {
     value: number
   }
   transactionHistory: Array<Transaction>
-  stakingHistory: any
+  stakingHistory: Array<StakingHistoryObject>
   visibleAddresses: Array<any>
   poolRecommendation: {
     isInRecommendedPoolSet: boolean

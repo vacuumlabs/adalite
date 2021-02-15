@@ -1,15 +1,20 @@
-import {h, Component} from 'preact'
+import {h} from 'preact'
 import printAda from '../../../helpers/printAda'
 import {getActiveAccountInfo, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import toLocalDate from '../../../helpers/toLocalDate'
-import {RewardWithdrawal, StakingHistoryItemType} from '../delegations/stakingHistoryPage'
-import {Lovelace} from '../../../types'
+import {
+  RewardWithdrawal,
+  StakingHistoryItemType,
+  StakingHistoryObject,
+  StakingReward,
+} from '../delegations/stakingHistoryPage'
+import {HexString, Lovelace, Transaction} from '../../../types'
 import moment = require('moment')
 
-const FormattedAmount = ({amount}: {amount: Lovelace}) => {
+const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
   const value = printAda(Math.abs(amount) as Lovelace)
   const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
   return (
@@ -19,12 +24,12 @@ const FormattedAmount = ({amount}: {amount: Lovelace}) => {
   )
 }
 
-const FormattedFee = ({fee}: {fee: Lovelace}) => {
+const FormattedFee = ({fee}: {fee: Lovelace}): h.JSX.Element => {
   const value = printAda(fee)
   return <div className="transaction-fee">{`Fee: ${value}`}</div>
 }
 
-const Transaction = ({txid}) => (
+const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
   <div className="blockexplorer-link">
     <span>View on </span>
     {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
@@ -82,11 +87,12 @@ const Transaction = ({txid}) => (
 )
 
 interface Props {
-  transactionHistory: any
+  transactionHistory: Array<Transaction>
+  stakingHistory: Array<StakingHistoryObject>
 }
 
-const ExportCSV = ({transactionHistory, stakingHistory}) => {
-  const withdrawalHistory = stakingHistory
+const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element => {
+  const withdrawalHistory: {[key: string]: Lovelace} = stakingHistory
     .filter((item) => item.type === StakingHistoryItemType.RewardWithdrawal)
     .reduce((acc, withdrawal: RewardWithdrawal) => {
       acc[withdrawal.txHash] = withdrawal.amount
@@ -95,7 +101,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}) => {
 
   const stakingRewards = stakingHistory.filter(
     (item) => item.type === StakingHistoryItemType.StakingReward
-  )
+  ) as Array<StakingReward>
 
   const delimiter = ','
   const rowsDelimiter = '\n'
@@ -114,13 +120,22 @@ const ExportCSV = ({transactionHistory, stakingHistory}) => {
     .map((header) => `${header}${delimiter}`)
     .join('')
 
-  const transactionTypes = {
-    received: 'Received',
-    sent: 'Sent',
-    rewardAwarded: 'Reward awarded',
+  const enum TransactionType {
+    received = 'Received',
+    sent = 'Sent',
+    rewardAwarded = 'Reward awarded',
   }
 
-  const transactionsEntries = transactionHistory.map((transaction) => {
+  type Entry = {
+    type: TransactionType
+    txHash?: string
+    dateTime: moment.Moment
+    sent?: Lovelace
+    received?: Lovelace
+    fee?: Lovelace
+  }
+
+  const transactionsEntries: Array<Entry> = transactionHistory.map((transaction: Transaction) => {
     const common = {
       txHash: transaction.ctbId,
       dateTime: moment.utc(new Date(transaction.ctbTimeIssued * 1000)),
@@ -129,37 +144,38 @@ const ExportCSV = ({transactionHistory, stakingHistory}) => {
     if (withdrawalHistory.hasOwnProperty(transaction.ctbId)) {
       return {
         ...common,
-        type: transactionTypes.sent,
-        sent: Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) - transaction.fee,
+        type: TransactionType.sent,
+        sent: (Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) -
+          transaction.fee) as Lovelace,
         fee: transaction.fee,
       }
     } else if (transaction.effect > 0) {
       return {
         ...common,
-        type: transactionTypes.received,
+        type: TransactionType.received,
         received: transaction.effect,
       }
     } else {
       return {
         ...common,
-        type: transactionTypes.sent,
-        sent: Math.abs(transaction.effect) - transaction.fee,
+        type: TransactionType.sent,
+        sent: (Math.abs(transaction.effect) - transaction.fee) as Lovelace,
         fee: transaction.fee,
       }
     }
   })
 
-  const rewardsEntries = stakingRewards.map((stakingReward) => ({
-    type: transactionTypes.rewardAwarded,
+  const rewardsEntries: Array<Entry> = stakingRewards.map((stakingReward: StakingReward) => ({
+    type: TransactionType.rewardAwarded,
     dateTime: moment(stakingReward.dateTime),
     received: stakingReward.reward,
   }))
 
-  const entries = [...transactionsEntries, ...rewardsEntries].sort(
-    (a, b) => b.dateTime - a.dateTime
+  const entries: Array<Entry> = [...transactionsEntries, ...rewardsEntries].sort(
+    (a, b) => b.dateTime.unix() - a.dateTime.unix()
   )
 
-  const rows = entries.map((entry) =>
+  const rows: Array<string> = entries.map((entry) =>
     [
       entry.type,
       entry.received && printAda(entry.received as Lovelace),
@@ -188,36 +204,32 @@ const ExportCSV = ({transactionHistory, stakingHistory}) => {
   )
 }
 
-class TransactionHistory extends Component<Props> {
-  render({transactionHistory, stakingHistory}) {
-    const formatDate = (date) => toLocalDate(new Date(date * 1000))
-
-    return (
-      <div className="transactions card">
-        <div className="transactions-header">
-          <h2 className="card-title">Transaction History</h2>
-          <div className="download-transaction">
-            <ExportCSV transactionHistory={transactionHistory} stakingHistory={stakingHistory} />
-          </div>
-        </div>
-        {transactionHistory.length === 0 ? (
-          <div className="transactions-empty">No transactions found</div>
-        ) : (
-          <ul className="transactions-content">
-            {transactionHistory.map((transaction) => (
-              <li key={transaction.ctbId} className="transaction-item">
-                <div className="transaction-date">{formatDate(transaction.ctbTimeIssued)}</div>
-                <FormattedAmount amount={transaction.effect} />
-                <Transaction txid={transaction.ctbId} />
-                <FormattedFee fee={transaction.fee} />
-              </li>
-            ))}
-          </ul>
-        )}
+const TransactionHistory = ({transactionHistory, stakingHistory}: Props): h.JSX.Element => (
+  <div className="transactions card">
+    <div className="transactions-header">
+      <h2 className="card-title">Transaction History</h2>
+      <div className="download-transaction">
+        <ExportCSV transactionHistory={transactionHistory} stakingHistory={stakingHistory} />
       </div>
-    )
-  }
-}
+    </div>
+    {transactionHistory.length === 0 ? (
+      <div className="transactions-empty">No transactions found</div>
+    ) : (
+      <ul className="transactions-content">
+        {transactionHistory.map((transaction: Transaction) => (
+          <li key={transaction.ctbId} className="transaction-item">
+            <div className="transaction-date">
+              {toLocalDate(new Date(transaction.ctbTimeIssued * 1000))}
+            </div>
+            <FormattedAmount amount={transaction.effect} />
+            <FormattedTransaction txid={transaction.ctbId} />
+            <FormattedFee fee={transaction.fee} />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+)
 
 export default connect(
   (state: State) => ({
