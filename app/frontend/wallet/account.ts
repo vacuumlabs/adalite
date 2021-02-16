@@ -149,7 +149,7 @@ const MyAddresses = ({
   }
 
   async function areAddressesUsed() {
-    const baseExt = await baseExtAddrManager.discoverAddresses()
+    const baseExt = await baseExtAddrManager._deriveAddresses(0, gapLimit)
     return await blockchainExplorer.isSomeAddressUsed(baseExt)
   }
 
