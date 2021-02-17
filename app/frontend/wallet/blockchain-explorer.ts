@@ -14,6 +14,14 @@ import {
   Lovelace,
   Stakepool,
   StakepoolDataProvider,
+  TxSummaryEntry,
+  StakingHistoryObject,
+  HostedPoolMetadata,
+  NextRewardDetailsFormatted,
+  RewardWithMetadata,
+  Balance,
+  Token,
+  _Address,
 } from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -23,19 +31,23 @@ import {
   TxSummaryResponse,
   SubmitResponse,
   BulkAdressesUtxoResponse,
-  HostedPoolMetadata,
   DelegationHistoryEntry,
   RewardsHistoryEntry,
   WithdrawalsHistoryEntry,
   StakeRegistrationHistoryEntry,
   NextRewardDetail,
-  NextRewardDetailsFormatted,
-  RewardWithMetadata,
   PoolRecommendationResponse,
   StakingInfoResponse,
   BestSlotResponse,
+  BulkAddressesSummary,
+  CaTxEntry,
+  TxSummary,
+  TxSubmission,
   StakePoolInfo,
-} from './explorer-types'
+  _Utxo,
+  TokenObject,
+} from './backend-types'
+import {UTxO} from './types'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -55,7 +67,9 @@ const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Func
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
 
-  async function _fetchBulkAddressInfo(addresses: Array<string>) {
+  async function _fetchBulkAddressInfo(
+    addresses: Array<string>
+  ): Promise<BulkAddressesSummary | undefined> {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`
     const result: BulkAddressesSummaryResponse = await request(
       url,
@@ -66,16 +80,15 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         'Content-Type': 'application/json',
       }
     )
-    // @ts-ignore (TODO, handle 'Left')
-    return result.Right
+    // TODO, handle 'Left'
+    return 'Right' in result ? result.Right : undefined
   }
 
   const _getAddressInfos = cacheResults(5000)(_fetchBulkAddressInfo)
 
-  async function getTxHistory(addresses: Array<string>) {
-    const transactions = []
+  async function getTxHistory(addresses: Array<string>): Promise<TxSummaryEntry[]> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const cachedAddressInfos = (
+    const cachedAddressInfos: {caTxList: CaTxEntry[]} = (
       await Promise.all(
         chunks.map(async (index) => {
           const beginIndex = index * gapLimit
@@ -90,33 +103,70 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       },
       {caTxList: []}
     )
-    // create a deep copy of address infos since
-    // we are mutating effect and fee
-    const addressInfos = JSON.parse(JSON.stringify(cachedAddressInfos))
-    addressInfos.caTxList.forEach((tx) => {
-      transactions[tx.ctbId] = tx
+
+    const filteredTxs: {[ctbId: string]: CaTxEntry} = {}
+    cachedAddressInfos.caTxList.forEach((tx) => {
+      filteredTxs[tx.ctbId] = tx
     })
 
-    for (const t of Object.values(transactions)) {
-      if (!t.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(t)}`)
-      t.fee = parseInt(t.fee, 10)
-      let effect = 0 //effect on wallet balance accumulated
-      for (const input of t.ctbInputs || []) {
-        if (addresses.includes(input[0])) {
-          effect -= +input[1].getCoin
-        }
-      }
-      for (const output of t.ctbOutputs || []) {
-        if (addresses.includes(output[0])) {
-          effect += +output[1].getCoin
-        }
-      }
-      t.effect = effect
-    }
-    return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
+    const txHistoryEntries = Object.values(filteredTxs).map((tx) => {
+      if (!tx.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(tx)}`)
+      return prepareTxHistoryEntry(tx, addresses)
+    })
+
+    return txHistoryEntries.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
-  async function fetchTxInfo(txHash: string) {
+  type TokenMap = {[key: string]: {[key: string]: number}}
+
+  function prepareTxHistoryEntry(tx: CaTxEntry, addresses: string[]): TxSummaryEntry {
+    const tokenEffects: TokenMap = {}
+
+    const calculateTokenEffects = (getTokens: TokenObject[], multiplier: number) => {
+      getTokens.forEach(({policyId, assetName, quantity}) => {
+        if (!(policyId in tokenEffects)) {
+          tokenEffects[policyId] = {}
+        }
+        if (!(assetName in tokenEffects[policyId])) {
+          tokenEffects[policyId][assetName] = 0
+        }
+        tokenEffects[policyId][assetName] += multiplier * parseInt(quantity, 10)
+      })
+    }
+
+    let effect = 0 //effect on wallet balance accumulated
+    for (const input of tx.ctbInputs || []) {
+      const isWalletAddress = addresses.includes(input[0])
+      if (isWalletAddress) {
+        effect -= +input[1].getCoin
+        calculateTokenEffects(tx.ctbInputSum.getTokens, -1)
+      }
+    }
+    for (const output of tx.ctbOutputs || []) {
+      const isWalletAddress = addresses.includes(output[0])
+      if (isWalletAddress) {
+        effect += +output[1].getCoin
+        calculateTokenEffects(tx.ctbOutputSum.getTokens, 1)
+      }
+    }
+    return {
+      ...tx,
+      fee: parseInt(tx.fee, 10) as Lovelace,
+      effect: effect as Lovelace,
+      tokenEffects: flattenTokens(tokenEffects),
+    }
+  }
+
+  function flattenTokens(tokens: TokenMap) {
+    const tokenArray = Object.entries(tokens).map(([policyId, assets]) => {
+      return Object.entries(assets).map(([assetName, quantity]) => {
+        return {policyId, assetName, quantity}
+      })
+    })
+    return tokenArray.flat(1)
+  }
+
+  async function fetchTxInfo(txHash: string): Promise<TxSummary> {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/summary/${txHash}`
     const response: TxSummaryResponse = await request(url)
     // @ts-ignore (TODO, handle 'Left')
@@ -137,7 +187,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   // TODO: we should have an endpoint for this
-  async function filterUsedAddresses(addresses: Array<string>) {
+  async function filterUsedAddresses(addresses: Array<string>): Promise<Set<string>> {
     const txHistory = await getTxHistory(addresses)
     const usedAddresses = new Set<string>()
     txHistory.forEach((trx) => {
@@ -152,20 +202,38 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return usedAddresses
   }
 
-  async function getBalance(addresses: Array<string>) {
+  async function getBalance(addresses: Array<string>): Promise<Balance> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const balance = (
-      await Promise.all(
-        chunks.map(async (index) => {
-          const beginIndex = index * gapLimit
-          return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
-        })
-      )
-    ).reduce((acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10), 0)
-    return balance
+    const txHistory = await Promise.all(
+      chunks.map(async (index) => {
+        const beginIndex = index * gapLimit
+        return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
+      })
+    )
+    const tokens = {}
+    txHistory.map((txHistoryEntry) => {
+      txHistoryEntry.caBalance.getTokens.map(({assetName, policyId, quantity}) => {
+        if (!(policyId in tokens)) {
+          tokens[policyId] = {}
+        }
+        if (!(assetName in tokens[policyId])) {
+          tokens[policyId][assetName] = 0
+        }
+        tokens[policyId][assetName] += parseInt(quantity, 10)
+      })
+    })
+
+    const coins = txHistory.reduce(
+      (acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10),
+      0
+    ) as Lovelace
+    return {
+      coins,
+      tokens: flattenTokens(tokens),
+    }
   }
 
-  async function submitTxRaw(txHash, txBody, params) {
+  async function submitTxRaw(txHash, txBody, params): Promise<TxSubmission> {
     const token = ADALITE_CONFIG.ADALITE_BACKEND_TOKEN
     const response: SubmitResponse = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/txs/submit`,
@@ -194,7 +262,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response.Right
   }
 
-  async function fetchUnspentTxOutputs(addresses: Array<string>) {
+  async function fetchUnspentTxOutputs(addresses: Array<string>): Promise<UTxO[]> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
 
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
@@ -212,22 +280,27 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
             }
           )
           // @ts-ignore (TODO, handle 'Left')
-          return response.Right
+          return response.Right as Array<_Utxo>
         })
       )
     ).reduce((acc, cur) => acc.concat(cur), [])
 
     return response.map((elem) => {
+      const tokens: Token[] = elem.cuCoins.getTokens.map((token) => ({
+        ...token,
+        quantity: parseInt(token.quantity, 10),
+      }))
       return {
         txHash: elem.cuId,
-        address: elem.cuAddress,
-        coins: parseInt(elem.cuCoins.getCoin, 10),
+        address: elem.cuAddress as _Address,
+        coins: parseInt(elem.cuCoins.getCoin, 10) as Lovelace,
+        tokens,
         outputIndex: elem.cuOutIndex,
       }
     })
   }
 
-  async function getPoolInfo(url: string) {
+  async function getPoolInfo(url: string): Promise<HostedPoolMetadata> {
     const response: HostedPoolMetadata = await request(
       `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
       'POST',
@@ -242,7 +315,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   async function getStakingHistory(
     stakingKeyHashHex: HexString,
     validStakepoolDataProvider: StakepoolDataProvider
-  ) {
+  ): Promise<StakingHistoryObject[]> {
     const delegationsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/delegationHistory/${stakingKeyHashHex}`
     const rewardsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/rewardHistory/${stakingKeyHashHex}`
     const withdrawalsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/withdrawalHistory/${stakingKeyHashHex}`
@@ -424,10 +497,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     }))
   }
 
-  async function getStakingInfo(stakingKeyHashHex: HexString) {
+  async function getStakingInfo(stakingKeyHashHex: HexString): Promise<StakingInfoResponse> {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/info/${stakingKeyHashHex}`
-    const response: StakingInfoResponse = await request(url)
+    const response = await request(url)
     // if we fail to recieve poolMeta from backend
+    // TODO: IMHO we shouldn't freestyle append poolInfo here, it breaks types easily
     if (response.delegation.url && !response.delegation.name) {
       const poolInfo = await getPoolInfo(response.delegation.url)
       return {

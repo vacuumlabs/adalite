@@ -1,5 +1,5 @@
-import {CaTxEntry, RewardType} from './wallet/explorer-types'
 import {_SignedTx, _TxAux} from './wallet/shelley/types'
+import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
 import {Network} from './wallet/types'
 
 export type BIP32Path = number[]
@@ -59,10 +59,15 @@ export type DerivationScheme = {
   keyfileVersion: string
 }
 
+export type Token = Omit<TokenObject, 'quantity'> & {
+  quantity: number
+}
+
 export type HexString = string
-export type TxSummaryEntry = CaTxEntry & {
+export type TxSummaryEntry = Omit<CaTxEntry, 'fee'> & {
   fee: Lovelace
   effect: Lovelace
+  tokenEffects: Token[]
 }
 
 export type _XPubKey = {
@@ -101,6 +106,7 @@ export type AccountInfo = {
   stakingXpub: _XPubKey
   stakingAddress: _Address
   balance: number
+  tokenBalance: Token[]
   shelleyBalances: {
     stakingBalance?: number
     nonStakingBalance?: number
@@ -123,7 +129,7 @@ export type AccountInfo = {
     }
     value: number
   }
-  transactionHistory: Array<CaTxEntry>
+  transactionHistory: Array<TxSummaryEntry>
   stakingHistory: Array<StakingHistoryObject>
   visibleAddresses: Array<any>
   poolRecommendation: PoolRecommendation
@@ -227,3 +233,27 @@ export type TxPlanArgs =
   | ConvertLegacyAdaTxPlanArgs
   | WithdrawRewardsTxPlanArgs
   | DelegateAdaTxPlanArgs
+
+export type HostedPoolMetadata = {
+  name: string
+  description: string
+  ticker: string
+  homepage: string
+  extended?: string
+}
+
+export type RewardWithMetadata = NextRewardDetail & {
+  distributionEpoch?: number
+  pool: HostedPoolMetadata | Object // TODO after refactor
+}
+
+export type NextRewardDetailsFormatted = {
+  upcoming: Array<RewardWithMetadata>
+  nearest: RewardWithMetadata
+  currentDelegation: RewardWithMetadata
+}
+
+export type Balance = {
+  coins: Lovelace
+  tokens: Token[]
+}
