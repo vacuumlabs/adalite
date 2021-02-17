@@ -165,3 +165,8 @@ export type Utxo = {
   cuCoins: CoinObject
 }
 export type BulkAdressesUtxoResponse = SuccessResponse<Array<Utxo>> | TxSubmissionFailure
+
+export interface TxHistoryEntry extends Omit<CaTxEntry, 'fee'> {
+  fee: number
+  effect: number
+}
