@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {h, Fragment} from 'preact'
 import printAda from '../../../helpers/printAda'
 import {getActiveAccountInfo, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
@@ -14,6 +14,7 @@ import {
   Lovelace,
   TxSummaryEntry,
 } from '../../../types'
+import {StarIcon} from '../../common/svg'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -28,7 +29,7 @@ const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
 
 const FormattedFee = ({fee}: {fee: Lovelace}): h.JSX.Element => {
   const value = printAda(fee)
-  return <div className="transaction-fee">{`Fee: ${value}`}</div>
+  return <div className="transaction-fee nowrap">{`Fee: ${value}`}</div>
 }
 
 const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
@@ -86,6 +87,31 @@ const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
       </span>
     )}
   </div>
+)
+
+type MultiAssetProps = {
+  star: boolean
+  name: string
+  hash: string
+  amount: number
+}
+
+const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
+  <Fragment>
+    <div className="row">
+      <div className="multi-asset-name">
+        {star && <StarIcon />}
+        {name}
+      </div>
+      <div className={`multi-asset-amount ${amount > 0 ? 'credit' : 'debit'}`}>
+        {printAda(Math.abs(amount) as Lovelace)}
+      </div>
+    </div>
+    <div className="multi-asset-hash">
+      <span className="ellipsis">{hash.slice(0, -6)}</span>
+      {hash.slice(-6)}
+    </div>
+  </Fragment>
 )
 
 interface Props {
@@ -222,12 +248,28 @@ const TransactionHistory = ({transactionHistory, stakingHistory}: Props): h.JSX.
       <ul className="transactions-content">
         {transactionHistory.map((transaction: TxSummaryEntry) => (
           <li key={transaction.ctbId} className="transaction-item">
-            <div className="transaction-date">
-              {toLocalDate(new Date(transaction.ctbTimeIssued * 1000))}
+            <div className="row">
+              <div className="transaction-date">
+                {toLocalDate(new Date(transaction.ctbTimeIssued * 1000))}
+              </div>
+              <FormattedAmount amount={transaction.effect} />
             </div>
-            <FormattedAmount amount={transaction.effect} />
-            <FormattedTransaction txid={transaction.ctbId} />
-            <FormattedFee fee={transaction.fee} />
+            <div className="row">
+              <FormattedTransaction txid={transaction.ctbId} />
+              <FormattedFee fee={transaction.fee} />
+            </div>
+            <MultiAsset
+              star
+              name="Testcoin"
+              hash="95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39"
+              amount={transaction.effect} // mock, just to show something
+            />
+            <MultiAsset
+              star={false}
+              name="Testcoin 2"
+              hash="95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39"
+              amount={transaction.effect} // mock, just to show something
+            />
           </li>
         ))}
       </ul>

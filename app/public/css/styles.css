@@ -157,6 +157,12 @@ p.hey {
   display: none;
 }
 
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* SELECTABILITY */
 
 .one-click-select {
@@ -641,6 +647,101 @@ p.hey {
 
 .accordion-icon.shown {
   transform: rotate(180deg);
+}
+
+/* SEARCHABLE SELECT */
+
+.searchable-select-wrapper {
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.searchable-select {
+  position: relative;
+  cursor: pointer;
+}
+
+.searchable-select-dropdown {
+  position: absolute;
+  width: 100%;
+  min-width: 0;
+  max-height: 421px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  cursor: pointer;
+  transition: max-height 0.25s ease-out;
+  background-color: white;
+  box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.08);
+  z-index: 1;
+}
+
+.searchable-select-dropdown.hide {
+  max-height: 0px;
+}
+
+.searchable-select-input {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  padding-left: 12px;
+  font-size: 16px;
+  line-height: 16px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  border: none;
+  background-color: white;
+  z-index: 1;
+}
+
+.searchable-select-input:focus {
+  outline: none;
+}
+
+.searchable-select-item {
+  padding-left: 12px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  background-color: white;
+}
+
+.searchable-select-item:hover {
+  background-color: var(--color-grey-light);
+}
+
+.searchable-select-item.hide {
+  display: none;
+}
+
+.searchable-select-item .multi-asset-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.searchable-select-item .multi-asset-name-amount {
+  display: flex;
+  justify-content: space-between;
+}
+
+.searchable-select-item .multi-asset-name {
+  margin: unset;
+}
+
+.searchable-select-item .multi-asset-amount {
+  margin: unset;
+  padding-right: 12px;
+}
+
+.searchable-select-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  padding-left: 4px;
+  width: 6.6em;
+  background: white;
+  z-index: 1;
 }
 
 /* FORM GLOBAL */
@@ -1335,6 +1436,10 @@ button[data-balloon] {
 
 .dashboard-column {
   flex: 1 1 50%;
+}
+
+.dashboard-column.shrinkable {
+  min-width: 0;
 }
 
 .dashboard-column:first-child {
@@ -3287,11 +3392,16 @@ input:checked + .slider:before {
 }
 
 .transaction-item {
-  display: grid;
-  grid-template-columns: 50% 50%;
+  display: flex;
   padding: 24px 16px 24px 0;
   border-top: 1px solid var(--color-border);
   color: var(--color-grey);
+  flex-direction: column;
+}
+
+.transaction-item .row {
+  display: flex;
+  justify-content: space-between;
 }
 
 .transaction-item:last-child {
@@ -3328,6 +3438,33 @@ input:checked + .slider:before {
 
 .transaction-fee {
   text-align: right;
+}
+
+.multi-asset-name {
+  margin-top: 8px;
+}
+
+.multi-asset-name svg {
+  padding-top: 6px;
+  margin-right: 2px;
+}
+
+.multi-asset-amount {
+  margin-top: 8px;
+  text-align: right;
+}
+
+.multi-asset-amount.credit {
+  color: var(--color-success);
+}
+
+.multi-asset-amount.debit {
+  color: var(--color-error);
+}
+
+.multi-asset-hash {
+  display: flex;
+  padding-right: 16px;
 }
 
 .transactions-empty {
