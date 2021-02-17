@@ -34,7 +34,9 @@ import {
   PoolRecommendationResponse,
   StakingInfoResponse,
   BestSlotResponse,
-  StakePoolInfo,
+  BulkAddressesSummary,
+  CaTxEntry,
+  TxHistoryEntry,
 } from './explorer-types'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
@@ -55,7 +57,9 @@ const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Func
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
 
-  async function _fetchBulkAddressInfo(addresses: Array<string>) {
+  async function _fetchBulkAddressInfo(
+    addresses: Array<string>
+  ): Promise<BulkAddressesSummary | undefined> {
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`
     const result: BulkAddressesSummaryResponse = await request(
       url,
@@ -66,16 +70,15 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         'Content-Type': 'application/json',
       }
     )
-    // @ts-ignore (TODO, handle 'Left')
-    return result.Right
+    // TODO, handle 'Left'
+    return 'Right' in result ? result.Right : undefined
   }
 
   const _getAddressInfos = cacheResults(5000)(_fetchBulkAddressInfo)
 
-  async function getTxHistory(addresses: Array<string>) {
-    const transactions = []
+  async function getTxHistory(addresses: Array<string>): Promise<TxHistoryEntry[]> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const cachedAddressInfos = (
+    const cachedAddressInfos: {caTxList: CaTxEntry[]} = (
       await Promise.all(
         chunks.map(async (index) => {
           const beginIndex = index * gapLimit
@@ -90,30 +93,28 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       },
       {caTxList: []}
     )
-    // create a deep copy of address infos since
-    // we are mutating effect and fee
-    const addressInfos = JSON.parse(JSON.stringify(cachedAddressInfos))
-    addressInfos.caTxList.forEach((tx) => {
-      transactions[tx.ctbId] = tx
-    })
 
-    for (const t of Object.values(transactions)) {
-      if (!t.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(t)}`)
-      t.fee = parseInt(t.fee, 10)
+    const txHistoryEntries = cachedAddressInfos.caTxList.map((tx) => {
+      if (!tx.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(tx)}`)
       let effect = 0 //effect on wallet balance accumulated
-      for (const input of t.ctbInputs || []) {
+      for (const input of tx.ctbInputs || []) {
         if (addresses.includes(input[0])) {
           effect -= +input[1].getCoin
         }
       }
-      for (const output of t.ctbOutputs || []) {
+      for (const output of tx.ctbOutputs || []) {
         if (addresses.includes(output[0])) {
           effect += +output[1].getCoin
         }
       }
-      t.effect = effect
-    }
-    return Object.values(transactions).sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
+      return {
+        ...tx,
+        fee: parseInt(tx.fee, 10),
+        effect,
+      }
+    })
+
+    return txHistoryEntries.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
   async function fetchTxInfo(txHash: string) {
