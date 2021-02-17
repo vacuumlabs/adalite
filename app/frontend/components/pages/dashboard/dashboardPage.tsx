@@ -79,7 +79,7 @@ const SendingPage = ({
         </div>
       ) : (
         <div className="dashboard desktop">
-          <div className="dashboard-column">
+          <div className="dashboard-column shrinkable">
             <Balance />
             <TransactionHistory />
           </div>

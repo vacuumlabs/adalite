@@ -10,12 +10,16 @@ import DonateThanksModal from './donateThanksModal'
 import DonationButtons from './donationButtons'
 import CustomDonationInput from './customDonationInput'
 import Conversions from '../../common/conversions'
+import SearchableSelect from '../../common/searchableSelect'
 import {ADALITE_CONFIG} from '../../../config'
 import {toCoins} from '../../../helpers/adaConverters'
 
 import tooltip from '../../common/tooltip'
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
+import {useCallback} from 'preact/hooks'
+import {Lovelace} from '../../../../frontend/types'
+import {StarIcon} from '../../common/svg'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -68,6 +72,58 @@ interface Props {
   switchSourceAndTargetAccounts: any
 }
 
+type MultiAsset = {
+  name: string
+  hash?: string
+  amount: number
+  star: boolean
+}
+
+// mock
+const multiAssets: MultiAsset[] = [
+  {
+    name: 'ADA',
+    amount: 10000000,
+    star: true,
+  },
+  {
+    name: 'Testcoin',
+    hash: '95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39',
+    amount: 10000000,
+    star: true,
+  },
+  {
+    name: 'Testcoin 2',
+    hash: '95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39',
+    amount: 10000000,
+    star: false,
+  },
+  ...[...Array(43).keys()].map((i) => ({
+    name: `Random coin ${i}`,
+    hash: [...Array(56).keys()].map(() => Math.floor(Math.random() * 15).toString(16)).join(''),
+    amount: Math.random() * 100000000,
+    star: Math.random() < 0.5,
+  })),
+]
+
+const showMultiAsset = ({star, name, hash, amount}: MultiAsset) => (
+  <div className="multi-asset-item">
+    <div className="multi-asset-name-amount">
+      <div className="multi-asset-name">
+        {star && <StarIcon />}
+        {name}
+      </div>
+      <div className="multi-asset-amount">{printAda(Math.abs(amount) as Lovelace)}</div>
+    </div>
+    {hash && (
+      <div className="multi-asset-hash">
+        <span className="ellipsis">{hash.slice(0, -6)}</span>
+        <span>{hash.slice(-6)}</span>
+      </div>
+    )}
+  </div>
+)
+
 class SendAdaPage extends Component<Props> {
   amountField: HTMLInputElement
   submitTxBtn: HTMLButtonElement
@@ -116,6 +172,13 @@ class SendAdaPage extends Component<Props> {
       await confirmTransaction('send')
     }
 
+    const searchPredicate = useCallback(
+      (query: string, multiAsset: MultiAsset): boolean =>
+        multiAsset.name.toLowerCase().includes(query.toLowerCase()) ||
+        (multiAsset.hash && multiAsset.hash.toLowerCase().includes(query.toLowerCase())),
+      []
+    )
+
     return (
       <div className="send card">
         <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
@@ -145,6 +208,19 @@ class SendAdaPage extends Component<Props> {
             <AccountDropdown accountIndex={targetAccountIndex} setAccountFunc={setTargetAccount} />
           </div>
         )}
+        <SearchableSelect
+          label="Select asset"
+          defaultItem={multiAssets[0]}
+          displaySelectedItem={(multiAsset: MultiAsset) => `${multiAsset.name}`}
+          displaySelectedItemClassName="input"
+          items={multiAssets}
+          displayItem={(multiAsset: MultiAsset) => showMultiAsset(multiAsset)}
+          onSelect={() => {
+            return
+          }}
+          searchPredicate={searchPredicate}
+          searchPlaceholder={`Search from ${multiAssets.length} tokens by name or hash`}
+        />
         <div className="send-values">
           <label className="ada-label amount" htmlFor={`${isModal ? 'account' : ''}send-amount`}>
             Amount
@@ -242,7 +318,7 @@ class SendAdaPage extends Component<Props> {
 SendAdaPage.defaultProps = {
   showDonationFields: true,
   isModal: false,
-  title: 'Send ADA',
+  title: 'Send',
 }
 
 export default connect(
