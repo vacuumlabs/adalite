@@ -86,6 +86,7 @@ const translations = {
 
   CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
   OutputTooSmall: () => 'Output amount too low. Minimum output amount is 1 ADA.',
+  TxTooBig: () => 'Transaction is too big, try sending less amount of coins.',
   SendAmountTooLow: () => 'Amount too low. Minimum amount to send is 1 ADA',
   SendAmountBalanceTooLow: () => 'Minimum output amount is 1 ADA.',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,

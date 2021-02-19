@@ -248,7 +248,7 @@ const ShelleyTrezorCryptoProvider = async ({
     const outputs = await Promise.all(_outputs)
 
     const certificates = []
-    for (const cert of unsignedTx.certs) {
+    for (const cert of unsignedTx.certificates) {
       const data = prepareCertificate(cert, addressToAbsPathMapper)
       certificates.push(data)
     }

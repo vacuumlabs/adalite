@@ -2,13 +2,14 @@ import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {localStorageVars} from './localStorage'
 import {AccountInfo, AuthMethodType, Lovelace} from './types'
+import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
 export interface SendTransactionSummary {
   amount?: Lovelace
   donation?: Lovelace
   fee: Lovelace
-  plan: any
+  plan: TxPlan
   tab?: any
-  deposit: any
+  deposit: Lovelace
 }
 
 export interface State {
@@ -224,7 +225,7 @@ const initialState: State = {
     fee: 0 as Lovelace,
     donation: 0 as Lovelace,
     plan: null,
-    deposit: 0,
+    deposit: 0 as Lovelace,
   },
   rawTransactionOpen: false,
   rawTransaction: '',

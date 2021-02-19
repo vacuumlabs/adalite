@@ -8,6 +8,7 @@ import {
   CryptoProvider,
   Lovelace,
   StakingHistoryObject,
+  TxPlanArgs,
   TxType,
   _Address,
 } from '../types'
@@ -21,7 +22,9 @@ import {
 import {
   selectMinimalTxPlan,
   computeRequiredTxFee,
-  isUtxoProfitable, // TODO: useless
+  isUtxoProfitable,
+  TxPlan,
+  TxPlanResult, // TODO: useless
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
@@ -243,35 +246,29 @@ const Account = ({
     return signedTx
   }
 
-  async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
+  async function getMaxSendableAmount(
+    address: _Address,
+    hasDonation: boolean,
+    donationAmount: Lovelace,
+    donationType
+  ) {
     // TODO: why do we need hasDonation?
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
   }
 
-  async function getMaxDonationAmount(address: string, sendAmount: Lovelace) {
+  async function getMaxDonationAmount(address: _Address, sendAmount: Lovelace) {
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
-  async function getMaxNonStakingAmount(address) {
+  async function getMaxNonStakingAmount(address: _Address) {
     const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
-    return _getMaxSendableAmount(utxos, address, false, 0, false)
+    return _getMaxSendableAmount(utxos, address, false, 0 as Lovelace, false)
   }
 
-  type utxoArgs = {
-    address?: string
-    donationAmount?: Lovelace
-    coins?: Lovelace
-    poolHash?: string
-    stakingKeyRegistered?: boolean
-    txType?: TxType
-    rewards: any
-  }
-
-  const getTxPlan = async (args: utxoArgs) => {
-    const stakingAddress = await myAddresses.getStakingAddress()
-    const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType, rewards} = args
+  const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
+    const {txType} = txPlanArgs
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
     const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(addressToHex(address)))
@@ -285,17 +282,7 @@ const Account = ({
           ...shuffleArray(nonStakingUtxos, randomGenerator),
           ...shuffleArray(baseAddressUtxos, randomGenerator),
         ]
-    const plan = selectMinimalTxPlan(
-      shuffledUtxos,
-      address,
-      coins,
-      donationAmount,
-      changeAddress,
-      stakingAddress,
-      poolHash,
-      !stakingKeyRegistered,
-      rewards
-    )
+    const plan = selectMinimalTxPlan(shuffledUtxos, changeAddress, txPlanArgs)
     return plan
   }
 

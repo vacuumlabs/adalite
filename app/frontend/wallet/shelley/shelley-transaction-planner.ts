@@ -1,44 +1,51 @@
 import {encode} from 'borc'
-
-import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
-
-import {TX_WITNESS_SIZES} from '../constants'
+import {
+  ShelleyTxCertificates,
+  ShelleyTxInputs,
+  ShelleyTxOutputs,
+  ShelleyTxWithdrawals,
+} from './shelley-transaction'
+import {MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
-import {Lovelace, CertificateType} from '../../types'
+import {
+  Lovelace,
+  CertificateType,
+  TxPlanArgs,
+  _Address,
+  TxType,
+  SendAdaTxPlanArgs,
+  DelegateAdaTxPlanArgs,
+  WithdrawRewardsTxPlanArgs,
+  ConvertLegacyAdaTxPlanArgs,
+} from '../../types'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
+import {UTxO, _Certificate, _Input, _Output, _Withdrawal} from '../types'
 
-export function txFeeFunction(txSizeInBytes: number): Lovelace {
-  const a = 155381
-  const b = 43.946
-
-  return Math.ceil(a + txSizeInBytes * b) as Lovelace
+type TxPlanDraft = {
+  outputs: _Output[]
+  certificates: _Certificate[]
+  withdrawals: _Withdrawal[]
 }
 
-type UTxO = {
-  txHash: string
-  address: string
-  coins: Lovelace
-  outputIndex: number
+export const enum TxPlanResultType {
+  SUCCESS,
+  FAILURE,
 }
 
-type Input = UTxO
-
-type Output = {
-  address: string
-  coins: Lovelace
-  accountAddress: string
-}
-
-type Cert = {
-  type: number
-  accountAddress: any
-  poolHash: string | null
-  poolRegistrationParams?: any
-}
+export type TxPlanResult =
+  | {
+      type: TxPlanResultType.SUCCESS
+      txPlan: TxPlan
+    }
+  | {
+      type: TxPlanResultType.FAILURE
+      error: any
+      estimatedFee: Lovelace
+    }
 export interface TxPlan {
   inputs: Array<_Input>
   outputs: Array<_Output>
@@ -196,10 +203,6 @@ export function computeTxPlan(
     coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
   }
 
-  if (!checkOutputs([...outputs, change], 0)) {
-    return null
-  }
-
   return {
     inputs,
     outputs,
@@ -211,74 +214,121 @@ export function computeTxPlan(
   }
 }
 
-export function isUtxoProfitable(utxo: UTxO) {
-  // in case of legacy utxos, we want to convert them even if they are non-profitable
-  if (!isShelleyFormat(utxo.address)) return true
-  const inputSize = encode(ShelleyTxInputFromUtxo(utxo)).length
-  const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZES.shelley) - txFeeFunction(0)
-
-  return utxo.coins > addedCost
+// TODO: remove this altogether, since shelley all utxos are profitable
+export const isUtxoProfitable = (utxo: UTxO): boolean => {
+  return true
 }
 
-function createCert(type, accountAddress, poolHash) {
-  const certTypes = {
-    staking_key_registration: CertificateType.STAKING_KEY_REGISTRATION,
-    staking_key_deregistration: CertificateType.STAKING_KEY_DEREGISTRATION,
-    delegation: CertificateType.DELEGATION,
+const validateTxPlan = (txPlan: TxPlan): void => {
+  const outputs = txPlan.change ? [...txPlan.outputs, txPlan.change] : txPlan.outputs
+  if (outputs.some(({coins}) => coins < 1000000)) {
+    throw NamedError('OutputTooSmall')
   }
-  return {
-    type: certTypes[type],
-    accountAddress,
-    poolHash,
+  const totalRewards = txPlan.withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
+  if (totalRewards > 0 && totalRewards < txPlan.fee) {
+    throw NamedError('RewardsBalanceTooLow')
   }
 }
 
-export function selectMinimalTxPlan(
+const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
+  const prepareSendAdaTx = (
+    txPlanArgs: SendAdaTxPlanArgs | ConvertLegacyAdaTxPlanArgs
+  ): TxPlanDraft => {
+    const outputs: _Output[] = []
+    outputs.push({address: txPlanArgs.address, coins: txPlanArgs.coins})
+    if (txPlanArgs.txType === TxType.SEND_ADA && txPlanArgs.donationAmount > 0) {
+      outputs.push({
+        address: getDonationAddress(),
+        coins: txPlanArgs.donationAmount,
+      })
+    }
+    return {
+      outputs,
+      certificates: [],
+      withdrawals: [],
+    }
+  }
+
+  const prepareDelegationTx = (txPlanArgs: DelegateAdaTxPlanArgs): TxPlanDraft => {
+    const certificates: _Certificate[] = []
+    if (!txPlanArgs.isStakingKeyRegistered) {
+      certificates.push({
+        type: CertificateType.STAKING_KEY_REGISTRATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+        poolHash: null,
+      })
+    }
+    if (txPlanArgs.poolHash) {
+      certificates.push({
+        type: CertificateType.DELEGATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+        poolHash: txPlanArgs.poolHash,
+      })
+    }
+    return {
+      outputs: [],
+      certificates,
+      withdrawals: [],
+    }
+  }
+
+  const prepareWithdrawalTx = (txPlanArgs: WithdrawRewardsTxPlanArgs): TxPlanDraft => {
+    const withdrawals: _Withdrawal[] = []
+    withdrawals.push({stakingAddress: txPlanArgs.stakingAddress, rewards: txPlanArgs.rewards})
+    return {
+      outputs: [],
+      certificates: [],
+      withdrawals,
+    }
+  }
+
+  switch (txPlanArgs.txType) {
+    case TxType.SEND_ADA:
+      return prepareSendAdaTx(txPlanArgs)
+    case TxType.DELEGATE:
+      return prepareDelegationTx(txPlanArgs)
+    case TxType.WITHDRAW:
+      return prepareWithdrawalTx(txPlanArgs)
+    case TxType.CONVERT_LEGACY:
+      return prepareSendAdaTx(txPlanArgs)
+    default:
+      throw NamedError('InvalidTxPlanType')
+  }
+}
+
+export const selectMinimalTxPlan = (
   utxos: Array<UTxO>,
-  address,
-  coins,
-  donationAmount,
-  changeAddress,
-  accountAddress,
-  poolHash = null,
-  registerStakingKey = false,
-  rewards = 0
-): TxPlan | NoTxPlan {
-  const certs = []
-  const withdrawals: Array<Withdrawal> = []
-  if (poolHash && registerStakingKey) {
-    certs.push(createCert('staking_key_registration', accountAddress, null))
-  }
-  if (poolHash) {
-    certs.push(createCert('delegation', accountAddress, poolHash))
-  }
-  if (rewards) {
-    withdrawals.push({accountAddress, rewards: rewards as Lovelace})
-  }
-  const profitableUtxos = utxos.filter(isUtxoProfitable)
+  changeAddress: _Address,
+  txPlanArgs: TxPlanArgs
+): TxPlanResult => {
+  const inputs: _Input[] = []
+  const {outputs, certificates, withdrawals} = prepareTxPlanDraft(txPlanArgs)
+  const change: _Output = {address: changeAddress, coins: 0 as Lovelace}
 
-  const inputs = []
-
-  const outputs = address ? [{address, coins, accountAddress}] : []
-  if (donationAmount > 0) {
-    outputs.push({
-      address: getDonationAddress(),
-      coins: donationAmount,
-      accountAddress,
-    })
+  // TODO: refactor this when implementing multi assets
+  for (const utxo of utxos) {
+    inputs.push(utxo)
+    try {
+      const plan = computeTxPlan(inputs, outputs, change, certificates, withdrawals)
+      validateTxPlan(plan)
+      return {
+        type: TxPlanResultType.SUCCESS,
+        txPlan: plan,
+      }
+    } catch (e) {
+      if (inputs.length === utxos.length) {
+        return {
+          type: TxPlanResultType.FAILURE,
+          estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
+          error: {code: e.name},
+        }
+      }
+    }
   }
-
-  const change = {address: changeAddress, coins: 0 as Lovelace, accountAddress}
-
-  for (let i = 0; i < profitableUtxos.length; i++) {
-    inputs.push(profitableUtxos[i])
-    const plan = computeTxPlan(inputs, outputs, change, certs, withdrawals)
-    if (plan) return plan
-  }
-
   return {
-    estimatedFee: computeRequiredTxFee(inputs, outputs, certs, withdrawals),
-    error: {code: 'OutputTooSmall'},
+    type: TxPlanResultType.FAILURE,
+    estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
+    error: {code: 'CannotConstructTxPlan'},
   }
 }
 
@@ -297,7 +347,7 @@ export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => 
       accountAddress: null,
     })),
     change: null,
-    certs: unsignedTx.certificates.map((cert) => ({
+    certificates: unsignedTx.certificates.map((cert) => ({
       type: cert.type,
       accountAddress: null,
       poolHash: null,

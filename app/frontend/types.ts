@@ -172,9 +172,40 @@ export interface RewardWithdrawal extends StakingHistoryObject {
   amount: Lovelace
   txHash: string
 }
-
 export interface StakingKeyRegistration extends StakingHistoryObject {
   action: string
   stakingKey: string
   txHash: string
 }
+
+export type SendAdaTxPlanArgs = {
+  txType: TxType.SEND_ADA
+  address: _Address
+  coins: Lovelace
+  donationAmount: Lovelace
+}
+
+export type ConvertLegacyAdaTxPlanArgs = {
+  txType: TxType.CONVERT_LEGACY
+  address: _Address
+  coins: Lovelace
+}
+
+export type WithdrawRewardsTxPlanArgs = {
+  txType: TxType.WITHDRAW
+  rewards: Lovelace
+  stakingAddress: _Address
+}
+
+export type DelegateAdaTxPlanArgs = {
+  txType: TxType.DELEGATE
+  poolHash: string
+  isStakingKeyRegistered: boolean
+  stakingAddress: _Address
+}
+
+export type TxPlanArgs =
+  | SendAdaTxPlanArgs
+  | ConvertLegacyAdaTxPlanArgs
+  | WithdrawRewardsTxPlanArgs
+  | DelegateAdaTxPlanArgs
