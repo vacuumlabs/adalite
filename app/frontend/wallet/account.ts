@@ -30,16 +30,10 @@ import {
   getAccountXpub as getAccoutXpubByron,
 } from './byron/byron-address-provider'
 import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresses'
-import {
-  ShelleyTxAux,
-  ShelleyTxInputFromUtxo,
-  ShelleyTxOutput,
-  ShelleyTxCert,
-  ShelleyFee,
-  ShelleyTtl,
-  ShelleyWitdrawal,
-} from './shelley/shelley-transaction'
+import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
+import {_TxAux} from './shelley/types'
+import {_Output} from './types'
 
 const DummyAddressManager = () => {
   return {
@@ -213,7 +207,7 @@ const Account = ({
     await myAddresses.baseExtAddrManager._deriveAddress(0)
   }
 
-  async function calculateTtl() {
+  async function calculateTtl(): Promise<number> {
     // TODO: move to wallet
     try {
       const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
@@ -224,29 +218,23 @@ const Account = ({
     }
   }
 
-  async function prepareTxAux(plan, ttl?) {
-    // TODO: move to wallet
-    const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
-    const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
-    const txCerts = plan.certs.map(({type, accountAddress, poolHash, poolRegistrationParams}) =>
-      ShelleyTxCert(type, accountAddress, poolHash, poolRegistrationParams)
-    )
-    const txFee = ShelleyFee(plan.fee)
-    const txTtl = ShelleyTtl(!ttl ? await calculateTtl() : ttl)
-    const txWithdrawals = plan.withdrawals.map(({accountAddress, rewards}) => {
-      return ShelleyWitdrawal(accountAddress, rewards)
-    })
-    if (plan.change) {
-      const {address, coins, accountAddress} = plan.change
-      const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(address)
-      const stakingPath = myAddresses.getAddressToAbsPathMapper()(accountAddress)
-      txOutputs.push(ShelleyTxOutput(address, coins, true, absDerivationPath, stakingPath))
+  async function prepareTxAux(txPlan: TxPlan, ttl?: number) {
+    const {inputs, outputs, change, fee, certificates, withdrawals} = txPlan
+    const txOutputs = [...outputs]
+    if (change) {
+      const stakingAddress = await myAddresses.getStakingAddress()
+      const changeOutput: _Output = {
+        ...change,
+        spendingPath: myAddresses.getAddressToAbsPathMapper()(change.address),
+        stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
+      }
+      txOutputs.push(changeOutput)
     }
-    // TODO: there is just one witdrawal
-    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts, txWithdrawals[0])
+    const txTtl = !ttl ? await calculateTtl() : ttl
+    return ShelleyTxAux(inputs, txOutputs, fee, txTtl, certificates, withdrawals)
   }
 
-  async function signTxAux(txAux: any) {
+  async function signTxAux(txAux: _TxAux) {
     const signedTx = await cryptoProvider
       .signTx(txAux, [], myAddresses.fixedPathMapper())
       .catch((e) => {

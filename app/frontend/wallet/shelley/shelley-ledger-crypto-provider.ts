@@ -276,7 +276,9 @@ const ShelleyLedgerCryptoProvider = async ({
   async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
     const inputs = unsignedTx.inputs.map((input, i) => _prepareInput(input, addressToAbsPathMapper))
     const outputs = unsignedTx.outputs.map((output) => _prepareOutput(output))
-    const certificates = unsignedTx.certs.map((cert) => _prepareCert(cert, addressToAbsPathMapper))
+    const certificates = unsignedTx.certificates.map((cert) =>
+      _prepareCert(cert, addressToAbsPathMapper)
+    )
     const feeStr = `${unsignedTx.fee.fee}`
     const ttlStr = `${unsignedTx.ttl.ttl}`
     const withdrawals = unsignedTx.withdrawals

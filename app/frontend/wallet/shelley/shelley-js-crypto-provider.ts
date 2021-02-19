@@ -73,7 +73,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     const structured_tx = await signTxGetStructured(txAux, addressToAbsPathMapper)
     const tx = {
       txBody: encode(structured_tx).toString('hex'),
-      txHash: structured_tx.getId().toString('hex'),
+      txHash: structured_tx.getId(),
     }
     return tx
   }
@@ -123,10 +123,10 @@ CryptoProviderParams): Promise<CryptoProvider> => {
 
   async function signTxGetStructured(txAux, addressToAbsPathMapper) {
     const txHash = txAux.getId()
-    const witnesses = await build_witnesses(
+    const witnesses: Map<number, any> = await build_witnesses(
       txAux.withdrawals
-        ? [...txAux.inputs, ...txAux.certs, txAux.withdrawals]
-        : [...txAux.inputs, ...txAux.certs], // TODO: a withdrawal!
+        ? [...txAux.inputs, ...txAux.certificates, txAux.withdrawals]
+        : [...txAux.inputs, ...txAux.certificates], // TODO: a withdrawal!
       txHash,
       sign, // TODO: useless here
       network,

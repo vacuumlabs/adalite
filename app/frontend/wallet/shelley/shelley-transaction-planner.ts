@@ -39,192 +39,161 @@ type Cert = {
   poolHash: string | null
   poolRegistrationParams?: any
 }
+export interface TxPlan {
+  inputs: Array<_Input>
+  outputs: Array<_Output>
+  change: _Output | null
+  certificates: Array<_Certificate>
+  deposit: Lovelace
+  fee: Lovelace
+  withdrawals: Array<_Withdrawal>
+}
 
-type Withdrawal = {
-  accountAddress: string
-  rewards: Lovelace
+export function txFeeFunction(txSizeInBytes: number): Lovelace {
+  const a = 155381
+  const b = 43.946
+
+  return Math.ceil(a + txSizeInBytes * b) as Lovelace
 }
 
 // Estimates size of final transaction in bytes.
 // Note(ppershing): can overshoot a bit
 export function estimateTxSize(
-  inputs: Array<Input>,
-  outputs: Array<Output>,
-  certs: Array<Cert>,
-  withdrawals: Array<Withdrawal>
+  inputs: Array<_Input>,
+  outputs: Array<_Output>,
+  certificates: Array<_Certificate>,
+  withdrawals: Array<_Withdrawal>
 ): Lovelace {
-  // exact size for inputs
-  const preparedInputs = inputs.map(ShelleyTxInputFromUtxo)
-  const txInputsSize = encode(new CborIndefiniteLengthArray(preparedInputs)).length
+  // the 1 is there for the key in the tx map
+  const txInputsSize = encode(ShelleyTxInputs(inputs)).length + 1
+  /*
+  * we have to estimate size of tx outputs since we are calculating
+  * fee also in cases we dont know the amount of coins in advance
+  */
+  const txOutputs: _Output[] = outputs.map((output) => ({
+    address: output.address,
+    coins: Number.MAX_SAFE_INTEGER as Lovelace,
+  }))
+  // TODO: max output size
+  const txOutputsSize = encode(ShelleyTxOutputs(txOutputs)).length + 1
 
-  const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
-  const txOutputsSizes = outputs.map(
-    // Note(ppershing): we are conservative here
-    // FIXME(ppershing): shouldn't there be some +1 for the array encoding?
-    // Is it in maxCborCoinsLen?
-    ({address, coins}) =>
-      isShelleyFormat(address)
-        ? bech32.decode(address).data.length + maxCborCoinsLen
-        : base58.decode(address).length + maxCborCoinsLen
-  )
-  // +2 for indef array start & end
-  const txOutputsSize = txOutputsSizes.reduce((acc, x) => acc + x, 0) + 2
+  const txCertificatesSize = encode(ShelleyTxCertificates(certificates)).length + 1
+  const txWithdrawalsSize = encode(ShelleyTxWithdrawals(withdrawals)).length + 1
+  const txTllSize = encode(Number.MAX_SAFE_INTEGER).length + 1
+  const txFeeSize = encode(Number.MAX_SAFE_INTEGER).length + 1
 
-  let txCertSize = 0
-  if (certs.length) {
-    // TODO: refactor
-    const preparedCerts = certs.map(
-      ({type, accountAddress, poolHash}) =>
-        encode(ShelleyTxCert(type, accountAddress, poolHash)).length
-    )
-    txCertSize = preparedCerts.reduce((acc, x) => acc + x, 0) + 2
-  }
+  const txAuxSize =
+    txInputsSize + txOutputsSize + txCertificatesSize + txWithdrawalsSize + txFeeSize + txTllSize
 
-  let txWithdrawalsSize = 0
-  if (withdrawals.length) {
-    const preparedWithdrawals = withdrawals.map(
-      ({accountAddress, rewards}) => encode(ShelleyWitdrawal(accountAddress, rewards)).length
-    )
-    txWithdrawalsSize = preparedWithdrawals.reduce((acc, x) => acc + x, 0) + 2
-  }
-
-  const txMetaSize = 1 // currently empty Map
-
-  // the 1 is there for the CBOR "tag" for an array of 4 elements
-  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize + txWithdrawalsSize
-
-  // TODO: refactor
   const shelleyInputs = inputs.filter(({address}) => isShelleyFormat(address))
   const byronInputs = inputs.filter(({address}) => !isShelleyFormat(address))
 
   const shelleyWitnessesSize =
-    (withdrawals.length + certs.length + shelleyInputs.length) * TX_WITNESS_SIZES.shelley
+    (withdrawals.length + certificates.length + shelleyInputs.length) * TX_WITNESS_SIZES.shelley
 
-  let byronWitnessesSize = 0
-  if (byronInputs.length) {
-    byronWitnessesSize =
-      byronInputs.length *
-      (isV1Address(byronInputs[0].address) ? TX_WITNESS_SIZES.byronV1 : TX_WITNESS_SIZES.byronv2)
-  }
+  const byronWitnessesSize = byronInputs.reduce((acc, {address}) => {
+    const witnessSize = isV1Address(address) ? TX_WITNESS_SIZES.byronV1 : TX_WITNESS_SIZES.byronv2
+    return acc + witnessSize
+  }, 0)
 
   const txWitnessesSize = shelleyWitnessesSize + byronWitnessesSize
-  // TODO: also for withdrawals
-  // the 1 is there for the CBOR "tag" for an array of 2 elements
-  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
 
+  const txMetaSize = 1 // currently null
+
+  // the 1 is there for the CBOR "tag" for an array of 2 elements
+  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize + txMetaSize
+
+  if (txSizeInBytes > MAX_TX_SIZE) throw NamedError('TxTooBig')
   /*
   * the slack is there for the array of tx witnesses
   * because it may have more than 1 byte of overhead
   * if more than 16 elements are present
   */
-  const slack = 250 // TODO: this is too much
+  const slack = 1 // TODO
 
   return txSizeInBytes + slack
 }
 
 export function computeRequiredTxFee(
-  inputs: Array<Input>,
-  outputs: Array<Output>,
-  certs: Array<Cert> = [],
-  withdrawals: Array<Withdrawal> = []
+  inputs: Array<_Input>,
+  outputs: Array<_Output>,
+  certificates: Array<_Certificate> = [],
+  withdrawals: Array<_Withdrawal> = []
 ): Lovelace {
-  const fee = txFeeFunction(estimateTxSize(inputs, outputs, certs, withdrawals))
+  const fee = txFeeFunction(estimateTxSize(inputs, outputs, certificates, withdrawals))
   return fee
 }
 
-function computeRequiredDeposit(certs: Array<Cert>): Lovelace {
-  let deposit = 0
-  for (const {type} of certs) {
-    if (type === 0) deposit += 2000000
+function computeRequiredDeposit(certificates: Array<_Certificate>): Lovelace {
+  const CertificateDeposit: {[key in CertificateType]: number} = {
+    [CertificateType.DELEGATION]: 0,
+    [CertificateType.STAKEPOOL_REGISTRATION]: 500000000,
+    [CertificateType.STAKING_KEY_REGISTRATION]: 2000000,
+    [CertificateType.STAKING_KEY_DEREGISTRATION]: -2000000,
   }
-  return deposit as Lovelace
-}
-
-export interface TxPlan {
-  inputs: Array<Input>
-  outputs: Array<Output>
-  change: Output | null
-  certs: Array<Cert>
-  deposit: Lovelace
-  fee: Lovelace
-  withdrawals?: Array<Withdrawal>
-}
-
-interface NoTxPlan {
-  estimatedFee: Lovelace
-  error: {code: string}
-}
-
-const checkOutputs = (outputs, fee) => {
-  for (const {coins} of outputs) {
-    if (coins < 1000000 + fee) return false
-  }
-  return true
+  return certificates.reduce((acc, {type}) => acc + CertificateDeposit[type], 0) as Lovelace
 }
 
 export function computeTxPlan(
-  inputs: Array<Input>,
-  outputs: Array<Output>,
-  possibleChange: Output,
-  certs: Array<Cert>,
-  withdrawals: Array<Withdrawal>
-): TxPlan | null {
-  const withdrawalAmount = withdrawals && withdrawals.length ? withdrawals[0].rewards : 0
-  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + withdrawalAmount
-  const deposit = computeRequiredDeposit(certs)
-  const totalOutput =
-    outputs.reduce((acc, output) => acc + output.coins, 0) + deposit + withdrawalAmount
+  inputs: Array<_Input>,
+  outputs: Array<_Output>,
+  possibleChange: _Output,
+  certificates: Array<_Certificate>,
+  withdrawals: Array<_Withdrawal>
+): TxPlan {
+  const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
+  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
+  const deposit = computeRequiredDeposit(certificates)
+  const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit + totalRewards
 
   if (totalOutput > Number.MAX_SAFE_INTEGER) {
     throw NamedError('CoinAmountError')
   }
 
-  const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certs, withdrawals)
+  const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certificates, withdrawals)
+
   // Cannot construct transaction plan
-  if (totalOutput + feeWithoutChange > totalInput) return null
+  if (totalOutput + feeWithoutChange > totalInput) {
+    throw NamedError('CannotConstructTxPlan')
+  }
 
   // No change necessary, perfect fit
   if (totalOutput + feeWithoutChange === totalInput) {
-    if (checkOutputs(outputs, 0)) {
-      return {
-        inputs,
-        outputs,
-        change: null,
-        certs,
-        deposit,
-        fee: feeWithoutChange as Lovelace,
-        withdrawals,
-      }
+    return {
+      inputs,
+      outputs,
+      change: null,
+      certificates,
+      deposit,
+      fee: feeWithoutChange,
+      withdrawals,
     }
   }
 
   const feeWithChange = computeRequiredTxFee(
     inputs,
     [...outputs, possibleChange],
-    certs,
+    certificates,
     withdrawals
   )
 
   if (totalOutput + feeWithChange > totalInput) {
     // We cannot fit the change output into the transaction
     // Instead, just increase the fee
-    if (checkOutputs(outputs, 0)) {
-      return {
-        inputs,
-        outputs,
-        change: null,
-        certs,
-        deposit,
-        fee: (totalInput - totalOutput) as Lovelace,
-        withdrawals,
-      }
+    return {
+      inputs,
+      outputs,
+      change: null,
+      certificates,
+      deposit,
+      fee: (totalInput - totalOutput) as Lovelace,
+      withdrawals,
     }
   }
 
   const change = {
-    ...possibleChange,
     address: possibleChange.address,
-    coins: (totalInput - totalOutput - feeWithChange + withdrawalAmount) as Lovelace,
+    coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
   }
 
   if (!checkOutputs([...outputs, change], 0)) {
@@ -235,9 +204,9 @@ export function computeTxPlan(
     inputs,
     outputs,
     change,
-    certs,
+    certificates,
     deposit,
-    fee: feeWithChange as Lovelace,
+    fee: feeWithChange,
     withdrawals,
   }
 }
