@@ -6,7 +6,7 @@ export type HostedPoolMetadata = {
   extended?: string
 }
 
-type StakePoolInfo = {
+export type StakePoolInfo = {
   pledge: string
   margin: number
   fixedCost: string

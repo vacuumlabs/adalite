@@ -33,6 +33,7 @@ import {
   PoolRecommendationResponse,
   StakingInfoResponse,
   BestSlotResponse,
+  StakePoolInfo,
 } from './explorer-types'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
@@ -360,6 +361,20 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     validStakepools: ValidStakePoolsMapping,
     epochsToRewardDistribution: number
   ): Promise<NextRewardDetailsFormatted> {
+    const getPool = async (
+      poolHash: string
+    ): Promise<StakePoolInfo | HostedPoolMetadata | string> => {
+      if (validStakepools[poolHash]) {
+        if (validStakepools[poolHash].name) {
+          return validStakepools[poolHash]
+        } else if (validStakepools[poolHash].url) {
+          return await getPoolInfo(validStakepools[poolHash].url).catch(() => UNKNOWN_POOL_NAME)
+        }
+      }
+
+      return UNKNOWN_POOL_NAME
+    }
+
     const nextRewardDetailsWithMetaData: Array<RewardWithMetadata> = await Promise.all(
       nextRewardDetails.map(async (nextRewardDetail: NextRewardDetail) => {
         const poolHash = nextRewardDetail.poolHash
@@ -367,10 +382,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
           return {
             ...nextRewardDetail,
             distributionEpoch: nextRewardDetail.forEpoch + epochsToRewardDistribution,
-            pool:
-              validStakepools[poolHash] && validStakepools[poolHash].name
-                ? validStakepools[poolHash]
-                : await getPoolInfo(validStakepools[poolHash].url).catch(() => UNKNOWN_POOL_NAME),
+            pool: await getPool(poolHash),
           }
         } else {
           return {
