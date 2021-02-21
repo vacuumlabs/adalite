@@ -59,6 +59,7 @@
     "minimist": "^1.2.2",
     "acorn": "^5.7.4",
     "kind-of": "^6.0.3",
-    "elliptic": "^6.5.3"
+    "elliptic": "^6.5.3",
+    "prettier": "^1.19.1"
   }
 }
