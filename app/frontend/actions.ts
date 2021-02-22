@@ -421,7 +421,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* TRANSACTION */
 
-  const confirmTransaction = async (state: State, txConfirmType) => {
+  const confirmTransaction = async (state: State, txConfirmType): Promise<void> => {
     let txAux
     const newState = getState()
     try {
@@ -560,10 +560,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const resetDelegation = () => {
     setState({
       shelleyDelegation: {
-        delegationFee: 0,
-        selectedPool: {
-          poolHash: '',
-        },
+        delegationFee: 0 as Lovelace,
+        selectedPool: null,
       },
     })
   }
@@ -1023,7 +1021,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({
         shelleyDelegation: {
           ...state.shelleyDelegation,
-          delegationFee: 0,
+          delegationFee: 0 as Lovelace,
         },
       })
     }

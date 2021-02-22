@@ -86,6 +86,13 @@ export enum ScreenType {
 export type Ada = number & {__typeAda: any}
 export type Lovelace = number & {__typeLovelace: any}
 
+export type PoolRecommendation = {
+  isInRecommendedPoolSet: boolean
+  recommendedPoolHash: string
+  status: string
+  shouldShowSaturatedBanner: boolean
+}
+
 export type AccountInfo = {
   // TODO: refactor, update type
   accountXpubs: {
@@ -120,12 +127,7 @@ export type AccountInfo = {
   transactionHistory: Array<CaTxEntry>
   stakingHistory: Array<StakingHistoryObject>
   visibleAddresses: Array<any>
-  poolRecommendation: {
-    isInRecommendedPoolSet: boolean
-    recommendedPoolHash: string
-    status: string
-    shouldShowSaturatedBanner: boolean
-  }
+  poolRecommendation: PoolRecommendation
   isUsed: boolean
   accountIndex: number
 }

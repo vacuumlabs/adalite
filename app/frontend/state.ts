@@ -211,10 +211,8 @@ const initialState: State = {
 
   // delegation
   shelleyDelegation: {
-    delegationFee: 0.0,
-    selectedPool: {
-      poolHash: '',
-    },
+    delegationFee: 0 as Lovelace,
+    selectedPool: null,
   },
   gettingPoolInfo: false,
 
