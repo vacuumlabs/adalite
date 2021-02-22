@@ -198,3 +198,29 @@ export type StakepoolDataProvider = {
   getPoolInfoByPoolHash: (poolHash: string) => Stakepool
   hasTickerMapping: boolean
 }
+
+export type Utxo = {
+  txHash: string
+  address: string
+  coins: Lovelace
+  outputIndex: number
+}
+
+export type HostedPoolMetadata = {
+  name: string
+  description: string
+  ticker: string
+  homepage: string
+  extended?: string
+}
+
+export type RewardWithMetadata = NextRewardDetail & {
+  distributionEpoch?: number
+  pool: HostedPoolMetadata | Object // TODO after refactor
+}
+
+export type NextRewardDetailsFormatted = {
+  upcoming: Array<RewardWithMetadata>
+  nearest: RewardWithMetadata
+  currentDelegation: RewardWithMetadata
+}

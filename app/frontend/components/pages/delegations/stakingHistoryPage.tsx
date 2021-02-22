@@ -6,7 +6,7 @@ import {getActiveAccountInfo, State} from '../../../state'
 import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
-import {RewardType} from '../../../wallet/explorer-types'
+import {RewardType} from '../../../wallet/backend-types'
 import {
   StakingHistoryItemType,
   StakingHistoryObject,
