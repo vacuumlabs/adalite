@@ -12,6 +12,8 @@ import {
   StakingKeyRegistration,
   HexString,
   Lovelace,
+  Stakepool,
+  StakepoolDataProvider,
 } from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -27,7 +29,6 @@ import {
   WithdrawalsHistoryEntry,
   StakeRegistrationHistoryEntry,
   NextRewardDetail,
-  ValidStakePoolsMapping,
   NextRewardDetailsFormatted,
   RewardWithMetadata,
   PoolRecommendationResponse,
@@ -74,12 +75,14 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   async function getTxHistory(addresses: Array<string>) {
     const transactions = []
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const cachedAddressInfos = (await Promise.all(
-      chunks.map(async (index) => {
-        const beginIndex = index * gapLimit
-        return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
-      })
-    )).reduce(
+    const cachedAddressInfos = (
+      await Promise.all(
+        chunks.map(async (index) => {
+          const beginIndex = index * gapLimit
+          return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
+        })
+      )
+    ).reduce(
       (acc, elem) => {
         return {
           caTxList: [...acc.caTxList, ...elem.caTxList],
@@ -151,12 +154,14 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
   async function getBalance(addresses: Array<string>) {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const balance = (await Promise.all(
-      chunks.map(async (index) => {
-        const beginIndex = index * gapLimit
-        return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
-      })
-    )).reduce((acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10), 0)
+    const balance = (
+      await Promise.all(
+        chunks.map(async (index) => {
+          const beginIndex = index * gapLimit
+          return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
+        })
+      )
+    ).reduce((acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10), 0)
     return balance
   }
 
@@ -193,22 +198,24 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
 
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
-    const response = (await Promise.all(
-      chunks.map(async (index) => {
-        const beginIndex = index * gapLimit
-        const response: BulkAdressesUtxoResponse = await request(
-          url,
-          'POST',
-          JSON.stringify(addresses.slice(beginIndex, beginIndex + gapLimit)),
-          {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          }
-        )
-        // @ts-ignore (TODO, handle 'Left')
-        return response.Right
-      })
-    )).reduce((acc, cur) => acc.concat(cur), [])
+    const response = (
+      await Promise.all(
+        chunks.map(async (index) => {
+          const beginIndex = index * gapLimit
+          const response: BulkAdressesUtxoResponse = await request(
+            url,
+            'POST',
+            JSON.stringify(addresses.slice(beginIndex, beginIndex + gapLimit)),
+            {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            }
+          )
+          // @ts-ignore (TODO, handle 'Left')
+          return response.Right
+        })
+      )
+    ).reduce((acc, cur) => acc.concat(cur), [])
 
     return response.map((elem) => {
       return {
@@ -232,19 +239,14 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response
   }
 
-  async function getStakingHistory(stakingKeyHashHex: HexString, validStakepools) {
-    const delegationsUrl = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/delegationHistory/${stakingKeyHashHex}`
-    const rewardsUrl = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/rewardHistory/${stakingKeyHashHex}`
-    const withdrawalsUrl = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/withdrawalHistory/${stakingKeyHashHex}`
-    const stakingKeyRegistrationUrl = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/stakeRegistrationHistory/${stakingKeyHashHex}`
+  async function getStakingHistory(
+    stakingKeyHashHex: HexString,
+    validStakepoolDataProvider: StakepoolDataProvider
+  ) {
+    const delegationsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/delegationHistory/${stakingKeyHashHex}`
+    const rewardsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/rewardHistory/${stakingKeyHashHex}`
+    const withdrawalsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/withdrawalHistory/${stakingKeyHashHex}`
+    const stakingKeyRegistrationUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/stakeRegistrationHistory/${stakingKeyHashHex}`
 
     const [delegations, rewards, withdrawals, stakingKeyRegistrations]: [
       Array<DelegationHistoryEntry>,
@@ -259,7 +261,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     ])
 
     const extractUrl = (poolHash) =>
-      validStakepools[poolHash] ? validStakepools[poolHash].url : null
+      validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)?.url || null
 
     const poolMetaUrls = distinct(
       [...delegations, ...rewards]
@@ -267,11 +269,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         .map(({poolHash}) => extractUrl(poolHash))
     ).filter((url) => url != null)
 
-    const metaUrlToPoolNameMap = (await Promise.all(
-      poolMetaUrls.map((url: string) =>
-        getPoolInfo(url).then((metaData) => ({url, name: metaData.name}))
+    const metaUrlToPoolNameMap = (
+      await Promise.all(
+        poolMetaUrls.map((url: string) =>
+          getPoolInfo(url).then((metaData) => ({url, name: metaData.name}))
+        )
       )
-    )).reduce((map, {url, name}) => {
+    ).reduce((map, {url, name}) => {
       map[url] = name
       return map
     }, {})
@@ -358,17 +362,18 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   async function getRewardDetails(
     nextRewardDetails: Array<NextRewardDetail>,
     currentDelegationPoolHash: string,
-    validStakepools: ValidStakePoolsMapping,
+    validStakepoolDataProvider: StakepoolDataProvider,
     epochsToRewardDistribution: number
   ): Promise<NextRewardDetailsFormatted> {
     const getPool = async (
       poolHash: string
     ): Promise<StakePoolInfo | HostedPoolMetadata | string> => {
-      if (validStakepools[poolHash]) {
-        if (validStakepools[poolHash].name) {
-          return validStakepools[poolHash]
-        } else if (validStakepools[poolHash].url) {
-          return await getPoolInfo(validStakepools[poolHash].url).catch(() => UNKNOWN_POOL_NAME)
+      const stakePool = validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
+      if (stakePool) {
+        if (stakePool.name) {
+          return stakePool
+        } else if (stakePool.url) {
+          return await getPoolInfo(stakePool.url).catch(() => UNKNOWN_POOL_NAME)
         }
       }
 
@@ -411,9 +416,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     poolHash: string,
     stakeAmount: Lovelace
   ): Promise<PoolRecommendationResponse> {
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stakeAmount}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stakeAmount}`
     return request(url).catch(() => ({
       recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
       isInRecommendedPoolSet: true,
@@ -422,9 +425,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   async function getStakingInfo(stakingKeyHashHex: HexString) {
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/info/${stakingKeyHashHex}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/info/${stakingKeyHashHex}`
     const response: StakingInfoResponse = await request(url)
     // if we fail to recieve poolMeta from backend
     if (response.delegation.url && !response.delegation.name) {
@@ -440,9 +441,36 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response
   }
 
-  function getValidStakepools(): Promise<ValidStakePoolsMapping> {
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-    return request(url)
+  async function getStakepoolDataProvider(): Promise<StakepoolDataProvider> {
+    const createStakepoolDataProvider = async (): Promise<StakepoolDataProvider> => {
+      const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
+      const validStakepools = await request(url)
+      const [tickerMapping, poolHashMapping] = Object.entries(validStakepools).reduce(
+        ([tickerMapping, poolHashMapping], entry) => {
+          const [key, value]: [string, any] = entry
+          const stakepool = {
+            ...value,
+            poolHash: key,
+          }
+          if (stakepool.ticker) tickerMapping[stakepool.ticker] = stakepool
+          if (stakepool.poolHash) poolHashMapping[stakepool.poolHash] = stakepool
+          return [tickerMapping, poolHashMapping]
+        },
+        [{}, {}]
+      )
+
+      const getPoolInfoByTicker = (ticker: string): Stakepool => tickerMapping[ticker]
+      const getPoolInfoByPoolHash = (poolHash: string): Stakepool => poolHashMapping[poolHash]
+      const hasTickerMapping = Object.keys(tickerMapping).length !== 0
+
+      return {
+        getPoolInfoByTicker,
+        getPoolInfoByPoolHash,
+        hasTickerMapping,
+      }
+    }
+
+    return await createStakepoolDataProvider()
   }
 
   function getBestSlot(): Promise<BestSlotResponse> {
@@ -464,7 +492,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     getPoolRecommendation,
     getStakingInfo,
     getBestSlot,
-    getValidStakepools,
+    getStakepoolDataProvider,
   }
 }
 

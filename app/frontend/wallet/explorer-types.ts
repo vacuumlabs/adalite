@@ -58,12 +58,6 @@ export type StakeRegistrationHistoryEntry = {
   action: 'registration' | 'deregistration'
 }
 
-export type ValidStakePoolsMapping = {
-  [poolId: string]: StakePoolInfo & {
-    url: string
-  }
-}
-
 export type NextRewardDetail = StakePoolInfoExtended & {
   forEpoch: number
   rewardDate: string

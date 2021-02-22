@@ -10,6 +10,7 @@ import {
   StakingHistoryObject,
   TxType,
   _Address,
+  StakepoolDataProvider,
 } from '../types'
 import {
   getAccountXpub as getAccoutXpubShelley,
@@ -323,13 +324,13 @@ const Account = ({
     return config.isShelleyCompatible && myAddresses.areAddressesUsed()
   }
 
-  async function getAccountInfo(validStakepools) {
+  async function getAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
     const accountXpubs = await getAccountXpubs()
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
     const stakingAddress = await myAddresses.getStakingAddress()
     const {baseAddressBalance, nonStakingBalance, balance} = await getBalance()
-    const shelleyAccountInfo = await getStakingInfo(validStakepools)
-    const stakingHistory = await getStakingHistory(validStakepools)
+    const shelleyAccountInfo = await getStakingInfo(validStakepoolDataProvider)
+    const stakingHistory = await getStakingHistory(validStakepoolDataProvider)
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getTxHistory()
     const poolRecommendation = await getPoolRecommendation(
@@ -374,9 +375,14 @@ const Account = ({
     return blockchainExplorer.getTxHistory([...base, ...legacy, account])
   }
 
-  async function getStakingHistory(validStakepools): Promise<StakingHistoryObject[]> {
+  async function getStakingHistory(
+    validStakepoolDataProvider: StakepoolDataProvider
+  ): Promise<StakingHistoryObject[]> {
     const stakingAddress = await myAddresses.getStakingAddress()
-    return blockchainExplorer.getStakingHistory(bechAddressToHex(stakingAddress), validStakepools)
+    return blockchainExplorer.getStakingHistory(
+      bechAddressToHex(stakingAddress),
+      validStakepoolDataProvider
+    )
   }
 
   async function getAccountXpubs() {
@@ -388,7 +394,7 @@ const Account = ({
     }
   }
 
-  async function getStakingInfo(validStakepools) {
+  async function getStakingInfo(validStakepoolDataProvider: StakepoolDataProvider) {
     const stakingAddressHex = bechAddressToHex(await myAddresses.getStakingAddress())
     const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getStakingInfo(
       stakingAddressHex
@@ -396,7 +402,7 @@ const Account = ({
     const rewardDetails = await blockchainExplorer.getRewardDetails(
       nextRewardDetails,
       accountInfo.delegation.poolHash,
-      validStakepools,
+      validStakepoolDataProvider,
       cryptoProvider.network.epochsToRewardDistribution
     )
 
@@ -409,10 +415,10 @@ const Account = ({
 
   async function getChangeAddress(): Promise<_Address> {
     /*
-    * We use visible addresses as change addresses to mainintain
-    * AdaLite original functionality which did not consider change addresses.
-    * This is an intermediate step between legacy mode and full Yoroi compatibility.
-    */
+     * We use visible addresses as change addresses to mainintain
+     * AdaLite original functionality which did not consider change addresses.
+     * This is an intermediate step between legacy mode and full Yoroi compatibility.
+     */
     const candidates = await getVisibleAddresses()
 
     // const randomSeedGenerator = PseudoRandom(rngSeed)

@@ -37,7 +37,15 @@ import {parseUnsignedTx} from './helpers/cliParser/parser'
 import {TxPlan, unsignedPoolTxToTxPlan} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, Ada, Lovelace, CryptoProviderFeature, _Address, TxType, AuthMethodType} from './types'
+import {
+  AccountInfo,
+  Ada,
+  Lovelace,
+  CryptoProviderFeature,
+  _Address,
+  TxType,
+  AuthMethodType,
+} from './types'
 import {MainTabs} from './constants'
 
 let wallet: ReturnType<typeof ShelleyWallet>
@@ -175,8 +183,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         cryptoProvider,
       })
 
-      const validStakepools = await wallet.getValidStakepools()
-      const accountsInfo = await wallet.getAccountsInfo(validStakepools)
+      const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
+      const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
       const {totalRewardsBalance, totalWalletBalance, shouldShowSaturatedBanner} = getWalletInfo(
         accountsInfo
       )
@@ -187,16 +195,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       const shouldNumberAccountsFromOne = hwWalletName === 'Trezor'
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
-      const demoRootSecret = (await mnemonicToWalletSecretDef(
-        ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC
-      )).rootSecret
+      const demoRootSecret = (
+        await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)
+      ).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
       const shouldShowPremiumBanner =
         state.shouldShowPremiumBanner && PREMIUM_MEMBER_BALANCE_TRESHOLD < totalWalletBalance
       const isBigDelegator = totalWalletBalance > BIG_DELEGATOR_THRESHOLD
       setState({
-        validStakepools,
+        validStakepoolDataProvider,
         accountsInfo,
         maxAccountIndex,
         totalWalletBalance,
@@ -244,7 +252,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const reloadWalletInfo = async (state: State) => {
     loadingAction(state, 'Reloading wallet info...')
     try {
-      const accountsInfo = await wallet.getAccountsInfo(state.validStakepools)
+      const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
       const conversionRates = getConversionRates(state)
 
       // timeout setting loading state, so that loading shows even if everything was cached
@@ -1081,7 +1089,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     try {
       loadingAction(state, 'Loading account')
       const nextAccount = await wallet.exploreNextAccount()
-      const accountInfo = await nextAccount.getAccountInfo(state.validStakepools)
+      const accountInfo = await nextAccount.getAccountInfo(state.validStakepoolDataProvider)
       const accountsInfo = [...state.accountsInfo, accountInfo]
       setState({
         //@ts-ignore TODO: refactor type AccountInfo

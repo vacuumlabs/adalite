@@ -1,7 +1,7 @@
 import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, AuthMethodType, Lovelace} from './types'
+import {AccountInfo, AuthMethodType, Lovelace, StakepoolDataProvider} from './types'
 export interface SendTransactionSummary {
   amount?: Lovelace
   donation?: Lovelace
@@ -146,7 +146,7 @@ export interface State {
     // TODO: probably useless
     stakePool?: any
   }
-  validStakepools?: any | null
+  validStakepoolDataProvider?: StakepoolDataProvider
 }
 
 const initialState: State = {

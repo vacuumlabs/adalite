@@ -1,8 +1,7 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
-import {AccountInfo, CryptoProvider, CryptoProviderFeature} from '../types'
+import {AccountInfo, CryptoProvider, CryptoProviderFeature, StakepoolDataProvider} from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
-import {ValidStakePoolsMapping} from './explorer-types'
 
 type WalletParams = {
   config: any
@@ -63,19 +62,21 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   }
 
   async function getAccountsInfo(
-    validStakepools: ValidStakePoolsMapping
+    validStakepoolDataProvider: StakepoolDataProvider
   ): Promise<Array<AccountInfo>> {
     const accounts = await accountManager.discoverAccounts()
     //@ts-ignore TODO: refactor type AccountInfo
-    return Promise.all(accounts.map((account) => account.getAccountInfo(validStakepools)))
+    return Promise.all(
+      accounts.map((account) => account.getAccountInfo(validStakepoolDataProvider))
+    )
   }
 
   function getMaxAccountIndex() {
     return maxAccountIndex
   }
 
-  function getValidStakepools(): Promise<any> {
-    return blockchainExplorer.getValidStakepools()
+  function getStakepoolDataProvider(): Promise<StakepoolDataProvider> {
+    return blockchainExplorer.getStakepoolDataProvider()
   }
 
   return {
@@ -86,7 +87,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     fetchTxInfo,
     ensureFeatureIsSupported,
     getAccountsInfo,
-    getValidStakepools,
+    getStakepoolDataProvider,
     getAccount: accountManager.getAccount,
     exploreNextAccount: accountManager.exploreNextAccount,
     getMaxAccountIndex,

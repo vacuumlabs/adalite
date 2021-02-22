@@ -178,3 +178,21 @@ export interface StakingKeyRegistration extends StakingHistoryObject {
   stakingKey: string
   txHash: string
 }
+
+export type Stakepool = {
+  pledge: string
+  margin: number
+  fixedCost: string
+  url: string
+  name: string
+  ticker: string
+  homepage: string
+  poolHash: string
+  validationError?: any
+}
+
+export type StakepoolDataProvider = {
+  getPoolInfoByTicker: (ticker: string) => Stakepool
+  getPoolInfoByPoolHash: (poolHash: string) => Stakepool
+  hasTickerMapping: boolean
+}
