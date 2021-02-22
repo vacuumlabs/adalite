@@ -10,7 +10,6 @@ import {
   withdrawalPlanValidator,
   mnemonicValidator,
   donationAmountValidator,
-  poolIdValidator,
   validatePoolRegUnsignedTx,
 } from './helpers/validators'
 import printAda from './helpers/printAda'
@@ -1027,21 +1026,25 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const updateStakePoolIdentifier = (state, e, hash?) => {
+  const updateStakePoolIdentifier = (
+    state: State,
+    poolHash: string,
+    validationError: any = null
+  ): void => {
     /**
      * this has to be redone,
      * pool validation must happen before debouncing
      * but pool info shown after
      */
-    const poolHash = hash || e.target.value
-    const validationError = poolIdValidator(poolHash, state.validStakepools)
+    const newPool = state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
+    const oldPool = state.shelleyDelegation.selectedPool
+    if (newPool?.poolHash === oldPool?.poolHash) return
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPool: {
+          ...newPool,
           validationError,
-          ...state.validStakepools[poolHash],
-          poolHash,
         },
       },
     })
@@ -1057,11 +1060,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateDelegationAndCalculateFee()
   }
 
-  const selectAdaliteStakepool = (state: State) => {
+  const selectAdaliteStakepool = (state: State): void => {
     const newState = getState()
     updateStakePoolIdentifier(
       newState,
-      null,
       getSourceAccountInfo(newState).poolRecommendation.recommendedPoolHash
     )
   }

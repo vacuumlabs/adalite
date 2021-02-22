@@ -3122,11 +3122,6 @@ input:checked + .slider:before {
   align-items: center;
 }
 
-.delegation-input-row.focus {
-  outline: none;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.06);
-}
-
 .delegation-input {
   border: none;
   flex: 1 1 auto;
@@ -3138,14 +3133,13 @@ input:checked + .slider:before {
 }
 
 .delegation-input-label {
-  padding-top: 2px;
-  padding-right: 4px;
-  color: var(--color-grey)
+  position: absolute;
+  top: -12px;
 }
 
 .stake-pool-info {
   margin-left: 12px;
-  height: 16px;
+  height: 168px;
 }
 
 .stake-pool-info.valid {
@@ -3197,18 +3191,25 @@ input:checked + .slider:before {
 .stake-pool-item {
   display: grid;
   /* grid-template-columns: 76% 24%; */
-  padding: 24px 0px 24px 0;
+  padding: 24px 0px 4px 0;
   color: var(--color-grey);
 }
 
-.stake-pool {
-  margin-top: 24px;
+.stake-pool-input-label {
+  position: relative;
+  top: 13px;
+  left: 12px;
+  padding-left: 4px;
+  width: 12em;
+  background: white;
 }
 
-.add-stake-pool-wrapper {
-  margin-left: 12px;
-  display: block;
-  height: 80px;
+.stake-pool-input-label.stake-pool-id-only {
+  width: 7.3em;
+}
+
+.stake-pool-input-label .highlight {
+  color: black;
 }
 
 .current-delegation-wrapper {
@@ -3416,6 +3417,14 @@ input:checked + .slider:before {
   background-size: contain;
   background-position: center;
   background-image: url('../assets/question_symbol.svg');
+}
+
+.delegation.field-na {
+  color: var(--color-error);
+}
+
+.delegation.stake-pool-id {
+  word-break: break-all;
 }
 
 .delegation.show-info::after {

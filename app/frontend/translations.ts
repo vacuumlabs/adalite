@@ -23,7 +23,8 @@ const translations = {
   DonationAmountTooLow: () => `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
   DonationInsufficientBalance: () => 'Insufficient balance for the donation.',
 
-  InvalidStakepoolIdentifier: () => 'Stakepool id is invalid.',
+  InvalidStakepoolIdentifier: ({hasTickerMapping}) =>
+    `Enter a valid ${hasTickerMapping ? 'ticker or ' : ''}stakepool id.`,
   RedundantStakePool: () => 'This stake pool is already chosen.',
   DelegationBalanceError: () => 'Not enough funds to pay the delegation fee.',
   DelegationFeeError: () => 'Unsuccessful delegation fee calculation.',

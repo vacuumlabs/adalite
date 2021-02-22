@@ -124,18 +124,6 @@ const mnemonicValidator = (mnemonic) => {
   return null
 }
 
-const poolIdValidator = (poolId, validStakepools) => {
-  if (poolId === '') {
-    return null
-  }
-  if (!validStakepools[poolId]) {
-    return {
-      code: 'InvalidStakepoolIdentifier',
-    }
-  }
-  return null
-}
-
 const validatePoolRegUnsignedTx = (unsignedTx) => {
   if (!unsignedTx || !unsignedTx.certificates || unsignedTx.certificates.length !== 1) {
     return {code: 'PoolRegInvalidNumCerts'}
@@ -161,6 +149,5 @@ export {
   withdrawalPlanValidator,
   mnemonicValidator,
   donationAmountValidator,
-  poolIdValidator,
   validatePoolRegUnsignedTx,
 }
