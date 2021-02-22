@@ -1,4 +1,4 @@
-import {CaTxEntry, RewardType} from './wallet/explorer-types'
+import {CaTxEntry, NextRewardDetail, RewardType} from './wallet/backend-types'
 import {Network} from './wallet/types'
 
 export type BIP32Path = number[]
@@ -61,7 +61,7 @@ export type DerivationScheme = {
 }
 
 export type HexString = string
-export type TxSummaryEntry = CaTxEntry & {
+export type TxSummaryEntry = Omit<CaTxEntry, 'fee'> & {
   fee: Lovelace
   effect: Lovelace
 }

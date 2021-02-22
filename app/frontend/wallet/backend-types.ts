@@ -1,4 +1,4 @@
-type StakePoolInfo = {
+export type StakePoolInfo = {
   pledge: string
   margin: number
   fixedCost: string
