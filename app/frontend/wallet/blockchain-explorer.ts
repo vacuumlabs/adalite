@@ -99,7 +99,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       {caTxList: []}
     )
 
-    const txHistoryEntries = cachedAddressInfos.caTxList.map((tx) => {
+    const filteredTxs: {[ctbId: string]: CaTxEntry} = {}
+    cachedAddressInfos.caTxList.forEach((tx) => {
+      filteredTxs[tx.ctbId] = tx
+    })
+
+    const txHistoryEntries = Object.values(filteredTxs).map((tx) => {
       if (!tx.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(tx)}`)
       let effect = 0 //effect on wallet balance accumulated
       for (const input of tx.ctbInputs || []) {
@@ -248,7 +253,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   async function getStakingHistory(
     stakingKeyHashHex: HexString,
     validStakepoolDataProvider: StakepoolDataProvider
-  ): Promise<StakingHistoryObject[]>  {
+  ): Promise<StakingHistoryObject[]> {
     const delegationsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/delegationHistory/${stakingKeyHashHex}`
     const rewardsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/rewardHistory/${stakingKeyHashHex}`
     const withdrawalsUrl = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/withdrawalHistory/${stakingKeyHashHex}`
@@ -431,9 +436,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   async function getStakingInfo(stakingKeyHashHex: HexString): Promise<StakingInfoResponse> {
-    const url = `${
-      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
-    }/api/account/info/${stakingKeyHashHex}`
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/info/${stakingKeyHashHex}`
     const response = await request(url)
     // if we fail to recieve poolMeta from backend
     // TODO: IMHO we shouldn't freestyle append poolInfo here, it breaks types easily
