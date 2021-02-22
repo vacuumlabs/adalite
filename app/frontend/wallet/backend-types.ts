@@ -1,12 +1,4 @@
-export type HostedPoolMetadata = {
-  name: string
-  description: string
-  ticker: string
-  homepage: string
-  extended?: string
-}
-
-export type StakePoolInfo = {
+type StakePoolInfo = {
   pledge: string
   margin: number
   fixedCost: string
@@ -15,7 +7,7 @@ export type StakePoolInfo = {
   homepage: string
 }
 
-export type StakePoolInfoExtended = StakePoolInfo & {
+type StakePoolInfoExtended = StakePoolInfo & {
   poolHash: string
   liveStake: string
   roa: string
@@ -78,17 +70,6 @@ export type BestSlotResponse = {
   Right: {
     bestSlot: number
   }
-}
-
-export type RewardWithMetadata = NextRewardDetail & {
-  distributionEpoch?: number
-  pool: HostedPoolMetadata | Object // TODO after refactor
-}
-
-export type NextRewardDetailsFormatted = {
-  upcoming: Array<RewardWithMetadata>
-  nearest: RewardWithMetadata
-  currentDelegation: RewardWithMetadata
 }
 
 export enum PoolRecommendationStatus {
@@ -157,16 +138,11 @@ export type TxSubmissionFailure = FailureResponse & {
   statusCode?: number
 }
 export type SubmitResponse = SuccessResponse<TxSubmission> | TxSubmissionFailure
-export type Utxo = {
+export type _Utxo = {
   tag: string
   cuId: string
   cuOutIndex: number
   cuAddress: string
   cuCoins: CoinObject
 }
-export type BulkAdressesUtxoResponse = SuccessResponse<Array<Utxo>> | TxSubmissionFailure
-
-export interface TxHistoryEntry extends Omit<CaTxEntry, 'fee'> {
-  fee: number
-  effect: number
-}
+export type BulkAdressesUtxoResponse = SuccessResponse<Array<_Utxo>> | TxSubmissionFailure
