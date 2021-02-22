@@ -31,21 +31,17 @@ const expectedStateChanges = {
   donationAmount: {fieldValue: '', coins: 0},
   sendResponse: '',
   ticker2Id: null,
-  validStakepools: [
-    {
-      pool_id: 'd4b1243dfc0bec57f146a90d85b478cdd3e0e646c43801c2bebd6792580a7db2',
-      owner: 'def7e265ec2c54e1cf00dae85ec407e823dd1374e6520cd59264df321513ffe5',
-      name: 'IOHK Stakepool',
-      description: null,
-      ticker: 'IOHK1',
-      homepage: 'https://staking.cardano.org',
-      rewards: {
-        fixed: 258251123,
-        ratio: [2, 25],
-        limit: null,
-      },
-    },
-  ],
+}
+
+const expectedStakepool = {
+  pledge: '30000000000',
+  margin: 0.03,
+  fixedCost: '340000000',
+  url: 'https://adalite.io/ADLT-metadata.json',
+  name: 'AdaLite Stake Pool',
+  ticker: 'ADLT',
+  homepage: 'https://adalite.io/',
+  poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
 }
 
 it('Should properly load shelley wallet', async () => {
@@ -71,6 +67,16 @@ it('Should properly load shelley wallet', async () => {
   })
   assertPropertiesEqual(state, expectedStateChanges)
   assert.equal(state.accountsInfo[0].visibleAddresses.length, 20)
+  assert.deepStrictEqual(
+    state.validStakepoolDataProvider.getPoolInfoByPoolHash(
+      '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438'
+    ),
+    expectedStakepool
+  )
+  assert.deepStrictEqual(
+    state.validStakepoolDataProvider.getPoolInfoByTicker('ADLT'),
+    expectedStakepool
+  )
 
   mockNet.clean()
 })
