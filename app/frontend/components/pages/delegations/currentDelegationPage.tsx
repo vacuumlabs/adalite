@@ -10,6 +10,7 @@ import {SATURATION_POINT} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
 
 const SaturationInfo = (pool) => {
+  if (pool.liveStake == null) return <Fragment />
   const liveStake = parseFloat(pool.liveStake)
   const saturationPercentage = roundNumber((liveStake / SATURATION_POINT) * 100, 2)
   return (
@@ -39,39 +40,55 @@ const CurrentDelegationPage = ({
               <LinkIconToPool poolHash={pool.poolHash} />
             </div>
             <div className="current-delegation-id">{pool.poolHash}</div>
-            <div className="current-delegation-id">Ticker: {pool.ticker || ''}</div>
-            <div className="current-delegation-id">Tax: {pool.margin * 100 || ''}%</div>
-            <div className="current-delegation-id">
-              Fixed cost: {printAda(parseInt(pool.fixedCost, 10) as Lovelace)}
-            </div>
-            {pool.roa !== '0' && <div className="current-delegation-id">ROA 30d: {pool.roa}%</div>}
+            {pool.ticker != null && (
+              <div className="current-delegation-id">Ticker: {pool.ticker}</div>
+            )}
+            {pool.margin != null && (
+              <div className="current-delegation-id">Tax: {pool.margin * 100}%</div>
+            )}
+            {pool.fixedCost != null && (
+              <div className="current-delegation-id">
+                Fixed cost: {printAda(parseInt(pool.fixedCost, 10) as Lovelace)}
+              </div>
+            )}
+            {pool.roa != null && pool.roa !== '0' && (
+              <div className="current-delegation-id">ROA 30d: {pool.roa}%</div>
+            )}
             {SaturationInfo(pool)}
-            <div className="current-delegation-id">
-              Live stake: {parseFloat(printAda(pool.liveStake as Lovelace)).toLocaleString('en')}
-            </div>
-            <div className="current-delegation-id">
-              {'Homepage: '}
-              <a target="_blank" href={pool.homepage}>
-                {pool.homepage}
-              </a>
-            </div>
-            <div className="current-delegation-id">
-              {'View on '}
-              <a
-                target="_blank"
-                className="transaction-address"
-                href={`https://adapools.org/pool/${pool.poolHash}`}
-              >
-                ADApools
-              </a>
-            </div>
-            <div className="current-delegation-id">
-              Next reward:{' '}
-              <EpochDateTime
-                epoch={currentDelegationReward.distributionEpoch}
-                dateTime={new Date(currentDelegationReward.rewardDate)}
-              />
-            </div>
+            {pool.liveStake != null && (
+              <div className="current-delegation-id">
+                Live stake: {parseFloat(printAda(pool.liveStake as Lovelace)).toLocaleString('en')}
+              </div>
+            )}
+            {pool.homepage != null && (
+              <div className="current-delegation-id">
+                {'Homepage: '}
+                <a target="_blank" href={pool.homepage}>
+                  {pool.homepage}
+                </a>
+              </div>
+            )}
+            {pool.poolHash != null && (
+              <div className="current-delegation-id">
+                {'View on '}
+                <a
+                  target="_blank"
+                  className="transaction-address"
+                  href={`https://adapools.org/pool/${pool.poolHash}`}
+                >
+                  ADApools
+                </a>
+              </div>
+            )}
+            {currentDelegationReward.distributionEpoch && currentDelegationReward.rewardDate && (
+              <div className="current-delegation-id">
+                Next reward:{' '}
+                <EpochDateTime
+                  epoch={currentDelegationReward.distributionEpoch}
+                  dateTime={new Date(currentDelegationReward.rewardDate)}
+                />
+              </div>
+            )}
           </div>
           {/* <button
             className="button primary revokedelegation-delegation"
