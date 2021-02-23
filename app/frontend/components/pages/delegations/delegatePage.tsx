@@ -112,7 +112,7 @@ const Delegate = ({
             !isShelleyCompatible ||
             validationError ||
             calculatingDelegationFee ||
-            stakePool.poolHash === ''
+            !stakePool?.poolHash
           }
           onClick={delegationHandler}
           {...tooltip(

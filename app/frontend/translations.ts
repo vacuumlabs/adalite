@@ -25,6 +25,7 @@ const translations = {
 
   InvalidStakepoolIdentifier: ({hasTickerMapping}) =>
     `Enter a valid ${hasTickerMapping ? 'ticker or ' : ''}stakepool id.`,
+  TickerSearchDisabled: ({hasTickerMapping}) => 'Search by ticker is temporary disabled',
   RedundantStakePool: () => 'This stake pool is already chosen.',
   DelegationBalanceError: () => 'Not enough funds to pay the delegation fee.',
   DelegationFeeError: () => 'Unsuccessful delegation fee calculation.',

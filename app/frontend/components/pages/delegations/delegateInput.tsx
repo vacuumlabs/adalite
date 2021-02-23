@@ -27,11 +27,39 @@ const StakePoolLabel = ({
   </Fragment>
 )
 
+// TODO: move to types
+type Error = {
+  code: string
+  params?: {hasTickerMapping: boolean}
+}
+
+type ValidatedInput = {
+  poolHash: string | null
+  error: Error
+}
+
+const validateInput = (
+  fieldValue: string,
+  validStakepoolDataProvider: StakepoolDataProvider
+): ValidatedInput => {
+  const pool =
+    validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue) ||
+    validStakepoolDataProvider.getPoolInfoByTicker(fieldValue)
+  if (pool) return {poolHash: pool.poolHash, error: null}
+
+  const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
+  const isTickerString = fieldValue.length <= 5 && fieldValue.toUpperCase() === fieldValue
+  const poolHash = null
+  if (!hasTickerMapping && isTickerString) return {poolHash, error: {code: 'TickerSearchDisabled'}}
+  return {poolHash, error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}}
+}
+
 interface Props {
   poolRecommendation: PoolRecommendation
   pool: Stakepool
   validStakepoolDataProvider: StakepoolDataProvider
   updateStakePoolIdentifier: (poolHash: string, validationError?: any) => void
+  resetStakePoolIndentifier: () => void
 }
 
 const DelegateInput = ({
@@ -39,6 +67,7 @@ const DelegateInput = ({
   pool,
   validStakepoolDataProvider,
   updateStakePoolIdentifier,
+  resetStakePoolIndentifier,
 }: Props): h.JSX.Element => {
   useEffect(() => {
     const poolHash = poolRecommendation?.recommendedPoolHash || pool?.poolHash
@@ -60,15 +89,13 @@ const DelegateInput = ({
     setFieldValue(fieldValue)
     setIsTicker(isTicker)
     setIsPoolHash(isPoolHash)
-    const poolHash = isTicker
-      ? validStakepoolDataProvider.getPoolInfoByTicker(fieldValue).poolHash
-      : fieldValue
-    const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
-    const error =
-      poolHash === '' || validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
-        ? null
-        : {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}
-    updateStakePoolIdentifier(poolHash, error)
+
+    if (fieldValue) {
+      const {poolHash, error} = validateInput(fieldValue, validStakepoolDataProvider)
+      updateStakePoolIdentifier(poolHash, error)
+    } else {
+      resetStakePoolIndentifier()
+    }
   }
 
   return (

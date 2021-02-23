@@ -1004,7 +1004,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const validateDelegationAndCalculateFee = () => {
     const state = getState()
     const selectedPool = state.shelleyDelegation.selectedPool
-    const delegationValidationError = selectedPool.validationError || selectedPool.poolHash === ''
+    const delegationValidationError = selectedPool.validationError
 
     setErrorState('delegationValidationError', delegationValidationError)
     setState({
@@ -1036,9 +1036,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
      * pool validation must happen before debouncing
      * but pool info shown after
      */
-    const newPool = state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
+    const newPool = poolHash && state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
     const oldPool = state.shelleyDelegation.selectedPool
-    if (newPool?.poolHash === oldPool?.poolHash) return
+    if (newPool && newPool?.poolHash === oldPool?.poolHash) return
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -1048,16 +1048,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         },
       },
     })
-    if (validationError || poolHash === '') {
-      if (poolHash === '') {
-        resetDelegation()
-        setState({
-          delegationValidationError: null,
-        })
-      }
-      return
-    }
+    if (validationError) return
     validateDelegationAndCalculateFee()
+  }
+
+  const resetStakePoolIndentifier = (): void => {
+    resetDelegation()
+    setState({
+      delegationValidationError: null,
+    })
   }
 
   const selectAdaliteStakepool = (state: State): void => {
@@ -1566,6 +1565,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetDonation,
     closeStakingBanner,
     updateStakePoolIdentifier,
+    resetStakePoolIndentifier,
     setActiveMainTab,
     selectAdaliteStakepool,
     convertNonStakingUtxos,
