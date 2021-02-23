@@ -1,5 +1,5 @@
 import {_SignedTx, _TxAux} from './wallet/shelley/types'
-import {CaTxEntry, NextRewardDetail, RewardType} from './wallet/backend-types'
+import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
 import {Network} from './wallet/types'
 
 export type BIP32Path = number[]
@@ -59,10 +59,15 @@ export type DerivationScheme = {
   keyfileVersion: string
 }
 
+export type Token = Omit<TokenObject, 'quantity'> & {
+  quantity: number
+}
+
 export type HexString = string
 export type TxSummaryEntry = Omit<CaTxEntry, 'fee'> & {
   fee: Lovelace
   effect: Lovelace
+  tokenEffects: Token[]
 }
 
 export type _XPubKey = {
@@ -123,7 +128,7 @@ export type AccountInfo = {
     }
     value: number
   }
-  transactionHistory: Array<CaTxEntry>
+  transactionHistory: Array<TxSummaryEntry>
   stakingHistory: Array<StakingHistoryObject>
   visibleAddresses: Array<any>
   poolRecommendation: PoolRecommendation
@@ -232,6 +237,7 @@ export type Utxo = {
   txHash: string
   address: string
   coins: Lovelace
+  tokens: Token[]
   outputIndex: number
 }
 
@@ -252,4 +258,9 @@ export type NextRewardDetailsFormatted = {
   upcoming: Array<RewardWithMetadata>
   nearest: RewardWithMetadata
   currentDelegation: RewardWithMetadata
+}
+
+export type Balance = {
+  coins: Lovelace
+  tokens: Token[]
 }

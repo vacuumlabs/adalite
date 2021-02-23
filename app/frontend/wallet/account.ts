@@ -339,8 +339,8 @@ const Account = ({
 
   async function getBalance() {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
-    const nonStakingBalance = await blockchainExplorer.getBalance(legacy)
-    const baseAddressBalance = await blockchainExplorer.getBalance(base)
+    const {coins: nonStakingBalance} = await blockchainExplorer.getBalance(legacy)
+    const {coins: baseAddressBalance} = await blockchainExplorer.getBalance(base)
     return {
       baseAddressBalance,
       nonStakingBalance,

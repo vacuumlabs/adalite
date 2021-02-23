@@ -20,6 +20,7 @@ import {
   HostedPoolMetadata,
   NextRewardDetailsFormatted,
   RewardWithMetadata,
+  Balance,
 } from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -42,6 +43,8 @@ import {
   TxSummary,
   TxSubmission,
   StakePoolInfo,
+  _Utxo,
+  TokenObject,
 } from './backend-types'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
@@ -106,25 +109,59 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
     const txHistoryEntries = Object.values(filteredTxs).map((tx) => {
       if (!tx.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(tx)}`)
-      let effect = 0 //effect on wallet balance accumulated
-      for (const input of tx.ctbInputs || []) {
-        if (addresses.includes(input[0])) {
-          effect -= +input[1].getCoin
-        }
-      }
-      for (const output of tx.ctbOutputs || []) {
-        if (addresses.includes(output[0])) {
-          effect += +output[1].getCoin
-        }
-      }
-      return {
-        ...tx,
-        fee: parseInt(tx.fee, 10) as Lovelace,
-        effect: effect as Lovelace,
-      }
+      return prepareTxHistoryEntry(tx, addresses)
     })
 
     return txHistoryEntries.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
+  }
+
+  type TokenMap = {[key: string]: {[key: string]: number}}
+
+  function prepareTxHistoryEntry(tx: CaTxEntry, addresses: string[]): TxSummaryEntry {
+    const tokenEffects: TokenMap = {}
+
+    const calculateTokenEffects = (getTokens: TokenObject[], multiplier: number) => {
+      getTokens.forEach(({policyId, assetName, quantity}) => {
+        if (!(policyId in tokenEffects)) {
+          tokenEffects[policyId] = {}
+        }
+        if (!(assetName in tokenEffects[policyId])) {
+          tokenEffects[policyId][assetName] = 0
+        }
+        tokenEffects[policyId][assetName] += multiplier * parseInt(quantity, 10)
+      })
+    }
+
+    let effect = 0 //effect on wallet balance accumulated
+    for (const input of tx.ctbInputs || []) {
+      const isWalletAddress = addresses.includes(input[0])
+      if (isWalletAddress) {
+        effect -= +input[1].getCoin
+        calculateTokenEffects(tx.ctbInputSum.getTokens, -1)
+      }
+    }
+    for (const output of tx.ctbOutputs || []) {
+      const isWalletAddress = addresses.includes(output[0])
+      if (isWalletAddress) {
+        effect += +output[1].getCoin
+        calculateTokenEffects(tx.ctbOutputSum.getTokens, 1)
+      }
+    }
+    return {
+      ...tx,
+      fee: parseInt(tx.fee, 10) as Lovelace,
+      effect: effect as Lovelace,
+      tokenEffects: flattenAssets(tokenEffects),
+    }
+  }
+
+  function flattenAssets(tokens: TokenMap) {
+    const tokenArray = Object.entries(tokens).map(([policyId, assets]) => {
+      return Object.entries(assets).map(([assetName, quantity]) => {
+        return {policyId, assetName, quantity}
+      })
+    })
+    return tokenArray.flat(1)
   }
 
   async function fetchTxInfo(txHash: string): Promise<TxSummary> {
@@ -163,17 +200,35 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return usedAddresses
   }
 
-  async function getBalance(addresses: Array<string>): Promise<Lovelace> {
+  async function getBalance(addresses: Array<string>): Promise<Balance> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const balance = (
-      await Promise.all(
-        chunks.map(async (index) => {
-          const beginIndex = index * gapLimit
-          return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
-        })
-      )
-    ).reduce((acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10), 0) as Lovelace
-    return balance
+    const txHistory = await Promise.all(
+      chunks.map(async (index) => {
+        const beginIndex = index * gapLimit
+        return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
+      })
+    )
+    const tokens = {}
+    txHistory.map((txHistoryEntry) => {
+      txHistoryEntry.caBalance.getTokens.map(({assetName, policyId, quantity}) => {
+        if (!(policyId in tokens)) {
+          tokens[policyId] = {}
+        }
+        if (!(assetName in tokens[policyId])) {
+          tokens[policyId][assetName] = 0
+        }
+        tokens[policyId][assetName] += parseInt(quantity, 10)
+      })
+    })
+
+    const coins = txHistory.reduce(
+      (acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10),
+      0
+    ) as Lovelace
+    return {
+      coins,
+      tokens: flattenAssets(tokens),
+    }
   }
 
   async function submitTxRaw(txHash, txBody, params): Promise<TxSubmission> {
@@ -223,16 +278,21 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
             }
           )
           // @ts-ignore (TODO, handle 'Left')
-          return response.Right
+          return response.Right as Array<_Utxo>
         })
       )
     ).reduce((acc, cur) => acc.concat(cur), [])
 
     return response.map((elem) => {
+      const tokens = elem.cuCoins.getTokens.map((token) => ({
+        ...token,
+        quantity: parseInt(token.quantity, 10),
+      }))
       return {
         txHash: elem.cuId,
         address: elem.cuAddress,
-        coins: parseInt(elem.cuCoins.getCoin, 10),
+        coins: parseInt(elem.cuCoins.getCoin, 10) as Lovelace,
+        tokens,
         outputIndex: elem.cuOutIndex,
       }
     })

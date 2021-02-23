@@ -4,7 +4,7 @@
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "target": "ES2016",
+    "target": "es2019",
     "jsx": "react",
     "jsxFactory": "h",
     "baseUrl": ".",
