@@ -50,6 +50,22 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">02/23/2021</h3>
+            <Article title="Request for a short survey" icon="">
+              Cardano will undergo Mary hard-fork on 1st March 2021. No action is needed by the
+              users. This hard-fork will introduce multi-assets to Cardano blockchain. AdaLite will
+              support this feature since day 1. In the meantime - help us make AdaLite better by
+              completing{' '}
+              <a
+                href="https://us9.list-manage.com/survey?u=a4ef0e2eec6beca874d360490&id=9aa07f5f0e"
+                target="_blank"
+                rel="noopener"
+              >
+                this short (2-3 minutes) survey
+              </a>
+              .
+            </Article>
+            <hr className="info-separator" />
             <h3 className="info-date">01/14/2021</h3>
             <Article title="Multi-account support and partial delegation" icon="">
               AdaLite is introducing the concept of wallet accounts. Apart from other benefits, this
