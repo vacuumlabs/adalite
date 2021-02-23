@@ -69,18 +69,18 @@ const DelegateInput = ({
   updateStakePoolIdentifier,
   resetStakePoolIndentifier,
 }: Props): h.JSX.Element => {
-  useEffect(() => {
-    const poolHash = poolRecommendation?.recommendedPoolHash || pool?.poolHash
-    if (poolHash) {
-      updateStakePoolIdentifier(poolHash)
-    }
-  }, [pool, poolRecommendation, updateStakePoolIdentifier])
-
-  const [fieldValue, setFieldValue] = useState(
-    poolRecommendation?.recommendedPoolHash || pool?.poolHash || ''
-  )
+  const [fieldValue, setFieldValue] = useState('')
   const [isTicker, setIsTicker] = useState(false)
   const [isPoolHash, setIsPoolHash] = useState(!!fieldValue)
+
+  useEffect(() => {
+    const recommendedPoolHash = poolRecommendation?.recommendedPoolHash || pool?.poolHash
+    if (recommendedPoolHash) {
+      const {poolHash, error} = validateInput(recommendedPoolHash, validStakepoolDataProvider)
+      updateStakePoolIdentifier(poolHash, error)
+      setFieldValue(recommendedPoolHash)
+    }
+  }, [pool, poolRecommendation, validStakepoolDataProvider, updateStakePoolIdentifier])
 
   const handleOnInput = (event: any): void => {
     const fieldValue: string = event?.target?.value
