@@ -429,7 +429,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const response: StakingInfoResponse = await request(url)
     // if we fail to recieve poolMeta from backend
     if (response.delegation.url && !response.delegation.name) {
-      const poolInfo = getPoolInfo(response.delegation.url)
+      const poolInfo = await getPoolInfo(response.delegation.url)
       return {
         ...response,
         delegation: {
