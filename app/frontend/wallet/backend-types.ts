@@ -86,8 +86,15 @@ export type PoolRecommendationResponse = StakePoolInfoExtended & {
   isInRecommendedPoolSet: boolean
 }
 
+export declare type Token = {
+  policyId: string
+  assetName: string
+  quantity: string // possibly huge amounts
+}
+
 export type CoinObject = {
   getCoin: string
+  getTokens: Token[]
 }
 
 export type AddressCoinTuple = [string, CoinObject]
