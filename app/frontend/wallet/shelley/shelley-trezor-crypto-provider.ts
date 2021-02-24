@@ -4,7 +4,7 @@ import {ADALITE_SUPPORT_EMAIL, TREZOR_ERRORS, TREZOR_VERSIONS} from '../constant
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
-import {bech32} from 'cardano-crypto.js'
+import {bech32, AddressTypes} from 'cardano-crypto.js'
 import {hasRequiredVersion} from './helpers/version-check'
 import {
   CryptoProvider,
@@ -12,8 +12,31 @@ import {
   CryptoProviderFeature,
   BIP32Path,
   HexString,
+  AddressToPathMapper,
 } from '../../types'
-import {Network} from '../types'
+import {
+  Network,
+  OutputType,
+  _Certificate,
+  _DelegationCertificate,
+  _Input,
+  _Output,
+  _StakepoolRegistrationCertificate,
+  _StakingKeyDeregistrationCertificate,
+  _StakingKeyRegistrationCertificate,
+  _Withdrawal,
+} from '../types'
+import {
+  TrezorAddressParameters,
+  TrezorGetAddressResponse,
+  TrezorGetPublicKeyResponse,
+  TrezorInput,
+  TrezorOutput,
+  TrezorSignTxResponse,
+  TrezorTxCertificate,
+  TrezorWithdrawal,
+} from './trezor-types'
+import {_SignedTx, _TxAux} from './types'
 
 type CryptoProviderParams = {
   network: Network
@@ -34,6 +57,7 @@ const ShelleyTrezorCryptoProvider = async ({
   })
 
   const getVersion = async (): Promise<any> => {
+    // TODO: add return type
     const {payload: features} = await TrezorConnect.getFeatures()
     const {major_version: major, minor_version: minor, patch_version: patch} = features
     return {major, minor, patch}
@@ -41,27 +65,29 @@ const ShelleyTrezorCryptoProvider = async ({
 
   const version = await getVersion()
 
-  const isHwWallet = () => true
-  const getWalletName = () => 'Trezor'
+  const isHwWallet = (): boolean => true
+  const getWalletName = (): string => 'Trezor' // TODO: return enum
 
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk,
     async (absDerivationPaths: BIP32Path[]) => {
       const bundle = absDerivationPaths.map((path: BIP32Path) => ({path, showOnTrezor: false}))
-      const response = await TrezorConnect.cardanoGetPublicKey({
+      const response: TrezorGetPublicKeyResponse = await TrezorConnect.cardanoGetPublicKey({
         bundle,
       })
-      throwIfNotSuccess(response)
+      if (response.success === false) {
+        throw NamedError('TrezorError', {message: response.payload.error})
+      }
       return response.payload.map(({publicKey}) => Buffer.from(publicKey, 'hex'))
     }
   )
 
-  function isFeatureSupported(feature: CryptoProviderFeature) {
+  function isFeatureSupported(feature: CryptoProviderFeature): boolean {
     return TREZOR_VERSIONS[feature] ? hasRequiredVersion(version, TREZOR_VERSIONS[feature]) : true
   }
 
-  function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
     if (!isFeatureSupported(feature)) {
       throw NamedError(TREZOR_ERRORS[feature], {
         message: `${version.major}.${version.minor}.${version.patch}`,
@@ -69,100 +95,65 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  function getHdPassphrase() {
+  function getHdPassphrase(): void {
     throw NamedError('UnsupportedOperationError', {
       message: 'This operation is not supported on TrezorCryptoProvider!',
     })
   }
 
-  function sign(message: HexString, absDerivationPath: BIP32Path) {
+  function sign(message: HexString, absDerivationPath: BIP32Path): void {
     throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
-  type CardanoAddressParameters = {
-    addressType: number
-    path: string | number[]
-    stakingPath?: string | number[]
-    stakingKeyHash?: string
-    certificatePointer?: CardanoCertificatePointer
-  }
-
-  // we should pass the addressType as an argument here and retrieve it from the address
-  async function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath?: BIP32Path) {
-    const addressParameters: CardanoAddressParameters = {
-      addressType: 0, // TODO: retrieve from the address
+  async function displayAddressForPath(
+    absDerivationPath: BIP32Path,
+    stakingPath?: BIP32Path
+  ): Promise<void> {
+    const addressParameters: TrezorAddressParameters = {
+      addressType: AddressTypes.BASE, // TODO: retrieve from address
       path: absDerivationPath,
       stakingPath,
     }
-    const response = await TrezorConnect.cardanoGetAddress({
+    const response: TrezorGetAddressResponse = await TrezorConnect.cardanoGetAddress({
       addressParameters,
       networkId: network.networkId,
       protocolMagic: network.protocolMagic,
       showOnTrezor: true,
     })
-
-    throwIfNotSuccess(response)
-  }
-  type CardanoCertificatePointer = {
-    blockIndex: number
-    txIndex: number
-    certificateIndex: number
-  }
-
-  type CardanoInput = {
-    path?: string | number[]
-    // eslint-disable-next-line camelcase
-    prev_hash: string
-    // eslint-disable-next-line camelcase
-    prev_index: number
-  }
-  type CardanoOutput =
-    | {
-        addressParameters: CardanoAddressParameters
-        amount: string
-      }
-    | {
-        address: string
-        amount: string
-      }
-  type CardanoCertificate = {
-    type: number
-    path?: string | number[]
-    pool?: string
-    poolParameters?: any
-  }
-
-  type CardanoWithdrawal = {
-    path: string | number[]
-    amount: string
-  }
-
-  function prepareInput(input, addressToAbsPathMapper): CardanoInput {
-    const data = {
-      ...(input.address && {path: addressToAbsPathMapper(input.address)}),
-      prev_hash: input.txid,
-      prev_index: input.outputNo,
+    if (response.success === false) {
+      throw NamedError('TrezorError', {message: response.payload.error})
     }
-
-    return data
   }
 
-  function prepareOutput(output, addressToAbsPathMapper): CardanoOutput {
-    if (output.isChange) {
-      return {
+  function prepareInput(input: _Input, addressToAbsPathMapper: AddressToPathMapper): TrezorInput {
+    return {
+      ...(input.address && {path: addressToAbsPathMapper(input.address)}),
+      prev_hash: input.txHash,
+      prev_index: input.outputIndex,
+    }
+  }
+
+  function prepareTokenBundle() {
+    return [] // TODO:
+  }
+
+  function prepareOutput(output: _Output): TrezorOutput {
+    const tokenBundle = prepareTokenBundle()
+    return output.type === OutputType.NO_CHANGE
+      ? {
+        address: output.address,
+        amount: `${output.coins}`,
+        tokenBundle,
+      }
+      : {
         amount: `${output.coins}`,
         addressParameters: {
-          addressType: 0, // TODO: 0 for base address
+          addressType: AddressTypes.BASE, // TODO: retrieve from the address
           path: output.spendingPath,
           stakingPath: output.stakingPath,
         },
+        tokenBundle,
       }
-    } else {
-      return {
-        address: output.address,
-        amount: `${output.coins}`,
-      }
-    }
   }
 
   function poolCertToTrezorFormat(cert) {
@@ -203,63 +194,78 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  function prepareCertificate(cert, addressToAbsPathMapper): CardanoCertificate {
-    // TODO: refactor, for some reason trezor cant have the pool parameter undefined
-    // but dont mind having poolParameters undefined
-    return cert.type === CertificateType.DELEGATION
-      ? {
-        type: cert.type,
-        path: !cert.poolRegistrationParams
-          ? addressToAbsPathMapper(cert.accountAddress)
-          : undefined,
-        pool: cert.poolHash,
-      }
-      : {
-        type: cert.type,
-        path: !cert.poolRegistrationParams
-          ? addressToAbsPathMapper(cert.accountAddress)
-          : undefined,
-        poolParameters: cert.poolRegistrationParams
-          ? poolCertToTrezorFormat(cert.poolRegistrationParams)
-          : undefined,
-      }
+  function prepareStakingKeyRegistrationCertificate(
+    certificate: _StakingKeyRegistrationCertificate | _StakingKeyDeregistrationCertificate,
+    path: BIP32Path
+  ): TrezorTxCertificate {
+    return {
+      type: certificate.type,
+      path,
+    }
   }
 
-  function prepareWithdrawal(withdrawal, addressToAbsPathMapper): CardanoWithdrawal {
+  function prepareDelegationCertificate(
+    certificate: _DelegationCertificate,
+    path: BIP32Path
+  ): TrezorTxCertificate {
     return {
-      path: addressToAbsPathMapper(withdrawal.address),
+      type: certificate.type,
+      path,
+      pool: certificate.poolHash,
+    }
+  }
+
+  function preparePoolRegistrationCertificate(
+    certificate: _StakepoolRegistrationCertificate,
+    path: BIP32Path
+  ): TrezorTxCertificate {
+    return null // TODO:
+  }
+
+  // TODO: refactor this to switch with prepare function for each type of certificate
+  function prepareCertificate(
+    certificate: _Certificate,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): TrezorTxCertificate {
+    const path = addressToAbsPathMapper(certificate.stakingAddress)
+    switch (certificate.type) {
+      case CertificateType.STAKING_KEY_REGISTRATION:
+        return prepareStakingKeyRegistrationCertificate(certificate, path)
+      case CertificateType.DELEGATION:
+        return prepareDelegationCertificate(certificate, path)
+      case CertificateType.STAKEPOOL_REGISTRATION:
+        return preparePoolRegistrationCertificate(certificate, path)
+      default:
+        throw NamedError('InvalidCertficateType')
+    }
+  }
+
+  function prepareWithdrawal(
+    withdrawal: _Withdrawal,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): TrezorWithdrawal {
+    return {
+      path: addressToAbsPathMapper(withdrawal.stakingAddress),
       amount: `${withdrawal.rewards}`,
     }
   }
 
-  async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
-    const _inputs = []
-    for (const input of unsignedTx.inputs) {
-      const data = prepareInput(input, addressToAbsPathMapper)
-      _inputs.push(data)
-    }
-    const inputs = await Promise.all(_inputs)
+  async function signTx(
+    txAux: _TxAux,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): Promise<_SignedTx> {
+    const inputs = txAux.inputs.map((input) => prepareInput(input, addressToAbsPathMapper))
+    const outputs = txAux.outputs.map((output) => prepareOutput(output))
+    const certificates = txAux.certificates.map((certificate) =>
+      prepareCertificate(certificate, addressToAbsPathMapper)
+    )
+    const fee = `${txAux.fee}`
+    const ttl = `${txAux.ttl}`
+    const withdrawals = txAux.withdrawals.map((withdrawal) =>
+      prepareWithdrawal(withdrawal, addressToAbsPathMapper)
+    )
 
-    const _outputs = []
-    for (const output of unsignedTx.outputs) {
-      const data = prepareOutput(output, addressToAbsPathMapper)
-      _outputs.push(data)
-    }
-    const outputs = await Promise.all(_outputs)
-
-    const certificates = []
-    for (const cert of unsignedTx.certs) {
-      const data = prepareCertificate(cert, addressToAbsPathMapper)
-      certificates.push(data)
-    }
-
-    const fee = `${unsignedTx.fee.fee}`
-    const ttl = `${unsignedTx.ttl.ttl}`
-    const withdrawals = unsignedTx.withdrawals
-      ? [prepareWithdrawal(unsignedTx.withdrawals, addressToAbsPathMapper)]
-      : []
-
-    const response = await TrezorConnect.cardanoSignTransaction({
+    const response: TrezorSignTxResponse = await TrezorConnect.cardanoSignTransaction({
       inputs,
       outputs,
       protocolMagic: network.protocolMagic,
@@ -270,9 +276,15 @@ const ShelleyTrezorCryptoProvider = async ({
       withdrawals,
     })
 
-    if (response.error || !response.success) {
+    if (response.success === false) {
       debugLog(response)
       throw NamedError('TrezorSignTxError', {message: response.payload.error})
+    }
+
+    if (response.payload.hash !== txAux.getId()) {
+      throw NamedError('TxSerializationError', {
+        message: 'Tx serialization mismatch between Trezor and Adalite',
+      })
     }
 
     return {
@@ -281,22 +293,12 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  function getWalletSecret() {
+  function getWalletSecret(): void {
     throw NamedError('UnsupportedOperationError', {message: 'Unsupported operation!'})
   }
 
   function getDerivationScheme() {
     return derivationScheme
-  }
-
-  function throwIfNotSuccess(response) {
-    if (response.error || !response.success) {
-      debugLog(response)
-      throw NamedError('TrezorError', {
-        message:
-          'Trezor operation failed, please make sure ad blockers are switched off for this site and you are using the latest version of Trezor firmware',
-      })
-    }
   }
 
   return {
