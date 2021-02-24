@@ -3,11 +3,14 @@ import PseudoRandom from './helpers/PseudoRandom'
 import {DEFAULT_TTL_SLOTS, MAX_INT32} from './constants'
 import NamedError from '../helpers/NamedError'
 import {
+  AddressToPathMapper,
   AddressToPathMapping,
   AddressWithMeta,
+  BIP32Path,
   CryptoProvider,
   Lovelace,
   StakingHistoryObject,
+  TxPlanArgs,
   TxType,
   _Address,
   StakepoolDataProvider,
@@ -22,7 +25,9 @@ import {
 import {
   selectMinimalTxPlan,
   computeRequiredTxFee,
-  isUtxoProfitable, // TODO: useless
+  isUtxoProfitable,
+  TxPlan,
+  TxPlanResult, // TODO: useless
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
@@ -31,16 +36,10 @@ import {
   getAccountXpub as getAccoutXpubByron,
 } from './byron/byron-address-provider'
 import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresses'
-import {
-  ShelleyTxAux,
-  ShelleyTxInputFromUtxo,
-  ShelleyTxOutput,
-  ShelleyTxCert,
-  ShelleyFee,
-  ShelleyTtl,
-  ShelleyWitdrawal,
-} from './shelley/shelley-transaction'
+import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
+import {_TxAux} from './shelley/types'
+import {OutputType, _Output} from './types'
 
 const DummyAddressManager = () => {
   return {
@@ -129,7 +128,7 @@ const MyAddresses = ({
     return (address) => mapping[address]
   }
 
-  function fixedPathMapper() {
+  function fixedPathMapper(): AddressToPathMapper {
     const mappingLegacy = {
       ...legacyIntManager.getAddressToAbsPathMapping(),
       ...legacyExtManager.getAddressToAbsPathMapping(),
@@ -144,7 +143,7 @@ const MyAddresses = ({
     for (const key in mappingShelley) {
       fixedShelley[bechAddressToHex(key)] = mappingShelley[key]
     }
-    return (address) => {
+    return (address: _Address) => {
       return mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
     }
   }
@@ -214,7 +213,7 @@ const Account = ({
     await myAddresses.baseExtAddrManager._deriveAddress(0)
   }
 
-  async function calculateTtl() {
+  async function calculateTtl(): Promise<number> {
     // TODO: move to wallet
     try {
       const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
@@ -225,66 +224,55 @@ const Account = ({
     }
   }
 
-  async function prepareTxAux(plan, ttl?) {
-    // TODO: move to wallet
-    const txInputs = plan.inputs.map(ShelleyTxInputFromUtxo)
-    const txOutputs = plan.outputs.map(({address, coins}) => ShelleyTxOutput(address, coins, false))
-    const txCerts = plan.certs.map(({type, accountAddress, poolHash, poolRegistrationParams}) =>
-      ShelleyTxCert(type, accountAddress, poolHash, poolRegistrationParams)
-    )
-    const txFee = ShelleyFee(plan.fee)
-    const txTtl = ShelleyTtl(!ttl ? await calculateTtl() : ttl)
-    const txWithdrawals = plan.withdrawals.map(({accountAddress, rewards}) => {
-      return ShelleyWitdrawal(accountAddress, rewards)
-    })
-    if (plan.change) {
-      const {address, coins, accountAddress} = plan.change
-      const absDerivationPath = myAddresses.getAddressToAbsPathMapper()(address)
-      const stakingPath = myAddresses.getAddressToAbsPathMapper()(accountAddress)
-      txOutputs.push(ShelleyTxOutput(address, coins, true, absDerivationPath, stakingPath))
+  async function prepareTxAux(txPlan: TxPlan, ttl?: number) {
+    const {inputs, outputs, change, fee, certificates, withdrawals} = txPlan
+    const txOutputs = [...outputs]
+    if (change) {
+      const stakingAddress = await myAddresses.getStakingAddress()
+      const changeOutput: _Output = {
+        ...change,
+        type: OutputType.CHANGE,
+        spendingPath: myAddresses.getAddressToAbsPathMapper()(change.address),
+        stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
+      }
+      txOutputs.push(changeOutput)
     }
-    // TODO: there is just one witdrawal
-    return ShelleyTxAux(txInputs, txOutputs, txFee, txTtl, txCerts, txWithdrawals[0])
+    const txTtl = !ttl ? await calculateTtl() : ttl
+    return ShelleyTxAux(inputs, txOutputs, fee, txTtl, certificates, withdrawals)
   }
 
-  async function signTxAux(txAux: any) {
+  async function signTxAux(txAux: _TxAux) {
     const signedTx = await cryptoProvider
-      .signTx(txAux, [], myAddresses.fixedPathMapper())
+      .signTx(txAux, myAddresses.fixedPathMapper())
       .catch((e) => {
         throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
       })
     return signedTx
   }
 
-  async function getMaxSendableAmount(address, hasDonation, donationAmount, donationType) {
+  async function getMaxSendableAmount(
+    address: _Address,
+    hasDonation: boolean,
+    donationAmount: Lovelace,
+    donationType
+  ) {
     // TODO: why do we need hasDonation?
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
   }
 
-  async function getMaxDonationAmount(address: string, sendAmount: Lovelace) {
+  async function getMaxDonationAmount(address: _Address, sendAmount: Lovelace) {
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxDonationAmount(utxos, address, sendAmount)
   }
 
-  async function getMaxNonStakingAmount(address) {
+  async function getMaxNonStakingAmount(address: _Address) {
     const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
-    return _getMaxSendableAmount(utxos, address, false, 0, false)
+    return _getMaxSendableAmount(utxos, address, false, 0 as Lovelace, false)
   }
 
-  type utxoArgs = {
-    address?: string
-    donationAmount?: Lovelace
-    coins?: Lovelace
-    poolHash?: string
-    stakingKeyRegistered?: boolean
-    txType?: TxType
-    rewards: any
-  }
-
-  const getTxPlan = async (args: utxoArgs) => {
-    const stakingAddress = await myAddresses.getStakingAddress()
-    const {address, coins, donationAmount, poolHash, stakingKeyRegistered, txType, rewards} = args
+  const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
+    const {txType} = txPlanArgs
     const changeAddress = await getChangeAddress()
     const availableUtxos = await getUtxos()
     const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(addressToHex(address)))
@@ -298,17 +286,7 @@ const Account = ({
           ...shuffleArray(nonStakingUtxos, randomGenerator),
           ...shuffleArray(baseAddressUtxos, randomGenerator),
         ]
-    const plan = selectMinimalTxPlan(
-      shuffledUtxos,
-      address,
-      coins,
-      donationAmount,
-      changeAddress,
-      stakingAddress,
-      poolHash,
-      !stakingKeyRegistered,
-      rewards
-    )
+    const plan = selectMinimalTxPlan(shuffledUtxos, changeAddress, txPlanArgs)
     return plan
   }
 

@@ -1,4 +1,5 @@
 import {CaTxEntry, RewardType} from './wallet/explorer-types'
+import {_SignedTx, _TxAux} from './wallet/shelley/types'
 import {Network} from './wallet/types'
 
 export type BIP32Path = number[]
@@ -22,13 +23,11 @@ export type AddressToPathMapping = {
   [key: string]: BIP32Path
 }
 
+export type AddressToPathMapper = (address: _Address) => BIP32Path
+
 export interface CryptoProvider {
   network: Network
-  signTx: (
-    unsignedTx: any,
-    rawInputTxs: any,
-    addressToAbsPathMapper: any
-  ) => Promise<{txHash: HexString; txBody: HexString}>
+  signTx: (unsignedTx: _TxAux, addressToPathMapper: AddressToPathMapper) => Promise<_SignedTx>
   getWalletSecret: () => Buffer | void
   getWalletName: () => string
   getDerivationScheme: () => DerivationScheme
@@ -174,7 +173,6 @@ export interface RewardWithdrawal extends StakingHistoryObject {
   amount: Lovelace
   txHash: string
 }
-
 export interface StakingKeyRegistration extends StakingHistoryObject {
   action: string
   stakingKey: string
@@ -198,3 +196,34 @@ export type StakepoolDataProvider = {
   getPoolInfoByPoolHash: (poolHash: string) => Stakepool
   hasTickerMapping: boolean
 }
+export type SendAdaTxPlanArgs = {
+  txType: TxType.SEND_ADA
+  address: _Address
+  coins: Lovelace
+  donationAmount: Lovelace
+}
+
+export type ConvertLegacyAdaTxPlanArgs = {
+  txType: TxType.CONVERT_LEGACY
+  address: _Address
+  coins: Lovelace
+}
+
+export type WithdrawRewardsTxPlanArgs = {
+  txType: TxType.WITHDRAW
+  rewards: Lovelace
+  stakingAddress: _Address
+}
+
+export type DelegateAdaTxPlanArgs = {
+  txType: TxType.DELEGATE
+  poolHash: string
+  isStakingKeyRegistered: boolean
+  stakingAddress: _Address
+}
+
+export type TxPlanArgs =
+  | SendAdaTxPlanArgs
+  | ConvertLegacyAdaTxPlanArgs
+  | WithdrawRewardsTxPlanArgs
+  | DelegateAdaTxPlanArgs

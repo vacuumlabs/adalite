@@ -89,7 +89,7 @@ const SignPoolCertTxModal = ({
 export default connect(
   (state) => ({
     poolCert: state.poolCertTxVars.plan
-      ? state.poolCertTxVars.plan.certs[0].poolRegistrationParams
+      ? state.poolCertTxVars.plan.certificates[0].poolRegistrationParams
       : {},
   }),
   actions

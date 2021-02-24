@@ -82,12 +82,14 @@ const translations = {
 
   TrezorRejected: () => 'TrezorRejected: Operation rejected by the Trezor hardware wallet.',
   TrezorSignTxError: ({message}) => `TrezorSignTxError: ${message}`,
-  TrezorError: ({message}) => `TrezorError: ${message}`,
+  TrezorError: ({message}) =>
+    `TrezorError: Trezor operation failed, please make sure ad blockers are switched off for this site and you are using the latest version of Trezor firmware. ${message}`,
   LedgerOperationError: ({message}) =>
     `LedgerOperationError: ${message}. Please make sure you are using the latest version of the Cardano application.`,
 
   CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
   OutputTooSmall: () => 'Output amount too low. Minimum output amount is 1 ADA.',
+  TxTooBig: () => 'Transaction is too big, try sending less amount of coins.',
   SendAmountTooLow: () => 'Amount too low. Minimum amount to send is 1 ADA',
   SendAmountBalanceTooLow: () => 'Minimum output amount is 1 ADA.',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,

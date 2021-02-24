@@ -1,15 +1,69 @@
 import {encode} from 'borc'
-
-import {ShelleyTxInputFromUtxo, ShelleyWitdrawal, ShelleyTxCert} from './shelley-transaction'
-
-import {TX_WITNESS_SIZES} from '../constants'
+import {
+  ShelleyTxCertificates,
+  ShelleyTxInputs,
+  ShelleyTxOutputs,
+  ShelleyTxWithdrawals,
+} from './shelley-transaction'
+import {MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
 import CborIndefiniteLengthArray from '../byron/helpers/CborIndefiniteLengthArray'
 import NamedError from '../../helpers/NamedError'
-import {Lovelace, CertificateType} from '../../types'
+import {
+  Lovelace,
+  CertificateType,
+  TxPlanArgs,
+  _Address,
+  TxType,
+  SendAdaTxPlanArgs,
+  DelegateAdaTxPlanArgs,
+  WithdrawRewardsTxPlanArgs,
+  ConvertLegacyAdaTxPlanArgs,
+} from '../../types'
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
+import {
+  OutputType,
+  UTxO,
+  _Certificate,
+  _DelegationCertificate,
+  _Input,
+  _Output,
+  _StakingKeyRegistrationCertificate,
+  _Withdrawal,
+} from '../types'
+
+type TxPlanDraft = {
+  outputs: _Output[]
+  certificates: _Certificate[]
+  withdrawals: _Withdrawal[]
+}
+
+export const enum TxPlanResultType {
+  SUCCESS,
+  FAILURE,
+}
+
+export type TxPlanResult =
+  | {
+      type: TxPlanResultType.SUCCESS
+      txPlan: TxPlan
+    }
+  | {
+      type: TxPlanResultType.FAILURE
+      error: any
+      estimatedFee: Lovelace
+    }
+export interface TxPlan {
+  inputs: Array<_Input>
+  outputs: Array<_Output>
+  change: _Output | null
+  certificates: Array<_Certificate>
+  deposit: Lovelace
+  fee: Lovelace
+  withdrawals: Array<_Withdrawal>
+}
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
   const a = 155381
@@ -18,298 +72,276 @@ export function txFeeFunction(txSizeInBytes: number): Lovelace {
   return Math.ceil(a + txSizeInBytes * b) as Lovelace
 }
 
-type UTxO = {
-  txHash: string
-  address: string
-  coins: Lovelace
-  outputIndex: number
-}
-
-type Input = UTxO
-
-type Output = {
-  address: string
-  coins: Lovelace
-  accountAddress: string
-}
-
-type Cert = {
-  type: number
-  accountAddress: any
-  poolHash: string | null
-  poolRegistrationParams?: any
-}
-
-type Withdrawal = {
-  accountAddress: string
-  rewards: Lovelace
-}
-
 // Estimates size of final transaction in bytes.
 // Note(ppershing): can overshoot a bit
 export function estimateTxSize(
-  inputs: Array<Input>,
-  outputs: Array<Output>,
-  certs: Array<Cert>,
-  withdrawals: Array<Withdrawal>
+  inputs: Array<_Input>,
+  outputs: Array<_Output>,
+  certificates: Array<_Certificate>,
+  withdrawals: Array<_Withdrawal>
 ): Lovelace {
-  // exact size for inputs
-  const preparedInputs = inputs.map(ShelleyTxInputFromUtxo)
-  const txInputsSize = encode(new CborIndefiniteLengthArray(preparedInputs)).length
+  // the 1 is there for the key in the tx map
+  const txInputsSize = encode(ShelleyTxInputs(inputs)).length + 1
+  /*
+   * we have to estimate size of tx outputs since we are calculating
+   * fee also in cases we dont know the amount of coins in advance
+   */
+  const txOutputs: _Output[] = outputs.map((output) => ({
+    type: OutputType.NO_CHANGE,
+    address: output.address,
+    coins: Number.MAX_SAFE_INTEGER as Lovelace,
+  }))
+  // TODO: max output size
+  const txOutputsSize = encode(ShelleyTxOutputs(txOutputs)).length + 1
 
-  const maxCborCoinsLen = 9 //length of CBOR encoded 64 bit integer, currently max supported
-  const txOutputsSizes = outputs.map(
-    // Note(ppershing): we are conservative here
-    // FIXME(ppershing): shouldn't there be some +1 for the array encoding?
-    // Is it in maxCborCoinsLen?
-    ({address, coins}) =>
-      isShelleyFormat(address)
-        ? bech32.decode(address).data.length + maxCborCoinsLen
-        : base58.decode(address).length + maxCborCoinsLen
-  )
-  // +2 for indef array start & end
-  const txOutputsSize = txOutputsSizes.reduce((acc, x) => acc + x, 0) + 2
+  const txCertificatesSize = encode(ShelleyTxCertificates(certificates)).length + 1
+  const txWithdrawalsSize = encode(ShelleyTxWithdrawals(withdrawals)).length + 1
+  const txTllSize = encode(Number.MAX_SAFE_INTEGER).length + 1
+  const txFeeSize = encode(Number.MAX_SAFE_INTEGER).length + 1
 
-  let txCertSize = 0
-  if (certs.length) {
-    // TODO: refactor
-    const preparedCerts = certs.map(
-      ({type, accountAddress, poolHash}) =>
-        encode(ShelleyTxCert(type, accountAddress, poolHash)).length
-    )
-    txCertSize = preparedCerts.reduce((acc, x) => acc + x, 0) + 2
-  }
+  const txAuxSize =
+    txInputsSize + txOutputsSize + txCertificatesSize + txWithdrawalsSize + txFeeSize + txTllSize
 
-  let txWithdrawalsSize = 0
-  if (withdrawals.length) {
-    const preparedWithdrawals = withdrawals.map(
-      ({accountAddress, rewards}) => encode(ShelleyWitdrawal(accountAddress, rewards)).length
-    )
-    txWithdrawalsSize = preparedWithdrawals.reduce((acc, x) => acc + x, 0) + 2
-  }
-
-  const txMetaSize = 1 // currently empty Map
-
-  // the 1 is there for the CBOR "tag" for an array of 4 elements
-  const txAuxSize = 1 + txInputsSize + txOutputsSize + txMetaSize + txCertSize + txWithdrawalsSize
-
-  // TODO: refactor
   const shelleyInputs = inputs.filter(({address}) => isShelleyFormat(address))
   const byronInputs = inputs.filter(({address}) => !isShelleyFormat(address))
 
   const shelleyWitnessesSize =
-    (withdrawals.length + certs.length + shelleyInputs.length) * TX_WITNESS_SIZES.shelley
+    (withdrawals.length + certificates.length + shelleyInputs.length) * TX_WITNESS_SIZES.shelley
 
-  let byronWitnessesSize = 0
-  if (byronInputs.length) {
-    byronWitnessesSize =
-      byronInputs.length *
-      (isV1Address(byronInputs[0].address) ? TX_WITNESS_SIZES.byronV1 : TX_WITNESS_SIZES.byronv2)
-  }
+  const byronWitnessesSize = byronInputs.reduce((acc, {address}) => {
+    const witnessSize = isV1Address(address) ? TX_WITNESS_SIZES.byronV1 : TX_WITNESS_SIZES.byronv2
+    return acc + witnessSize
+  }, 0)
 
   const txWitnessesSize = shelleyWitnessesSize + byronWitnessesSize
-  // TODO: also for withdrawals
-  // the 1 is there for the CBOR "tag" for an array of 2 elements
-  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize
 
+  const txMetaSize = 1 // currently null
+
+  // the 1 is there for the CBOR "tag" for an array of 2 elements
+  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize + txMetaSize
+
+  if (txSizeInBytes > MAX_TX_SIZE) throw NamedError('TxTooBig')
   /*
-  * the slack is there for the array of tx witnesses
-  * because it may have more than 1 byte of overhead
-  * if more than 16 elements are present
-  */
-  const slack = 250 // TODO: this is too much
+   * the slack is there for the array of tx witnesses
+   * because it may have more than 1 byte of overhead
+   * if more than 16 elements are present
+   */
+  const slack = 1 // TODO
 
   return txSizeInBytes + slack
 }
 
 export function computeRequiredTxFee(
-  inputs: Array<Input>,
-  outputs: Array<Output>,
-  certs: Array<Cert> = [],
-  withdrawals: Array<Withdrawal> = []
+  inputs: Array<_Input>,
+  outputs: Array<_Output>,
+  certificates: Array<_Certificate> = [],
+  withdrawals: Array<_Withdrawal> = []
 ): Lovelace {
-  const fee = txFeeFunction(estimateTxSize(inputs, outputs, certs, withdrawals))
+  const fee = txFeeFunction(estimateTxSize(inputs, outputs, certificates, withdrawals))
   return fee
 }
 
-function computeRequiredDeposit(certs: Array<Cert>): Lovelace {
-  let deposit = 0
-  for (const {type} of certs) {
-    if (type === 0) deposit += 2000000
+function computeRequiredDeposit(certificates: Array<_Certificate>): Lovelace {
+  const CertificateDeposit: {[key in CertificateType]: number} = {
+    [CertificateType.DELEGATION]: 0,
+    [CertificateType.STAKEPOOL_REGISTRATION]: 500000000,
+    [CertificateType.STAKING_KEY_REGISTRATION]: 2000000,
+    [CertificateType.STAKING_KEY_DEREGISTRATION]: -2000000,
   }
-  return deposit as Lovelace
-}
-
-export interface TxPlan {
-  inputs: Array<Input>
-  outputs: Array<Output>
-  change: Output | null
-  certs: Array<Cert>
-  deposit: Lovelace
-  fee: Lovelace
-  withdrawals?: Array<Withdrawal>
-}
-
-interface NoTxPlan {
-  estimatedFee: Lovelace
-  error: {code: string}
-}
-
-const checkOutputs = (outputs, fee) => {
-  for (const {coins} of outputs) {
-    if (coins < 1000000 + fee) return false
-  }
-  return true
+  return certificates.reduce((acc, {type}) => acc + CertificateDeposit[type], 0) as Lovelace
 }
 
 export function computeTxPlan(
-  inputs: Array<Input>,
-  outputs: Array<Output>,
-  possibleChange: Output,
-  certs: Array<Cert>,
-  withdrawals: Array<Withdrawal>
-): TxPlan | null {
-  const withdrawalAmount = withdrawals && withdrawals.length ? withdrawals[0].rewards : 0
-  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + withdrawalAmount
-  const deposit = computeRequiredDeposit(certs)
-  const totalOutput =
-    outputs.reduce((acc, output) => acc + output.coins, 0) + deposit + withdrawalAmount
+  inputs: Array<_Input>,
+  outputs: Array<_Output>,
+  possibleChange: _Output,
+  certificates: Array<_Certificate>,
+  withdrawals: Array<_Withdrawal>
+): TxPlan {
+  const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
+  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
+  const deposit = computeRequiredDeposit(certificates)
+  const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit + totalRewards
 
   if (totalOutput > Number.MAX_SAFE_INTEGER) {
     throw NamedError('CoinAmountError')
   }
 
-  const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certs, withdrawals)
+  const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certificates, withdrawals)
+
   // Cannot construct transaction plan
-  if (totalOutput + feeWithoutChange > totalInput) return null
+  if (totalOutput + feeWithoutChange > totalInput) {
+    throw NamedError('CannotConstructTxPlan')
+  }
 
   // No change necessary, perfect fit
   if (totalOutput + feeWithoutChange === totalInput) {
-    if (checkOutputs(outputs, 0)) {
-      return {
-        inputs,
-        outputs,
-        change: null,
-        certs,
-        deposit,
-        fee: feeWithoutChange as Lovelace,
-        withdrawals,
-      }
+    return {
+      inputs,
+      outputs,
+      change: null,
+      certificates,
+      deposit,
+      fee: feeWithoutChange,
+      withdrawals,
     }
   }
 
   const feeWithChange = computeRequiredTxFee(
     inputs,
     [...outputs, possibleChange],
-    certs,
+    certificates,
     withdrawals
   )
 
   if (totalOutput + feeWithChange > totalInput) {
     // We cannot fit the change output into the transaction
     // Instead, just increase the fee
-    if (checkOutputs(outputs, 0)) {
-      return {
-        inputs,
-        outputs,
-        change: null,
-        certs,
-        deposit,
-        fee: (totalInput - totalOutput) as Lovelace,
-        withdrawals,
-      }
+    return {
+      inputs,
+      outputs,
+      change: null,
+      certificates,
+      deposit,
+      fee: (totalInput - totalOutput) as Lovelace,
+      withdrawals,
     }
   }
 
   const change = {
     ...possibleChange,
     address: possibleChange.address,
-    coins: (totalInput - totalOutput - feeWithChange + withdrawalAmount) as Lovelace,
-  }
-
-  if (!checkOutputs([...outputs, change], 0)) {
-    return null
+    coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
   }
 
   return {
     inputs,
     outputs,
     change,
-    certs,
+    certificates,
     deposit,
-    fee: feeWithChange as Lovelace,
+    fee: feeWithChange,
     withdrawals,
   }
 }
 
-export function isUtxoProfitable(utxo: UTxO) {
-  // in case of legacy utxos, we want to convert them even if they are non-profitable
-  if (!isShelleyFormat(utxo.address)) return true
-  const inputSize = encode(ShelleyTxInputFromUtxo(utxo)).length
-  const addedCost = txFeeFunction(inputSize + TX_WITNESS_SIZES.shelley) - txFeeFunction(0)
-
-  return utxo.coins > addedCost
+// TODO: remove this altogether, since shelley all utxos are profitable
+export const isUtxoProfitable = (utxo: UTxO): boolean => {
+  return true
 }
 
-function createCert(type, accountAddress, poolHash) {
-  const certTypes = {
-    staking_key_registration: CertificateType.STAKING_KEY_REGISTRATION,
-    staking_key_deregistration: CertificateType.STAKING_KEY_DEREGISTRATION,
-    delegation: CertificateType.DELEGATION,
+const validateTxPlan = (txPlan: TxPlan): void => {
+  const outputs = txPlan.change ? [...txPlan.outputs, txPlan.change] : txPlan.outputs
+  if (outputs.some(({coins}) => coins < 1000000)) {
+    throw NamedError('OutputTooSmall')
   }
-  return {
-    type: certTypes[type],
-    accountAddress,
-    poolHash,
+  const totalRewards = txPlan.withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
+  if (totalRewards > 0 && totalRewards < txPlan.fee) {
+    throw NamedError('RewardsBalanceTooLow')
   }
 }
 
-export function selectMinimalTxPlan(
+const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
+  const prepareSendAdaTx = (
+    txPlanArgs: SendAdaTxPlanArgs | ConvertLegacyAdaTxPlanArgs
+  ): TxPlanDraft => {
+    const outputs: _Output[] = []
+    outputs.push({type: OutputType.NO_CHANGE, address: txPlanArgs.address, coins: txPlanArgs.coins})
+    if (txPlanArgs.txType === TxType.SEND_ADA && txPlanArgs.donationAmount > 0) {
+      outputs.push({
+        type: OutputType.NO_CHANGE,
+        address: getDonationAddress(),
+        coins: txPlanArgs.donationAmount,
+      })
+    }
+    return {
+      outputs,
+      certificates: [],
+      withdrawals: [],
+    }
+  }
+
+  const prepareDelegationTx = (txPlanArgs: DelegateAdaTxPlanArgs): TxPlanDraft => {
+    const certificates: _Certificate[] = []
+    if (!txPlanArgs.isStakingKeyRegistered) {
+      const registrationCertificate: _StakingKeyRegistrationCertificate = {
+        type: CertificateType.STAKING_KEY_REGISTRATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+      }
+      certificates.push(registrationCertificate)
+    }
+    if (txPlanArgs.poolHash) {
+      const delegationCertificate: _DelegationCertificate = {
+        type: CertificateType.DELEGATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+        poolHash: txPlanArgs.poolHash,
+      }
+      certificates.push(delegationCertificate)
+    }
+    return {
+      outputs: [],
+      certificates,
+      withdrawals: [],
+    }
+  }
+
+  const prepareWithdrawalTx = (txPlanArgs: WithdrawRewardsTxPlanArgs): TxPlanDraft => {
+    const withdrawals: _Withdrawal[] = []
+    withdrawals.push({stakingAddress: txPlanArgs.stakingAddress, rewards: txPlanArgs.rewards})
+    return {
+      outputs: [],
+      certificates: [],
+      withdrawals,
+    }
+  }
+
+  switch (txPlanArgs.txType) {
+    case TxType.SEND_ADA:
+      return prepareSendAdaTx(txPlanArgs)
+    case TxType.DELEGATE:
+      return prepareDelegationTx(txPlanArgs)
+    case TxType.WITHDRAW:
+      return prepareWithdrawalTx(txPlanArgs)
+    case TxType.CONVERT_LEGACY:
+      return prepareSendAdaTx(txPlanArgs)
+    default:
+      throw NamedError('InvalidTxPlanType')
+  }
+}
+
+export const selectMinimalTxPlan = (
   utxos: Array<UTxO>,
-  address,
-  coins,
-  donationAmount,
-  changeAddress,
-  accountAddress,
-  poolHash = null,
-  registerStakingKey = false,
-  rewards = 0
-): TxPlan | NoTxPlan {
-  const certs = []
-  const withdrawals: Array<Withdrawal> = []
-  if (poolHash && registerStakingKey) {
-    certs.push(createCert('staking_key_registration', accountAddress, null))
-  }
-  if (poolHash) {
-    certs.push(createCert('delegation', accountAddress, poolHash))
-  }
-  if (rewards) {
-    withdrawals.push({accountAddress, rewards: rewards as Lovelace})
-  }
-  const profitableUtxos = utxos.filter(isUtxoProfitable)
+  changeAddress: _Address,
+  txPlanArgs: TxPlanArgs
+): TxPlanResult => {
+  const inputs: _Input[] = []
+  const {outputs, certificates, withdrawals} = prepareTxPlanDraft(txPlanArgs)
+  const change: _Output = {type: OutputType.NO_CHANGE, address: changeAddress, coins: 0 as Lovelace}
 
-  const inputs = []
-
-  const outputs = address ? [{address, coins, accountAddress}] : []
-  if (donationAmount > 0) {
-    outputs.push({
-      address: getDonationAddress(),
-      coins: donationAmount,
-      accountAddress,
-    })
+  // TODO: refactor this when implementing multi assets
+  for (const utxo of utxos) {
+    inputs.push(utxo)
+    try {
+      const plan = computeTxPlan(inputs, outputs, change, certificates, withdrawals)
+      validateTxPlan(plan)
+      return {
+        type: TxPlanResultType.SUCCESS,
+        txPlan: plan,
+      }
+    } catch (e) {
+      if (inputs.length === utxos.length) {
+        return {
+          type: TxPlanResultType.FAILURE,
+          estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
+          error: {code: e.name},
+        }
+      }
+    }
   }
-
-  const change = {address: changeAddress, coins: 0 as Lovelace, accountAddress}
-
-  for (let i = 0; i < profitableUtxos.length; i++) {
-    inputs.push(profitableUtxos[i])
-    const plan = computeTxPlan(inputs, outputs, change, certs, withdrawals)
-    if (plan) return plan
-  }
-
   return {
-    estimatedFee: computeRequiredTxFee(inputs, outputs, certs, withdrawals),
-    error: {code: 'OutputTooSmall'},
+    type: TxPlanResultType.FAILURE,
+    estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
+    error: {code: 'CannotConstructTxPlan'},
   }
 }
 
@@ -328,7 +360,7 @@ export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => 
       accountAddress: null,
     })),
     change: null,
-    certs: unsignedTx.certificates.map((cert) => ({
+    certificates: unsignedTx.certificates.map((cert) => ({
       type: cert.type,
       accountAddress: null,
       poolHash: null,

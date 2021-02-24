@@ -13,18 +13,12 @@ import {MaxAmountCalculator} from './max-amount-calculator'
 // eslint-disable-next-line no-unused-vars
 import {TxPlan} from './shelley/build-transaction'
 import {ADALITE_CONFIG} from '../config'
+import {UTxO} from './types'
 
 const {
   getMaxDonationAmount: _getMaxDonationAmount,
   getMaxSendableAmount: _getMaxSendableAmount,
 } = MaxAmountCalculator(computeRequiredTxFee)
-
-type UTxO = {
-  txHash: string
-  address: string
-  coins: Lovelace
-  outputIndex: number
-}
 
 function prepareTxAux(plan: TxPlan) {
   const txInputs = plan.inputs.map(TxInputFromUtxo)
@@ -217,10 +211,10 @@ const CardanoWallet = (options) => {
 
   async function getChangeAddress() {
     /*
-    * We use visible addresses as change addresses to mainintain
-    * AdaLite original functionality which did not consider change addresses.
-    * This is an intermediate step between legacy mode and full Yoroi compatibility.
-    */
+     * We use visible addresses as change addresses to mainintain
+     * AdaLite original functionality which did not consider change addresses.
+     * This is an intermediate step between legacy mode and full Yoroi compatibility.
+     */
     const candidates = await getVisibleAddresses()
 
     const randomSeedGenerator = PseudoRandom(seeds.randomChangeSeed)

@@ -11,11 +11,15 @@ export const ADA_DONATION_ADDRESS_BYRON =
   'DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5'
 export const ADA_DONATION_ADDRESS =
   'addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2mjdvnpufphgjawhyh0tg9r3sk85ls4'
+
 export const TX_WITNESS_SIZES = {
   byronv2: 139,
   shelley: 139, //TODO: this is too much
   byronV1: 170,
 }
+
+export const MAX_TX_SIZE = 16384
+export const MAX_TX_OUTPUT_SIZE = 4000 // TODO: exact number
 
 export const PROTOCOL_MAGIC_KEY = 2
 

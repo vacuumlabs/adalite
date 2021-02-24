@@ -1,3 +1,5 @@
+import {TxType} from '../../../frontend/types'
+
 const ttl = 8493834
 
 const transactionSettings = {
@@ -7,7 +9,7 @@ const transactionSettings = {
         'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
       coins: 1000000,
       donationAmount: 5000000,
-      txType: 'sendAda',
+      txType: TxType.SEND_ADA,
     },
     plan: {
       inputs: [
@@ -24,24 +26,21 @@ const transactionSettings = {
           address:
             'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
           coins: 1000000,
-          accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
         },
         {
           address:
             'addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2mjdvnpufphgjawhyh0tg9r3sk85ls4',
           coins: 5000000,
-          accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
         },
       ],
       change: {
         address:
           'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-        coins: 3816581,
-        accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+        coins: 3827875,
       },
-      certs: [],
+      certificates: [],
       deposit: 0,
-      fee: 183419,
+      fee: 172125,
       withdrawals: [],
     },
     ttl,
@@ -51,7 +50,8 @@ const transactionSettings = {
     args: {
       poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
       stakingKeyRegistered: false,
-      txType: 'delegate',
+      stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+      txType: TxType.DELEGATE,
     },
     plan: {
       inputs: [
@@ -67,23 +67,22 @@ const transactionSettings = {
       change: {
         address:
           'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-        coins: 7806122,
-        accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+        coins: 7817328,
       },
-      certs: [
+      certificates: [
         {
           type: 0,
-          accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+          stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
           poolHash: null,
         },
         {
           type: 2,
-          accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+          stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
           poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
         },
       ],
       deposit: 2000000,
-      fee: 193878,
+      fee: 182672,
       withdrawals: [],
     },
     ttl,
@@ -92,7 +91,8 @@ const transactionSettings = {
   rewardWithdrawal: {
     args: {
       rewards: 50000,
-      txType: 'withdraw',
+      txType: TxType.WITHDRAW,
+      stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
     },
     plan: {
       inputs: [
@@ -108,15 +108,14 @@ const transactionSettings = {
       change: {
         address:
           'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-        coins: 9864999,
-        accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+        coins: 9877831,
       },
-      certs: [],
+      certificates: [],
       deposit: 0,
-      fee: 185001,
+      fee: 172169,
       withdrawals: [
         {
-          accountAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+          stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
           rewards: 50000,
         },
       ],
