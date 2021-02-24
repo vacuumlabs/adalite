@@ -4,11 +4,7 @@ import Ledger, {AddressTypeNibbles} from '@cardano-foundation/ledgerjs-hw-app-ca
 import {encode} from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
-import {
-  ShelleyTxWitnessShelley,
-  ShelleyTxWitnessByron,
-  ShelleySignedTransactionStructured,
-} from './shelley-transaction'
+import {ShelleySignedTransactionStructured, ShelleyTxWitnesses} from './shelley-transaction'
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
 import {PoolParams} from './helpers/poolCertificateUtils'
@@ -20,6 +16,8 @@ import {
   isShelleyPath,
   isShelleyFormat,
   base58AddressToHex,
+  xpub2pub,
+  xpub2ChainCode,
 } from './helpers/addresses'
 
 import derivationSchemes from '../helpers/derivation-schemes'
@@ -27,11 +25,36 @@ import NamedError from '../../helpers/NamedError'
 import {
   CryptoProvider,
   CryptoProviderFeature,
-  CertificateType,
   BIP32Path,
   HexString,
+  DerivationScheme,
+  AddressToPathMapper,
+  CertificateType,
 } from '../../types'
-import {Network} from '../types'
+import {
+  Network,
+  OutputType,
+  _ByronWitness,
+  _Certificate,
+  _DelegationCertificate,
+  _Input,
+  _Output,
+  _ShelleyWitness,
+  _StakepoolRegistrationCertificate,
+  _StakingKeyDeregistrationCertificate,
+  _StakingKeyRegistrationCertificate,
+  _Withdrawal,
+} from '../types'
+import {
+  LedgerCertificate,
+  LedgerGetExtendedPublicKeyResponse,
+  LedgerInput,
+  LedgerOutput,
+  LedgerSignTransactionResponse,
+  LedgerWithdrawal,
+  LedgerWitness,
+} from './ledger-types'
+import {_SignedTx, _TxAux} from './types'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -93,11 +116,13 @@ const ShelleyLedgerCryptoProvider = async ({
   const isHwWallet = () => true
   const getWalletName = () => 'Ledger'
 
-  const exportPublicKeys = async (derivationPaths: BIP32Path[]) => {
+  const exportPublicKeys = async (
+    derivationPaths: BIP32Path[]
+  ): Promise<LedgerGetExtendedPublicKeyResponse[]> => {
     if (isFeatureSupported(CryptoProviderFeature.BULK_EXPORT)) {
       return await ledger.getExtendedPublicKeys(derivationPaths)
     }
-    const response = []
+    const response: LedgerGetExtendedPublicKeyResponse[] = []
     for (const path of derivationPaths) {
       response.push(await ledger.getExtendedPublicKey(path))
     }
@@ -113,11 +138,11 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   )
 
-  function isFeatureSupported(feature: CryptoProviderFeature) {
+  function isFeatureSupported(feature: CryptoProviderFeature): boolean {
     return LEDGER_VERSIONS[feature] ? hasRequiredVersion(version, LEDGER_VERSIONS[feature]) : true
   }
 
-  function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
+  function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
     if (!isFeatureSupported(feature)) {
       throw NamedError(LEDGER_ERRORS[feature], {
         message: `${version.major}.${version.minor}.${version.patch}`,
@@ -125,20 +150,23 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
-  function getHdPassphrase() {
+  function getHdPassphrase(): void {
     throw NamedError('UnsupportedOperationError', {
       message: 'This operation is not supported on LedgerCryptoProvider!',
     })
   }
 
-  function sign(message: HexString, absDerivationPath: BIP32Path) {
+  function sign(message: HexString, absDerivationPath: BIP32Path): void {
     throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
-  async function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath?: BIP32Path) {
+  async function displayAddressForPath(
+    absDerivationPath: BIP32Path,
+    stakingPath?: BIP32Path
+  ): Promise<void> {
     try {
       await ledger.showAddress(
-        AddressTypeNibbles.BASE,
+        AddressTypeNibbles.BASE, // TODO: retrieve from the address
         network.networkId,
         absDerivationPath,
         stakingPath
@@ -148,142 +176,157 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
-  function getWalletSecret() {
+  function getWalletSecret(): void {
     throw NamedError('UnsupportedOperationError', {message: 'Unsupported operation!'})
   }
 
-  function getDerivationScheme() {
+  function getDerivationScheme(): DerivationScheme {
     return derivationScheme
   }
 
-  function _prepareInput(input, addressToAbsPathMapper): InputTypeUTxO {
+  function prepareInput(input: _Input, addressToAbsPathMapper: AddressToPathMapper): LedgerInput {
     return {
-      txHashHex: input.txid,
-      outputIndex: input.outputNo,
+      txHashHex: input.txHash,
+      outputIndex: input.outputIndex,
       path: input.address ? addressToAbsPathMapper(input.address) : null,
     }
   }
 
-  type InputTypeUTxO = {
-    txHashHex: string
-    outputIndex: number
-    path?: any //BIP32Path,
-  }
-
-  type OutputTypeAddress = {
-    amountStr: string
-    addressHex: string
-  }
-
-  type OutputTypeChange = {
-    addressTypeNibble: number
-    spendingPath: any //BIP32Path,
-    amountStr: string
-    stakingPath?: any //BIP32Path,
-    stakingKeyHashHex?: string
-  }
-
-  type Certificate = {
-    type: number
-    path?: any //BIP32Path,
-    poolKeyHashHex?: string
-    poolRegistrationParams?: PoolParams
-  }
-
-  type Withdrawal = {
-    path: any //BIP32Path,
-    amountStr: string
-  }
-
-  function _prepareCert(cert, addressToAbsPathMapper): Certificate {
-    return {
-      type: cert.type,
-      path:
-        cert.type < CertificateType.STAKEPOOL_REGISTRATION
-          ? addressToAbsPathMapper(cert.accountAddress)
-          : null,
-      poolKeyHashHex: cert.poolHash,
-      poolRegistrationParams: cert.poolRegistrationParams,
-    }
-  }
-
-  function _prepareOutput(output): OutputTypeAddress | OutputTypeChange {
-    return output.isChange
+  function prepareOutput(output: _Output): LedgerOutput {
+    return output.type === OutputType.NO_CHANGE
       ? {
-        addressTypeNibble: 0, // TODO: get from address
-        spendingPath: output.spendingPath,
-        amountStr: `${output.coins}`,
-        stakingPath: output.stakingPath,
-      }
-      : {
         amountStr: `${output.coins}`,
         addressHex: isShelleyFormat(output.address)
           ? bechAddressToHex(output.address)
           : base58AddressToHex(output.address),
+        tokenBundle: [],
+      }
+      : {
+        amountStr: `${output.coins}`,
+        tokenBundle: [],
+        addressTypeNibble: AddressTypeNibbles.BASE,
+        spendingPath: output.spendingPath,
+        stakingPath: output.stakingPath,
       }
   }
 
-  function _prepareWithdrawal(withdrawal, addressToAbsPathMapper): Withdrawal {
+  function prepareStakingKeyRegistrationCertificate(
+    certificate: _StakingKeyRegistrationCertificate | _StakingKeyDeregistrationCertificate,
+    path: BIP32Path
+  ): LedgerCertificate {
     return {
-      path: addressToAbsPathMapper(withdrawal.address),
+      type: certificate.type,
+      path,
+    }
+  }
+
+  function prepareDelegationCertificate(
+    certificate: _DelegationCertificate,
+    path: BIP32Path
+  ): LedgerCertificate {
+    return {
+      type: certificate.type,
+      poolKeyHashHex: certificate.poolHash,
+      path,
+    }
+  }
+
+  function prepareStakepoolRegistrationCertificate(
+    certificate: _StakepoolRegistrationCertificate,
+    path: BIP32Path
+  ): LedgerCertificate {
+    return {
+      type: certificate.type,
+      // TODO: prepare pool registration params
+      poolRegistrationParams: certificate.poolRegistrationParams,
+      path,
+    }
+  }
+
+  function prepareCertificate(
+    certificate: _Certificate,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): LedgerCertificate {
+    const path = addressToAbsPathMapper(certificate.stakingAddress)
+    switch (certificate.type) {
+      case CertificateType.STAKING_KEY_REGISTRATION:
+        return prepareStakingKeyRegistrationCertificate(certificate, path)
+      case CertificateType.STAKING_KEY_DEREGISTRATION:
+        return prepareStakingKeyRegistrationCertificate(certificate, path)
+      case CertificateType.DELEGATION:
+        return prepareDelegationCertificate(certificate, path)
+      case CertificateType.STAKEPOOL_REGISTRATION:
+        return prepareStakepoolRegistrationCertificate(certificate, path)
+      default:
+        throw NamedError('InvalidCertificateType')
+    }
+  }
+
+  function prepareWithdrawal(
+    withdrawal: _Withdrawal,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): LedgerWithdrawal {
+    return {
+      path: addressToAbsPathMapper(withdrawal.stakingAddress),
       amountStr: `${withdrawal.rewards}`,
     }
   }
 
-  const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32) // TODO: export from addresses
-
-  const ShelleyWitness = async (witness) => {
+  const prepareByronWitness = async (witness: LedgerWitness): Promise<_ByronWitness> => {
     const xpub = await deriveXpub(witness.path)
     const publicKey = xpub2pub(xpub)
-    const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
-    return ShelleyTxWitnessShelley(publicKey, signature)
-  }
-
-  const ByronWitness = async (witness) => {
-    const xpub = await deriveXpub(witness.path)
-    const publicKey = xpub2pub(xpub)
-    const chainCode = xpub.slice(32, 64) // TODO: move this somewhere
-    // TODO: unless we create pathToAddressMapper we cant get this from cardano-crypto
+    const chainCode = xpub2ChainCode(xpub)
+    // only v1 witnesses has address atributes
+    // since ledger is v2 they are always {}
     const addressAttributes = encode({})
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
-    return ShelleyTxWitnessByron(publicKey, signature, chainCode, addressAttributes)
+    return {
+      publicKey,
+      signature,
+      chainCode,
+      addressAttributes,
+    }
   }
 
-  const prepareWitnesses = async (ledgerWitnesses) => {
+  const prepareShelleyWitness = async (witness: LedgerWitness): Promise<_ShelleyWitness> => {
+    const xpub = await deriveXpub(witness.path)
+    const publicKey = xpub2pub(xpub)
+    const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
+    return {
+      publicKey,
+      signature,
+    }
+  }
+
+  const prepareWitnesses = async (ledgerWitnesses: LedgerWitness[]) => {
     const _shelleyWitnesses = []
     const _byronWitnesses = []
     ledgerWitnesses.forEach((witness) => {
       isShelleyPath(witness.path)
-        ? _shelleyWitnesses.push(ShelleyWitness(witness))
-        : _byronWitnesses.push(ByronWitness(witness))
+        ? _shelleyWitnesses.push(prepareShelleyWitness(witness))
+        : _byronWitnesses.push(prepareByronWitness(witness))
     })
-    const shelleyWitnesses = await Promise.all(_shelleyWitnesses)
-    const byronWitnesses = await Promise.all(_byronWitnesses)
-    const witnesses = new Map()
-    if (shelleyWitnesses.length > 0) {
-      witnesses.set(0, shelleyWitnesses)
-    }
-    if (byronWitnesses.length > 0) {
-      witnesses.set(2, byronWitnesses)
-    }
-    return witnesses
+    const shelleyWitnesses: _ShelleyWitness[] = await Promise.all(_shelleyWitnesses)
+    const byronWitnesses: _ByronWitness[] = await Promise.all(_byronWitnesses)
+    return {shelleyWitnesses, byronWitnesses}
   }
 
-  function prepareBody(unsignedTx, txWitnesses) {
-    return encode(ShelleySignedTransactionStructured(unsignedTx, txWitnesses, null)).toString('hex')
-  }
+  async function signTx(
+    txAux: _TxAux,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): Promise<_SignedTx> {
+    const inputs = txAux.inputs.map((input) => prepareInput(input, addressToAbsPathMapper))
+    const outputs = txAux.outputs.map((output) => prepareOutput(output))
+    const certificates = txAux.certificates.map((certificate) =>
+      prepareCertificate(certificate, addressToAbsPathMapper)
+    )
+    const feeStr = `${txAux.fee}`
+    const ttlStr = `${txAux.ttl}`
+    const withdrawals = txAux.withdrawals.map((withdrawal) =>
+      prepareWithdrawal(withdrawal, addressToAbsPathMapper)
+    )
 
-  async function signTx(unsignedTx, rawInputTxs, addressToAbsPathMapper) {
-    const inputs = unsignedTx.inputs.map((input, i) => _prepareInput(input, addressToAbsPathMapper))
-    const outputs = unsignedTx.outputs.map((output) => _prepareOutput(output))
-    const certificates = unsignedTx.certs.map((cert) => _prepareCert(cert, addressToAbsPathMapper))
-    const feeStr = `${unsignedTx.fee.fee}`
-    const ttlStr = `${unsignedTx.ttl.ttl}`
-    const withdrawals = unsignedTx.withdrawals
-      ? [_prepareWithdrawal(unsignedTx.withdrawals, addressToAbsPathMapper)]
-      : []
-
-    const response = await ledger.signTransaction(
+    const response: LedgerSignTransactionResponse = await ledger.signTransaction(
       network.networkId,
       network.protocolMagic,
       inputs,
@@ -294,16 +337,20 @@ const ShelleyLedgerCryptoProvider = async ({
       withdrawals
     )
 
-    if (response.txHashHex !== unsignedTx.getId()) {
+    if (response.txHashHex !== txAux.getId()) {
       throw NamedError('TxSerializationError', {
         message: 'Tx serialization mismatch between Ledger and Adalite',
       })
     }
-    // serialize signed transaction for submission
-    const txWitnesses = await prepareWitnesses(response.witnesses)
+
+    const txMeta = null
+    const {shelleyWitnesses, byronWitnesses} = await prepareWitnesses(response.witnesses)
+    const txWitnesses = ShelleyTxWitnesses(byronWitnesses, shelleyWitnesses)
+    const structuredTx = ShelleySignedTransactionStructured(txAux, txWitnesses, txMeta)
+
     return {
       txHash: response.txHashHex,
-      txBody: prepareBody(unsignedTx, txWitnesses),
+      txBody: encode(structuredTx).toString('hex'),
     }
   }
 
