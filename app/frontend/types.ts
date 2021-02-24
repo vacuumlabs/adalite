@@ -206,7 +206,6 @@ export type SendAdaTxPlanArgs = {
   txType: TxType.SEND_ADA
   address: _Address
   coins: Lovelace
-  donationAmount: Lovelace
 }
 
 export type ConvertLegacyAdaTxPlanArgs = {

@@ -5,7 +5,6 @@ import {AccountInfo, AuthMethodType, Lovelace, StakepoolDataProvider} from './ty
 import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
 export interface SendTransactionSummary {
   amount?: Lovelace
-  donation?: Lovelace
   fee: Lovelace
   plan: TxPlan
   tab?: any
@@ -71,17 +70,17 @@ export interface State {
   calculatingFee?: boolean
 
   // donation
-  donationAmount: {
-    fieldValue: string
-    coins: Lovelace
-  }
-  checkedDonationType: string // TODO: enum
-  donationAmountValidationError?: any
-  shouldShowCustomDonationInput: boolean
-  maxDonationAmount: number
-  percentageDonationValue: number
-  percentageDonationText: string
-  isThresholdAmountReached: boolean
+  // donationAmount: {
+  //   fieldValue: string
+  //   coins: Lovelace
+  // }
+  // checkedDonationType: string // TODO: enum
+  // donationAmountValidationError?: any
+  // shouldShowCustomDonationInput: boolean
+  // maxDonationAmount: number
+  // percentageDonationValue: number
+  // percentageDonationText: string
+  // isThresholdAmountReached: boolean
 
   // delegation form
   calculatingDelegationFee?: any
@@ -201,15 +200,6 @@ const initialState: State = {
   sendAddress: {fieldValue: ''},
   sendAmount: {fieldValue: '0', coins: 0 as Lovelace},
 
-  // donation
-  donationAmount: {fieldValue: '0', coins: 0 as Lovelace},
-  checkedDonationType: '',
-  shouldShowCustomDonationInput: false,
-  maxDonationAmount: Infinity,
-  percentageDonationValue: 0,
-  percentageDonationText: '0.2%', // What is this and why it isn't in config?
-  isThresholdAmountReached: false,
-
   // delegation
   shelleyDelegation: {
     delegationFee: 0 as Lovelace,
@@ -221,7 +211,6 @@ const initialState: State = {
   sendTransactionSummary: {
     amount: 0 as Lovelace,
     fee: 0 as Lovelace,
-    donation: 0 as Lovelace,
     plan: null,
     deposit: 0 as Lovelace,
   },

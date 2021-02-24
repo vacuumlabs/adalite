@@ -10,42 +10,13 @@ function getInputBalance(inputs: Array<UTxO>): Lovelace {
 
 // TODO: when we remove the byron functionality we can remove the computeFeeFn as argument
 export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequiredTxFee) => {
-  function getMaxSendableAmount(
-    profitableInputs: Array<UTxO>,
-    address: _Address,
-    hasDonation: boolean,
-    donationAmount: Lovelace,
-    donationType // TODO: enum
-  ) {
+  function getMaxSendableAmount(profitableInputs: Array<UTxO>, address: _Address) {
     const coins = getInputBalance(profitableInputs)
 
-    if (!hasDonation) {
-      const outputs: _Output[] = [{type: OutputType.NO_CHANGE, address, coins: 0 as Lovelace}]
+    const outputs: _Output[] = [{type: OutputType.NO_CHANGE, address, coins: 0 as Lovelace}]
 
-      const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
-      return {sendAmount: Math.max(coins - txFee, 0) as Lovelace}
-    } else {
-      const outputs: _Output[] = [
-        {type: OutputType.NO_CHANGE, address, coins: 0 as Lovelace},
-        {type: OutputType.NO_CHANGE, address: getDonationAddress(), coins: 0 as Lovelace},
-      ]
-      const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
-
-      if (donationType === 'percentage') {
-        // set maxSendAmount and percentageDonation (0.2% of max) to deplete balance completely
-        const percent = 0.2
-
-        const reducedAmount: Lovelace = Math.floor(coins / (1 + percent / 100)) as Lovelace
-        const roundedDonation = roundWholeAdas(((reducedAmount * percent) / 100) as Lovelace)
-
-        return {
-          sendAmount: (coins - txFee - roundedDonation) as Lovelace,
-          donationAmount: roundedDonation,
-        }
-      } else {
-        return {sendAmount: Math.max(coins - donationAmount - txFee, 0) as Lovelace}
-      }
-    }
+    const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
+    return {sendAmount: Math.max(coins - txFee, 0) as Lovelace}
   }
 
   function getMaxDonationAmount(

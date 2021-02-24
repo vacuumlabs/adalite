@@ -110,7 +110,7 @@ class SendAdaPage extends Component<Props> {
     const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
     const isDonationSufficient = maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
     const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-    const total = summary.amount + transactionFee + summary.donation
+    const total = summary.amount + transactionFee + summary
 
     const submitHandler = async () => {
       await confirmTransaction('send')
@@ -179,7 +179,8 @@ class SendAdaPage extends Component<Props> {
           {showDonationFields && (
             <Fragment>
               <label className="ada-label amount donation" htmlFor="donation-amount">
-                Donate<a
+                Donate
+                <a
                   {...tooltip(
                     'Your donation is very much appreciated and will be used for further development of AdaLite',
                     true
@@ -191,10 +192,10 @@ class SendAdaPage extends Component<Props> {
               {!isDonationSufficient && (
                 <div className="send-donate-msg">Insufficient balance for a donation.</div>
               )}
-              {!shouldShowCustomDonationInput &&
-                isDonationSufficient && <DonationButtons isSendAddressValid={isSendAddressValid} />}
-              {shouldShowCustomDonationInput &&
-                isDonationSufficient && (
+              {!shouldShowCustomDonationInput && isDonationSufficient && (
+                <DonationButtons isSendAddressValid={isSendAddressValid} />
+              )}
+              {shouldShowCustomDonationInput && isDonationSufficient && (
                 <CustomDonationInput isSendAddressValid={isSendAddressValid} />
               )}
             </Fragment>

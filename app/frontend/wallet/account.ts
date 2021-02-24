@@ -250,15 +250,10 @@ const Account = ({
     return signedTx
   }
 
-  async function getMaxSendableAmount(
-    address: _Address,
-    hasDonation: boolean,
-    donationAmount: Lovelace,
-    donationType
-  ) {
+  async function getMaxSendableAmount(address: _Address) {
     // TODO: why do we need hasDonation?
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
-    return _getMaxSendableAmount(utxos, address, hasDonation, donationAmount, donationType)
+    return _getMaxSendableAmount(utxos, address)
   }
 
   async function getMaxDonationAmount(address: _Address, sendAmount: Lovelace) {
@@ -268,7 +263,7 @@ const Account = ({
 
   async function getMaxNonStakingAmount(address: _Address) {
     const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
-    return _getMaxSendableAmount(utxos, address, false, 0 as Lovelace, false)
+    return _getMaxSendableAmount(utxos, address)
   }
 
   const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
