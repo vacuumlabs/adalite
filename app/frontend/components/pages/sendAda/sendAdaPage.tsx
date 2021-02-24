@@ -74,18 +74,26 @@ interface Props {
   tokenBalance: Array<Token>
 }
 
+const enum MultiAssetType {
+  ADA,
+  TOKEN,
+}
+
 type MultiAsset = Token & {
+  type: MultiAssetType
   star?: boolean
 }
 
-const showMultiAsset = ({star, assetName, policyId, quantity}: MultiAsset) => (
+const showMultiAsset = ({type, star, assetName, policyId, quantity}: MultiAsset) => (
   <div className="multi-asset-item">
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
         {star && <StarIcon />}
         {assetName}
       </div>
-      <div className="multi-asset-amount">{quantity}</div>
+      <div className="multi-asset-amount">
+        {type === MultiAssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
+      </div>
     </div>
     {policyId && (
       <div className="multi-asset-hash">
@@ -142,12 +150,21 @@ class SendAdaPage extends Component<Props> {
     const total = summary.amount + transactionFee + summary
     const tokenBalanceWithAda: Array<MultiAsset> = [
       {
+        type: MultiAssetType.ADA,
         policyId: null,
         assetName: 'ADA',
         quantity: balance,
         star: true,
       },
-      ...(tokenBalance.sort((a: Token, b: Token) => b.quantity - a.quantity) as MultiAsset[]),
+      ...tokenBalance
+        .sort((a: Token, b: Token) => b.quantity - a.quantity)
+        .map(
+          (token: Token): MultiAsset => ({
+            ...token,
+            type: MultiAssetType.TOKEN,
+            star: false,
+          })
+        ),
     ]
 
     const submitHandler = async () => {
