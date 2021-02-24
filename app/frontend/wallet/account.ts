@@ -306,7 +306,7 @@ const Account = ({
     const accountXpubs = await getAccountXpubs()
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
     const stakingAddress = await myAddresses.getStakingAddress()
-    const {baseAddressBalance, nonStakingBalance, balance} = await getBalance()
+    const {baseAddressBalance, nonStakingBalance, balance, tokenBalance} = await getBalance()
     const shelleyAccountInfo = await getStakingInfo(validStakepoolDataProvider)
     const stakingHistory = await getStakingHistory(validStakepoolDataProvider)
     const visibleAddresses = await getVisibleAddresses()
@@ -322,6 +322,7 @@ const Account = ({
       stakingXpub,
       stakingAddress,
       balance,
+      tokenBalance,
       shelleyBalances: {
         nonStakingBalance,
         stakingBalance: baseAddressBalance + shelleyAccountInfo.value,
@@ -339,9 +340,15 @@ const Account = ({
 
   async function getBalance() {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
-    const {coins: nonStakingBalance} = await blockchainExplorer.getBalance(legacy)
-    const {coins: baseAddressBalance} = await blockchainExplorer.getBalance(base)
+    const {
+      coins: nonStakingBalance,
+      tokens: nonStakingTokens,
+    } = await blockchainExplorer.getBalance(legacy)
+    const {coins: baseAddressBalance, tokens: stakingTokens} = await blockchainExplorer.getBalance(
+      base
+    )
     return {
+      tokenBalance: [...nonStakingTokens, ...stakingTokens],
       baseAddressBalance,
       nonStakingBalance,
       balance: nonStakingBalance + baseAddressBalance,

@@ -21,6 +21,7 @@ import {
   NextRewardDetailsFormatted,
   RewardWithMetadata,
   Balance,
+  Token,
 } from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -151,11 +152,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       ...tx,
       fee: parseInt(tx.fee, 10) as Lovelace,
       effect: effect as Lovelace,
-      tokenEffects: flattenAssets(tokenEffects),
+      tokenEffects: flattenTokens(tokenEffects),
     }
   }
 
-  function flattenAssets(tokens: TokenMap) {
+  function flattenTokens(tokens: TokenMap) {
     const tokenArray = Object.entries(tokens).map(([policyId, assets]) => {
       return Object.entries(assets).map(([assetName, quantity]) => {
         return {policyId, assetName, quantity}
@@ -227,7 +228,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     ) as Lovelace
     return {
       coins,
-      tokens: flattenAssets(tokens),
+      tokens: flattenTokens(tokens),
     }
   }
 
@@ -284,7 +285,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     ).reduce((acc, cur) => acc.concat(cur), [])
 
     return response.map((elem) => {
-      const tokens = elem.cuCoins.getTokens.map((token) => ({
+      const tokens: Token[] = elem.cuCoins.getTokens.map((token) => ({
         ...token,
         quantity: parseInt(token.quantity, 10),
       }))

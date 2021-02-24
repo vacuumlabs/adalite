@@ -106,6 +106,7 @@ export type AccountInfo = {
   stakingXpub: _XPubKey
   stakingAddress: _Address
   balance: number
+  tokenBalance: Token[]
   shelleyBalances: {
     stakingBalance?: number
     nonStakingBalance?: number

@@ -86,7 +86,7 @@ export type PoolRecommendationResponse = StakePoolInfoExtended & {
   isInRecommendedPoolSet: boolean
 }
 
-export declare type TokenObject = {
+export type TokenObject = {
   policyId: string
   assetName: string
   quantity: string // possibly huge amounts

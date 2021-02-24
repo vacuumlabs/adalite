@@ -257,6 +257,7 @@ const initialState: State = {
       stakingXpub: null,
       stakingAddress: null,
       balance: 0,
+      tokenBalance: [],
       shelleyBalances: {
         stakingBalance: 0,
         nonStakingBalance: 0,
