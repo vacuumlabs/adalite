@@ -234,14 +234,6 @@ export type TxPlanArgs =
   | WithdrawRewardsTxPlanArgs
   | DelegateAdaTxPlanArgs
 
-export type Utxo = {
-  txHash: string
-  address: string
-  coins: Lovelace
-  tokens: Token[]
-  outputIndex: number
-}
-
 export type HostedPoolMetadata = {
   name: string
   description: string

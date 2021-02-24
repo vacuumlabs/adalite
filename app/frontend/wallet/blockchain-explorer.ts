@@ -16,12 +16,12 @@ import {
   StakepoolDataProvider,
   TxSummaryEntry,
   StakingHistoryObject,
-  Utxo,
   HostedPoolMetadata,
   NextRewardDetailsFormatted,
   RewardWithMetadata,
   Balance,
   Token,
+  _Address,
 } from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -47,6 +47,7 @@ import {
   _Utxo,
   TokenObject,
 } from './backend-types'
+import {UTxO} from './types'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -261,7 +262,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response.Right
   }
 
-  async function fetchUnspentTxOutputs(addresses: Array<string>): Promise<Utxo[]> {
+  async function fetchUnspentTxOutputs(addresses: Array<string>): Promise<UTxO[]> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
 
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
@@ -291,7 +292,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       }))
       return {
         txHash: elem.cuId,
-        address: elem.cuAddress,
+        address: elem.cuAddress as _Address,
         coins: parseInt(elem.cuCoins.getCoin, 10) as Lovelace,
         tokens,
         outputIndex: elem.cuOutIndex,

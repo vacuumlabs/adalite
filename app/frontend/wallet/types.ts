@@ -1,4 +1,4 @@
-import {BIP32Path, CertificateType, Lovelace, _Address} from '../types'
+import {BIP32Path, CertificateType, Lovelace, Token, _Address} from '../types'
 
 export const enum NetworkId {
   MAINNET = 1,
@@ -31,6 +31,7 @@ export type UTxO = {
   txHash: string
   address: _Address
   coins: Lovelace
+  tokens: Token[]
   outputIndex: number
 }
 
