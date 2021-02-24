@@ -19,7 +19,6 @@ import {
   WithdrawRewardsTxPlanArgs,
   ConvertLegacyAdaTxPlanArgs,
 } from '../../types'
-import getDonationAddress from '../../helpers/getDonationAddress'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
@@ -247,13 +246,6 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   ): TxPlanDraft => {
     const outputs: _Output[] = []
     outputs.push({type: OutputType.NO_CHANGE, address: txPlanArgs.address, coins: txPlanArgs.coins})
-    if (txPlanArgs.txType === TxType.SEND_ADA && txPlanArgs.donationAmount > 0) {
-      outputs.push({
-        type: OutputType.NO_CHANGE,
-        address: getDonationAddress(),
-        coins: txPlanArgs.donationAmount,
-      })
-    }
     return {
       outputs,
       certificates: [],
