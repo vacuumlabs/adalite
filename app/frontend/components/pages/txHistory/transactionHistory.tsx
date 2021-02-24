@@ -15,22 +15,27 @@ import {
   TxSummaryEntry,
   Token,
 } from '../../../types'
-import {StarIcon} from '../../common/svg'
+import {AdaIcon, StarIcon} from '../../common/svg'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
-  const value = printAda(Math.abs(amount) as Lovelace)
-  const number = `${value}`.indexOf('.') === -1 ? `${value}.0` : `${value}`
+  const value = printAda(amount)
   return (
     <div className={`transaction-amount ${amount > 0 ? 'credit' : 'debit'}`}>
-      {`${number}`.padEnd(10)}
+      {amount > 0 ? `+${value}` : value}
+      <AdaIcon />
     </div>
   )
 }
 
 const FormattedFee = ({fee}: {fee: Lovelace}): h.JSX.Element => {
   const value = printAda(fee)
-  return <div className="transaction-fee nowrap">{`Fee: ${value}`}</div>
+  return (
+    <div className="transaction-fee nowrap">
+      {`Fee: ${value}`}
+      <AdaIcon />
+    </div>
+  )
 }
 
 const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
@@ -105,7 +110,7 @@ const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
         {name}
       </div>
       <div className={`multi-asset-amount ${amount > 0 ? 'credit' : 'debit'}`}>
-        {Math.abs(amount)}
+        {amount > 0 ? `+${amount}` : amount}
       </div>
     </div>
     <div className="multi-asset-hash">

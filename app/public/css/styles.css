@@ -2438,7 +2438,7 @@ li.main-tab input + label.selected:after {
 .staking-balances-amount svg {
   margin-left: 12px;
   width: 12px;
-} 
+}
 
 .staking-balances-amount svg path {
   fill: var(--color-brand);
@@ -2455,7 +2455,7 @@ li.main-tab input + label.selected:after {
 .balance-amount-staking svg {
   margin-left: 12px;
   width: 18px;
-} 
+}
 
 .balance-amount-staking svg path {
   fill: var(--color-brand);
@@ -3425,12 +3425,25 @@ input:checked + .slider:before {
   color: var(--color-success);
 }
 
+.transaction-amount.credit svg path {
+  fill: var(--color-success);
+}
+
 .transaction-amount.debit {
   color: var(--color-error);
 }
 
+.transaction-amount.debit svg path {
+  fill: var(--color-error);
+}
+
 .transaction-amount.withdraw {
   color: var(--color-staking-dark);
+}
+
+.transaction-amount svg {
+  margin-left: 6px;
+  height: 13px;
 }
 
 .transaction-address {
@@ -3440,6 +3453,15 @@ input:checked + .slider:before {
 
 .transaction-fee {
   text-align: right;
+}
+
+.transaction-fee svg {
+  margin-left: 6px;
+  height: 12px;
+}
+
+.transaction-fee svg path {
+  fill: var(--color-grey)
 }
 
 .multi-asset-name {
@@ -3454,6 +3476,7 @@ input:checked + .slider:before {
 .multi-asset-amount {
   margin-top: 8px;
   text-align: right;
+  font-weight: bold;
 }
 
 .multi-asset-amount.credit {
