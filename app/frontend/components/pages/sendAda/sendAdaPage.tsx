@@ -85,7 +85,7 @@ const showMultiAsset = ({star, assetName, policyId, quantity}: MultiAsset) => (
         {star && <StarIcon />}
         {assetName}
       </div>
-      <div className="multi-asset-amount">{printAda(Math.abs(quantity) as Lovelace)}</div>
+      <div className="multi-asset-amount">{quantity}</div>
     </div>
     {policyId && (
       <div className="multi-asset-hash">
