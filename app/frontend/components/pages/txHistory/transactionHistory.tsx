@@ -13,6 +13,7 @@ import {
   HexString,
   Lovelace,
   TxSummaryEntry,
+  Token,
 } from '../../../types'
 import {StarIcon} from '../../common/svg'
 import moment = require('moment')
@@ -104,7 +105,7 @@ const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
         {name}
       </div>
       <div className={`multi-asset-amount ${amount > 0 ? 'credit' : 'debit'}`}>
-        {printAda(Math.abs(amount) as Lovelace)}
+        {Math.abs(amount)}
       </div>
     </div>
     <div className="multi-asset-hash">
@@ -258,18 +259,15 @@ const TransactionHistory = ({transactionHistory, stakingHistory}: Props): h.JSX.
               <FormattedTransaction txid={transaction.ctbId} />
               <FormattedFee fee={transaction.fee} />
             </div>
-            <MultiAsset
-              star
-              name="Testcoin"
-              hash="95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39"
-              amount={transaction.effect} // mock, just to show something
-            />
-            <MultiAsset
-              star={false}
-              name="Testcoin 2"
-              hash="95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39"
-              amount={transaction.effect} // mock, just to show something
-            />
+            {transaction.tokenEffects.map((tokenEffect: Token) => (
+              <MultiAsset
+                key={tokenEffect.policyId}
+                star={false}
+                name={tokenEffect.assetName}
+                hash={tokenEffect.policyId}
+                amount={tokenEffect.quantity} // mock, just to show something
+              />
+            ))}
           </li>
         ))}
       </ul>
