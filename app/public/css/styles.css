@@ -669,7 +669,7 @@ p.hey {
   display: flex;
   flex-direction: column;
   border-radius: 4px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   cursor: pointer;
   transition: max-height 0.25s ease-out;
