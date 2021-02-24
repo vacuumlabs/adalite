@@ -77,8 +77,6 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               </div>
               <div className="ada-label">Amount</div>
               <div className="review-amount">{printAda(summary.amount)}</div>
-              <div className="ada-label">Donation</div>
-              <div className="review-amount">{printAda(summary.donation)}</div>
             </Fragment>
           )}
 
@@ -115,10 +113,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               <div className="review-label">Ticker</div>
               <div className="review-amount">{stakePool.ticker}</div>
               <div className="review-label">Tax</div>
-              <div className="review-amount">
-                {stakePool.margin && stakePool.margin * 100}
-                %
-              </div>
+              <div className="review-amount">{stakePool.margin && stakePool.margin * 100}%</div>
               <div className="review-label">Fixed cost</div>
               <div className="review-amount">
                 {stakePool.fixedCost && printAda(stakePool.fixedCost)}

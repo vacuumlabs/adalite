@@ -1,4 +1,4 @@
-import {h, Component, Fragment} from 'preact'
+import {h, Component} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 
@@ -6,22 +6,14 @@ import {getTranslation} from '../../../translations'
 import printAda from '../../../helpers/printAda'
 
 import ConfirmTransactionDialog from './confirmTransactionDialog'
-import DonateThanksModal from './donateThanksModal'
-import DonationButtons from './donationButtons'
-import CustomDonationInput from './customDonationInput'
 import Conversions from '../../common/conversions'
 import SearchableSelect from '../../common/searchableSelect'
-import {ADALITE_CONFIG} from '../../../config'
-import {toCoins} from '../../../helpers/adaConverters'
 
-import tooltip from '../../common/tooltip'
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
 import {useCallback} from 'preact/hooks'
 import {Lovelace, Token} from '../../../types'
 import {StarIcon} from '../../common/svg'
-
-const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -46,24 +38,17 @@ interface Props {
   sendAddressValidationError: any
   sendAmount: any
   sendAmountValidationError: any
-  donationAmountValidationError: any
   updateAddress: any
   updateAmount: any
   confirmTransaction: any
   shouldShowConfirmTransactionDialog: any
   feeRecalculating: any
   sendMaxFunds: any
-  shouldShowThanksForDonation: any
-  closeThanksForDonationModal: any
-  coinsAmount: any
-  shouldShowCustomDonationInput: any
-  maxDonationAmount: any
   conversionRates: any
   sendTransactionSummary: any
   transactionFee: any
   txSuccessTab: any
   balance: any
-  showDonationFields: boolean
   isModal: boolean
   title: string
   sourceAccountIndex: number
@@ -114,24 +99,17 @@ class SendAdaPage extends Component<Props> {
     sendAddressValidationError,
     sendAmount,
     sendAmountValidationError,
-    donationAmountValidationError,
     updateAddress,
     updateAmount,
     confirmTransaction,
     shouldShowConfirmTransactionDialog,
     feeRecalculating,
     sendMaxFunds,
-    shouldShowThanksForDonation,
-    closeThanksForDonationModal,
-    coinsAmount,
-    shouldShowCustomDonationInput,
-    maxDonationAmount,
     conversionRates,
     sendTransactionSummary: summary,
     transactionFee,
     txSuccessTab,
     balance,
-    showDonationFields,
     isModal, // TODO: remove
     title,
     sourceAccountIndex,
@@ -141,13 +119,11 @@ class SendAdaPage extends Component<Props> {
     switchSourceAndTargetAccounts,
     tokenBalance,
   }: Props) {
-    const sendFormValidationError =
-      sendAddressValidationError || sendAmountValidationError || donationAmountValidationError
+    const sendFormValidationError = sendAddressValidationError || sendAmountValidationError
 
     const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
-    const isDonationSufficient = maxDonationAmount >= toCoins(ADALITE_MIN_DONATION_VALUE)
     const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-    const total = summary.amount + transactionFee + summary
+    const total = summary.amount + transactionFee
     const tokenBalanceWithAda: Array<MultiAsset> = [
       {
         type: MultiAssetType.ADA,
@@ -254,30 +230,6 @@ class SendAdaPage extends Component<Props> {
               Max
             </button>
           </div>
-          {showDonationFields && (
-            <Fragment>
-              <label className="ada-label amount donation" htmlFor="donation-amount">
-                Donate
-                <a
-                  {...tooltip(
-                    'Your donation is very much appreciated and will be used for further development of AdaLite',
-                    true
-                  )}
-                >
-                  <span className="show-info">{''}</span>
-                </a>
-              </label>
-              {!isDonationSufficient && (
-                <div className="send-donate-msg">Insufficient balance for a donation.</div>
-              )}
-              {!shouldShowCustomDonationInput && isDonationSufficient && (
-                <DonationButtons isSendAddressValid={isSendAddressValid} />
-              )}
-              {shouldShowCustomDonationInput && isDonationSufficient && (
-                <CustomDonationInput isSendAddressValid={isSendAddressValid} />
-              )}
-            </Fragment>
-          )}
           <div className="ada-label">Fee</div>
           <div className="send-fee">{printAda(transactionFee)}</div>
         </div>
@@ -309,16 +261,12 @@ class SendAdaPage extends Component<Props> {
           )}
         </div>
         {shouldShowConfirmTransactionDialog && !isModal && <ConfirmTransactionDialog />}
-        {shouldShowThanksForDonation && (
-          <DonateThanksModal closeThanksForDonationModal={closeThanksForDonationModal} />
-        )}
       </div>
     )
   }
 }
 
 SendAdaPage.defaultProps = {
-  showDonationFields: false,
   isModal: false,
   title: 'Send',
 }
@@ -330,13 +278,8 @@ export default connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount.fieldValue,
-    donationAmountValidationError: state.donationAmountValidationError,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
-    shouldShowThanksForDonation: state.shouldShowThanksForDonation,
-    coinsAmount: state.sendAmount.coins,
-    shouldShowCustomDonationInput: state.shouldShowCustomDonationInput,
-    maxDonationAmount: state.maxDonationAmount,
     conversionRates: state.conversionRates && state.conversionRates.data,
     sendTransactionSummary: state.sendTransactionSummary,
     transactionFee: state.transactionFee,
