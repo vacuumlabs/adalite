@@ -29,7 +29,9 @@ export const encodeAddress = (address: Buffer): _Address => {
   return bech32.encode(addressPrefix, address)
 }
 
-const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
+export const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
+
+export const xpub2ChainCode = (xpub: Buffer) => xpub.slice(32, 64)
 
 // takes xpubkey, converts it to pubkey and then to 28 byte blake2b encoded hash
 const xpub2blake2b224Hash = (xpub: Buffer) => getPubKeyBlake2b224Hash(xpub2pub(xpub))
