@@ -297,7 +297,7 @@ class SendAdaPage extends Component<Props> {
               this.submitTxBtn = element
             }}
           >
-            Send ADA
+            Send
           </button>
           {feeRecalculating ? (
             <CalculatingFee />
