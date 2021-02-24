@@ -665,7 +665,9 @@ p.hey {
   position: absolute;
   width: 100%;
   min-width: 0;
-  max-height: 421px;
+  /* TODO: Make this dynamic, so we don't have to edit it every time Send ada page changes height */
+  /* max-height: 421px; */
+  max-height: 356px;
   display: flex;
   flex-direction: column;
   border-radius: 4px;

@@ -301,7 +301,7 @@ class SendAdaPage extends Component<Props> {
 }
 
 SendAdaPage.defaultProps = {
-  showDonationFields: true,
+  showDonationFields: false,
   isModal: false,
   title: 'Send',
 }
