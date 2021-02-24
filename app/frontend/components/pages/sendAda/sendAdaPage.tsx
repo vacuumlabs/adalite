@@ -202,6 +202,7 @@ class SendAdaPage extends Component<Props> {
           onSelect={() => {
             return
           }}
+          showSearch={tokenBalanceWithAda.length >= 6}
           searchPredicate={searchPredicate}
           searchPlaceholder={`Search from ${tokenBalanceWithAda.length} assets by name or hash`} // TODO: Maybe hide search when there are not so many tokens?
         />

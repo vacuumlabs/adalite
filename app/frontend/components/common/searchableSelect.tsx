@@ -12,6 +12,7 @@ interface Props<T> {
   displaySelectedItemClassName: string
   displayItem: (t: T) => any
   onSelect: (t: T) => void
+  showSearch: boolean
   searchPredicate: (query: string, t: T) => boolean
   searchPlaceholder: string
 }
@@ -25,6 +26,7 @@ const SearchableSelect = <T extends {}>({
   displaySelectedItemClassName,
   displayItem,
   onSelect,
+  showSearch,
   searchPredicate,
   searchPlaceholder,
 }: Props<T>) => {
@@ -37,7 +39,7 @@ const SearchableSelect = <T extends {}>({
   const showDropdown = (bool: boolean) => {
     setVisible(bool)
     setSearch('')
-    if (bool) {
+    if (bool && inputEl?.current) {
       inputEl.current.focus()
     }
   }
@@ -56,14 +58,16 @@ const SearchableSelect = <T extends {}>({
         {displaySelectedItem(value)}
       </div>
       <div ref={dropdownEl} className={`searchable-select-dropdown ${visible ? '' : 'hide'}`}>
-        <input
-          ref={inputEl}
-          type="text"
-          className="searchable-select-input"
-          value={search}
-          onInput={(event: any) => setSearch(event.target.value)}
-          placeholder={searchPlaceholder}
-        />
+        {showSearch && (
+          <input
+            ref={inputEl}
+            type="text"
+            className="searchable-select-input"
+            value={search}
+            onInput={(event: any) => setSearch(event.target.value)}
+            placeholder={searchPlaceholder}
+          />
+        )}
         <div>
           {items &&
             items.map((item, i) => (
@@ -85,7 +89,4 @@ const SearchableSelect = <T extends {}>({
   )
 }
 
-export default connect(
-  (state: State) => ({}),
-  actions
-)(SearchableSelect)
+export default connect((state: State) => ({}), actions)(SearchableSelect)
