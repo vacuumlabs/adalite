@@ -254,10 +254,6 @@ p.hey {
   right: 16px;
 }
 
-.input-wrapper.donation {
-  padding-right: 126px;
-}
-
 .input-wrapper-percent {
   border-radius: 4px;
   border: 1px solid var(--color-border);
@@ -521,49 +517,6 @@ p.hey {
   right: 0;
 }
 
-.button.donate {
-  border: 1px solid var(--color-brand);
-  font-size: 14px;
-  font-weight: 400;
-  background-color: transparent;
-  padding: 6px 10px;
-  color: var(--color-brand);
-  white-space: nowrap;
-}
-
-.button.donate svg path {
-  fill: var(--color-brand);
-}
-
-.button.donate.active,
-.button.donate:hover {
-  background-color: var(--color-brand);
-  color: #fff;
-}
-
-.button.donate.active svg path,
-.button.donate:hover svg path {
-  fill: #fff;
-}
-
-.button.donate:disabled {
-  border-color: var(--color-border);
-  color: var(--color-placeholder);
-}
-
-.button.donate:disabled svg path {
-  fill: var(--color-placeholder);
-}
-
-.button.donate:disabled:hover {
-  background-color: var(--color-brand-light);
-  color: #fff;
-}
-
-.button.donate:disabled:hover svg path {
-  fill: #fff;
-}
-
 .send-values .button svg {
   width: 8px;
 }
@@ -574,21 +527,6 @@ p.hey {
 
 .button.send-max:disabled svg path {
   fill: var(--color-grey-light);
-}
-
-/* is only going to be disabled */
-.button.donate.insufficient:disabled {
-  background-color: var(--color-border);
-  border-color: var(--color-border);
-}
-
-.button.donate.insufficient:disabled:hover {
-  background-color: var(--color-brand-light);
-  color: #fff;
-}
-
-.button.donate.insufficient:disabled:hover svg path {
-  fill: #fff;
 }
 
 .button.close {
@@ -3618,23 +3556,6 @@ input:checked + .slider:before {
   justify-content: space-between;
   color: var(--color-grey);
   padding-left: 16px;
-}
-
-.send-donate {
-  margin: 6px 0px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  justify-content: space-between;
-  grid-gap: 15px;
-}
-
-.send-donate-msg {
-  margin: 17px 0px;
-  padding-left: 16px;
-}
-
-.send-donate label {
-  white-space: nowrap;
 }
 
 .send-total {
