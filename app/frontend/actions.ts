@@ -48,8 +48,11 @@ import {
   TxPlanArgs,
   AuthMethodType,
   HexString,
+  AssetType,
+  Token,
 } from './types'
 import {MainTabs} from './constants'
+import {createAssetDataProvider} from './helpers/dataProviders/assetDataProvider'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 
@@ -666,6 +669,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
     validateSendFormAndCalculateFee()
   }
+
+  const updateSendAsset = (state: State, assetType: AssetType, underlyingToken?: Token): void =>
+    setState({sendAsset: createAssetDataProvider(assetType, underlyingToken)})
 
   const validateAndSetMaxFunds = (state: State, maxAmounts) => {
     setState({
@@ -1372,6 +1378,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     submitTransaction,
     updateAddress,
     updateAmount,
+    updateSendAsset,
     loadDemoWallet,
     updateMnemonic,
     updateMnemonicValidationError,

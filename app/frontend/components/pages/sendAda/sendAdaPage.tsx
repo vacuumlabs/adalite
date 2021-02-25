@@ -12,8 +12,9 @@ import SearchableSelect from '../../common/searchableSelect'
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
 import {useCallback} from 'preact/hooks'
-import {Lovelace, Token} from '../../../types'
+import {AssetType, Lovelace, Token} from '../../../types'
 import {StarIcon} from '../../common/svg'
+import {AssetDataProvider} from '../../../../frontend/helpers/dataProviders/types'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -57,19 +58,16 @@ interface Props {
   setTargetAccount: any
   switchSourceAndTargetAccounts: any
   tokenBalance: Array<Token>
+  sendAsset: AssetDataProvider
+  updateSendAsset: (assetType: AssetType, underlyingToken?: Token) => void
 }
 
-const enum MultiAssetType {
-  ADA,
-  TOKEN,
-}
-
-type MultiAsset = Token & {
-  type: MultiAssetType
+type DropdownAssetItem = Token & {
+  type: AssetType
   star?: boolean
 }
 
-const showMultiAsset = ({type, star, assetName, policyId, quantity}: MultiAsset) => (
+const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: DropdownAssetItem) => (
   <div className="multi-asset-item">
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
@@ -77,7 +75,7 @@ const showMultiAsset = ({type, star, assetName, policyId, quantity}: MultiAsset)
         {assetName}
       </div>
       <div className="multi-asset-amount">
-        {type === MultiAssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
+        {type === AssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
       </div>
     </div>
     {policyId && (
@@ -118,26 +116,29 @@ class SendAdaPage extends Component<Props> {
     setTargetAccount,
     switchSourceAndTargetAccounts,
     tokenBalance,
+    sendAsset,
+    updateSendAsset,
   }: Props) {
     const sendFormValidationError = sendAddressValidationError || sendAmountValidationError
 
     const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
     const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
     const total = summary.amount + transactionFee
-    const tokenBalanceWithAda: Array<MultiAsset> = [
-      {
-        type: MultiAssetType.ADA,
-        policyId: null,
-        assetName: 'ADA',
-        quantity: balance,
-        star: true,
-      },
+    const adaAsset = {
+      type: AssetType.ADA,
+      policyId: null,
+      assetName: 'ADA',
+      quantity: balance,
+      star: true,
+    }
+    const dropdownAssetItems: Array<DropdownAssetItem> = [
+      adaAsset,
       ...tokenBalance
         .sort((a: Token, b: Token) => b.quantity - a.quantity)
         .map(
-          (token: Token): MultiAsset => ({
+          (token: Token): DropdownAssetItem => ({
             ...token,
-            type: MultiAssetType.TOKEN,
+            type: AssetType.TOKEN,
             star: false,
           })
         ),
@@ -147,12 +148,32 @@ class SendAdaPage extends Component<Props> {
       await confirmTransaction('send')
     }
 
+    const getDefaultItem = () => {
+      if (sendAsset.isADA) {
+        return adaAsset
+      }
+      const defaultItem = dropdownAssetItems.find(
+        (selectAsset: DropdownAssetItem) => selectAsset.policyId === sendAsset.getTokenPolicyId()
+      )
+      if (defaultItem) return defaultItem
+      updateSendAsset(AssetType.ADA)
+      return adaAsset
+    }
+
     const searchPredicate = useCallback(
-      (query: string, multiAsset: MultiAsset): boolean =>
-        multiAsset.assetName.toLowerCase().includes(query.toLowerCase()) ||
-        (multiAsset.policyId && multiAsset.policyId.toLowerCase().includes(query.toLowerCase())),
+      (query: string, {policyId, assetName}: DropdownAssetItem): boolean =>
+        assetName.toLowerCase().includes(query.toLowerCase()) ||
+        (policyId && policyId.toLowerCase().includes(query.toLowerCase())),
       []
     )
+
+    const onSelect = (dropdownAssetItem: DropdownAssetItem): void => {
+      if (dropdownAssetItem.type === AssetType.ADA) {
+        updateSendAsset(AssetType.ADA)
+      } else if (dropdownAssetItem.type === AssetType.TOKEN) {
+        updateSendAsset(AssetType.TOKEN, dropdownAssetItem)
+      }
+    }
 
     return (
       <div className="send card">
@@ -185,19 +206,17 @@ class SendAdaPage extends Component<Props> {
         )}
         <SearchableSelect
           label="Select asset"
-          defaultItem={tokenBalanceWithAda[0]}
-          displaySelectedItem={(tokenBalanceWithAda: MultiAsset) =>
+          defaultItem={getDefaultItem()}
+          displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
             `${tokenBalanceWithAda.assetName}`
           }
           displaySelectedItemClassName="input"
-          items={tokenBalanceWithAda}
-          displayItem={(multiAsset: MultiAsset) => showMultiAsset(multiAsset)}
-          onSelect={() => {
-            return
-          }}
-          showSearch={tokenBalanceWithAda.length >= 6}
+          items={dropdownAssetItems}
+          displayItem={showDropdownAssetItem}
+          onSelect={onSelect}
+          showSearch={dropdownAssetItems.length >= 6}
           searchPredicate={searchPredicate}
-          searchPlaceholder={`Search from ${tokenBalanceWithAda.length} assets by name or hash`} // TODO: Maybe hide search when there are not so many tokens?
+          searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
         />
         <div className="send-values">
           <label className="ada-label amount" htmlFor={`${isModal ? 'account' : ''}send-amount`}>
@@ -288,6 +307,7 @@ export default connect(
     sourceAccountIndex: state.sourceAccountIndex,
     targetAccountIndex: state.targetAccountIndex,
     tokenBalance: getSourceAccountInfo(state).tokenBalance,
+    sendAsset: state.sendAsset,
   }),
   actions
 )(SendAdaPage)

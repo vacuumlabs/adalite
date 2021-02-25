@@ -202,6 +202,7 @@ export type StakepoolDataProvider = {
   getPoolInfoByPoolHash: (poolHash: string) => Stakepool
   hasTickerMapping: boolean
 }
+
 export type SendAdaTxPlanArgs = {
   txType: TxType.SEND_ADA
   address: _Address
@@ -255,4 +256,9 @@ export type NextRewardDetailsFormatted = {
 export type Balance = {
   coins: Lovelace
   tokens: Token[]
+}
+
+export const enum AssetType {
+  ADA,
+  TOKEN,
 }
