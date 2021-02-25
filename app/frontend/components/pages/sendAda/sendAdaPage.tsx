@@ -302,7 +302,7 @@ const SendAdaPage = ({
       </div>
       <div className="validation-row">
         <button
-          className="button primary"
+          className="button primary medium"
           disabled={!enableSubmit || feeRecalculating}
           onClick={submitHandler}
           ref={(element) => {

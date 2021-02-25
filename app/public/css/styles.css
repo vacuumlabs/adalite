@@ -313,6 +313,10 @@ p.hey {
   color: white;
 }
 
+.button.primary.medium {
+  min-width: 121px;
+}
+
 .button.secondary {
   padding: 10px 24px;
   color: var(--color-grey);
