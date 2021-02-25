@@ -256,3 +256,15 @@ export const enum AssetType {
   ADA,
   TOKEN,
 }
+
+export type SendAmount =
+  | {
+      isLovelace: true
+      fieldValue: string
+      coins: Lovelace
+    }
+  | {
+      isLovelace: false
+      fieldValue: string
+      token: Token
+    }

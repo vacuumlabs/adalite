@@ -5,10 +5,3 @@ export type StakepoolDataProvider = {
   getPoolInfoByPoolHash: (poolHash: string) => Stakepool
   hasTickerMapping: boolean
 }
-
-export type AssetDataProvider = {
-  isADA: boolean
-  isToken: boolean
-  getTokenPolicyId: () => string
-  getTokenAssetName: () => string
-}

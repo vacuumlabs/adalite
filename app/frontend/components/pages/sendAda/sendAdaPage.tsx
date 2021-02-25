@@ -11,10 +11,10 @@ import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
-import {useCallback} from 'preact/hooks'
-import {AssetType, Lovelace, Token} from '../../../types'
+import {useCallback, useState} from 'preact/hooks'
+import {AssetType, Lovelace, SendAmount, Token} from '../../../types'
 import {StarIcon} from '../../common/svg'
-import {AssetDataProvider} from '../../../../frontend/helpers/dataProviders/types'
+import {parseCoins} from '../../../../frontend/helpers/validators'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -37,10 +37,10 @@ interface Props {
   sendResponse: any
   sendAddress: string
   sendAddressValidationError: any
-  sendAmount: any
+  sendAmount: SendAmount
   sendAmountValidationError: any
   updateAddress: any
-  updateAmount: any
+  updateAmount: (sendAmount: SendAmount) => void
   confirmTransaction: any
   shouldShowConfirmTransactionDialog: any
   feeRecalculating: any
@@ -58,7 +58,6 @@ interface Props {
   setTargetAccount: any
   switchSourceAndTargetAccounts: any
   tokenBalance: Array<Token>
-  sendAsset: AssetDataProvider
   updateSendAsset: (assetType: AssetType, underlyingToken?: Token) => void
 }
 
@@ -112,7 +111,6 @@ const SendAdaPage = ({
   setTargetAccount,
   switchSourceAndTargetAccounts,
   tokenBalance,
-  sendAsset,
   updateSendAsset,
 }: Props) => {
   let amountField: HTMLInputElement
@@ -120,10 +118,10 @@ const SendAdaPage = ({
 
   const sendFormValidationError = sendAddressValidationError || sendAmountValidationError
 
-  const enableSubmit = sendAmount && sendAddress && !sendFormValidationError
+  const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
   const total = summary.amount + transactionFee
-  const adaAsset = {
+  const adaAsset: DropdownAssetItem = {
     type: AssetType.ADA,
     policyId: null,
     assetName: 'ADA',
@@ -143,16 +141,18 @@ const SendAdaPage = ({
       ),
   ]
 
+  const [selectedAsset, setSelectedAsset] = useState(adaAsset)
+
   const submitHandler = async () => {
     await confirmTransaction('send')
   }
 
   const getDefaultItem = () => {
-    if (sendAsset.isADA) {
+    if (selectedAsset.type === AssetType.ADA) {
       return adaAsset
     }
     const defaultItem = dropdownAssetItems.find(
-      (selectAsset: DropdownAssetItem) => selectAsset.policyId === sendAsset.getTokenPolicyId()
+      (selectAsset: DropdownAssetItem) => selectAsset.policyId === selectedAsset.policyId
     )
     if (defaultItem) return defaultItem
     updateSendAsset(AssetType.ADA)
@@ -166,13 +166,52 @@ const SendAdaPage = ({
     []
   )
 
-  const onSelect = (dropdownAssetItem: DropdownAssetItem): void => {
-    if (dropdownAssetItem.type === AssetType.ADA) {
-      updateSendAsset(AssetType.ADA)
-    } else if (dropdownAssetItem.type === AssetType.TOKEN) {
-      updateSendAsset(AssetType.TOKEN, dropdownAssetItem)
-    }
-  }
+  const onSelect = useCallback(
+    (dropdownAssetItem: DropdownAssetItem): void => {
+      setSelectedAsset(dropdownAssetItem)
+      if (dropdownAssetItem.type === AssetType.ADA) {
+        updateAmount({
+          isLovelace: true,
+          fieldValue: sendAmount.fieldValue,
+          coins: parseCoins(sendAmount.fieldValue) || (0 as Lovelace),
+        })
+      } else if (dropdownAssetItem.type === AssetType.TOKEN) {
+        updateAmount({
+          isLovelace: false,
+          fieldValue: sendAmount.fieldValue,
+          token: {
+            policyId: selectedAsset.policyId,
+            assetName: selectedAsset.assetName,
+            quantity: parseFloat(sendAmount.fieldValue),
+          },
+        })
+      }
+    },
+    [selectedAsset, sendAmount.fieldValue, updateAmount]
+  )
+
+  const onInput = useCallback(
+    (e) => {
+      if (selectedAsset.type === AssetType.ADA) {
+        updateAmount({
+          isLovelace: true,
+          fieldValue: e?.target?.value,
+          coins: parseCoins(e?.target?.value) || (0 as Lovelace),
+        })
+      } else if (selectedAsset.type === AssetType.TOKEN) {
+        updateAmount({
+          isLovelace: false,
+          fieldValue: e?.target?.value,
+          token: {
+            policyId: selectedAsset.policyId,
+            assetName: selectedAsset.assetName,
+            quantity: parseFloat(e?.target?.value),
+          },
+        })
+      }
+    },
+    [selectedAsset, updateAmount]
+  )
 
   return (
     <div className="send card">
@@ -219,7 +258,7 @@ const SendAdaPage = ({
       />
       <div className="send-values">
         <label
-          className={`ada-label amount ${sendAsset.isToken ? 'token' : ''}`}
+          className={`ada-label amount ${selectedAsset.type === AssetType.TOKEN ? 'token' : ''}`}
           htmlFor={`${isModal ? 'account' : ''}send-amount`}
         >
           Amount
@@ -230,8 +269,8 @@ const SendAdaPage = ({
             id={`${isModal ? 'account' : ''}send-amount`}
             name={`${isModal ? 'account' : ''}send-amount`}
             placeholder="0.000000"
-            value={sendAmount}
-            onInput={updateAmount}
+            value={sendAmount.fieldValue}
+            onInput={onInput}
             autoComplete="off"
             ref={(element) => {
               amountField = element
@@ -297,7 +336,7 @@ export default connect(
     sendAddressValidationError: state.sendAddressValidationError,
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,
-    sendAmount: state.sendAmount.fieldValue,
+    sendAmount: state.sendAmount,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
     conversionRates: state.conversionRates && state.conversionRates.data,
@@ -308,7 +347,6 @@ export default connect(
     sourceAccountIndex: state.sourceAccountIndex,
     targetAccountIndex: state.targetAccountIndex,
     tokenBalance: getSourceAccountInfo(state).tokenBalance,
-    sendAsset: state.sendAsset,
   }),
   actions
 )(SendAdaPage)
