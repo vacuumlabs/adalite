@@ -21,7 +21,8 @@ import {
   _TxAux,
   _TxSigned,
 } from './types'
-import {CertificateType, HexString} from '../../types'
+import {CertificateType, HexString, Token} from '../../types'
+import {tokens2TokenObject} from '../helpers/tokenFormater'
 
 function ShelleyTxAux(
   inputs: _Input[],
@@ -73,9 +74,23 @@ function ShelleyTxInputs(inputs: _Input[]): TxInput[] {
   return txInputs
 }
 
+function cborizeOutputTokens(tokens: Token[]) {
+  const policyIdMap = new Map<Buffer, Map<Buffer, number>>()
+  const tokenObject: {[key: string]: {[key: string]: number}} = tokens2TokenObject(tokens)
+  Object.entries(tokenObject).forEach(([policyId, assets]) => {
+    const assetMap = new Map<Buffer, number>()
+    Object.entries(assets).forEach(([assetName, quantity]) => {
+      assetMap.set(Buffer.from(assetName, 'hex'), quantity)
+    })
+    policyIdMap.set(Buffer.from(policyId, 'hex'), assetMap)
+  })
+  return policyIdMap
+}
+
 function ShelleyTxOutputs(outputs: _Output[]): TxOutput[] {
   const txOutputs: TxOutput[] = outputs.map((output) => {
-    const amount = output.tokens.length > 0 ? [output.coins, output.tokens] : output.coins
+    const amount =
+      output.tokens.length > 0 ? [output.coins, cborizeOutputTokens(output.tokens)] : output.coins
     // TODO: we should have one fn for decoding
     const addressBuff: Buffer = isShelleyFormat(output.address)
       ? bech32.decode(output.address).data

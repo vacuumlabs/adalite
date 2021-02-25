@@ -56,7 +56,7 @@ export const enum TxRelayType {
 
 export type TxInput = [Buffer, number]
 
-export type TxOutput = [Buffer, number]
+export type TxOutput = [Buffer, number | any] // TODO:
 
 export type TxWithdrawals = Map<Buffer, Lovelace>
 

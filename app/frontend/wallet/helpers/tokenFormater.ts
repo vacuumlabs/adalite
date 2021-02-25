@@ -33,3 +33,17 @@ export const aggregateTokens = (tokens: Array<Array<Token>>): Array<Token> =>
     .map(aggregateTokensForPolicy)
     .flatten()
     .value()
+
+export const tokens2TokenObject = (tokens: Token[]) => {
+  return _(tokens)
+    .groupBy(({policyId}) => policyId)
+    .map((policyGroup, policyId) => [
+      policyId,
+      _(policyGroup)
+        .keyBy('assetName')
+        .mapValues('quantity')
+        .value(),
+    ])
+    .fromPairs()
+    .value()
+}
