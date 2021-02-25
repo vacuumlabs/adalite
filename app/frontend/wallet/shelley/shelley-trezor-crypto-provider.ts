@@ -13,6 +13,7 @@ import {
   BIP32Path,
   HexString,
   AddressToPathMapper,
+  Token,
 } from '../../types'
 import {
   Network,
@@ -30,12 +31,14 @@ import {
   TrezorGetAddressResponse,
   TrezorGetPublicKeyResponse,
   TrezorInput,
+  TrezorMultiAsset,
   TrezorOutput,
   TrezorSignTxResponse,
   TrezorTxCertificate,
   TrezorWithdrawal,
 } from './trezor-types'
 import {_SignedTx, _TxAux} from './types'
+import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 
 type CryptoProviderParams = {
   network: Network
@@ -132,12 +135,26 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  function prepareTokenBundle() {
-    return [] // TODO:
+  const prepareTokenBundle = (tokens: Token[]): TrezorMultiAsset | undefined => {
+    // if (multiAssets.length > 0 && !isFeatureSupportedForVersion(TrezorCryptoProviderFeature.MULTI_ASSET)) {
+    //   throw Error(Errors.TrezorMultiAssetsNotSupported)
+    // }
+    const tokenObject = groupTokensByPolicyId(tokens)
+    const tokenBundle = Object.entries(tokenObject).map(([policyId, assets]) => {
+      const tokenAmounts = assets.map(({assetName, quantity}) => ({
+        assetNameBytes: assetName,
+        amount: quantity.toString(),
+      }))
+      return {
+        policyId,
+        tokenAmounts,
+      }
+    })
+    return tokenBundle.length > 0 ? tokenBundle : undefined
   }
 
   function prepareOutput(output: _Output): TrezorOutput {
-    const tokenBundle = prepareTokenBundle()
+    const tokenBundle = prepareTokenBundle(output.tokens)
     return output.isChange === false
       ? {
         address: output.address,

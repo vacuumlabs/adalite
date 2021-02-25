@@ -30,6 +30,7 @@ import {
   DerivationScheme,
   AddressToPathMapper,
   CertificateType,
+  Token,
 } from '../../types'
 import {
   Network,
@@ -45,6 +46,7 @@ import {
   _Withdrawal,
 } from '../types'
 import {
+  LedgerAssetGroup,
   LedgerCertificate,
   LedgerGetExtendedPublicKeyResponse,
   LedgerInput,
@@ -54,6 +56,7 @@ import {
   LedgerWitness,
 } from './ledger-types'
 import {_SignedTx, _TxAux} from './types'
+import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -191,18 +194,36 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
+  const prepareTokenBundle = (tokens: Token[]): LedgerAssetGroup[] => {
+    // if (multiAssets.length > 0 && !isFeatureSupportedForVersion(LedgerCryptoProviderFeature.MULTI_ASSET)) {
+    //   throw Error(Errors.LedgerMultiAssetsNotSupported)
+    // }
+    const tokenObject = groupTokensByPolicyId(tokens)
+    return Object.entries(tokenObject).map(([policyId, assets]) => {
+      const tokens = assets.map(({assetName, quantity}) => ({
+        assetNameHex: assetName,
+        amountStr: quantity.toString(),
+      }))
+      return {
+        policyIdHex: policyId,
+        tokens,
+      }
+    })
+  }
+
   function prepareOutput(output: _Output): LedgerOutput {
+    const tokenBundle = prepareTokenBundle(output.tokens)
     return output.isChange === false
       ? {
         amountStr: `${output.coins}`,
         addressHex: isShelleyFormat(output.address)
           ? bechAddressToHex(output.address)
           : base58AddressToHex(output.address),
-        tokenBundle: [],
+        tokenBundle,
       }
       : {
         amountStr: `${output.coins}`,
-        tokenBundle: [],
+        tokenBundle,
         addressTypeNibble: AddressTypeNibbles.BASE,
         spendingPath: output.spendingPath,
         stakingPath: output.stakingPath,
