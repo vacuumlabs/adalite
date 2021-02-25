@@ -248,7 +248,7 @@ const SendAdaPage = ({
         displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
           `${tokenBalanceWithAda.assetName}`
         }
-        displaySelectedItemClassName="input"
+        displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
         displayItem={showDropdownAssetItem}
         onSelect={onSelect}
