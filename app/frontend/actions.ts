@@ -2,7 +2,6 @@ import {ADALITE_CONFIG} from './config'
 import {saveAs} from './libs/file-saver'
 import {encode, decode} from 'borc'
 import {
-  parseCoins,
   sendAddressValidator,
   sendAmountValidator,
   txPlanValidator,
@@ -11,7 +10,6 @@ import {
   mnemonicValidator,
   validatePoolRegUnsignedTx,
 } from './helpers/validators'
-import printAda from './helpers/printAda'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
@@ -48,6 +46,7 @@ import {
   TxPlanArgs,
   AuthMethodType,
   HexString,
+  SendAmount,
 } from './types'
 import {MainTabs} from './constants'
 
@@ -229,7 +228,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         shouldShowGenerateMnemonicDialog: false,
         shouldShowAddressVerification: usingHwWallet,
         // send form
-        sendAmount: {fieldValue: '', coins: 0 as Lovelace},
+        sendAmount: {isLovelace: true, fieldValue: '', coins: 0 as Lovelace},
         sendAddress: {fieldValue: ''},
         sendResponse: '',
         // shelley
@@ -533,7 +532,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const resetSendFormFields = (state: State) => {
     setState({
-      sendAmount: {fieldValue: '', coins: 0 as Lovelace},
+      sendAmount: {isLovelace: true, fieldValue: '', coins: 0 as Lovelace},
       sendAddress: {fieldValue: ''},
       sendAddressValidationError: null,
       sendAmountValidationError: null,
@@ -556,7 +555,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       'sendAmountValidationError',
       sendAmountValidator(
         state.sendAmount.fieldValue,
-        state.sendAmount.coins,
+        (state.sendAmount as any).coins, // TODO
         getSourceAccountInfo(state).balance as Lovelace
       )
     )
@@ -594,7 +593,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
       return
     }
-    const coins = state.sendAmount.coins
+    const coins = (state.sendAmount as any).coins // TODO
     // TODO: sendAddress should have a validated field of type _Address
     const address = state.sendAddress.fieldValue as _Address
     const txPlanResult = await prepareTxPlan({
@@ -656,26 +655,25 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
-  const updateAmount = (state: State, e) => {
+  const updateAmount = (state: State, sendAmount: SendAmount): void => {
     setState({
       sendResponse: '',
-      sendAmount: Object.assign({}, state.sendAmount, {
-        fieldValue: e.target.value,
-        coins: parseCoins(e.target.value) || (0 as Lovelace),
-      }),
+      sendAmount: Object.assign({}, state.sendAmount, sendAmount),
     })
     validateSendFormAndCalculateFee()
   }
 
   const validateAndSetMaxFunds = (state: State, maxAmounts) => {
-    setState({
-      sendResponse: '',
-      sendAmount: {
-        fieldValue: printAda(maxAmounts.sendAmount),
-        coins: maxAmounts.sendAmount || null,
-      },
-    })
-    validateSendFormAndCalculateFee()
+    // TODO
+    return
+    // setState({
+    //   sendResponse: '',
+    //   sendAmount: {
+    //     fieldValue: printAda(maxAmounts.sendAmount),
+    //     coins: maxAmounts.sendAmount || null,
+    //   },
+    // })
+    // validateSendFormAndCalculateFee()
   }
 
   const sendMaxFunds = async (state: State) => {
@@ -965,7 +963,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       sendTransactionTitle: 'Transfer funds between accounts',
       shouldShowSendTransactionModal: true,
       txSuccessTab: '',
-      sendAmount: {fieldValue: '', coins: 0 as Lovelace},
+      sendAmount: {isLovelace: true, fieldValue: '', coins: 0 as Lovelace},
       transactionFee: 0,
     })
     const targetAddress = await wallet.getAccount(targetAccountIndex).getChangeAddress()
@@ -977,7 +975,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetAccountIndexes(state)
     setState({
       sendAddress: {fieldValue: ''},
-      sendAmount: {fieldValue: '', coins: 0 as Lovelace},
+      sendAmount: {isLovelace: true, fieldValue: '', coins: 0 as Lovelace},
       transactionFee: 0,
       shouldShowSendTransactionModal: false,
       sendAddressValidationError: null,

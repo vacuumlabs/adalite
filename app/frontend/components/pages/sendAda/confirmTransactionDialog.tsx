@@ -75,6 +75,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
                 {sendAddress}
                 {txConfirmType === 'crossAccount' && <AddressVerification address={sendAddress} />}
               </div>
+              {/* TODO: Hide ADA symbol when handling tokens */}
               <div className="ada-label">Amount</div>
               <div className="review-amount">{printAda(summary.amount)}</div>
             </Fragment>
@@ -136,6 +137,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
           )}
           <div className="ada-label">Fee</div>
           <div className="review-fee">{printAda(summary.fee as Lovelace)}</div>
+          {/* TODO: Hide ADA symbol when handling tokens */}
           <div className="ada-label">Total</div>
           <div className="review-total">{printAda(total)}</div>
         </div>

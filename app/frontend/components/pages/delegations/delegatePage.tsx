@@ -107,7 +107,7 @@ const Delegate = ({
       </div>
       <div className="validation-row">
         <button
-          className="button primary"
+          className="button primary medium"
           disabled={
             !isShelleyCompatible ||
             validationError ||

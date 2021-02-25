@@ -49,11 +49,11 @@ const SearchableSelect = <T extends {}>({
   })
 
   return (
-    <div className="searchable-select-wrapper" onMouseLeave={() => showDropdown(false)}>
+    <div className="searchable-select-wrapper" tabIndex={0} onBlur={() => showDropdown(false)}>
       <div className="searchable-select-label">{label}</div>
       <div
         className={`searchable-select ${displaySelectedItemClassName}`}
-        onMouseUp={() => showDropdown(!visible)}
+        onClick={() => showDropdown(!visible)}
       >
         {displaySelectedItem(value)}
       </div>
@@ -74,7 +74,7 @@ const SearchableSelect = <T extends {}>({
               <div
                 className={`searchable-select-item ${shouldShowItem(item) ? '' : 'hide'}`}
                 key={i}
-                onMouseUp={() => {
+                onClick={() => {
                   setVisible(false)
                   setValue(item)
                   onSelect(item)

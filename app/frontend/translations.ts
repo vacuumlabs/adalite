@@ -141,6 +141,7 @@ const translations = {
   PoolRegNoTtl: () =>
     'TTL parameter is missing in the transaction. It is explicitly required even for the Allegra era.',
   PoolRegTxParserError: ({message}) => `Parser error: ${message}`,
+  InvalidDataProviderInitilization: () => 'Invalid data provider initilization',
 
   Error: ({message}) => {
     const errors = {

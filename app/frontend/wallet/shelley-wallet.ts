@@ -1,7 +1,8 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
-import {AccountInfo, CryptoProvider, CryptoProviderFeature, StakepoolDataProvider} from '../types'
+import {AccountInfo, CryptoProvider, CryptoProviderFeature} from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
+import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 
 type WalletParams = {
   config: any

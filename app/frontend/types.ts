@@ -197,11 +197,6 @@ export type Stakepool = {
   validationError?: any
 }
 
-export type StakepoolDataProvider = {
-  getPoolInfoByTicker: (ticker: string) => Stakepool
-  getPoolInfoByPoolHash: (poolHash: string) => Stakepool
-  hasTickerMapping: boolean
-}
 export type SendAdaTxPlanArgs = {
   txType: TxType.SEND_ADA
   address: _Address
@@ -256,3 +251,20 @@ export type Balance = {
   coins: Lovelace
   tokens: Token[]
 }
+
+export const enum AssetType {
+  ADA,
+  TOKEN,
+}
+
+export type SendAmount =
+  | {
+      isLovelace: true
+      fieldValue: string
+      coins: Lovelace
+    }
+  | {
+      isLovelace: false
+      fieldValue: string
+      token: Token
+    }

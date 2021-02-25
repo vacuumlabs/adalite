@@ -12,8 +12,6 @@ import {
   StakingKeyRegistration,
   HexString,
   Lovelace,
-  Stakepool,
-  StakepoolDataProvider,
   TxSummaryEntry,
   StakingHistoryObject,
   HostedPoolMetadata,
@@ -45,9 +43,12 @@ import {
   TxSubmission,
   StakePoolInfo,
   _Utxo,
+  StakePoolInfosByPoolHash,
 } from './backend-types'
 import {UTxO} from './types'
 import {aggregateTokens, formatToken} from './helpers/tokenFormater'
+import {StakepoolDataProvider} from '../helpers/dataProviders/types'
+import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDataProvider'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -490,35 +491,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   async function getStakepoolDataProvider(): Promise<StakepoolDataProvider> {
-    const createStakepoolDataProvider = async (): Promise<StakepoolDataProvider> => {
-      const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
-      const validStakepools = await request(url)
-      const [tickerMapping, poolHashMapping] = Object.entries(validStakepools).reduce(
-        ([tickerMapping, poolHashMapping], entry) => {
-          const [key, value]: [string, any] = entry
-          const stakepool = {
-            ...value,
-            poolHash: key,
-          }
-          if (stakepool.ticker) tickerMapping[stakepool.ticker] = stakepool
-          if (stakepool.poolHash) poolHashMapping[stakepool.poolHash] = stakepool
-          return [tickerMapping, poolHashMapping]
-        },
-        [{}, {}]
-      )
-
-      const getPoolInfoByTicker = (ticker: string): Stakepool => tickerMapping[ticker]
-      const getPoolInfoByPoolHash = (poolHash: string): Stakepool => poolHashMapping[poolHash]
-      const hasTickerMapping = Object.keys(tickerMapping).length !== 0
-
-      return {
-        getPoolInfoByTicker,
-        getPoolInfoByPoolHash,
-        hasTickerMapping,
-      }
-    }
-
-    return await createStakepoolDataProvider()
+    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/stakePools`
+    const validStakepools: StakePoolInfosByPoolHash = await request(url)
+    return createStakepoolDataProvider(validStakepools)
   }
 
   function getBestSlot(): Promise<BestSlotResponse> {
