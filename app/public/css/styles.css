@@ -3479,7 +3479,7 @@ input:checked + .slider:before {
   line-height: 32px;
 }
 
-.ada-label:not(.donation)::after {
+.ada-label:not(.token)::after {
   content: '';
   position: absolute;
   width: 9px;

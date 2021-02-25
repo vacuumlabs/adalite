@@ -219,7 +219,10 @@ class SendAdaPage extends Component<Props> {
           searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
         />
         <div className="send-values">
-          <label className="ada-label amount" htmlFor={`${isModal ? 'account' : ''}send-amount`}>
+          <label
+            className={`ada-label amount ${sendAsset.isToken ? 'token' : ''}`}
+            htmlFor={`${isModal ? 'account' : ''}send-amount`}
+          >
             Amount
           </label>
           <div className="input-wrapper">
