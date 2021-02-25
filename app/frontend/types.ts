@@ -197,12 +197,6 @@ export type Stakepool = {
   validationError?: any
 }
 
-export type StakepoolDataProvider = {
-  getPoolInfoByTicker: (ticker: string) => Stakepool
-  getPoolInfoByPoolHash: (poolHash: string) => Stakepool
-  hasTickerMapping: boolean
-}
-
 export type SendAdaTxPlanArgs = {
   txType: TxType.SEND_ADA
   address: _Address

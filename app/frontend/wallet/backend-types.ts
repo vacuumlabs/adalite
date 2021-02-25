@@ -7,6 +7,8 @@ export type StakePoolInfo = {
   homepage: string
 }
 
+export type StakePoolInfosByPoolHash = {[key: string]: StakePoolInfo}
+
 type StakePoolInfoExtended = StakePoolInfo & {
   poolHash: string
   liveStake: string

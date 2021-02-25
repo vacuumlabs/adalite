@@ -13,7 +13,6 @@ import {
   TxPlanArgs,
   TxType,
   _Address,
-  StakepoolDataProvider,
 } from '../types'
 import {
   getAccountXpub as getAccoutXpubShelley,
@@ -40,6 +39,7 @@ import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {_TxAux} from './shelley/types'
 import {OutputType, _Output} from './types'
+import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 
 const DummyAddressManager = () => {
   return {

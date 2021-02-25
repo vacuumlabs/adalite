@@ -1,9 +1,10 @@
-import {Stakepool, PoolRecommendation, StakepoolDataProvider} from '../../../types'
+import {Stakepool, PoolRecommendation} from '../../../types'
 import {Fragment, h} from 'preact'
 import {useEffect, useState} from 'preact/hooks'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import {getSourceAccountInfo, State} from '../../../state'
+import {StakepoolDataProvider} from '../../../../frontend/helpers/dataProviders/types'
 
 type StakePoolLabelProps = {
   isTicker: boolean

@@ -1,9 +1,9 @@
 import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {createAssetDataProvider} from './helpers/dataProviders/assetDataProvider'
-import {AssetDataProvider} from './helpers/dataProviders/types'
+import {AssetDataProvider, StakepoolDataProvider} from './helpers/dataProviders/types'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, AssetType, AuthMethodType, Lovelace, StakepoolDataProvider} from './types'
+import {AccountInfo, AssetType, AuthMethodType, Lovelace} from './types'
 import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
 export interface SendTransactionSummary {
   amount?: Lovelace
