@@ -39,7 +39,8 @@ import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresse
 import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {_TxAux} from './shelley/types'
-import {OutputType, _Output} from './types'
+import {_Output} from './types'
+import {aggregateTokens} from './helpers/tokenFormater'
 
 const DummyAddressManager = () => {
   return {
@@ -231,7 +232,7 @@ const Account = ({
       const stakingAddress = await myAddresses.getStakingAddress()
       const changeOutput: _Output = {
         ...change,
-        type: OutputType.CHANGE,
+        isChange: true,
         spendingPath: myAddresses.getAddressToAbsPathMapper()(change.address),
         stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
       }
@@ -343,7 +344,7 @@ const Account = ({
       base
     )
     return {
-      tokenBalance: [...nonStakingTokens, ...stakingTokens],
+      tokenBalance: aggregateTokens([nonStakingTokens, stakingTokens]),
       baseAddressBalance,
       nonStakingBalance,
       balance: nonStakingBalance + baseAddressBalance,

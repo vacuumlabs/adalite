@@ -45,9 +45,9 @@ import {
   TxSubmission,
   StakePoolInfo,
   _Utxo,
-  TokenObject,
 } from './backend-types'
 import {UTxO} from './types'
+import {aggregateTokens, formatToken} from './helpers/tokenFormater'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -117,53 +117,33 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return txHistoryEntries.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
-  type TokenMap = {[key: string]: {[key: string]: number}}
-
   function prepareTxHistoryEntry(tx: CaTxEntry, addresses: string[]): TxSummaryEntry {
-    const tokenEffects: TokenMap = {}
-
-    const calculateTokenEffects = (getTokens: TokenObject[], multiplier: number) => {
-      getTokens.forEach(({policyId, assetName, quantity}) => {
-        if (!(policyId in tokenEffects)) {
-          tokenEffects[policyId] = {}
-        }
-        if (!(assetName in tokenEffects[policyId])) {
-          tokenEffects[policyId][assetName] = 0
-        }
-        tokenEffects[policyId][assetName] += multiplier * parseInt(quantity, 10)
-      })
-    }
+    const outputTokens: Token[][] = []
+    const inputTokens: Token[][] = []
 
     let effect = 0 //effect on wallet balance accumulated
-    for (const input of tx.ctbInputs || []) {
-      const isWalletAddress = addresses.includes(input[0])
-      if (isWalletAddress) {
-        effect -= +input[1].getCoin
-        calculateTokenEffects(tx.ctbInputSum.getTokens, -1)
+    for (const [address, amount] of tx.ctbInputs || []) {
+      if (addresses.includes(address)) {
+        effect -= +amount.getCoin
+        const formatedInputTokens = amount.getTokens.map((token) => formatToken(token, -1))
+        inputTokens.push(formatedInputTokens)
       }
     }
-    for (const output of tx.ctbOutputs || []) {
-      const isWalletAddress = addresses.includes(output[0])
-      if (isWalletAddress) {
-        effect += +output[1].getCoin
-        calculateTokenEffects(tx.ctbOutputSum.getTokens, 1)
+    for (const [address, amount] of tx.ctbOutputs || []) {
+      if (addresses.includes(address)) {
+        effect += +amount.getCoin
+        const formatedOutputTokens = amount.getTokens.map((token) => formatToken(token, 1))
+        outputTokens.push(formatedOutputTokens)
       }
     }
     return {
       ...tx,
       fee: parseInt(tx.fee, 10) as Lovelace,
       effect: effect as Lovelace,
-      tokenEffects: flattenTokens(tokenEffects),
+      tokenEffects: aggregateTokens([...inputTokens, ...outputTokens]).filter(
+        (token) => token.quantity !== 0
+      ),
     }
-  }
-
-  function flattenTokens(tokens: TokenMap) {
-    const tokenArray = Object.entries(tokens).map(([policyId, assets]) => {
-      return Object.entries(assets).map(([assetName, quantity]) => {
-        return {policyId, assetName, quantity}
-      })
-    })
-    return tokenArray.flat(1)
   }
 
   async function fetchTxInfo(txHash: string): Promise<TxSummary> {
@@ -210,26 +190,20 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )
-    const tokens = {}
-    txHistory.map((txHistoryEntry) => {
-      txHistoryEntry.caBalance.getTokens.map(({assetName, policyId, quantity}) => {
-        if (!(policyId in tokens)) {
-          tokens[policyId] = {}
-        }
-        if (!(assetName in tokens[policyId])) {
-          tokens[policyId][assetName] = 0
-        }
-        tokens[policyId][assetName] += parseInt(quantity, 10)
-      })
+    const addressTokens = txHistory.map((txHistoryEntry) => {
+      const formatedTokens = txHistoryEntry.caBalance.getTokens.map((token) =>
+        formatToken(token, 1)
+      )
+      return formatedTokens
     })
-
+    const tokens = aggregateTokens(addressTokens).filter((token) => token.quantity > 0)
     const coins = txHistory.reduce(
       (acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10),
       0
     ) as Lovelace
     return {
       coins,
-      tokens: flattenTokens(tokens),
+      tokens,
     }
   }
 

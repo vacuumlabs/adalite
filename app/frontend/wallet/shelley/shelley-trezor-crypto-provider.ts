@@ -16,7 +16,6 @@ import {
 } from '../../types'
 import {
   Network,
-  OutputType,
   _Certificate,
   _DelegationCertificate,
   _Input,
@@ -139,7 +138,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   function prepareOutput(output: _Output): TrezorOutput {
     const tokenBundle = prepareTokenBundle()
-    return output.type === OutputType.NO_CHANGE
+    return output.isChange === false
       ? {
         address: output.address,
         amount: `${output.coins}`,

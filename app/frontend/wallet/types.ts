@@ -35,23 +35,20 @@ export type UTxO = {
   outputIndex: number
 }
 
-export const enum OutputType {
-  CHANGE,
-  NO_CHANGE,
-}
-
 export type _Input = UTxO
 
 export type _Output =
   | {
-      type: OutputType.NO_CHANGE
+      isChange: false
       address: _Address
       coins: Lovelace
+      tokens: Token[]
     }
   | {
-      type: OutputType.CHANGE
+      isChange: true
       address: _Address
       coins: Lovelace
+      tokens: Token[]
       spendingPath: BIP32Path
       stakingPath: BIP32Path
     }

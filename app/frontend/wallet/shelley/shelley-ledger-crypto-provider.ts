@@ -33,7 +33,6 @@ import {
 } from '../../types'
 import {
   Network,
-  OutputType,
   _ByronWitness,
   _Certificate,
   _DelegationCertificate,
@@ -193,7 +192,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   function prepareOutput(output: _Output): LedgerOutput {
-    return output.type === OutputType.NO_CHANGE
+    return output.isChange === false
       ? {
         amountStr: `${output.coins}`,
         addressHex: isShelleyFormat(output.address)

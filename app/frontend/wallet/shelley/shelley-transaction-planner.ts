@@ -23,7 +23,6 @@ import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 import {
-  OutputType,
   UTxO,
   _Certificate,
   _DelegationCertificate,
@@ -32,6 +31,7 @@ import {
   _StakingKeyRegistrationCertificate,
   _Withdrawal,
 } from '../types'
+import {aggregateTokens, formatToken} from '../helpers/tokenFormater'
 
 type TxPlanDraft = {
   outputs: _Output[]
@@ -86,9 +86,10 @@ export function estimateTxSize(
    * fee also in cases we dont know the amount of coins in advance
    */
   const txOutputs: _Output[] = outputs.map((output) => ({
-    type: OutputType.NO_CHANGE,
+    isChange: false,
     address: output.address,
     coins: Number.MAX_SAFE_INTEGER as Lovelace,
+    tokens: output.tokens,
   }))
   // TODO: max output size
   const txOutputsSize = encode(ShelleyTxOutputs(txOutputs)).length + 1
@@ -159,10 +160,24 @@ export function computeTxPlan(
 ): TxPlan {
   const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
+  const totalInputTokens = aggregateTokens(inputs.map(({tokens}) => tokens))
   const deposit = computeRequiredDeposit(certificates)
   const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit + totalRewards
+  const totalOutputTokens = aggregateTokens(outputs.map(({tokens}) => tokens)).map((token) =>
+    formatToken({...token, quantity: `${token.quantity}`}, -1)
+  )
 
-  if (totalOutput > Number.MAX_SAFE_INTEGER) {
+  const tokenDifference = aggregateTokens([totalInputTokens, totalOutputTokens])
+
+  // Cannot construct transaction plan, not enought tokens
+  if (tokenDifference.some(({quantity}) => quantity < 0)) {
+    throw NamedError('CannotConstructTxPlan')
+  }
+
+  if (
+    totalOutput > Number.MAX_SAFE_INTEGER ||
+    totalOutputTokens.some(({quantity}) => quantity > Number.MAX_SAFE_INTEGER)
+  ) {
     throw NamedError('CoinAmountError')
   }
 
@@ -174,7 +189,7 @@ export function computeTxPlan(
   }
 
   // No change necessary, perfect fit
-  if (totalOutput + feeWithoutChange === totalInput) {
+  if (totalOutput + feeWithoutChange === totalInput && tokenDifference.length === 0) {
     return {
       inputs,
       outputs,
@@ -186,14 +201,19 @@ export function computeTxPlan(
     }
   }
 
+  const change = {
+    ...possibleChange,
+    tokens: tokenDifference,
+  }
+
   const feeWithChange = computeRequiredTxFee(
     inputs,
-    [...outputs, possibleChange],
+    [...outputs, change],
     certificates,
     withdrawals
   )
 
-  if (totalOutput + feeWithChange > totalInput) {
+  if (totalOutput + feeWithChange > totalInput && tokenDifference.length === 0) {
     // We cannot fit the change output into the transaction
     // Instead, just increase the fee
     return {
@@ -207,16 +227,13 @@ export function computeTxPlan(
     }
   }
 
-  const change = {
-    ...possibleChange,
-    address: possibleChange.address,
-    coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
-  }
-
   return {
     inputs,
     outputs,
-    change,
+    change: {
+      ...change,
+      coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
+    },
     certificates,
     deposit,
     fee: feeWithChange,
@@ -245,7 +262,12 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
     txPlanArgs: SendAdaTxPlanArgs | ConvertLegacyAdaTxPlanArgs
   ): TxPlanDraft => {
     const outputs: _Output[] = []
-    outputs.push({type: OutputType.NO_CHANGE, address: txPlanArgs.address, coins: txPlanArgs.coins})
+    outputs.push({
+      isChange: false,
+      address: txPlanArgs.address,
+      coins: txPlanArgs.coins,
+      tokens: [],
+    })
     return {
       outputs,
       certificates: [],
@@ -308,7 +330,12 @@ export const selectMinimalTxPlan = (
 ): TxPlanResult => {
   const inputs: _Input[] = []
   const {outputs, certificates, withdrawals} = prepareTxPlanDraft(txPlanArgs)
-  const change: _Output = {type: OutputType.NO_CHANGE, address: changeAddress, coins: 0 as Lovelace}
+  const change: _Output = {
+    isChange: false,
+    address: changeAddress,
+    coins: 0 as Lovelace,
+    tokens: [],
+  }
 
   // TODO: refactor this when implementing multi assets
   for (const utxo of utxos) {

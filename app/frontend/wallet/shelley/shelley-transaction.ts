@@ -75,11 +75,12 @@ function ShelleyTxInputs(inputs: _Input[]): TxInput[] {
 
 function ShelleyTxOutputs(outputs: _Output[]): TxOutput[] {
   const txOutputs: TxOutput[] = outputs.map((output) => {
+    const amount = output.tokens.length > 0 ? [output.coins, output.tokens] : output.coins
     // TODO: we should have one fn for decoding
     const addressBuff: Buffer = isShelleyFormat(output.address)
       ? bech32.decode(output.address).data
       : base58.decode(output.address)
-    return [addressBuff, output.coins]
+    return [addressBuff, amount]
   })
   return txOutputs
 }
