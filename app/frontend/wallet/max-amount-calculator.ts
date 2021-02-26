@@ -1,8 +1,12 @@
-import {roundWholeAdas} from '../helpers/adaConverters'
-import {Lovelace, _Address} from '../types'
+import {AssetType, Lovelace, SendAmount, _Address} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
-import {computeRequiredTxFee} from './shelley/shelley-transaction-planner'
+import {
+  calculateMinUTxOLovelaceAmount,
+  computeRequiredTxFee,
+} from './shelley/shelley-transaction-planner'
 import {UTxO, _Output} from './types'
+import {aggregateTokens} from './helpers/tokenFormater'
+import printAda from '../helpers/printAda'
 
 function getInputBalance(inputs: Array<UTxO>): Lovelace {
   return inputs.reduce((acc, input) => acc + input.coins, 0) as Lovelace
@@ -10,18 +14,39 @@ function getInputBalance(inputs: Array<UTxO>): Lovelace {
 
 // TODO: when we remove the byron functionality we can remove the computeFeeFn as argument
 export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequiredTxFee) => {
-  function getMaxSendableAmount(profitableInputs: Array<UTxO>, address: _Address) {
+  function getMaxSendableAmount(
+    profitableInputs: Array<UTxO>,
+    address: _Address,
+    sendAmount: SendAmount
+  ): SendAmount {
     // as tokens for the max amount output we pass the longest tokens
     // to be precise we should pass the tokens that are the beggest when cborized
-    const tokens = profitableInputs
-      .map(({tokens}) => tokens)
-      .reduce((acc, tokens) => (tokens.length > acc.length ? tokens : acc), [])
-    const coins = getInputBalance(profitableInputs)
-
-    const outputs: _Output[] = [{isChange: false, address, coins: 0 as Lovelace, tokens}]
-
-    const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
-    return {sendAmount: Math.max(coins - txFee, 0) as Lovelace}
+    if (sendAmount.assetType === AssetType.ADA) {
+      const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
+      const minUTxOLovelaceAmount = calculateMinUTxOLovelaceAmount(tokens)
+      const coins = getInputBalance(profitableInputs)
+      // TODO: edge case, if the amount of ada is too low an we cant split it into two outputs
+      const outputs: _Output[] = [
+        {isChange: false, address, coins: 0 as Lovelace, tokens: []},
+        {isChange: false, address, coins: minUTxOLovelaceAmount, tokens},
+      ]
+      const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
+      const amount = Math.max(coins - txFee - minUTxOLovelaceAmount, 0) as Lovelace
+      return {assetType: AssetType.ADA, coins: amount, fieldValue: `${printAda(amount)}`}
+    } else {
+      const {token: sendToken} = sendAmount
+      const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
+      // TODO: rename
+      const theToken = tokens.find(
+        (token) => token.policyId === sendToken.policyId && token.assetName === sendToken.assetName
+      )
+      // TODO: edge case, if the amount of ada is too low an we cant split it into two outputs
+      return {
+        assetType: AssetType.TOKEN,
+        token: theToken,
+        fieldValue: `${theToken.quantity}`,
+      }
+    }
   }
 
   function getMaxDonationAmount(

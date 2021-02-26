@@ -2,14 +2,16 @@ import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {StakepoolDataProvider} from './helpers/dataProviders/types'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, AuthMethodType, Lovelace, SendAmount} from './types'
+import {AccountInfo, AssetType, AuthMethodType, Lovelace, SendAmount} from './types'
 import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
 export interface SendTransactionSummary {
-  amount?: Lovelace
+  amount?: SendAmount
+  minimalLovelaceAmount: Lovelace
   fee: Lovelace
   plan: TxPlan
   tab?: any
   deposit: Lovelace
+  rewards?: Lovelace
 }
 
 export interface State {
@@ -196,7 +198,7 @@ const initialState: State = {
   // send form
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
-  sendAmount: {isLovelace: true, fieldValue: '0', coins: 0 as Lovelace},
+  sendAmount: {assetType: AssetType.ADA, fieldValue: '0', coins: 0 as Lovelace},
 
   // delegation
   shelleyDelegation: {
@@ -207,7 +209,8 @@ const initialState: State = {
 
   // transaction
   sendTransactionSummary: {
-    amount: 0 as Lovelace,
+    amount: {assetType: AssetType.ADA, fieldValue: '0', coins: 0 as Lovelace},
+    minimalLovelaceAmount: 0 as Lovelace,
     fee: 0 as Lovelace,
     plan: null,
     deposit: 0 as Lovelace,

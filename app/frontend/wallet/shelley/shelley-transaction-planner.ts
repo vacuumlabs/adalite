@@ -18,6 +18,8 @@ import {
   DelegateAdaTxPlanArgs,
   WithdrawRewardsTxPlanArgs,
   ConvertLegacyAdaTxPlanArgs,
+  Token,
+  AssetType,
 } from '../../types'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
@@ -257,17 +259,31 @@ const validateTxPlan = (txPlan: TxPlan): void => {
   }
 }
 
+export const calculateMinUTxOLovelaceAmount = (tokens: Token[]) => {
+  return 2000000 as Lovelace
+}
+
 const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   const prepareSendAdaTx = (
     txPlanArgs: SendAdaTxPlanArgs | ConvertLegacyAdaTxPlanArgs
   ): TxPlanDraft => {
     const outputs: _Output[] = []
-    outputs.push({
-      isChange: false,
-      address: txPlanArgs.address,
-      coins: txPlanArgs.coins,
-      tokens: [],
-    })
+    if (txPlanArgs.sendAmount.assetType === AssetType.ADA) {
+      outputs.push({
+        isChange: false,
+        address: txPlanArgs.address,
+        coins: txPlanArgs.sendAmount.coins,
+        tokens: [],
+      })
+    } else {
+      outputs.push({
+        isChange: false,
+        address: txPlanArgs.address,
+        coins: calculateMinUTxOLovelaceAmount([txPlanArgs.sendAmount.token]),
+        tokens: [txPlanArgs.sendAmount.token],
+      })
+    }
+
     return {
       outputs,
       certificates: [],

@@ -2,7 +2,7 @@ import {isValidBootstrapAddress, isValidShelleyAddress} from 'cardano-crypto.js'
 import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
-import {Lovelace, Ada, CertificateType} from '../types'
+import {Lovelace, Ada, CertificateType, SendAmount} from '../types'
 import {NETWORKS} from '../wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
@@ -72,7 +72,7 @@ const donationAmountValidator = (fieldValue: string, coins: Lovelace, balance: L
 }
 
 const txPlanValidator = (
-  sendAmount: Lovelace,
+  coins: Lovelace,
   balance: Lovelace,
   fee: Lovelace,
   donationAmount: Lovelace = 0 as Lovelace
@@ -80,13 +80,13 @@ const txPlanValidator = (
   if (fee >= balance) {
     return {code: 'SendAmountCantSendAnyFunds'}
   }
-  if (sendAmount + fee > balance) {
+  if (coins + fee > balance) {
     return {
       code: 'SendAmountInsufficientFunds',
       params: {balance},
     }
   }
-  if (donationAmount > 0 && sendAmount + fee + donationAmount > balance) {
+  if (donationAmount > 0 && coins + fee + donationAmount > balance) {
     return {
       code: 'DonationInsufficientBalance',
       params: {balance},

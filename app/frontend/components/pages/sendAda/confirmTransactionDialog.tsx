@@ -4,10 +4,10 @@ import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 import RawTransactionModal from './rawTransactionModal'
-import {State} from '../../../state'
+import {SendTransactionSummary, State} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
-import {Lovelace} from '../../../types'
+import {AssetType, Lovelace} from '../../../types'
 
 interface Props {
   sendAddress: any
@@ -18,6 +18,7 @@ interface Props {
   isDelegation?: boolean
   stakePool: any
   txConfirmType: string
+  summary: SendTransactionSummary
 }
 
 class ConfirmTransactionDialogClass extends Component<Props, {}> {
@@ -36,14 +37,16 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
     rawTransactionOpen,
     stakePool,
     txConfirmType,
-  }) {
+  }: Props) {
     // TODO: refactor all of this
-    const totalAmount = summary.amount + summary.donation + summary.fee + summary.deposit
+    const summarySendAmount =
+      summary.amount?.assetType === AssetType.ADA ? summary.amount?.coins : (0 as Lovelace)
+    const totalAmount = (summarySendAmount + summary.fee + summary.deposit) as Lovelace
     const totalAmounts = {
-      convert: summary.amount,
-      withdraw: summary.amount - summary.fee,
+      convert: summarySendAmount,
+      withdraw: (summary.rewards ?? (0 as Lovelace)) - summary.fee,
     }
-    const total = totalAmounts[txConfirmType] || totalAmount
+    const total = (totalAmounts[txConfirmType] as Lovelace) || (totalAmount as Lovelace)
     const titleMap = {
       delegate: 'Delegation review',
       revoke: 'Delegation revocation review',
@@ -77,7 +80,7 @@ class ConfirmTransactionDialogClass extends Component<Props, {}> {
               </div>
               {/* TODO: Hide ADA symbol when handling tokens */}
               <div className="ada-label">Amount</div>
-              <div className="review-amount">{printAda(summary.amount)}</div>
+              <div className="review-amount">{printAda(summarySendAmount)}</div>
             </Fragment>
           )}
 

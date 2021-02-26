@@ -5,6 +5,7 @@ import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import {getSourceAccountInfo, State} from '../../../state'
 import {StakepoolDataProvider} from '../../../../frontend/helpers/dataProviders/types'
+import {ADALITE_CONFIG} from '../../../../frontend/config'
 
 type StakePoolLabelProps = {
   isTicker: boolean
@@ -43,16 +44,25 @@ const validateInput = (
   fieldValue: string,
   validStakepoolDataProvider: StakepoolDataProvider
 ): ValidatedInput => {
-  const pool =
-    validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue) ||
-    validStakepoolDataProvider.getPoolInfoByTicker(fieldValue)
-  if (pool) return {poolHash: pool.poolHash, error: null}
+  if (ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER) {
+    const pool =
+      validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue) ||
+      validStakepoolDataProvider.getPoolInfoByTicker(fieldValue)
+    if (pool) return {poolHash: pool.poolHash, error: null}
 
-  const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
-  const isTickerString = fieldValue.length <= 5 && fieldValue.toUpperCase() === fieldValue
-  const poolHash = null
-  if (!hasTickerMapping && isTickerString) return {poolHash, error: {code: 'TickerSearchDisabled'}}
-  return {poolHash, error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}}
+    const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
+    const isTickerString = fieldValue.length <= 5 && fieldValue.toUpperCase() === fieldValue
+    const poolHash = null
+    if (!hasTickerMapping && isTickerString) {return {poolHash, error: {code: 'TickerSearchDisabled'}}}
+    return {poolHash, error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}}
+  }
+
+  const pool = validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue)
+  if (pool) return {poolHash: pool.poolHash, error: null}
+  return {
+    poolHash: null,
+    error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping: false}},
+  }
 }
 
 interface Props {
@@ -99,17 +109,16 @@ const DelegateInput = ({
     }
   }
 
+  const tickerSearchEnabled =
+    ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER && validStakepoolDataProvider.hasTickerMapping
+
   return (
     <Fragment>
-      <div
-        className={`stake-pool-input-label ${
-          validStakepoolDataProvider.hasTickerMapping ? '' : 'stake-pool-id-only'
-        }`}
-      >
+      <div className={`stake-pool-input-label ${tickerSearchEnabled ? '' : 'stake-pool-id-only'}`}>
         <StakePoolLabel
           isTicker={isTicker}
           isPoolHash={isPoolHash}
-          tickerSearchEnabled={validStakepoolDataProvider.hasTickerMapping}
+          tickerSearchEnabled={tickerSearchEnabled}
         />
       </div>
       <input

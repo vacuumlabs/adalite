@@ -6,9 +6,9 @@ import {
   AddressToPathMapper,
   AddressToPathMapping,
   AddressWithMeta,
-  BIP32Path,
   CryptoProvider,
   Lovelace,
+  SendAmount,
   StakingHistoryObject,
   TxPlanArgs,
   TxType,
@@ -251,10 +251,10 @@ const Account = ({
     return signedTx
   }
 
-  async function getMaxSendableAmount(address: _Address) {
+  async function getMaxSendableAmount(address: _Address, sendAmount: SendAmount) {
     // TODO: why do we need hasDonation?
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
-    return _getMaxSendableAmount(utxos, address)
+    return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
   async function getMaxDonationAmount(address: _Address, sendAmount: Lovelace) {
@@ -264,7 +264,8 @@ const Account = ({
 
   async function getMaxNonStakingAmount(address: _Address) {
     const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
-    return _getMaxSendableAmount(utxos, address)
+    // TODO: sendAmount instead of null
+    return _getMaxSendableAmount(utxos, address, null)
   }
 
   const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {

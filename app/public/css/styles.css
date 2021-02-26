@@ -163,6 +163,10 @@ p.hey {
   text-overflow: ellipsis;
 }
 
+.no-outline .no-outline:focus, .no-outline:hover{
+  outline:none;
+}
+
 /* SELECTABILITY */
 
 .one-click-select {
@@ -605,28 +609,38 @@ p.hey {
   margin-bottom: 32px;
 }
 
+.searchable-select-wrapper.no-margin {
+  margin-bottom: 0;
+}
+
 .searchable-select {
   position: relative;
   cursor: pointer;
+}
+
+.searchable-select.focus {
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.06);
 }
 
 .searchable-select-dropdown {
   position: absolute;
   width: 100%;
   min-width: 0;
-  /* TODO: Make this dynamic, so we don't have to edit it every time Send ada page changes height */
-  /* max-height: 421px; */
-  max-height: 356px;
+  max-height: 331px;
   display: flex;
   flex-direction: column;
   border-radius: 4px;
   overflow-y: auto;
   overflow-x: hidden;
   cursor: pointer;
-  transition: max-height 0.25s ease-out;
+  /* transition: max-height 0.25s ease-out; */
   background-color: white;
   box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.08);
   z-index: 1;
+}
+
+.searchable-select-dropdown.modal-dropdown {
+  right: 0px;
 }
 
 .searchable-select-dropdown.hide {
@@ -693,6 +707,11 @@ p.hey {
   width: 6.6em;
   background: white;
   z-index: 1;
+}
+
+.asset-dropdown-label {
+  justify-self: end;
+  padding-right: 16px;
 }
 
 /* FORM GLOBAL */

@@ -152,7 +152,7 @@ const CardanoWallet = (options) => {
 
   async function getMaxSendableAmount(address) {
     const utxos = (await getUTxOs()).filter(isUtxoProfitable)
-    return _getMaxSendableAmount(utxos, address)
+    return _getMaxSendableAmount(utxos, address, null)
   }
 
   async function getMaxDonationAmount(address, sendAmount: Lovelace) {

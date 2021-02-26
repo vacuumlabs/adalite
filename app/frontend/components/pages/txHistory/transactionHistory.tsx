@@ -107,7 +107,8 @@ const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
     <div className="row">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {name}
+        {/* TODO: this should converted be probably somewhere else */}
+        {Buffer.from(name, 'hex').toString()}
       </div>
       <div className={`multi-asset-amount ${amount > 0 ? 'credit' : 'debit'}`}>
         {amount > 0 ? `+${amount}` : amount}
@@ -270,7 +271,7 @@ const TransactionHistory = ({transactionHistory, stakingHistory}: Props): h.JSX.
                 star={false}
                 name={tokenEffect.assetName}
                 hash={tokenEffect.policyId}
-                amount={tokenEffect.quantity} // mock, just to show something
+                amount={tokenEffect.quantity}
               />
             ))}
           </li>

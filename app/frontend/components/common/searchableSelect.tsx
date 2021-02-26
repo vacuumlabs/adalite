@@ -5,20 +5,24 @@ import {State} from '../../state'
 import {useEffect, useRef, useState} from 'preact/hooks'
 
 interface Props<T> {
-  label: string
+  wrapperClassName?: string
+  label?: string
   defaultItem: T
   items: T[]
   displaySelectedItem: (t: T) => string
-  displaySelectedItemClassName: string
+  displaySelectedItemClassName?: string
   displayItem: (t: T) => any
   onSelect: (t: T) => void
   showSearch: boolean
   searchPredicate: (query: string, t: T) => boolean
   searchPlaceholder: string
+  dropdownClassName?: string
+  dropdownStyle?: string
 }
 
 // <T extends {}> is workaround for <T> being recognized as JSX element instead of generics
 const SearchableSelect = <T extends {}>({
+  wrapperClassName,
   label,
   defaultItem,
   items,
@@ -29,6 +33,8 @@ const SearchableSelect = <T extends {}>({
   showSearch,
   searchPredicate,
   searchPlaceholder,
+  dropdownClassName,
+  dropdownStyle,
 }: Props<T>) => {
   const inputEl = useRef<HTMLInputElement>(null)
   const dropdownEl = useRef<HTMLDivElement>(null)
@@ -48,16 +54,30 @@ const SearchableSelect = <T extends {}>({
     dropdownEl.current.scrollTop = 0
   })
 
+  const optionalClassName = (className?: string) => (className != null ? className : '')
+
   return (
-    <div className="searchable-select-wrapper" tabIndex={0} onBlur={() => showDropdown(false)}>
-      <div className="searchable-select-label">{label}</div>
+    <div
+      className={`searchable-select-wrapper no-outline ${optionalClassName(wrapperClassName)}`}
+      tabIndex={0}
+      onBlur={() => !showSearch && showDropdown(false)}
+    >
+      {label && <div className="searchable-select-label">{label}</div>}
       <div
-        className={`searchable-select ${displaySelectedItemClassName}`}
+        className={`searchable-select ${visible ? 'focus ' : ''}${optionalClassName(
+          displaySelectedItemClassName
+        )}`}
         onClick={() => showDropdown(!visible)}
       >
         {displaySelectedItem(value)}
       </div>
-      <div ref={dropdownEl} className={`searchable-select-dropdown ${visible ? '' : 'hide'}`}>
+      <div
+        ref={dropdownEl}
+        className={`searchable-select-dropdown ${visible ? '' : 'hide'} ${optionalClassName(
+          dropdownClassName
+        )}`}
+        style={dropdownStyle}
+      >
         {showSearch && (
           <input
             ref={inputEl}
@@ -65,6 +85,7 @@ const SearchableSelect = <T extends {}>({
             className="searchable-select-input"
             value={search}
             onInput={(event: any) => setSearch(event.target.value)}
+            onBlur={() => showDropdown(false)}
             placeholder={searchPlaceholder}
           />
         )}
