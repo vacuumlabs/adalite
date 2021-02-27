@@ -60,6 +60,34 @@ const sendAmountValidator = (fieldValue: string, coins: Lovelace, balance: Lovel
   return null
 }
 
+const tokenAmountValidator = (fieldValue: string, quantity: number, tokenBalance: number) => {
+  const maxAmount = Number.MAX_SAFE_INTEGER
+  const integerRegex = /^\d+$/
+
+  if (fieldValue === '') {
+    return null
+  }
+  if (quantity > maxAmount) {
+    return {code: 'SendAmountIsTooBig'}
+  }
+  if (quantity <= 0) {
+    return {code: 'SendAmountIsNotPositive'}
+  }
+  if (!integerRegex.test(fieldValue)) {
+    return {code: 'TokenAmountOnlyWholeNumbers'}
+  }
+  if (isNaN(quantity)) {
+    return {code: 'SendAmountIsNan'}
+  }
+  if (quantity > tokenBalance) {
+    return {
+      code: 'TokenAmountInsufficientFunds',
+      params: {tokenBalance},
+    }
+  }
+  return null
+}
+
 const donationAmountValidator = (fieldValue: string, coins: Lovelace, balance: Lovelace) => {
   const amountError = sendAmountValidator(fieldValue, coins, balance)
   if (amountError) {
@@ -149,4 +177,5 @@ export {
   mnemonicValidator,
   donationAmountValidator,
   validatePoolRegUnsignedTx,
+  tokenAmountValidator,
 }

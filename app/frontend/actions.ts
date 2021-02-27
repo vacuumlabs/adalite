@@ -9,6 +9,7 @@ import {
   withdrawalPlanValidator,
   mnemonicValidator,
   validatePoolRegUnsignedTx,
+  tokenAmountValidator,
 } from './helpers/validators'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
@@ -557,17 +558,27 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const validateSendForm = (state: State) => {
     setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
-    const sendAmountValidationError =
-      state.sendAmount.assetType === AssetType.ADA
-        ? sendAmountValidator(
-          state.sendAmount.fieldValue,
-          state.sendAmount.coins,
-            getSourceAccountInfo(state).balance as Lovelace
-        )
-        : null
-    // tokenAmountValidator
-    //(state.sendAmount.fieldValue, state.sendAmount.token.quantity, tokenBalance)
-    setErrorState('sendAmountValidationError', sendAmountValidationError)
+    if (state.sendAmount.assetType === AssetType.ADA) {
+      const sendAmountValidationError = sendAmountValidator(
+        state.sendAmount.fieldValue,
+        state.sendAmount.coins,
+        getSourceAccountInfo(state).balance as Lovelace
+      )
+      setErrorState('sendAmountValidationError', sendAmountValidationError)
+    }
+    if (state.sendAmount.assetType === AssetType.TOKEN) {
+      const {policyId, assetName, quantity} = state.sendAmount.token
+      // TODO: we should have a assetProvider to get token O(1)
+      const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
+        (token) => token.policyId === policyId && token.assetName === assetName
+      ).quantity
+      const sendAmountValidationError = tokenAmountValidator(
+        state.sendAmount.fieldValue,
+        quantity,
+        tokenBalance
+      )
+      setErrorState('sendAmountValidationError', sendAmountValidationError)
+    }
   }
 
   const isSendFormFilledAndValid = (state: State) =>

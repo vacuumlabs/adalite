@@ -15,6 +15,7 @@ import {useCallback, useState} from 'preact/hooks'
 import {AssetType, Lovelace, SendAmount, Token} from '../../../types'
 import {StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
+import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -70,8 +71,7 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {/* TODO: this should converted be probably somewhere else */}
-        {type === AssetType.TOKEN ? Buffer.from(assetName, 'hex').toString() : assetName}
+        {type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}
       </div>
       <div className="multi-asset-amount">
         {type === AssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
@@ -228,8 +228,8 @@ const SendAdaPage = ({
     <SearchableSelect
       label="Select asset"
       defaultItem={getDefaultItem()}
-      displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
-        `${tokenBalanceWithAda.assetName}`
+      displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
+        `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
       }
       displaySelectedItemClassName="input dropdown"
       items={dropdownAssetItems}
@@ -247,8 +247,8 @@ const SendAdaPage = ({
       <SearchableSelect
         wrapperClassName="no-margin"
         defaultItem={getDefaultItem()}
-        displaySelectedItem={(tokenBalanceWithAda: DropdownAssetItem) =>
-          `${tokenBalanceWithAda.assetName}`
+        displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
+          `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
         }
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}

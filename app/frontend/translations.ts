@@ -20,6 +20,9 @@ const translations = {
   SendAmountPrecisionLimit: () => 'Invalid format: Maximum allowed precision is 0.000001',
   SendAmountIsTooBig: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER as Lovelace)}`,
+  TokenAmountOnlyWholeNumbers: () => 'Invalid format: Asset amount has to be a whole number',
+  TokenAmountInsufficientFunds: ({tokenBalance}) =>
+    `Insufficient funds for the transaction. Your balance is ${tokenBalance}`,
   DonationAmountTooLow: () => `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
   DonationInsufficientBalance: () => 'Insufficient balance for the donation.',
 

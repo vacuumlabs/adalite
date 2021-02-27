@@ -29,6 +29,9 @@ export const encodeAddress = (address: Buffer): _Address => {
   return bech32.encode(addressPrefix, address)
 }
 
+export const assetNameHex2Readable = (assetNameHex: HexString) =>
+  Buffer.from(assetNameHex, 'hex').toString()
+
 export const xpub2pub = (xpub: Buffer) => xpub.slice(0, 32)
 
 export const xpub2ChainCode = (xpub: Buffer) => xpub.slice(32, 64)

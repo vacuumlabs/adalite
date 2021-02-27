@@ -1,4 +1,5 @@
 import {h, Fragment} from 'preact'
+import {assetNameHex2Readable} from '../../../wallet/shelley/helpers/addresses'
 import printAda from '../../../helpers/printAda'
 import {getActiveAccountInfo, State} from '../../../state'
 import {ADALITE_CONFIG} from '../../../config'
@@ -107,8 +108,7 @@ const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
     <div className="row">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {/* TODO: this should converted be probably somewhere else */}
-        {Buffer.from(name, 'hex').toString()}
+        {assetNameHex2Readable(name)}
       </div>
       <div className={`multi-asset-amount ${amount > 0 ? 'credit' : 'debit'}`}>
         {amount > 0 ? `+${amount}` : amount}
