@@ -2,17 +2,15 @@ import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {StakepoolDataProvider} from './helpers/dataProviders/types'
 import {localStorageVars} from './localStorage'
-import {AccountInfo, AssetType, AuthMethodType, Lovelace, SendAmount} from './types'
-import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
-export interface SendTransactionSummary {
-  amount?: SendAmount
-  minimalLovelaceAmount: Lovelace
-  fee: Lovelace
-  plan: TxPlan
-  tab?: any
-  deposit: Lovelace
-  rewards?: Lovelace
-}
+import {
+  AccountInfo,
+  AssetType,
+  AuthMethodType,
+  Lovelace,
+  SendAmount,
+  TransactionSummary,
+  TxType,
+} from './types'
 
 export interface State {
   // general
@@ -69,19 +67,6 @@ export interface State {
   sendAmountValidationError?: any
   calculatingFee?: boolean
 
-  // donation
-  // donationAmount: {
-  //   fieldValue: string
-  //   coins: Lovelace
-  // }
-  // checkedDonationType: string // TODO: enum
-  // donationAmountValidationError?: any
-  // shouldShowCustomDonationInput: boolean
-  // maxDonationAmount: number
-  // percentageDonationValue: number
-  // percentageDonationText: string
-  // isThresholdAmountReached: boolean
-
   // delegation form
   calculatingDelegationFee?: any
   isDelegationValid?: any
@@ -93,7 +78,7 @@ export interface State {
   gettingPoolInfo: boolean
 
   // transaction
-  sendTransactionSummary: SendTransactionSummary
+  sendTransactionSummary: TransactionSummary
   rawTransactionOpen: boolean
   rawTransaction: string
   transactionFee?: any
@@ -209,11 +194,13 @@ const initialState: State = {
 
   // transaction
   sendTransactionSummary: {
-    amount: {assetType: AssetType.ADA, fieldValue: '0', coins: 0 as Lovelace},
+    // this should be called only transactionSummary
+    type: TxType.SEND_ADA,
+    sendAddress: {fieldValue: ''},
+    sendAmount: {assetType: AssetType.ADA, fieldValue: '0', coins: 0 as Lovelace},
     minimalLovelaceAmount: 0 as Lovelace,
     fee: 0 as Lovelace,
     plan: null,
-    deposit: 0 as Lovelace,
   },
   rawTransactionOpen: false,
   rawTransaction: '',

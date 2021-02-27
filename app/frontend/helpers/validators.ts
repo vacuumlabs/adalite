@@ -2,7 +2,7 @@ import {isValidBootstrapAddress, isValidShelleyAddress} from 'cardano-crypto.js'
 import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
-import {Lovelace, Ada, CertificateType, SendAmount} from '../types'
+import {Lovelace, Ada, CertificateType} from '../types'
 import {NETWORKS} from '../wallet/constants'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
@@ -101,14 +101,18 @@ const donationAmountValidator = (fieldValue: string, coins: Lovelace, balance: L
 
 const txPlanValidator = (
   coins: Lovelace,
+  minimalLovelaceAmount: Lovelace,
   balance: Lovelace,
   fee: Lovelace,
   donationAmount: Lovelace = 0 as Lovelace
 ) => {
-  if (fee >= balance) {
+  if (minimalLovelaceAmount + fee > balance) {
+    return {code: 'SendTokenNotMinimalLovelaceAmount', params: {minimalLovelaceAmount}}
+  }
+  if (fee >= balance + minimalLovelaceAmount) {
     return {code: 'SendAmountCantSendAnyFunds'}
   }
-  if (coins + fee > balance) {
+  if (coins + fee + minimalLovelaceAmount > balance) {
     return {
       code: 'SendAmountInsufficientFunds',
       params: {balance},
@@ -130,7 +134,7 @@ const delegationPlanValidator = (balance: Lovelace, deposit: Lovelace, fee: Love
       params: {balance},
     }
   }
-  const txPlanError = txPlanValidator(0 as Lovelace, balance, fee)
+  const txPlanError = txPlanValidator(0 as Lovelace, 0 as Lovelace, balance, fee)
   return txPlanError || null
 }
 
@@ -138,7 +142,7 @@ const withdrawalPlanValidator = (rewardsAmount: Lovelace, balance: Lovelace, fee
   if (fee >= rewardsAmount) {
     return {code: 'RewardsBalanceTooLow', message: ''}
   }
-  const txPlanError = txPlanValidator(0 as Lovelace, balance, fee)
+  const txPlanError = txPlanValidator(0 as Lovelace, 0 as Lovelace, balance, fee)
   return txPlanError || null
 }
 

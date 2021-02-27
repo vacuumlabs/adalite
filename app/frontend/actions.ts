@@ -50,6 +50,9 @@ import {
   HexString,
   SendAmount,
   AssetType,
+  SendTransactionSummary,
+  WithdrawTransactionSummary,
+  DelegateTransactionSummary,
 } from './types'
 import {MainTabs} from './constants'
 
@@ -379,7 +382,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* ADDRESS DETAIL */
 
-  const verifyAddress = async (state, address?) => {
+  const verifyAddress = async (state: State, address?: string) => {
     const newState = getState()
     if (newState.usingHwWallet) {
       try {
@@ -477,13 +480,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     shouldShowDelegationModal: false,
   })
 
-  const setRawTransactionOpen = (state, open) => {
+  const setRawTransactionOpen = (state: State, open: boolean) => {
     setState({
       rawTransactionOpen: open,
     })
   }
 
-  const closeTransactionErrorModal = (state) => {
+  const closeTransactionErrorModal = (state: State) => {
     setState({
       shouldShowTransactionErrorModal: false,
     })
@@ -492,20 +495,17 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   /* SEND ADA */
 
   const setTransactionSummary = (
-    tab, // TODO: add enum for tabs
     plan: TxPlan,
-    minimalLovelaceAmount: Lovelace,
-    sendAmount?: SendAmount,
-    rewards?: Lovelace
+    transactionSummary:
+      | SendTransactionSummary
+      | WithdrawTransactionSummary
+      | DelegateTransactionSummary
   ) => {
     setState({
       sendTransactionSummary: {
-        amount: sendAmount,
-        minimalLovelaceAmount,
+        ...transactionSummary,
         fee: plan.fee,
         plan,
-        tab,
-        deposit: plan.deposit,
       },
     })
   }
@@ -513,19 +513,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const resetTransactionSummary = (state: State) => {
     setState({
       sendTransactionSummary: {
-        amount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace},
+        // TODO: we should reset this to null
+        type: TxType.SEND_ADA,
+        sendAddress: {fieldValue: ''},
+        sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace},
         minimalLovelaceAmount: 0 as Lovelace,
         fee: 0 as Lovelace,
         plan: null,
-        tab: state.sendTransactionSummary.tab,
-        deposit: 0 as Lovelace,
       },
-    })
-  }
-
-  const resetAmountFields = (state: State) => {
-    setState({
-      transactionFee: 0, // TODO: remove this
     })
   }
 
@@ -543,8 +538,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       sendAddress: {fieldValue: ''},
       sendAddressValidationError: null,
       sendAmountValidationError: null,
+      transactionFee: 0 as Lovelace,
     })
-    resetAmountFields(state)
   }
 
   const resetDelegation = () => {
@@ -568,7 +563,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
     if (state.sendAmount.assetType === AssetType.TOKEN) {
       const {policyId, assetName, quantity} = state.sendAmount.token
-      // TODO: we should have a assetProvider to get token O(1)
+      // TODO: we should have a tokenProvider to get token O(1)
       const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
         (token) => token.policyId === policyId && token.assetName === assetName
       ).quantity
@@ -625,7 +620,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const minimalLovelaceAmount = calculateMinUTxOLovelaceAmount(
       sendAmount.assetType === AssetType.ADA ? [] : [sendAmount.token]
     )
-    const coins = sendAmount.assetType === AssetType.ADA ? sendAmount.coins : minimalLovelaceAmount
+    const coins = sendAmount.assetType === AssetType.ADA ? sendAmount.coins : (0 as Lovelace)
 
     if (txPlanResult.type === TxPlanResultType.SUCCESS) {
       const newState = getState() // if the values changed meanwhile
@@ -636,7 +631,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       ) {
         return
       }
-      setTransactionSummary('send', txPlanResult.txPlan, minimalLovelaceAmount, sendAmount)
+      const sendTransactionSummary: SendTransactionSummary = {
+        type: TxType.SEND_ADA,
+        sendAddress: newState.sendAddress,
+        sendAmount,
+        minimalLovelaceAmount,
+      }
+      setTransactionSummary(txPlanResult.txPlan, sendTransactionSummary)
       setState({
         calculatingFee: false,
         txSuccessTab: '',
@@ -644,7 +645,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       })
     } else {
       const validationError =
-        txPlanValidator(coins, balance, txPlanResult.estimatedFee) || txPlanResult.error
+        txPlanValidator(coins, minimalLovelaceAmount, balance, txPlanResult.estimatedFee) ||
+        txPlanResult.error
       setErrorState('sendAmountValidationError', validationError)
       setState({
         calculatingFee: false,
@@ -665,7 +667,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setState({calculatingFee: true})
       debouncedCalculateFee()
     } else {
-      resetAmountFields(state)
       setState({calculatingFee: false})
     }
   }
@@ -712,12 +713,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const convertNonStakingUtxos = async (state: State): Promise<void> => {
     loadingAction(state, 'Preparing transaction...')
-    const sendAmount = {...state.sendAmount}
     const address = await wallet.getAccount(state.sourceAccountIndex).getChangeAddress()
-    const maxAmount = await wallet
+    const sendAmount = await wallet
       .getAccount(state.sourceAccountIndex)
       .getMaxNonStakingAmount(address)
-    const coins = maxAmount.assetType === AssetType.ADA && maxAmount.coins
+    const coins = sendAmount.assetType === AssetType.ADA && sendAmount.coins
     const txPlanResult = await prepareTxPlan({
       address,
       sendAmount,
@@ -726,11 +726,18 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
     if (txPlanResult.type === TxPlanResultType.SUCCESS) {
-      setTransactionSummary('stake', txPlanResult.txPlan, coins)
+      const sendTransactionSummary: SendTransactionSummary = {
+        type: TxType.SEND_ADA,
+        sendAmount,
+        sendAddress: {fieldValue: address},
+        minimalLovelaceAmount: 0 as Lovelace,
+      }
+      setTransactionSummary(txPlanResult.txPlan, sendTransactionSummary)
       await confirmTransaction(getState(), 'convert')
     } else {
       const validationError =
-        txPlanValidator(coins, balance, txPlanResult.estimatedFee) || txPlanResult.error
+        txPlanValidator(coins, 0 as Lovelace, balance, txPlanResult.estimatedFee) ||
+        txPlanResult.error
       setErrorState('transactionSubmissionError', validationError, {
         shouldShowTransactionErrorModal: true,
       })
@@ -755,7 +762,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
     if (txPlanResult.type === TxPlanResultType.SUCCESS) {
-      setTransactionSummary('stake', txPlanResult.txPlan, 0 as Lovelace, undefined, rewards)
+      const withdrawTransactionSummary: WithdrawTransactionSummary = {
+        type: TxType.WITHDRAW,
+        rewards,
+      }
+      setTransactionSummary(txPlanResult.txPlan, withdrawTransactionSummary)
       await confirmTransaction(getState(), 'withdraw')
     } else {
       const withdrawalValidationError =
@@ -830,7 +841,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
           delegationFee: txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit,
         },
       })
-      setTransactionSummary('stake', txPlanResult.txPlan, 0 as Lovelace)
+      const delegationTransactionSummary: DelegateTransactionSummary = {
+        type: TxType.DELEGATE,
+        deposit: txPlanResult.txPlan.deposit,
+        stakePool: newState.shelleyDelegation.selectedPool,
+      }
+      setTransactionSummary(txPlanResult.txPlan, delegationTransactionSummary)
       setState({
         calculatingDelegationFee: false,
         txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
@@ -877,11 +893,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     poolHash: string,
     validationError: any = null
   ): void => {
-    /**
-     * this has to be redone,
-     * pool validation must happen before debouncing
-     * but pool info shown after
-     */
     const newPool = poolHash && state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
     const oldPool = state.shelleyDelegation.selectedPool
     if (newPool && newPool?.poolHash === oldPool?.poolHash) return
@@ -979,10 +990,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       sourceAccountIndex,
       targetAccountIndex,
-      sendTransactionTitle: 'Transfer funds between accounts',
+      sendTransactionTitle: 'Transfer funds between accounts', // TODO: remove this
       shouldShowSendTransactionModal: true,
       txSuccessTab: '',
-      sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace},
+      sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace}, // TODO: use reset function
       transactionFee: 0,
     })
     const targetAddress = await wallet.getAccount(targetAccountIndex).getChangeAddress()
@@ -1018,7 +1029,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       sourceAccountIndex,
       // TODO: move this title logic to the actual component
-      delegationTitle: state.shouldNumberAccountsFromOne
+      delegationTitle: state.shouldNumberAccountsFromOne // TODO: remove this from state
         ? `Delegate Account #${sourceAccountIndex + 1} Stake`
         : `Delegate Account ${sourceAccountIndex} Stake`,
       shouldShowDelegationModal: true,
@@ -1085,7 +1096,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
     let sendResponse
     let txSubmitResult
-    const txTab = state.sendTransactionSummary.tab
+    const txTab = state.sendTransactionSummary.type
     try {
       const txAux = await wallet
         .getAccount(state.sourceAccountIndex)
@@ -1123,14 +1134,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       resetTransactionSummary(state)
       resetSendFormFields(state)
       resetSendFormState(state)
-      resetAmountFields(state)
       await reloadWalletInfo(state)
       wallet.getAccount(state.sourceAccountIndex).generateNewSeeds()
       resetAccountIndexes(state)
       selectAdaliteStakepool(state)
       setState({
         waitingForHwWallet: false,
-        txSuccessTab: sendResponse && sendResponse.success ? txTab : '',
+        // TODO: refactor txSuccesTab
+        txSuccessTab:
+          sendResponse && sendResponse.success && txTab === TxType.SEND_ADA ? 'send' : 'stake',
         sendResponse,
       })
     }
@@ -1151,7 +1163,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* GENERAL */
 
-  const openWelcome = (state) => {
+  const openWelcome = (state: State) => {
     setState({
       displayWelcome: true,
     })

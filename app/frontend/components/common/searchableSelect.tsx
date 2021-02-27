@@ -24,7 +24,7 @@ interface Props<T> {
 const SearchableSelect = <T extends {}>({
   wrapperClassName,
   label,
-  defaultItem,
+  defaultItem, // TODO: do we need this, should default item by in state of the parent component?
   items,
   displaySelectedItem,
   displaySelectedItemClassName,
@@ -39,7 +39,7 @@ const SearchableSelect = <T extends {}>({
   const inputEl = useRef<HTMLInputElement>(null)
   const dropdownEl = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
-  const [value, setValue] = useState(defaultItem)
+  // const [value, setValue] = useState(defaultItem)
   const [search, setSearch] = useState('')
   const shouldShowItem = (item: T) => searchPredicate(search, item)
   const showDropdown = (bool: boolean) => {
@@ -69,7 +69,7 @@ const SearchableSelect = <T extends {}>({
         )}`}
         onClick={() => showDropdown(!visible)}
       >
-        {displaySelectedItem(value)}
+        {displaySelectedItem(defaultItem)}
       </div>
       <div
         ref={dropdownEl}
@@ -97,7 +97,6 @@ const SearchableSelect = <T extends {}>({
                 key={i}
                 onClick={() => {
                   setVisible(false)
-                  setValue(item)
                   onSelect(item)
                 }}
               >

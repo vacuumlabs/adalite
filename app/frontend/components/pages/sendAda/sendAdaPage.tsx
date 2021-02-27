@@ -10,9 +10,17 @@ import Conversions from '../../common/conversions'
 import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
-import {getSourceAccountInfo, SendTransactionSummary, State} from '../../../state'
+import {getSourceAccountInfo, State} from '../../../state'
 import {useCallback, useState} from 'preact/hooks'
-import {AssetType, Lovelace, SendAmount, Token} from '../../../types'
+import {
+  AssetType,
+  Lovelace,
+  SendAmount,
+  SendTransactionSummary,
+  Token,
+  TransactionSummary,
+  TxType,
+} from '../../../types'
 import {StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
@@ -47,7 +55,7 @@ interface Props {
   feeRecalculating: any
   sendMaxFunds: any
   conversionRates: any
-  sendTransactionSummary: SendTransactionSummary
+  sendTransactionSummary: TransactionSummary & SendTransactionSummary
   transactionFee: any
   txSuccessTab: any
   balance: any
@@ -86,6 +94,25 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
   </div>
 )
 
+const calculateTotalAmounts = (transactionSummary: TransactionSummary) => {
+  const zeroTotal = {totalLovelace: 0 as Lovelace, totalTokens: null}
+  if (!transactionSummary || transactionSummary.type !== TxType.SEND_ADA) return zeroTotal
+  const {sendAmount, fee, minimalLovelaceAmount} = transactionSummary
+  if (sendAmount.assetType === AssetType.ADA) {
+    return {
+      totalLovelace: (sendAmount.coins + fee) as Lovelace,
+      totalTokens: null,
+    }
+  }
+  if (sendAmount.assetType === AssetType.TOKEN) {
+    return {
+      totalLovelace: (minimalLovelaceAmount + fee) as Lovelace,
+      totalTokens: sendAmount.token,
+    }
+  }
+  return zeroTotal
+}
+
 const SendAdaPage = ({
   sendResponse,
   sendAddress,
@@ -119,10 +146,9 @@ const SendAdaPage = ({
 
   const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-  const total =
-    (summary.amount?.assetType === AssetType.ADA
-      ? summary.amount.coins
-      : summary.minimalLovelaceAmount) + transactionFee
+
+  const {totalLovelace, totalTokens} = calculateTotalAmounts(summary)
+
   const adaAsset: DropdownAssetItem = {
     type: AssetType.ADA,
     policyId: null,
@@ -148,8 +174,6 @@ const SendAdaPage = ({
   const submitHandler = async () => {
     await confirmTransaction('send')
   }
-
-  const getDefaultItem = () => adaAsset
 
   const searchPredicate = useCallback(
     (query: string, {policyId, assetName}: DropdownAssetItem): boolean =>
@@ -227,7 +251,7 @@ const SendAdaPage = ({
   const selectAssetDropdown = (
     <SearchableSelect
       label="Select asset"
-      defaultItem={getDefaultItem()}
+      defaultItem={selectedAsset}
       displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
         `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
       }
@@ -246,7 +270,7 @@ const SendAdaPage = ({
       <label className="asset-dropdown-label">Asset</label>
       <SearchableSelect
         wrapperClassName="no-margin"
-        defaultItem={getDefaultItem()}
+        defaultItem={selectedAsset}
         displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
           `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
         }
@@ -322,8 +346,16 @@ const SendAdaPage = ({
       <div className="send-total">
         <div className="send-total-title">Total</div>
         <div className="send-total-inner">
-          <div className="send-total-ada">{printAda(total)}</div>
-          {conversionRates && <Conversions balance={total} conversionRates={conversionRates} />}
+          <div className="send-total-ada">{printAda(totalLovelace)} ADA</div>
+          {conversionRates && (
+            <Conversions balance={totalLovelace} conversionRates={conversionRates} />
+          )}
+          {totalTokens && enableSubmit && (
+            <div className="send-total-ada">
+              {totalTokens.quantity}
+              {assetNameHex2Readable(totalTokens.assetName)}
+            </div>
+          )}
         </div>
       </div>
       <div className="validation-row">

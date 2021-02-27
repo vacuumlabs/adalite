@@ -169,7 +169,9 @@ export function computeTxPlan(
     formatToken({...token, quantity: `${token.quantity}`}, -1)
   )
 
-  const tokenDifference = aggregateTokens([totalInputTokens, totalOutputTokens])
+  const tokenDifference = aggregateTokens([totalInputTokens, totalOutputTokens]).filter(
+    (token) => token.quantity !== 0
+  )
 
   // Cannot construct transaction plan, not enought tokens
   if (tokenDifference.some(({quantity}) => quantity < 0)) {

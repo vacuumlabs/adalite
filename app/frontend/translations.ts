@@ -23,6 +23,10 @@ const translations = {
   TokenAmountOnlyWholeNumbers: () => 'Invalid format: Asset amount has to be a whole number',
   TokenAmountInsufficientFunds: ({tokenBalance}) =>
     `Insufficient funds for the transaction. Your balance is ${tokenBalance}`,
+  SendTokenNotMinimalLovelaceAmount: ({minimalLovelaceAmount}) =>
+    `Insufficient funds for the transaction, the minimal amount of ADA for sending the tokens is ${printAda(
+      minimalLovelaceAmount
+    )}`,
   DonationAmountTooLow: () => `Minimum donation is ${ADALITE_MIN_DONATION_VALUE} ADA`,
   DonationInsufficientBalance: () => 'Insufficient balance for the donation.',
 

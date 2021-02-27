@@ -1,6 +1,7 @@
 import {_SignedTx, _TxAux} from './wallet/shelley/types'
 import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
 import {Network} from './wallet/types'
+import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
 
 export type BIP32Path = number[]
 
@@ -268,3 +269,30 @@ export type SendAmount =
       fieldValue: string
       token: Token
     }
+
+export type SendAddress = {
+  fieldValue: string
+}
+
+export type TransactionSummary = {
+  type: TxType
+  fee: Lovelace
+  plan: TxPlan
+} & (SendTransactionSummary | WithdrawTransactionSummary | DelegateTransactionSummary)
+
+export type SendTransactionSummary = {
+  type: TxType.SEND_ADA | TxType.CONVERT_LEGACY
+  sendAddress: SendAddress
+  sendAmount: SendAmount
+  minimalLovelaceAmount: Lovelace
+}
+
+export type WithdrawTransactionSummary = {
+  type: TxType.WITHDRAW
+  rewards: Lovelace
+}
+export type DelegateTransactionSummary = {
+  type: TxType.DELEGATE
+  deposit: Lovelace
+  stakePool: any // TODO:
+}
