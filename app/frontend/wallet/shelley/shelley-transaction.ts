@@ -253,4 +253,5 @@ export {
   ShelleyTxOutputs,
   ShelleyTxCertificates,
   ShelleyTxWithdrawals,
+  cborizeTxOutput,
 }

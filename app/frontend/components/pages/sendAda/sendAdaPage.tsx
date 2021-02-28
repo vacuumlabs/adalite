@@ -19,7 +19,6 @@ import {
   SendTransactionSummary,
   Token,
   TransactionSummary,
-  TxType,
 } from '../../../types'
 import {AdaIcon, StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
@@ -96,25 +95,6 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
   </div>
 )
 
-const calculateTotalAmounts = (transactionSummary: TransactionSummary) => {
-  const zeroTotal = {totalLovelace: 0 as Lovelace, totalTokens: null}
-  if (!transactionSummary || transactionSummary.type !== TxType.SEND_ADA) return zeroTotal
-  const {sendAmount, fee, minimalLovelaceAmount} = transactionSummary
-  if (sendAmount.assetFamily === AssetFamily.ADA) {
-    return {
-      totalLovelace: (sendAmount.coins + fee) as Lovelace,
-      totalTokens: null,
-    }
-  }
-  if (sendAmount.assetFamily === AssetFamily.TOKEN) {
-    return {
-      totalLovelace: (minimalLovelaceAmount + fee) as Lovelace,
-      totalTokens: sendAmount.token,
-    }
-  }
-  return zeroTotal
-}
-
 const SendAdaPage = ({
   sendResponse,
   sendAddress,
@@ -150,7 +130,9 @@ const SendAdaPage = ({
   const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
 
-  const {totalLovelace, totalTokens} = calculateTotalAmounts(summary)
+  const totalLovelace =
+    ((summary.coins + summary.fee + summary.minimalLovelaceAmount) as Lovelace) || (0 as Lovelace)
+  const totalTokens = summary.token
 
   const adaAsset: DropdownAssetItem = {
     type: AssetFamily.ADA,
@@ -359,7 +341,7 @@ const SendAdaPage = ({
               </a>
             </div>
             {/* TODO: Connect to state when this values is calculated */}
-            <div className="send-fee">{printAda(2000000 as Lovelace)}</div>
+            <div className="send-fee">{printAda(summary.minimalLovelaceAmount)}</div>
           </Fragment>
         )}
       </div>

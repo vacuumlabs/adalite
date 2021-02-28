@@ -38,7 +38,7 @@ import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresse
 import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {_TxAux} from './shelley/types'
-import {_Output} from './types'
+import {UTxO, _Output} from './types'
 import {aggregateTokens} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 
@@ -257,34 +257,36 @@ const Account = ({
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  async function getMaxDonationAmount(address: _Address, sendAmount: Lovelace) {
-    const utxos = (await getUtxos()).filter(isUtxoProfitable)
-    return _getMaxDonationAmount(utxos, address, sendAmount)
-  }
-
-  async function getMaxNonStakingAmount(address: _Address) {
+  async function getMaxNonStakingAmount(address: _Address, sendAmount: SendAmount) {
     const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
-    // TODO: sendAmount instead of null
-    return _getMaxSendableAmount(utxos, address, null)
+    return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
-    const {txType} = txPlanArgs
-    const changeAddress = await getChangeAddress()
+  const selectUTxOs = async (txType: TxType): Promise<UTxO[]> => {
     const availableUtxos = await getUtxos()
     const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(addressToHex(address)))
     const baseAddressUtxos = availableUtxos.filter(({address}) => isBase(addressToHex(address)))
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    // we shuffle non-staking utxos separately since we want them to be spend first
-    const shuffledUtxos =
-      txType === TxType.CONVERT_LEGACY
-        ? shuffleArray(nonStakingUtxos, randomGenerator)
-        : [
-          ...shuffleArray(nonStakingUtxos, randomGenerator),
-          ...shuffleArray(baseAddressUtxos, randomGenerator),
-        ]
-    const plan = selectMinimalTxPlan(shuffledUtxos, changeAddress, txPlanArgs)
-    return plan
+    // TODO: ideally we want to do nonStaking, with token, only ada, the rest
+    if (txType === TxType.SEND_ADA || txType === TxType.CONVERT_LEGACY) {
+      return [
+        ...shuffleArray(nonStakingUtxos, randomGenerator),
+        ...shuffleArray(baseAddressUtxos, randomGenerator),
+      ]
+    }
+    const adaUTxOs = baseAddressUtxos.filter(({tokens}) => tokens.length === 0)
+    const tokenUTxOs = baseAddressUtxos.filter(({tokens}) => tokens.length > 0)
+    return [
+      ...shuffleArray(nonStakingUtxos, randomGenerator),
+      ...shuffleArray(adaUTxOs, randomGenerator),
+      ...shuffleArray(tokenUTxOs, randomGenerator),
+    ]
+  }
+
+  const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
+    const changeAddress = await getChangeAddress()
+    const shuffledUtxos = await selectUTxOs(txPlanArgs.txType)
+    return selectMinimalTxPlan(shuffledUtxos, changeAddress, txPlanArgs)
   }
 
   async function getPoolInfo(url) {
@@ -409,7 +411,7 @@ const Account = ({
     // return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
-  async function getUtxos(): Promise<Array<any>> {
+  async function getUtxos(): Promise<Array<UTxO>> {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
     const baseUtxos = await blockchainExplorer.fetchUnspentTxOutputs(base)
     const nonStakingUtxos = await blockchainExplorer.fetchUnspentTxOutputs(legacy)
@@ -476,7 +478,6 @@ const Account = ({
     getBalance,
     getChangeAddress,
     getMaxSendableAmount,
-    getMaxDonationAmount,
     getMaxNonStakingAmount,
     getTxPlan,
     getTxHistory,

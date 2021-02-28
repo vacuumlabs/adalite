@@ -282,8 +282,9 @@ export type TransactionSummary = {
 
 export type SendTransactionSummary = {
   type: TxType.SEND_ADA | TxType.CONVERT_LEGACY
-  sendAddress: SendAddress
-  sendAmount: SendAmount
+  coins: Lovelace
+  token: Token | null
+  address: _Address
   minimalLovelaceAmount: Lovelace
 }
 

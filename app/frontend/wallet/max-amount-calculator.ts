@@ -1,7 +1,7 @@
 import {AssetFamily, Lovelace, SendAmount, _Address} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
 import {
-  calculateMinUTxOLovelaceAmount,
+  computeMinUTxOLovelaceAmount,
   computeRequiredTxFee,
 } from './shelley/shelley-transaction-planner'
 import {UTxO, _Output} from './types'
@@ -19,32 +19,32 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
     address: _Address,
     sendAmount: SendAmount
   ): SendAmount {
-    // as tokens for the max amount output we pass the longest tokens
-    // to be precise we should pass the tokens that are the beggest when cborized
     if (sendAmount.assetFamily === AssetFamily.ADA) {
       const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
-      const minUTxOLovelaceAmount = calculateMinUTxOLovelaceAmount(tokens)
-      const coins = getInputBalance(profitableInputs)
-      // TODO: edge case, if the amount of ada is too low an we cant split it into two outputs
+      const inputBalance = getInputBalance(profitableInputs)
+      const additionalLovelaceAmount = computeMinUTxOLovelaceAmount(address, inputBalance, tokens)
+      // we also need a change output leaving tokens in account
+      // TODO: we should probably leave there sufficient amount of ada for sending them somewhere
       const outputs: _Output[] = [
         {isChange: false, address, coins: 0 as Lovelace, tokens: []},
-        {isChange: false, address, coins: minUTxOLovelaceAmount, tokens},
+        {isChange: false, address, coins: additionalLovelaceAmount, tokens},
       ]
       const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
-      const amount = Math.max(coins - txFee - minUTxOLovelaceAmount, 0) as Lovelace
-      return {assetFamily: AssetFamily.ADA, coins: amount, fieldValue: `${printAda(amount)}`}
+      const coins = Math.max(inputBalance - txFee - additionalLovelaceAmount, 0) as Lovelace
+
+      return {assetFamily: AssetFamily.ADA, coins, fieldValue: `${printAda(coins)}`}
     } else {
-      const {token: sendToken} = sendAmount
       const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
-      // TODO: rename
-      const theToken = tokens.find(
-        (token) => token.policyId === sendToken.policyId && token.assetName === sendToken.assetName
+      const sendToken = tokens.find(
+        (token) =>
+          token.policyId === sendAmount.token.policyId &&
+          token.assetName === sendAmount.token.assetName
       )
-      // TODO: edge case, if the amount of ada is too low an we cant split it into two outputs
+
       return {
         assetFamily: AssetFamily.TOKEN,
-        token: theToken,
-        fieldValue: `${theToken.quantity}`,
+        token: sendToken,
+        fieldValue: `${sendToken.quantity}`,
       }
     }
   }

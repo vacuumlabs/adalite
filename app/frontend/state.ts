@@ -196,8 +196,9 @@ const initialState: State = {
   sendTransactionSummary: {
     // this should be called only transactionSummary
     type: TxType.SEND_ADA,
-    sendAddress: {fieldValue: ''},
-    sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '0', coins: 0 as Lovelace},
+    address: null,
+    coins: 0 as Lovelace,
+    token: null,
     minimalLovelaceAmount: 0 as Lovelace,
     fee: 0 as Lovelace,
     plan: null,
