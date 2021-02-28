@@ -58,8 +58,6 @@ const SendAdaReview = ({
         <div className="review-amount">
           {printAda((summarySendAmount + minimalLovelaceAmount) as Lovelace)}
         </div>
-        <div className="ada-label">Fee</div>
-        <div className="review-fee">{printAda(transactionSummary.fee as Lovelace)}</div>
         {summaryToken && (
           <Fragment>
             <div className="review-label">Token policy Id</div>
@@ -72,6 +70,8 @@ const SendAdaReview = ({
             <div className="review-amount">{printAda(minimalLovelaceAmount)}</div> */}
           </Fragment>
         )}
+        <div className="ada-label">Fee</div>
+        <div className="review-fee">{printAda(transactionSummary.fee as Lovelace)}</div>
         {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Total</div>
         <div className="review-total">{printAda(total)}</div>
