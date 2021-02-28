@@ -253,19 +253,19 @@ export type Balance = {
   tokens: Token[]
 }
 
-export const enum AssetType {
+export const enum AssetFamily {
   ADA,
   TOKEN,
 }
 
 export type SendAmount =
   | {
-      assetType: AssetType.ADA
+      assetFamily: AssetFamily.ADA
       fieldValue: string
       coins: Lovelace
     }
   | {
-      assetType: AssetType.TOKEN
+      assetFamily: AssetFamily.TOKEN
       fieldValue: string
       token: Token
     }

@@ -61,6 +61,7 @@ interface Props {
   withAccordion: boolean
   title: string
   confirmTransaction: (txConfirmType) => Promise<void>
+  selectAdaliteStakepool: () => void
 }
 
 const Delegate = ({

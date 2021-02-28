@@ -63,7 +63,6 @@ const checkMap = check.map(process.env, {
   ADALITE_ENABLE_TREZOR: isBoolString,
   ADALITE_ENABLE_LEDGER: isBoolString,
   ADALITE_ENFORCE_STAKEPOOL: isBoolString,
-  ADALITE_ENABLE_SEARCH_BY_TICKER: isBoolString,
 })
 
 const {

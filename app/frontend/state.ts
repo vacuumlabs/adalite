@@ -4,7 +4,7 @@ import {StakepoolDataProvider} from './helpers/dataProviders/types'
 import {localStorageVars} from './localStorage'
 import {
   AccountInfo,
-  AssetType,
+  AssetFamily,
   AuthMethodType,
   Lovelace,
   SendAmount,
@@ -183,7 +183,7 @@ const initialState: State = {
   // send form
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
-  sendAmount: {assetType: AssetType.ADA, fieldValue: '0', coins: 0 as Lovelace},
+  sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '0', coins: 0 as Lovelace},
 
   // delegation
   shelleyDelegation: {
@@ -197,7 +197,7 @@ const initialState: State = {
     // this should be called only transactionSummary
     type: TxType.SEND_ADA,
     sendAddress: {fieldValue: ''},
-    sendAmount: {assetType: AssetType.ADA, fieldValue: '0', coins: 0 as Lovelace},
+    sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '0', coins: 0 as Lovelace},
     minimalLovelaceAmount: 0 as Lovelace,
     fee: 0 as Lovelace,
     plan: null,

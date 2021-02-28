@@ -11,9 +11,9 @@ import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo, State} from '../../../state'
-import {useCallback, useState} from 'preact/hooks'
+import {useCallback, useMemo, useRef} from 'preact/hooks'
 import {
-  AssetType,
+  AssetFamily,
   Lovelace,
   SendAmount,
   SendTransactionSummary,
@@ -21,9 +21,10 @@ import {
   TransactionSummary,
   TxType,
 } from '../../../types'
-import {StarIcon} from '../../common/svg'
+import {AdaIcon, StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
+import tooltip from '../../common/tooltip'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -70,7 +71,8 @@ interface Props {
 }
 
 type DropdownAssetItem = Token & {
-  type: AssetType
+  assetNameHex: string
+  type: AssetFamily
   star?: boolean
 }
 
@@ -79,10 +81,10 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}
+        {assetName}
       </div>
       <div className="multi-asset-amount">
-        {type === AssetType.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
+        {type === AssetFamily.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
       </div>
     </div>
     {policyId && (
@@ -98,13 +100,13 @@ const calculateTotalAmounts = (transactionSummary: TransactionSummary) => {
   const zeroTotal = {totalLovelace: 0 as Lovelace, totalTokens: null}
   if (!transactionSummary || transactionSummary.type !== TxType.SEND_ADA) return zeroTotal
   const {sendAmount, fee, minimalLovelaceAmount} = transactionSummary
-  if (sendAmount.assetType === AssetType.ADA) {
+  if (sendAmount.assetFamily === AssetFamily.ADA) {
     return {
       totalLovelace: (sendAmount.coins + fee) as Lovelace,
       totalTokens: null,
     }
   }
-  if (sendAmount.assetType === AssetType.TOKEN) {
+  if (sendAmount.assetFamily === AssetFamily.TOKEN) {
     return {
       totalLovelace: (minimalLovelaceAmount + fee) as Lovelace,
       totalTokens: sendAmount.token,
@@ -139,8 +141,9 @@ const SendAdaPage = ({
   switchSourceAndTargetAccounts,
   tokenBalance,
 }: Props) => {
-  let amountField: HTMLInputElement
-  let submitTxBtn: HTMLButtonElement
+  const amountField = useRef<HTMLInputElement>(null)
+  const submitTxBtn = useRef<HTMLButtonElement>(null)
+  const sendCardDiv = useRef<HTMLDivElement>(null)
 
   const sendFormValidationError = sendAddressValidationError || sendAmountValidationError
 
@@ -150,26 +153,41 @@ const SendAdaPage = ({
   const {totalLovelace, totalTokens} = calculateTotalAmounts(summary)
 
   const adaAsset: DropdownAssetItem = {
-    type: AssetType.ADA,
+    type: AssetFamily.ADA,
     policyId: null,
     assetName: 'ADA',
+    assetNameHex: null,
     quantity: balance,
     star: true,
   }
-  const dropdownAssetItems: Array<DropdownAssetItem> = [
-    adaAsset,
-    ...tokenBalance
-      .sort((a: Token, b: Token) => b.quantity - a.quantity)
-      .map(
-        (token: Token): DropdownAssetItem => ({
-          ...token,
-          type: AssetType.TOKEN,
-          star: false,
-        })
-      ),
-  ]
+  const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
+    () => [
+      adaAsset,
+      ...tokenBalance
+        .sort((a: Token, b: Token) => b.quantity - a.quantity)
+        .map(
+          (token: Token): DropdownAssetItem => ({
+            ...token,
+            assetNameHex: token.assetName,
+            assetName: assetNameHex2Readable(token.assetName),
+            type: AssetFamily.TOKEN,
+            star: false,
+          })
+        ),
+    ],
+    [adaAsset, tokenBalance]
+  )
 
-  const [selectedAsset, setSelectedAsset] = useState(adaAsset)
+  const selectedAsset = useMemo(() => {
+    if (sendAmount.assetFamily === AssetFamily.ADA) {
+      return adaAsset
+    }
+    return dropdownAssetItems.find(
+      (item) =>
+        item.assetNameHex === sendAmount.token.assetName &&
+        item.policyId === sendAmount.token.policyId
+    )
+  }, [adaAsset, dropdownAssetItems, sendAmount])
 
   const submitHandler = async () => {
     await confirmTransaction('send')
@@ -184,19 +202,19 @@ const SendAdaPage = ({
 
   const updateSentAssetPair = useCallback(
     (dropdownAssetItem: DropdownAssetItem, fieldValue: string) => {
-      if (dropdownAssetItem.type === AssetType.ADA) {
+      if (dropdownAssetItem.type === AssetFamily.ADA) {
         updateAmount({
-          assetType: AssetType.ADA,
+          assetFamily: AssetFamily.ADA,
           fieldValue,
           coins: parseCoins(fieldValue) || (0 as Lovelace),
         })
-      } else if (dropdownAssetItem.type === AssetType.TOKEN) {
+      } else if (dropdownAssetItem.type === AssetFamily.TOKEN) {
         updateAmount({
-          assetType: AssetType.TOKEN,
+          assetFamily: AssetFamily.TOKEN,
           fieldValue,
           token: {
             policyId: dropdownAssetItem.policyId,
-            assetName: dropdownAssetItem.assetName,
+            assetName: dropdownAssetItem.assetNameHex,
             quantity: parseFloat(fieldValue),
           },
         })
@@ -205,15 +223,14 @@ const SendAdaPage = ({
     [updateAmount]
   )
 
-  const onSelect = useCallback(
+  const handleDropdownOnSelect = useCallback(
     (dropdownAssetItem: DropdownAssetItem): void => {
-      setSelectedAsset(dropdownAssetItem)
       updateSentAssetPair(dropdownAssetItem, sendAmount.fieldValue)
     },
     [sendAmount.fieldValue, updateSentAssetPair]
   )
 
-  const onInput = useCallback(
+  const handleAmountOnInput = useCallback(
     (e) => {
       updateSentAssetPair(selectedAsset, e?.target?.value)
     },
@@ -230,7 +247,7 @@ const SendAdaPage = ({
       value={sendAddress}
       onInput={updateAddress}
       autoComplete="off"
-      onKeyDown={(e) => e.key === 'Enter' && amountField.focus()}
+      onKeyDown={(e) => e.key === 'Enter' && amountField?.current.focus()}
       disabled={isModal}
     />
   )
@@ -248,48 +265,36 @@ const SendAdaPage = ({
     </div>
   )
 
-  const selectAssetDropdown = (
-    <SearchableSelect
-      label="Select asset"
-      defaultItem={selectedAsset}
-      displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
-        `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
-      }
-      displaySelectedItemClassName="input dropdown"
-      items={dropdownAssetItems}
-      displayItem={showDropdownAssetItem}
-      onSelect={onSelect}
-      showSearch={dropdownAssetItems.length >= 6}
-      searchPredicate={searchPredicate}
-      searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
-    />
-  )
+  // TODO: is this possible to do in raw CSS?
+  // dropdown width is dependand on div that is much higher in HTML DOM
+  const calculateDropdownWidth = () => {
+    const deriveFrom = sendCardDiv?.current
+    if (deriveFrom) {
+      const style = window.getComputedStyle(deriveFrom)
+      const width = deriveFrom.clientWidth
+      const paddingLeft = parseInt(style.paddingLeft, 10)
+      const paddingRight = parseInt(style.paddingRight, 10)
+      return `${width - paddingLeft - paddingRight}px`
+    }
+    return '100%'
+  }
 
-  const selectAssetDropdownModal = (
+  const selectAssetDropdown = (
     <Fragment>
-      <label className="asset-dropdown-label">Asset</label>
+      <label className="send-label">Asset</label>
       <SearchableSelect
         wrapperClassName="no-margin"
         defaultItem={selectedAsset}
-        displaySelectedItem={({type, assetName}: DropdownAssetItem) =>
-          `${type === AssetType.TOKEN ? assetNameHex2Readable(assetName) : assetName}`
-        }
+        displaySelectedItem={({assetName}: DropdownAssetItem) => assetName}
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
         displayItem={showDropdownAssetItem}
-        onSelect={onSelect}
-        showSearch={dropdownAssetItems.length >= 6}
+        onSelect={handleDropdownOnSelect}
+        showSearch={dropdownAssetItems.length >= 4}
         searchPredicate={searchPredicate}
         searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
         dropdownClassName="modal-dropdown"
-        // TODO: replace this with something reasonable
-        dropdownStyle={(() => {
-          const modal = document.getElementsByClassName('modal-body')[0] as any
-          const width = modal?.clientWidth
-          const paddingLeft = modal && window.getComputedStyle(modal).paddingLeft
-          const paddingRight = modal && window.getComputedStyle(modal).paddingLeft
-          return `width: calc(${width} - ${paddingLeft} - ${paddingRight});`
-        })()}
+        getDropdownWidth={calculateDropdownWidth}
       />
     </Fragment>
   )
@@ -297,7 +302,7 @@ const SendAdaPage = ({
   const amountInput = (
     <Fragment>
       <label
-        className={`ada-label amount ${selectedAsset.type === AssetType.TOKEN ? 'token' : ''}`}
+        className={`ada-label amount ${selectedAsset.type === AssetFamily.TOKEN ? 'token' : ''}`}
         htmlFor={`${isModal ? 'account' : ''}send-amount`}
       >
         Amount
@@ -309,14 +314,13 @@ const SendAdaPage = ({
           name={`${isModal ? 'account' : ''}send-amount`}
           placeholder="0.000000"
           value={sendAmount.fieldValue}
-          onInput={onInput}
+          onInput={handleAmountOnInput}
           autoComplete="off"
-          ref={(element) => {
-            amountField = element
-          }}
+          ref={amountField}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && submitTxBtn) {
-              submitTxBtn.click()
+              // eslint-disable-next-line no-unused-expressions
+              submitTxBtn?.current.click()
               e.preventDefault()
             }
           }}
@@ -333,39 +337,71 @@ const SendAdaPage = ({
   )
 
   return (
-    <div className="send card">
+    <div className="send card" ref={sendCardDiv}>
       <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
       {isModal ? accountSwitch : addressInput}
-      {!isModal && selectAssetDropdown}
       <div className="send-values">
-        {isModal && selectAssetDropdownModal}
+        {selectAssetDropdown}
         {amountInput}
         <div className="ada-label">Fee</div>
         <div className="send-fee">{printAda(transactionFee)}</div>
+        {selectedAsset.type === AssetFamily.TOKEN && (
+          <Fragment>
+            <div className="send-label">
+              Min ADA
+              <a
+                {...tooltip(
+                  'Every output created by a transaction must include a minimum amount of ada, which is calculated based on the size of the output.',
+                  true
+                )}
+              >
+                <span className="show-info">{''}</span>
+              </a>
+            </div>
+            {/* TODO: Connect to state when this values is calculated */}
+            <div className="send-fee">{printAda(2000000 as Lovelace)}</div>
+          </Fragment>
+        )}
       </div>
       <div className="send-total">
         <div className="send-total-title">Total</div>
         <div className="send-total-inner">
-          <div className="send-total-ada">{printAda(totalLovelace)} ADA</div>
-          {conversionRates && (
-            <Conversions balance={totalLovelace} conversionRates={conversionRates} />
-          )}
-          {totalTokens && enableSubmit && (
+          {selectedAsset.type === AssetFamily.ADA ? (
             <div className="send-total-ada">
-              {totalTokens.quantity}
-              {assetNameHex2Readable(totalTokens.assetName)}
+              {printAda(totalLovelace)}
+              <AdaIcon />
+            </div>
+          ) : (
+            <div className="send-total-ada">
+              {totalTokens?.quantity != null ? totalTokens.quantity : 0}{' '}
+              {totalTokens ? assetNameHex2Readable(totalTokens.assetName) : selectedAsset.assetName}
             </div>
           )}
+          {selectedAsset.type === AssetFamily.ADA
+            ? conversionRates && (
+              <Conversions balance={totalLovelace} conversionRates={conversionRates} />
+            )
+            : ''}
         </div>
+        <div />
+        {selectedAsset.type === AssetFamily.TOKEN && (
+          <div className="send-total-inner ma-ada-fees">
+            <div>
+              +{printAda(totalLovelace)}
+              <AdaIcon />
+            </div>
+            {conversionRates && (
+              <Conversions balance={totalLovelace} conversionRates={conversionRates} />
+            )}
+          </div>
+        )}
       </div>
       <div className="validation-row">
         <button
           className="button primary medium"
           disabled={!enableSubmit || feeRecalculating}
           onClick={submitHandler}
-          ref={(element) => {
-            submitTxBtn = element
-          }}
+          ref={submitTxBtn}
         >
           Send
         </button>

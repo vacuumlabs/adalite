@@ -57,6 +57,10 @@
   box-sizing: inherit;
 }
 
+* *:focus, *:hover{
+  outline: none;
+}
+
 html {
   height: 100%;
   font-size: 14px;
@@ -161,10 +165,6 @@ p.hey {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.no-outline .no-outline:focus, .no-outline:hover{
-  outline:none;
 }
 
 /* SELECTABILITY */
@@ -567,6 +567,7 @@ p.hey {
   padding: 0;
   margin-top: -16px;
   margin-bottom: -16px;
+  margin-right: 16px;
 }
 
 /* ACCORDIONS */
@@ -659,6 +660,7 @@ p.hey {
   border: none;
   background-color: white;
   z-index: 1;
+  font-family: JTMarnie, Arial, Helvetica, sans-serif;
 }
 
 .searchable-select-input:focus {
@@ -707,11 +709,6 @@ p.hey {
   width: 6.6em;
   background: white;
   z-index: 1;
-}
-
-.asset-dropdown-label {
-  justify-self: end;
-  padding-right: 16px;
 }
 
 /* FORM GLOBAL */
@@ -3457,7 +3454,7 @@ input:checked + .slider:before {
 
 .multi-asset-hash {
   display: flex;
-  padding-right: 16px;
+  padding-right: 128px;
 }
 
 .transactions-empty {
@@ -3501,6 +3498,11 @@ input:checked + .slider:before {
   color: var(--color-grey);
 }
 
+.send-label {
+  justify-self: end;
+  padding-right: 16px;
+}
+
 .ada-label {
   padding-right: 16px;
   position: relative;
@@ -3532,6 +3534,7 @@ input:checked + .slider:before {
   line-height: 32px;
   align-self: center;
   justify-self: end;
+  padding-right: 16px;
 }
 
 .show-info::after {
@@ -3604,6 +3607,11 @@ input:checked + .slider:before {
   font-size: 24px;
 }
 
+.send-total-ada svg {
+  margin-left: 6px;
+  height: 18px;
+}
+
 .send-total-title {
   font-weight: bold;
 }
@@ -3615,9 +3623,24 @@ input:checked + .slider:before {
   flex-wrap: wrap;
 }
 
+.send-total .ma-ada-fees {
+  text-align: left;
+  padding-left: 16px;
+  color: var(--color-grey);
+}
+
+.send-total .ma-ada-fees svg {
+  padding-left: 2px;
+  height: 10px;
+}
+
+.send-total .ma-ada-fees svg path {
+  fill: var(--color-grey);
+}
+
 .review {
   display: grid;
-  grid-template-columns: 80px 1fr;
+  grid-template-columns: 112px 1fr;
   grid-row-gap: 8px;
   grid-column-gap: 56px;
   line-height: 32px;
@@ -3650,7 +3673,7 @@ input:checked + .slider:before {
   height: 1px;
   width: 200px;
   position: absolute;
-  left: -136px;
+  left: -168px;
   bottom: -16px;
   background-color: var(--color-grey-light);
 }

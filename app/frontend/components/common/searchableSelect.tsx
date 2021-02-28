@@ -2,7 +2,7 @@ import {h} from 'preact'
 import {connect} from '../../helpers/connect'
 import actions from '../../actions'
 import {State} from '../../state'
-import {useEffect, useRef, useState} from 'preact/hooks'
+import {useEffect, useLayoutEffect, useRef, useState} from 'preact/hooks'
 
 interface Props<T> {
   wrapperClassName?: string
@@ -17,7 +17,7 @@ interface Props<T> {
   searchPredicate: (query: string, t: T) => boolean
   searchPlaceholder: string
   dropdownClassName?: string
-  dropdownStyle?: string
+  getDropdownWidth?: () => string
 }
 
 // <T extends {}> is workaround for <T> being recognized as JSX element instead of generics
@@ -34,12 +34,12 @@ const SearchableSelect = <T extends {}>({
   searchPredicate,
   searchPlaceholder,
   dropdownClassName,
-  dropdownStyle,
+  getDropdownWidth,
 }: Props<T>) => {
   const inputEl = useRef<HTMLInputElement>(null)
   const dropdownEl = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
-  // const [value, setValue] = useState(defaultItem)
+  const [dropdownWidth, setDropdownWidth] = useState(getDropdownWidth())
   const [search, setSearch] = useState('')
   const shouldShowItem = (item: T) => searchPredicate(search, item)
   const showDropdown = (bool: boolean) => {
@@ -54,11 +54,21 @@ const SearchableSelect = <T extends {}>({
     dropdownEl.current.scrollTop = 0
   })
 
+  useLayoutEffect(() => {
+    if (getDropdownWidth) {
+      const handleResize = () => setDropdownWidth(getDropdownWidth())
+      handleResize()
+      window.addEventListener('resize', handleResize)
+      return () => window.removeEventListener('resize', handleResize)
+    }
+    return () => null
+  }, [getDropdownWidth])
+
   const optionalClassName = (className?: string) => (className != null ? className : '')
 
   return (
     <div
-      className={`searchable-select-wrapper no-outline ${optionalClassName(wrapperClassName)}`}
+      className={`searchable-select-wrapper ${optionalClassName(wrapperClassName)}`}
       tabIndex={0}
       onBlur={() => !showSearch && showDropdown(false)}
     >
@@ -76,7 +86,7 @@ const SearchableSelect = <T extends {}>({
         className={`searchable-select-dropdown ${visible ? '' : 'hide'} ${optionalClassName(
           dropdownClassName
         )}`}
-        style={dropdownStyle}
+        style={getDropdownWidth ? `width: ${dropdownWidth}` : ''}
       >
         {showSearch && (
           <input
@@ -95,7 +105,7 @@ const SearchableSelect = <T extends {}>({
               <div
                 className={`searchable-select-item ${shouldShowItem(item) ? '' : 'hide'}`}
                 key={i}
-                onClick={() => {
+                onMouseDown={() => {
                   setVisible(false)
                   onSelect(item)
                 }}

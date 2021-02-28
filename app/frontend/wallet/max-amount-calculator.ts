@@ -1,4 +1,4 @@
-import {AssetType, Lovelace, SendAmount, _Address} from '../types'
+import {AssetFamily, Lovelace, SendAmount, _Address} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
 import {
   calculateMinUTxOLovelaceAmount,
@@ -21,7 +21,7 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
   ): SendAmount {
     // as tokens for the max amount output we pass the longest tokens
     // to be precise we should pass the tokens that are the beggest when cborized
-    if (sendAmount.assetType === AssetType.ADA) {
+    if (sendAmount.assetFamily === AssetFamily.ADA) {
       const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
       const minUTxOLovelaceAmount = calculateMinUTxOLovelaceAmount(tokens)
       const coins = getInputBalance(profitableInputs)
@@ -32,7 +32,7 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
       ]
       const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
       const amount = Math.max(coins - txFee - minUTxOLovelaceAmount, 0) as Lovelace
-      return {assetType: AssetType.ADA, coins: amount, fieldValue: `${printAda(amount)}`}
+      return {assetFamily: AssetFamily.ADA, coins: amount, fieldValue: `${printAda(amount)}`}
     } else {
       const {token: sendToken} = sendAmount
       const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
@@ -42,7 +42,7 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
       )
       // TODO: edge case, if the amount of ada is too low an we cant split it into two outputs
       return {
-        assetType: AssetType.TOKEN,
+        assetFamily: AssetFamily.TOKEN,
         token: theToken,
         fieldValue: `${theToken.quantity}`,
       }

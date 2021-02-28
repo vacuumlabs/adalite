@@ -49,7 +49,7 @@ import {
   AuthMethodType,
   HexString,
   SendAmount,
-  AssetType,
+  AssetFamily,
   SendTransactionSummary,
   WithdrawTransactionSummary,
   DelegateTransactionSummary,
@@ -234,7 +234,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         shouldShowGenerateMnemonicDialog: false,
         shouldShowAddressVerification: usingHwWallet,
         // send form
-        sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace},
+        sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
         sendAddress: {fieldValue: ''},
         sendResponse: '',
         // shelley
@@ -516,7 +516,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         // TODO: we should reset this to null
         type: TxType.SEND_ADA,
         sendAddress: {fieldValue: ''},
-        sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace},
+        sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
         minimalLovelaceAmount: 0 as Lovelace,
         fee: 0 as Lovelace,
         plan: null,
@@ -534,7 +534,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const resetSendFormFields = (state: State) => {
     setState({
-      sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace},
+      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
       sendAddress: {fieldValue: ''},
       sendAddressValidationError: null,
       sendAmountValidationError: null,
@@ -553,7 +553,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const validateSendForm = (state: State) => {
     setErrorState('sendAddressValidationError', sendAddressValidator(state.sendAddress.fieldValue))
-    if (state.sendAmount.assetType === AssetType.ADA) {
+    if (state.sendAmount.assetFamily === AssetFamily.ADA) {
       const sendAmountValidationError = sendAmountValidator(
         state.sendAmount.fieldValue,
         state.sendAmount.coins,
@@ -561,7 +561,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       )
       setErrorState('sendAmountValidationError', sendAmountValidationError)
     }
-    if (state.sendAmount.assetType === AssetType.TOKEN) {
+    if (state.sendAmount.assetFamily === AssetFamily.TOKEN) {
       const {policyId, assetName, quantity} = state.sendAmount.token
       // TODO: we should have a tokenProvider to get token O(1)
       const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
@@ -618,16 +618,16 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
     const balance = getSourceAccountInfo(state).balance as Lovelace
     const minimalLovelaceAmount = calculateMinUTxOLovelaceAmount(
-      sendAmount.assetType === AssetType.ADA ? [] : [sendAmount.token]
+      sendAmount.assetFamily === AssetFamily.ADA ? [] : [sendAmount.token]
     )
-    const coins = sendAmount.assetType === AssetType.ADA ? sendAmount.coins : (0 as Lovelace)
+    const coins = sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
 
     if (txPlanResult.type === TxPlanResultType.SUCCESS) {
       const newState = getState() // if the values changed meanwhile
       if (
         newState.sendAmount.fieldValue !== state.sendAmount.fieldValue ||
         newState.sendAddress.fieldValue !== state.sendAddress.fieldValue ||
-        newState.sendAmount.assetType !== state.sendAmount.assetType
+        newState.sendAmount.assetFamily !== state.sendAmount.assetFamily
       ) {
         return
       }
@@ -717,7 +717,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const sendAmount = await wallet
       .getAccount(state.sourceAccountIndex)
       .getMaxNonStakingAmount(address)
-    const coins = sendAmount.assetType === AssetType.ADA && sendAmount.coins
+    const coins = sendAmount.assetFamily === AssetFamily.ADA && sendAmount.coins
     const txPlanResult = await prepareTxPlan({
       address,
       sendAmount,
@@ -993,7 +993,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       sendTransactionTitle: 'Transfer funds between accounts', // TODO: remove this
       shouldShowSendTransactionModal: true,
       txSuccessTab: '',
-      sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace}, // TODO: use reset function
+      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace}, // TODO: use reset function
       transactionFee: 0,
     })
     const targetAddress = await wallet.getAccount(targetAccountIndex).getChangeAddress()
@@ -1005,7 +1005,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     resetAccountIndexes(state)
     setState({
       sendAddress: {fieldValue: ''},
-      sendAmount: {assetType: AssetType.ADA, fieldValue: '', coins: 0 as Lovelace},
+      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
       transactionFee: 0,
       shouldShowSendTransactionModal: false,
       sendAddressValidationError: null,
@@ -1137,6 +1137,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       await reloadWalletInfo(state)
       wallet.getAccount(state.sourceAccountIndex).generateNewSeeds()
       resetAccountIndexes(state)
+      resetDelegation()
       selectAdaliteStakepool(state)
       setState({
         waitingForHwWallet: false,
@@ -1228,6 +1229,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({activeMainTab: mainTab})
     resetTransactionSummary(state)
     resetSendFormFields(state)
+    resetDelegation()
+    if (mainTab === MainTabs.STAKING) selectAdaliteStakepool(state)
   }
 
   const closeUnexpectedErrorModal = (state) => {

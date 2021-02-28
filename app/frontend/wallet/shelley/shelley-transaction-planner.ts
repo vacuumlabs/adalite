@@ -19,7 +19,7 @@ import {
   WithdrawRewardsTxPlanArgs,
   ConvertLegacyAdaTxPlanArgs,
   Token,
-  AssetType,
+  AssetFamily,
 } from '../../types'
 import {base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
@@ -270,7 +270,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
     txPlanArgs: SendAdaTxPlanArgs | ConvertLegacyAdaTxPlanArgs
   ): TxPlanDraft => {
     const outputs: _Output[] = []
-    if (txPlanArgs.sendAmount.assetType === AssetType.ADA) {
+    if (txPlanArgs.sendAmount.assetFamily === AssetFamily.ADA) {
       outputs.push({
         isChange: false,
         address: txPlanArgs.address,
