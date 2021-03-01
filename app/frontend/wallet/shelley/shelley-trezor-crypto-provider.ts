@@ -4,7 +4,7 @@ import {ADALITE_SUPPORT_EMAIL, TREZOR_ERRORS, TREZOR_VERSIONS} from '../constant
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
-import {bech32, AddressTypes} from 'cardano-crypto.js'
+import {AddressTypes} from 'cardano-crypto.js'
 import {hasRequiredVersion} from './helpers/version-check'
 import {
   CryptoProvider,
@@ -136,7 +136,8 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   const prepareTokenBundle = (tokens: Token[]): TrezorMultiAsset | undefined => {
-    // if (multiAssets.length > 0 && !isFeatureSupportedForVersion(TrezorCryptoProviderFeature.MULTI_ASSET)) {
+    // if (multiAssets.length > 0
+    //&& !isFeatureSupportedForVersion(TrezorCryptoProviderFeature.MULTI_ASSET)) {
     //   throw Error(Errors.TrezorMultiAssetsNotSupported)
     // }
     const tokenObject = groupTokensByPolicyId(tokens)
@@ -172,43 +173,43 @@ const ShelleyTrezorCryptoProvider = async ({
       }
   }
 
-  function poolCertToTrezorFormat(cert) {
-    return {
-      poolId: cert.poolKeyHashHex,
-      vrfKeyHash: cert.vrfKeyHashHex,
-      pledge: cert.pledgeStr,
-      cost: cert.costStr,
-      margin: {
-        numerator: cert.margin.numeratorStr,
-        denominator: cert.margin.denominatorStr,
-      },
-      rewardAccount: bech32.encode('stake', Buffer.from(cert.rewardAccountHex, 'hex')),
-      owners: cert.poolOwners.map((owner) => ({
-        ...(owner.stakingKeyHashHex && {
-          stakingKeyHash: owner.stakingKeyHashHex,
-        }),
-        ...(owner.stakingPath && {
-          stakingKeyPath: owner.stakingPath,
-          stakingKeyHash: undefined,
-        }),
-      })),
-      relays: cert.relays.map((relay) => ({
-        type: relay.type,
-        ...(relay.type === 0 && {
-          ipv4Address: relay.params.ipv4,
-          ipv6Address: relay.params.ipv6,
-        }),
-        ...(relay.type < 2 && {port: relay.params.portNumber}),
-        ...(relay.type > 0 && {hostName: relay.params.dnsName}),
-      })),
-      metadata: cert.metadata
-        ? {
-          url: cert.metadata.metadataUrl,
-          hash: cert.metadata.metadataHashHex,
-        }
-        : null,
-    }
-  }
+  // function poolCertToTrezorFormat(cert) {
+  //   return {
+  //     poolId: cert.poolKeyHashHex,
+  //     vrfKeyHash: cert.vrfKeyHashHex,
+  //     pledge: cert.pledgeStr,
+  //     cost: cert.costStr,
+  //     margin: {
+  //       numerator: cert.margin.numeratorStr,
+  //       denominator: cert.margin.denominatorStr,
+  //     },
+  //     rewardAccount: bech32.encode('stake', Buffer.from(cert.rewardAccountHex, 'hex')),
+  //     owners: cert.poolOwners.map((owner) => ({
+  //       ...(owner.stakingKeyHashHex && {
+  //         stakingKeyHash: owner.stakingKeyHashHex,
+  //       }),
+  //       ...(owner.stakingPath && {
+  //         stakingKeyPath: owner.stakingPath,
+  //         stakingKeyHash: undefined,
+  //       }),
+  //     })),
+  //     relays: cert.relays.map((relay) => ({
+  //       type: relay.type,
+  //       ...(relay.type === 0 && {
+  //         ipv4Address: relay.params.ipv4,
+  //         ipv6Address: relay.params.ipv6,
+  //       }),
+  //       ...(relay.type < 2 && {port: relay.params.portNumber}),
+  //       ...(relay.type > 0 && {hostName: relay.params.dnsName}),
+  //     })),
+  //     metadata: cert.metadata
+  //       ? {
+  //         url: cert.metadata.metadataUrl,
+  //         hash: cert.metadata.metadataHashHex,
+  //       }
+  //       : null,
+  //   }
+  // }
 
   function prepareStakingKeyRegistrationCertificate(
     certificate: _StakingKeyRegistrationCertificate | _StakingKeyDeregistrationCertificate,

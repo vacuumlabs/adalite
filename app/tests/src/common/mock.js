@@ -17,7 +17,7 @@ const mock = (ADALITE_CONFIG) => {
         const summary = {
           caAddresses: [],
           caTxNum: 0,
-          caBalance: {getCoin: 0},
+          caBalance: {getCoin: 0, getTokens: []},
           caTxList: [],
         }
         JSON.parse(options.body).forEach((address) => {
@@ -48,7 +48,7 @@ const mock = (ADALITE_CONFIG) => {
     fetchMock.config.overwriteRoutes = true
     const acctInfoMock = {
       delegation: {},
-      rewards: 5000000,
+      rewards: 50000000,
       hasStakingKey: false,
       nextRewardDetails: [{forEpoch: 212}, {forEpoch: 213}, {forEpoch: 214}, {forEpoch: 215}],
     }

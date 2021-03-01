@@ -5,6 +5,7 @@ import {CryptoProviderType} from '../../../frontend/wallet/types'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import assert from 'assert'
 import {walletSettings} from '../common/wallet-settings'
+import {AssetFamily} from '../../../frontend/types'
 
 let state, action
 
@@ -45,13 +46,12 @@ const sendAdaTxSettings = {
         fieldValue:
           'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
       },
-      sendAmount: {fieldValue: 1, coins: 1000000},
-      donationAmount: {fieldValue: 5, coins: 5000000},
+      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '1', coins: 1500000},
     },
     sendTransactionSummary: {
       amount: 1000000,
       donation: 5000000,
-      fee: 183419,
+      fee: 170850,
       plan: {},
       tab: 'send',
       deposit: 0,
@@ -71,7 +71,7 @@ const delegationSettings = {
     sendTransactionSummary: {
       amount: 0,
       donation: 0,
-      fee: 193878,
+      fee: 183990,
       plan: {},
       tab: 'stake',
       deposit: 2000000,
@@ -85,7 +85,7 @@ const withdrawalSettings = {
     sendTransactionSummary: {
       amount: 0,
       donation: 0,
-      fee: 185089,
+      fee: 175157,
       plan: {},
       tab: 'withdraw',
       deposit: 0,

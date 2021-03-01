@@ -447,8 +447,8 @@ const singleAddressesMock = {
   },
 
   /*
-      * begin addresses for 'should properly compute change address for unused wallet'
-      */
+   * begin addresses for 'should properly compute change address for unused wallet'
+   */
   'DdzFFzCqrhsef6yEYwhNtfoNQEFAjr2Uur66mBxjnBX6cZyEDLfodWjDxj4K4VDNkAqQjTQVDxrpEptvL85xYLpHP9HUEAPm31tJME3K': {
     Right: {
       caAddress:
@@ -500,14 +500,14 @@ const singleAddressesMock = {
     },
   },
   /*
-      * end of addresses for 'should properly compute change address for unused wallet'
-      */
+   * end of addresses for 'should properly compute change address for unused wallet'
+   */
 
   /*
-      * addresses to compute utxo
-      * from mnemonic:
-      *  logic easily waste eager injury oval sentence wine bomb embrace gossip supreme
-      */
+   * addresses to compute utxo
+   * from mnemonic:
+   *  logic easily waste eager injury oval sentence wine bomb embrace gossip supreme
+   */
   'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym': {
     Right: {
       caAddress:
@@ -1339,10 +1339,10 @@ const singleAddressesMock = {
     },
   },
   /*
-      * addresses to compute utxos for wallet with lot of small utxos and few big
-      * from mnemonic:
-      *  blame matrix water coil diet seat nerve street movie turkey jump bundle
-      */
+   * addresses to compute utxos for wallet with lot of small utxos and few big
+   * from mnemonic:
+   *  blame matrix water coil diet seat nerve street movie turkey jump bundle
+   */
   'DdzFFzCqrhsvrNGcR93DW8cmrPVVbP6vFxcL1i92WzvqcHrp1K1of4DQ8t8cr3oQgsMbbY1eXKWhrcpfnTohNqrr6zPdLeE3AYBtxxZZ': {
     Right: {
       caAddress:
@@ -1519,11 +1519,11 @@ const singleAddressesMock = {
     },
   },
   /*
-      * addresses to test discovery of addresses with v2 derivation scheme
-      * from mnemonic:
-      *  cost dash dress stove morning robust group affair
-      *  stomach vacant route volume yellow salute laugh
-      */
+   * addresses to test discovery of addresses with v2 derivation scheme
+   * from mnemonic:
+   *  cost dash dress stove morning robust group affair
+   *  stomach vacant route volume yellow salute laugh
+   */
   'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X': {
     Right: {
       caAddress: 'Ae2tdPwUPEZMPdF4Z6gPy7Yr3NeXcXbBMZv5saB3pmwsp7HWbRobc1VRZ4X',
@@ -2538,6 +2538,7 @@ const singleAddressesMock = {
       caTxNum: 1,
       caBalance: {
         getCoin: '10000000',
+        getTokens: [],
       },
       caTxList: [
         {
@@ -2548,6 +2549,7 @@ const singleAddressesMock = {
               'addr1q88w8sft932ckyuw0xtqvhw3y9ssygkn5ty2mrxy3s0m3y9hrpl88wzzxde89584pysyuhrmdypggxylltksmf6qqrms055em6',
               {
                 getCoin: '10177267',
+                getTokens: [],
               },
             ],
           ],
@@ -2556,14 +2558,17 @@ const singleAddressesMock = {
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
               {
                 getCoin: '10000000',
+                getTokens: [],
               },
             ],
           ],
           ctbInputSum: {
             getCoin: '10177267',
+            getTokens: [],
           },
           ctbOutputSum: {
             getCoin: '10000000',
+            getTokens: [],
           },
           fee: '177267',
         },
@@ -2578,6 +2583,7 @@ const singleAddressesMock = {
       caTxNum: 1,
       caBalance: {
         getCoin: '5000000',
+        getTokens: [],
       },
       caTxList: [
         {
@@ -2588,6 +2594,7 @@ const singleAddressesMock = {
               'addr1q88w8sft932ckyuw0xtqvhw3y9ssygkn5ty2mrxy3s0m3y9hrpl88wzzxde89584pysyuhrmdypggxylltksmf6qqrms055em6',
               {
                 getCoin: '5177267',
+                getTokens: [],
               },
             ],
           ],
@@ -2596,14 +2603,17 @@ const singleAddressesMock = {
               'addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z',
               {
                 getCoin: '5000000',
+                getTokens: [],
               },
             ],
           ],
           ctbInputSum: {
             getCoin: '5177267',
+            getTokens: [],
           },
           ctbOutputSum: {
             getCoin: '5000000',
+            getTokens: [],
           },
           fee: '177267',
         },
@@ -2618,6 +2628,7 @@ const singleAddressesMock = {
       caTxNum: 1,
       caBalance: {
         getCoin: '5000000',
+        getTokens: [],
       },
       caTxList: [
         {
@@ -2628,6 +2639,7 @@ const singleAddressesMock = {
               'addr1q88w8sft932ckyuw0xtqvhw3y9ssygkn5ty2mrxy3s0m3y9hrpl88wzzxde89584pysyuhrmdypggxylltksmf6qqrms055em6',
               {
                 getCoin: '5177267',
+                getTokens: [],
               },
             ],
           ],
@@ -2636,14 +2648,17 @@ const singleAddressesMock = {
               'addr1q9x7ydkah05wvkz5ncrwz72tm33tcf5e69sc70xex28tu0mdpyx5wwzddund4ha95apyseyt908qu269hva68d6vrpnsytprlt',
               {
                 getCoin: '5000000',
+                getTokens: [],
               },
             ],
           ],
           ctbInputSum: {
             getCoin: '5177267',
+            getTokens: [],
           },
           ctbOutputSum: {
             getCoin: '5000000',
+            getTokens: [],
           },
           fee: '177267',
         },
@@ -2658,6 +2673,7 @@ const singleAddressesMock = {
       caTxNum: 0,
       caBalance: {
         getCoin: '0',
+        getTokens: [],
       },
       caTxList: [],
     },

@@ -1,4 +1,4 @@
-import {TxType} from '../../../frontend/types'
+import {AssetFamily, TxType} from '../../../frontend/types'
 
 const ttl = 8493834
 
@@ -8,120 +8,137 @@ const transactionSettings = {
       address:
         'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
       coins: 1000000,
-      donationAmount: 5000000,
+      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: `${1.5}`, coins: 1500000},
       txType: TxType.SEND_ADA,
     },
-    plan: {
-      inputs: [
-        {
-          txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+    txPlanResult: {
+      success: true,
+      txPlan: {
+        inputs: [
+          {
+            txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 10000000,
+            outputIndex: 1,
+            tokens: [],
+          },
+        ],
+        outputs: [
+          {
+            isChange: false,
+            address:
+              'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
+            coins: 1500000,
+            tokens: [],
+          },
+        ],
+        change: {
+          isChange: false,
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 10000000,
-          outputIndex: 1,
+          coins: 8329150,
+          tokens: [],
         },
-      ],
-      outputs: [
-        {
-          address:
-            'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
-          coins: 1000000,
-        },
-        {
-          address:
-            'addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2mjdvnpufphgjawhyh0tg9r3sk85ls4',
-          coins: 5000000,
-        },
-      ],
-      change: {
-        address:
-          'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-        coins: 3827875,
+        certificates: [],
+        deposit: 0,
+        fee: 170850,
+        additionalLovelaceAmount: 0,
+        withdrawals: [],
       },
-      certificates: [],
-      deposit: 0,
-      fee: 172125,
-      withdrawals: [],
     },
     ttl,
-    txHash: '1ec20e39ecd3a4ecc0c53a7ff02a38492431a808eb4ed77c4f5cd73d1d234e5a',
+    txHash: 'ed69394abc8fd22c4eb3cc24524007f0aa793ef1f96ba7fc5b49504251b4c9f2',
   },
   delegation: {
     args: {
       poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
-      stakingKeyRegistered: false,
+      isStakingKeyRegistered: false,
       stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
       txType: TxType.DELEGATE,
     },
-    plan: {
-      inputs: [
-        {
-          txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+    txPlanResult: {
+      success: true,
+      txPlan: {
+        inputs: [
+          {
+            txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 10000000,
+            outputIndex: 1,
+            tokens: [],
+          },
+        ],
+        outputs: [],
+        change: {
+          isChange: false,
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 10000000,
-          outputIndex: 1,
+          coins: 7816010,
+          tokens: [],
         },
-      ],
-      outputs: [],
-      change: {
-        address:
-          'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-        coins: 7817328,
+        certificates: [
+          {
+            type: 0,
+            stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+          },
+          {
+            type: 2,
+            stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+            poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
+          },
+        ],
+        deposit: 2000000,
+        fee: 183990,
+        additionalLovelaceAmount: 0,
+        withdrawals: [],
       },
-      certificates: [
-        {
-          type: 0,
-          stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
-          poolHash: null,
-        },
-        {
-          type: 2,
-          stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
-          poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
-        },
-      ],
-      deposit: 2000000,
-      fee: 182672,
-      withdrawals: [],
     },
     ttl,
-    txHash: '14fbbd80cd9f04367cab3f81255816881629431bd54233c4c8bbf57001e352e0',
+    txHash: '540a00a825b4b1b8d606ca0d44dab00b512eb081dde5ad03eb489973cec2de6d',
   },
   rewardWithdrawal: {
     args: {
-      rewards: 50000,
+      rewards: 5000000,
       txType: TxType.WITHDRAW,
       stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
     },
-    plan: {
-      inputs: [
-        {
-          txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+    txPlanResult: {
+      success: true,
+      txPlan: {
+        inputs: [
+          {
+            txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 10000000,
+            outputIndex: 1,
+            tokens: [],
+          },
+        ],
+        outputs: [],
+        change: {
+          isChange: false,
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 10000000,
-          outputIndex: 1,
+          coins: 14824843,
+          tokens: [],
         },
-      ],
-      outputs: [],
-      change: {
-        address:
-          'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-        coins: 9877831,
+        certificates: [],
+        deposit: 0,
+        fee: 175157,
+        additionalLovelaceAmount: 0,
+        withdrawals: [
+          {
+            stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+            rewards: 5000000,
+          },
+        ],
       },
-      certificates: [],
-      deposit: 0,
-      fee: 172169,
-      withdrawals: [
-        {
-          stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
-          rewards: 50000,
-        },
-      ],
     },
     ttl,
-    txHash: '58d9451f5f28d6ee6e00c55cbd77645ea2888f155122619546f580a678ba24a4',
+    txHash: 'd94f6d79a30cde15d26be15a7c2b7750026ab8c35d16cd42367b28affd67ff6b',
   },
 }
 

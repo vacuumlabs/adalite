@@ -5,6 +5,7 @@ import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonic
 import assert from 'assert'
 import {assertPropertiesEqual, setupInitialMockState} from './actions'
 import {walletSettings} from '../common/wallet-settings'
+import {AssetFamily} from '../../../frontend/types'
 
 let state, action
 
@@ -26,9 +27,8 @@ const expectedStateChanges = {
   shouldShowDemoWalletWarningDialog: false,
   shouldShowGenerateMnemonicDialog: false,
   // send form
-  sendAmount: {fieldValue: '', coins: 0},
+  sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0},
   sendAddress: {fieldValue: ''},
-  donationAmount: {fieldValue: '', coins: 0},
   sendResponse: '',
   ticker2Id: null,
 }

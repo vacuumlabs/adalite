@@ -6,6 +6,7 @@ import FileLoader from '../../common/fileLoader'
 import tooltip from '../../common/tooltip'
 import {getTranslation} from '../../../translations'
 import SignPoolCertTxModal from './signPoolCertTxModal'
+import {State} from '../../../state'
 
 interface Props {
   loadingAction: any
@@ -49,15 +50,12 @@ const PoolOwnerCard = ({
     })(targetFile)
   }
 
-  useEffect(
-    () => {
-      // reset file name after pool tx plan is reset
-      if (poolTxPlan === null) {
-        setFileName('')
-      }
-    },
-    [poolTxPlan]
-  )
+  useEffect(() => {
+    // reset file name after pool tx plan is reset
+    if (poolTxPlan === null) {
+      setFileName('')
+    }
+  }, [poolTxPlan])
 
   const error = poolRegTxError
   const hwWalletLimitation = 'Only hardware wallet users can use this feature.'
@@ -144,7 +142,7 @@ const PoolOwnerCard = ({
 }
 
 export default connect(
-  (state) => ({
+  (state: State) => ({
     poolRegTxError: state.poolRegTxError,
     shouldShowPoolCertSignModal: state.poolCertTxVars.shouldShowPoolCertSignModal,
     poolTxPlan: state.poolCertTxVars.plan,

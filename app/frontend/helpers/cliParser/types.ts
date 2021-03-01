@@ -1,4 +1,4 @@
-export const enum TxBodyKeys {
+export enum TxBodyKeys {
   INPUTS = 0,
   OUTPUTS = 1,
   FEE = 2,
@@ -6,6 +6,8 @@ export const enum TxBodyKeys {
   CERTIFICATES = 4,
   WITHDRAWALS = 5,
   META_DATA_HASH = 7,
+  VALIDITY_INTERVAL_START = 8,
+  MINT = 9, // unsupported in current version
 }
 
 export const enum TxWitnessKeys {
@@ -20,15 +22,23 @@ export const enum TxCertificateKeys {
   STAKEPOOL_REGISTRATION = 3,
 }
 
+export type Lovelace = BigInt
+
 export type _Input = {
   txHash: Buffer
   outputIndex: number
 }
 
+export type _Asset = {assetName: Buffer; amount: BigInt}
+
+export type _MultiAsset = {policyId: Buffer; assets: _Asset[]}
+
 export type _Output = {
   address: Buffer
-  coins: number
+  coins: Lovelace
+  tokenBundle: _MultiAsset[]
 }
+
 export type _DelegationCert = {
   type: TxCertificateKeys.DELEGATION
   pubKeyHash: Buffer
@@ -77,7 +87,7 @@ export type _PoolRelay = {
   dnsName?: string
 }
 
-export type _PoolMetadataParams = {
+export type _PoolMetadataParams = null | {
   metadataUrl: string
   metadataHash: Buffer
 }
@@ -91,8 +101,8 @@ export type _StakepoolRegistrationCert = {
   type: TxCertificateKeys.STAKEPOOL_REGISTRATION
   poolKeyHash: Buffer
   vrfPubKeyHash: Buffer
-  pledge: number
-  cost: number
+  pledge: Lovelace
+  cost: Lovelace
   margin: _Margin // tagged
   rewardAddress: Buffer
   poolOwnersPubKeyHashes: Array<Buffer>
@@ -108,18 +118,20 @@ export type _Certificate =
 
 export type _Withdrawal = {
   address: Buffer
-  coins: number
+  coins: Lovelace
 }
 
 export type _UnsignedTxParsed = {
   inputs: _Input[]
   outputs: _Output[]
-  fee: number
-  ttl: number
+  fee: Lovelace
+  ttl?: BigInt
   certificates: _Certificate[]
   withdrawals: _Withdrawal[]
   metaDataHash?: Buffer
   meta: Buffer | null
+  validityIntervalStart?: BigInt
+  mint?: _MultiAsset
 }
 
 export type TxWitnessByron = [Buffer, Buffer, Buffer, Buffer]
@@ -173,14 +185,18 @@ export type WitnessOutput = {
 }
 
 export type SignedTxOutput = {
-  type: 'TxSignedShelley'
+  type: string
   description: ''
   cborHex: SignedTxCborHex
 }
 
 export type TxInput = [Buffer, number]
 
-export type TxOutput = [Buffer, number]
+export type TxAsset = Map<Buffer, number>
+
+export type TxMultiAsset = Map<Buffer, TxAsset>
+
+export type TxOutput = [Buffer, number | [number, TxMultiAsset]]
 
 export type TxStakingKeyRegistrationCert = [
   TxCertificateKeys.STAKING_KEY_REGISTRATION,
@@ -194,13 +210,7 @@ export type TxStakingKeyDeregistrationCert = [
 
 export type TxDelegationCert = [TxCertificateKeys.DELEGATION, [number, Buffer], Buffer]
 
-// prettier-ignore
-export type TxSingleHostIPRelay = [
-  TxRelayTypes.SINGLE_HOST_IP,
-  number?,
-  Buffer?,
-  Buffer?,
-]
+export type TxSingleHostIPRelay = [TxRelayTypes.SINGLE_HOST_IP, number?, Buffer?, Buffer?]
 
 export type TxSingleHostNameRelay = [TxRelayTypes.SINGLE_HOST_NAME, number, string]
 
@@ -223,3 +233,5 @@ export type TxStakepoolRegistrationCert = [
   any,
   [string, Buffer]
 ]
+
+export type TxWithdrawal = Map<Buffer, Lovelace>

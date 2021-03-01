@@ -190,10 +190,7 @@ const Account = ({
   blockchainExplorer,
   accountIndex,
 }: AccountParams) => {
-  const {
-    getMaxDonationAmount: _getMaxDonationAmount,
-    getMaxSendableAmount: _getMaxSendableAmount,
-  } = MaxAmountCalculator(computeRequiredTxFee)
+  const {getMaxSendableAmount: _getMaxSendableAmount} = MaxAmountCalculator(computeRequiredTxFee)
 
   let seeds = {
     randomInputSeed,

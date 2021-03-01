@@ -1,12 +1,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
-import {
-  sign as signMsg,
-  derivePrivate,
-  xpubToHdPassphrase,
-  getBootstrapAddressAttributes,
-  base58,
-} from 'cardano-crypto.js'
+import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
 import {encode} from 'borc'
 
 import HdNode, {_HdNode} from '../helpers/hd-node'

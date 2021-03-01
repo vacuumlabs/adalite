@@ -7,7 +7,7 @@ import debugLog from '../../helpers/debugLog'
 import {ShelleySignedTransactionStructured, ShelleyTxWitnesses} from './shelley-transaction'
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
-import {PoolParams} from './helpers/poolCertificateUtils'
+// import {PoolParams} from './helpers/poolCertificateUtils'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
 import {captureMessage} from '@sentry/browser'
 
@@ -195,7 +195,8 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   const prepareTokenBundle = (tokens: Token[]): LedgerAssetGroup[] => {
-    // if (multiAssets.length > 0 && !isFeatureSupportedForVersion(LedgerCryptoProviderFeature.MULTI_ASSET)) {
+    // if (multiAssets.length > 0 &&
+    //!isFeatureSupportedForVersion(LedgerCryptoProviderFeature.MULTI_ASSET)) {
     //   throw Error(Errors.LedgerMultiAssetsNotSupported)
     // }
     const tokenObject = groupTokensByPolicyId(tokens)

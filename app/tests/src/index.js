@@ -13,9 +13,9 @@ describe('AdaLite Test Suite', () => {
   describe('Blockchain Explorer', () => {
     require('./blockchain-explorer')
   })
-  describe('Cardano Wallet', () => {
-    require('./cardano-wallet')
-  })
+  // describe('Cardano Wallet', () => {
+  //   require('./cardano-wallet')
+  // })
   describe('Import/Export Wallet as JSON', () => {
     require('./keypass-json')
   })

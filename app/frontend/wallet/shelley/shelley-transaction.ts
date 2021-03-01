@@ -1,9 +1,9 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
-import {encode, Tagged} from 'borc'
+import {encode} from 'borc'
 import {blake2b, base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat} from './helpers/addresses'
-import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
+// import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
 import {_ByronWitness, _Certificate, _Input, _Output, _ShelleyWitness, _Withdrawal} from '../types'
 import {
   TxAmount,
@@ -123,7 +123,8 @@ function ShelleyTxCertificates(certificates: _Certificate[]): TxCertificate[] {
         stakeCredential,
       ],
       [CertificateType.DELEGATION]: [TxCertificateKey.DELEGATION, stakeCredential, poolHash],
-      [CertificateType.STAKEPOOL_REGISTRATION]: null, //ShelleyPoolRegistrationCertificate(certificate),
+      [CertificateType.STAKEPOOL_REGISTRATION]: null,
+      //ShelleyPoolRegistrationCertificate(certificate),
     }
     return encodedCertsTypes[certificate.type]
   })

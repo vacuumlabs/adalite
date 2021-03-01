@@ -10,96 +10,150 @@ import {
   TxSingleHostIPRelay,
   TxSingleHostNameRelay,
   TxRelayTypes,
+  TxWithdrawal,
+  _UnsignedTxDecoded,
+  TxBodyKeys,
 } from './types'
 
-export const isArrayOfType = <T>(test: any, valueGuard: (test: any) => boolean): test is T[] =>
-  Array.isArray(test) && (test as any[]).every((value) => valueGuard(value))
+export const isArrayOfType = <T>(value: any, valueGuard: (item: any) => boolean): value is T[] =>
+  Array.isArray(value) && (value as any[]).every((item) => valueGuard(item))
 
-export const isTxInput = (test: any): test is TxInput =>
-  test.length === 2 && Buffer.isBuffer(test[0]) && Number.isInteger(test[1])
+export const isUint64 = (value: any): value is number => {
+  if (typeof value === 'number' && value > 0) return true
+  try {
+    BigInt(value)
+    return value > 0
+  } catch (e) {
+    return false
+  }
+}
 
-export const isTxOutput = (test: any): test is TxOutput =>
-  test.length === 2 && Buffer.isBuffer(test[0]) && Number.isInteger(test[1])
+export const isTxInput = (value: any): value is TxInput => {
+  if (!Array.isArray(value) || value.length !== 2) return false
+  const [txHash, outputIndex] = value
+  return Buffer.isBuffer(txHash) && Number.isInteger(outputIndex)
+}
 
-export const isWithdrawalsMap = (test: any): test is Map<Buffer, number> =>
-  test instanceof Map &&
-  Array.from(test.keys()).every((value) => Buffer.isBuffer(value)) &&
-  Array.from(test.values()).every((value) => Number.isInteger(value))
+export const isTxOutput = (value: any): value is TxOutput => {
+  if (Array.isArray(value) && value.length === 2) {
+    const [address, amount] = value
+    const isMultiAsset = (outputAmount: any) =>
+      Array.isArray(outputAmount) && outputAmount.length === 2
+    return Buffer.isBuffer(address) && (isUint64(amount) || isMultiAsset(amount))
+  }
+  return false
+}
 
-export const isTxStakingKeyRegistrationCert = (test: any): test is TxStakingKeyRegistrationCert =>
-  Array.isArray(test) &&
-  test.length === 2 &&
-  test[0] === TxCertificateKeys.STAKING_KEY_REGISTRATION &&
-  Array.isArray(test[1]) &&
-  test[1].length === 2 &&
-  Number.isInteger(test[1][0]) &&
-  Buffer.isBuffer(test[1][1])
+export const isWithdrawalsMap = (value: any): value is TxWithdrawal =>
+  value instanceof Map &&
+  Array.from(value.keys()).every((key) => Buffer.isBuffer(key)) &&
+  Array.from(value.values()).every((mapValue) => isUint64(mapValue))
 
-export const isStakingKeyDeregistrationCert = (test: any): test is TxStakingKeyDeregistrationCert =>
-  Array.isArray(test) &&
-  test.length === 2 &&
-  test[0] === TxCertificateKeys.STAKING_KEY_DEREGISTRATION &&
-  Array.isArray(test[1]) &&
-  test[1].length === 2 &&
-  Number.isInteger(test[1][0]) &&
-  Buffer.isBuffer(test[1][1])
+export const isTxStakingKeyRegistrationCert = (
+  value: any
+): value is TxStakingKeyRegistrationCert => {
+  if (!Array.isArray(value) || value.length !== 2) return false
+  if (!Array.isArray(value[1]) || value[1].length !== 2) return false
+  const [type, [, pubKeyHash]] = value
+  return type === TxCertificateKeys.STAKING_KEY_REGISTRATION && Buffer.isBuffer(pubKeyHash)
+}
 
-export const isDelegationCert = (test: any): test is TxDelegationCert =>
-  Array.isArray(test) &&
-  test.length === 3 &&
-  test[0] === TxCertificateKeys.DELEGATION &&
-  Array.isArray(test[1]) &&
-  test[1].length === 2 &&
-  Number.isInteger(test[1][0]) &&
-  Buffer.isBuffer(test[1][1]) &&
-  Buffer.isBuffer(test[2])
+export const isStakingKeyDeregistrationCert = (
+  value: any
+): value is TxStakingKeyDeregistrationCert => {
+  if (!Array.isArray(value) || value.length !== 2) return false
+  if (!Array.isArray(value[1]) || value[1].length !== 2) return false
+  const [type, [, pubKeyHash]] = value
+  return type === TxCertificateKeys.STAKING_KEY_DEREGISTRATION && Buffer.isBuffer(pubKeyHash)
+}
 
-export const isTxSingleHostIPRelay = (test: any): test is TxSingleHostIPRelay =>
-  Array.isArray(test) &&
-  test.length <= 4 &&
-  test[0] === TxRelayTypes.SINGLE_HOST_IP &&
-  (test[1] === null || Number.isInteger(test[1])) &&
-  (test[2] === null || Buffer.isBuffer(test[2])) &&
-  (test[3] === null || Buffer.isBuffer(test[3]))
+export const isDelegationCert = (value: any): value is TxDelegationCert => {
+  if (!Array.isArray(value) || value.length !== 3) return false
+  if (!Array.isArray(value[1]) || value[1].length !== 2) return false
+  const [type, [, pubKeyHash], poolHash] = value
+  return (
+    type === TxCertificateKeys.DELEGATION &&
+    Buffer.isBuffer(pubKeyHash) &&
+    Buffer.isBuffer(poolHash)
+  )
+}
 
-export const isTxSingleHostNameRelay = (test: any): test is TxSingleHostNameRelay =>
-  Array.isArray(test) &&
-  test.length === 3 &&
-  test[0] === TxRelayTypes.SINGLE_HOST_NAME &&
-  Number.isInteger(test[1]) &&
-  typeof test[2] === 'string'
+export const isTxSingleHostIPRelay = (value: any): value is TxSingleHostIPRelay => {
+  if (!Array.isArray(value) || value.length !== 4) return false
+  const [type, portNumber, ipv4, ipv6] = value
+  return (
+    type === TxRelayTypes.SINGLE_HOST_IP &&
+    (portNumber === null || Number.isInteger(portNumber)) &&
+    (ipv4 === null || Buffer.isBuffer(ipv4)) &&
+    (ipv6 === null || Buffer.isBuffer(ipv6))
+  )
+}
 
-export const isTxMultiHostNameRelay = (test: any): test is TxMultiHostNameRelay =>
-  Array.isArray(test) &&
-  test.length === 2 &&
-  test[0] === TxRelayTypes.MULTI_HOST_NAME &&
-  typeof test[1] === 'string'
+export const isTxSingleHostNameRelay = (value: any): value is TxSingleHostNameRelay => {
+  if (!Array.isArray(value) || value.length !== 3) return false
+  const [type, portNumber, dnsName] = value
+  return (
+    type === TxRelayTypes.SINGLE_HOST_NAME &&
+    Number.isInteger(portNumber) &&
+    typeof dnsName === 'string'
+  )
+}
 
-const isMargin = (test: any) =>
-  typeof test === 'object' &&
-  'value' in test &&
-  0 in test.value &&
-  Number.isInteger(test.value[0]) &&
-  1 in test.value &&
-  Number.isInteger(test.value[1])
+export const isTxMultiHostNameRelay = (value: any): value is TxMultiHostNameRelay => {
+  if (!Array.isArray(value) || value.length !== 2) return false
+  const [type, dnsName] = value
+  return type === TxRelayTypes.MULTI_HOST_NAME && typeof dnsName === 'string'
+}
 
-const isMetaData = (test: any) =>
-  test === null ||
-  (Array.isArray(test) &&
-    test.length === 2 &&
-    typeof test[0] === 'string' &&
-    Buffer.isBuffer(test[1]))
+const isMargin = (_value: any) => {
+  if (typeof _value !== 'object') return false
+  const {tag, value} = _value
+  if (!Array.isArray(value)) return false
+  const [numerator, denominator] = value
+  return tag === 30 && Number.isInteger(numerator) && Number.isInteger(denominator)
+}
 
-export const isStakepoolRegistrationCert = (test: any): test is TxStakepoolRegistrationCert =>
-  Array.isArray(test) &&
-  test.length === 10 &&
-  test[0] === TxCertificateKeys.STAKEPOOL_REGISTRATION &&
-  Buffer.isBuffer(test[1]) &&
-  Buffer.isBuffer(test[2]) &&
-  Number.isInteger(test[3]) &&
-  Number.isInteger(test[4]) &&
-  isMargin(test[5]) &&
-  Buffer.isBuffer(test[6]) &&
-  isArrayOfType<Buffer>(test[7], Buffer.isBuffer) &&
-  Array.isArray(test[8]) &&
-  isMetaData(test[9])
+const isMetaData = (value: any) => {
+  if (value === null) return true
+  if (!Array.isArray(value) || value.length !== 2) return false
+  const [metadataUrl, metadataHash] = value
+  return typeof metadataUrl === 'string' && Buffer.isBuffer(metadataHash)
+}
+
+export const isStakepoolRegistrationCert = (value: any): value is TxStakepoolRegistrationCert => {
+  if (!Array.isArray(value) || value.length !== 10) return false
+  const [
+    type,
+    poolKeyHash,
+    vrfPubKeyHash,
+    pledge,
+    cost,
+    margin,
+    rewardAddress,
+    poolOwnersPubKeyHashes,
+    relays,
+    metadata,
+  ] = value
+  return (
+    type === TxCertificateKeys.STAKEPOOL_REGISTRATION &&
+    Buffer.isBuffer(poolKeyHash) &&
+    Buffer.isBuffer(vrfPubKeyHash) &&
+    isUint64(pledge) &&
+    isUint64(cost) &&
+    isMargin(margin) &&
+    Buffer.isBuffer(rewardAddress) &&
+    isArrayOfType<Buffer>(poolOwnersPubKeyHashes, Buffer.isBuffer) &&
+    Array.isArray(relays) &&
+    isMetaData(metadata)
+  )
+}
+
+export const isUnsignedTxDecoded = (value: any): value is _UnsignedTxDecoded => {
+  if (Array.isArray(value)) {
+    const txBody = value[0]
+    const validKeys = Object.values(TxBodyKeys).filter(Number.isInteger) as Array<number>
+    const txBodyKeys: Array<number> = Array.from(txBody.keys())
+    return txBodyKeys.every((key) => validKeys.includes(key))
+  }
+  return false
+}

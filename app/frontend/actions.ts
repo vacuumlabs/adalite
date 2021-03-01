@@ -1336,7 +1336,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const signPoolCertificateTx = async (state) => {
+  const signPoolCertificateTx = async (state: State) => {
     try {
       // TODO: refactor
       const supportError = wallet.ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)

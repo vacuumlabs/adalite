@@ -89,8 +89,8 @@ describe('Tx plan', () => {
   Object.entries(transactionSettings).forEach(([name, setting]) =>
     it(`should create the right tx plan for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
-      const txPlan = await account.getTxPlan({...setting.args})
-      assert.deepEqual(txPlan, setting.plan)
+      const txPlanResult = await account.getTxPlan({...setting.args})
+      assert.deepEqual(txPlanResult, setting.txPlanResult)
     })
   )
 })
@@ -99,7 +99,7 @@ describe('TxAux', () => {
   Object.entries(transactionSettings).forEach(([name, setting]) =>
     it(`should calcualte the right tx hash for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
-      const txHash = (await account.prepareTxAux(setting.plan, setting.ttl)).getId()
+      const txHash = (await account.prepareTxAux(setting.txPlanResult.txPlan, setting.ttl)).getId()
       assert.deepEqual(txHash, setting.txHash)
     })
   )

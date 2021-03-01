@@ -21,7 +21,7 @@ import {
   Token,
   AssetFamily,
 } from '../../types'
-import {base58, bech32} from 'cardano-crypto.js'
+import {bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 import {
