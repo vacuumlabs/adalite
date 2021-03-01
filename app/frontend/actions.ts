@@ -792,15 +792,15 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   /* DELEGATE */
 
   const hasPoolIdentifiersChanged = (state: State) => {
-    const {shelleyDelegation: newShelleyDelegation, activeMainTab: newActiveMainTab} = getState()
+    const {shelleyDelegation: newShelleyDelegation} = getState()
     return (
-      newActiveMainTab !== state.activeMainTab ||
       newShelleyDelegation?.selectedPool?.poolHash !==
-        state?.shelleyDelegation?.selectedPool?.poolHash
+      state.shelleyDelegation?.selectedPool?.poolHash
     )
+    // maybe also check if tab changed
   }
 
-  const setPoolInfo = async (state: State): Promise<void> => {
+  const setPoolInfo = async (state: State) => {
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
@@ -826,19 +826,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const calculateDelegationFee = async (state: State): Promise<void> => {
-    if (hasPoolIdentifiersChanged(state)) {
-      return
-    }
-    const debouncedState = getState()
-    await setPoolInfo(debouncedState)
-    if (hasPoolIdentifiersChanged(debouncedState)) {
-      return
-    }
-    const poolHash = debouncedState.shelleyDelegation.selectedPool.poolHash as string
-    const isStakingKeyRegistered = getSourceAccountInfo(debouncedState).shelleyAccountInfo
-      .hasStakingKey
-    const stakingAddress = getSourceAccountInfo(debouncedState).stakingAddress
+  const calculateDelegationFee = async (): Promise<void> => {
+    const state = getState()
+    setPoolInfo(state)
+    const poolHash = state.shelleyDelegation.selectedPool.poolHash as string
+    const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
+    const stakingAddress = getSourceAccountInfo(state).stakingAddress
     const txPlanResult = await prepareTxPlan({
       poolHash,
       stakingAddress,
@@ -849,7 +842,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     if (hasPoolIdentifiersChanged(newState)) {
       return
     }
-    const balance = getSourceAccountInfo(debouncedState).balance as Lovelace
+    const balance = getSourceAccountInfo(state).balance as Lovelace
 
     if (txPlanResult.success === true) {
       setState({
@@ -878,8 +871,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const debouncedCalculateDelegationFee = (state: State) =>
-    debounceEvent(() => calculateDelegationFee(state), 500)
+  const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
 
   const validateDelegationAndCalculateFee = () => {
     const state = getState()

@@ -141,6 +141,7 @@ export function computeRequiredTxFee(
 }
 
 function computeRequiredDeposit(certificates: Array<TxCertificate>): Lovelace {
+  // TODO: this to network config
   const CertificateDeposit: {[key in CertificateType]: number} = {
     [CertificateType.DELEGATION]: 0,
     [CertificateType.STAKEPOOL_REGISTRATION]: 500000000,
@@ -155,9 +156,10 @@ export const computeMinUTxOLovelaceAmount = (
   coins: Lovelace,
   tokens: Token[]
 ): Lovelace => {
-  // TODO: get these from constants
-  const adaOnlyUTxOSize = 64
+  // TODO: this to network config or constants
+  const adaOnlyUTxOSize = 60 // TODO: this is too low
   const minUTxOValue = 1000000
+  if (tokens.length === 0) return minUTxOValue as Lovelace
   const output: TxOutput = {
     isChange: false,
     address,
@@ -258,8 +260,30 @@ export function computeTxPlan(
     coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
   }
 
+  const minimalChangeLovelace = computeMinUTxOLovelaceAmount(
+    change.address,
+    change.coins,
+    change.tokens
+  )
+
+  // if we cannot create a change output with minimal ada we add it to the first output
+  if (change.tokens.length === 0 && change.coins < minimalChangeLovelace) {
+    const outputWithChange = {...outputs[0], coins: (outputs[0].coins + change.coins) as Lovelace}
+    const outputsWithChange = outputs.map((output, i) => (i === 0 ? outputWithChange : output))
+    return {
+      inputs,
+      outputs: outputsWithChange,
+      change: null,
+      certificates,
+      deposit,
+      additionalLovelaceAmount: (additionalLovelaceAmount + change.coins) as Lovelace,
+      fee: feeWithChange,
+      withdrawals,
+    }
+  }
+
   if (change.coins < computeMinUTxOLovelaceAmount(change.address, change.coins, change.tokens)) {
-    throw NamedError('OutputTooSmall')
+    throw NamedError('ChangeOutputTooSmall')
   }
 
   return {
@@ -407,7 +431,9 @@ export const selectMinimalTxPlan = (
         error: {code: e.name},
         minimalLovelaceAmount: outputs.reduce(
           (acc, output) =>
-            acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens),
+            output.tokens.length > 0
+              ? acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens)
+              : 0,
           0
         ) as Lovelace,
       }
