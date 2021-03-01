@@ -414,7 +414,6 @@ export const selectMinimalTxPlan = (
   }
 
   // TODO: refactor this
-  let txPlanResult: TxPlanResult
   for (const utxo of utxos) {
     inputs.push(utxo)
     try {
@@ -425,21 +424,34 @@ export const selectMinimalTxPlan = (
         txPlan: plan,
       }
     } catch (e) {
-      txPlanResult = {
-        success: false,
-        estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
-        error: {code: e.name},
-        minimalLovelaceAmount: outputs.reduce(
-          (acc, output) =>
-            output.tokens.length > 0
-              ? acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens)
-              : 0,
-          0
-        ) as Lovelace,
+      if (inputs.length === utxos.length) {
+        return {
+          success: false,
+          estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
+          error: {code: e.name},
+          minimalLovelaceAmount: outputs.reduce(
+            (acc, output) =>
+              output.tokens.length > 0
+                ? acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens)
+                : 0,
+            0
+          ) as Lovelace,
+        }
       }
     }
   }
-  return txPlanResult
+  return {
+    success: false,
+    estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
+    error: {code: 'CannotConstructTxPlan'},
+    minimalLovelaceAmount: outputs.reduce(
+      (acc, output) =>
+        output.tokens.length > 0
+          ? acc + computeMinUTxOLovelaceAmount(output.address, output.coins, output.tokens)
+          : 0,
+      0
+    ) as Lovelace,
+  }
 }
 
 export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => {
