@@ -607,7 +607,7 @@ p.hey {
 
 .searchable-select-wrapper {
   position: relative;
-  margin-bottom: 32px;
+  min-width: 0;
 }
 
 .searchable-select-wrapper.no-margin {
@@ -617,6 +617,19 @@ p.hey {
 .searchable-select {
   position: relative;
   cursor: pointer;
+}
+
+.searchable-select .wrapper{
+  display: flex;
+  min-width: 0;
+  padding-right: 16px;
+}
+
+.searchable-select .hash{
+  display: flex;
+  padding-left: 4px;
+  min-width: 0;
+  color: var(--color-grey-medium);
 }
 
 .searchable-select.focus {
@@ -699,6 +712,10 @@ p.hey {
 .searchable-select-item .multi-asset-amount {
   margin: unset;
   padding-right: 12px;
+}
+
+.searchable-select-item .no-name-asset {
+  color: var(--color-grey-medium);
 }
 
 .searchable-select-label {

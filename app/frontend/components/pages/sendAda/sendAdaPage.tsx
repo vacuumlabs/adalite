@@ -80,7 +80,11 @@ const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: Drop
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {assetName}
+        {assetName || (
+          <span className="no-name-asset">
+            {'<'}no-name{'>'}
+          </span>
+        )}
       </div>
       <div className="multi-asset-amount">
         {type === AssetFamily.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
@@ -142,6 +146,7 @@ const SendAdaPage = ({
     quantity: balance,
     star: true,
   }
+
   const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
     () => [
       adaAsset,
@@ -203,6 +208,17 @@ const SendAdaPage = ({
       }
     },
     [updateAmount]
+  )
+
+  const displayDropdownSelectedItem = ({assetName, policyId}: DropdownAssetItem) => (
+    <div className="wrapper">
+      {assetName}
+      {selectedAsset.type === AssetFamily.TOKEN && (
+        <div className="hash">
+          (<div className="ellipsis">{policyId}</div>)
+        </div>
+      )}
+    </div>
   )
 
   const handleDropdownOnSelect = useCallback(
@@ -267,14 +283,14 @@ const SendAdaPage = ({
       <SearchableSelect
         wrapperClassName="no-margin"
         defaultItem={selectedAsset}
-        displaySelectedItem={({assetName}: DropdownAssetItem) => assetName}
+        displaySelectedItem={displayDropdownSelectedItem}
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
         displayItem={showDropdownAssetItem}
         onSelect={handleDropdownOnSelect}
         showSearch={dropdownAssetItems.length >= 4}
         searchPredicate={searchPredicate}
-        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or hash`}
+        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or policy ID`}
         dropdownClassName="modal-dropdown"
         getDropdownWidth={calculateDropdownWidth}
       />
@@ -294,7 +310,7 @@ const SendAdaPage = ({
           className="input send-amount"
           id={`${isModal ? 'account' : ''}send-amount`}
           name={`${isModal ? 'account' : ''}send-amount`}
-          placeholder="0.000000"
+          placeholder={selectedAsset.type === AssetFamily.ADA ? '0.000000' : '0'}
           value={sendAmount.fieldValue}
           onInput={handleAmountOnInput}
           autoComplete="off"
@@ -333,7 +349,7 @@ const SendAdaPage = ({
               Min ADA
               <a
                 {...tooltip(
-                  'Every output created by a transaction must include a minimum amount of ada, which is calculated based on the size of the output.',
+                  'Every transaction must include a minimum amount of ada, which is calculated based on the size of the transaction.',
                   true
                 )}
               >

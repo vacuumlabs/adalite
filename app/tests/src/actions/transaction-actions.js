@@ -62,6 +62,7 @@ const sendAdaTxSettings = {
 const delegationSettings = {
   delegation: {
     state: {
+      activeMainTab: 'Staking',
       shelleyDelegation: {
         selectedPool: {
           poolHash: '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438',
@@ -107,7 +108,7 @@ describe('Delegation fee calculation', () => {
   Object.entries(delegationSettings).forEach(([name, setting]) =>
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
-      await action.calculateDelegationFee()
+      await action.calculateDelegationFee(setting.state)
       assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
     })
   )

@@ -9,9 +9,9 @@ interface Props<T> {
   label?: string
   defaultItem: T
   items: T[]
-  displaySelectedItem: (t: T) => string
+  displaySelectedItem: (t: T) => string | h.JSX.Element
   displaySelectedItemClassName?: string
-  displayItem: (t: T) => any
+  displayItem: (t: T) => string | h.JSX.Element
   onSelect: (t: T) => void
   showSearch: boolean
   searchPredicate: (query: string, t: T) => boolean
