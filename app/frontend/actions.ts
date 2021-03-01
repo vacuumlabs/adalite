@@ -804,10 +804,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const poolInfo = !state.shelleyDelegation.selectedPool.name
+    const poolInfo = !state.shelleyDelegation?.selectedPool?.name
       ? await wallet
         .getAccount(state.sourceAccountIndex)
-        .getPoolInfo(state.shelleyDelegation.selectedPool.url)
+        .getPoolInfo(state.shelleyDelegation?.selectedPool?.url)
       : {}
     if (hasPoolIdentifiersChanged(state)) {
       return
@@ -817,10 +817,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPool: {
-          ...state.shelleyDelegation.selectedPool,
+          ...state.shelleyDelegation?.selectedPool,
           ...poolInfo,
         },
-        delegationFee: newState.shelleyDelegation.delegationFee,
+        delegationFee: newState.shelleyDelegation?.delegationFee,
       },
       gettingPoolInfo: false,
     })
@@ -829,7 +829,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const calculateDelegationFee = async (): Promise<void> => {
     const state = getState()
     setPoolInfo(state)
-    const poolHash = state.shelleyDelegation.selectedPool.poolHash as string
+    const poolHash = state.shelleyDelegation?.selectedPool?.poolHash as string
     const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
     const txPlanResult = await prepareTxPlan({
@@ -854,7 +854,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const delegationTransactionSummary: DelegateTransactionSummary = {
         type: TxType.DELEGATE,
         deposit: txPlanResult.txPlan.deposit,
-        stakePool: newState.shelleyDelegation.selectedPool,
+        stakePool: newState.shelleyDelegation?.selectedPool,
       }
       setTransactionSummary(txPlanResult.txPlan, delegationTransactionSummary)
       setState({
