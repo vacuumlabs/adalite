@@ -37,7 +37,7 @@ import {
   TrezorTxCertificate,
   TrezorWithdrawal,
 } from './trezor-types'
-import {_SignedTx, _TxAux} from './types'
+import {TxSigned, TxAux} from './types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 
 type CryptoProviderParams = {
@@ -268,9 +268,9 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   async function signTx(
-    txAux: _TxAux,
+    txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper
-  ): Promise<_SignedTx> {
+  ): Promise<TxSigned> {
     const inputs = txAux.inputs.map((input) => prepareInput(input, addressToAbsPathMapper))
     const outputs = txAux.outputs.map((output) => prepareOutput(output))
     const certificates = txAux.certificates.map((certificate) =>

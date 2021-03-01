@@ -4,7 +4,7 @@ import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto
 import {encode} from 'borc'
 
 import HdNode, {_HdNode} from '../helpers/hd-node'
-import {ShelleySignedTransactionStructured, ShelleyTxWitnesses} from './shelley-transaction'
+import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
 
 import {isShelleyPath, xpub2ChainCode, xpub2pub} from './helpers/addresses'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
@@ -18,7 +18,7 @@ import {
 } from '../../types'
 import NamedError from '../../helpers/NamedError'
 import {Network, _ByronWitness, _ShelleyWitness} from '../types'
-import {_SignedTx, _TxAux, _TxSigned} from './types'
+import {TxSigned, TxAux, CborizedTxSignedStructured} from './types'
 
 type CryptoProviderParams = {
   walletSecretDef: any
@@ -67,10 +67,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   }
 
   // eslint-disable-next-line require-await
-  async function signTx(
-    txAux: _TxAux,
-    addressToPathMapper: AddressToPathMapper
-  ): Promise<_SignedTx> {
+  async function signTx(txAux: TxAux, addressToPathMapper: AddressToPathMapper): Promise<TxSigned> {
     const structuredTx = await signTxGetStructured(txAux, addressToPathMapper)
     const tx = {
       txBody: encode(structuredTx).toString('hex'),
@@ -108,7 +105,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     return {publicKey, signature, chainCode, addressAttributes}
   }
 
-  const prepareWitnesses = async (txAux: _TxAux, addressToAbsPathMapper: AddressToPathMapper) => {
+  const prepareWitnesses = async (txAux: TxAux, addressToAbsPathMapper: AddressToPathMapper) => {
     const {inputs, certificates, withdrawals, getId} = txAux
     const txHash = getId()
     const _shelleyWitnesses = []
@@ -133,11 +130,11 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   }
 
   async function signTxGetStructured(
-    txAux: _TxAux,
+    txAux: TxAux,
     addressToPathMapper: AddressToPathMapper
-  ): Promise<_TxSigned> {
+  ): Promise<CborizedTxSignedStructured> {
     const {shelleyWitnesses, byronWitnesses} = await prepareWitnesses(txAux, addressToPathMapper)
-    const txWitnesses = ShelleyTxWitnesses(byronWitnesses, shelleyWitnesses)
+    const txWitnesses = cborizeTxWitnesses(byronWitnesses, shelleyWitnesses)
     const txMeta = null
 
     return ShelleySignedTransactionStructured(txAux, txWitnesses, txMeta)

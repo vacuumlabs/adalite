@@ -3,7 +3,7 @@ import {_Certificate, _Input, _Output, _Withdrawal} from '../types'
 
 type encodeCBORFn = any // TODO: type
 
-export type _TxAux = {
+export type TxAux = {
   getId: () => HexString
   inputs: _Input[]
   outputs: _Output[]
@@ -14,12 +14,12 @@ export type _TxAux = {
   encodeCBOR: encodeCBORFn
 }
 
-export type _TxSigned = {
+export type CborizedTxSignedStructured = {
   getId: () => HexString
   encodeCBOR: encodeCBORFn
 }
 
-export type _SignedTx = {
+export type TxSigned = {
   txBody: HexString
   txHash: HexString
 }
@@ -54,41 +54,45 @@ export const enum TxRelayType {
   MULTI_HOST_NAME = 2,
 }
 
-export type TxInput = [Buffer, number]
+export type CborizedTxInput = [Buffer, number]
 
-export type TxTokens = Map<Buffer, Map<Buffer, number>>
+export type CborizedTxTokens = Map<Buffer, Map<Buffer, number>>
 
-export type TxAmount = Lovelace | [Lovelace, TxTokens]
+export type CborizedTxAmount = Lovelace | [Lovelace, CborizedTxTokens]
 
-export type TxOutput = [Buffer, TxAmount]
+export type CborizedTxOutput = [Buffer, CborizedTxAmount]
 
-export type TxWithdrawals = Map<Buffer, Lovelace>
+export type CborizedTxWithdrawals = Map<Buffer, Lovelace>
 
-export type TxStakingKeyRegistrationCert = [
+export type CborizedTxStakingKeyRegistrationCert = [
   TxCertificateKey.STAKING_KEY_REGISTRATION,
-  TxStakeCredential
+  CborizedTxStakeCredential
 ]
 
-export type TxStakingKeyDeregistrationCert = [
+export type CborizedTxStakingKeyDeregistrationCert = [
   TxCertificateKey.STAKING_KEY_DEREGISTRATION,
-  TxStakeCredential
+  CborizedTxStakeCredential
 ]
 
-export type TxDelegationCert = [TxCertificateKey.DELEGATION, TxStakeCredential, Buffer]
+export type CborizedTxDelegationCert = [
+  TxCertificateKey.DELEGATION,
+  CborizedTxStakeCredential,
+  Buffer
+]
 
 // prettier-ignore
-export type TxSingleHostIPRelay = [
+export type CborizedTxSingleHostIPRelay = [
   TxRelayType.SINGLE_HOST_IP,
   number?,
   Buffer?,
   Buffer?,
 ]
 
-export type TxSingleHostNameRelay = [TxRelayType.SINGLE_HOST_NAME, number, string]
+export type CborizedTxSingleHostNameRelay = [TxRelayType.SINGLE_HOST_NAME, number, string]
 
 export type TxMultiHostNameRelay = [TxRelayType.MULTI_HOST_NAME, string]
 
-export type TxStakepoolRegistrationCert = [
+export type CborizedTxStakepoolRegistrationCert = [
   TxCertificateKey.STAKEPOOL_REGISTRATION,
   Buffer,
   Buffer,
@@ -106,29 +110,32 @@ export type TxStakepoolRegistrationCert = [
   [string, Buffer]
 ]
 
-export type TxCertificate =
-  | TxDelegationCert
-  | TxStakepoolRegistrationCert
-  | TxStakingKeyDeregistrationCert
-  | TxStakingKeyRegistrationCert
+export type CborizedTxCertificate =
+  | CborizedTxDelegationCert
+  | CborizedTxStakepoolRegistrationCert
+  | CborizedTxStakingKeyDeregistrationCert
+  | CborizedTxStakingKeyRegistrationCert
 
-export type TxWitnessByron = [Buffer, Buffer, Buffer, Buffer]
+export type CborizedTxWitnessByron = [Buffer, Buffer, Buffer, Buffer]
 
-export type TxWitnessShelley = [Buffer, Buffer]
+export type CborizedTxWitnessShelley = [Buffer, Buffer]
 
-export type _SignedTxDecoded = [
+export type CborizedTxSigned = [
   Map<TxBodyKey, any>,
-  Map<TxWitnessKey, Array<TxWitnessByron | TxWitnessShelley>>,
+  Map<TxWitnessKey, Array<CborizedTxWitnessByron | CborizedTxWitnessShelley>>,
   Buffer | null
 ]
 
-export type _UnsignedTxDecoded = [Map<TxBodyKey, any>, Buffer | null]
+export type CborizedTxUnsigned = [Map<TxBodyKey, any>, Buffer | null]
 
-export type TxWitnesses = Map<TxWitnessKey, Array<TxWitnessByron | TxWitnessShelley>>
+export type CborizedTxWitnesses = Map<
+  TxWitnessKey,
+  Array<CborizedTxWitnessByron | CborizedTxWitnessShelley>
+>
 
 export enum TxStakeCredentialType {
   ADDR_KEYHASH = 0,
   // SCRIPTHASH = 1,
 }
 
-export type TxStakeCredential = [TxStakeCredentialType, Buffer]
+export type CborizedTxStakeCredential = [TxStakeCredentialType, Buffer]

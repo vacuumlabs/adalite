@@ -4,7 +4,7 @@ import Ledger, {AddressTypeNibbles} from '@cardano-foundation/ledgerjs-hw-app-ca
 import {encode} from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
-import {ShelleySignedTransactionStructured, ShelleyTxWitnesses} from './shelley-transaction'
+import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
 // import {PoolParams} from './helpers/poolCertificateUtils'
@@ -55,7 +55,7 @@ import {
   LedgerWithdrawal,
   LedgerWitness,
 } from './ledger-types'
-import {_SignedTx, _TxAux} from './types'
+import {TxSigned, TxAux} from './types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 
 const isWebUsbSupported = async () => {
@@ -333,9 +333,9 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   async function signTx(
-    txAux: _TxAux,
+    txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper
-  ): Promise<_SignedTx> {
+  ): Promise<TxSigned> {
     const inputs = txAux.inputs.map((input) => prepareInput(input, addressToAbsPathMapper))
     const outputs = txAux.outputs.map((output) => prepareOutput(output))
     const certificates = txAux.certificates.map((certificate) =>
@@ -366,7 +366,7 @@ const ShelleyLedgerCryptoProvider = async ({
 
     const txMeta = null
     const {shelleyWitnesses, byronWitnesses} = await prepareWitnesses(response.witnesses)
-    const txWitnesses = ShelleyTxWitnesses(byronWitnesses, shelleyWitnesses)
+    const txWitnesses = cborizeTxWitnesses(byronWitnesses, shelleyWitnesses)
     const structuredTx = ShelleySignedTransactionStructured(txAux, txWitnesses, txMeta)
 
     return {

@@ -37,7 +37,7 @@ import {
 import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresses'
 import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
-import {_TxAux} from './shelley/types'
+import {TxAux} from './shelley/types'
 import {UTxO, _Output} from './types'
 import {aggregateTokens} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
@@ -239,7 +239,7 @@ const Account = ({
     return ShelleyTxAux(inputs, txOutputs, fee, txTtl, certificates, withdrawals)
   }
 
-  async function signTxAux(txAux: _TxAux) {
+  async function signTxAux(txAux: TxAux) {
     const signedTx = await cryptoProvider
       .signTx(txAux, myAddresses.fixedPathMapper())
       .catch((e) => {

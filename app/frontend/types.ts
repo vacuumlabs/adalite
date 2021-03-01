@@ -1,4 +1,4 @@
-import {_SignedTx, _TxAux} from './wallet/shelley/types'
+import {TxSigned, TxAux} from './wallet/shelley/types'
 import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
 import {Network} from './wallet/types'
 import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
@@ -28,7 +28,7 @@ export type AddressToPathMapper = (address: _Address) => BIP32Path
 
 export interface CryptoProvider {
   network: Network
-  signTx: (unsignedTx: _TxAux, addressToPathMapper: AddressToPathMapper) => Promise<_SignedTx>
+  signTx: (unsignedTx: TxAux, addressToPathMapper: AddressToPathMapper) => Promise<TxSigned>
   getWalletSecret: () => Buffer | void
   getWalletName: () => string
   getDerivationScheme: () => DerivationScheme

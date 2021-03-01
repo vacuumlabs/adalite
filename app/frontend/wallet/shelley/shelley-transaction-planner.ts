@@ -1,10 +1,10 @@
 import {encode} from 'borc'
 import {
-  cborizeTxOutput,
-  ShelleyTxCertificates,
-  ShelleyTxInputs,
-  ShelleyTxOutputs,
-  ShelleyTxWithdrawals,
+  cborizeSingleTxOutput,
+  cborizeTxCertificates,
+  cborizeTxInputs,
+  cborizeTxOutputs,
+  cborizeTxWithdrawals,
 } from './shelley-transaction'
 import {MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
 import NamedError from '../../helpers/NamedError'
@@ -79,7 +79,7 @@ export function estimateTxSize(
   withdrawals: Array<_Withdrawal>
 ): Lovelace {
   // the 1 is there for the key in the tx map
-  const txInputsSize = encode(ShelleyTxInputs(inputs)).length + 1
+  const txInputsSize = encode(cborizeTxInputs(inputs)).length + 1
   /*
    * we have to estimate size of tx outputs since we are calculating
    * fee also in cases we dont know the amount of coins in advance
@@ -91,10 +91,10 @@ export function estimateTxSize(
     tokens: output.tokens,
   }))
   // TODO: max output size
-  const txOutputsSize = encode(ShelleyTxOutputs(txOutputs)).length + 1
+  const txOutputsSize = encode(cborizeTxOutputs(txOutputs)).length + 1
 
-  const txCertificatesSize = encode(ShelleyTxCertificates(certificates)).length + 1
-  const txWithdrawalsSize = encode(ShelleyTxWithdrawals(withdrawals)).length + 1
+  const txCertificatesSize = encode(cborizeTxCertificates(certificates)).length + 1
+  const txWithdrawalsSize = encode(cborizeTxWithdrawals(withdrawals)).length + 1
   const txTllSize = encode(Number.MAX_SAFE_INTEGER).length + 1
   const txFeeSize = encode(Number.MAX_SAFE_INTEGER).length + 1
 
@@ -164,7 +164,7 @@ export const computeMinUTxOLovelaceAmount = (
     coins,
     tokens,
   }
-  const outputSize = encode(cborizeTxOutput(output)).length
+  const outputSize = encode(cborizeSingleTxOutput(output)).length
   const minAda = (outputSize / adaOnlyUTxOSize) * minUTxOValue
   return minAda as Lovelace
 }

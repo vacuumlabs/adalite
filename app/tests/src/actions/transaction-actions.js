@@ -56,7 +56,8 @@ const sendAdaTxSettings = {
   // sendToken: {
   //   sendAddress: {
   //     fieldValue:
-  //       'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
+  //       'addr1qjag9rgwe04haycr283datdrjv3m
+  //lttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
   //   },
   //   state: {
   //     sendAmount: {assetFamily: AssetFamily.TOKEN, fieldValue: '2', token: {
@@ -101,7 +102,6 @@ describe('Send ADA fee calculation', () => {
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
       await action.calculateFee()
-      console.log(state)
       assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
     })
   )
