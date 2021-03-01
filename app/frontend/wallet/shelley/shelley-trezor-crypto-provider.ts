@@ -154,7 +154,7 @@ const ShelleyTrezorCryptoProvider = async ({
         tokenAmounts,
       }
     })
-    return tokenBundle.length > 0 ? tokenBundle : undefined
+    return tokenBundle.length > 0 ? tokenBundle : []
   }
 
   function prepareOutput(output: TxOutput): TrezorOutput {

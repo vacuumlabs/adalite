@@ -22,7 +22,10 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
     if (sendAmount.assetFamily === AssetFamily.ADA) {
       const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
       const inputBalance = getInputBalance(profitableInputs)
-      const additionalLovelaceAmount = computeMinUTxOLovelaceAmount(address, inputBalance, tokens)
+      const additionalLovelaceAmount =
+        tokens.length > 0
+          ? computeMinUTxOLovelaceAmount(address, inputBalance, tokens)
+          : (0 as Lovelace)
       // we also need a change output leaving tokens in account
       // TODO: we should probably leave there sufficient amount of ada for sending them somewhere
       const outputs: TxOutput[] = [
