@@ -50,6 +50,18 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">03/01/2021</h3>
+            <Article title="Mary hard fork update" icon="">
+              We successfully updated AdaLite to support Mary hard fork. No action needed by the
+              users. This Cardano protocol update introduces multi-assets (tokens) that can be sent
+              over the Cardano network. The received and sent tokens will be shown in the
+              transaction history. Currently, you can see the list of your tokens (if you have any)
+              only in the drop-down menu in the "Send" interface. We will soon reorganize the wallet
+              to provide a more convenient way to list multicurrency tokens. We also temporarily
+              removed the "Buy/Sell ADA" feature and the Stake Pool Owner support for pledging from
+              HW wallets. Both of these features will be back online in ~1 week.
+            </Article>
+            <hr className="info-separator" />
             <h3 className="info-date">02/23/2021</h3>
             <Article title="Request for a short survey" icon="">
               Cardano will undergo Mary hard-fork on 1st March 2021. No action is needed by the
@@ -90,7 +102,8 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                 rel="noopener"
               >
                 here
-              </a>.
+              </a>
+              .
             </Article>
             <Article title="Account tab" icon="">
               The main purpose of the <b>Accounts tab</b> is to enable users to switch between
@@ -107,7 +120,8 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                 rel="noopener"
               >
                 here
-              </a>.
+              </a>
+              .
             </Article>
             <hr className="info-separator" />
             <h3 className="info-date">11/23/2020</h3>
@@ -163,14 +177,18 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
               want to stay anonymous, you can contact me on{' '}
               <a href="https://t.me/AdaLite" target="_blank" rel="noopener">
                 Telegram
-              </a>.
+              </a>
+              .
             </Article>
             <Article title="AdaLite stakepools performance" icon="">
               All our pools are showing stable appropriate performance and ROI variance is within
               the expected limits. Long term ROI our pools are achieving:
-              <br />ADLT - 5.40%
-              <br />ADLT2 - 5.24%
-              <br />ADLT3 - 5.71%
+              <br />
+              ADLT - 5.40%
+              <br />
+              ADLT2 - 5.24%
+              <br />
+              ADLT3 - 5.71%
             </Article>
             <Article title="AdaLite now shows rewards history" icon="">
               Latest AdaLite release brought rewards per epoch history (Staking screen &gt; Staking
