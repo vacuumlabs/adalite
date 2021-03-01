@@ -75,13 +75,19 @@ type DropdownAssetItem = Token & {
   star?: boolean
 }
 
-const showDropdownAssetItem = ({type, star, assetName, policyId, quantity}: DropdownAssetItem) => (
+const displayDropdownAssetItem = ({
+  type,
+  star,
+  assetName,
+  policyId,
+  quantity,
+}: DropdownAssetItem) => (
   <div className="multi-asset-item">
     <div className="multi-asset-name-amount">
       <div className="multi-asset-name">
         {star && <StarIcon />}
         {assetName || (
-          <span className="no-name-asset">
+          <span className="empty">
             {'<'}no-name{'>'}
           </span>
         )}
@@ -286,7 +292,7 @@ const SendAdaPage = ({
         displaySelectedItem={displayDropdownSelectedItem}
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
-        displayItem={showDropdownAssetItem}
+        displayItem={displayDropdownAssetItem}
         onSelect={handleDropdownOnSelect}
         showSearch={dropdownAssetItems.length >= 4}
         searchPredicate={searchPredicate}

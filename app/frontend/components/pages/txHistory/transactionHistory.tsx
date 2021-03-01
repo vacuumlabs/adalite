@@ -17,6 +17,7 @@ import {
   Token,
 } from '../../../types'
 import {AdaIcon, StarIcon} from '../../common/svg'
+import {LinkToAsset} from '../delegations/common'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -108,7 +109,14 @@ const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
     <div className="row">
       <div className="multi-asset-name">
         {star && <StarIcon />}
-        {assetNameHex2Readable(name)}
+        {name ? (
+          assetNameHex2Readable(name)
+        ) : (
+          <span className="empty">
+            {'<'}no-name{'>'}
+          </span>
+        )}
+        <LinkToAsset policyIdHex={hash} assetNameHex={name} />
       </div>
       <div className={`multi-asset-amount ${amount > 0 ? 'credit' : 'debit'}`}>
         {amount > 0 ? `+${amount}` : amount}

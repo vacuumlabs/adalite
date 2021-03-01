@@ -714,10 +714,6 @@ p.hey {
   padding-right: 12px;
 }
 
-.searchable-select-item .no-name-asset {
-  color: var(--color-grey-medium);
-}
-
 .searchable-select-label {
   position: absolute;
   top: -10px;
@@ -3448,6 +3444,10 @@ input:checked + .slider:before {
 
 .multi-asset-name {
   margin-top: 8px;
+}
+
+.multi-asset-name .empty {
+  color: var(--color-grey-medium);
 }
 
 .multi-asset-name svg {
