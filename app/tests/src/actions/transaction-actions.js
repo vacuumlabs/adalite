@@ -40,7 +40,7 @@ const loadTestWallet = async (mockState) => {
 }
 
 const sendAdaTxSettings = {
-  donation: {
+  sendAda: {
     state: {
       sendAddress: {
         fieldValue:
@@ -49,14 +49,26 @@ const sendAdaTxSettings = {
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '1', coins: 1500000},
     },
     sendTransactionSummary: {
-      amount: 1000000,
-      donation: 5000000,
-      fee: 170850,
-      plan: {},
-      tab: 'send',
-      deposit: 0,
+      fee: 174850,
     },
   },
+  // TODO:
+  // sendToken: {
+  //   sendAddress: {
+  //     fieldValue:
+  //       'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
+  //   },
+  //   state: {
+  //     sendAmount: {assetFamily: AssetFamily.TOKEN, fieldValue: '2', token: {
+  //       policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
+  //       assetName: '7365636f6e646173736574',
+  //       quantity: 2,
+  //     }},
+  //   },
+  //   sendTransactionSummary: {
+  //     fee: 176871,
+  //   },
+  // },
 }
 
 const delegationSettings = {
@@ -70,12 +82,7 @@ const delegationSettings = {
       },
     },
     sendTransactionSummary: {
-      amount: 0,
-      donation: 0,
-      fee: 183990,
-      plan: {},
-      tab: 'stake',
-      deposit: 2000000,
+      fee: 187989,
     },
   },
 }
@@ -84,12 +91,7 @@ const withdrawalSettings = {
   rewardWithdrawal: {
     state: {},
     sendTransactionSummary: {
-      amount: 0,
-      donation: 0,
-      fee: 175157,
-      plan: {},
-      tab: 'withdraw',
-      deposit: 0,
+      fee: 179156,
     },
   },
 }
@@ -99,6 +101,7 @@ describe('Send ADA fee calculation', () => {
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
       await action.calculateFee()
+      console.log(state)
       assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
     })
   )

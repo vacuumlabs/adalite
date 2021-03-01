@@ -63,7 +63,26 @@ const utxoMock = {
       cuOutIndex: 1,
       cuAddress:
         'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-      cuCoins: {getCoin: '10000000', getTokens: []},
+      cuCoins: {
+        getCoin: '10000000',
+        getTokens: [
+          {
+            policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
+            assetName: '66697273746173736574',
+            quantity: '8',
+          },
+          {
+            policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
+            assetName: '7365636f6e646173736574',
+            quantity: '4',
+          },
+          {
+            policyId: '6b8d07d69639e9413dd637a1a815a7323c69c86abbafb66dbfdb1aa7',
+            assetName: '',
+            quantity: '2',
+          },
+        ],
+      },
     },
   ],
   addr1qxgcexwttk64d4tx4jd5zh8aqhdx3mlqkl9mujv50fungkh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qg8cy6z: [
@@ -85,5 +104,23 @@ const utxoMock = {
     },
   ],
 }
+
+const tokens = [
+  {
+    policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
+    assetName: '66697273746173736574',
+    quantity: '8',
+  },
+  {
+    policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
+    assetName: '7365636f6e646173736574',
+    quantity: '4',
+  },
+  {
+    policyId: '6b8d07d69639e9413dd637a1a815a7323c69c86abbafb66dbfdb1aa7',
+    assetName: '',
+    quantity: '2',
+  },
+]
 
 export default utxoMock
