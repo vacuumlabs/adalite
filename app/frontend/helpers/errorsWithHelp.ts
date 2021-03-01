@@ -6,6 +6,8 @@ const errorsWithHelp = new Set([
   'TrezorError',
   'DisconnectedDeviceDuringOperation',
   'TransportWebUSBGestureRequired',
+  'NotFoundError',
+  'AbortError',
   'Error',
 ])
 

@@ -7,7 +7,7 @@ import {Lovelace, CryptoProviderFeature} from './types'
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
 const ledgerTroubleshootingSuggestion =
-  'If you are using Ledger, please try connecting your device using the "Connect with WebUSB" functionality (the button underneath "Unlock with Ledger"). For more information please read the section concerning Ledger in our troubleshooting suggestions.'
+  'If you are using Ledger, please make sure Ledger Live app is closed and try connecting your device using the "Connect with WebUSB" functionality (the button underneath "Unlock with Ledger"). For more information please read the section concerning Ledger in our troubleshooting suggestions.'
 
 const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
@@ -71,6 +71,8 @@ const translations = {
     `DisconnectedDeviceDuringOperation: ${ledgerTroubleshootingSuggestion}`,
   TransportWebUSBGestureRequired: () =>
     `TransportWebUSBGestureRequired: ${ledgerTroubleshootingSuggestion}`,
+  NotFoundError: () => `NotFoundError: ${ledgerTroubleshootingSuggestion}`,
+  AbortError: () => `NotFoundError: ${ledgerTroubleshootingSuggestion}`,
 
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
