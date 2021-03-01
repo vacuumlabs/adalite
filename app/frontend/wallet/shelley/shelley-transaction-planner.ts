@@ -157,7 +157,7 @@ export const computeMinUTxOLovelaceAmount = (
   tokens: Token[]
 ): Lovelace => {
   // TODO: this to network config or constants
-  const adaOnlyUTxOSize = 60 // TODO: this is too low
+  const adaOnlyUTxOSize = 64 // TODO: this is too low
   const minUTxOValue = 1000000
   if (tokens.length === 0) return minUTxOValue as Lovelace
   const output: TxOutput = {

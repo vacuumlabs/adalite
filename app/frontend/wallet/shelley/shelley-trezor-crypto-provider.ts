@@ -136,10 +136,13 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   const prepareTokenBundle = (tokens: Token[]): TrezorMultiAsset | undefined => {
-    // if (multiAssets.length > 0
-    //&& !isFeatureSupportedForVersion(TrezorCryptoProviderFeature.MULTI_ASSET)) {
-    //   throw Error(Errors.TrezorMultiAssetsNotSupported)
-    // }
+    // TODO: refactor
+    if (tokens.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
+      throw NamedError('TrezorMultiAssetNotSupported', {
+        message:
+          'Sending tokens is not supported on Trezor device. Please update your firmware to the latest version.',
+      })
+    }
     const tokenObject = groupTokensByPolicyId(tokens)
     const tokenBundle = Object.entries(tokenObject).map(([policyId, assets]) => {
       const tokenAmounts = assets.map(({assetName, quantity}) => ({

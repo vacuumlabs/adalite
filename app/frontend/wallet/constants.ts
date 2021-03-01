@@ -82,6 +82,11 @@ export const LEDGER_VERSIONS = {
     minor: 1,
     patch: 0,
   },
+  [CryptoProviderFeature.MULTI_ASSET]: {
+    major: 2,
+    minor: 2,
+    patch: 0,
+  },
 }
 
 export const LEDGER_ERRORS = {
@@ -93,6 +98,11 @@ export const LEDGER_ERRORS = {
 
 export const TREZOR_VERSIONS = {
   [CryptoProviderFeature.POOL_OWNER]: {
+    major: 2,
+    minor: 3,
+    patch: 5,
+  },
+  [CryptoProviderFeature.MULTI_ASSET]: {
     major: 2,
     minor: 3,
     patch: 5,

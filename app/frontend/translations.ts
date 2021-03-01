@@ -105,6 +105,9 @@ const translations = {
     'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
   ServerError: () =>
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
+
+  LedgerMultiAssetNotSupported: () =>
+    'LedgerMultiAssetNotSupported: Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
   LedgerOutdatedCardanoAppError: ({message}) =>
     `LedgerOutdatedCardanoAppError: Your cardano application is running on an outdated version ${message}. Please update your cardano application to the version ${
       LEDGER_VERSIONS[CryptoProviderFeature.MINIMAL].major
@@ -129,6 +132,9 @@ const translations = {
     }.${TREZOR_VERSIONS[CryptoProviderFeature.POOL_OWNER].minor}.${
       TREZOR_VERSIONS[CryptoProviderFeature.POOL_OWNER].patch
     }`,
+  TrezorMultiAssetNotSupported: () =>
+    'TrezorMultiAssetNotSupported: Sending tokens is not supported on Trezor device. Please update your firmware to the latest version.',
+
   PoolRegInvalidNumCerts: () =>
     'The transaction must include exactly one certificate, being the pool registration.',
   PoolRegInvalidType: () => 'The certificate in transaction is not a pool registration.',

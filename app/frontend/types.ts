@@ -54,6 +54,7 @@ export const enum CryptoProviderFeature {
   WITHDRAWAL,
   BULK_EXPORT,
   POOL_OWNER,
+  MULTI_ASSET,
 }
 export type DerivationScheme = {
   type: 'v1' | 'v2'

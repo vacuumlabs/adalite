@@ -195,10 +195,13 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   const prepareTokenBundle = (tokens: Token[]): LedgerAssetGroup[] => {
-    // if (multiAssets.length > 0 &&
-    //!isFeatureSupportedForVersion(LedgerCryptoProviderFeature.MULTI_ASSET)) {
-    //   throw Error(Errors.LedgerMultiAssetsNotSupported)
-    // }
+    // TODO: refactor, we should check the whole tx againt the version beforehand
+    if (tokens.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
+      throw NamedError('LedgerMultiAssetNotSupported', {
+        message:
+          'Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
+      })
+    }
     const tokenObject = groupTokensByPolicyId(tokens)
     return Object.entries(tokenObject).map(([policyId, assets]) => {
       const tokens = assets.map(({assetName, quantity}) => ({
