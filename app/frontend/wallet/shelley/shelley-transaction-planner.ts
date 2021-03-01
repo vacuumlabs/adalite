@@ -157,7 +157,7 @@ export const computeMinUTxOLovelaceAmount = (
   tokens: Token[]
 ): Lovelace => {
   // TODO: this to network config or constants
-  const adaOnlyUTxOSize = 64 // TODO: this is too low
+  const adaOnlyUTxOSize = 74 // TODO: this is too much
   const minUTxOValue = 1000000
   if (tokens.length === 0) return minUTxOValue as Lovelace
   const output: TxOutput = {
@@ -168,7 +168,7 @@ export const computeMinUTxOLovelaceAmount = (
   }
   const outputSize = encode(cborizeSingleTxOutput(output)).length
   const minAda = (outputSize / adaOnlyUTxOSize) * minUTxOValue
-  return minAda as Lovelace
+  return Math.ceil(minAda) as Lovelace
 }
 
 export function computeTxPlan(

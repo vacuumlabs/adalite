@@ -101,7 +101,7 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
-            coins: 1921875,
+            coins: 1662163,
             tokens: [
               {
                 policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
@@ -115,7 +115,7 @@ const transactionSettings = {
           isChange: false,
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 7901254,
+          coins: 8160966,
           tokens: [
             {
               policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
@@ -137,12 +137,12 @@ const transactionSettings = {
         certificates: [],
         deposit: 0,
         fee: 176871,
-        additionalLovelaceAmount: 1921875,
+        additionalLovelaceAmount: 1662163,
         withdrawals: [],
       },
     },
     ttl,
-    txHash: '9f77ef4aec02abe850eb68cecbfcd83bd7bc89b241ebd04fa8f9242e9d5ef9d6',
+    txHash: '5e16ed3df65a716cb75381966c980bd0aea9ac4961743687e4f96ee2a15da27a',
   },
   delegation: {
     args: {
