@@ -19,7 +19,7 @@ import {
   RewardWithMetadata,
   Balance,
   Token,
-  _Address,
+  Address,
 } from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -267,7 +267,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       }))
       return {
         txHash: elem.cuId,
-        address: elem.cuAddress as _Address,
+        address: elem.cuAddress as Address,
         coins: parseInt(elem.cuCoins.getCoin, 10) as Lovelace,
         tokens,
         outputIndex: elem.cuOutIndex,

@@ -17,14 +17,14 @@ import {
 } from '../../types'
 import {
   Network,
-  _Certificate,
-  _DelegationCertificate,
-  _Input,
-  _Output,
-  _StakepoolRegistrationCertificate,
-  _StakingKeyDeregistrationCertificate,
-  _StakingKeyRegistrationCertificate,
-  _Withdrawal,
+  TxCertificate,
+  TxDelegationCert,
+  TxInput,
+  TxOutput,
+  TxStakepoolRegistrationCert,
+  TxStakingKeyDeregistrationCert,
+  TxStakingKeyRegistrationCert,
+  TxWithdrawal,
 } from '../types'
 import {
   TrezorAddressParameters,
@@ -127,7 +127,7 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  function prepareInput(input: _Input, addressToAbsPathMapper: AddressToPathMapper): TrezorInput {
+  function prepareInput(input: TxInput, addressToAbsPathMapper: AddressToPathMapper): TrezorInput {
     return {
       ...(input.address && {path: addressToAbsPathMapper(input.address)}),
       prev_hash: input.txHash,
@@ -154,7 +154,7 @@ const ShelleyTrezorCryptoProvider = async ({
     return tokenBundle.length > 0 ? tokenBundle : undefined
   }
 
-  function prepareOutput(output: _Output): TrezorOutput {
+  function prepareOutput(output: TxOutput): TrezorOutput {
     const tokenBundle = prepareTokenBundle(output.tokens)
     return output.isChange === false
       ? {
@@ -212,7 +212,7 @@ const ShelleyTrezorCryptoProvider = async ({
   // }
 
   function prepareStakingKeyRegistrationCertificate(
-    certificate: _StakingKeyRegistrationCertificate | _StakingKeyDeregistrationCertificate,
+    certificate: TxStakingKeyRegistrationCert | TxStakingKeyDeregistrationCert,
     path: BIP32Path
   ): TrezorTxCertificate {
     return {
@@ -222,7 +222,7 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   function prepareDelegationCertificate(
-    certificate: _DelegationCertificate,
+    certificate: TxDelegationCert,
     path: BIP32Path
   ): TrezorTxCertificate {
     return {
@@ -233,7 +233,7 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   function preparePoolRegistrationCertificate(
-    certificate: _StakepoolRegistrationCertificate,
+    certificate: TxStakepoolRegistrationCert,
     path: BIP32Path
   ): TrezorTxCertificate {
     return null // TODO:
@@ -241,7 +241,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   // TODO: refactor this to switch with prepare function for each type of certificate
   function prepareCertificate(
-    certificate: _Certificate,
+    certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
   ): TrezorTxCertificate {
     const path = addressToAbsPathMapper(certificate.stakingAddress)
@@ -258,7 +258,7 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   function prepareWithdrawal(
-    withdrawal: _Withdrawal,
+    withdrawal: TxWithdrawal,
     addressToAbsPathMapper: AddressToPathMapper
   ): TrezorWithdrawal {
     return {

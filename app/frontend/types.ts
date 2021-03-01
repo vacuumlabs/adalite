@@ -5,17 +5,17 @@ import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
 
 export type BIP32Path = number[]
 
-export type _Address = string & {__typeAddress: any}
+export type Address = string & {__typeAddress: any}
 
 export type AddressProvider = (
   i: number
 ) => Promise<{
   path: BIP32Path
-  address: _Address
+  address: Address
 }>
 
 export type AddressWithMeta = {
-  address: _Address
+  address: Address
   bip32StringPath: string
   isUsed: boolean
 }
@@ -24,7 +24,7 @@ export type AddressToPathMapping = {
   [key: string]: BIP32Path
 }
 
-export type AddressToPathMapper = (address: _Address) => BIP32Path
+export type AddressToPathMapper = (address: Address) => BIP32Path
 
 export interface CryptoProvider {
   network: Network
@@ -41,6 +41,7 @@ export interface CryptoProvider {
   displayAddressForPath: (absDerivationPath: BIP32Path, stakingPath: BIP32Path) => void
 }
 
+// TODO: remove this and replace with TxCertificateType
 export const enum CertificateType {
   STAKING_KEY_REGISTRATION = 0,
   STAKING_KEY_DEREGISTRATION = 1,
@@ -105,7 +106,7 @@ export type AccountInfo = {
     byronAccountXpub: _XPubKey
   }
   stakingXpub: _XPubKey
-  stakingAddress: _Address
+  stakingAddress: Address
   balance: number
   tokenBalance: Token[]
   shelleyBalances: {
@@ -200,27 +201,27 @@ export type Stakepool = {
 
 export type SendAdaTxPlanArgs = {
   txType: TxType.SEND_ADA
-  address: _Address
+  address: Address
   sendAmount: SendAmount
 }
 
 export type ConvertLegacyAdaTxPlanArgs = {
   txType: TxType.CONVERT_LEGACY
-  address: _Address
+  address: Address
   sendAmount: SendAmount
 }
 
 export type WithdrawRewardsTxPlanArgs = {
   txType: TxType.WITHDRAW
   rewards: Lovelace
-  stakingAddress: _Address
+  stakingAddress: Address
 }
 
 export type DelegateAdaTxPlanArgs = {
   txType: TxType.DELEGATE
   poolHash: string
   isStakingKeyRegistered: boolean
-  stakingAddress: _Address
+  stakingAddress: Address
 }
 
 export type TxPlanArgs =
@@ -284,7 +285,7 @@ export type SendTransactionSummary = {
   type: TxType.SEND_ADA | TxType.CONVERT_LEGACY
   coins: Lovelace
   token: Token | null
-  address: _Address
+  address: Address
   minimalLovelaceAmount: Lovelace
 }
 

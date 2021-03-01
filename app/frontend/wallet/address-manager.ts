@@ -1,6 +1,6 @@
 import {toBip32StringPath} from './helpers/bip32'
 import NamedError from '../helpers/NamedError'
-import {AddressProvider, AddressToPathMapping, AddressWithMeta, BIP32Path, _Address} from '../types'
+import {AddressProvider, AddressToPathMapping, AddressWithMeta, BIP32Path, Address} from '../types'
 import blockchainExplorer from './blockchain-explorer'
 
 type AddressManagerParams = {
@@ -14,9 +14,9 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: Address
     throw NamedError('ParamsValidationError', {message: `Invalid gap limit: ${gapLimit}`})
   }
 
-  const deriveAddressMemo: {[key: number]: {path: BIP32Path; address: _Address}} = {}
+  const deriveAddressMemo: {[key: number]: {path: BIP32Path; address: Address}} = {}
 
-  async function cachedDeriveAddress(index: number): Promise<_Address> {
+  async function cachedDeriveAddress(index: number): Promise<Address> {
     const memoKey = index
 
     if (!deriveAddressMemo[memoKey]) {
@@ -26,16 +26,16 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: Address
     return deriveAddressMemo[memoKey].address
   }
 
-  async function deriveAddressesBlock(beginIndex: number, endIndex: number): Promise<_Address[]> {
-    const derivedAddresses: _Address[] = []
+  async function deriveAddressesBlock(beginIndex: number, endIndex: number): Promise<Address[]> {
+    const derivedAddresses: Address[] = []
     for (let i = beginIndex; i < endIndex; i += 1) {
       derivedAddresses.push(await cachedDeriveAddress(i))
     }
     return derivedAddresses
   }
 
-  async function discoverAddresses(): Promise<_Address[]> {
-    let addresses: _Address[] = []
+  async function discoverAddresses(): Promise<Address[]> {
+    let addresses: Address[] = []
     let from = 0
     let isGapBlock = false
 
@@ -68,7 +68,7 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: Address
     })
   }
 
-  // this is supposed to return {[key: _Address]: BIP32Path} but ts does support
+  // this is supposed to return {[key: Address]: BIP32Path} but ts does support
   // only strings and number as index signatures
 
   function getAddressToAbsPathMapping(): AddressToPathMapping {

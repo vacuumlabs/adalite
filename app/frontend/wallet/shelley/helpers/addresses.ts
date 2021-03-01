@@ -1,4 +1,4 @@
-import {BIP32Path, HexString, _Address} from '../../../types'
+import {BIP32Path, HexString, Address} from '../../../types'
 import {
   packBaseAddress,
   packRewardAddress,
@@ -13,7 +13,7 @@ import {HARDENED_THRESHOLD} from '../../constants'
 import {NetworkId} from '../../types'
 import {encode} from 'borc'
 
-export const encodeAddress = (address: Buffer): _Address => {
+export const encodeAddress = (address: Buffer): Address => {
   const addressType = getAddressType(address)
   if (addressType === AddressTypes.BOOTSTRAP) {
     return base58.encode(address)
@@ -64,7 +64,7 @@ export const base58AddressToHex = (address: string): HexString => {
   return parsed.toString('hex')
 }
 
-export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId: NetworkId): _Address => {
+export const stakingAddressFromXpub = (stakeXpub: Buffer, networkId: NetworkId): Address => {
   const addrBuffer: Buffer = packRewardAddress(xpub2blake2b224Hash(stakeXpub), networkId)
   return encodeAddress(addrBuffer)
 }
@@ -73,7 +73,7 @@ export const baseAddressFromXpub = (
   spendXpub: Buffer,
   stakeXpub: Buffer,
   networkId: NetworkId
-): _Address => {
+): Address => {
   const addrBuffer = packBaseAddress(
     xpub2blake2b224Hash(spendXpub),
     xpub2blake2b224Hash(stakeXpub),
@@ -91,6 +91,6 @@ export const isByron = (address: HexString): boolean => {
 }
 
 export const addressToHex = (address: string): HexString =>
-  // TODO: we should restrict the type of address to _Address and in that case
+  // TODO: we should restrict the type of address to Address and in that case
   // we dont need to validate the address
   isShelleyFormat(address) ? bechAddressToHex(address) : base58AddressToHex(address)

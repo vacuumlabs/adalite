@@ -1,16 +1,16 @@
 import {HexString, Lovelace} from '../../types'
-import {_Certificate, _Input, _Output, _Withdrawal} from '../types'
+import {TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../types'
 
 type encodeCBORFn = any // TODO: type
 
 export type TxAux = {
   getId: () => HexString
-  inputs: _Input[]
-  outputs: _Output[]
+  inputs: TxInput[]
+  outputs: TxOutput[]
   fee: number
   ttl: number
-  certificates: _Certificate[]
-  withdrawals: _Withdrawal[]
+  certificates: TxCertificate[]
+  withdrawals: TxWithdrawal[]
   encodeCBOR: encodeCBORFn
 }
 

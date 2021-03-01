@@ -12,7 +12,7 @@ import {
   Lovelace,
   CertificateType,
   TxPlanArgs,
-  _Address,
+  Address,
   TxType,
   SendAdaTxPlanArgs,
   DelegateAdaTxPlanArgs,
@@ -26,19 +26,19 @@ import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 import {
   UTxO,
-  _Certificate,
-  _DelegationCertificate,
-  _Input,
-  _Output,
-  _StakingKeyRegistrationCertificate,
-  _Withdrawal,
+  TxCertificate,
+  TxDelegationCert,
+  TxInput,
+  TxOutput,
+  TxStakingKeyRegistrationCert,
+  TxWithdrawal,
 } from '../types'
 import {aggregateTokens, formatToken} from '../helpers/tokenFormater'
 
 type TxPlanDraft = {
-  outputs: _Output[]
-  certificates: _Certificate[]
-  withdrawals: _Withdrawal[]
+  outputs: TxOutput[]
+  certificates: TxCertificate[]
+  withdrawals: TxWithdrawal[]
 }
 
 export type TxPlanResult =
@@ -53,14 +53,14 @@ export type TxPlanResult =
       minimalLovelaceAmount: Lovelace
     }
 export interface TxPlan {
-  inputs: Array<_Input>
-  outputs: Array<_Output>
-  change: _Output | null
-  certificates: Array<_Certificate>
+  inputs: Array<TxInput>
+  outputs: Array<TxOutput>
+  change: TxOutput | null
+  certificates: Array<TxCertificate>
   deposit: Lovelace
   additionalLovelaceAmount: Lovelace
   fee: Lovelace
-  withdrawals: Array<_Withdrawal>
+  withdrawals: Array<TxWithdrawal>
 }
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
@@ -73,10 +73,10 @@ export function txFeeFunction(txSizeInBytes: number): Lovelace {
 // Estimates size of final transaction in bytes.
 // Note(ppershing): can overshoot a bit
 export function estimateTxSize(
-  inputs: Array<_Input>,
-  outputs: Array<_Output>,
-  certificates: Array<_Certificate>,
-  withdrawals: Array<_Withdrawal>
+  inputs: Array<TxInput>,
+  outputs: Array<TxOutput>,
+  certificates: Array<TxCertificate>,
+  withdrawals: Array<TxWithdrawal>
 ): Lovelace {
   // the 1 is there for the key in the tx map
   const txInputsSize = encode(cborizeTxInputs(inputs)).length + 1
@@ -84,7 +84,7 @@ export function estimateTxSize(
    * we have to estimate size of tx outputs since we are calculating
    * fee also in cases we dont know the amount of coins in advance
    */
-  const txOutputs: _Output[] = outputs.map((output) => ({
+  const txOutputs: TxOutput[] = outputs.map((output) => ({
     isChange: false,
     address: output.address,
     coins: Number.MAX_SAFE_INTEGER as Lovelace,
@@ -131,16 +131,16 @@ export function estimateTxSize(
 }
 
 export function computeRequiredTxFee(
-  inputs: Array<_Input>,
-  outputs: Array<_Output>,
-  certificates: Array<_Certificate> = [],
-  withdrawals: Array<_Withdrawal> = []
+  inputs: Array<TxInput>,
+  outputs: Array<TxOutput>,
+  certificates: Array<TxCertificate> = [],
+  withdrawals: Array<TxWithdrawal> = []
 ): Lovelace {
   const fee = txFeeFunction(estimateTxSize(inputs, outputs, certificates, withdrawals))
   return fee
 }
 
-function computeRequiredDeposit(certificates: Array<_Certificate>): Lovelace {
+function computeRequiredDeposit(certificates: Array<TxCertificate>): Lovelace {
   const CertificateDeposit: {[key in CertificateType]: number} = {
     [CertificateType.DELEGATION]: 0,
     [CertificateType.STAKEPOOL_REGISTRATION]: 500000000,
@@ -151,14 +151,14 @@ function computeRequiredDeposit(certificates: Array<_Certificate>): Lovelace {
 }
 
 export const computeMinUTxOLovelaceAmount = (
-  address: _Address,
+  address: Address,
   coins: Lovelace,
   tokens: Token[]
 ): Lovelace => {
   // TODO: get these from constants
   const adaOnlyUTxOSize = 64
   const minUTxOValue = 1000000
-  const output: _Output = {
+  const output: TxOutput = {
     isChange: false,
     address,
     coins,
@@ -170,11 +170,11 @@ export const computeMinUTxOLovelaceAmount = (
 }
 
 export function computeTxPlan(
-  inputs: Array<_Input>,
-  outputs: Array<_Output>,
-  possibleChange: _Output,
-  certificates: Array<_Certificate>,
-  withdrawals: Array<_Withdrawal>
+  inputs: Array<TxInput>,
+  outputs: Array<TxOutput>,
+  possibleChange: TxOutput,
+  certificates: Array<TxCertificate>,
+  withdrawals: Array<TxWithdrawal>
 ): TxPlan {
   const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
@@ -299,7 +299,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   const prepareSendAdaTx = (
     txPlanArgs: SendAdaTxPlanArgs | ConvertLegacyAdaTxPlanArgs
   ): TxPlanDraft => {
-    const outputs: _Output[] = []
+    const outputs: TxOutput[] = []
     if (txPlanArgs.sendAmount.assetFamily === AssetFamily.ADA) {
       outputs.push({
         isChange: false,
@@ -328,16 +328,16 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   }
 
   const prepareDelegationTx = (txPlanArgs: DelegateAdaTxPlanArgs): TxPlanDraft => {
-    const certificates: _Certificate[] = []
+    const certificates: TxCertificate[] = []
     if (!txPlanArgs.isStakingKeyRegistered) {
-      const registrationCertificate: _StakingKeyRegistrationCertificate = {
+      const registrationCertificate: TxStakingKeyRegistrationCert = {
         type: CertificateType.STAKING_KEY_REGISTRATION,
         stakingAddress: txPlanArgs.stakingAddress,
       }
       certificates.push(registrationCertificate)
     }
     if (txPlanArgs.poolHash) {
-      const delegationCertificate: _DelegationCertificate = {
+      const delegationCertificate: TxDelegationCert = {
         type: CertificateType.DELEGATION,
         stakingAddress: txPlanArgs.stakingAddress,
         poolHash: txPlanArgs.poolHash,
@@ -352,7 +352,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   }
 
   const prepareWithdrawalTx = (txPlanArgs: WithdrawRewardsTxPlanArgs): TxPlanDraft => {
-    const withdrawals: _Withdrawal[] = []
+    const withdrawals: TxWithdrawal[] = []
     withdrawals.push({stakingAddress: txPlanArgs.stakingAddress, rewards: txPlanArgs.rewards})
     return {
       outputs: [],
@@ -377,12 +377,12 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
 
 export const selectMinimalTxPlan = (
   utxos: Array<UTxO>,
-  changeAddress: _Address,
+  changeAddress: Address,
   txPlanArgs: TxPlanArgs
 ): TxPlanResult => {
-  const inputs: _Input[] = []
+  const inputs: TxInput[] = []
   const {outputs, certificates, withdrawals} = prepareTxPlanDraft(txPlanArgs)
-  const change: _Output = {
+  const change: TxOutput = {
     isChange: false,
     address: changeAddress,
     coins: 0 as Lovelace,

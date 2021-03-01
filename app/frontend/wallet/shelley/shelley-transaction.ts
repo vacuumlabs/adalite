@@ -2,7 +2,14 @@ import {encode} from 'borc'
 import {blake2b, base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat} from './helpers/addresses'
 // import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
-import {_ByronWitness, _Certificate, _Input, _Output, _ShelleyWitness, _Withdrawal} from '../types'
+import {
+  TxByronWitness,
+  TxCertificate,
+  TxInput,
+  TxOutput,
+  TxShelleyWitness,
+  TxWithdrawal,
+} from '../types'
 import {
   CborizedTxAmount,
   TxBodyKey,
@@ -25,12 +32,12 @@ import {CertificateType, HexString, Token} from '../../types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 
 function ShelleyTxAux(
-  inputs: _Input[],
-  outputs: _Output[],
+  inputs: TxInput[],
+  outputs: TxOutput[],
   fee: number,
   ttl: number,
-  certificates: _Certificate[],
-  withdrawals: _Withdrawal[]
+  certificates: TxCertificate[],
+  withdrawals: TxWithdrawal[]
 ): TxAux {
   function getId() {
     return blake2b(
@@ -66,7 +73,7 @@ function ShelleyTxAux(
   }
 }
 
-function cborizeTxInputs(inputs: _Input[]): CborizedTxInput[] {
+function cborizeTxInputs(inputs: TxInput[]): CborizedTxInput[] {
   const txInputs: CborizedTxInput[] = inputs.map(({txHash, outputIndex}) => {
     const txId = Buffer.from(txHash, 'hex')
     return [txId, outputIndex]
@@ -87,7 +94,7 @@ function cborizeTxOutputTokens(tokens: Token[]): CborizedTxTokens {
   return policyIdMap
 }
 
-function cborizeSingleTxOutput(output: _Output): CborizedTxOutput {
+function cborizeSingleTxOutput(output: TxOutput): CborizedTxOutput {
   const amount: CborizedTxAmount =
     output.tokens.length > 0 ? [output.coins, cborizeTxOutputTokens(output.tokens)] : output.coins
   // TODO: we should have one fn for decoding
@@ -97,12 +104,12 @@ function cborizeSingleTxOutput(output: _Output): CborizedTxOutput {
   return [addressBuff, amount]
 }
 
-function cborizeTxOutputs(outputs: _Output[]): CborizedTxOutput[] {
+function cborizeTxOutputs(outputs: TxOutput[]): CborizedTxOutput[] {
   const txOutputs: CborizedTxOutput[] = outputs.map(cborizeSingleTxOutput)
   return txOutputs
 }
 
-function cborizeTxCertificates(certificates: _Certificate[]): CborizedTxCertificate[] {
+function cborizeTxCertificates(certificates: TxCertificate[]): CborizedTxCertificate[] {
   const txCertificates: CborizedTxCertificate[] = certificates.map((certificate) => {
     // TODO: helper for getting stakingKeyHash from address
     const stakingKeyHash: Buffer = bech32.decode(certificate.stakingAddress).data.slice(1)
@@ -132,7 +139,7 @@ function cborizeTxCertificates(certificates: _Certificate[]): CborizedTxCertific
   return txCertificates
 }
 
-function cborizeTxWithdrawals(withdrawals: _Withdrawal[]): CborizedTxWithdrawals {
+function cborizeTxWithdrawals(withdrawals: TxWithdrawal[]): CborizedTxWithdrawals {
   const txWithdrawals: CborizedTxWithdrawals = new Map()
   withdrawals.forEach((withdrawal) => {
     const stakingAddress: Buffer = bech32.decode(withdrawal.stakingAddress).data
@@ -142,7 +149,7 @@ function cborizeTxWithdrawals(withdrawals: _Withdrawal[]): CborizedTxWithdrawals
 }
 
 function cborizeTxWitnessesShelley(
-  shelleyWitnesses: _ShelleyWitness[]
+  shelleyWitnesses: TxShelleyWitness[]
 ): CborizedTxWitnessShelley[] {
   const txWitnessesShelley: CborizedTxWitnessShelley[] = shelleyWitnesses.map(
     ({publicKey, signature}) => [publicKey, signature]
@@ -150,7 +157,7 @@ function cborizeTxWitnessesShelley(
   return txWitnessesShelley
 }
 
-function cborizeTxWitnessesByron(byronWitnesses: _ByronWitness[]): CborizedTxWitnessByron[] {
+function cborizeTxWitnessesByron(byronWitnesses: TxByronWitness[]): CborizedTxWitnessByron[] {
   const txWitnessesByron: CborizedTxWitnessByron[] = byronWitnesses.map(
     ({publicKey, signature, chainCode, addressAttributes}) => [
       publicKey,
@@ -163,8 +170,8 @@ function cborizeTxWitnessesByron(byronWitnesses: _ByronWitness[]): CborizedTxWit
 }
 
 function cborizeTxWitnesses(
-  byronWitnesses: _ByronWitness[],
-  shelleyWitnesses: _ShelleyWitness[]
+  byronWitnesses: TxByronWitness[],
+  shelleyWitnesses: TxShelleyWitness[]
 ): CborizedTxWitnesses {
   const txWitnesses: CborizedTxWitnesses = new Map()
   if (byronWitnesses.length > 0) {
@@ -195,7 +202,7 @@ function ShelleySignedTransactionStructured(
   }
 }
 
-// function ShelleyPoolRegistrationCertificate(certificate: _Certificate) {
+// function ShelleyPoolRegistrationCertificate(certificate: TxCertificate) {
 //   const {type, poolRegistrationParams: poolParams} = certificate
 //   const txPoolRegistrationCertificate = certificate.poolRegistrationParams
 //     ? [

@@ -5,7 +5,7 @@ import {State, getActiveAccountInfo} from '../../../state'
 import {parsePath} from '../../../helpers/pathParser'
 import {LinkIconToKey} from '../delegations/common'
 import tooltip from '../../common/tooltip'
-import {_Address, _XPubKey} from '../../../types'
+import {Address, _XPubKey} from '../../../types'
 import {bechAddressToHex, xpubHexToCborPubHex} from '../../../wallet/shelley/helpers/addresses'
 
 const DownloadKey = ({cborHex}) => {
@@ -25,7 +25,7 @@ const DownloadKey = ({cborHex}) => {
 type Props = {
   shelleyAccountXpub: _XPubKey
   byronAccountXpub: _XPubKey
-  stakingAddress: _Address
+  stakingAddress: Address
   stakingXpub: _XPubKey
 }
 

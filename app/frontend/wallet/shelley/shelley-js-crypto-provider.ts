@@ -14,10 +14,10 @@ import {
   CryptoProvider,
   CryptoProviderFeature,
   HexString,
-  _Address,
+  Address,
 } from '../../types'
 import NamedError from '../../helpers/NamedError'
-import {Network, _ByronWitness, _ShelleyWitness} from '../types'
+import {Network, TxByronWitness, TxShelleyWitness} from '../types'
 import {TxSigned, TxAux, CborizedTxSignedStructured} from './types'
 
 type CryptoProviderParams = {
@@ -83,7 +83,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   const prepareShelleyWitness = async (
     txHash: HexString,
     path: BIP32Path
-  ): Promise<_ShelleyWitness> => {
+  ): Promise<TxShelleyWitness> => {
     const signature = await sign(txHash, path)
     const xpub = await deriveXpub(path)
     const publicKey = xpub2pub(xpub)
@@ -93,8 +93,8 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   const prepareByronWitness = async (
     txHash: HexString,
     path: BIP32Path,
-    address: _Address
-  ): Promise<_ByronWitness> => {
+    address: Address
+  ): Promise<TxByronWitness> => {
     const signature = await sign(txHash, path)
     const xpub = await deriveXpub(path)
     const publicKey = xpub2pub(xpub)
@@ -124,8 +124,8 @@ CryptoProviderParams): Promise<CryptoProvider> => {
       _shelleyWitnesses.push(prepareShelleyWitness(txHash, stakingPath))
     })
 
-    const shelleyWitnesses: _ShelleyWitness[] = await Promise.all(_shelleyWitnesses)
-    const byronWitnesses: _ByronWitness[] = await Promise.all(_byronWitnesses)
+    const shelleyWitnesses: TxShelleyWitness[] = await Promise.all(_shelleyWitnesses)
+    const byronWitnesses: TxByronWitness[] = await Promise.all(_byronWitnesses)
     return {shelleyWitnesses, byronWitnesses}
   }
 

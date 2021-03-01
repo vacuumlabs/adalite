@@ -34,16 +34,16 @@ import {
 } from '../../types'
 import {
   Network,
-  _ByronWitness,
-  _Certificate,
-  _DelegationCertificate,
-  _Input,
-  _Output,
-  _ShelleyWitness,
-  _StakepoolRegistrationCertificate,
-  _StakingKeyDeregistrationCertificate,
-  _StakingKeyRegistrationCertificate,
-  _Withdrawal,
+  TxByronWitness,
+  TxCertificate,
+  TxDelegationCert,
+  TxInput,
+  TxOutput,
+  TxShelleyWitness,
+  TxStakepoolRegistrationCert,
+  TxStakingKeyDeregistrationCert,
+  TxStakingKeyRegistrationCert,
+  TxWithdrawal,
 } from '../types'
 import {
   LedgerAssetGroup,
@@ -186,7 +186,7 @@ const ShelleyLedgerCryptoProvider = async ({
     return derivationScheme
   }
 
-  function prepareInput(input: _Input, addressToAbsPathMapper: AddressToPathMapper): LedgerInput {
+  function prepareInput(input: TxInput, addressToAbsPathMapper: AddressToPathMapper): LedgerInput {
     return {
       txHashHex: input.txHash,
       outputIndex: input.outputIndex,
@@ -212,7 +212,7 @@ const ShelleyLedgerCryptoProvider = async ({
     })
   }
 
-  function prepareOutput(output: _Output): LedgerOutput {
+  function prepareOutput(output: TxOutput): LedgerOutput {
     const tokenBundle = prepareTokenBundle(output.tokens)
     return output.isChange === false
       ? {
@@ -232,7 +232,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   function prepareStakingKeyRegistrationCertificate(
-    certificate: _StakingKeyRegistrationCertificate | _StakingKeyDeregistrationCertificate,
+    certificate: TxStakingKeyRegistrationCert | TxStakingKeyDeregistrationCert,
     path: BIP32Path
   ): LedgerCertificate {
     return {
@@ -242,7 +242,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   function prepareDelegationCertificate(
-    certificate: _DelegationCertificate,
+    certificate: TxDelegationCert,
     path: BIP32Path
   ): LedgerCertificate {
     return {
@@ -253,7 +253,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   function prepareStakepoolRegistrationCertificate(
-    certificate: _StakepoolRegistrationCertificate,
+    certificate: TxStakepoolRegistrationCert,
     path: BIP32Path
   ): LedgerCertificate {
     return {
@@ -265,7 +265,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   function prepareCertificate(
-    certificate: _Certificate,
+    certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
   ): LedgerCertificate {
     const path = addressToAbsPathMapper(certificate.stakingAddress)
@@ -284,7 +284,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   function prepareWithdrawal(
-    withdrawal: _Withdrawal,
+    withdrawal: TxWithdrawal,
     addressToAbsPathMapper: AddressToPathMapper
   ): LedgerWithdrawal {
     return {
@@ -293,7 +293,7 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
-  const prepareByronWitness = async (witness: LedgerWitness): Promise<_ByronWitness> => {
+  const prepareByronWitness = async (witness: LedgerWitness): Promise<TxByronWitness> => {
     const xpub = await deriveXpub(witness.path)
     const publicKey = xpub2pub(xpub)
     const chainCode = xpub2ChainCode(xpub)
@@ -309,7 +309,7 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
-  const prepareShelleyWitness = async (witness: LedgerWitness): Promise<_ShelleyWitness> => {
+  const prepareShelleyWitness = async (witness: LedgerWitness): Promise<TxShelleyWitness> => {
     const xpub = await deriveXpub(witness.path)
     const publicKey = xpub2pub(xpub)
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
@@ -327,8 +327,8 @@ const ShelleyLedgerCryptoProvider = async ({
         ? _shelleyWitnesses.push(prepareShelleyWitness(witness))
         : _byronWitnesses.push(prepareByronWitness(witness))
     })
-    const shelleyWitnesses: _ShelleyWitness[] = await Promise.all(_shelleyWitnesses)
-    const byronWitnesses: _ByronWitness[] = await Promise.all(_byronWitnesses)
+    const shelleyWitnesses: TxShelleyWitness[] = await Promise.all(_shelleyWitnesses)
+    const byronWitnesses: TxByronWitness[] = await Promise.all(_byronWitnesses)
     return {shelleyWitnesses, byronWitnesses}
   }
 

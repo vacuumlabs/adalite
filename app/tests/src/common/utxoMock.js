@@ -105,22 +105,4 @@ const utxoMock = {
   ],
 }
 
-const tokens = [
-  {
-    policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
-    assetName: '66697273746173736574',
-    quantity: '8',
-  },
-  {
-    policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
-    assetName: '7365636f6e646173736574',
-    quantity: '4',
-  },
-  {
-    policyId: '6b8d07d69639e9413dd637a1a815a7323c69c86abbafb66dbfdb1aa7',
-    assetName: '',
-    quantity: '2',
-  },
-]
-
 export default utxoMock

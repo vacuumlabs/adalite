@@ -1,4 +1,4 @@
-import {BIP32Path, CertificateType, Lovelace, Token, _Address} from '../types'
+import {BIP32Path, CertificateType, Lovelace, Token, Address} from '../types'
 
 export const enum NetworkId {
   MAINNET = 1,
@@ -29,69 +29,69 @@ export const enum CryptoProviderType {
 
 export type UTxO = {
   txHash: string
-  address: _Address
+  address: Address
   coins: Lovelace
   tokens: Token[]
   outputIndex: number
 }
 
-export type _Input = UTxO
+export type TxInput = UTxO
 
-export type _Output =
+export type TxOutput =
   | {
       isChange: false
-      address: _Address
+      address: Address
       coins: Lovelace
       tokens: Token[]
     }
   | {
       isChange: true
-      address: _Address
+      address: Address
       coins: Lovelace
       tokens: Token[]
       spendingPath: BIP32Path
       stakingPath: BIP32Path
     }
 
-export type _Certificate =
-  | _StakingKeyRegistrationCertificate
-  | _StakingKeyDeregistrationCertificate
-  | _DelegationCertificate
-  | _StakepoolRegistrationCertificate
+export type TxCertificate =
+  | TxStakingKeyRegistrationCert
+  | TxStakingKeyDeregistrationCert
+  | TxDelegationCert
+  | TxStakepoolRegistrationCert
 
-export type _StakingKeyRegistrationCertificate = {
+export type TxStakingKeyRegistrationCert = {
   type: CertificateType.STAKING_KEY_REGISTRATION
-  stakingAddress: _Address
+  stakingAddress: Address
 }
 
-export type _StakingKeyDeregistrationCertificate = {
+export type TxStakingKeyDeregistrationCert = {
   type: CertificateType.STAKING_KEY_DEREGISTRATION
-  stakingAddress: _Address
+  stakingAddress: Address
 }
 
-export type _DelegationCertificate = {
+export type TxDelegationCert = {
   type: CertificateType.DELEGATION
-  stakingAddress: _Address
+  stakingAddress: Address
   poolHash: string
 }
 
-export type _StakepoolRegistrationCertificate = {
+export type TxStakepoolRegistrationCert = {
   type: CertificateType.STAKEPOOL_REGISTRATION
-  stakingAddress: _Address
+  stakingAddress: Address
   poolRegistrationParams: any
 }
 
-export type _Withdrawal = {
-  stakingAddress: _Address
+export type TxWithdrawal = {
+  stakingAddress: Address
   rewards: Lovelace
 }
 
-export type _ShelleyWitness = {
+export type TxShelleyWitness = {
   publicKey: Buffer
   signature: Buffer
 }
 
-export type _ByronWitness = {
+export type TxByronWitness = {
   publicKey: Buffer
   signature: Buffer
   chainCode: Buffer

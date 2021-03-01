@@ -41,7 +41,7 @@ import {
   AccountInfo,
   Lovelace,
   CryptoProviderFeature,
-  _Address,
+  Address,
   TxType,
   TxPlanArgs,
   AuthMethodType,
@@ -609,8 +609,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       return
     }
     const sendAmount = {...state.sendAmount}
-    // TODO: sendAddress should have a validated field of type _Address
-    const address = state.sendAddress.fieldValue as _Address
+    // TODO: sendAddress should have a validated field of type Address
+    const address = state.sendAddress.fieldValue as Address
     const txPlanResult = await prepareTxPlan({
       address,
       sendAmount,
@@ -631,7 +631,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }
       const sendTransactionSummary: SendTransactionSummary = {
         type: TxType.SEND_ADA,
-        address: newState.sendAddress.fieldValue as _Address,
+        address: newState.sendAddress.fieldValue as Address,
         coins,
         token,
         minimalLovelaceAmount: txPlanResult.txPlan.additionalLovelaceAmount,
@@ -703,7 +703,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     try {
       const maxAmounts = await wallet
         .getAccount(state.sourceAccountIndex)
-        .getMaxSendableAmount(state.sendAddress.fieldValue as _Address, state.sendAmount)
+        .getMaxSendableAmount(state.sendAddress.fieldValue as Address, state.sendAmount)
       validateAndSetMaxFunds(state, maxAmounts)
     } catch (e) {
       setState({

@@ -12,7 +12,7 @@ import {
   StakingHistoryObject,
   TxPlanArgs,
   TxType,
-  _Address,
+  Address,
 } from '../types'
 import {
   getAccountXpub as getAccoutXpubShelley,
@@ -38,16 +38,16 @@ import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresse
 import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {TxAux} from './shelley/types'
-import {UTxO, _Output} from './types'
+import {UTxO, TxOutput} from './types'
 import {aggregateTokens} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 
 const DummyAddressManager = () => {
   return {
-    discoverAddresses: (): Promise<_Address[]> => Promise.resolve([]),
+    discoverAddresses: (): Promise<Address[]> => Promise.resolve([]),
     discoverAddressesWithMeta: (): Promise<AddressWithMeta[]> => Promise.resolve([]),
     getAddressToAbsPathMapping: (): AddressToPathMapping => ({}),
-    _deriveAddress: (): Promise<_Address> => Promise.resolve(null),
+    _deriveAddress: (): Promise<Address> => Promise.resolve(null),
   }
 }
 
@@ -144,7 +144,7 @@ const MyAddresses = ({
     for (const key in mappingShelley) {
       fixedShelley[bechAddressToHex(key)] = mappingShelley[key]
     }
-    return (address: _Address) => {
+    return (address: Address) => {
       return mappingLegacy[address] || fixedShelley[address] || mappingShelley[address]
     }
   }
@@ -227,7 +227,7 @@ const Account = ({
     const txOutputs = [...outputs]
     if (change) {
       const stakingAddress = await myAddresses.getStakingAddress()
-      const changeOutput: _Output = {
+      const changeOutput: TxOutput = {
         ...change,
         isChange: true,
         spendingPath: myAddresses.getAddressToAbsPathMapper()(change.address),
@@ -248,13 +248,13 @@ const Account = ({
     return signedTx
   }
 
-  async function getMaxSendableAmount(address: _Address, sendAmount: SendAmount) {
+  async function getMaxSendableAmount(address: Address, sendAmount: SendAmount) {
     // TODO: why do we need hasDonation?
     const utxos = (await getUtxos()).filter(isUtxoProfitable)
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  async function getMaxNonStakingAmount(address: _Address, sendAmount: SendAmount) {
+  async function getMaxNonStakingAmount(address: Address, sendAmount: SendAmount) {
     const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
@@ -394,7 +394,7 @@ const Account = ({
     }
   }
 
-  async function getChangeAddress(): Promise<_Address> {
+  async function getChangeAddress(): Promise<Address> {
     /*
      * We use visible addresses as change addresses to mainintain
      * AdaLite original functionality which did not consider change addresses.
