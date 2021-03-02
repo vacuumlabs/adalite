@@ -1,6 +1,12 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
-import {sign as signMsg, derivePrivate, xpubToHdPassphrase} from 'cardano-crypto.js'
+import {
+  sign as signMsg,
+  derivePrivate,
+  xpubToHdPassphrase,
+  base58,
+  getBootstrapAddressAttributes,
+} from 'cardano-crypto.js'
 import {encode} from 'borc'
 
 import HdNode, {_HdNode} from '../helpers/hd-node'
@@ -99,9 +105,8 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     const xpub = await deriveXpub(path)
     const publicKey = xpub2pub(xpub)
     const chainCode = xpub2ChainCode(xpub)
-    // TODO: we should get address addresses from cardano-crypto
-    // but for some reason it returns something invalid for testnet
-    const addressAttributes = encode({})
+    // TODO: check if this works for testnet, apparently it doesnt
+    const addressAttributes = encode(getBootstrapAddressAttributes(base58.decode(address)))
     return {publicKey, signature, chainCode, addressAttributes}
   }
 
