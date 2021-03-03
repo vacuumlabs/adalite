@@ -24,6 +24,7 @@ import {AdaIcon, StarIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
 import tooltip from '../../common/tooltip'
+import {LinkToAsset} from '../delegations/common'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -79,6 +80,7 @@ const displayDropdownAssetItem = ({
   type,
   star,
   assetName,
+  assetNameHex,
   policyId,
   quantity,
 }: DropdownAssetItem) => (
@@ -90,6 +92,9 @@ const displayDropdownAssetItem = ({
           <span className="empty">
             {'<'}no-name{'>'}
           </span>
+        )}
+        {type === AssetFamily.TOKEN && (
+          <LinkToAsset policyIdHex={policyId} assetNameHex={assetNameHex} />
         )}
       </div>
       <div className="multi-asset-amount">

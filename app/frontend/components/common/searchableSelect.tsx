@@ -3,6 +3,7 @@ import {connect} from '../../helpers/connect'
 import actions from '../../actions'
 import {State} from '../../state'
 import {useEffect, useLayoutEffect, useRef, useState} from 'preact/hooks'
+import onSubTreeBlur from '../../../frontend/helpers/onSubTreeBlur'
 
 interface Props<T> {
   wrapperClassName?: string
@@ -38,6 +39,7 @@ const SearchableSelect = <T extends {}>({
 }: Props<T>) => {
   const inputEl = useRef<HTMLInputElement>(null)
   const dropdownEl = useRef<HTMLDivElement>(null)
+  const wrapperEl = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   const [dropdownWidth, setDropdownWidth] = useState(getDropdownWidth())
   const [search, setSearch] = useState('')
@@ -70,7 +72,10 @@ const SearchableSelect = <T extends {}>({
     <div
       className={`searchable-select-wrapper ${optionalClassName(wrapperClassName)}`}
       tabIndex={0}
-      onBlur={() => !showSearch && showDropdown(false)}
+      ref={wrapperEl}
+      // TODO: remove @ts-ignore when onFocusOut is added to jsx.d.ts
+      // @ts-ignore
+      onfocusout={(e) => onSubTreeBlur(e, wrapperEl, () => showDropdown(false))}
     >
       {label && <div className="searchable-select-label">{label}</div>}
       <div
@@ -95,7 +100,6 @@ const SearchableSelect = <T extends {}>({
             className="searchable-select-input"
             value={search}
             onInput={(event: any) => setSearch(event.target.value)}
-            onBlur={() => showDropdown(false)}
             placeholder={searchPlaceholder}
           />
         )}
@@ -105,7 +109,7 @@ const SearchableSelect = <T extends {}>({
               <div
                 className={`searchable-select-item ${shouldShowItem(item) ? '' : 'hide'}`}
                 key={i}
-                onMouseDown={() => {
+                onClick={() => {
                   setVisible(false)
                   onSelect(item)
                 }}

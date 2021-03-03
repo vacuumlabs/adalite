@@ -29,6 +29,11 @@ export const LinkIconToKey = ({stakeKey}) => (
   <LinkIcon url={`https://cardanoscan.io/stakekey/${stakeKey}`} />
 )
 
-export const LinkToAsset = ({policyIdHex, assetNameHex}) => (
+type LinkToAssetProps = {
+  policyIdHex: string
+  assetNameHex: string
+}
+
+export const LinkToAsset = ({policyIdHex, assetNameHex}: LinkToAssetProps) => (
   <LinkIcon url={`https://cardanoscan.io/token/${policyIdHex}.${assetNameHex}`} />
 )
