@@ -26,7 +26,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
       </button>
     </div>
     {conversionRates && <Conversions balance={balance} conversionRates={conversionRates} />}
-    {/* <div className="buy-ada-partner-wrapper">
+    <div className="buy-ada-partner-wrapper">
       <a
         className="button primary outline buy-ada-partner-link"
         href="https://exchange.adalite.io/"
@@ -35,13 +35,14 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
         Buy/Sell ADA
       </a>
       <span className="buy-ada-partner-logo">
-        Powered by<img
+        Powered by
+        <img
           className="buy-ada-partner-logo-img"
           src="assets/coinswitch-logo.svg"
           alt="CoinSwitch logo"
         />
       </span>
-    </div> */}
+    </div>
   </div>
 )
 
