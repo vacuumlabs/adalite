@@ -31,6 +31,7 @@
   --color-blue: #78c9dd;
   --color-red: #cf4040;
   --color-orange: #f4b253;
+  --color-selected: #f9f7f7;
   --color-brand: var(--color-pink);
   --color-brand-light: #f5a6c8;
   --color-brand-dark: #c91563;
@@ -1636,7 +1637,7 @@ li.main-tab input + label.selected:after {
 }
 
 .card.account.selected {
-  background-color: #f9f7f7;
+  background-color: var(--color-selected);
 }
 
 /* ACCOUNTS*/
@@ -2527,23 +2528,9 @@ li.main-tab input + label.selected:after {
 /* ADDRESSES */
 
 .addresses {
+  width: 100%;
   position: relative;
   padding-right: 28px;
-}
-
-.addresses::before {
-  position: absolute;
-  content: '';
-  left: 56px;
-  right: 40px;
-  bottom: 40px;
-  height: 56px;
-  background-image: linear-gradient(
-    to top,
-    rgb(255, 255, 255),
-    rgba(255, 255, 255, 0.4)
-  );
-  z-index: 2;
 }
 
 .addresses-title {
@@ -2551,34 +2538,62 @@ li.main-tab input + label.selected:after {
 }
 
 .addresses-content {
-  margin-bottom: 19px;
-  max-height: 736px;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 
 .address {
-  padding: 24px 16px 24px 0;
+  padding: 24px 16px 24px 24px;
   border-top: 1px solid var(--color-border);
 }
 
 .address:last-child {
-  margin-bottom: 8px;
+  padding-bottom: 0px;
 }
 
-.address-value {
+.address .value {
+  display: flex;
+  cursor: pointer;
   color: var(--color-grey);
   word-break: break-all;
-  margin-bottom: 16px;
-  display: flex;
 }
 
-.address-number {
+.address.expanded {
+  background-color: var(--color-selected);
+}
+
+.address:not(.expanded) {
+  cursor: pointer;
+}
+
+.address .expanded {
+  display: flex;
+  margin-left: 32px;
+}
+
+.address .explorer-links {
+  margin-left: 38px;
+}
+
+.address .hide {
+  display: none;
+}
+
+.address .expanded .details {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  margin-left: 12px;
+}
+
+.address .expanded .details .verification {
+  margin-top: 74px;
+}
+
+.address .number {
   font-weight: bold;
   word-break: normal;
   margin-right: 16px;
+  min-width: 22px;
 }
 
 .no-select {
@@ -2797,6 +2812,10 @@ li.main-tab input + label.selected:after {
 
 .copy:hover .copy-text::before {
   background-image: url('../assets/copy_symbol_active.svg');
+}
+
+.copy-text.margin-left {
+  margin-left: 8px;
 }
 
 /* LINK ICON */
@@ -3689,6 +3708,10 @@ input:checked + .slider:before {
 .review-address {
   margin-bottom: 24px;
   word-break: break-all;
+}
+
+.review-address-verification {
+  float: right;
 }
 
 .review-fee {

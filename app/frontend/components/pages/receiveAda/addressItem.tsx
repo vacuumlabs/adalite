@@ -1,125 +1,114 @@
-import {h, Component} from 'preact'
-import {connect} from '../../../helpers/connect'
-import actions from '../../../actions'
+import {Fragment, h} from 'preact'
 import {ADALITE_CONFIG} from '../../../config'
 import CopyOnClick from '../../common/copyOnClick'
+import AddressVerification from '../../common/addressVerification'
+import * as QRious from '../../../libs/qrious'
+import ViewAddressOn from './viewAddressOn'
 
 interface Props {
-  openAddressDetail: any
   address: string
   bip32path: string
+  isExpanded: boolean
+  expand: () => void
 }
 
-class AddressItem extends Component<Props, {onSmallDevice: boolean}> {
-  constructor(props) {
-    super(props)
-    this.updateDimensions = this.updateDimensions.bind(this)
-    this.openAddressDetail = this.openAddressDetail.bind(this)
-    this.state = {onSmallDevice: false}
-  }
+const AddressItem = ({address, bip32path, isExpanded, expand}: Props): h.JSX.Element => {
+  const explorerLinksInline = (
+    <div>
+      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
+        <Fragment>
+          <ViewAddressOn
+            name="Blockchair"
+            url={`https://blockchair.com/cardano/address/${address}`}
+          />
+          {' | '}
+          <ViewAddressOn name="AdaScan" url={`https://adascan.net/address/${address}`} inline />
+        </Fragment>
+      )}
+      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
+        <Fragment>
+          <ViewAddressOn name="CardanoScan" url={`https://cardanoscan.io/address/${address}`} />
+          {' | '}
+          <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} inline />
+        </Fragment>
+      )}
+    </div>
+  )
 
-  openAddressDetail({address, bip32path}, copyOnClick) {
-    this.props.openAddressDetail({address, bip32path}, copyOnClick)
-  }
-
-  updateDimensions() {
-    if (window.innerWidth < 768) {
-      this.setState({onSmallDevice: true})
-    } else {
-      this.setState({onSmallDevice: false})
-    }
-  }
-
-  componentWillMount() {
-    this.updateDimensions()
-  }
-  componentDidMount() {
-    window.addEventListener('resize', this.updateDimensions)
-  }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateDimensions)
-  }
-
-  render({address, bip32path}) {
-    return (
-      <div className="address">
-        <div className="address-value">
-          <p className="address-number no-select">{`/${bip32path.split('/').pop()}`}</p>
-          <CopyOnClick value={address} copy={this.state.onSmallDevice}>
-            <p className="one-click-select">{address}</p>
-          </CopyOnClick>
-        </div>
-        <div className="address-links blockexplorer-link">
-          <CopyOnClick value={address} elementClass="address-link copy">
-            <a className="copy-text">Copy Address</a>
-          </CopyOnClick>
-          <div style="margin-right:24px">
-            <span>View on </span>
-            {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
-              <span>
-                <a
-                  className="address-link"
-                  href={`https://blockchair.com/cardano/address/${address}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  Blockchair
-                </a>
-                <span> | </span>
-                <a
-                  className="address-link"
-                  href={`https://adascan.net/address/${address}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  AdaScan
-                </a>
-              </span>
-            )}
-            {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
-              <span>
-                <a
-                  className="address-link"
-                  href={`https://cardanoscan.io/address/${address}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  CardanoScan
-                </a>
-                {/* <span> | </span> */}
-                {/* <a
-                  className="address-link"
-                  href={`https://explorer.cardano.org/en/address?address=${address}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  CardanoExplorer
-                </a> */}
-                <span> | </span>
-                <a
-                  className="address-link"
-                  href={`https://adaex.org/${address}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  ADAex
-                </a>
-              </span>
-            )}
+  const explorerLinks = (
+    <Fragment>
+      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
+        <Fragment>
+          <ViewAddressOn
+            name="Blockchair"
+            url={`https://blockchair.com/cardano/address/${address}`}
+          />
+          <ViewAddressOn name="AdaScan" url={`https://adascan.net/address/${address}`} />
+        </Fragment>
+      )}
+      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
+        <Fragment>
+          <div>
+            <ViewAddressOn name="CardanoScan" url={`https://cardanoscan.io/address/${address}`} />
           </div>
-          <a
-            className="address-link more"
-            onClick={() => this.openAddressDetail({address, bip32path}, this.state.onSmallDevice)}
-          >
-            View more
-          </a>
+          <div>
+            <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} />
+          </div>
+        </Fragment>
+      )}
+    </Fragment>
+  )
+
+  const addressHash = (
+    <Fragment>
+      <span className="desktop">
+        <span>{address}</span>
+        <CopyOnClick value={address} elementClass="copy">
+          <span className="copy-text margin-left" />
+        </CopyOnClick>
+      </span>
+      <span className="mobile">
+        <CopyOnClick value={address}>
+          <span>{address}</span>
+        </CopyOnClick>
+      </span>
+    </Fragment>
+  )
+
+  return (
+    <div className={`address ${isExpanded ? 'expanded' : ''}`} onClick={expand}>
+      <div className="value">
+        <div className="number no-select">{`/${bip32path.split('/').pop()}`}</div>
+        {addressHash}
+      </div>
+      <div className={`explorer-links ${isExpanded ? 'hide' : ''}`}>{explorerLinksInline}</div>
+      <div className={`expanded ${isExpanded ? '' : 'hide'}`}>
+        <div className="qr">
+          <img
+            src={new QRious({
+              value: address,
+              level: 'M',
+              size: 200,
+            }).toDataURL()}
+          />
+        </div>
+        <div className="details">
+          {explorerLinks}
+          <div>
+            Derivation path: <span className="nowrap">{bip32path}</span>
+          </div>
+          <div className="desktop">
+            <CopyOnClick value={address} elementClass="address-link copy">
+              <a className="copy-text">Copy Address</a>
+            </CopyOnClick>
+          </div>
+          <div className="verification">
+            <AddressVerification address={address} />
+          </div>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
-export default connect(
-  null,
-  actions
-)(AddressItem)
+export default AddressItem

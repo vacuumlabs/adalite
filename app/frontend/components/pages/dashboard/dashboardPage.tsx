@@ -86,9 +86,25 @@ const SendingPage = ({
           </div>
           <div className="dashboard-column">
             <SendAdaPage />
-            <MyAddresses />
             {shouldShowExportOption && <ExportCard />}
           </div>
+        </div>
+      )}
+    </Fragment>
+  )
+}
+
+const ReceivePage = ({screenType}: {screenType: ScreenType}) => {
+  const mainSubTab = SubTabs.ADDRESSES
+  return (
+    <Fragment>
+      {isSmallerThanDesktop(screenType) ? (
+        <div className="dashboard mobile">
+          <DashboardMobileContent subTabs={[]} defaultSubTab={null} mainSubTab={mainSubTab} />
+        </div>
+      ) : (
+        <div className="dashboard desktop">
+          <MyAddresses />
         </div>
       )}
     </Fragment>
@@ -191,6 +207,7 @@ const DashboardPage = ({
     [MainTabs.SENDING]: (
       <SendingPage screenType={screenType} shouldShowExportOption={shouldShowExportOption} />
     ),
+    [MainTabs.RECEIVE]: <ReceivePage screenType={screenType} />,
     [MainTabs.ADVANCED]: <AdvancedPage screenType={screenType} />,
   }
   return (

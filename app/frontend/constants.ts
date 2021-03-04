@@ -1,6 +1,7 @@
 export enum MainTabs {
   ACCOUNT = 'Accounts',
   SENDING = 'Sending',
+  RECEIVE = 'Receive',
   STAKING = 'Staking',
   ADVANCED = 'Advanced',
 }

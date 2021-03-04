@@ -716,6 +716,22 @@
     margin: 0;
   }
 
+  .address .expanded {
+    flex-direction: column;
+    margin: unset;
+    align-items: center;
+    text-align: center;
+  }
+
+  .address .expanded .details {
+    margin-top: unset;
+  }
+
+  .address .expanded .details .verification {
+    margin-top: unset;
+    margin-bottom: 12px;
+  }
+
   .detail {
     flex-direction: column;
     padding: 0 8px;
@@ -796,7 +812,7 @@
 
   .tabinator li {
     display: unset;
-    flex: 0 0 50%;
+    flex: 1 0 50%;
   }
 
   .tabinator label:before {

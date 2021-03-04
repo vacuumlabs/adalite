@@ -37,6 +37,7 @@ class CopyOnClick extends Component<Props, {copied: boolean}> {
   }
 
   async copyTextToClipboard(e) {
+    e.stopPropagation()
     e.preventDefault()
     try {
       if (navigator.clipboard) {

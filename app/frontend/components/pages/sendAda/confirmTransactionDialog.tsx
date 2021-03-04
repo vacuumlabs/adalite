@@ -46,7 +46,11 @@ const SendAdaReview = ({
         <div className="review-label">Address</div>
         <div className="review-address">
           {address}
-          {shouldShowAddressVerification && <AddressVerification address={address} />}
+          {shouldShowAddressVerification && (
+            <div className="review-address-verification">
+              <AddressVerification address={address} />
+            </div>
+          )}
         </div>
         {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Amount</div>
@@ -134,7 +138,9 @@ const WithdrawReview = ({
         <div className="review-label">Address</div>
         <div className="review-address">
           {transactionSummary.plan.change.address}
-          <AddressVerification address={transactionSummary.plan.change.address} />
+          <div className="review-address-verification">
+            <AddressVerification address={transactionSummary.plan.change.address} />
+          </div>
         </div>
         <div className="ada-label">Rewards</div>
         <div className="review-amount">{printAda(rewards)}</div>
@@ -165,7 +171,9 @@ const ConvertFundsReview = ({
         <div className="review-label">Address</div>
         <div className="review-address">
           {address}
-          <AddressVerification address={address} />
+          <div className="review-address-verification">
+            <AddressVerification address={address} />
+          </div>
         </div>
         <div className="ada-label">Amount</div>
         <div className="review-amount">{printAda(coins)}</div>

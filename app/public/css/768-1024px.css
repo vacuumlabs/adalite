@@ -352,7 +352,7 @@
   }
 
   li.main-tab label {
-    width: calc(100% / 4);
+    width: calc(100% / 5);
   }
 
   .tabinator li {

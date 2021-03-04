@@ -12,7 +12,7 @@ const AddressVerification = ({
 }) =>
   showVerification &&
   (verificationError ? (
-    <div className="detail-error" style="float: right;">
+    <div className="detail-error">
       <div>
         Verification failed.{' '}
         <a
@@ -31,7 +31,6 @@ const AddressVerification = ({
     <a
       href="#"
       className="detail-verify"
-      style="float: right;"
       onClick={(e) => {
         e.preventDefault()
         !waitingForHwWallet && verifyAddress(address)
