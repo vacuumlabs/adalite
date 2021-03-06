@@ -18,7 +18,7 @@ import {
   NETWORKS,
   PREMIUM_MEMBER_BALANCE_TRESHOLD,
   BIG_DELEGATOR_THRESHOLD,
-  WANTED_DELEGATOR_ADDRESSES,
+  WANTED_DELEGATOR_STAKING_ADDRESSES,
 } from './wallet/constants'
 import {CryptoProviderType} from './wallet/types'
 import NamedError from './helpers/NamedError'
@@ -154,16 +154,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   /* LOADING WALLET */
-  const accountsIncludeAddresses = (
+  const accountsIncludeStakingAddresses = (
     accountsInfo: Array<AccountInfo>,
     soughtAddresses: Array<string>
   ): boolean => {
-    const accountAddresses = accountsInfo
-      .map((accountInfo) =>
-        accountInfo.visibleAddresses.map((visibleAddress) => visibleAddress.address)
-      )
-      .flat()
-    return accountAddresses.some((address) => soughtAddresses.includes(address))
+    const stakingAddresses = accountsInfo.map((accountInfo) => accountInfo.stakingAddress)
+    return stakingAddresses.some((address) => soughtAddresses.includes(address))
   }
 
   const loadWallet = async (
@@ -210,9 +206,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const maxAccountIndex = wallet.getMaxAccountIndex()
-      const shouldShowWantedAddressesModal = accountsIncludeAddresses(
+      const shouldShowWantedAddressesModal = accountsIncludeStakingAddresses(
         accountsInfo,
-        WANTED_DELEGATOR_ADDRESSES
+        WANTED_DELEGATOR_STAKING_ADDRESSES
       )
       const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       const shouldNumberAccountsFromOne = hwWalletName === 'Trezor'
