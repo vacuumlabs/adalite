@@ -18,6 +18,7 @@ import {
   NETWORKS,
   PREMIUM_MEMBER_BALANCE_TRESHOLD,
   BIG_DELEGATOR_THRESHOLD,
+  WANTED_DELEGATOR_STAKING_ADDRESSES,
 } from './wallet/constants'
 import {CryptoProviderType} from './wallet/types'
 import NamedError from './helpers/NamedError'
@@ -153,6 +154,13 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   }
 
   /* LOADING WALLET */
+  const accountsIncludeStakingAddresses = (
+    accountsInfo: Array<AccountInfo>,
+    soughtAddresses: Array<string>
+  ): boolean => {
+    const stakingAddresses = accountsInfo.map((accountInfo) => accountInfo.stakingAddress)
+    return stakingAddresses.some((address) => soughtAddresses.includes(address))
+  }
 
   const loadWallet = async (
     state: State,
@@ -198,6 +206,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const maxAccountIndex = wallet.getMaxAccountIndex()
+      const shouldShowWantedAddressesModal = accountsIncludeStakingAddresses(
+        accountsInfo,
+        WANTED_DELEGATOR_STAKING_ADDRESSES
+      )
       const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       const shouldNumberAccountsFromOne = hwWalletName === 'Trezor'
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
@@ -229,6 +241,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         isDemoWallet,
         shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,
         shouldShowNonShelleyCompatibleDialog: !isShelleyCompatible,
+        shouldShowWantedAddressesModal,
         shouldShowGenerateMnemonicDialog: false,
         shouldShowAddressVerification: usingHwWallet,
         // send form
@@ -1216,6 +1229,12 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  const closeWantedAddressModal = (state) => {
+    setState({
+      shouldShowWantedAddressesModal: false,
+    })
+  }
+
   const shouldShowContactFormModal = (state) => {
     setState({
       shouldShowContactFormModal: true,
@@ -1444,6 +1463,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     openInfoModal,
     closeInfoModal,
     closePremiumBanner,
+    closeWantedAddressModal,
     showSendTransactionModal,
     closeSendTransactionModal,
     showDelegationModal,
