@@ -9,9 +9,9 @@ const WantedAddressesModal = () => {
   const {closeWantedAddressModal} = useActions(actions)
 
   return (
-    <Modal onRequestClose={closeWantedAddressModal} title={'Action required'}>
+    <Modal onRequestClose={closeWantedAddressModal} title={'Direct message - Action required'}>
       <div>
-        Dear owner of these addresses:{' '}
+        Dear owner(s) of these addresses:{' '}
         <Alert alertType="wanted">
           {WANTED_DELEGATOR_ADDRESSES.map((address, key) => (
             <Fragment key={key}>
@@ -28,7 +28,8 @@ const WantedAddressesModal = () => {
         USD per day.
       </p>
       <p className="wanted-text">
-        Please, contact us at <a href={'mailto:adalite@vacuumlabs.com'}>adalite@vacuumlabs.com</a>{' '}
+        Please, contact us at <a href={'mailto:adalite@vacuumlabs.com'}>adalite@vacuumlabs.com</a>
+        {', '}
         <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a> or +421 907
         189 842 and we will setup a dedicated staking infrastructure just for you free of charge and
         help you with setting up a more effective stake delegation scheme.
