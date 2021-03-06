@@ -34,6 +34,7 @@ export interface State {
   shouldShowStakingBanner: boolean
   displayInfoModal: boolean
   shouldShowPremiumBanner?: boolean
+  shouldShowWantedAddressesModal: boolean
 
   // login / logout
   autoLogin: boolean
@@ -159,6 +160,7 @@ const initialState: State = {
   shouldShowPremiumBanner: !(
     window.localStorage.getItem(localStorageVars.PREMIUM_BANNER) === 'true'
   ),
+  shouldShowWantedAddressesModal: false,
   displayInfoModal: !(window.localStorage.getItem(localStorageVars.INFO_MODAL) === 'true'),
 
   // login / logout

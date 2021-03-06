@@ -13,6 +13,7 @@ import ShelleyBalances from '../delegations/shelleyBalances'
 import {MainTab, SubTab} from './tabs'
 import InfoModal from '../../common/infoModal'
 import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
+import WantedAddressesModal from '../login/wantedAddressesModal'
 import DashboardErrorBanner from './dashboardErrorBanner'
 import PremiumBanner from './premiumBanner'
 import SaturationErrorBanner from './saturationErrorBanner'
@@ -162,6 +163,7 @@ type Props = {
   shouldShowNonShelleyCompatibleDialog: boolean
   displayInfoModal: boolean
   shouldShowPremiumBanner: boolean
+  shouldShowWantedAddressesModal: boolean
   shouldShowSaturatedBanner: boolean
   activeAccountIndex: number
   shouldNumberAccountsFromOne: boolean
@@ -175,6 +177,7 @@ const DashboardPage = ({
   isShelleyCompatible,
   shouldShowNonShelleyCompatibleDialog,
   shouldShowPremiumBanner,
+  shouldShowWantedAddressesModal,
   shouldShowSaturatedBanner,
   activeAccountIndex,
   shouldNumberAccountsFromOne,
@@ -193,6 +196,7 @@ const DashboardPage = ({
   return (
     <div className="page-wrapper">
       <ErrorModals />
+      {shouldShowWantedAddressesModal && <WantedAddressesModal />}
       {isShelleyCompatible && displayInfoModal && <InfoModal />}
       {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
       {!isShelleyCompatible && <DashboardErrorBanner />}
@@ -256,6 +260,7 @@ export default connect(
     activeAccountIndex: state.activeAccountIndex,
     shouldNumberAccountsFromOne: state.shouldNumberAccountsFromOne,
     shouldShowExportOption: state.shouldShowExportOption,
+    shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
   }),
   actions
 )(DashboardPage)
