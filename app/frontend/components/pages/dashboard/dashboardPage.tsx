@@ -204,7 +204,7 @@ const DashboardPage = ({
   const MainPages: {[key in MainTabs]: any} = {
     [MainTabs.ACCOUNT]: <AccountsPage screenType={screenType} />,
     [MainTabs.STAKING]: <StakingPage screenType={screenType} />,
-    [MainTabs.SENDING]: (
+    [MainTabs.SEND]: (
       <SendingPage screenType={screenType} shouldShowExportOption={shouldShowExportOption} />
     ),
     [MainTabs.RECEIVE]: <ReceivePage screenType={screenType} />,

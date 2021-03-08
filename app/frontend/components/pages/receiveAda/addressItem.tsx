@@ -4,6 +4,7 @@ import CopyOnClick from '../../common/copyOnClick'
 import AddressVerification from '../../common/addressVerification'
 import * as QRious from '../../../libs/qrious'
 import ViewAddressOn from './viewAddressOn'
+import {DropdownCaret} from '../../common/svg'
 
 interface Props {
   address: string
@@ -77,12 +78,17 @@ const AddressItem = ({address, bip32path, isExpanded, expand}: Props): h.JSX.Ele
 
   return (
     <div className={`address ${isExpanded ? 'expanded' : ''}`} onClick={expand}>
-      <div className="value">
-        <div className="number no-select">{`/${bip32path.split('/').pop()}`}</div>
-        {addressHash}
+      <div className="label">
+        <div className="value">
+          <div className="number no-select">{`/${bip32path.split('/').pop()}`}</div>
+          {addressHash}
+        </div>
+        <div className={`accordion-icon flex-end ${isExpanded ? 'shown' : 'hidden'}`}>
+          <DropdownCaret />
+        </div>
       </div>
-      <div className={`explorer-links ${isExpanded ? 'hide' : ''}`}>{explorerLinksInline}</div>
-      <div className={`expanded ${isExpanded ? '' : 'hide'}`}>
+      <div className={`explorer-links ${isExpanded ? 'hide' : 'show'}`}>{explorerLinksInline}</div>
+      <div className={`expanded ${isExpanded ? 'show' : 'hide'}`}>
         <div className="qr">
           <img
             src={new QRious({

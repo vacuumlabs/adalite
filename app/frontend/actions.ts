@@ -430,13 +430,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  const closeAddressDetail = (state) => {
-    setState({
-      showAddressDetail: undefined,
-      addressVerificationError: undefined,
-    })
-  }
-
   /* TRANSACTION */
 
   const confirmTransaction = async (state: State, txConfirmType): Promise<void> => {
@@ -1437,7 +1430,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     updateMnemonic,
     updateMnemonicValidationError,
     openAddressDetail,
-    closeAddressDetail,
     verifyAddress,
     sendMaxFunds,
     openGenerateMnemonicDialog,

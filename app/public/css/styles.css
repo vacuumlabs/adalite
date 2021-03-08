@@ -1531,6 +1531,8 @@ li.main-tab input {
 }
 
 li.main-tab label {
+  white-space: nowrap;
+  min-width: 100px;
   box-sizing: border-box;
   display: inline-block;
   padding: 15px 25px;
@@ -2530,7 +2532,6 @@ li.main-tab input + label.selected:after {
 .addresses {
   width: 100%;
   position: relative;
-  padding-right: 28px;
 }
 
 .addresses-title {
@@ -2550,19 +2551,27 @@ li.main-tab input + label.selected:after {
   padding-bottom: 0px;
 }
 
+.address .label {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
 .address .value {
   display: flex;
-  cursor: pointer;
   color: var(--color-grey);
   word-break: break-all;
 }
 
 .address.expanded {
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
   background-color: var(--color-selected);
+  transition: background-color 0.25s ease-out 0.5s, box-shadow 0.25s ease-out 0.5s;
 }
 
 .address:not(.expanded) {
   cursor: pointer;
+  transition: background-color 0.25s ease-out, box-shadow 0.25s ease-out;
 }
 
 .address .expanded {
@@ -2574,8 +2583,22 @@ li.main-tab input + label.selected:after {
   margin-left: 38px;
 }
 
+.address .explorer-links.show {
+  max-height: 24px;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+}
+
+.address .expanded.show {
+  max-height: 208px;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+}
+
 .address .hide {
-  display: none;
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
 }
 
 .address .expanded .details {

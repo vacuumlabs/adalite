@@ -148,7 +148,7 @@ const initialState: State = {
   sendSentry: {},
   errorBannerContent: '',
   shouldShowUnexpectedErrorModal: false,
-  activeMainTab: MainTabs.SENDING,
+  activeMainTab: MainTabs.SEND,
 
   // cache
   displayWelcome:
