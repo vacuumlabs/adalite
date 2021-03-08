@@ -266,23 +266,22 @@ export function computeTxPlan(
     change.tokens
   )
 
-  // if we cannot create a change output with minimal ada we add it to the first output
+  // if we cannot create a change output with minimal ada we add it to the fee
   if (change.tokens.length === 0 && change.coins < minimalChangeLovelace) {
-    const outputWithChange = {...outputs[0], coins: (outputs[0].coins + change.coins) as Lovelace}
-    const outputsWithChange = outputs.map((output, i) => (i === 0 ? outputWithChange : output))
     return {
       inputs,
-      outputs: outputsWithChange,
+      outputs,
       change: null,
       certificates,
       deposit,
-      additionalLovelaceAmount: (additionalLovelaceAmount + change.coins) as Lovelace,
-      fee: feeWithChange,
+      additionalLovelaceAmount,
+      fee: (feeWithChange + change.coins) as Lovelace,
       withdrawals,
     }
   }
 
-  if (change.coins < computeMinUTxOLovelaceAmount(change.address, change.coins, change.tokens)) {
+  // we cant build the transaction with big enough change lovelace
+  if (change.tokens.length > 0 && change.coins < minimalChangeLovelace) {
     throw NamedError('ChangeOutputTooSmall')
   }
 
