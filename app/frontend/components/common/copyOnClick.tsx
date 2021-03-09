@@ -12,6 +12,8 @@ interface Props {
   children: ComponentChildren
   inline?: boolean
   tooltipMessage?: string
+  stopPropagation?: boolean
+  preventDefault?: boolean
 }
 
 class CopyOnClick extends Component<Props, {copied: boolean}> {
@@ -37,8 +39,8 @@ class CopyOnClick extends Component<Props, {copied: boolean}> {
   }
 
   async copyTextToClipboard(e) {
-    e.stopPropagation()
-    e.preventDefault()
+    this.props.preventDefault && e.preventDefault()
+    this.props.stopPropagation && e.stopPropagation()
     try {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(this.props.value)
@@ -76,6 +78,10 @@ class CopyOnClick extends Component<Props, {copied: boolean}> {
       </span>
     )
   }
+}
+
+CopyOnClick.defaultProps = {
+  preventDefault: true,
 }
 
 export default CopyOnClick

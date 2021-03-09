@@ -64,12 +64,12 @@ const AddressItem = ({address, bip32path, isExpanded, expand}: Props): h.JSX.Ele
     <Fragment>
       <span className="desktop">
         <span>{address}</span>
-        <CopyOnClick value={address} elementClass="copy">
+        <CopyOnClick value={address} elementClass="copy" stopPropagation>
           <span className="copy-text margin-left" />
         </CopyOnClick>
       </span>
       <span className="mobile">
-        <CopyOnClick value={address}>
+        <CopyOnClick value={address} preventDefault={false}>
           <span>{address}</span>
         </CopyOnClick>
       </span>

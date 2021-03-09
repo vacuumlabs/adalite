@@ -392,10 +392,6 @@
     display: none;
   }
 
-  .address {
-    padding-right: 0;
-  }
-
   .address:last-child {
     margin-bottom: 0;
   }

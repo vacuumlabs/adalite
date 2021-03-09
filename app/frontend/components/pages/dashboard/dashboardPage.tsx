@@ -26,6 +26,7 @@ import {useState} from 'preact/hooks'
 import {SubTabs, MainTabs} from '../../../constants'
 import {useViewport, isSmallerThanDesktop} from '../../common/viewPort'
 import {ScreenType} from '../../../types'
+import ReceiveRedirect from '../receiveAda/receiveRedirect'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -86,6 +87,7 @@ const SendingPage = ({
           </div>
           <div className="dashboard-column">
             <SendAdaPage />
+            <ReceiveRedirect />
             {shouldShowExportOption && <ExportCard />}
           </div>
         </div>

@@ -2543,7 +2543,7 @@ li.main-tab input + label.selected:after {
 }
 
 .address {
-  padding: 24px 16px 24px 24px;
+  padding: 24px;
   border-top: 1px solid var(--color-border);
 }
 
@@ -2566,7 +2566,7 @@ li.main-tab input + label.selected:after {
 .address.expanded {
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
   background-color: var(--color-selected);
-  transition: background-color 0.25s ease-out 0.5s, box-shadow 0.25s ease-out 0.5s;
+  transition: background-color 0.25s ease-out 0.25s, box-shadow 0.25s ease-out 0.25s;
 }
 
 .address:not(.expanded) {
@@ -2586,19 +2586,19 @@ li.main-tab input + label.selected:after {
 .address .explorer-links.show {
   max-height: 24px;
   overflow: hidden;
-  transition: max-height 0.5s ease-out;
+  transition: max-height 0.25s ease-out;
 }
 
 .address .expanded.show {
   max-height: 208px;
   overflow: hidden;
-  transition: max-height 0.5s ease-out;
+  transition: max-height 0.25s ease-out;
 }
 
 .address .hide {
   max-height: 0px;
   overflow: hidden;
-  transition: max-height 0.5s ease-out;
+  transition: max-height 0.25s ease-out;
 }
 
 .address .expanded .details {

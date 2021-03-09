@@ -416,20 +416,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const openAddressDetail = (state, {address, bip32path}, copyOnClick) => {
-    /*
-     * because we don't want to trigger trezor address
-     * verification for the  donation address
-     */
-    const shouldShowAddressVerification = state.usingHwWallet && bip32path
-
-    // trigger trezor address verification for the  donation address
-    setState({
-      showAddressDetail: {address, bip32path, copyOnClick},
-      shouldShowAddressVerification,
-    })
-  }
-
   /* TRANSACTION */
 
   const confirmTransaction = async (state: State, txConfirmType): Promise<void> => {
@@ -1429,7 +1415,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     loadDemoWallet,
     updateMnemonic,
     updateMnemonicValidationError,
-    openAddressDetail,
     verifyAddress,
     sendMaxFunds,
     openGenerateMnemonicDialog,

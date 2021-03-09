@@ -695,10 +695,6 @@
     display: none;
   }
 
-  .address {
-    padding-right: 0;
-  }
-
   .address:last-child {
     margin-bottom: 0;
   }
@@ -730,6 +726,13 @@
   .address .expanded .details .verification {
     margin-top: unset;
     margin-bottom: 12px;
+  }
+
+  .address .expanded.show {
+    height: 298px;
+    max-height: 298px;
+    overflow: hidden;
+    transition: max-height 0.25s ease-out;
   }
 
   .detail {
