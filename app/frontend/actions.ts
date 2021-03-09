@@ -600,7 +600,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       return await wallet.getAccount(state.sourceAccountIndex).getTxPlan(args)
     } catch (e) {
       // TODO: refactor setErrorState to check all errors if there unexpected
-      if (e.name !== 'NetworkError' && e.name !== 'ServerError') {
+      if (e.name !== 'NetworkError' && e.name !== 'ServerError' && e.name !== 'TxTooBig') {
         throw e
       }
       return {
