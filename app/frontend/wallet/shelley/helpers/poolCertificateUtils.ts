@@ -1,4 +1,6 @@
+import {_Margin, _PoolRelay, _StakepoolRegistrationCert} from '../../../helpers/cliParser/types'
 import NamedError from '../../../helpers/NamedError'
+import {TxPoolParams} from '../../types'
 
 const enum PoolParamsByteLengths {
   POOL_HASH = 28,
@@ -64,14 +66,14 @@ const buf2hexLengthCheck = (buffer, correctByteLength, variableName) => {
   return buffer.toString('hex')
 }
 
-const checkedNumber = (number, variableName) => {
-  if (!Number.isInteger(number)) {
-    throw NamedError('PoolRegInvalidNumber', {message: variableName})
-  }
-  return number
-}
+const checkedNumber = <T>(number: T, variableName): T => number //{
+//   if (!Number.isInteger(number)) {
+//     throw NamedError('PoolRegInvalidNumber', {message: variableName})
+//   }
+//   return number
+// }
 
-const transformPoolOwners = (poolOwners, ownerCredentials) => {
+const transformPoolOwners = (poolOwners) => {
   const hexOwners: Array<string> = poolOwners.map((owner) =>
     buf2hexLengthCheck(owner, PoolParamsByteLengths.OWNER, 'Owner key hash')
   )
@@ -80,25 +82,21 @@ const transformPoolOwners = (poolOwners, ownerCredentials) => {
     throw NamedError('PoolRegDuplicateOwners')
   }
 
-  let isWalletTheOwner = false
   const transformedOwners = hexOwners.map((owner) => {
-    if (owner === ownerCredentials.pubKeyHex) {
-      isWalletTheOwner = true
-      return {
-        stakingPath: ownerCredentials.path,
-        pubKeyHex: ownerCredentials.pubKeyHex, // retain key hex for inverse operation
-      }
-    }
+    // if (owner === ownerCredentials.pubKeyHex) {
+    //   isWalletTheOwner = true
+    //   return {
+    //     stakingPath: ownerCredentials.path,
+    //     pubKeyHex: ownerCredentials.pubKeyHex, // retain key hex for inverse operation
+    //   }
+    // }
     return {stakingKeyHashHex: owner}
   })
 
-  if (!isWalletTheOwner) {
-    throw NamedError('PoolRegNotTheOwner')
-  }
   return transformedOwners
 }
 
-const transformMargin = (marginObj) => {
+const transformMargin = (marginObj: _Margin) => {
   if (
     !marginObj ||
     !marginObj.hasOwnProperty('denominator') ||
@@ -141,7 +139,7 @@ export const ipv6AddressToBuf = (ipv6Address: string) => {
   return endianSwappedBuf
 }
 
-const transformRelays = (relays) =>
+const transformRelays = (relays: _PoolRelay[]) =>
   relays.map((relay) => {
     let params
     switch (relay.type) {
@@ -189,21 +187,17 @@ const transformMetadata = (metadata) => {
   }
 }
 
-export const transformPoolParamsTypes = (
-  {
-    type,
-    poolKeyHash,
-    vrfPubKeyHash,
-    pledge,
-    cost,
-    margin,
-    rewardAddress,
-    poolOwnersPubKeyHashes,
-    relays,
-    metadata,
-  },
-  ownerCredentials
-) => ({
+export const transformPoolParamsTypes = ({
+  poolKeyHash,
+  vrfPubKeyHash,
+  pledge,
+  cost,
+  margin,
+  rewardAddress,
+  poolOwnersPubKeyHashes,
+  relays,
+  metadata,
+}: _StakepoolRegistrationCert): TxPoolParams => ({
   poolKeyHashHex: buf2hexLengthCheck(poolKeyHash, PoolParamsByteLengths.POOL_HASH, 'Pool key hash'),
   vrfKeyHashHex: buf2hexLengthCheck(vrfPubKeyHash, PoolParamsByteLengths.VRF, 'VRF key hash'),
   pledgeStr: checkedNumber(pledge, 'Pledge').toString(),
@@ -214,7 +208,7 @@ export const transformPoolParamsTypes = (
     PoolParamsByteLengths.REWARD,
     'Reward account'
   ),
-  poolOwners: transformPoolOwners(poolOwnersPubKeyHashes, ownerCredentials),
+  poolOwners: transformPoolOwners(poolOwnersPubKeyHashes),
   relays: transformRelays(relays),
   metadata: transformMetadata(metadata),
 })

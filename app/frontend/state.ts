@@ -7,6 +7,7 @@ import {
   AssetFamily,
   AuthMethodType,
   Lovelace,
+  PoolRegTransactionSummary,
   SendAmount,
   TransactionSummary,
   TxType,
@@ -100,12 +101,7 @@ export interface State {
   }
 
   // pool registration
-  poolCertTxVars: {
-    shouldShowPoolCertSignModal: boolean
-    ttl: any
-    signature: any
-    plan: any
-  }
+  poolRegTransactionSummary: PoolRegTransactionSummary
   poolRegTxError?: any
 
   // address detail
@@ -220,11 +216,12 @@ const initialState: State = {
   },
 
   // pool registration
-  poolCertTxVars: {
+  poolRegTransactionSummary: {
     shouldShowPoolCertSignModal: false,
     ttl: 0,
-    signature: null,
+    witness: null,
     plan: null,
+    txBodyType: null,
   },
 
   // accounts info

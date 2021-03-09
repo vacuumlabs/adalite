@@ -13,6 +13,7 @@ import {
   TxPlanArgs,
   TxType,
   Address,
+  PoolOwnerTxPlanArgs,
 } from '../types'
 import {
   getAccountXpub as getAccoutXpubShelley,
@@ -26,7 +27,8 @@ import {
   computeRequiredTxFee,
   isUtxoProfitable,
   TxPlan,
-  TxPlanResult, // TODO: useless
+  TxPlanResult,
+  unsignedPoolTxToTxPlan, // TODO: useless
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
@@ -226,6 +228,7 @@ const Account = ({
     const {inputs, outputs, change, fee, certificates, withdrawals} = txPlan
     const txOutputs = [...outputs]
     if (change) {
+      // TODO: do this with map
       const stakingAddress = await myAddresses.getStakingAddress()
       const changeOutput: TxOutput = {
         ...change,
@@ -246,6 +249,15 @@ const Account = ({
         throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
       })
     return signedTx
+  }
+
+  async function witnessPoolRegTxAux(txAux: TxAux) {
+    const txWitness = await cryptoProvider
+      .witnessPoolRegTx(txAux, myAddresses.fixedPathMapper())
+      .catch((e) => {
+        throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
+      })
+    return txWitness
   }
 
   async function getMaxSendableAmount(address: Address, sendAmount: SendAmount) {
@@ -457,6 +469,11 @@ const Account = ({
     }
   }
 
+  async function getPoolRegistrationTxPlan(poolRegistrationArgs: PoolOwnerTxPlanArgs) {
+    const stakingAddress = await myAddresses.getStakingAddress()
+    return unsignedPoolTxToTxPlan(poolRegistrationArgs.unsignedTxParsed, stakingAddress)
+  }
+
   async function getPoolOwnerCredentials() {
     const stakingAddress = await myAddresses.getStakingAddress()
     const path = myAddresses.fixedPathMapper()(stakingAddress)
@@ -472,6 +489,7 @@ const Account = ({
 
   return {
     signTxAux,
+    witnessPoolRegTxAux,
     getBalance,
     getChangeAddress,
     getMaxSendableAmount,
@@ -491,6 +509,7 @@ const Account = ({
     isAccountUsed,
     ensureXpubIsExported,
     _getAccountXpubs: getAccountXpubs,
+    getPoolRegistrationTxPlan,
   }
 }
 

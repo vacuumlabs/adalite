@@ -1,13 +1,17 @@
-import {encode} from 'borc'
+import * as cbor from 'borc'
 import {blake2b, base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat} from './helpers/addresses'
 // import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
 import {
   TxByronWitness,
   TxCertificate,
+  TxDelegationCert,
   TxInput,
   TxOutput,
   TxShelleyWitness,
+  TxStakepoolRegistrationCert,
+  TxStakingKeyDeregistrationCert,
+  TxStakingKeyRegistrationCert,
   TxWithdrawal,
 } from '../types'
 import {
@@ -27,9 +31,15 @@ import {
   CborizedTxWitnessShelley,
   TxAux,
   CborizedTxSignedStructured,
+  CborizedTxStakingKeyRegistrationCert,
+  CborizedTxStakingKeyDeregistrationCert,
+  CborizedTxDelegationCert,
+  CborizedTxStakepoolRegistrationCert,
 } from './types'
 import {CertificateType, HexString, Token} from '../../types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
+import NamedError from '../../helpers/NamedError'
+import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
 
 function ShelleyTxAux(
   inputs: TxInput[],
@@ -41,7 +51,7 @@ function ShelleyTxAux(
 ): TxAux {
   function getId() {
     return blake2b(
-      encode(ShelleyTxAux(inputs, outputs, fee, ttl, certificates, withdrawals)),
+      cbor.encode(ShelleyTxAux(inputs, outputs, fee, ttl, certificates, withdrawals)),
       32
     ).toString('hex')
   }
@@ -109,32 +119,101 @@ function cborizeTxOutputs(outputs: TxOutput[]): CborizedTxOutput[] {
   return txOutputs
 }
 
-function cborizeTxCertificates(certificates: TxCertificate[]): CborizedTxCertificate[] {
-  const txCertificates: CborizedTxCertificate[] = certificates.map((certificate) => {
-    // TODO: helper for getting stakingKeyHash from address
-    const stakingKeyHash: Buffer = bech32.decode(certificate.stakingAddress).data.slice(1)
-    // TODO: switch
-    const poolHash =
-      certificate.type === CertificateType.DELEGATION && Buffer.from(certificate.poolHash, 'hex')
-    const stakeCredential: CborizedTxStakeCredential = [
-      TxStakeCredentialType.ADDR_KEYHASH,
-      stakingKeyHash,
-    ]
+function cborizeStakingKeyRegistrationCert(
+  certificate: TxStakingKeyRegistrationCert
+): CborizedTxStakingKeyRegistrationCert {
+  const stakingKeyHash: Buffer = bech32.decode(certificate.stakingAddress).data.slice(1)
+  const stakeCredential: CborizedTxStakeCredential = [
+    TxStakeCredentialType.ADDR_KEYHASH,
+    stakingKeyHash,
+  ]
+  return [TxCertificateKey.STAKING_KEY_REGISTRATION, stakeCredential]
+}
 
-    const encodedCertsTypes: {[key in CertificateType]: CborizedTxCertificate} = {
-      [CertificateType.STAKING_KEY_REGISTRATION]: [
-        TxCertificateKey.STAKING_KEY_REGISTRATION,
-        stakeCredential,
+function cborizeStakingKeyDeregistrationCert(
+  certificate: TxStakingKeyDeregistrationCert
+): CborizedTxStakingKeyDeregistrationCert {
+  const stakingKeyHash: Buffer = bech32.decode(certificate.stakingAddress).data.slice(1)
+  const stakeCredential: CborizedTxStakeCredential = [
+    TxStakeCredentialType.ADDR_KEYHASH,
+    stakingKeyHash,
+  ]
+  return [TxCertificateKey.STAKING_KEY_DEREGISTRATION, stakeCredential]
+}
+
+function cborizeDelegationCert(certificate: TxDelegationCert): CborizedTxDelegationCert {
+  const stakingKeyHash: Buffer = bech32.decode(certificate.stakingAddress).data.slice(1)
+  const stakeCredential: CborizedTxStakeCredential = [
+    TxStakeCredentialType.ADDR_KEYHASH,
+    stakingKeyHash,
+  ]
+  const poolHash = Buffer.from(certificate.poolHash, 'hex')
+  return [TxCertificateKey.DELEGATION, stakeCredential, poolHash]
+}
+
+function cborizeStakepoolRegistrationCert(
+  certificate: TxStakepoolRegistrationCert
+): CborizedTxStakepoolRegistrationCert {
+  const {poolRegistrationParams} = certificate
+  return [
+    TxCertificateKey.STAKEPOOL_REGISTRATION,
+    Buffer.from(poolRegistrationParams.poolKeyHashHex, 'hex'),
+    Buffer.from(poolRegistrationParams.vrfKeyHashHex, 'hex'),
+    parseInt(poolRegistrationParams.pledgeStr, 10),
+    parseInt(poolRegistrationParams.costStr, 10),
+    new cbor.Tagged(
+      30,
+      [
+        parseInt(poolRegistrationParams.margin.numeratorStr, 10),
+        parseInt(poolRegistrationParams.margin.denominatorStr, 10),
       ],
-      [CertificateType.STAKING_KEY_DEREGISTRATION]: [
-        TxCertificateKey.STAKING_KEY_DEREGISTRATION,
-        stakeCredential,
-      ],
-      [CertificateType.DELEGATION]: [TxCertificateKey.DELEGATION, stakeCredential, poolHash],
-      [CertificateType.STAKEPOOL_REGISTRATION]: null,
-      //ShelleyPoolRegistrationCertificate(certificate),
+      null
+    ),
+    Buffer.from(poolRegistrationParams.rewardAccountHex, 'hex'),
+    poolRegistrationParams.poolOwners.map((ownerObj) => {
+      return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
+    }),
+    poolRegistrationParams.relays.map((relay) => {
+      // TODO: enum for relays
+      switch (relay.type) {
+        case 0:
+          return [
+            relay.type,
+            relay.params.portNumber,
+            relay.params.ipv4 ? ipv4AddressToBuf(relay.params.ipv4) : null,
+            relay.params.ipv6 ? ipv6AddressToBuf(relay.params.ipv6) : null,
+          ]
+        case 1:
+          return [relay.type, relay.params.portNumber, relay.params.dnsName]
+        case 2:
+          return [relay.type, relay.params.dnsName]
+        default:
+          return []
+      }
+    }),
+    poolRegistrationParams.metadata
+      ? [
+        poolRegistrationParams.metadata.metadataUrl,
+        Buffer.from(poolRegistrationParams.metadata.metadataHashHex, 'hex'),
+      ]
+      : null,
+  ]
+}
+
+function cborizeTxCertificates(certificates: TxCertificate[]): CborizedTxCertificate[] {
+  const txCertificates = certificates.map((certificate) => {
+    switch (certificate.type) {
+      case CertificateType.STAKING_KEY_REGISTRATION:
+        return cborizeStakingKeyRegistrationCert(certificate)
+      case CertificateType.STAKING_KEY_DEREGISTRATION:
+        return cborizeStakingKeyDeregistrationCert(certificate)
+      case CertificateType.DELEGATION:
+        return cborizeDelegationCert(certificate)
+      case CertificateType.STAKEPOOL_REGISTRATION:
+        return cborizeStakepoolRegistrationCert(certificate)
+      default:
+        throw NamedError('InvalidCertificateType')
     }
-    return encodedCertsTypes[certificate.type]
   })
   return txCertificates
 }
@@ -202,62 +281,10 @@ function ShelleySignedTransactionStructured(
   }
 }
 
-// function ShelleyPoolRegistrationCertificate(certificate: TxCertificate) {
-//   const {type, poolRegistrationParams: poolParams} = certificate
-//   const txPoolRegistrationCertificate = certificate.poolRegistrationParams
-//     ? [
-//       type,
-//       Buffer.from(poolParams.poolKeyHashHex, 'hex'),
-//       Buffer.from(poolParams.vrfKeyHashHex, 'hex'),
-//       parseInt(poolParams.pledgeStr, 10),
-//       parseInt(poolParams.costStr, 10),
-//       new Tagged(
-//         30,
-//         [
-//           parseInt(poolParams.margin.numeratorStr, 10),
-//           parseInt(poolParams.margin.denominatorStr, 10),
-//         ],
-//         null
-//       ),
-//       Buffer.from(poolParams.rewardAccountHex, 'hex'),
-//       poolParams.poolOwners.map((ownerObj) => {
-//         if (ownerObj.stakingKeyHashHex) {
-//           return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
-//         }
-//         // else is a path owner and has pubKeyHex
-//         return Buffer.from(ownerObj.pubKeyHex, 'hex')
-//       }),
-//       poolParams.relays.map((relay) => {
-//         switch (relay.type) {
-//           case 0:
-//             return [
-//               relay.type,
-//               relay.params.portNumber,
-//               relay.params.ipv4 ? ipv4AddressToBuf(relay.params.ipv4) : null,
-//               relay.params.ipv6 ? ipv6AddressToBuf(relay.params.ipv6) : null,
-//             ]
-//           case 1:
-//             return [relay.type, relay.params.portNumber, relay.params.dnsName]
-//           case 2:
-//             return [relay.type, relay.params.dnsName]
-//           default:
-//             return []
-//         }
-//       }),
-//       poolParams.metadata
-//         ? [
-//           poolParams.metadata.metadataUrl,
-//           Buffer.from(poolParams.metadata.metadataHashHex, 'hex'),
-//         ]
-//         : null,
-//     ]
-//     : []
-//   return txPoolRegistrationCertificate
-// }
-
 export {
   ShelleyTxAux,
   cborizeTxWitnesses,
+  cborizeTxWitnessesShelley,
   ShelleySignedTransactionStructured,
   cborizeTxInputs,
   cborizeTxOutputs,

@@ -78,7 +78,7 @@ export type TxDelegationCert = {
 export type TxStakepoolRegistrationCert = {
   type: CertificateType.STAKEPOOL_REGISTRATION
   stakingAddress: Address
-  poolRegistrationParams: any
+  poolRegistrationParams: TxPoolParams
 }
 
 export type TxWithdrawal = {
@@ -96,4 +96,27 @@ export type TxByronWitness = {
   signature: Buffer
   chainCode: Buffer
   addressAttributes: any // TODO:
+}
+
+export type TxPoolParams = {
+  poolKeyHashHex: string // Hex
+  vrfKeyHashHex: string
+  pledgeStr: string
+  costStr: string
+  margin: {
+    numeratorStr: string
+    denominatorStr: string
+  }
+  rewardAccountHex: string
+  poolOwners: {
+    stakingKeyHashHex: string
+  }[]
+  relays: {
+    type: any
+    params: any
+  }[]
+  metadata: {
+    metadataUrl: any
+    metadataHashHex: string
+  }
 }

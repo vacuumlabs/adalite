@@ -139,3 +139,5 @@ export enum TxStakeCredentialType {
 }
 
 export type CborizedTxStakeCredential = [TxStakeCredentialType, Buffer]
+
+export type CborizedCliWitness = [TxWitnessKey, CborizedTxWitnessShelley | CborizedTxWitnessByron]

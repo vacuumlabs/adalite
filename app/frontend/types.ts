@@ -1,7 +1,8 @@
-import {TxSigned, TxAux} from './wallet/shelley/types'
+import {TxSigned, TxAux, CborizedCliWitness} from './wallet/shelley/types'
 import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
 import {Network} from './wallet/types'
 import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
+import {_UnsignedTxParsed} from './helpers/cliParser/types'
 
 export type BIP32Path = number[]
 
@@ -29,6 +30,10 @@ export type AddressToPathMapper = (address: Address) => BIP32Path
 export interface CryptoProvider {
   network: Network
   signTx: (unsignedTx: TxAux, addressToPathMapper: AddressToPathMapper) => Promise<TxSigned>
+  witnessPoolRegTx: (
+    unsignedTx: TxAux,
+    addressToPathMapper: AddressToPathMapper
+  ) => Promise<CborizedCliWitness>
   getWalletSecret: () => Buffer | void
   getWalletName: () => string
   getDerivationScheme: () => DerivationScheme
@@ -42,7 +47,7 @@ export interface CryptoProvider {
 }
 
 // TODO: remove this and replace with TxCertificateType
-export const enum CertificateType {
+export enum CertificateType {
   STAKING_KEY_REGISTRATION = 0,
   STAKING_KEY_DEREGISTRATION = 1,
   DELEGATION = 2,
@@ -145,6 +150,7 @@ export const enum TxType {
   CONVERT_LEGACY,
   DELEGATE,
   WITHDRAW,
+  POOL_REG_OWNER,
 }
 
 export enum StakingHistoryItemType {
@@ -225,11 +231,17 @@ export type DelegateAdaTxPlanArgs = {
   stakingAddress: Address
 }
 
+export type PoolOwnerTxPlanArgs = {
+  txType: TxType.POOL_REG_OWNER
+  unsignedTxParsed: _UnsignedTxParsed
+}
+
 export type TxPlanArgs =
   | SendAdaTxPlanArgs
   | ConvertLegacyAdaTxPlanArgs
   | WithdrawRewardsTxPlanArgs
   | DelegateAdaTxPlanArgs
+  | PoolOwnerTxPlanArgs
 
 export type HostedPoolMetadata = {
   name: string
@@ -298,4 +310,12 @@ export type DelegateTransactionSummary = {
   type: TxType.DELEGATE
   deposit: Lovelace
   stakePool: any // TODO:
+}
+
+export type PoolRegTransactionSummary = {
+  shouldShowPoolCertSignModal: boolean
+  ttl: any
+  witness: CborizedCliWitness
+  plan: TxPlan
+  txBodyType: string
 }

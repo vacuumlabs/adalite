@@ -34,6 +34,15 @@ import {
   TxWithdrawal,
 } from '../types'
 import {aggregateTokens, formatToken} from '../helpers/tokenFormater'
+import {_UnsignedTxParsed} from '../../../frontend/helpers/cliParser/types'
+import {
+  prepareCertificates,
+  prepareFee,
+  prepareInputs,
+  prepareOutputs,
+  prepareTtl,
+  prepareWithdrawals,
+} from '../../../frontend/helpers/cliParser/parseCborTxBody'
 
 type TxPlanDraft = {
   outputs: TxOutput[]
@@ -453,30 +462,18 @@ export const selectMinimalTxPlan = (
   }
 }
 
-export const unsignedPoolTxToTxPlan = (unsignedTx, ownerCredentials): TxPlan => {
+export const unsignedPoolTxToTxPlan = (
+  unsignedTx: _UnsignedTxParsed,
+  stakingAddress: Address
+): TxPlan => {
   return {
-    inputs: unsignedTx.inputs.map((input) => ({
-      outputIndex: input.outputIndex,
-      txHash: input.txHash.toString('hex'),
-      address: null,
-      coins: null,
-      // path
-    })),
-    outputs: unsignedTx.outputs.map((output) => ({
-      coins: output.coins,
-      address: bech32.encode('addr', output.address),
-      accountAddress: null,
-    })),
+    inputs: prepareInputs(unsignedTx.inputs),
+    outputs: prepareOutputs(unsignedTx.outputs),
     change: null,
-    certificates: unsignedTx.certificates.map((cert) => ({
-      type: cert.type,
-      accountAddress: null,
-      poolHash: null,
-      poolRegistrationParams: transformPoolParamsTypes(cert, ownerCredentials),
-    })),
-    deposit: null,
+    certificates: prepareCertificates(unsignedTx.certificates, stakingAddress),
+    deposit: 0 as Lovelace,
     additionalLovelaceAmount: 0 as Lovelace,
-    fee: parseInt(unsignedTx.fee, 10) as Lovelace,
-    withdrawals: unsignedTx.withdrawals,
+    fee: prepareFee(unsignedTx.fee) as Lovelace,
+    withdrawals: prepareWithdrawals(unsignedTx.withdrawals, stakingAddress),
   }
 }

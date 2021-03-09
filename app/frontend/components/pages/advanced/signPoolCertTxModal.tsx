@@ -4,16 +4,17 @@ import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
-import {Lovelace} from '../../../types'
+import {CertificateType, Lovelace} from '../../../types'
+import {State} from '../../../state'
 
 interface Props {
-  closePoolCertificateTxModal: any
+  closePoolRegTransactionModal: any
   signPoolCertificateTx: any
   poolCert: any
 }
 
 const SignPoolCertTxModal = ({
-  closePoolCertificateTxModal,
+  closePoolRegTransactionModal,
   signPoolCertificateTx,
   poolCert,
 }: Props) => {
@@ -24,7 +25,10 @@ const SignPoolCertTxModal = ({
   }, [])
 
   return (
-    <Modal onRequestClose={closePoolCertificateTxModal} title={'Sign pool certificate transaction'}>
+    <Modal
+      onRequestClose={closePoolRegTransactionModal}
+      title={'Sign pool certificate transaction'}
+    >
       <div>
         We are creating a hardware wallet signature of the given pool registration certificate
         transaction
@@ -73,7 +77,7 @@ const SignPoolCertTxModal = ({
         </button>
         <a
           className="review-cancel"
-          onClick={closePoolCertificateTxModal}
+          onClick={closePoolRegTransactionModal}
           ref={cancelTx}
           onKeyDown={(e) => {
             e.key === 'Enter' && (e.target as HTMLAnchorElement).click()
@@ -87,9 +91,11 @@ const SignPoolCertTxModal = ({
 }
 
 export default connect(
-  (state) => ({
-    poolCert: state.poolCertTxVars.plan
-      ? state.poolCertTxVars.plan.certificates[0].poolRegistrationParams
+  (state: State) => ({
+    poolCert: state.poolRegTransactionSummary.plan
+      ? state.poolRegTransactionSummary.plan.certificates[0].type ===
+          CertificateType.STAKEPOOL_REGISTRATION &&
+        state.poolRegTransactionSummary.plan.certificates[0].poolRegistrationParams
       : {},
   }),
   actions

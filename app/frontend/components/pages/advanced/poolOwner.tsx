@@ -7,36 +7,65 @@ import tooltip from '../../common/tooltip'
 import {getTranslation} from '../../../translations'
 import SignPoolCertTxModal from './signPoolCertTxModal'
 import {State} from '../../../state'
+import {PoolRegTransactionSummary} from '../../../../frontend/types'
+import * as cbor from 'borc'
+import {saveAs} from '../../../libs/file-saver'
+import {CborizedCliWitness} from '../../../wallet/shelley/types'
 
 interface Props {
-  loadingAction: any
-  stopLoadingAction: any
   loadPoolCertificateTx: any
+  poolRegTransactionSummary: PoolRegTransactionSummary
   poolRegTxError: any
   downloadPoolSignature: any
-  openPoolCertificateTxModal: any
-  shouldShowPoolCertSignModal: boolean
-  poolTxPlan: any
-  signature: any
+  openPoolRegTransactionModal: any
   usingHwWallet: boolean
+  resetPoolRegTransactionSummary: any
+}
+
+const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: string) => {
+  const witnessTypes = {
+    TxUnsignedShelley: 'TxWitnessShelley',
+    TxBodyAllegra: 'TxWitness AllegraEra',
+    TxBodyMary: 'TxWitness MaryEra',
+  }
+  const type = witnessTypes[txBodyType]
+  return {
+    type,
+    description: '',
+    cborHex: cbor.encode(witness).toString('hex'),
+  }
+}
+
+const downloadPoolWitness = (witness: CborizedCliWitness, txBodyType: string) => {
+  const cliFormatWitness = transformSignatureToCliFormat(witness, txBodyType)
+  const signatureExport = JSON.stringify(cliFormatWitness)
+  const blob = new Blob([signatureExport], {
+    type: 'application/json;charset=utf-8',
+  })
+  saveAs(blob, 'witness.json')
 }
 
 const PoolOwnerCard = ({
-  loadingAction,
-  stopLoadingAction,
   loadPoolCertificateTx,
+  poolRegTransactionSummary,
   poolRegTxError,
-  downloadPoolSignature,
-  openPoolCertificateTxModal,
-  shouldShowPoolCertSignModal,
-  poolTxPlan,
-  signature,
+  openPoolRegTransactionModal,
   usingHwWallet,
 }: Props) => {
+  const {
+    plan: poolTxPlan,
+    shouldShowPoolCertSignModal,
+    witness,
+    txBodyType,
+  } = poolRegTransactionSummary
   const [fileName, setFileName] = useState<string>('')
 
-  const signCertificateHandler = () => {
-    openPoolCertificateTxModal()
+  const handleTxSign = () => {
+    openPoolRegTransactionModal()
+  }
+
+  const handleDownloadWitness = () => {
+    downloadPoolWitness(witness, txBodyType)
   }
 
   const readFile = async (targetFile) => {
@@ -92,7 +121,7 @@ const PoolOwnerCard = ({
       <div className="pool-owner-content-bottom">
         <button
           disabled={!usingHwWallet || fileName === '' || !!error || !poolTxPlan}
-          onClick={signCertificateHandler}
+          onClick={handleTxSign}
           className="button primary"
           {...tooltip(
             'Please insert a valid certificate\nJSON file before proceeding.',
@@ -107,12 +136,12 @@ const PoolOwnerCard = ({
         </button>
         <button
           className="button secondary"
-          disabled={!signature} //
+          disabled={!witness} // signature
           {...tooltip(
             'You have to sign the certificate\nto be able to download it.',
-            !signature //
+            !witness // signature
           )}
-          onClick={downloadPoolSignature}
+          onClick={handleDownloadWitness}
         >
           Download signature
         </button>
@@ -144,9 +173,7 @@ const PoolOwnerCard = ({
 export default connect(
   (state: State) => ({
     poolRegTxError: state.poolRegTxError,
-    shouldShowPoolCertSignModal: state.poolCertTxVars.shouldShowPoolCertSignModal,
-    poolTxPlan: state.poolCertTxVars.plan,
-    signature: state.poolCertTxVars.signature,
+    poolRegTransactionSummary: state.poolRegTransactionSummary,
     usingHwWallet: state.usingHwWallet,
   }),
   actions

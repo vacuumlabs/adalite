@@ -1,7 +1,7 @@
 import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
 import LedgerTransportWebusb from '@ledgerhq/hw-transport-webusb'
 import Ledger, {AddressTypeNibbles} from '@cardano-foundation/ledgerjs-hw-app-cardano'
-import {encode} from 'borc'
+import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
 import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
@@ -10,7 +10,7 @@ import {hasRequiredVersion} from './helpers/version-check'
 // import {PoolParams} from './helpers/poolCertificateUtils'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
 import {captureMessage} from '@sentry/browser'
-
+import {bech32} from 'cardano-crypto.js'
 import {
   bechAddressToHex,
   isShelleyPath,
@@ -55,7 +55,7 @@ import {
   LedgerWithdrawal,
   LedgerWitness,
 } from './ledger-types'
-import {TxSigned, TxAux} from './types'
+import {TxSigned, TxAux, CborizedTxWitnesses, CborizedCliWitness} from './types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 
 const isWebUsbSupported = async () => {
@@ -259,11 +259,18 @@ const ShelleyLedgerCryptoProvider = async ({
     certificate: TxStakepoolRegistrationCert,
     path: BIP32Path
   ): LedgerCertificate {
+    const {data} = bech32.decode(certificate.stakingAddress)
+    const poolOwners = certificate.poolRegistrationParams.poolOwners.map((owner) => {
+      return !Buffer.compare(Buffer.from(owner.stakingKeyHashHex, 'hex'), data.slice(1))
+        ? {stakingPath: path}
+        : owner
+    })
     return {
       type: certificate.type,
-      // TODO: prepare pool registration params
-      poolRegistrationParams: certificate.poolRegistrationParams,
-      path,
+      poolRegistrationParams: {
+        ...certificate.poolRegistrationParams,
+        poolOwners,
+      },
     }
   }
 
@@ -302,7 +309,7 @@ const ShelleyLedgerCryptoProvider = async ({
     const chainCode = xpub2ChainCode(xpub)
     // only v1 witnesses has address atributes
     // since ledger is v2 they are always {}
-    const addressAttributes = encode({})
+    const addressAttributes = cbor.encode({})
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
     return {
       publicKey,
@@ -374,8 +381,19 @@ const ShelleyLedgerCryptoProvider = async ({
 
     return {
       txHash: response.txHashHex,
-      txBody: encode(structuredTx).toString('hex'),
+      txBody: cbor.encode(structuredTx).toString('hex'),
     }
+  }
+
+  async function witnessPoolRegTx(
+    txAux: TxAux,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): Promise<CborizedCliWitness> {
+    const txSigned = await signTx(txAux, addressToAbsPathMapper)
+    const [, witnesses]: [any, CborizedTxWitnesses] = cbor.decode(txSigned.txBody)
+    // there can be only one witness since only one signing file was passed
+    const [key, [data]] = Array.from(witnesses)[0]
+    return [key, data]
   }
 
   return {
@@ -383,6 +401,7 @@ const ShelleyLedgerCryptoProvider = async ({
     getWalletSecret,
     getDerivationScheme,
     signTx,
+    witnessPoolRegTx,
     getHdPassphrase,
     displayAddressForPath,
     deriveXpub,

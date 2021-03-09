@@ -133,7 +133,7 @@ const AdvancedPage = ({screenType}: {screenType: ScreenType}) => {
             <Keys />
           </div>
           <div className="dashboard-column">
-            {/* <PoolOwner /> */}
+            <PoolOwner />
             <div />
           </div>
         </div>

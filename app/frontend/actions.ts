@@ -1,6 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {saveAs} from './libs/file-saver'
-import {encode, decode} from 'borc'
+import {encode} from 'borc'
 import {
   sendAddressValidator,
   sendAmountValidator,
@@ -8,8 +8,8 @@ import {
   delegationPlanValidator,
   withdrawalPlanValidator,
   mnemonicValidator,
-  validatePoolRegUnsignedTx,
   tokenAmountValidator,
+  validatePoolRegUnsignedTx,
 } from './helpers/validators'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
@@ -30,12 +30,7 @@ import captureBySentry from './helpers/captureBySentry'
 import {State, GetStateFn, SetStateFn, getSourceAccountInfo} from './state'
 import ShelleyCryptoProviderFactory from './wallet/shelley/shelley-crypto-provider-factory'
 import {ShelleyWallet} from './wallet/shelley-wallet'
-import {parseUnsignedTx} from './helpers/cliParser/parser'
-import {
-  TxPlan,
-  TxPlanResult,
-  unsignedPoolTxToTxPlan,
-} from './wallet/shelley/shelley-transaction-planner'
+import {TxPlan, TxPlanResult} from './wallet/shelley/shelley-transaction-planner'
 import getDonationAddress from './helpers/getDonationAddress'
 import {localStorageVars} from './localStorage'
 import {
@@ -54,6 +49,7 @@ import {
   DelegateTransactionSummary,
 } from './types'
 import {MainTabs} from './constants'
+import {parseUnsignedTxCborHex, prepareTtl} from './helpers/cliParser/parseCborTxBody'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 
@@ -1255,46 +1251,32 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
-  /* Pool Owner */
+  /* POOL OWNER */
 
-  const deserializeTransactionFile = (file) => {
-    if (!file || !file.cborHex) {
-      throw NamedError('PoolRegInvalidFileFormat')
-    }
-
-    const unsignedTxDecoded = decode(file.cborHex)
-    const parsedTx = parseUnsignedTx(unsignedTxDecoded)
-    return parsedTx
-  }
-
-  const loadPoolCertificateTx = async (state: State, fileObj) => {
+  const loadPoolCertificateTx = async (state: State, file: string) => {
     try {
-      if (!state.usingHwWallet) {
-        throw NamedError('PoolRegNoHwWallet')
-      }
       loadingAction(state, 'Loading pool registration certificate...', {
         poolRegTxError: undefined,
       })
-      const fileJson = await JSON.parse(fileObj)
-      const deserializedTx = deserializeTransactionFile(fileJson)
-      const deserializedTxValidationError = validatePoolRegUnsignedTx(deserializedTx)
+      const {cborHex, type: txBodyType} = await JSON.parse(file)
+      const unsignedTxParsed = parseUnsignedTxCborHex(cborHex)
+      const deserializedTxValidationError = validatePoolRegUnsignedTx(unsignedTxParsed)
       if (deserializedTxValidationError) {
         throw deserializedTxValidationError
       }
-      const ownerCredentials = await wallet
-        .getAccount(state.sourceAccountIndex)
-        .getPoolOwnerCredentials()
-      const poolTxPlan: TxPlan = unsignedPoolTxToTxPlan(deserializedTx, ownerCredentials)
+      const txPlan = await wallet
+        .getAccount(state.activeAccountIndex)
+        .getPoolRegistrationTxPlan({txType: TxType.POOL_REG_OWNER, unsignedTxParsed})
       setState({
-        poolCertTxVars: {
+        poolRegTransactionSummary: {
           shouldShowPoolCertSignModal: false,
-          ttl: deserializedTx.ttl,
-          signature: null,
-          plan: poolTxPlan,
+          ttl: unsignedTxParsed.ttl,
+          witness: null,
+          plan: txPlan,
+          txBodyType,
         },
       })
     } catch (err) {
-      // err from parser
       if (err.name === 'Error') {
         err.name = 'PoolRegTxParserError'
       }
@@ -1305,39 +1287,40 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const openPoolCertificateTxModal = (state) => {
+  const openPoolRegTransactionModal = (state: State) => {
     setState({
-      poolCertTxVars: {
-        ...state.poolCertTxVars,
+      poolRegTransactionSummary: {
+        ...state.poolRegTransactionSummary,
         shouldShowPoolCertSignModal: true,
       },
     })
   }
 
-  const closePoolCertificateTxModal = (state) => {
+  const closePoolRegTransactionModal = (state: State) => {
     setState({
-      poolCertTxVars: {
-        ...state.poolCertTxVars,
+      poolRegTransactionSummary: {
+        ...state.poolRegTransactionSummary,
         shouldShowPoolCertSignModal: false,
       },
     })
   }
 
-  const resetPoolCertificateTxVars = (state) => {
+  const resetPoolRegTransactionSummary = (state: State) => {
     setState({
-      poolCertTxVars: {
+      poolRegTransactionSummary: {
         shouldShowPoolCertSignModal: false,
         ttl: 0,
-        signature: null,
+        witness: null,
         plan: null,
+        txBodyType: null,
       },
-      poolRegTxError: undefined,
+      poolRegTxError: null,
     })
   }
 
   const signPoolCertificateTx = async (state: State) => {
     try {
-      // TODO: refactor
+      // TODO: refactor feature support logic
       const supportError = wallet.ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)
       if (supportError) throw NamedError(supportError.code, {message: supportError.params.message})
       if (state.usingHwWallet) {
@@ -1348,51 +1331,26 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       }
 
       const txAux = await wallet.getAccount(state.sourceAccountIndex).prepareTxAux(
-        state.poolCertTxVars.plan, // @ts-ignore (Fix byron-shelley formats later)
-        parseInt(state.poolCertTxVars.ttl, 10)
+        state.poolRegTransactionSummary.plan,
+        prepareTtl(state.poolRegTransactionSummary.ttl)
+        // TODO: validityIntervalStart
       )
-      const signature = await wallet.getAccount(state.sourceAccountIndex).signTxAux(txAux)
+      const witness = await wallet.getAccount(state.sourceAccountIndex).witnessPoolRegTxAux(txAux)
 
       setState({
-        poolCertTxVars: {
-          ...state.poolCertTxVars,
+        poolRegTransactionSummary: {
+          ...state.poolRegTransactionSummary,
           shouldShowPoolCertSignModal: false,
-          signature,
+          witness,
         },
       })
     } catch (e) {
       debugLog(`Certificate transaction file signing failure: ${e}`)
-      resetPoolCertificateTxVars(state)
+      resetPoolRegTransactionSummary(state)
       setErrorState('poolRegTxError', e)
     } finally {
       stopLoadingAction(state, {})
     }
-  }
-
-  // TODO: move these below somewhere else since it has nothing to do with state
-
-  // vacuumlabs/cardano-hw-cli
-  const transformSignatureToCliFormat = (signedTxCborHex) => {
-    const [, witnesses] = decode(signedTxCborHex)
-    // there can be only one witness since only one signing file was passed
-    const [key, [data]]: any = Array.from(witnesses)[0]
-    // enum TxWitnessKeys
-    const type = key === 0 ? 'TxWitness AllegraEra' : 'TxWitnessByron'
-    return {
-      type,
-      description: '',
-      cborHex: encode([key, data]).toString('hex'),
-    }
-  }
-
-  const downloadPoolSignature = (state) => {
-    const cliFormatWitness = transformSignatureToCliFormat(state.poolCertTxVars.signature.txBody)
-    const signatureExport = JSON.stringify(cliFormatWitness)
-    const blob = new Blob([signatureExport], {
-      type: 'application/json;charset=utf-8',
-    })
-    saveAs(blob, 'PoolSignature.json')
-    resetPoolCertificateTxVars(state)
   }
 
   return {
@@ -1451,9 +1409,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     exploreNextAccount,
     switchSourceAndTargetAccounts,
     loadPoolCertificateTx,
-    downloadPoolSignature,
-    openPoolCertificateTxModal,
-    closePoolCertificateTxModal,
+    openPoolRegTransactionModal,
+    closePoolRegTransactionModal,
     signPoolCertificateTx,
+    resetPoolRegTransactionSummary,
   }
 }

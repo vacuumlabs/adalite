@@ -4,7 +4,7 @@ import {ADALITE_SUPPORT_EMAIL, TREZOR_ERRORS, TREZOR_VERSIONS} from '../constant
 import derivationSchemes from '../helpers/derivation-schemes'
 import NamedError from '../../helpers/NamedError'
 import debugLog from '../../helpers/debugLog'
-import {AddressTypes} from 'cardano-crypto.js'
+import {AddressTypes, bech32} from 'cardano-crypto.js'
 import {hasRequiredVersion} from './helpers/version-check'
 import {
   CryptoProvider,
@@ -37,8 +37,10 @@ import {
   TrezorTxCertificate,
   TrezorWithdrawal,
 } from './trezor-types'
-import {TxSigned, TxAux} from './types'
+import {TxSigned, TxAux, CborizedTxWitnesses, CborizedCliWitness} from './types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
+import * as cbor from 'borc'
+import {encodeAddress} from './helpers/addresses'
 
 type CryptoProviderParams = {
   network: Network
@@ -176,43 +178,62 @@ const ShelleyTrezorCryptoProvider = async ({
       }
   }
 
-  // function poolCertToTrezorFormat(cert) {
-  //   return {
-  //     poolId: cert.poolKeyHashHex,
-  //     vrfKeyHash: cert.vrfKeyHashHex,
-  //     pledge: cert.pledgeStr,
-  //     cost: cert.costStr,
-  //     margin: {
-  //       numerator: cert.margin.numeratorStr,
-  //       denominator: cert.margin.denominatorStr,
-  //     },
-  //     rewardAccount: bech32.encode('stake', Buffer.from(cert.rewardAccountHex, 'hex')),
-  //     owners: cert.poolOwners.map((owner) => ({
-  //       ...(owner.stakingKeyHashHex && {
-  //         stakingKeyHash: owner.stakingKeyHashHex,
-  //       }),
-  //       ...(owner.stakingPath && {
-  //         stakingKeyPath: owner.stakingPath,
-  //         stakingKeyHash: undefined,
-  //       }),
-  //     })),
-  //     relays: cert.relays.map((relay) => ({
-  //       type: relay.type,
-  //       ...(relay.type === 0 && {
-  //         ipv4Address: relay.params.ipv4,
-  //         ipv6Address: relay.params.ipv6,
-  //       }),
-  //       ...(relay.type < 2 && {port: relay.params.portNumber}),
-  //       ...(relay.type > 0 && {hostName: relay.params.dnsName}),
-  //     })),
-  //     metadata: cert.metadata
-  //       ? {
-  //         url: cert.metadata.metadataUrl,
-  //         hash: cert.metadata.metadataHashHex,
-  //       }
-  //       : null,
-  //   }
+  // function prepareStakepoolRegistrationOwners() {
+
+  //   owners: poolRegistrationParams.poolOwners.map((owner) => ({
+  //     ...(owner.stakingKeyHashHex && {
+  //       stakingKeyHash: owner.stakingKeyHashHex,
+  //     }),
+  //     ...(owner.stakingPath && {
+  //       stakingKeyPath: owner.stakingPath,
+  //       stakingKeyHash: undefined,
+  //     }),
+  //   })),
   // }
+
+  function preparePoolRegistrationCertificate(
+    certificate: TxStakepoolRegistrationCert,
+    path: BIP32Path
+  ): TrezorTxCertificate {
+    const {type, poolRegistrationParams} = certificate
+    const {data} = bech32.decode(certificate.stakingAddress)
+    const owners = certificate.poolRegistrationParams.poolOwners.map((owner) => {
+      // TODO: helper function stakingAddress2StakingKeyHash
+      return !Buffer.compare(Buffer.from(owner.stakingKeyHashHex, 'hex'), data.slice(1))
+        ? {stakingKeyPath: path}
+        : {stakingKeyHash: owner.stakingKeyHashHex}
+    })
+    return {
+      type,
+      poolParameters: {
+        poolId: poolRegistrationParams.poolKeyHashHex,
+        vrfKeyHash: poolRegistrationParams.vrfKeyHashHex,
+        pledge: poolRegistrationParams.pledgeStr,
+        cost: poolRegistrationParams.costStr,
+        margin: {
+          numerator: poolRegistrationParams.margin.numeratorStr,
+          denominator: poolRegistrationParams.margin.denominatorStr,
+        },
+        rewardAccount: encodeAddress(Buffer.from(poolRegistrationParams.rewardAccountHex, 'hex')),
+        owners,
+        relays: poolRegistrationParams.relays.map((relay) => ({
+          type: relay.type,
+          ...(relay.type === 0 && {
+            ipv4Address: relay.params.ipv4,
+            ipv6Address: relay.params.ipv6,
+          }),
+          ...(relay.type < 2 && {port: relay.params.portNumber}),
+          ...(relay.type > 0 && {hostName: relay.params.dnsName}),
+        })),
+        metadata: poolRegistrationParams.metadata
+          ? {
+            url: poolRegistrationParams.metadata.metadataUrl,
+            hash: poolRegistrationParams.metadata.metadataHashHex,
+          }
+          : null,
+      },
+    }
+  }
 
   function prepareStakingKeyRegistrationCertificate(
     certificate: TxStakingKeyRegistrationCert | TxStakingKeyDeregistrationCert,
@@ -235,14 +256,6 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  function preparePoolRegistrationCertificate(
-    certificate: TxStakepoolRegistrationCert,
-    path: BIP32Path
-  ): TrezorTxCertificate {
-    return null // TODO:
-  }
-
-  // TODO: refactor this to switch with prepare function for each type of certificate
   function prepareCertificate(
     certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
@@ -313,6 +326,18 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
+  async function witnessPoolRegTx(
+    txAux: TxAux,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): Promise<CborizedCliWitness> {
+    const txSigned = await signTx(txAux, addressToAbsPathMapper)
+    // TODO: extract this to function
+    const [, witnesses]: [any, CborizedTxWitnesses] = cbor.decode(txSigned.txBody)
+    // there can be only one witness since only one signing file was passed
+    const [key, [data]] = Array.from(witnesses)[0]
+    return [key, data]
+  }
+
   function getWalletSecret(): void {
     throw NamedError('UnsupportedOperationError', {message: 'Unsupported operation!'})
   }
@@ -325,6 +350,7 @@ const ShelleyTrezorCryptoProvider = async ({
     getWalletSecret,
     getDerivationScheme,
     signTx,
+    witnessPoolRegTx,
     displayAddressForPath,
     deriveXpub,
     isHwWallet,

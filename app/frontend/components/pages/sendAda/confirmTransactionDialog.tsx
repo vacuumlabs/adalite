@@ -200,6 +200,7 @@ const ConfirmTransactionDialog = ({
     [TxType.SEND_ADA]: 'Transaction review',
     [TxType.CONVERT_LEGACY]: 'Stakable balance conversion review',
     [TxType.WITHDRAW]: 'Rewards withdrawal review',
+    [TxType.POOL_REG_OWNER]: '',
     // crossAccount: 'Transaction between accounts review',
   }
   // TODO: refactor, remove txConfirmType

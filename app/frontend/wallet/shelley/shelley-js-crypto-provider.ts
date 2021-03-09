@@ -157,9 +157,18 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
   }
 
+  // eslint-disable-next-line require-await
+  async function witnessPoolRegTx(
+    txAux: TxAux,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): Promise<any> {
+    throw NamedError('UnsupportedOperation')
+  }
+
   return {
     network,
     signTx,
+    witnessPoolRegTx,
     getWalletSecret,
     getWalletName,
     getDerivationScheme,
