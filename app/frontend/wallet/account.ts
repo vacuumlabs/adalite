@@ -28,7 +28,7 @@ import {
   isUtxoProfitable,
   TxPlan,
   TxPlanResult,
-  unsignedPoolTxToTxPlan, // TODO: useless
+  unsignedPoolTxToTxPlan,
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'

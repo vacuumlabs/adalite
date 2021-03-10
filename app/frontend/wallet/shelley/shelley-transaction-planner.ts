@@ -21,9 +21,7 @@ import {
   Token,
   AssetFamily,
 } from '../../types'
-import {bech32} from 'cardano-crypto.js'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
-import {transformPoolParamsTypes} from './helpers/poolCertificateUtils'
 import {
   UTxO,
   TxCertificate,
@@ -36,12 +34,11 @@ import {
 import {aggregateTokens, formatToken} from '../helpers/tokenFormater'
 import {_UnsignedTxParsed} from '../../../frontend/helpers/cliParser/types'
 import {
-  prepareCertificates,
-  prepareFee,
-  prepareInputs,
-  prepareOutputs,
-  prepareTtl,
-  prepareWithdrawals,
+  parseCliCertificates,
+  parseCliFee,
+  parseCliInputs,
+  parseCliOutputs,
+  parseCliWithdrawals,
 } from '../../../frontend/helpers/cliParser/parseCborTxBody'
 
 type TxPlanDraft = {
@@ -462,18 +459,19 @@ export const selectMinimalTxPlan = (
   }
 }
 
+// TODO: we should move this somewhere else
 export const unsignedPoolTxToTxPlan = (
   unsignedTx: _UnsignedTxParsed,
   stakingAddress: Address
 ): TxPlan => {
   return {
-    inputs: prepareInputs(unsignedTx.inputs),
-    outputs: prepareOutputs(unsignedTx.outputs),
+    inputs: parseCliInputs(unsignedTx.inputs),
+    outputs: parseCliOutputs(unsignedTx.outputs),
     change: null,
-    certificates: prepareCertificates(unsignedTx.certificates, stakingAddress),
+    certificates: parseCliCertificates(unsignedTx.certificates, stakingAddress),
     deposit: 0 as Lovelace,
     additionalLovelaceAmount: 0 as Lovelace,
-    fee: prepareFee(unsignedTx.fee) as Lovelace,
-    withdrawals: prepareWithdrawals(unsignedTx.withdrawals, stakingAddress),
+    fee: parseCliFee(unsignedTx.fee) as Lovelace,
+    withdrawals: parseCliWithdrawals(unsignedTx.withdrawals, stakingAddress),
   }
 }

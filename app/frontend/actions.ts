@@ -49,7 +49,11 @@ import {
   DelegateTransactionSummary,
 } from './types'
 import {MainTabs} from './constants'
-import {parseUnsignedTxCborHex, prepareTtl} from './helpers/cliParser/parseCborTxBody'
+import {
+  parseCliUnsignedTxCborHex,
+  parseCliTtl,
+  parseCliValidityIntervalStart,
+} from './helpers/cliParser/parseCborTxBody'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 
@@ -1259,7 +1263,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         poolRegTxError: undefined,
       })
       const {cborHex, type: txBodyType} = await JSON.parse(file)
-      const unsignedTxParsed = parseUnsignedTxCborHex(cborHex)
+      const unsignedTxParsed = parseCliUnsignedTxCborHex(cborHex)
       const deserializedTxValidationError = validatePoolRegUnsignedTx(unsignedTxParsed)
       if (deserializedTxValidationError) {
         throw deserializedTxValidationError
@@ -1332,7 +1336,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
       const txAux = await wallet.getAccount(state.sourceAccountIndex).prepareTxAux(
         state.poolRegTransactionSummary.plan,
-        prepareTtl(state.poolRegTransactionSummary.ttl)
+        parseCliTtl(state.poolRegTransactionSummary.ttl)
         // TODO: validityIntervalStart
       )
       const witness = await wallet.getAccount(state.sourceAccountIndex).witnessPoolRegTxAux(txAux)
