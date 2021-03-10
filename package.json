@@ -1,6 +1,6 @@
 {
   "name": "cardano",
-  "version": "6.1.4",
+  "version": "6.2.0",
   "engines": {
     "node": "11.10"
   },
