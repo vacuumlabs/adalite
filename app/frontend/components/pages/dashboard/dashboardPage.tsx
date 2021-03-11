@@ -20,7 +20,7 @@ import SaturationErrorBanner from './saturationErrorBanner'
 import Keys from '../advanced/keys'
 import AccountsDashboard from '../accounts/accountsDashboard'
 import {State} from '../../../state'
-import PoolOwner from '../advanced/poolOwner'
+// import PoolOwner from '../advanced/poolOwner'
 import ErrorModals from './errorModals'
 import {useState} from 'preact/hooks'
 import {SubTabs, MainTabs} from '../../../constants'
@@ -65,7 +65,7 @@ const SendingPage = ({
   shouldShowExportOption: boolean
   screenType: ScreenType
 }) => {
-  const subTabs = [SubTabs.SEND_ADA, SubTabs.TRANSACTIONS, SubTabs.ADDRESSES]
+  const subTabs = [SubTabs.SEND_ADA, SubTabs.TRANSACTIONS, SubTabs.MY_ADDRESSES_REDIRECT]
   const defaultSubTab = SubTabs.TRANSACTIONS
   const mainSubTab = SubTabs.BALANCE
   return (
@@ -114,8 +114,8 @@ const ReceivePage = ({screenType}: {screenType: ScreenType}) => {
 }
 
 const AdvancedPage = ({screenType}: {screenType: ScreenType}) => {
-  const subTabs = [SubTabs.POOL_OWNER]
-  const defaultSubTab = SubTabs.POOL_OWNER
+  const subTabs = []
+  const defaultSubTab = null
   const mainSubTab = SubTabs.KEYS
   return (
     <Fragment>
@@ -169,9 +169,10 @@ const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.ADDRESSES]: <MyAddresses />,
   [SubTabs.KEYS]: <Keys />,
   [SubTabs.ACCOUNTS]: <AccountsDashboard />,
-  [SubTabs.POOL_OWNER]: <PoolOwner />,
+  // [SubTabs.POOL_OWNER]: <PoolOwner />,
   [SubTabs.BALANCE]: <Balance />,
   [SubTabs.SHELLEY_BALANCES]: <ShelleyBalances />,
+  [SubTabs.MY_ADDRESSES_REDIRECT]: <ReceiveRedirect />,
 }
 
 type Props = {
