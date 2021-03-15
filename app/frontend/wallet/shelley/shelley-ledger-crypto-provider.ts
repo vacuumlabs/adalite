@@ -4,10 +4,13 @@ import Ledger, {AddressTypeNibbles} from '@cardano-foundation/ledgerjs-hw-app-ca
 import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import debugLog from '../../helpers/debugLog'
-import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
+import {
+  ShelleySignedTransactionStructured,
+  cborizeTxWitnesses,
+  cborizeCliWitness,
+} from './shelley-transaction'
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
-// import {PoolParams} from './helpers/poolCertificateUtils'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
 import {captureMessage} from '@sentry/browser'
 import {bech32} from 'cardano-crypto.js'
@@ -55,7 +58,7 @@ import {
   LedgerWithdrawal,
   LedgerWitness,
 } from './ledger-types'
-import {TxSigned, TxAux, CborizedTxWitnesses, CborizedCliWitness} from './types'
+import {TxSigned, TxAux, CborizedCliWitness} from './types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 
 const isWebUsbSupported = async () => {
@@ -263,8 +266,13 @@ const ShelleyLedgerCryptoProvider = async ({
     const poolOwners = certificate.poolRegistrationParams.poolOwners.map((owner) => {
       return !Buffer.compare(Buffer.from(owner.stakingKeyHashHex, 'hex'), data.slice(1))
         ? {stakingPath: path}
-        : owner
+        : {...owner}
     })
+    if (!poolOwners.some((owner) => owner.stakingPath)) {
+      throw NamedError('MissingOwner', {
+        message: 'This HW device is not an owner of the pool stated in registration certificate.',
+      })
+    }
     return {
       type: certificate.type,
       poolRegistrationParams: {
@@ -357,6 +365,10 @@ const ShelleyLedgerCryptoProvider = async ({
       prepareWithdrawal(withdrawal, addressToAbsPathMapper)
     )
 
+    const validityIntervalStart = txAux.validityIntervalStart
+      ? `${txAux.validityIntervalStart}`
+      : null
+
     const response: LedgerSignTransactionResponse = await ledger.signTransaction(
       network.networkId,
       network.protocolMagic,
@@ -365,7 +377,9 @@ const ShelleyLedgerCryptoProvider = async ({
       feeStr,
       ttlStr,
       certificates,
-      withdrawals
+      withdrawals,
+      null,
+      validityIntervalStart
     )
 
     if (response.txHashHex !== txAux.getId()) {
@@ -390,10 +404,7 @@ const ShelleyLedgerCryptoProvider = async ({
     addressToAbsPathMapper: AddressToPathMapper
   ): Promise<CborizedCliWitness> {
     const txSigned = await signTx(txAux, addressToAbsPathMapper)
-    const [, witnesses]: [any, CborizedTxWitnesses] = cbor.decode(txSigned.txBody)
-    // there can be only one witness since only one signing file was passed
-    const [key, [data]] = Array.from(witnesses)[0]
-    return [key, data]
+    return cborizeCliWitness(txSigned)
   }
 
   return {

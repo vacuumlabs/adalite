@@ -37,10 +37,12 @@ import {
   TrezorTxCertificate,
   TrezorWithdrawal,
 } from './trezor-types'
-import {TxSigned, TxAux, CborizedTxWitnesses, CborizedCliWitness} from './types'
+import {TxSigned, TxAux, CborizedCliWitness} from './types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
-import * as cbor from 'borc'
 import {encodeAddress} from './helpers/addresses'
+import {TxRelayType, TxStakepoolRelay} from './helpers/poolCertificateUtils'
+import {cborizeCliWitness} from './shelley-transaction'
+import {removeNullFields} from '../../helpers/removeNullFiels'
 
 type CryptoProviderParams = {
   network: Network
@@ -178,18 +180,32 @@ const ShelleyTrezorCryptoProvider = async ({
       }
   }
 
-  // function prepareStakepoolRegistrationOwners() {
-
-  //   owners: poolRegistrationParams.poolOwners.map((owner) => ({
-  //     ...(owner.stakingKeyHashHex && {
-  //       stakingKeyHash: owner.stakingKeyHashHex,
-  //     }),
-  //     ...(owner.stakingPath && {
-  //       stakingKeyPath: owner.stakingPath,
-  //       stakingKeyHash: undefined,
-  //     }),
-  //   })),
-  // }
+  function prepareStakepoolRelays(relays: TxStakepoolRelay[]) {
+    return relays.map((relay) => {
+      switch (relay.type) {
+        case TxRelayType.SINGLE_HOST_IP:
+          return {
+            type: relay.type,
+            ipv4Address: relay.params.ipv4,
+            ipv6Address: relay.params.ipv6,
+            port: relay.params.portNumber,
+          }
+        case TxRelayType.SINGLE_HOST_NAME:
+          return {
+            type: relay.type,
+            port: relay.params.portNumber,
+            hostName: relay.params.dnsName,
+          }
+        case TxRelayType.MULTI_HOST_NAME:
+          return {
+            type: relay.type,
+            hostName: relay.params.dnsName,
+          }
+        default:
+          throw NamedError('InvalidRelayType')
+      }
+    })
+  }
 
   function preparePoolRegistrationCertificate(
     certificate: TxStakepoolRegistrationCert,
@@ -203,6 +219,11 @@ const ShelleyTrezorCryptoProvider = async ({
         ? {stakingKeyPath: path}
         : {stakingKeyHash: owner.stakingKeyHashHex}
     })
+    if (!owners.some((owner) => owner.stakingKeyPath)) {
+      throw NamedError('MissingOwner', {
+        message: 'This HW device is not an owner of the pool stated in registration certificate.',
+      })
+    }
     return {
       type,
       poolParameters: {
@@ -216,15 +237,7 @@ const ShelleyTrezorCryptoProvider = async ({
         },
         rewardAccount: encodeAddress(Buffer.from(poolRegistrationParams.rewardAccountHex, 'hex')),
         owners,
-        relays: poolRegistrationParams.relays.map((relay) => ({
-          type: relay.type,
-          ...(relay.type === 0 && {
-            ipv4Address: relay.params.ipv4,
-            ipv6Address: relay.params.ipv6,
-          }),
-          ...(relay.type < 2 && {port: relay.params.portNumber}),
-          ...(relay.type > 0 && {hostName: relay.params.dnsName}),
-        })),
+        relays: prepareStakepoolRelays(poolRegistrationParams.relays),
         metadata: poolRegistrationParams.metadata
           ? {
             url: poolRegistrationParams.metadata.metadataUrl,
@@ -298,16 +311,23 @@ const ShelleyTrezorCryptoProvider = async ({
       prepareWithdrawal(withdrawal, addressToAbsPathMapper)
     )
 
-    const response: TrezorSignTxResponse = await TrezorConnect.cardanoSignTransaction({
-      inputs,
-      outputs,
-      protocolMagic: network.protocolMagic,
-      fee,
-      ttl,
-      networkId: network.networkId,
-      certificates,
-      withdrawals,
-    })
+    const validityIntervalStart = txAux.validityIntervalStart
+      ? `${txAux.validityIntervalStart}`
+      : null
+
+    const response: TrezorSignTxResponse = await TrezorConnect.cardanoSignTransaction(
+      removeNullFields({
+        inputs,
+        outputs,
+        protocolMagic: network.protocolMagic,
+        fee,
+        ttl,
+        networkId: network.networkId,
+        certificates,
+        withdrawals,
+        validityIntervalStart,
+      })
+    )
 
     if (response.success === false) {
       debugLog(response)
@@ -331,11 +351,7 @@ const ShelleyTrezorCryptoProvider = async ({
     addressToAbsPathMapper: AddressToPathMapper
   ): Promise<CborizedCliWitness> {
     const txSigned = await signTx(txAux, addressToAbsPathMapper)
-    // TODO: extract this to function
-    const [, witnesses]: [any, CborizedTxWitnesses] = cbor.decode(txSigned.txBody)
-    // there can be only one witness since only one signing file was passed
-    const [key, [data]] = Array.from(witnesses)[0]
-    return [key, data]
+    return cborizeCliWitness(txSigned)
   }
 
   function getWalletSecret(): void {

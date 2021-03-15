@@ -15,7 +15,7 @@ export enum SubTabs {
   ADDRESSES = 'Receive',
   KEYS = 'Keys',
   ACCOUNTS = 'Accounts',
-  // POOL_OWNER = 'Pool registration',
+  POOL_OWNER = 'Pool registration',
   MY_ADDRESSES_REDIRECT = 'Receive ADA',
   BALANCE = 'Balance',
   SHELLEY_BALANCES = 'Shelley Balances',

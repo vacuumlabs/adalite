@@ -32,7 +32,6 @@
     "@sentry/browser": "5.22.3",
     "@types/lodash": "^4.14.168",
     "babel-regenerator-runtime": "^6.5.0",
-    "bignumber": "^1.1.0",
     "bip39-light": "^1.0.7",
     "borc": "^2.1.2",
     "cardano-crypto.js": "^6.0.0",

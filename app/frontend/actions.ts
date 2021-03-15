@@ -9,7 +9,6 @@ import {
   withdrawalPlanValidator,
   mnemonicValidator,
   tokenAmountValidator,
-  validatePoolRegUnsignedTx,
 } from './helpers/validators'
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
@@ -49,11 +48,7 @@ import {
   DelegateTransactionSummary,
 } from './types'
 import {MainTabs} from './constants'
-import {
-  parseCliUnsignedTxCborHex,
-  parseCliTtl,
-  parseCliValidityIntervalStart,
-} from './helpers/cliParser/parseCborTxBody'
+import {parseCliUnsignedTx} from './wallet/shelley/helpers/stakepoolRegistrationUtils'
 
 let wallet: ReturnType<typeof ShelleyWallet>
 
@@ -1257,35 +1252,30 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   /* POOL OWNER */
 
-  const loadPoolCertificateTx = async (state: State, file: string) => {
+  const loadPoolCertificateTx = async (state: State, fileContentStr: string) => {
     try {
       loadingAction(state, 'Loading pool registration certificate...', {
         poolRegTxError: undefined,
       })
-      const {cborHex, type: txBodyType} = await JSON.parse(file)
-      const unsignedTxParsed = parseCliUnsignedTxCborHex(cborHex)
-      const deserializedTxValidationError = validatePoolRegUnsignedTx(unsignedTxParsed)
-      if (deserializedTxValidationError) {
-        throw deserializedTxValidationError
-      }
+      const {txBodyType, unsignedTxParsed, ttl, validityIntervalStart} = parseCliUnsignedTx(
+        fileContentStr
+      )
       const txPlan = await wallet
         .getAccount(state.activeAccountIndex)
         .getPoolRegistrationTxPlan({txType: TxType.POOL_REG_OWNER, unsignedTxParsed})
       setState({
         poolRegTransactionSummary: {
           shouldShowPoolCertSignModal: false,
-          ttl: unsignedTxParsed.ttl,
+          ttl,
+          validityIntervalStart,
           witness: null,
           plan: txPlan,
           txBodyType,
         },
       })
     } catch (err) {
-      if (err.name === 'Error') {
-        err.name = 'PoolRegTxParserError'
-      }
       debugLog(`Certificate file parsing failure: ${err}`)
-      setErrorState('poolRegTxError', err)
+      setErrorState('poolRegTxError', {name: 'PoolRegTxParserError', message: err.message})
     } finally {
       stopLoadingAction(state, {})
     }
@@ -1313,7 +1303,8 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       poolRegTransactionSummary: {
         shouldShowPoolCertSignModal: false,
-        ttl: 0,
+        ttl: null,
+        validityIntervalStart: null,
         witness: null,
         plan: null,
         txBodyType: null,
@@ -1334,11 +1325,11 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         throw NamedError('PoolRegNoHwWallet')
       }
 
-      const txAux = await wallet.getAccount(state.sourceAccountIndex).prepareTxAux(
-        state.poolRegTransactionSummary.plan,
-        parseCliTtl(state.poolRegTransactionSummary.ttl)
-        // TODO: validityIntervalStart
-      )
+      const {plan, ttl, validityIntervalStart} = state.poolRegTransactionSummary
+
+      const txAux = await wallet
+        .getAccount(state.sourceAccountIndex)
+        .prepareTxAux(plan, ttl, validityIntervalStart)
       const witness = await wallet.getAccount(state.sourceAccountIndex).witnessPoolRegTxAux(txAux)
 
       setState({

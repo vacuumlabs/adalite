@@ -1,4 +1,5 @@
 import {BIP32Path, CertificateType, Lovelace, Token, Address} from '../types'
+import {TxPoolParams} from './shelley/helpers/poolCertificateUtils'
 
 export const enum NetworkId {
   MAINNET = 1,
@@ -96,27 +97,4 @@ export type TxByronWitness = {
   signature: Buffer
   chainCode: Buffer
   addressAttributes: any // TODO:
-}
-
-export type TxPoolParams = {
-  poolKeyHashHex: string // Hex
-  vrfKeyHashHex: string
-  pledgeStr: string
-  costStr: string
-  margin: {
-    numeratorStr: string
-    denominatorStr: string
-  }
-  rewardAccountHex: string
-  poolOwners: {
-    stakingKeyHashHex: string
-  }[]
-  relays: {
-    type: any
-    params: any
-  }[]
-  metadata: {
-    metadataUrl: any
-    metadataHashHex: string
-  }
 }

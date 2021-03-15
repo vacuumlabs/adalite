@@ -218,7 +218,8 @@ const initialState: State = {
   // pool registration
   poolRegTransactionSummary: {
     shouldShowPoolCertSignModal: false,
-    ttl: 0,
+    ttl: null,
+    validityIntervalStart: null,
     witness: null,
     plan: null,
     txBodyType: null,

@@ -97,7 +97,7 @@ describe('Tx plan', () => {
 
 describe('TxAux', () => {
   Object.entries(transactionSettings).forEach(([name, setting]) =>
-    it(`should calcualte the right tx hash for tx with ${name}`, async () => {
+    it(`should calculate the right tx hash for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
       const txHash = (await account.prepareTxAux(setting.txPlanResult.txPlan, setting.ttl)).getId()
       assert.deepEqual(txHash, setting.txHash)

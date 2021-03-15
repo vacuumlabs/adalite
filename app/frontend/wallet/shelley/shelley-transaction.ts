@@ -1,7 +1,6 @@
 import * as cbor from 'borc'
 import {blake2b, base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat} from './helpers/addresses'
-// import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
 import {
   TxByronWitness,
   TxCertificate,
@@ -35,23 +34,44 @@ import {
   CborizedTxStakingKeyDeregistrationCert,
   CborizedTxDelegationCert,
   CborizedTxStakepoolRegistrationCert,
+  TxSigned,
+  CborizedCliWitness,
 } from './types'
 import {CertificateType, HexString, Token} from '../../types'
 import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 import NamedError from '../../helpers/NamedError'
-import {ipv4AddressToBuf, ipv6AddressToBuf} from './helpers/poolCertificateUtils'
+import {ipv4AddressToBuf, ipv6AddressToBuf, TxRelayType} from './helpers/poolCertificateUtils'
 
-function ShelleyTxAux(
-  inputs: TxInput[],
-  outputs: TxOutput[],
-  fee: number,
-  ttl: number,
-  certificates: TxCertificate[],
+function ShelleyTxAux({
+  inputs,
+  outputs,
+  fee,
+  ttl,
+  certificates,
+  withdrawals,
+  validityIntervalStart,
+}: {
+  inputs: TxInput[]
+  outputs: TxOutput[]
+  fee: number
+  ttl: number
+  certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
-): TxAux {
+  validityIntervalStart: number
+}): TxAux {
   function getId() {
     return blake2b(
-      cbor.encode(ShelleyTxAux(inputs, outputs, fee, ttl, certificates, withdrawals)),
+      cbor.encode(
+        ShelleyTxAux({
+          inputs,
+          outputs,
+          fee,
+          ttl,
+          certificates,
+          withdrawals,
+          validityIntervalStart,
+        })
+      ),
       32
     ).toString('hex')
   }
@@ -61,12 +81,17 @@ function ShelleyTxAux(
     txBody.set(TxBodyKey.INPUTS, cborizeTxInputs(inputs))
     txBody.set(TxBodyKey.OUTPUTS, cborizeTxOutputs(outputs))
     txBody.set(TxBodyKey.FEE, fee)
-    txBody.set(TxBodyKey.TTL, ttl)
+    if (ttl !== null) {
+      txBody.set(TxBodyKey.TTL, ttl)
+    }
     if (certificates.length) {
       txBody.set(TxBodyKey.CERTIFICATES, cborizeTxCertificates(certificates))
     }
     if (withdrawals.length) {
       txBody.set(TxBodyKey.WITHDRAWALS, cborizeTxWithdrawals(withdrawals))
+    }
+    if (validityIntervalStart !== null) {
+      txBody.set(TxBodyKey.VALIDITY_INTERVAL_START, validityIntervalStart)
     }
     return encoder.pushAny(txBody)
   }
@@ -79,6 +104,7 @@ function ShelleyTxAux(
     ttl,
     certificates,
     withdrawals,
+    validityIntervalStart,
     encodeCBOR,
   }
 }
@@ -174,18 +200,17 @@ function cborizeStakepoolRegistrationCert(
       return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
     }),
     poolRegistrationParams.relays.map((relay) => {
-      // TODO: enum for relays
       switch (relay.type) {
-        case 0:
+        case TxRelayType.SINGLE_HOST_IP:
           return [
             relay.type,
             relay.params.portNumber,
             relay.params.ipv4 ? ipv4AddressToBuf(relay.params.ipv4) : null,
             relay.params.ipv6 ? ipv6AddressToBuf(relay.params.ipv6) : null,
           ]
-        case 1:
+        case TxRelayType.SINGLE_HOST_NAME:
           return [relay.type, relay.params.portNumber, relay.params.dnsName]
-        case 2:
+        case TxRelayType.MULTI_HOST_NAME:
           return [relay.type, relay.params.dnsName]
         default:
           return []
@@ -281,6 +306,13 @@ function ShelleySignedTransactionStructured(
   }
 }
 
+function cborizeCliWitness(txSigned: TxSigned): CborizedCliWitness {
+  const [, witnesses]: [any, CborizedTxWitnesses] = cbor.decode(txSigned.txBody)
+  // there can be only one witness since only one signing file was passed
+  const [key, [data]] = Array.from(witnesses)[0]
+  return [key, data]
+}
+
 export {
   ShelleyTxAux,
   cborizeTxWitnesses,
@@ -291,4 +323,5 @@ export {
   cborizeTxCertificates,
   cborizeTxWithdrawals,
   cborizeSingleTxOutput,
+  cborizeCliWitness,
 }

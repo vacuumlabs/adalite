@@ -32,14 +32,6 @@ import {
   TxWithdrawal,
 } from '../types'
 import {aggregateTokens, formatToken} from '../helpers/tokenFormater'
-import {_UnsignedTxParsed} from '../../../frontend/helpers/cliParser/types'
-import {
-  parseCliCertificates,
-  parseCliFee,
-  parseCliInputs,
-  parseCliOutputs,
-  parseCliWithdrawals,
-} from '../../../frontend/helpers/cliParser/parseCborTxBody'
 
 type TxPlanDraft = {
   outputs: TxOutput[]
@@ -456,22 +448,5 @@ export const selectMinimalTxPlan = (
           : 0,
       0
     ) as Lovelace,
-  }
-}
-
-// TODO: we should move this somewhere else
-export const unsignedPoolTxToTxPlan = (
-  unsignedTx: _UnsignedTxParsed,
-  stakingAddress: Address
-): TxPlan => {
-  return {
-    inputs: parseCliInputs(unsignedTx.inputs),
-    outputs: parseCliOutputs(unsignedTx.outputs),
-    change: null,
-    certificates: parseCliCertificates(unsignedTx.certificates, stakingAddress),
-    deposit: 0 as Lovelace,
-    additionalLovelaceAmount: 0 as Lovelace,
-    fee: parseCliFee(unsignedTx.fee) as Lovelace,
-    withdrawals: parseCliWithdrawals(unsignedTx.withdrawals, stakingAddress),
   }
 }

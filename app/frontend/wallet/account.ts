@@ -28,7 +28,6 @@ import {
   isUtxoProfitable,
   TxPlan,
   TxPlanResult,
-  unsignedPoolTxToTxPlan,
 } from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
@@ -43,6 +42,7 @@ import {TxAux} from './shelley/types'
 import {UTxO, TxOutput} from './types'
 import {aggregateTokens} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
+import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
 
 const DummyAddressManager = () => {
   return {
@@ -224,7 +224,7 @@ const Account = ({
     }
   }
 
-  async function prepareTxAux(txPlan: TxPlan, ttl?: number) {
+  async function prepareTxAux(txPlan: TxPlan, ttl?: number, validityIntervalStart?: number) {
     const {inputs, outputs, change, fee, certificates, withdrawals} = txPlan
     const txOutputs = [...outputs]
     if (change) {
@@ -238,8 +238,18 @@ const Account = ({
       }
       txOutputs.push(changeOutput)
     }
-    const txTtl = !ttl ? await calculateTtl() : ttl
-    return ShelleyTxAux(inputs, txOutputs, fee, txTtl, certificates, withdrawals)
+    // tll is null if it's deliberately empty
+    const txTtl = ttl === undefined ? await calculateTtl() : ttl
+    const txValidityIntervalStart = validityIntervalStart ?? null
+    return ShelleyTxAux({
+      inputs,
+      outputs: txOutputs,
+      fee,
+      ttl: txTtl,
+      certificates,
+      withdrawals,
+      validityIntervalStart: txValidityIntervalStart,
+    })
   }
 
   async function signTxAux(txAux: TxAux) {
@@ -474,19 +484,6 @@ const Account = ({
     return unsignedPoolTxToTxPlan(poolRegistrationArgs.unsignedTxParsed, stakingAddress)
   }
 
-  async function getPoolOwnerCredentials() {
-    const stakingAddress = await myAddresses.getStakingAddress()
-    const path = myAddresses.fixedPathMapper()(stakingAddress)
-    // TODO: this is not pubkeyHex, its staking address hex
-    const pubKeyHex = bechAddressToHex(stakingAddress)
-    return {
-      pubKeyHex: Buffer.from(pubKeyHex, 'hex')
-        .slice(1)
-        .toString('hex'),
-      path,
-    }
-  }
-
   return {
     signTxAux,
     witnessPoolRegTxAux,
@@ -503,7 +500,6 @@ const Account = ({
     getAccountInfo,
     getStakingInfo,
     getPoolInfo,
-    getPoolOwnerCredentials,
     accountIndex,
     getPoolRecommendation,
     isAccountUsed,

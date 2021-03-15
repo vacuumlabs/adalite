@@ -22,12 +22,14 @@ interface Props {
   resetPoolRegTransactionSummary: any
 }
 
+// TODO: this should defined somewhere in cli tool
+const witnessTypes = {
+  TxUnsignedShelley: 'TxWitnessShelley',
+  TxBodyAllegra: 'TxWitness AllegraEra',
+  TxBodyMary: 'TxWitness MaryEra',
+}
+
 const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: string) => {
-  const witnessTypes = {
-    TxUnsignedShelley: 'TxWitnessShelley',
-    TxBodyAllegra: 'TxWitness AllegraEra',
-    TxBodyMary: 'TxWitness MaryEra',
-  }
   const type = witnessTypes[txBodyType]
   return {
     type,
@@ -136,11 +138,8 @@ const PoolOwnerCard = ({
         </button>
         <button
           className="button secondary"
-          disabled={!witness} // signature
-          {...tooltip(
-            'You have to sign the certificate\nto be able to download it.',
-            !witness // signature
-          )}
+          disabled={!witness}
+          {...tooltip('You have to sign the certificate\nto be able to download it.', !witness)}
           onClick={handleDownloadWitness}
         >
           Download signature

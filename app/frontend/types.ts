@@ -314,7 +314,8 @@ export type DelegateTransactionSummary = {
 
 export type PoolRegTransactionSummary = {
   shouldShowPoolCertSignModal: boolean
-  ttl: any
+  ttl: number | null
+  validityIntervalStart: number | null
   witness: CborizedCliWitness
   plan: TxPlan
   txBodyType: string

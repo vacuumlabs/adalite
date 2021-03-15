@@ -20,7 +20,7 @@ import SaturationErrorBanner from './saturationErrorBanner'
 import Keys from '../advanced/keys'
 import AccountsDashboard from '../accounts/accountsDashboard'
 import {State} from '../../../state'
-// import PoolOwner from '../advanced/poolOwner'
+import PoolOwner from '../advanced/poolOwner'
 import ErrorModals from './errorModals'
 import {useState} from 'preact/hooks'
 import {SubTabs, MainTabs} from '../../../constants'
@@ -169,7 +169,7 @@ const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.ADDRESSES]: <MyAddresses />,
   [SubTabs.KEYS]: <Keys />,
   [SubTabs.ACCOUNTS]: <AccountsDashboard />,
-  // [SubTabs.POOL_OWNER]: <PoolOwner />,
+  [SubTabs.POOL_OWNER]: <PoolOwner />,
   [SubTabs.BALANCE]: <Balance />,
   [SubTabs.SHELLEY_BALANCES]: <ShelleyBalances />,
   [SubTabs.MY_ADDRESSES_REDIRECT]: <ReceiveRedirect />,

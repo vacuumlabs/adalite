@@ -156,7 +156,7 @@ const translations = {
   PoolRegNoHwWallet: () => 'Only hardware wallet users can use this feature.',
   PoolRegNoTtl: () =>
     'TTL parameter is missing in the transaction. It is explicitly required even for the Allegra era.',
-  PoolRegTxParserError: ({message}) => `Parser error: ${message}`,
+  PoolRegTxParserError: ({message}) => `Parser error: Invalid transaction format. ${message}`,
   InvalidDataProviderInitilization: () => 'Invalid data provider initilization',
 
   Error: ({message}) => {

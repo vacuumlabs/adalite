@@ -1,6 +1,28 @@
-import {_Margin, _PoolRelay, _StakepoolRegistrationCert} from '../../../helpers/cliParser/types'
+import {
+  TxRelayTypes,
+  _Margin,
+  _PoolRelay,
+  _StakepoolRegistrationCert,
+} from '../../../helpers/cliParser/types'
 import NamedError from '../../../helpers/NamedError'
-import {TxPoolParams} from '../../types'
+
+export type TxPoolParams = {
+  poolKeyHashHex: string // Hex
+  vrfKeyHashHex: string
+  pledgeStr: string
+  costStr: string
+  margin: TxStakepoolMargin
+  rewardAccountHex: string
+  poolOwners: TxStakepoolOwner[]
+  relays: TxStakepoolRelay[]
+  metadata: TxStakepoolMetadata
+}
+
+export const enum TxRelayType {
+  SINGLE_HOST_IP = 0,
+  SINGLE_HOST_NAME = 1,
+  MULTI_HOST_NAME = 2,
+}
 
 const enum PoolParamsByteLengths {
   POOL_HASH = 28,
@@ -12,68 +34,73 @@ const enum PoolParamsByteLengths {
   METADATA_HASH = 32,
 }
 
-export type PoolOwnerParams = {
-  stakingPath?: any //BIP32Path
+type TxStakepoolOwner = {
   stakingKeyHashHex?: string
 }
 
-export type SingleHostIPRelay = {
-  portNumber?: number
-  ipv4?: string
-  ipv6?: string
+export type TxStakepoolRelay = SingleHostIPRelay | SingleHostNameRelay | MultiHostNameRelay
+
+type SingleHostIPRelay = {
+  type: TxRelayType.SINGLE_HOST_IP
+  params: {
+    portNumber?: number
+    ipv4?: string
+    ipv6?: string
+  }
 }
 
-export type SingleHostNameRelay = {
-  portNumber?: number
-  dnsName: string
+type SingleHostNameRelay = {
+  type: TxRelayType.SINGLE_HOST_NAME
+  params: {
+    portNumber?: number
+    dnsName: string
+  }
 }
 
-export type MultiHostNameRelay = {
-  dnsName: string
+type MultiHostNameRelay = {
+  type: TxRelayType.MULTI_HOST_NAME
+  params: {
+    dnsName: string
+  }
 }
 
-export type RelayParams = {
-  type: number // single host ip = 0, single hostname = 1, multi host name = 2
-  params: SingleHostIPRelay | SingleHostNameRelay | MultiHostNameRelay
-}
-
-export type PoolMetadataParams = {
+type TxStakepoolMetadata = {
   metadataUrl: string
   metadataHashHex: string
 }
 
-export type Margin = {
+type TxStakepoolMargin = {
   numeratorStr: string
   denominatorStr: string
 }
 
-export type PoolParams = {
-  poolKeyHashHex: string
-  vrfKeyHashHex: string
-  pledgeStr: string
-  costStr: string
-  margin: Margin
-  rewardAccountHex: string
-  poolOwners: Array<PoolOwnerParams>
-  relays: Array<RelayParams>
-  metadata: PoolMetadataParams
+// TODO: remove when migrating to BigInt
+// cli tool supports bigint and adalite doesnt so we need to restrict it
+export const ensureIsSafeInt = (value: BigInt | number, variableName: string): number => {
+  const valueType = typeof value
+  if (valueType !== 'bigint' && valueType !== 'number') {
+    throw Error(`${variableName} has invalid type ${valueType}.`)
+  }
+  const valueNumber = Number(value)
+  if (!Number.isInteger(valueNumber)) {
+    throw Error(`${variableName} is not a valid integer.`)
+  }
+  if (valueNumber > Number.MAX_SAFE_INTEGER || valueNumber < Number.MIN_SAFE_INTEGER) {
+    throw Error(
+      `${variableName} value is too big. Numbers bigger than ${Number.MAX_SAFE_INTEGER} are not supported.`
+    )
+  }
+  return valueNumber
 }
 
-const buf2hexLengthCheck = (buffer, correctByteLength, variableName) => {
+const buf2hexLengthCheck = (buffer: Buffer, correctByteLength: number, variableName: string) => {
   if (!Buffer.isBuffer(buffer) || Buffer.byteLength(buffer) !== correctByteLength) {
     throw NamedError('PoolRegIncorrectBufferLength', {message: variableName})
   }
   return buffer.toString('hex')
 }
 
-const checkedNumber = <T>(number: T, variableName): T => number //{
-//   if (!Number.isInteger(number)) {
-//     throw NamedError('PoolRegInvalidNumber', {message: variableName})
-//   }
-//   return number
-// }
-
-const transformPoolOwners = (poolOwners) => {
+const parseStakepoolOwners = (poolOwners: Buffer[]): TxStakepoolOwner[] => {
   const hexOwners: Array<string> = poolOwners.map((owner) =>
     buf2hexLengthCheck(owner, PoolParamsByteLengths.OWNER, 'Owner key hash')
   )
@@ -82,27 +109,18 @@ const transformPoolOwners = (poolOwners) => {
     throw NamedError('PoolRegDuplicateOwners')
   }
 
-  const transformedOwners = hexOwners.map((owner) => {
-    // if (owner === ownerCredentials.pubKeyHex) {
-    //   isWalletTheOwner = true
-    //   return {
-    //     stakingPath: ownerCredentials.path,
-    //     pubKeyHex: ownerCredentials.pubKeyHex, // retain key hex for inverse operation
-    //   }
-    // }
+  return hexOwners.map((owner) => {
     return {stakingKeyHashHex: owner}
   })
-
-  return transformedOwners
 }
 
-const transformMargin = (marginObj: _Margin) => {
+const parseStakepoolMargin = (marginObj: _Margin): TxStakepoolMargin => {
   if (
     !marginObj ||
     !marginObj.hasOwnProperty('denominator') ||
     !marginObj.hasOwnProperty('numerator') ||
-    checkedNumber(marginObj.numerator, 'Numerator') < 0 ||
-    checkedNumber(marginObj.denominator, 'Denominator') <= 0 ||
+    marginObj.numerator < 0 ||
+    marginObj.denominator <= 0 ||
     marginObj.numerator > marginObj.denominator
   ) {
     throw NamedError('PoolRegInvalidMargin')
@@ -113,12 +131,12 @@ const transformMargin = (marginObj: _Margin) => {
   }
 }
 
-const ipv4BufToAddress = (ipv4Buf) => {
+const ipv4BufToAddress = (ipv4Buf: Buffer) => {
   buf2hexLengthCheck(ipv4Buf, PoolParamsByteLengths.IPV4, 'Ipv4 Relay')
   return Array.from(new Uint8Array(ipv4Buf)).join('.')
 }
 
-const ipv6BufToAddress = (ipv6Buf) => {
+const ipv6BufToAddress = (ipv6Buf: Buffer) => {
   const copy = Buffer.from(ipv6Buf)
   const endianSwappedBuf = copy.swap32()
   const ipv6Hex = buf2hexLengthCheck(endianSwappedBuf, PoolParamsByteLengths.IPV6, 'Ipv6 Relay')
@@ -139,38 +157,39 @@ export const ipv6AddressToBuf = (ipv6Address: string) => {
   return endianSwappedBuf
 }
 
-const transformRelays = (relays: _PoolRelay[]) =>
+const parseStakepoolRelays = (relays: _PoolRelay[]): TxStakepoolRelay[] =>
   relays.map((relay) => {
-    let params
     switch (relay.type) {
-      case 0:
-        params = {
-          portNumber: checkedNumber(relay.portNumber, 'Port number'),
-          ipv4: relay.ipv4 ? ipv4BufToAddress(relay.ipv4) : null,
-          ipv6: relay.ipv6 ? ipv6BufToAddress(relay.ipv6) : null,
+      case TxRelayTypes.SINGLE_HOST_IP:
+        return {
+          type: TxRelayType.SINGLE_HOST_IP,
+          params: {
+            portNumber: relay.portNumber,
+            ipv4: relay.ipv4 ? ipv4BufToAddress(relay.ipv4) : null,
+            ipv6: relay.ipv6 ? ipv6BufToAddress(relay.ipv6) : null,
+          },
         }
-        break
-      case 1:
-        params = {
-          portNumber: checkedNumber(relay.portNumber, 'Port number'),
-          dnsName: relay.dnsName,
+      case TxRelayTypes.SINGLE_HOST_NAME:
+        return {
+          type: TxRelayType.SINGLE_HOST_NAME,
+          params: {
+            portNumber: relay.portNumber,
+            dnsName: relay.dnsName,
+          },
         }
-        break
-      case 2:
-        params = {
-          dnsName: relay.dnsName,
+      case TxRelayTypes.MULTI_HOST_NAME:
+        return {
+          type: TxRelayType.MULTI_HOST_NAME,
+          params: {
+            dnsName: relay.dnsName,
+          },
         }
-        break
       default:
         throw NamedError('PoolRegInvalidRelay')
     }
-    return {
-      type: relay.type,
-      params,
-    }
   })
 
-const transformMetadata = (metadata) => {
+const parseStakepoolMetadata = (metadata: {metadataUrl: string; metadataHash: Buffer}) => {
   if (!metadata) {
     return null
   }
@@ -187,7 +206,7 @@ const transformMetadata = (metadata) => {
   }
 }
 
-export const transformPoolParamsTypes = ({
+export const parseStakepoolRegistrationCertificate = ({
   poolKeyHash,
   vrfPubKeyHash,
   pledge,
@@ -200,15 +219,15 @@ export const transformPoolParamsTypes = ({
 }: _StakepoolRegistrationCert): TxPoolParams => ({
   poolKeyHashHex: buf2hexLengthCheck(poolKeyHash, PoolParamsByteLengths.POOL_HASH, 'Pool key hash'),
   vrfKeyHashHex: buf2hexLengthCheck(vrfPubKeyHash, PoolParamsByteLengths.VRF, 'VRF key hash'),
-  pledgeStr: checkedNumber(pledge, 'Pledge').toString(),
-  costStr: checkedNumber(cost, 'Fixed cost').toString(),
-  margin: transformMargin(margin),
+  pledgeStr: ensureIsSafeInt(pledge, 'Pledge').toString(),
+  costStr: ensureIsSafeInt(cost, 'Fixed cost').toString(),
+  margin: parseStakepoolMargin(margin),
   rewardAccountHex: buf2hexLengthCheck(
     rewardAddress,
     PoolParamsByteLengths.REWARD,
     'Reward account'
   ),
-  poolOwners: transformPoolOwners(poolOwnersPubKeyHashes),
-  relays: transformRelays(relays),
-  metadata: transformMetadata(metadata),
+  poolOwners: parseStakepoolOwners(poolOwnersPubKeyHashes),
+  relays: parseStakepoolRelays(relays),
+  metadata: parseStakepoolMetadata(metadata),
 })
