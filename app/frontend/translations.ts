@@ -73,6 +73,7 @@ const translations = {
     `TransportWebUSBGestureRequired: ${ledgerTroubleshootingSuggestion}`,
   NotFoundError: () => `NotFoundError: ${ledgerTroubleshootingSuggestion}`,
   AbortError: () => `NotFoundError: ${ledgerTroubleshootingSuggestion}`,
+  SecurityError: () => `Access denied: ${ledgerTroubleshootingSuggestion}`,
 
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
