@@ -8,6 +8,8 @@ const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
 const ledgerTroubleshootingSuggestion =
   'If you are using Ledger, please make sure Ledger Live app is closed and try connecting your device using the "Connect with WebUSB" functionality (the button underneath "Unlock with Ledger"). For more information please read the section concerning Ledger in our troubleshooting suggestions.'
+const updateHwWalletAppSuggestion =
+  'If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.'
 
 const translations = {
   SendAddressInvalidAddress: () => 'Invalid address',
@@ -50,8 +52,12 @@ const translations = {
 
     return `TransportCanceledByUser: ${message}. ${errors[message] || ''}`
   },
-  TransportError: ({message}) =>
-    `TransportError: ${message}.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.`,
+  TransportError: ({message}) => {
+    const errors = {
+      'Failed to sign with Ledger device: U2F DEVICE_INELIGIBLE': ledgerTroubleshootingSuggestion,
+    }
+    return `TransportError: ${message}. ${errors[message] || updateHwWalletAppSuggestion}`
+  },
   TransportStatusError: ({message}) => {
     const errors = {
       'Ledger device: Wrong Ledger app':
@@ -78,11 +84,7 @@ const translations = {
   TransactionRejectedByNetwork: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
   TransactionRejectedWhileSigning: ({message}) =>
-    `Transaction rejected while signing${
-      message
-        ? `:  ${message}`
-        : '.If you are using a Ledger, please make sure you are using the latest version of the Cardano application. If you are using Trezor, please make sure your Trezor firmware is updated.'
-    }`,
+    `Transaction rejected while signing. ${message || updateHwWalletAppSuggestion}`,
   TransactionCorrupted: () => 'TransactionCorrupted: Transaction assembling failure.',
   TransactionNotFoundInBlockchainAfterSubmission: ({txHash}) =>
     `TransactionNotFoundInBlockchainAfterSubmission: 
