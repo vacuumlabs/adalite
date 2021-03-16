@@ -1,1 +1,1 @@
-export default (array) => Array.from(new Set(array))
+export default <T>(array: T[]) => Array.from(new Set(array)) as T[]
