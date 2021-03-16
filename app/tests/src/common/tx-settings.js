@@ -39,7 +39,7 @@ const transactionSettings = {
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
             coins: 10000000,
             outputIndex: 1,
-            tokens: inputTokens,
+            tokenBundle: inputTokens,
           },
         ],
         outputs: [
@@ -48,7 +48,7 @@ const transactionSettings = {
             address:
               'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
             coins: 1500000,
-            tokens: [],
+            tokenBundle: [],
           },
         ],
         change: {
@@ -56,7 +56,7 @@ const transactionSettings = {
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
           coins: 8325150,
-          tokens: inputTokens,
+          tokenBundle: inputTokens,
         },
         certificates: [],
         deposit: 0,
@@ -93,7 +93,7 @@ const transactionSettings = {
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
             coins: 10000000,
             outputIndex: 1,
-            tokens: inputTokens,
+            tokenBundle: inputTokens,
           },
         ],
         outputs: [
@@ -101,8 +101,8 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
-            coins: 1662163,
-            tokens: [
+            coins: 1481480,
+            tokenBundle: [
               {
                 policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
                 assetName: '7365636f6e646173736574',
@@ -115,8 +115,8 @@ const transactionSettings = {
           isChange: false,
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 8160966,
-          tokens: [
+          coins: 8341649,
+          tokenBundle: [
             {
               policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
               assetName: '66697273746173736574',
@@ -137,12 +137,12 @@ const transactionSettings = {
         certificates: [],
         deposit: 0,
         fee: 176871,
-        additionalLovelaceAmount: 1662163,
+        additionalLovelaceAmount: 1481480,
         withdrawals: [],
       },
     },
     ttl,
-    txHash: '5e16ed3df65a716cb75381966c980bd0aea9ac4961743687e4f96ee2a15da27a',
+    txHash: '0f3979c1f43e6cdc62ca9aa0516b126917b053d0bc7751b5906fdc94a8b5d0b0',
   },
   delegation: {
     args: {
@@ -161,7 +161,7 @@ const transactionSettings = {
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
             coins: 10000000,
             outputIndex: 1,
-            tokens: inputTokens,
+            tokenBundle: inputTokens,
           },
         ],
         outputs: [],
@@ -170,7 +170,7 @@ const transactionSettings = {
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
           coins: 7812011,
-          tokens: inputTokens,
+          tokenBundle: inputTokens,
         },
         certificates: [
           {
@@ -208,7 +208,7 @@ const transactionSettings = {
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
             coins: 10000000,
             outputIndex: 1,
-            tokens: inputTokens,
+            tokenBundle: inputTokens,
           },
         ],
         outputs: [],
@@ -217,7 +217,7 @@ const transactionSettings = {
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
           coins: 14820844,
-          tokens: inputTokens,
+          tokenBundle: inputTokens,
         },
         certificates: [],
         deposit: 0,

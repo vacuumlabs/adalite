@@ -18,8 +18,8 @@ import {
   DelegateAdaTxPlanArgs,
   WithdrawRewardsTxPlanArgs,
   ConvertLegacyAdaTxPlanArgs,
-  Token,
   AssetFamily,
+  TokenBundle,
 } from '../../types'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {
@@ -31,7 +31,7 @@ import {
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
 } from '../types'
-import {aggregateTokens, formatToken, getTokenDifference} from '../helpers/tokenFormater'
+import {aggregateTokenBundles, getTokenBundlesDifference} from '../helpers/tokenFormater'
 import distinct from '../../helpers/distinct'
 
 type TxPlanDraft = {
@@ -87,7 +87,7 @@ export function estimateTxSize(
     isChange: false,
     address: output.address,
     coins: Number.MAX_SAFE_INTEGER as Lovelace,
-    tokens: output.tokens,
+    tokenBundle: output.tokenBundle,
   }))
   // TODO: max output size
   const txOutputsSize = encode(cborizeTxOutputs(txOutputs)).length + 1
@@ -150,7 +150,7 @@ function computeRequiredDeposit(certificates: Array<TxCertificate>): Lovelace {
   return certificates.reduce((acc, {type}) => acc + CertificateDeposit[type], 0) as Lovelace
 }
 
-export const computeMinUTxOLovelaceAmount = (tokens: Token[]): Lovelace => {
+export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace => {
   // based on https://github.com/input-output-hk/cardano-ledger-specs/blob/master/doc/explanations/min-utxo.rst
   const quot = (x: number, y: number) => Math.floor(x / y)
   const roundupBytesToWords = (x: number) => quot(x + 7, 8)
@@ -165,21 +165,23 @@ export const computeMinUTxOLovelaceAmount = (tokens: Token[]): Lovelace => {
   // NOTE: should be 29 but a bug in Haskell set this to 27
   const adaOnlyUtxoSize = utxoEntrySizeWithoutVal + coinSize
 
-  const distinctAssets = distinct(tokens.map(({assetName}) => assetName))
+  const distinctAssets = distinct(tokenBundle.map(({assetName}) => assetName))
 
   const numAssets = distinctAssets.length
-  const numPIDs = distinct(tokens.map(({policyId}) => policyId)).length
+  // number of unique policyIds
+  const numPIDs = distinct(tokenBundle.map(({policyId}) => policyId)).length
 
   const sumAssetNameLengths = distinctAssets.reduce(
     (acc, assetName) => acc + Math.max(Buffer.from(assetName, 'hex').byteLength, 1),
     0
   )
 
-  const pidSize = 28
+  const policyIdSize = 28 // pidSize in specs
 
-  const size = 6 + roundupBytesToWords(numAssets * 12 + sumAssetNameLengths + numPIDs * pidSize)
+  const size =
+    6 + roundupBytesToWords(numAssets * 12 + sumAssetNameLengths + numPIDs * policyIdSize)
 
-  if (tokens.length === 0) {
+  if (tokenBundle.length === 0) {
     return minUTxOValue as Lovelace
   } else {
     return Math.max(
@@ -198,18 +200,18 @@ export function computeTxPlan(
 ): TxPlan {
   const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
-  const totalInputTokens = aggregateTokens(inputs.map(({tokens}) => tokens))
+  const totalInputTokens = aggregateTokenBundles(inputs.map(({tokenBundle}) => tokenBundle))
   const deposit = computeRequiredDeposit(certificates)
   const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit + totalRewards
-  const totalOutputTokens = aggregateTokens(outputs.map(({tokens}) => tokens))
+  const totalOutputTokens = aggregateTokenBundles(outputs.map(({tokenBundle}) => tokenBundle))
 
   // total amount of lovelace that had to be added to token-containing outputs
   const additionalLovelaceAmount = outputs.reduce(
-    (acc, {coins, tokens}) => (tokens.length > 0 ? acc + coins : acc),
+    (acc, {coins, tokenBundle}) => (tokenBundle.length > 0 ? acc + coins : acc),
     0
   ) as Lovelace
 
-  const tokenDifference = getTokenDifference(totalInputTokens, totalOutputTokens)
+  const tokenDifference = getTokenBundlesDifference(totalInputTokens, totalOutputTokens)
   // Cannot construct transaction plan, not enought tokens
   if (tokenDifference.some(({quantity}) => quantity < 0)) {
     throw NamedError('CannotConstructTxPlan')
@@ -245,7 +247,7 @@ export function computeTxPlan(
 
   const feeWithChange = computeRequiredTxFee(
     inputs,
-    [...outputs, {...possibleChange, tokens: tokenDifference}],
+    [...outputs, {...possibleChange, tokenBundle: tokenDifference}],
     certificates,
     withdrawals
   )
@@ -265,16 +267,16 @@ export function computeTxPlan(
     }
   }
 
-  const change = {
+  const change: TxOutput = {
     ...possibleChange,
-    tokens: tokenDifference,
+    tokenBundle: tokenDifference,
     coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
   }
 
-  const minimalChangeLovelace = computeMinUTxOLovelaceAmount(change.tokens)
+  const minimalChangeLovelace = computeMinUTxOLovelaceAmount(change.tokenBundle)
 
   // if we cannot create a change output with minimal ada we add it to the fee
-  if (change.tokens.length === 0 && change.coins < minimalChangeLovelace) {
+  if (change.tokenBundle.length === 0 && change.coins < minimalChangeLovelace) {
     return {
       inputs,
       outputs,
@@ -288,7 +290,7 @@ export function computeTxPlan(
   }
 
   // we cant build the transaction with big enough change lovelace
-  if (change.tokens.length > 0 && change.coins < minimalChangeLovelace) {
+  if (change.tokenBundle.length > 0 && change.coins < minimalChangeLovelace) {
     throw NamedError('ChangeOutputTooSmall')
   }
 
@@ -312,7 +314,7 @@ export const isUtxoProfitable = (utxo: UTxO): boolean => {
 const validateTxPlan = (txPlan: TxPlan): void => {
   const outputs = txPlan.change ? [...txPlan.outputs, txPlan.change] : txPlan.outputs
   // TODO: check for maximal sizes of outputs
-  if (outputs.some(({coins, tokens}) => coins < computeMinUTxOLovelaceAmount(tokens))) {
+  if (outputs.some(({coins, tokenBundle}) => coins < computeMinUTxOLovelaceAmount(tokenBundle))) {
     throw NamedError('OutputTooSmall')
   }
   if (outputs.some((output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE)) {
@@ -334,14 +336,14 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
         isChange: false,
         address: txPlanArgs.address,
         coins: txPlanArgs.sendAmount.coins,
-        tokens: [],
+        tokenBundle: [],
       })
     } else {
       outputs.push({
         isChange: false,
         address: txPlanArgs.address,
         coins: computeMinUTxOLovelaceAmount([txPlanArgs.sendAmount.token]),
-        tokens: [txPlanArgs.sendAmount.token],
+        tokenBundle: [txPlanArgs.sendAmount.token],
       })
     }
 
@@ -411,7 +413,7 @@ export const selectMinimalTxPlan = (
     isChange: false,
     address: changeAddress,
     coins: 0 as Lovelace,
-    tokens: [],
+    tokenBundle: [],
   }
 
   // TODO: refactor this
@@ -432,7 +434,9 @@ export const selectMinimalTxPlan = (
           error: {code: e.name},
           minimalLovelaceAmount: outputs.reduce(
             (acc, output) =>
-              output.tokens.length > 0 ? acc + computeMinUTxOLovelaceAmount(output.tokens) : 0,
+              output.tokenBundle.length > 0
+                ? acc + computeMinUTxOLovelaceAmount(output.tokenBundle)
+                : 0,
             0
           ) as Lovelace,
         }
@@ -445,7 +449,7 @@ export const selectMinimalTxPlan = (
     error: {code: 'CannotConstructTxPlan'},
     minimalLovelaceAmount: outputs.reduce(
       (acc, output) =>
-        output.tokens.length > 0 ? acc + computeMinUTxOLovelaceAmount(output.tokens) : 0,
+        output.tokenBundle.length > 0 ? acc + computeMinUTxOLovelaceAmount(output.tokenBundle) : 0,
       0
     ) as Lovelace,
   }

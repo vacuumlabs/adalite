@@ -6,7 +6,7 @@ import {State} from '../../../state'
 import {AdaIcon} from '../../common/svg'
 import tooltip from '../../common/tooltip'
 import {Lovelace} from '../../../types'
-import {printAccountIndex} from '../../../helpers/printAccountIndex'
+import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 
 type TileProps = {
   accountIndex: number
@@ -36,7 +36,7 @@ const AccountTile = ({
   shouldShowAccountInfo,
 }: TileProps) => {
   const isActive = activeAccountIndex === accountIndex
-  const accountLabel = `Account ${printAccountIndex(accountIndex)}`
+  const accountLabel = `Account ${formatAccountIndex(accountIndex)}`
 
   const Balance = ({value}: {value: Lovelace}) =>
     value !== null ? (

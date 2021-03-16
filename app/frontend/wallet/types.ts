@@ -1,5 +1,5 @@
-import {BIP32Path, CertificateType, Lovelace, Token, Address} from '../types'
 import {TxPoolParams} from './shelley/helpers/poolCertificateUtils'
+import {BIP32Path, CertificateType, Lovelace, Address, TokenBundle} from '../types'
 
 export const enum NetworkId {
   MAINNET = 1,
@@ -32,7 +32,7 @@ export type UTxO = {
   txHash: string
   address: Address
   coins: Lovelace
-  tokens: Token[]
+  tokenBundle: TokenBundle
   outputIndex: number
 }
 
@@ -43,13 +43,13 @@ export type TxOutput =
       isChange: false
       address: Address
       coins: Lovelace
-      tokens: Token[]
+      tokenBundle: TokenBundle
     }
   | {
       isChange: true
       address: Address
       coins: Lovelace
-      tokens: Token[]
+      tokenBundle: TokenBundle
       spendingPath: BIP32Path
       stakingPath: BIP32Path
     }

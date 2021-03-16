@@ -1,4 +1,4 @@
-import {Token} from '../../types'
+import {Token, TokenBundle} from '../../types'
 import * as _ from 'lodash' // TODO: import only needed methods
 import {TokenObject} from '../backend-types'
 
@@ -7,16 +7,16 @@ import {TokenObject} from '../backend-types'
 export const arraySum = (numbers: Array<number>): number =>
   numbers.reduce((acc: number, val) => acc + val, 0)
 
-export const formatToken = (token: TokenObject): Token => ({
+export const parseToken = (token: TokenObject): Token => ({
   ...token,
   quantity: parseInt(token.quantity, 10),
 })
 
-const aggregateTokensForPolicy = (policyGroup: Token[], policyId: string) =>
+const aggregateTokenBundlesForPolicy = (policyGroup: TokenBundle, policyId: string) =>
   _(policyGroup)
     .groupBy(({assetName}) => assetName)
     .map((assetGroup, assetName) =>
-      formatToken({
+      parseToken({
         policyId,
         assetName,
         quantity: `${arraySum(assetGroup.map((asset) => asset.quantity))}`,
@@ -24,22 +24,29 @@ const aggregateTokensForPolicy = (policyGroup: Token[], policyId: string) =>
     )
     .value()
 
-export const aggregateTokens = (tokens: Token[][]): Token[] =>
-  _(tokens)
+export const aggregateTokenBundles = (tokenBundle: TokenBundle[]): TokenBundle =>
+  _(tokenBundle)
     .filter((token) => !!token.length)
     .flatten()
     .groupBy(({policyId}) => policyId)
-    .map(aggregateTokensForPolicy)
+    .map(aggregateTokenBundlesForPolicy)
     .flatten()
     .value()
 
-export const groupTokensByPolicyId = (tokens: Token[]): {[policyId: string]: Token[]} => {
-  return _(tokens)
+export const groupTokenBundleByPolicyId = (
+  tokenBundle: TokenBundle
+): {[policyId: string]: TokenBundle} => {
+  return _(tokenBundle)
     .groupBy(({policyId}) => policyId)
     .value()
 }
 
-export const getTokenDifference = (tokens1: Token[], tokens2: Token[]): Token[] => {
-  const negativeTokens = tokens2.map((token) => ({...token, quantity: -token.quantity}))
-  return aggregateTokens([tokens1, negativeTokens]).filter((token) => token.quantity !== 0)
+export const getTokenBundlesDifference = (
+  tokenBundle1: TokenBundle,
+  tokenBundle2: TokenBundle
+): TokenBundle => {
+  const negativeTokenBundle = tokenBundle2.map((token) => ({...token, quantity: -token.quantity}))
+  return aggregateTokenBundles([tokenBundle1, negativeTokenBundle]).filter(
+    (token) => token.quantity !== 0
+  )
 }

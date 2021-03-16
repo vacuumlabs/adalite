@@ -13,7 +13,7 @@ import {
   BIP32Path,
   HexString,
   AddressToPathMapper,
-  Token,
+  TokenBundle,
 } from '../../types'
 import {
   Network,
@@ -38,11 +38,11 @@ import {
   TrezorWithdrawal,
 } from './trezor-types'
 import {TxSigned, TxAux, CborizedCliWitness} from './types'
-import {groupTokensByPolicyId} from '../helpers/tokenFormater'
 import {encodeAddress} from './helpers/addresses'
 import {TxRelayType, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import {cborizeCliWitness} from './shelley-transaction'
 import {removeNullFields} from '../../helpers/removeNullFiels'
+import {groupTokenBundleByPolicyId} from '../helpers/tokenFormater'
 
 type CryptoProviderParams = {
   network: Network
@@ -139,16 +139,16 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  const prepareTokenBundle = (tokens: Token[]): TrezorMultiAsset | undefined => {
+  const prepareTokenBundle = (tokenBundle: TokenBundle): TrezorMultiAsset | undefined => {
     // TODO: refactor
-    if (tokens.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
+    if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
       throw NamedError('TrezorMultiAssetNotSupported', {
         message:
           'Sending tokens is not supported on Trezor device. Please update your firmware to the latest version.',
       })
     }
-    const tokenObject = groupTokensByPolicyId(tokens)
-    const tokenBundle = Object.entries(tokenObject).map(([policyId, assets]) => {
+    const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
+    return Object.entries(tokenObject).map(([policyId, assets]) => {
       const tokenAmounts = assets.map(({assetName, quantity}) => ({
         assetNameBytes: assetName,
         amount: quantity.toString(),
@@ -158,11 +158,10 @@ const ShelleyTrezorCryptoProvider = async ({
         tokenAmounts,
       }
     })
-    return tokenBundle.length > 0 ? tokenBundle : []
   }
 
   function prepareOutput(output: TxOutput): TrezorOutput {
-    const tokenBundle = prepareTokenBundle(output.tokens)
+    const tokenBundle = prepareTokenBundle(output.tokenBundle)
     return output.isChange === false
       ? {
         address: output.address,

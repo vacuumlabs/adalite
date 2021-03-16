@@ -18,8 +18,8 @@ import {
   NextRewardDetailsFormatted,
   RewardWithMetadata,
   Balance,
-  Token,
   Address,
+  TokenBundle,
 } from '../types'
 import distinct from '../helpers/distinct'
 import {UNKNOWN_POOL_NAME} from './constants'
@@ -46,7 +46,7 @@ import {
   StakePoolInfosByPoolHash,
 } from './backend-types'
 import {UTxO} from './types'
-import {aggregateTokens, formatToken, getTokenDifference} from './helpers/tokenFormater'
+import {aggregateTokenBundles, parseToken, getTokenBundlesDifference} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDataProvider'
 
@@ -119,29 +119,32 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   function prepareTxHistoryEntry(tx: CaTxEntry, addresses: string[]): TxSummaryEntry {
-    const outputTokens: Token[][] = []
-    const inputTokens: Token[][] = []
+    const outputTokenBundle: TokenBundle[] = []
+    const inputTokenBundle: TokenBundle[] = []
 
     let effect = 0 //effect on wallet balance accumulated
     for (const [address, amount] of tx.ctbInputs || []) {
       if (addresses.includes(address)) {
         effect -= +amount.getCoin
-        const formatedInputTokens = amount.getTokens.map(formatToken)
-        inputTokens.push(formatedInputTokens)
+        const parsedInputTokenBundle = amount.getTokens.map((token) => parseToken(token))
+        inputTokenBundle.push(parsedInputTokenBundle)
       }
     }
     for (const [address, amount] of tx.ctbOutputs || []) {
       if (addresses.includes(address)) {
         effect += +amount.getCoin
-        const formatedOutputTokens = amount.getTokens.map(formatToken)
-        outputTokens.push(formatedOutputTokens)
+        const parsedOutputTokenBundle = amount.getTokens.map((token) => parseToken(token))
+        outputTokenBundle.push(parsedOutputTokenBundle)
       }
     }
     return {
       ...tx,
       fee: parseInt(tx.fee, 10) as Lovelace,
       effect: effect as Lovelace,
-      tokenEffects: getTokenDifference(aggregateTokens(outputTokens), aggregateTokens(inputTokens)),
+      tokenEffects: getTokenBundlesDifference(
+        aggregateTokenBundles(outputTokenBundle),
+        aggregateTokenBundles(inputTokenBundle)
+      ),
     }
   }
 
@@ -189,17 +192,19 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )
-    const addressTokens = txHistory.map((txHistoryEntry) => {
-      return txHistoryEntry.caBalance.getTokens.map(formatToken)
+    const addressTokenBundles = txHistory.map((txHistoryEntry) => {
+      return txHistoryEntry.caBalance.getTokens.map((token) => parseToken(token))
     })
-    const tokens = aggregateTokens(addressTokens).filter((token) => token.quantity > 0)
+    const tokenBundle = aggregateTokenBundles(addressTokenBundles).filter(
+      (token) => token.quantity > 0
+    )
     const coins = txHistory.reduce(
       (acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10),
       0
     ) as Lovelace
     return {
       coins,
-      tokens,
+      tokenBundle,
     }
   }
 
@@ -256,7 +261,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     ).reduce((acc, cur) => acc.concat(cur), [])
 
     return response.map((elem) => {
-      const tokens: Token[] = elem.cuCoins.getTokens.map((token) => ({
+      const tokenBundle: TokenBundle = elem.cuCoins.getTokens.map((token) => ({
         ...token,
         quantity: parseInt(token.quantity, 10),
       }))
@@ -264,7 +269,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         txHash: elem.cuId,
         address: elem.cuAddress as Address,
         coins: parseInt(elem.cuCoins.getCoin, 10) as Lovelace,
-        tokens,
+        tokenBundle,
         outputIndex: elem.cuOutIndex,
       }
     })

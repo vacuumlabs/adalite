@@ -5,7 +5,7 @@ import {useState, useCallback} from 'preact/hooks'
 
 import range from '../../../wallet/helpers/range'
 import {State} from '../../../state'
-import {printAccountIndex} from '../../../helpers/printAccountIndex'
+import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 
 const AccountDropdown = ({accountIndex, setAccountFunc, accountsInfo}) => {
   const [shouldHideAccountDropdown, hideAccountDropdown] = useState(true)
@@ -20,7 +20,7 @@ const AccountDropdown = ({accountIndex, setAccountFunc, accountsInfo}) => {
         onBlur={() => hideAccountDropdown(true)}
         onClick={() => toggleAccountDropdown()}
       >
-        {`Account ${printAccountIndex(accountIndex)}`}
+        {`Account ${formatAccountIndex(accountIndex)}`}
       </button>
       <div className={`account-dropdown-content ${shouldHideAccountDropdown ? 'hide' : 'show'}`}>
         {range(0, accountsInfo.length).map((i) => (
@@ -32,7 +32,7 @@ const AccountDropdown = ({accountIndex, setAccountFunc, accountsInfo}) => {
               hideAccountDropdown(true)
             }}
           >
-            {`Account ${printAccountIndex(i)}`}
+            {`Account ${formatAccountIndex(i)}`}
           </a>
         ))}
       </div>

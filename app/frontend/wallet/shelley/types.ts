@@ -58,9 +58,9 @@ export enum TxStakeCredentialType {
 
 export type CborizedTxInput = [Buffer, number]
 
-export type CborizedTxTokens = Map<Buffer, Map<Buffer, number>>
+export type CborizedTxTokenBundle = Map<Buffer, Map<Buffer, number>>
 
-export type CborizedTxAmount = Lovelace | [Lovelace, CborizedTxTokens]
+export type CborizedTxAmount = Lovelace | [Lovelace, CborizedTxTokenBundle]
 
 export type CborizedTxOutput = [Buffer, CborizedTxAmount]
 

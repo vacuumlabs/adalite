@@ -52,7 +52,7 @@ const parseCliInputs = (inputs: _Input[]): TxInput[] => {
       txHash: input.txHash.toString('hex'),
       outputIndex: input.outputIndex,
       coins: null,
-      tokens: null,
+      tokenBundle: null,
       address: null,
     }
   })
@@ -64,7 +64,7 @@ const parseCliOutputs = (outputs: _Output[]): TxOutput[] => {
       isChange: false,
       address: encodeAddress(output.address),
       coins: ensureIsSafeInt(output.coins, 'Output coins') as Lovelace,
-      tokens: parseCliTokens(output.tokenBundle),
+      tokenBundle: parseCliTokens(output.tokenBundle),
     }
   })
 }

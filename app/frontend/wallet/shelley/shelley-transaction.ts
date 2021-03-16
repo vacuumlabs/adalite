@@ -22,7 +22,7 @@ import {
   CborizedTxOutput,
   CborizedTxStakeCredential,
   TxStakeCredentialType,
-  CborizedTxTokens,
+  CborizedTxTokenBundle,
   CborizedTxWithdrawals,
   CborizedTxWitnessByron,
   CborizedTxWitnesses,
@@ -37,10 +37,10 @@ import {
   TxSigned,
   CborizedCliWitness,
 } from './types'
-import {CertificateType, HexString, Token} from '../../types'
-import {groupTokensByPolicyId} from '../helpers/tokenFormater'
+import {CertificateType, HexString, TokenBundle} from '../../types'
 import NamedError from '../../helpers/NamedError'
 import {ipv4AddressToBuf, ipv6AddressToBuf, TxRelayType} from './helpers/poolCertificateUtils'
+import {groupTokenBundleByPolicyId} from '../helpers/tokenFormater'
 
 function ShelleyTxAux({
   inputs,
@@ -117,9 +117,9 @@ function cborizeTxInputs(inputs: TxInput[]): CborizedTxInput[] {
   return txInputs
 }
 
-function cborizeTxOutputTokens(tokens: Token[]): CborizedTxTokens {
+function cborizeTxOutputTokenBundle(tokenBundle: TokenBundle): CborizedTxTokenBundle {
   const policyIdMap = new Map<Buffer, Map<Buffer, number>>()
-  const tokenObject = groupTokensByPolicyId(tokens)
+  const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
   Object.entries(tokenObject).forEach(([policyId, assets]) => {
     const assetMap = new Map<Buffer, number>()
     assets.forEach(({assetName, quantity}) => {
@@ -132,7 +132,9 @@ function cborizeTxOutputTokens(tokens: Token[]): CborizedTxTokens {
 
 function cborizeSingleTxOutput(output: TxOutput): CborizedTxOutput {
   const amount: CborizedTxAmount =
-    output.tokens.length > 0 ? [output.coins, cborizeTxOutputTokens(output.tokens)] : output.coins
+    output.tokenBundle.length > 0
+      ? [output.coins, cborizeTxOutputTokenBundle(output.tokenBundle)]
+      : output.coins
   // TODO: we should have one fn for decoding
   const addressBuff: Buffer = isShelleyFormat(output.address)
     ? bech32.decode(output.address).data

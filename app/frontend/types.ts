@@ -71,11 +71,13 @@ export type Token = Omit<TokenObject, 'quantity'> & {
   quantity: number
 }
 
+export type TokenBundle = Token[]
+
 export type HexString = string
 export type TxSummaryEntry = Omit<CaTxEntry, 'fee'> & {
   fee: Lovelace
   effect: Lovelace
-  tokenEffects: Token[]
+  tokenEffects: TokenBundle
 }
 
 export type _XPubKey = {
@@ -114,7 +116,7 @@ export type AccountInfo = {
   stakingXpub: _XPubKey
   stakingAddress: Address
   balance: number
-  tokenBalance: Token[]
+  tokenBalance: TokenBundle
   shelleyBalances: {
     stakingBalance?: number
     nonStakingBalance?: number
@@ -264,7 +266,7 @@ export type NextRewardDetailsFormatted = {
 
 export type Balance = {
   coins: Lovelace
-  tokens: Token[]
+  tokenBundle: TokenBundle
 }
 
 export const enum AssetFamily {

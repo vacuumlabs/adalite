@@ -5,7 +5,7 @@ import {
   computeRequiredTxFee,
 } from './shelley/shelley-transaction-planner'
 import {UTxO, TxOutput} from './types'
-import {aggregateTokens} from './helpers/tokenFormater'
+import {aggregateTokenBundles} from './helpers/tokenFormater'
 import printAda from '../helpers/printAda'
 
 function getInputBalance(inputs: Array<UTxO>): Lovelace {
@@ -20,23 +20,29 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
     sendAmount: SendAmount
   ): SendAmount {
     if (sendAmount.assetFamily === AssetFamily.ADA) {
-      const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
+      const inputsTokenBundle = aggregateTokenBundles(
+        profitableInputs.map(({tokenBundle}) => tokenBundle)
+      )
       const inputBalance = getInputBalance(profitableInputs)
       const additionalLovelaceAmount =
-        tokens.length > 0 ? computeMinUTxOLovelaceAmount(tokens) : (0 as Lovelace)
-      // we also need a change output leaving tokens in account
+        inputsTokenBundle.length > 0
+          ? computeMinUTxOLovelaceAmount(inputsTokenBundle)
+          : (0 as Lovelace)
+      // we also need a change output leaving tokenBundle in account
       // TODO: we should probably leave there sufficient amount of ada for sending them somewhere
       const outputs: TxOutput[] = [
-        {isChange: false, address, coins: 0 as Lovelace, tokens: []},
-        {isChange: false, address, coins: additionalLovelaceAmount, tokens},
+        {isChange: false, address, coins: 0 as Lovelace, tokenBundle: []},
+        {isChange: false, address, coins: additionalLovelaceAmount, tokenBundle: inputsTokenBundle},
       ]
       const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
       const coins = Math.max(inputBalance - txFee - additionalLovelaceAmount, 0) as Lovelace
 
       return {assetFamily: AssetFamily.ADA, coins, fieldValue: `${printAda(coins)}`}
     } else {
-      const tokens = aggregateTokens(profitableInputs.map(({tokens}) => tokens))
-      const sendToken = tokens.find(
+      const inputsTokenBundle = aggregateTokenBundles(
+        profitableInputs.map(({tokenBundle}) => tokenBundle)
+      )
+      const sendToken = inputsTokenBundle.find(
         (token) =>
           token.policyId === sendAmount.token.policyId &&
           token.assetName === sendAmount.token.assetName
@@ -58,8 +64,8 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
     const coins = getInputBalance(profitableInputs)
 
     const outputs: TxOutput[] = [
-      {isChange: false, address, coins: 0 as Lovelace, tokens: []},
-      {isChange: false, address: getDonationAddress(), coins: 0 as Lovelace, tokens: []},
+      {isChange: false, address, coins: 0 as Lovelace, tokenBundle: []},
+      {isChange: false, address: getDonationAddress(), coins: 0 as Lovelace, tokenBundle: []},
     ]
 
     const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)

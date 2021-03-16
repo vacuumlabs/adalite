@@ -40,7 +40,7 @@ import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {TxAux} from './shelley/types'
 import {UTxO, TxOutput} from './types'
-import {aggregateTokens} from './helpers/tokenFormater'
+import {aggregateTokenBundles} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
 
@@ -293,8 +293,8 @@ const Account = ({
         ...shuffleArray(baseAddressUtxos, randomGenerator),
       ]
     }
-    const adaUTxOs = baseAddressUtxos.filter(({tokens}) => tokens.length === 0)
-    const tokenUTxOs = baseAddressUtxos.filter(({tokens}) => tokens.length > 0)
+    const adaUTxOs = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
+    const tokenUTxOs = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
     return [
       ...shuffleArray(nonStakingUtxos, randomGenerator),
       ...shuffleArray(adaUTxOs, randomGenerator),
@@ -360,13 +360,14 @@ const Account = ({
     const {legacy, base} = await myAddresses.discoverAllAddresses()
     const {
       coins: nonStakingBalance,
-      tokens: nonStakingTokens,
+      tokenBundle: nonStakingTokenBundle,
     } = await blockchainExplorer.getBalance(legacy)
-    const {coins: baseAddressBalance, tokens: stakingTokens} = await blockchainExplorer.getBalance(
-      base
-    )
+    const {
+      coins: baseAddressBalance,
+      tokenBundle: stakingTokenBundle,
+    } = await blockchainExplorer.getBalance(base)
     return {
-      tokenBalance: aggregateTokens([nonStakingTokens, stakingTokens]),
+      tokenBalance: aggregateTokenBundles([nonStakingTokenBundle, stakingTokenBundle]),
       baseAddressBalance,
       nonStakingBalance,
       balance: nonStakingBalance + baseAddressBalance,

@@ -33,7 +33,7 @@ import {
   DerivationScheme,
   AddressToPathMapper,
   CertificateType,
-  Token,
+  TokenBundle,
 } from '../../types'
 import {
   Network,
@@ -59,7 +59,7 @@ import {
   LedgerWitness,
 } from './ledger-types'
 import {TxSigned, TxAux, CborizedCliWitness} from './types'
-import {groupTokensByPolicyId} from '../helpers/tokenFormater'
+import {groupTokenBundleByPolicyId} from '../helpers/tokenFormater'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -197,15 +197,15 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
-  const prepareTokenBundle = (tokens: Token[]): LedgerAssetGroup[] => {
+  const prepareTokenBundle = (tokenBundle: TokenBundle): LedgerAssetGroup[] => {
     // TODO: refactor, we should check the whole tx againt the version beforehand
-    if (tokens.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
+    if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
       throw NamedError('LedgerMultiAssetNotSupported', {
         message:
           'Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
       })
     }
-    const tokenObject = groupTokensByPolicyId(tokens)
+    const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
     return Object.entries(tokenObject).map(([policyId, assets]) => {
       const tokens = assets.map(({assetName, quantity}) => ({
         assetNameHex: assetName,
@@ -219,7 +219,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   function prepareOutput(output: TxOutput): LedgerOutput {
-    const tokenBundle = prepareTokenBundle(output.tokens)
+    const tokenBundle = prepareTokenBundle(output.tokenBundle)
     return output.isChange === false
       ? {
         amountStr: `${output.coins}`,

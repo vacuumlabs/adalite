@@ -27,7 +27,7 @@ import {SubTabs, MainTabs} from '../../../constants'
 import {useViewport, isSmallerThanDesktop} from '../../common/viewPort'
 import {ScreenType} from '../../../types'
 import ReceiveRedirect from '../receiveAda/receiveRedirect'
-import {printAccountIndex} from '../../../helpers/printAccountIndex'
+import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -229,7 +229,7 @@ const DashboardPage = ({
             isActive={name === activeMainTab}
             setActiveTab={setActiveMainTab}
             displayName={
-              name === MainTabs.ACCOUNT && `Account ${printAccountIndex(activeAccountIndex)}`
+              name === MainTabs.ACCOUNT && `Account ${formatAccountIndex(activeAccountIndex)}`
             }
           />
         ))}
