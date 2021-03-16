@@ -1,11 +1,12 @@
 import {encode} from 'borc'
 import {
+  cborizeSingleTxOutput,
   cborizeTxCertificates,
   cborizeTxInputs,
   cborizeTxOutputs,
   cborizeTxWithdrawals,
 } from './shelley-transaction'
-import {MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
+import {MAX_TX_OUTPUT_SIZE, MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
 import NamedError from '../../helpers/NamedError'
 import {
   Lovelace,
@@ -318,8 +319,11 @@ export const isUtxoProfitable = (utxo: UTxO): boolean => {
 const validateTxPlan = (txPlan: TxPlan): void => {
   const outputs = txPlan.change ? [...txPlan.outputs, txPlan.change] : txPlan.outputs
   // TODO: check for maximal sizes of outputs
-  if (outputs.some(({coins, address, tokens}) => coins < computeMinUTxOLovelaceAmount(tokens))) {
+  if (outputs.some(({coins, tokens}) => coins < computeMinUTxOLovelaceAmount(tokens))) {
     throw NamedError('OutputTooSmall')
+  }
+  if (outputs.some((output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE)) {
+    throw NamedError('OutputTooBig')
   }
   const totalRewards = txPlan.withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   if (totalRewards > 0 && totalRewards < txPlan.fee) {

@@ -19,7 +19,7 @@ export const TX_WITNESS_SIZES = {
 }
 
 export const MAX_TX_SIZE = 16384
-export const MAX_TX_OUTPUT_SIZE = 4000 // TODO: exact number
+export const MAX_TX_OUTPUT_SIZE = 4000
 
 export const PROTOCOL_MAGIC_KEY = 2
 

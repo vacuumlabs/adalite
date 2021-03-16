@@ -98,9 +98,13 @@ const translations = {
     `LedgerOperationError: ${message}. Please make sure you are using the latest version of the Cardano application.`,
 
   CoinAmountError: () => 'CoinAmountError: Unsupported amount of coins.',
-  OutputTooSmall: () => 'Output amount too low. Minimum output amount is 1 ADA.',
-  ChangeOutputTooSmall: () => 'Change output amount too low, try sending a different amount.',
+  OutputTooSmall: () =>
+    'OutputTooSmall: Not enough funds to make this transaction, try sending a different amount.',
+  ChangeOutputTooSmall: () =>
+    'ChangeOutputTooSmall: Not enough funds to make this transaction, try sending a different amount.',
   TxTooBig: () => 'Transaction is too big, try sending lesser amount of coins.',
+  OutputTooBig: () => 'Transaction output is too big, try sending a diffrent amount.',
+
   SendAmountTooLow: () => 'Amount too low. Minimum amount to send is 1 ADA',
   SendAmountBalanceTooLow: () => 'Minimum output amount is 1 ADA.',
   CryptoProviderError: ({message}) => `CryptoProviderError: ${message}`,
