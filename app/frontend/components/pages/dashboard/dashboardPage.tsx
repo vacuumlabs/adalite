@@ -27,6 +27,7 @@ import {SubTabs, MainTabs} from '../../../constants'
 import {useViewport, isSmallerThanDesktop} from '../../common/viewPort'
 import {ScreenType} from '../../../types'
 import ReceiveRedirect from '../receiveAda/receiveRedirect'
+import {printAccountIndex} from '../../../helpers/printAccountIndex'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -185,7 +186,6 @@ type Props = {
   shouldShowWantedAddressesModal: boolean
   shouldShowSaturatedBanner: boolean
   activeAccountIndex: number
-  shouldNumberAccountsFromOne: boolean
   shouldShowExportOption: boolean
 }
 
@@ -199,7 +199,6 @@ const DashboardPage = ({
   shouldShowWantedAddressesModal,
   shouldShowSaturatedBanner,
   activeAccountIndex,
-  shouldNumberAccountsFromOne,
   shouldShowExportOption,
 }: Props) => {
   const screenType = useViewport()
@@ -230,10 +229,7 @@ const DashboardPage = ({
             isActive={name === activeMainTab}
             setActiveTab={setActiveMainTab}
             displayName={
-              name === MainTabs.ACCOUNT &&
-              (shouldNumberAccountsFromOne
-                ? `Account #${activeAccountIndex + 1}`
-                : `Account ${activeAccountIndex}`)
+              name === MainTabs.ACCOUNT && `Account ${printAccountIndex(activeAccountIndex)}`
             }
           />
         ))}
@@ -278,7 +274,6 @@ export default connect(
     shouldShowPremiumBanner: state.shouldShowPremiumBanner,
     shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
     activeAccountIndex: state.activeAccountIndex,
-    shouldNumberAccountsFromOne: state.shouldNumberAccountsFromOne,
     shouldShowExportOption: state.shouldShowExportOption,
     shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
   }),

@@ -206,7 +206,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         WANTED_DELEGATOR_STAKING_ADDRESSES
       )
       const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
-      const shouldNumberAccountsFromOne = hwWalletName === 'Trezor'
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (
         await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)
@@ -223,7 +222,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         totalWalletBalance,
         totalRewardsBalance,
         shouldShowSaturatedBanner,
-        shouldNumberAccountsFromOne,
         walletIsLoaded: true,
         loading: false,
         mnemonicAuthForm: {
@@ -992,7 +990,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     setState({
       sourceAccountIndex,
       targetAccountIndex,
-      sendTransactionTitle: 'Transfer funds between accounts', // TODO: remove this
       shouldShowSendTransactionModal: true,
       txSuccessTab: '',
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace}, // TODO: use reset function
@@ -1030,10 +1027,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const showDelegationModal = (state: State, sourceAccountIndex: number) => {
     setState({
       sourceAccountIndex,
-      // TODO: move this title logic to the actual component
-      delegationTitle: state.shouldNumberAccountsFromOne // TODO: remove this from state
-        ? `Delegate Account #${sourceAccountIndex + 1} Stake`
-        : `Delegate Account ${sourceAccountIndex} Stake`,
       shouldShowDelegationModal: true,
       txSuccessTab: '',
     })

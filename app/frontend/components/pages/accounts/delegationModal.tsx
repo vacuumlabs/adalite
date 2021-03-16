@@ -3,21 +3,25 @@ import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Modal from '../../common/modal'
 import DelegatePage from '../delegations/delegatePage'
+import {printAccountIndex} from '../../../helpers/printAccountIndex'
 
 interface Props {
   closeDelegationModal: any
-  title: string
+  sourceAccountIndex: number
 }
 
-const DelegationModal = ({closeDelegationModal, title}: Props) => (
+const DelegationModal = ({closeDelegationModal, sourceAccountIndex}: Props) => (
   <Modal onRequestClose={closeDelegationModal} bodyClass="delegate">
-    <DelegatePage withAccordion={false} title={title} />
+    <DelegatePage
+      withAccordion={false}
+      title={`Delegate Account ${printAccountIndex(sourceAccountIndex)} Stake`}
+    />
   </Modal>
 )
 
 export default connect(
   (state) => ({
-    title: state.delegationTitle,
+    sourceAccountIndex: state.sourceAccountIndex,
   }),
   actions
 )(DelegationModal)

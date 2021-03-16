@@ -6,6 +6,7 @@ import {State} from '../../../state'
 import {AdaIcon} from '../../common/svg'
 import tooltip from '../../common/tooltip'
 import {Lovelace} from '../../../types'
+import {printAccountIndex} from '../../../helpers/printAccountIndex'
 
 type TileProps = {
   accountIndex: number
@@ -18,7 +19,6 @@ type TileProps = {
   activeAccountIndex: number
   showDelegationModal: any
   showSendTransactionModal: any
-  shouldNumberAccountsFromOne: boolean
   shouldShowAccountInfo?: boolean
 }
 
@@ -33,13 +33,10 @@ const AccountTile = ({
   activeAccountIndex,
   showDelegationModal,
   showSendTransactionModal,
-  shouldNumberAccountsFromOne,
   shouldShowAccountInfo,
 }: TileProps) => {
   const isActive = activeAccountIndex === accountIndex
-  const accountLabel = shouldNumberAccountsFromOne
-    ? `Account #${accountIndex + 1}`
-    : `Account ${accountIndex}`
+  const accountLabel = `Account ${printAccountIndex(accountIndex)}`
 
   const Balance = ({value}: {value: Lovelace}) =>
     value !== null ? (
@@ -163,7 +160,6 @@ export default connect(
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
     activeAccountIndex: state.activeAccountIndex,
-    shouldNumberAccountsFromOne: state.shouldNumberAccountsFromOne,
   }),
   actions
 )(AccountTile)
