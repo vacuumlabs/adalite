@@ -46,7 +46,7 @@ import {
   StakePoolInfosByPoolHash,
 } from './backend-types'
 import {UTxO} from './types'
-import {aggregateTokens, formatToken} from './helpers/tokenFormater'
+import {aggregateTokens, formatToken, getTokenDifference} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDataProvider'
 
@@ -126,14 +126,14 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     for (const [address, amount] of tx.ctbInputs || []) {
       if (addresses.includes(address)) {
         effect -= +amount.getCoin
-        const formatedInputTokens = amount.getTokens.map((token) => formatToken(token, -1))
+        const formatedInputTokens = amount.getTokens.map(formatToken)
         inputTokens.push(formatedInputTokens)
       }
     }
     for (const [address, amount] of tx.ctbOutputs || []) {
       if (addresses.includes(address)) {
         effect += +amount.getCoin
-        const formatedOutputTokens = amount.getTokens.map((token) => formatToken(token, 1))
+        const formatedOutputTokens = amount.getTokens.map(formatToken)
         outputTokens.push(formatedOutputTokens)
       }
     }
@@ -141,9 +141,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       ...tx,
       fee: parseInt(tx.fee, 10) as Lovelace,
       effect: effect as Lovelace,
-      tokenEffects: aggregateTokens([...inputTokens, ...outputTokens]).filter(
-        (token) => token.quantity !== 0
-      ),
+      tokenEffects: getTokenDifference(aggregateTokens(outputTokens), aggregateTokens(inputTokens)),
     }
   }
 
@@ -192,10 +190,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       })
     )
     const addressTokens = txHistory.map((txHistoryEntry) => {
-      const formatedTokens = txHistoryEntry.caBalance.getTokens.map((token) =>
-        formatToken(token, 1)
-      )
-      return formatedTokens
+      return txHistoryEntry.caBalance.getTokens.map(formatToken)
     })
     const tokens = aggregateTokens(addressTokens).filter((token) => token.quantity > 0)
     const coins = txHistory.reduce(
