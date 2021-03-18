@@ -116,6 +116,8 @@ const ShelleyLedgerCryptoProvider = async ({
 
   const version = await ledger.getVersion()
 
+  const getVersion = (): string => `${version.major}.${version.minor}.${version.patch}`
+
   ensureFeatureIsSupported(CryptoProviderFeature.MINIMAL)
 
   const isHwWallet = () => true
@@ -421,6 +423,7 @@ const ShelleyLedgerCryptoProvider = async ({
     _sign: sign,
     isFeatureSupported,
     ensureFeatureIsSupported,
+    getVersion,
   }
 }
 

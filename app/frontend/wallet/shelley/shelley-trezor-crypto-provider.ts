@@ -62,14 +62,16 @@ const ShelleyTrezorCryptoProvider = async ({
     appUrl: config.ADALITE_SERVER_URL,
   })
 
-  const getVersion = async (): Promise<any> => {
+  const getTrezorVersion = async (): Promise<any> => {
     // TODO: add return type
     const {payload: features} = await TrezorConnect.getFeatures()
     const {major_version: major, minor_version: minor, patch_version: patch} = features
     return {major, minor, patch}
   }
 
-  const version = await getVersion()
+  const version = await getTrezorVersion()
+
+  const getVersion = (): string => `${version.major}.${version.minor}.${version.patch}`
 
   const isHwWallet = (): boolean => true
   const getWalletName = (): string => 'Trezor' // TODO: return enum
@@ -375,6 +377,7 @@ const ShelleyTrezorCryptoProvider = async ({
     ensureFeatureIsSupported,
     isFeatureSupported,
     getHdPassphrase,
+    getVersion,
   }
 }
 

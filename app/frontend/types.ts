@@ -44,6 +44,7 @@ export interface CryptoProvider {
   ensureFeatureIsSupported: (feature: CryptoProviderFeature) => void
   isFeatureSupported: (feature: CryptoProviderFeature) => boolean
   displayAddressForPath: (absDerivationPath: BIP32Path, stakingPath: BIP32Path) => void
+  getVersion: () => string | null
 }
 
 // TODO: remove this and replace with TxCertificateType
