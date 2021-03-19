@@ -31,8 +31,9 @@ const WantedAddressesModal = () => {
         Please, contact us at <a href={'mailto:adalite@vacuumlabs.com'}>adalite@vacuumlabs.com</a>
         {', '}
         <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a> or +421 907
-        189 842 and we will setup a dedicated staking infrastructure just for you free of charge and
-        help you with setting up a more effective stake delegation scheme.
+        189 842 to avoid such troubles in the future. We have setup a dedicated staking
+        infrastructure just for you free of charge. Please redelegate to the pre-filled Private
+        Adalite pool in the Staking tab.
       </p>
       <div className="modal-footer">{}</div>
     </Modal>
