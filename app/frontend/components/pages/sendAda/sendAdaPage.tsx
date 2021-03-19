@@ -5,7 +5,6 @@ import actions from '../../../actions'
 import {getTranslation} from '../../../translations'
 import printAda from '../../../helpers/printAda'
 
-import ConfirmTransactionDialog from './confirmTransactionDialog'
 import Conversions from '../../common/conversions'
 import SearchableSelect from '../../common/searchableSelect'
 
@@ -52,7 +51,6 @@ interface Props {
   updateAddress: any
   updateAmount: (sendAmount: SendAmount) => void
   confirmTransaction: any
-  shouldShowConfirmTransactionDialog: any
   feeRecalculating: any
   sendMaxFunds: any
   conversionRates: any
@@ -105,7 +103,6 @@ const SendAdaPage = ({
   updateAddress,
   updateAmount,
   confirmTransaction,
-  shouldShowConfirmTransactionDialog,
   feeRecalculating,
   sendMaxFunds,
   conversionRates,
@@ -409,7 +406,6 @@ const SendAdaPage = ({
           />
         )}
       </div>
-      {shouldShowConfirmTransactionDialog && !isModal && <ConfirmTransactionDialog />}
     </div>
   )
 }
@@ -426,7 +422,6 @@ export default connect(
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount,
-    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     feeRecalculating: state.calculatingFee,
     conversionRates: state.conversionRates && state.conversionRates.data,
     sendTransactionSummary: state.sendTransactionSummary,

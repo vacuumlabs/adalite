@@ -8,6 +8,7 @@ import SendAdaPage from '../sendAda/sendAdaPage'
 import MultiAssetsPage from '../sendAda/multiAssetsPage'
 import MyAddresses from '../receiveAda/myAddresses'
 import DelegatePage from '../delegations/delegatePage'
+import DeregisterStakeKeyPage from '../delegations/deregisterStakeKey'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
 import StakingHistoryPage from '../delegations/stakingHistoryPage'
 import ShelleyBalances from '../delegations/shelleyBalances'
@@ -29,6 +30,9 @@ import {useViewport, isSmallerThanDesktop} from '../../common/viewPort'
 import {ScreenType} from '../../../types'
 import ReceiveRedirect from '../receiveAda/receiveRedirect'
 import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
+import ConfirmTransactionDialog from '../sendAda/confirmTransactionDialog'
+import SendTransactionModal from '../accounts/sendTransactionModal'
+import DelegationModal from '../accounts/delegationModal'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -53,6 +57,7 @@ const StakingPage = ({screenType}: {screenType: ScreenType}) => {
           <div className="dashboard-column">
             <DelegatePage />
             <CurrentDelegationPage />
+            <DeregisterStakeKeyPage />
           </div>
         </div>
       )}
@@ -174,7 +179,12 @@ const MobileSendAdaPage = () => (
 
 const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.DELEGATE_ADA]: <DelegatePage />,
-  [SubTabs.CURRENT_DELEGATION]: <CurrentDelegationPage />,
+  [SubTabs.CURRENT_DELEGATION]: (
+    <Fragment>
+      <CurrentDelegationPage />
+      <DeregisterStakeKeyPage />
+    </Fragment>
+  ),
   [SubTabs.STAKING_HISTORY]: <StakingHistoryPage />,
   [SubTabs.SEND_ADA]: <MobileSendAdaPage />,
   [SubTabs.TRANSACTIONS]: <TransactionHistory />,
@@ -198,6 +208,9 @@ type Props = {
   shouldShowSaturatedBanner: boolean
   activeAccountIndex: number
   shouldShowExportOption: boolean
+  shouldShowConfirmTransactionDialog: boolean
+  shouldShowSendTransactionModal: boolean
+  shouldShowDelegationModal: boolean
 }
 
 const DashboardPage = ({
@@ -211,6 +224,9 @@ const DashboardPage = ({
   shouldShowSaturatedBanner,
   activeAccountIndex,
   shouldShowExportOption,
+  shouldShowConfirmTransactionDialog,
+  shouldShowSendTransactionModal,
+  shouldShowDelegationModal,
 }: Props) => {
   const screenType = useViewport()
 
@@ -226,6 +242,11 @@ const DashboardPage = ({
   return (
     <div className="page-wrapper">
       <ErrorModals />
+      {/* `SendTransactionModal` and `DelegationModal` should be before
+      `ConfirmTransactionDialog` */}
+      {shouldShowSendTransactionModal && <SendTransactionModal />}
+      {shouldShowDelegationModal && <DelegationModal />}
+      {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
       {shouldShowWantedAddressesModal && <WantedAddressesModal />}
       {isShelleyCompatible && displayInfoModal && <InfoModal />}
       {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
@@ -287,6 +308,9 @@ export default connect(
     activeAccountIndex: state.activeAccountIndex,
     shouldShowExportOption: state.shouldShowExportOption,
     shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
+    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
+    shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
+    shouldShowDelegationModal: state.shouldShowDelegationModal,
   }),
   actions
 )(DashboardPage)

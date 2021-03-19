@@ -5,22 +5,17 @@ import printAda from '../../../helpers/printAda'
 import {State} from '../../../state'
 import {AdaIcon} from '../../common/svg'
 import Alert from '../../common/alert'
-import SendTransactionModal from './sendTransactionModal'
-import DelegationModal from './delegationModal'
-import ConfirmTransactionDialog from '../../../../frontend/components/pages/sendAda/confirmTransactionDialog'
 import AccountTile from './accountTile'
 import {AccountInfo, Lovelace} from '../../../../frontend/types'
 import Conversions from '../../common/conversions'
+import {hasStakingKey} from '../../../selectors'
 
 type DashboardProps = {
   accountsInfo: Array<AccountInfo>
   maxAccountIndex: number
   reloadWalletInfo: any
-  shouldShowSendTransactionModal: boolean
-  shouldShowDelegationModal: boolean
   totalWalletBalance: number
   totalRewardsBalance: number
-  shouldShowConfirmTransactionDialog: boolean
   conversionRates: any
 }
 
@@ -28,11 +23,8 @@ const AccountsDashboard = ({
   accountsInfo,
   maxAccountIndex,
   reloadWalletInfo,
-  shouldShowSendTransactionModal,
-  shouldShowDelegationModal,
   totalWalletBalance,
   totalRewardsBalance,
-  shouldShowConfirmTransactionDialog,
   conversionRates,
 }: DashboardProps) => {
   const InfoAlert = () => (
@@ -94,8 +86,6 @@ const AccountsDashboard = ({
 
   return (
     <Fragment>
-      {shouldShowSendTransactionModal && <SendTransactionModal />}
-      {shouldShowDelegationModal && <DelegationModal />}
       <div className="dashboard-column account">
         <div className="card account-aggregated">
           <div className="balance">
@@ -142,7 +132,9 @@ const AccountsDashboard = ({
                 <AccountTile
                   key={accountInfo.accountIndex}
                   accountIndex={accountInfo.accountIndex}
-                  ticker={accountInfo.shelleyAccountInfo.delegation.ticker}
+                  ticker={
+                    hasStakingKey(accountInfo) && accountInfo.shelleyAccountInfo.delegation.ticker
+                  }
                   availableBalance={accountInfo.balance}
                   rewardsBalance={accountInfo.shelleyBalances.rewardsAccountBalance}
                   shouldShowSaturatedBanner={
@@ -168,7 +160,6 @@ const AccountsDashboard = ({
           </div>
         </div>
       </div>
-      {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
     </Fragment>
   )
 }
@@ -177,12 +168,9 @@ export default connect(
   (state: State) => ({
     accountsInfo: state.accountsInfo,
     maxAccountIndex: state.maxAccountIndex,
-    shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
-    shouldShowDelegationModal: state.shouldShowDelegationModal,
     activeAccountIndex: state.activeAccountIndex,
     totalRewardsBalance: state.totalRewardsBalance,
     totalWalletBalance: state.totalWalletBalance,
-    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     // TODO: refactor to get .data elsewhere
     conversionRates: state.conversionRates && state.conversionRates.data,
   }),

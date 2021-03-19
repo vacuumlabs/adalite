@@ -18,6 +18,7 @@ import {
   DelegateAdaTxPlanArgs,
   WithdrawRewardsTxPlanArgs,
   ConvertLegacyAdaTxPlanArgs,
+  DeregisterStakingKeyTxPlanArgs,
   AssetFamily,
   TokenBundle,
 } from '../../types'
@@ -321,7 +322,12 @@ const validateTxPlan = (txPlan: TxPlan): void => {
     throw NamedError('OutputTooBig')
   }
   const totalRewards = txPlan.withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
-  if (totalRewards > 0 && totalRewards < txPlan.fee) {
+
+  // When deregistering stake key, returned "deposit" should be in all cases higher than the Tx fee
+  const isDeregisteringStakeKey = txPlan.certificates.some(
+    (c) => c.type === CertificateType.STAKING_KEY_DEREGISTRATION
+  )
+  if (!isDeregisteringStakeKey && totalRewards > 0 && totalRewards < txPlan.fee) {
     throw NamedError('RewardsBalanceTooLow')
   }
 }
@@ -388,11 +394,34 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
     }
   }
 
+  const prepareDeregisterStakingKeyTx = (
+    txPlanArgs: DeregisterStakingKeyTxPlanArgs
+  ): TxPlanDraft => {
+    const {withdrawals, outputs} = prepareWithdrawalTx({
+      txType: TxType.WITHDRAW,
+      rewards: txPlanArgs.rewards,
+      stakingAddress: txPlanArgs.stakingAddress,
+    })
+    const certificates: TxCertificate[] = [
+      {
+        type: CertificateType.STAKING_KEY_DEREGISTRATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+      },
+    ]
+    return {
+      outputs,
+      certificates,
+      withdrawals: withdrawals.filter((w) => w.rewards > 0),
+    }
+  }
+
   switch (txPlanArgs.txType) {
     case TxType.SEND_ADA:
       return prepareSendAdaTx(txPlanArgs)
     case TxType.DELEGATE:
       return prepareDelegationTx(txPlanArgs)
+    case TxType.DEREGISTER_STAKE_KEY:
+      return prepareDeregisterStakingKeyTx(txPlanArgs)
     case TxType.WITHDRAW:
       return prepareWithdrawalTx(txPlanArgs)
     case TxType.CONVERT_LEGACY:

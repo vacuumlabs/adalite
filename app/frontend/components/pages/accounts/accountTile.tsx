@@ -157,8 +157,6 @@ const AccountTile = ({
 
 export default connect(
   (state: State) => ({
-    shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
-    shouldShowDelegationModal: state.shouldShowDelegationModal,
     activeAccountIndex: state.activeAccountIndex,
   }),
   actions

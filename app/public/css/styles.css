@@ -4322,3 +4322,68 @@ label.button.primary.disabled {
 .dashboard-tab:hover {
   cursor: pointer;
 }
+
+/* STAKE KEY DEREGISTER: (START) */
+.deregister-stake-key-card {
+  background: repeating-linear-gradient(
+    45deg,
+    #F7F7F7,
+    #F7F7F7 12px,
+    #FFFFFF 12px,
+    #FFFFFF 20px
+  );
+}
+
+.deregister-stake-key-card-disclaimer {
+  margin-bottom: 8px;
+  color: var(--color-grey);
+}
+
+.button.secondary.cancel-delegation {
+  position: relative;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 40px;
+}
+
+.cancel-delegation::before {
+  background-image: url('../assets/alert_icon_danger.svg');
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.button.secondary.cancel-delegation:hover {
+  color: var(--color-red);
+}
+
+.review.deregister-staking-key {
+  grid-template-columns: 160px 1fr;
+  margin-left: 30px;
+  margin-bottom: 32px;
+}
+
+.review.deregister-staking-key .review-fee::before {
+  left: -220px;
+  width: 310px;
+}
+
+.checkbox.deregister-stake-key-check {
+  margin-bottom: 40px;
+}
+
+.modal-body .deregister-staking-key-dialog .alert {
+  margin-top: 0px;
+  margin-left: -22px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border: none;
+}
+
+/* STAKE KEY DEREGISTER: (END) */

@@ -8,6 +8,7 @@ import {EpochDateTime} from '../common'
 import roundNumber from './../../../helpers/roundNumber'
 import {SATURATION_POINT} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
+import {useIsActiveAccountDelegating} from '../../../selectors'
 
 const SaturationInfo = (pool) => {
   if (pool.liveStake == null) return <Fragment />
@@ -29,10 +30,11 @@ const CurrentDelegationPage = ({
   nearestReward,
   currentDelegationReward,
 }) => {
+  const isDelegating = useIsActiveAccountDelegating()
   return (
     <div className="current-delegation card">
       <h2 className="card-title small-margin">Current Delegation</h2>
-      {Object.keys(pool).length ? (
+      {isDelegating ? (
         <div>
           <div className="current-delegation-wrapper">
             <div className="current-delegation-name">
