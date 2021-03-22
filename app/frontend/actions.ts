@@ -13,12 +13,7 @@ import {
 import debugLog from './helpers/debugLog'
 import getConversionRates from './helpers/getConversionRates'
 import sleep from './helpers/sleep'
-import {
-  NETWORKS,
-  PREMIUM_MEMBER_BALANCE_TRESHOLD,
-  BIG_DELEGATOR_THRESHOLD,
-  WANTED_DELEGATOR_STAKING_ADDRESSES,
-} from './wallet/constants'
+import {NETWORKS, WANTED_DELEGATOR_STAKING_ADDRESSES} from './wallet/constants'
 import {CryptoProviderType} from './wallet/types'
 import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
@@ -133,21 +128,9 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
-  const getWalletInfo = (accountsInfo: Array<AccountInfo>) => {
-    const totalWalletBalance = accountsInfo.reduce((a, {balance}) => balance + a, 0)
-    const totalRewardsBalance = accountsInfo.reduce(
-      (a, {shelleyBalances}) => shelleyBalances.rewardsAccountBalance + a,
-      0
-    )
-    const shouldShowSaturatedBanner = accountsInfo.some(
-      ({poolRecommendation}) => poolRecommendation.shouldShowSaturatedBanner
-    )
-    return {
-      totalWalletBalance,
-      totalRewardsBalance,
-      shouldShowSaturatedBanner,
-    }
-  }
+  // TODO: we may be able to remove this, kept for backwards compatibility
+  const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
+    accountsInfo.some(({poolRecommendation}) => poolRecommendation.shouldShowSaturatedBanner)
 
   /* LOADING WALLET */
   const accountsIncludeStakingAddresses = (
@@ -195,9 +178,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
       const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
       const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
-      const {totalRewardsBalance, totalWalletBalance, shouldShowSaturatedBanner} = getWalletInfo(
-        accountsInfo
-      )
+      const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
 
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
@@ -213,15 +194,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       ).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
       const autoLogin = state.autoLogin
-      const shouldShowPremiumBanner =
-        state.shouldShowPremiumBanner && PREMIUM_MEMBER_BALANCE_TRESHOLD < totalWalletBalance
-      const isBigDelegator = totalWalletBalance > BIG_DELEGATOR_THRESHOLD
       setState({
         validStakepoolDataProvider,
         accountsInfo,
         maxAccountIndex,
-        totalWalletBalance,
-        totalRewardsBalance,
         shouldShowSaturatedBanner,
         walletIsLoaded: true,
         loading: false,
@@ -244,8 +220,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         sendResponse: '',
         // shelley
         isShelleyCompatible,
-        shouldShowPremiumBanner,
-        isBigDelegator,
       })
       await fetchConversionRates(conversionRatesPromise)
     } catch (e) {
@@ -271,7 +245,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       setTimeout(() => setState({loading: false}), 500)
       setState({
         accountsInfo,
-        ...getWalletInfo(accountsInfo),
+        shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
       })
       await fetchConversionRates(conversionRates)
     } catch (e) {
@@ -1202,7 +1176,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
   const closePremiumBanner = (state) => {
     window.localStorage.setItem(localStorageVars.PREMIUM_BANNER, 'true')
     setState({
-      shouldShowPremiumBanner: false,
+      seenPremiumBanner: true,
     })
   }
 
