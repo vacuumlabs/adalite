@@ -21,10 +21,6 @@
     bech32 "^1.1.4"
     node-int64 "^0.4.0"
 
-"@emurgo/js-chain-libs@https://github.com/SebastienGllmt/js-chain-libs-pkg":
-  version "0.6.1"
-  resolved "https://github.com/SebastienGllmt/js-chain-libs-pkg#69701be6644927b324d380df6a9510c0fa2d4e1a"
-
 "@ledgerhq/devices@^5.15.0":
   version "5.15.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-5.15.0.tgz#ca8d1d2b5074257019b7b838f53d0337b451e57c"

@@ -20,12 +20,10 @@
     "build": "webpack --progress --config webpack.build.config.js",
     "dev": "webpack --watch --config webpack.build.config.js",
     "test": "webpack --config webpack.test.config.js ",
-    "test-chrome-headless": "yarn test && node node_modules/.bin/mocha-headless-chrome -f tests/index.html -a disable-web-security -a user-data-dir=tests/.chrome -a disable-site-isolation-trials",
-    "postinstall": "node ./helpers/removeChainLibsWasmImport"
+    "test-chrome-headless": "yarn test && node node_modules/.bin/mocha-headless-chrome -f tests/index.html -a disable-web-security -a user-data-dir=tests/.chrome -a disable-site-isolation-trials"
   },
   "dependencies": {
     "@cardano-foundation/ledgerjs-hw-app-cardano": "^2.2.1",
-    "@emurgo/js-chain-libs": "https://github.com/SebastienGllmt/js-chain-libs-pkg",
     "@ledgerhq/hw-transport": "^5.43.0",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",

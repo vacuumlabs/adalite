@@ -1,12 +1,11 @@
 import assert from 'assert'
 
 import derivationSchemes from '../../frontend/wallet/helpers/derivation-schemes'
-import CardanoWalletSecretCryptoProvider from '../../frontend/wallet/byron/cardano-wallet-secret-crypto-provider'
 import AddressManager from '../../frontend/wallet/address-manager'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import {byronAddressManagerSettings} from './common/address-manager-settings'
 import BlockchainExplorer from '../../frontend/wallet/blockchain-explorer'
-
+import ShelleyJsCryptoProvider from './../../frontend/wallet/shelley/shelley-js-crypto-provider'
 import mockNetwork from './common/mock'
 import {ByronAddressProvider} from '../../frontend/wallet/byron/byron-address-provider'
 
@@ -34,13 +33,11 @@ const initByronAddressManager = async (settings, i) => {
     walletSecretDef = await mnemonicToWalletSecretDef(cryptoSettings.secret)
   }
 
-  const cryptoProvider = CardanoWalletSecretCryptoProvider(
-    {
-      walletSecretDef,
-      network: cryptoSettings.network,
-    },
-    true
-  )
+  const cryptoProvider = await ShelleyJsCryptoProvider({
+    walletSecretDef,
+    network: cryptoSettings.network,
+    config: {shouldExportPubKeyBulk: true},
+  })
 
   const addressProvider = ByronAddressProvider(cryptoProvider, 0, isChange)
 

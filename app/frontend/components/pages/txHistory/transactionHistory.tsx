@@ -2,7 +2,6 @@ import {h, Fragment} from 'preact'
 import {assetNameHex2Readable} from '../../../wallet/shelley/helpers/addresses'
 import printAda from '../../../helpers/printAda'
 import {getActiveAccountInfo, State} from '../../../state'
-import {ADALITE_CONFIG} from '../../../config'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import toLocalDate from '../../../helpers/toLocalDate'
@@ -43,39 +42,17 @@ const FormattedFee = ({fee}: {fee: Lovelace}): h.JSX.Element => {
 const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
   <div className="blockexplorer-link">
     <span>View on </span>
-    {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
-      <span>
-        <a
-          className="transaction-address"
-          href={`https://blockchair.com/cardano/transaction/${txid}`}
-          target="_blank"
-          rel="noopener"
-        >
-          Blockchair
-        </a>
-        <span> | </span>
-        <a
-          className="transaction-address"
-          href={`https://adascan.net/transaction/${txid}`}
-          target="_blank"
-          rel="noopener"
-        >
-          AdaScan
-        </a>
-      </span>
-    )}
-    {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
-      <span>
-        <a
-          className="transaction-address"
-          href={`https://cardanoscan.io/transaction/${txid}`}
-          target="_blank"
-          rel="noopener"
-        >
-          CardanoScan
-        </a>
-        {/* <span> | </span> */}
-        {/* <a
+    <span>
+      <a
+        className="transaction-address"
+        href={`https://cardanoscan.io/transaction/${txid}`}
+        target="_blank"
+        rel="noopener"
+      >
+        CardanoScan
+      </a>
+      {/* <span> | </span> */}
+      {/* <a
           className="transaction-address"
           href={`hhttps://explorer.cardano.org/en/transaction?id=${txid}`}
           target="_blank"
@@ -83,17 +60,16 @@ const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
         >
           CardanoExplorer
         </a> */}
-        <span> | </span>
-        <a
-          className="transaction-address"
-          href={`https://adaex.org/${txid}`}
-          target="_blank"
-          rel="noopener"
-        >
-          ADAex
-        </a>
-      </span>
-    )}
+      <span> | </span>
+      <a
+        className="transaction-address"
+        href={`https://adaex.org/${txid}`}
+        target="_blank"
+        rel="noopener"
+      >
+        ADAex
+      </a>
+    </span>
   </div>
 )
 

@@ -9,13 +9,8 @@ const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str: string): Lovelace =>
   Math.trunc(toCoins(parseFloat(str) as Ada)) as Lovelace
 
-const _sendAddressValidators = {
-  byron: isValidBootstrapAddress,
-  shelley: (address: string) => isValidShelleyAddress(address) || isValidBootstrapAddress(address),
-}
-
 const sendAddressValidator = (fieldValue: string) =>
-  !_sendAddressValidators[ADALITE_CONFIG.ADALITE_CARDANO_VERSION](fieldValue) && fieldValue !== ''
+  !(isValidShelleyAddress(fieldValue) || isValidBootstrapAddress(fieldValue)) && fieldValue !== ''
     ? {code: 'SendAddressInvalidAddress'}
     : null
 

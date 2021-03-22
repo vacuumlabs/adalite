@@ -7,8 +7,6 @@ export const BTC_BLOCKCHAIN_EXPLORER = 'https://www.blockchain.com/btc/address/'
 export const ETH_BLOCKCHAIN_EXPLORER = 'https://etherscan.io/address/'
 export const BTC_DONATION_ADDRESS = '3Qk3BDbw4yym6PM6vWA4bAsFkY76EWwtnp'
 export const ETH_DONATION_ADDRESS = '0xe1575549f79742d21E56426a1F9AD26997F5B9fb'
-export const ADA_DONATION_ADDRESS_BYRON =
-  'DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5'
 export const ADA_DONATION_ADDRESS =
   'addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2mjdvnpufphgjawhyh0tg9r3sk85ls4'
 

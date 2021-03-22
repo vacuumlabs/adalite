@@ -1,5 +1,4 @@
 import {Fragment, h} from 'preact'
-import {ADALITE_CONFIG} from '../../../config'
 import CopyOnClick from '../../common/copyOnClick'
 import AddressVerification from '../../common/addressVerification'
 import * as QRious from '../../../libs/qrious'
@@ -16,47 +15,20 @@ interface Props {
 const AddressItem = ({address, bip32path, isExpanded, expand}: Props): h.JSX.Element => {
   const explorerLinksInline = (
     <div>
-      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
-        <Fragment>
-          <ViewAddressOn
-            name="Blockchair"
-            url={`https://blockchair.com/cardano/address/${address}`}
-          />
-          {' | '}
-          <ViewAddressOn name="AdaScan" url={`https://adascan.net/address/${address}`} inline />
-        </Fragment>
-      )}
-      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
-        <Fragment>
-          <ViewAddressOn name="CardanoScan" url={`https://cardanoscan.io/address/${address}`} />
-          {' | '}
-          <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} inline />
-        </Fragment>
-      )}
+      <ViewAddressOn name="CardanoScan" url={`https://cardanoscan.io/address/${address}`} />
+      {' | '}
+      <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} inline />
     </div>
   )
 
   const explorerLinks = (
     <Fragment>
-      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'byron' && (
-        <Fragment>
-          <ViewAddressOn
-            name="Blockchair"
-            url={`https://blockchair.com/cardano/address/${address}`}
-          />
-          <ViewAddressOn name="AdaScan" url={`https://adascan.net/address/${address}`} />
-        </Fragment>
-      )}
-      {ADALITE_CONFIG.ADALITE_CARDANO_VERSION === 'shelley' && (
-        <Fragment>
-          <div>
-            <ViewAddressOn name="CardanoScan" url={`https://cardanoscan.io/address/${address}`} />
-          </div>
-          <div>
-            <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} />
-          </div>
-        </Fragment>
-      )}
+      <div>
+        <ViewAddressOn name="CardanoScan" url={`https://cardanoscan.io/address/${address}`} />
+      </div>
+      <div>
+        <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} />
+      </div>
     </Fragment>
   )
 

@@ -16,13 +16,10 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
   const [enableBulkExport, setBulkExport] = useState(
     window.localStorage.getItem(localStorageVars.BULK_EXPORT) !== 'true'
   )
-  const toggleBulkExport = useCallback(
-    () => {
-      window.localStorage.setItem(localStorageVars.BULK_EXPORT, `${enableBulkExport}`)
-      setBulkExport(!enableBulkExport)
-    },
-    [enableBulkExport]
-  )
+  const toggleBulkExport = useCallback(() => {
+    window.localStorage.setItem(localStorageVars.BULK_EXPORT, `${enableBulkExport}`)
+    setBulkExport(!enableBulkExport)
+  }, [enableBulkExport])
 
   const TrezorAffiliateLink = (title) => (
     <a href="https://shop.trezor.io/?offer_id=10&aff_id=1071" target="blank">
@@ -65,7 +62,8 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
               })
             }
           >
-            Unlock with<div className="trezor-logo-container">
+            Unlock with
+            <div className="trezor-logo-container">
               <TrezorLogoWhite />
             </div>
           </button>
@@ -97,7 +95,8 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
               })
             }
           >
-            Unlock with<div className="ledger-logo-container">
+            Unlock with
+            <div className="ledger-logo-container">
               <LedgerLogoWhite />
             </div>
           </button>
@@ -118,7 +117,7 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
           </button>
         </div>
       </div>
-      <div className="authentication-hw-byron-public-export">
+      <div className="authentication-hw-bulk-public-export">
         <label className="checkbox">
           <input
             type="checkbox"
@@ -126,14 +125,12 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
             onChange={toggleBulkExport}
             className="checkbox-input"
           />
-          <span className="checkbox-indicator" />Bulk export public keys
+          <span className="checkbox-indicator" />
+          Bulk export public keys
         </label>
       </div>
     </Fragment>
   )
 }
 
-export default connect(
-  (state) => ({}),
-  actions
-)(LoadByHardwareWalletSection)
+export default connect((state) => ({}), actions)(LoadByHardwareWalletSection)

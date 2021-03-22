@@ -24,7 +24,6 @@ import {
 
 import {
   selectMinimalTxPlan,
-  computeRequiredTxFee,
   isUtxoProfitable,
   TxPlan,
   TxPlanResult,
@@ -192,7 +191,7 @@ const Account = ({
   blockchainExplorer,
   accountIndex,
 }: AccountParams) => {
-  const {getMaxSendableAmount: _getMaxSendableAmount} = MaxAmountCalculator(computeRequiredTxFee)
+  const {getMaxSendableAmount: _getMaxSendableAmount} = MaxAmountCalculator()
 
   let seeds = {
     randomInputSeed,

@@ -45,7 +45,6 @@ const expectedStakepool = {
 }
 
 it('Should properly load shelley wallet', async () => {
-  ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
   ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
   mockNet.mockBulkAddressSummaryEndpoint()

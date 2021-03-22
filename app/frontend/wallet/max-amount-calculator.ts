@@ -13,7 +13,7 @@ function getInputBalance(inputs: Array<UTxO>): Lovelace {
 }
 
 // TODO: when we remove the byron functionality we can remove the computeFeeFn as argument
-export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequiredTxFee) => {
+export const MaxAmountCalculator = () => {
   function getMaxSendableAmount(
     profitableInputs: Array<UTxO>,
     address: Address,
@@ -34,7 +34,7 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
         {isChange: false, address, coins: 0 as Lovelace, tokenBundle: []},
         {isChange: false, address, coins: additionalLovelaceAmount, tokenBundle: inputsTokenBundle},
       ]
-      const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
+      const txFee = computeRequiredTxFee(profitableInputs, outputs)
       const coins = Math.max(inputBalance - txFee - additionalLovelaceAmount, 0) as Lovelace
 
       return {assetFamily: AssetFamily.ADA, coins, fieldValue: `${printAda(coins)}`}
@@ -68,7 +68,7 @@ export const MaxAmountCalculator = (computeRequiredTxFeeFn: typeof computeRequir
       {isChange: false, address: getDonationAddress(), coins: 0 as Lovelace, tokenBundle: []},
     ]
 
-    const txFee = computeRequiredTxFeeFn(profitableInputs, outputs)
+    const txFee = computeRequiredTxFee(profitableInputs, outputs)
     return Math.max(coins - txFee - sendAmount, 0) as Lovelace
   }
 

@@ -14,7 +14,6 @@ beforeEach(() => {
 })
 
 before(() => {
-  ADALITE_CONFIG.ADALITE_CARDANO_VERSION = 'shelley'
   ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
   mockNet.mockBulkAddressSummaryEndpoint()

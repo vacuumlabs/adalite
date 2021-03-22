@@ -1,7 +1,7 @@
 import assert from 'assert'
 import cbor from 'borc'
 
-import CborIndefiniteLengthArray from '../../frontend/wallet/byron/helpers/CborIndefiniteLengthArray'
+import CborIndefiniteLengthArray from '../../frontend/wallet/helpers/CborIndefiniteLengthArray'
 
 describe('CBOR encoding of indefinite length arrays', () => {
   it('should properly encode empty array', () => {

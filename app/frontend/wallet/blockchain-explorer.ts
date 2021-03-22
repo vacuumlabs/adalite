@@ -155,15 +155,6 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response.Right
   }
 
-  // TODO: delete, raw txs are no longer in the db sync database
-  // TODO: remove tests for byron which use this
-  async function fetchTxRaw(txId) {
-    // eslint-disable-next-line no-undef
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/txs/raw/${txId}`
-    const result = await request(url)
-    return Buffer.from(result.Right, 'hex')
-  }
-
   async function isSomeAddressUsed(addresses: Array<string>): Promise<boolean> {
     return (await _getAddressInfos(addresses)).caTxNum > 0
   }
@@ -502,7 +493,6 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
   return {
     getTxHistory,
-    fetchTxRaw,
     fetchUnspentTxOutputs,
     isSomeAddressUsed,
     submitTxRaw,

@@ -13,8 +13,7 @@ const config = `{
   "ADALITE_MIN_DONATION_VALUE": "1",
   "ADALITE_STAKE_POOL_ID": "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49733c37b8f6",
   "ADALITE_ENV": "local",
-  "ADALITE_DEVEL_AUTO_LOGIN": "false",
-  "ADALITE_CARDANO_VERSION": "byron"
+  "ADALITE_DEVEL_AUTO_LOGIN": "false"
 }`
 
 document.body.setAttribute('data-config', config)
