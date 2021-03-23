@@ -5,6 +5,7 @@ import Balance from '../../common/balance'
 import TransactionHistory from '../txHistory/transactionHistory'
 import ExportCard from '../exportWallet/exportCard'
 import SendAdaPage from '../sendAda/sendAdaPage'
+import MultiAssetsPage from '../sendAda/multiAssetsPage'
 import MyAddresses from '../receiveAda/myAddresses'
 import DelegatePage from '../delegations/delegatePage'
 import CurrentDelegationPage from '../delegations/currentDelegationPage'
@@ -86,8 +87,9 @@ const SendingPage = ({
             <Balance />
             <TransactionHistory />
           </div>
-          <div className="dashboard-column">
+          <div className="dashboard-column shrinkable">
             <SendAdaPage />
+            <MultiAssetsPage />
             <ReceiveRedirect />
             {shouldShowExportOption && <ExportCard />}
           </div>
@@ -161,11 +163,20 @@ const AccountsPage = ({screenType}: {screenType: ScreenType}) => {
   )
 }
 
+const MobileSendAdaPage = () => (
+  <Fragment>
+    <SendAdaPage />
+    <div className="mobile-multi-assets-page-wrapper">
+      <MultiAssetsPage />
+    </div>
+  </Fragment>
+)
+
 const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.DELEGATE_ADA]: <DelegatePage />,
   [SubTabs.CURRENT_DELEGATION]: <CurrentDelegationPage />,
   [SubTabs.STAKING_HISTORY]: <StakingHistoryPage />,
-  [SubTabs.SEND_ADA]: <SendAdaPage />,
+  [SubTabs.SEND_ADA]: <MobileSendAdaPage />,
   [SubTabs.TRANSACTIONS]: <TransactionHistory />,
   [SubTabs.ADDRESSES]: <MyAddresses />,
   [SubTabs.KEYS]: <Keys />,

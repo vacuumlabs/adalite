@@ -16,7 +16,7 @@ import {
   Token,
 } from '../../../types'
 import {AdaIcon, StarIcon} from '../../common/svg'
-import {LinkToAsset} from '../delegations/common'
+import {LinkToAsset} from '../../common/asset'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {

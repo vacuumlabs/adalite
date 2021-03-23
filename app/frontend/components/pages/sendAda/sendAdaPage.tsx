@@ -20,11 +20,11 @@ import {
   Token,
   TransactionSummary,
 } from '../../../types'
-import {AdaIcon, StarIcon} from '../../common/svg'
+import {AdaIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
 import tooltip from '../../common/tooltip'
-import {LinkToAsset} from '../delegations/common'
+import {FormattedAssetItem} from '../../common/asset'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -76,38 +76,24 @@ type DropdownAssetItem = Token & {
   star?: boolean
 }
 
-const displayDropdownAssetItem = ({
-  type,
-  star,
-  assetName,
-  assetNameHex,
-  policyId,
-  quantity,
-}: DropdownAssetItem) => (
-  <div className="multi-asset-item">
-    <div className="multi-asset-name-amount">
-      <div className="multi-asset-name">
-        {star && <StarIcon />}
-        {assetName || (
-          <span className="empty">
-            {'<'}no-name{'>'}
-          </span>
-        )}
-        {type === AssetFamily.TOKEN && (
-          <LinkToAsset policyIdHex={policyId} assetNameHex={assetNameHex} />
-        )}
-      </div>
-      <div className="multi-asset-amount">
-        {type === AssetFamily.TOKEN ? quantity : printAda(Math.abs(quantity) as Lovelace)}
-      </div>
-    </div>
-    {policyId && (
-      <div className="multi-asset-hash">
-        <span className="ellipsis">{policyId.slice(0, -6)}</span>
-        <span>{policyId.slice(-6)}</span>
-      </div>
-    )}
-  </div>
+const displayDropdownAssetItem = (props: DropdownAssetItem) => (
+  <FormattedAssetItem key={props.assetName} {...props}>
+    {({starIcon, formattedAssetName, formattedAssetLink, formattedAmount, formattedPolicy}) => {
+      return (
+        <div className="multi-asset-item">
+          <div className="multi-asset-name-amount">
+            <div className="multi-asset-name">
+              {starIcon}
+              {formattedAssetName}
+              {formattedAssetLink}
+            </div>
+            <div className="multi-asset-amount">{formattedAmount}</div>
+          </div>
+          {formattedPolicy}
+        </div>
+      )
+    }}
+  </FormattedAssetItem>
 )
 
 const SendAdaPage = ({
