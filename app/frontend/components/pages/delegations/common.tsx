@@ -1,4 +1,5 @@
 import CopyOnClick from '../../common/copyOnClick'
+import LinkIcon from '../../common/linkIcon'
 import {h} from 'preact'
 
 export const CopyPoolId = ({value}) => {
@@ -13,27 +14,10 @@ export const CopyPoolId = ({value}) => {
   )
 }
 
-export const LinkIcon = ({url}) => {
-  return (
-    <span className="link">
-      <a className="link-icon" href={url} target="_blank" rel="noopener" />
-    </span>
-  )
-}
-
 export const LinkIconToPool = ({poolHash}) => (
   <LinkIcon url={`https://cardanoscan.io/pool/${poolHash}`} />
 )
 
 export const LinkIconToKey = ({stakeKey}) => (
   <LinkIcon url={`https://cardanoscan.io/stakekey/${stakeKey}`} />
-)
-
-type LinkToAssetProps = {
-  policyIdHex: string
-  assetNameHex: string
-}
-
-export const LinkToAsset = ({policyIdHex, assetNameHex}: LinkToAssetProps) => (
-  <LinkIcon url={`https://cardanoscan.io/token/${policyIdHex}.${assetNameHex}`} />
 )

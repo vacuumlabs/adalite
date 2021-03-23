@@ -911,6 +911,11 @@
     margin-bottom: -24px;
   }
 
+  .mobile-multi-assets-page-wrapper {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
   /* ACCOUNTS */
   .accounts-wrapper {
     display: flex;

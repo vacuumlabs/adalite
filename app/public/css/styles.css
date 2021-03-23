@@ -696,21 +696,21 @@ p.hey {
   display: none;
 }
 
-.searchable-select-item .multi-asset-item {
+.multi-asset-item {
   display: flex;
   flex-direction: column;
 }
 
-.searchable-select-item .multi-asset-name-amount {
+.multi-asset-name-amount {
   display: flex;
   justify-content: space-between;
 }
 
-.searchable-select-item .multi-asset-name {
+.multi-asset-name {
   margin: unset;
 }
 
-.searchable-select-item .multi-asset-amount {
+.multi-asset-amount {
   margin: unset;
   padding-right: 12px;
 }
@@ -3774,6 +3774,41 @@ input:checked + .slider:before {
 .review-bottom .button:first-child {
   margin-bottom: 32px;
 }
+
+/* MULTI ASSETS SCREEN: START */
+.mobile-multi-assets-page-wrapper {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.multi-asset-page-copy-on-click {
+  display: flex;
+}
+
+.multi-asset-page-policy .multi-asset-hash {
+  padding-right: 0;
+  max-width: calc(100% - 150px);
+}
+
+.multi-asset-page-item {
+  border-top: 1px solid var(--color-border);
+  padding: 4px 0;
+}
+
+.multi-assets-page-list {
+  /* Hack due to Tooltip being cut due to overflow property */
+  padding-top: 12px;
+  margin-top: -12px;
+
+  max-height: 300px;
+  overflow: auto;
+}
+
+.multi-asset-page-policy {
+  color: var(--color-grey);
+  padding-bottom: 8px;
+}
+/* MULTI ASSETS SCREEN: END */
 
 /* ANIMATIONS */
 
