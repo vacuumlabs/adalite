@@ -376,10 +376,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       return rewardWithdrawal
     })
 
-    // Prepare staking key registration
+    // Prepare staking key registration/deregistration
     const parsedStakingKeyRegistrations = stakingKeyRegistrations.map((registration) => {
       const stakingKeyRegistration: StakingKeyRegistration = {
-        type: StakingHistoryItemType.STAKING_KEY_REGISTRATION,
+        type:
+          registration.action === 'registration'
+            ? StakingHistoryItemType.STAKING_KEY_REGISTRATION
+            : StakingHistoryItemType.STAKING_KEY_DEREGISTRATION,
         txHash: registration.txHash,
         epoch: registration.epochNo,
         dateTime: new Date(registration.time),

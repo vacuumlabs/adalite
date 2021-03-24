@@ -1,14 +1,16 @@
 import {h, Fragment} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {useState} from 'preact/hooks'
+import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 import RawTransactionModal from './rawTransactionModal'
-import {State} from '../../../state'
 import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
+import Alert from '../../common/alert'
 import {
   DelegateTransactionSummary,
+  DeregisterStakingKeyTransactionSummary,
   Lovelace,
   SendTransactionSummary,
   TransactionSummary,
@@ -17,16 +19,29 @@ import {
 } from '../../../types'
 import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
 
-interface Props {
-  sendAddress: any
-  submitTransaction: any
-  cancelTransaction: any
-  setRawTransactionOpen: any
-  rawTransactionOpen: boolean
-  isDelegation?: boolean
-  stakePool: any
-  txConfirmType: string
-  transactionSummary: TransactionSummary
+interface ReviewBottomProps {
+  onSubmit: () => any
+  onCancel: () => any
+  disabled: boolean
+}
+
+const ReviewBottom = ({onSubmit, onCancel, disabled}: ReviewBottomProps) => {
+  return (
+    <div className="review-bottom">
+      <button className="button primary" onClick={onSubmit} disabled={disabled}>
+        Confirm Transaction
+      </button>
+      <a
+        className="review-cancel"
+        onClick={onCancel}
+        onKeyDown={(e) => {
+          e.key === 'Enter' && (e.target as HTMLAnchorElement).click()
+        }}
+      >
+        Cancel Transaction
+      </a>
+    </div>
+  )
 }
 
 const SendAdaReview = ({
@@ -121,6 +136,57 @@ const DelegateReview = ({
   )
 }
 
+const DeregisterStakeKeyReview = ({
+  transactionSummary,
+  onSubmit,
+  onCancel,
+}: {
+  transactionSummary: TransactionSummary & DeregisterStakingKeyTransactionSummary
+  onSubmit: () => any
+  onCancel: () => any
+}) => {
+  const {deposit, fee, rewards} = transactionSummary
+  const total = (fee + deposit) as Lovelace
+  const [checked, setChecked] = useState(false)
+  return (
+    <div className="deregister-staking-key-dialog">
+      <Alert alertType="warning">
+        You do NOT need to deregister to delegate to a different stake pool. You can change your
+        delegation preference at any time just by delegating to another stake pool.
+      </Alert>
+      <Alert alertType="warning">
+        Deregistering means this key will no longer receive rewards until you re-register the
+        staking key (usually by delegating to a pool again). Do NOT deregister if you are elligible
+        for rewards in the following epoch.
+      </Alert>
+      <Alert alertType="error">
+        You should NOT deregister if this staking key is used as a stake pool's reward account, as
+        this will cause all pool operator rewards to be sent back to the reserve.
+      </Alert>
+      <div className="review deregister-staking-key">
+        <div className="ada-label">Returned deposit</div>
+        <div className="review-fee">{printAda(-deposit as Lovelace)}</div>
+        <div className="ada-label">Withdrawn rewards</div>
+        <div className="review-fee">{printAda(rewards)}</div>
+        <div className="ada-label">Fee</div>
+        <div className="review-fee">{printAda(transactionSummary.fee as Lovelace)}</div>
+        <div className="ada-label">Returned</div>
+        <div className="review-total">{printAda(-total as Lovelace)}</div>
+      </div>
+      <label className="checkbox deregister-stake-key-check">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={() => setChecked(!checked)}
+          className="checkbox-input"
+        />
+        <span className="checkbox-indicator" />I understand all the above warnings.
+      </label>
+      <ReviewBottom {...{onSubmit, onCancel, disabled: !checked}} />
+    </div>
+  )
+}
+
 const WithdrawReview = ({
   transactionSummary,
 }: {
@@ -187,22 +253,24 @@ const ConvertFundsReview = ({
   )
 }
 
-const ConfirmTransactionDialog = ({
-  submitTransaction,
-  cancelTransaction,
-  setRawTransactionOpen,
-  rawTransactionOpen,
-  transactionSummary,
-  txConfirmType,
-}: Props) => {
+const ConfirmTransactionDialog = () => {
+  const {rawTransactionOpen, transactionSummary, txConfirmType} = useSelector((state) => ({
+    transactionSummary: state.sendTransactionSummary,
+    rawTransactionOpen: state.rawTransactionOpen,
+    txConfirmType: state.txConfirmType,
+  }))
+  const {setRawTransactionOpen, submitTransaction, cancelTransaction} = useActions(actions)
+
   const titleMap: {[key in TxType]: string} = {
     [TxType.DELEGATE]: 'Delegation review',
     [TxType.SEND_ADA]: 'Transaction review',
     [TxType.CONVERT_LEGACY]: 'Stakable balance conversion review',
     [TxType.WITHDRAW]: 'Rewards withdrawal review',
     [TxType.POOL_REG_OWNER]: '',
+    [TxType.DEREGISTER_STAKE_KEY]: 'Deregister stake key',
     // crossAccount: 'Transaction between accounts review',
   }
+  const hideDefaultSummary = transactionSummary.type === TxType.DEREGISTER_STAKE_KEY
   // TODO: refactor, remove txConfirmType
   return (
     <div>
@@ -225,27 +293,28 @@ const ConfirmTransactionDialog = ({
           <DelegateReview transactionSummary={transactionSummary} />
         )}
 
+        {transactionSummary.type === TxType.DEREGISTER_STAKE_KEY && (
+          <DeregisterStakeKeyReview
+            transactionSummary={transactionSummary}
+            onSubmit={submitTransaction}
+            onCancel={cancelTransaction}
+          />
+        )}
+
         {transactionSummary.type === TxType.SEND_ADA && (
           <SendAdaReview
             transactionSummary={transactionSummary}
             shouldShowAddressVerification={txConfirmType === 'crossAccount'}
           />
         )}
-        <div className="review-bottom">
-          <button className="button primary" onClick={submitTransaction}>
-            Confirm Transaction
-          </button>
-          <a
-            className="review-cancel"
-            onClick={cancelTransaction}
-            onKeyDown={(e) => {
-              e.key === 'Enter' && (e.target as HTMLAnchorElement).click()
-            }}
-          >
-            Cancel Transaction
-          </a>
-        </div>
-        <a href="#" className="send-raw" onClick={setRawTransactionOpen}>
+        {!hideDefaultSummary && (
+          <ReviewBottom
+            disabled={false}
+            onSubmit={submitTransaction}
+            onCancel={cancelTransaction}
+          />
+        )}
+        <a href="#" className="send-raw" onClick={() => setRawTransactionOpen(true)}>
           Raw unsigned transaction
         </a>
         {rawTransactionOpen && <RawTransactionModal />}
@@ -254,13 +323,4 @@ const ConfirmTransactionDialog = ({
   )
 }
 
-export default connect(
-  (state: State) => ({
-    sendAddress: state.sendAddress.fieldValue,
-    transactionSummary: state.sendTransactionSummary,
-    rawTransactionOpen: state.rawTransactionOpen,
-    stakePool: state.shelleyDelegation.selectedPool,
-    txConfirmType: state.txConfirmType,
-  }),
-  actions
-)(ConfirmTransactionDialog)
+export default ConfirmTransactionDialog

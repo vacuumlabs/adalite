@@ -46,6 +46,7 @@ import {
   SendTransactionSummary,
   WithdrawTransactionSummary,
   DelegateTransactionSummary,
+  DeregisterStakingKeyTransactionSummary,
 } from './types'
 import {MainTabs} from './constants'
 import {parseCliUnsignedTx} from './wallet/shelley/helpers/stakepoolRegistrationUtils'
@@ -438,7 +439,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const isTxBetweenAccounts = state.activeMainTab === MainTabs.ACCOUNT && txConfirmType === 'send'
     // TODO: refactor
     const keepConfirmationDialogOpen =
-      isTxBetweenAccounts || txConfirmType === 'convert' || txConfirmType === 'withdraw'
+      isTxBetweenAccounts ||
+      txConfirmType === 'convert' ||
+      txConfirmType === 'withdraw' ||
+      txConfirmType === 'deregisterStakeKey'
 
     setState({
       shouldShowConfirmTransactionDialog: true,
@@ -483,6 +487,7 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
       | SendTransactionSummary
       | WithdrawTransactionSummary
       | DelegateTransactionSummary
+      | DeregisterStakingKeyTransactionSummary
   ) => {
     setState({
       sendTransactionSummary: {
@@ -1346,6 +1351,49 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  const deregisterStakingKey = async (): Promise<void> => {
+    const supportError = wallet.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
+    if (supportError) {
+      setErrorState('transactionSubmissionError', supportError, {
+        shouldShowTransactionErrorModal: true,
+      })
+      return
+    }
+
+    const state = getState()
+    const sourceAccount = getSourceAccountInfo(state)
+    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
+    const balance = getSourceAccountInfo(state).balance as Lovelace
+
+    loadingAction(state, 'Preparing transaction...')
+
+    const txPlanResult = await prepareTxPlan({
+      txType: TxType.DEREGISTER_STAKE_KEY,
+      rewards,
+      stakingAddress: sourceAccount.stakingAddress,
+    })
+    if (txPlanResult.success === true) {
+      const summary = {
+        type: TxType.DEREGISTER_STAKE_KEY,
+        deposit: txPlanResult.txPlan.deposit,
+        rewards,
+      } as DeregisterStakingKeyTransactionSummary
+
+      setTransactionSummary(txPlanResult.txPlan, summary)
+      await confirmTransaction(getState(), 'deregisterStakeKey')
+    } else {
+      // Handled the same way as for withdrawal
+      const withdrawalValidationError =
+        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee) ||
+        wallet.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
+        txPlanResult.error
+      setErrorState('transactionSubmissionError', withdrawalValidationError, {
+        shouldShowTransactionErrorModal: true,
+      })
+    }
+    stopLoadingAction(state, {})
+  }
+
   return {
     loadingAction,
     stopLoadingAction,
@@ -1406,5 +1454,6 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     closePoolRegTransactionModal,
     signPoolCertificateTx,
     resetPoolRegTransactionSummary,
+    deregisterStakingKey,
   }
 }

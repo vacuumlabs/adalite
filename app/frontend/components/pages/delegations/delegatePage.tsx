@@ -5,7 +5,6 @@ import tooltip from '../../common/tooltip'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 import {getTranslation} from '../../../translations'
-import ConfirmTransactionDialog from '../../pages/sendAda/confirmTransactionDialog'
 import {getSourceAccountInfo, State} from '../../../state'
 import Accordion from '../../common/accordion'
 import {Lovelace, PoolRecommendation, Stakepool} from '../../../types'
@@ -52,7 +51,6 @@ interface Props {
   calculatingDelegationFee: boolean
   delegationValidationError: any
   isShelleyCompatible: boolean
-  shouldShowConfirmTransactionDialog: boolean
   txSuccessTab: string
   gettingPoolInfo: boolean
   poolRecommendation: PoolRecommendation
@@ -70,7 +68,6 @@ const Delegate = ({
   calculatingDelegationFee,
   delegationValidationError,
   isShelleyCompatible,
-  shouldShowConfirmTransactionDialog,
   txSuccessTab,
   gettingPoolInfo,
   poolRecommendation,
@@ -134,7 +131,6 @@ const Delegate = ({
           ),
         ]}
       </div>
-      {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog isDelegation />}
     </Fragment>
   )
 
@@ -169,7 +165,6 @@ export default connect(
     calculatingDelegationFee: state.calculatingDelegationFee,
     delegationFee: state.shelleyDelegation.delegationFee,
     delegationValidationError: state.delegationValidationError,
-    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,
     isShelleyCompatible: state.isShelleyCompatible,
