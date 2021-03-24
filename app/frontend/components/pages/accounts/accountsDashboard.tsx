@@ -3,12 +3,16 @@ import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import {State} from '../../../state'
+import {
+  totalWalletBalanceSelector,
+  totalRewardsBalanceSelector,
+  hasStakingKey,
+} from '../../../selectors'
 import {AdaIcon} from '../../common/svg'
 import Alert from '../../common/alert'
 import AccountTile from './accountTile'
 import {AccountInfo, Lovelace} from '../../../../frontend/types'
 import Conversions from '../../common/conversions'
-import {hasStakingKey} from '../../../selectors'
 
 type DashboardProps = {
   accountsInfo: Array<AccountInfo>
@@ -169,10 +173,10 @@ export default connect(
     accountsInfo: state.accountsInfo,
     maxAccountIndex: state.maxAccountIndex,
     activeAccountIndex: state.activeAccountIndex,
-    totalRewardsBalance: state.totalRewardsBalance,
-    totalWalletBalance: state.totalWalletBalance,
     // TODO: refactor to get .data elsewhere
     conversionRates: state.conversionRates && state.conversionRates.data,
+    totalWalletBalance: totalWalletBalanceSelector(state),
+    totalRewardsBalance: totalRewardsBalanceSelector(state),
   }),
   actions
 )(AccountsDashboard)

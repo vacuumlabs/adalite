@@ -8,6 +8,7 @@ import {getTranslation} from '../../../translations'
 import {getSourceAccountInfo, State} from '../../../state'
 import Accordion from '../../common/accordion'
 import {Lovelace, PoolRecommendation, Stakepool} from '../../../types'
+import {isBigDelegatorSelector} from '../../../selectors'
 import {StakePoolInfo} from './stakePoolInfo'
 import DelegateInput from './delegateInput'
 
@@ -170,7 +171,7 @@ export default connect(
     isShelleyCompatible: state.isShelleyCompatible,
     poolRecommendation: getSourceAccountInfo(state).poolRecommendation,
     pool: getSourceAccountInfo(state).shelleyAccountInfo.delegation,
-    isBigDelegator: state.isBigDelegator,
+    isBigDelegator: isBigDelegatorSelector(state),
   }),
   actions
 )(Delegate)

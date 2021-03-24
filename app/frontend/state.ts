@@ -34,7 +34,7 @@ export interface State {
   displayWelcome: boolean
   shouldShowStakingBanner: boolean
   displayInfoModal: boolean
-  shouldShowPremiumBanner?: boolean
+  seenPremiumBanner: boolean
   shouldShowWantedAddressesModal: boolean
 
   // login / logout
@@ -48,7 +48,6 @@ export interface State {
   walletLoadingError?: any
   shouldShowWalletLoadingErrorModal?: boolean
   usingHwWallet?: boolean
-  isBigDelegator: boolean
   shouldShowSaturatedBanner?: boolean
   mnemonicAuthForm: {
     mnemonicInputValue: string
@@ -115,8 +114,6 @@ export interface State {
   sourceAccountIndex: number
   activeAccountIndex: number
   targetAccountIndex: number
-  totalWalletBalance: number
-  totalRewardsBalance: number
 
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean
@@ -150,9 +147,7 @@ const initialState: State = {
   shouldShowStakingBanner: !(
     window.localStorage.getItem(localStorageVars.STAKING_BANNER) === 'true'
   ),
-  shouldShowPremiumBanner: !(
-    window.localStorage.getItem(localStorageVars.PREMIUM_BANNER) === 'true'
-  ),
+  seenPremiumBanner: window.localStorage.getItem(localStorageVars.PREMIUM_BANNER) === 'true',
   shouldShowWantedAddressesModal: false,
   displayInfoModal: !(window.localStorage.getItem(localStorageVars.INFO_MODAL) === 'true'),
 
@@ -167,7 +162,6 @@ const initialState: State = {
   walletIsLoaded: false,
   isShelleyCompatible: true,
   shouldShowNonShelleyCompatibleDialog: false,
-  isBigDelegator: false,
   mnemonicAuthForm: {
     mnemonicInputValue: '',
     mnemonicInputError: null,
@@ -272,8 +266,6 @@ const initialState: State = {
   sourceAccountIndex: 0,
   activeAccountIndex: 0,
   targetAccountIndex: 0,
-  totalWalletBalance: 0,
-  totalRewardsBalance: 0,
 
   shouldShowSendTransactionModal: false,
   shouldShowDelegationModal: false,
