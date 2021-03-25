@@ -254,7 +254,13 @@ const DashboardPage = ({
       {!isShelleyCompatible && <DashboardErrorBanner />}
       {shouldShowPremiumBanner && <PremiumBanner />}
       {shouldShowSaturatedBanner && <SaturationErrorBanner />}
+
       <ul className="tabinator">
+        {/*
+        REFACTOR: (calculateFee)
+        "setActiveMainTab" should really just change tab, instead it does all the magic
+        behind the scenes (e.g. calculate fee), this should be responsibility of screen of interest
+        */}
         {Object.values(MainTabs).map((name, i) => (
           <MainTab
             key={i}

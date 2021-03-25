@@ -568,6 +568,14 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  /*
+  REFACTOR: (calculateFee)
+  => this should be just "async" function that calculates the "fee" based on its
+  arguments, that other "actions" can call to obtain the fee (if they need it)
+  => this function should not have any notion of "state/setState/getState"
+  => components could call it directly to obtain the fee for parts of the screen where
+  they need it, no need for storing it in global state (also it leads to "race-conditions")
+  */
   const calculateFee = async (): Promise<void> => {
     const state = getState()
     if (!isSendFormFilledAndValid(state)) {
@@ -589,6 +597,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     const coins = sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
     const token = sendAmount.assetFamily === AssetFamily.TOKEN ? sendAmount.token : null
 
+    /*
+    REFACTOR: (calculateFee)
+    Setting transaction summary should not be the responsibility of action called "calculateFee"
+    */
     if (txPlanResult.success === true) {
       const newState = getState() // if the values changed meanwhile
       if (
@@ -612,6 +624,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
         transactionFee: txPlanResult.txPlan.fee,
       })
     } else {
+      /*
+      REFACTOR: (calculateFee)
+      Handling validation error should not be the responsibility of action called "calculateFee"
+      */
       const validationError =
         txPlanValidator(
           coins,
@@ -630,6 +646,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
 
   const debouncedCalculateFee = debounceEvent(calculateFee, 2000)
 
+  /*
+  REFACTOR: (forms)
+  This logic & state should be moved to components.
+  */
   const validateSendFormAndCalculateFee = () => {
     validateSendForm(getState())
     resetTransactionSummary(getState())
@@ -643,6 +663,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     }
   }
 
+  /*
+  REFACTOR: (forms)
+  This logic & state should be moved to components.
+  */
   const updateAddress = (state: State, e, address?: string) => {
     setState({
       sendResponse: '',
@@ -653,6 +677,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     validateSendFormAndCalculateFee()
   }
 
+  /*
+  REFACTOR: (forms)
+  This logic & state should be moved to components.
+  */
   const updateAmount = (state: State, sendAmount: SendAmount): void => {
     setState({
       sendResponse: '',
@@ -795,6 +823,10 @@ export default ({setState, getState}: {setState: SetStateFn; getState: GetStateF
     })
   }
 
+  /*
+  REFACTOR: (calculateFee)
+  Same issues as with "calculateFee" applies.
+  */
   const calculateDelegationFee = async (): Promise<void> => {
     const state = getState()
     setPoolInfo(state)

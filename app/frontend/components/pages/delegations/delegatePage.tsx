@@ -78,6 +78,12 @@ const Delegate = ({
   title,
   confirmTransaction,
 }: Props): h.JSX.Element => {
+  /*
+  REFACTOR (calculateFee):
+  Calculation of "fee" should be fired from there explicitely using "useEffect"
+  when component mounts.
+  */
+
   const delegationHandler = async (): Promise<void> => {
     await confirmTransaction('delegate')
   }
