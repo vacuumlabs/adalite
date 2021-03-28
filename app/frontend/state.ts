@@ -9,6 +9,7 @@ import {
   Lovelace,
   PoolRegTransactionSummary,
   SendAmount,
+  Stakepool,
   TransactionSummary,
   TxType,
 } from './types'
@@ -71,8 +72,8 @@ export interface State {
   calculatingDelegationFee?: any
   isDelegationValid?: any
   shelleyDelegation?: {
-    selectedPool?: any
-    delegationFee?: any
+    selectedPool?: Stakepool
+    delegationFee?: Lovelace
   }
   delegationValidationError?: any
   gettingPoolInfo: boolean
