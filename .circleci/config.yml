@@ -47,10 +47,10 @@ jobs:
       - image: circleci/node:11.10-browsers
     working_directory: ~/repo
     steps:
+      - checkout
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
-      - checkout
       - run: yarn eslint
 
   test:
@@ -58,15 +58,15 @@ jobs:
       - image: circleci/node:11.10-browsers
     working_directory: ~/repo
     steps:
+      - checkout
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
-      - checkout
       - run: yarn test-chrome-headless
 
 workflows:
   version: 2
-  build-and-test:
+  build:
     jobs:
       - build
       - audit
