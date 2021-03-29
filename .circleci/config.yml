@@ -38,6 +38,7 @@ jobs:
       - image: circleci/node:11.10-browsers
     working_directory: ~/repo
     steps:
+      - checkout
       - run: yarn audit
       - run: cd app && yarn audit && cd ../
   
@@ -46,6 +47,7 @@ jobs:
       - image: circleci/node:11.10-browsers
     working_directory: ~/repo
     steps:
+      - checkout
       - run: yarn eslint
 
   test:
@@ -53,6 +55,7 @@ jobs:
       - image: circleci/node:11.10-browsers
     working_directory: ~/repo
     steps:
+      - checkout
       - run: yarn test-chrome-headless
 
 workflows:
