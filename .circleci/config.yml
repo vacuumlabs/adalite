@@ -1,24 +1,20 @@
-# Orb 'cypress-io/cypress@1' resolved to 'cypress-io/cypress@1.27.0'
-version: 2
-jobs:
-  build:
-    docker:
-      - image: circleci/node:14.16-browsers
-    working_directory: ~/repo
+version: 2.1
+
+defaults: &defaults
+  docker:
+    - image: circleci/node:14.16-browsers
+  working_directory: ~/repo
+
+commands:
+  setup:
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
-
       - run: cp .env.example .env
       - run: yarn install
       - run: cd app && yarn install && cd ../
-      - run: yarn audit
-      - run: cd app && yarn audit && cd ../
-
       - save_cache:
           paths:
             - node_modules
@@ -26,9 +22,30 @@ jobs:
             - ../.cache/Cypress
           key: dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
 
-      # run tests!
+jobs:
+  audit:
+    <<: *defaults
+    steps:
+      - setup
+      - run: yarn audit
+      - run: cd app && yarn audit && cd ../
+  
+  lint:
+    <<: *defaults
+    steps:
+      - setup
       - run: yarn eslint
+
+  test_unit:
+    <<: *defaults
+    steps:
+      - setup
       - run: yarn test-chrome-headless
+  
+  test_integration:
+    <<: *defaults
+    steps:
+      - setup
       - run:
           name: Build the app so that server can be started
           command: cd app && yarn build && cd ../
@@ -50,4 +67,8 @@ workflows:
   version: 2
   workflow:
     jobs:
-      - build
+      - audit
+      - lint
+      - test_unit
+      - test_integration
+
