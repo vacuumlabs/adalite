@@ -1,16 +1,10 @@
 import {h} from 'preact'
-import {useActions, useSelector} from '../../../helpers/connect'
+import {useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import {useIsActiveAccountDelegating} from '../../../selectors'
 
 const DeregisterStakeKeyPage = () => {
   const {deregisterStakingKey} = useActions(actions)
-
-  /*
-  REFACTOR (calculateFee):
-  After "calculateFee" refactor "calculatingDelegationFee" should be removed.
-  */
-  const calculatingDelegationFee = useSelector((state) => state.calculatingDelegationFee)
   const isDelegating = useIsActiveAccountDelegating()
 
   if (!isDelegating) return null
@@ -21,11 +15,7 @@ const DeregisterStakeKeyPage = () => {
       <p className="deregister-stake-key-card-disclaimer">
         ...if you do not want to use this wallet anymore
       </p>
-      <button
-        className="button secondary cancel-delegation"
-        disabled={calculatingDelegationFee}
-        onClick={() => deregisterStakingKey()}
-      >
+      <button className="button secondary cancel-delegation" onClick={() => deregisterStakingKey()}>
         Deregister stake key
       </button>
     </div>
