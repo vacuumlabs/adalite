@@ -71,8 +71,8 @@ workflows:
       - build
       - audit
       - lint:
-        requires:
-          - build
+          requires:
+            - build
       - test:
-        requires:
-          - build
+          requires:
+            - build
