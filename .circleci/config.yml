@@ -27,15 +27,39 @@ jobs:
       - run: cp .env.example .env
       - run: yarn install
       - run: cd app && yarn install && cd ../
-      - run: yarn audit
-      - run: cd app && yarn audit && cd ../
-
       - save_cache:
           paths:
             - node_modules
             - app/node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
 
-      # run tests!
+  audit:
+    docker:
+      - image: circleci/node:11.10-browsers
+    working_directory: ~/repo
+    steps:
+      - run: yarn audit
+      - run: cd app && yarn audit && cd ../
+  
+  lint:
+    docker:
+      - image: circleci/node:11.10-browsers
+    working_directory: ~/repo
+    steps:
       - run: yarn eslint
+
+  test:
+    docker:
+      - image: circleci/node:11.10-browsers
+    working_directory: ~/repo
+    steps:
       - run: yarn test-chrome-headless
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+      - lint
+      - audit
+      - test
