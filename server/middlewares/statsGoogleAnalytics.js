@@ -64,7 +64,7 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
     const tokenMatched = tokenMatches(req.get('token'))
     const txSubmissionType =
-      tokenMatched && isSameOrigin(req.get('origin'), process.env.ADALITE_SERVER_URL)
+      tokenMatched && isSameOrigin(req.get('origin'), backendConfig.ADALITE_SERVER_URL)
         ? 'txSubmissions'
         : 'otherTxSubmissions'
     const txSubmissionSuccess = body.Right ? 'successful' : 'unsuccessful'

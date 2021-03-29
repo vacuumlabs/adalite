@@ -5,6 +5,7 @@ const mung = require('express-mung')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const {captureException} = require('@sentry/node')
 const {isSameOrigin, tokenMatches} = require('../helpers/checkOrigin')
+const {backendConfig} = require('../helpers/loadConfig')
 
 const knownIps = new Set()
 
@@ -40,7 +41,7 @@ const trackTxSubmissions = mung.json((body, req, res) => {
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
     const txSubmissionType =
       tokenMatches(req.get('token')) &&
-      isSameOrigin(req.get('origin'), process.env.ADALITE_SERVER_URL)
+      isSameOrigin(req.get('origin'), backendConfig.ADALITE_SERVER_URL)
         ? 'txSubmissions'
         : 'otherTxSubmissions'
     const txSubmissionSuccess = body.Right ? 'successful' : 'unsuccessful'

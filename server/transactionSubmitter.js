@@ -1,6 +1,7 @@
 require('isomorphic-fetch')
 const Sentry = require('@sentry/node')
 const {isSameOrigin, tokenMatches} = require('./helpers/checkOrigin')
+const {backendConfig} = require('./helpers/loadConfig')
 
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
@@ -47,7 +48,7 @@ module.exports = function(app, env) {
 
       if (
         tokenMatches(req.get('token')) &&
-        isSameOrigin(req.get('origin'), process.env.ADALITE_SERVER_URL)
+        isSameOrigin(req.get('origin'), backendConfig.ADALITE_SERVER_URL)
       ) {
         Sentry.captureException(new Error('TransactionSubmissionFailed'), {
           contexts: [{...JSON.parse(errorMessage)}],
