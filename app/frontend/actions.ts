@@ -33,6 +33,7 @@ import {
   WithdrawTransactionSummary,
   DelegateTransactionSummary,
   DeregisterStakingKeyTransactionSummary,
+  TransactionSummary,
 } from './types'
 import {MainTabs} from './constants'
 import {parseCliUnsignedTx} from './wallet/shelley/helpers/stakepoolRegistrationUtils'
@@ -164,20 +165,26 @@ export default (store: Store) => {
 
   /* TRANSACTION */
 
-  const confirmTransaction = async (state: State, txConfirmType): Promise<void> => {
+  const _confirmTransaction = async (
+    state: State,
+    {
+      txConfirmType,
+      txPlan,
+      sourceAccountIndex,
+    }: {txConfirmType: TxType; txPlan: TxPlan; sourceAccountIndex: number}
+  ): Promise<void> => {
     let txAux
-    const newState = getState()
     try {
-      if (newState.sendTransactionSummary.plan) {
+      if (txPlan) {
         txAux = await getWallet()
-          .getAccount(state.sourceAccountIndex)
-          .prepareTxAux(newState.sendTransactionSummary.plan)
+          .getAccount(sourceAccountIndex)
+          .prepareTxAux(txPlan)
       } else {
         loadingAction(state, 'Preparing transaction plan...')
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
         const retriedState = getState()
         txAux = await getWallet()
-          .getAccount(state.sourceAccountIndex)
+          .getAccount(sourceAccountIndex)
           .prepareTxAux(retriedState.sendTransactionSummary.plan)
       }
     } catch (e) {
@@ -186,24 +193,48 @@ export default (store: Store) => {
       stopLoadingAction(state)
     }
 
-    // TODO: implement tx differenciation here and drop the txConfirmType
+    /*
+    REFACTOR:
+    Drop: `keepConfirmationDialogOpen, isCrossAccount` as those values can
+    be inferred
+    */
 
-    const isTxBetweenAccounts = state.activeMainTab === MainTabs.ACCOUNT && txConfirmType === 'send'
+    const isTxBetweenAccounts =
+      state.activeMainTab === MainTabs.ACCOUNT && txConfirmType === TxType.SEND_ADA
+
     // TODO: refactor
     const keepConfirmationDialogOpen =
       isTxBetweenAccounts ||
-      txConfirmType === 'convert' ||
-      txConfirmType === 'withdraw' ||
-      txConfirmType === 'deregisterStakeKey'
+      txConfirmType === TxType.CONVERT_LEGACY ||
+      txConfirmType === TxType.WITHDRAW ||
+      txConfirmType === TxType.DEREGISTER_STAKE_KEY
 
     setState({
       shouldShowConfirmTransactionDialog: true,
-      txConfirmType: isTxBetweenAccounts ? 'crossAccount' : txConfirmType,
+      txConfirmType,
+      isCrossAccount: isTxBetweenAccounts,
       keepConfirmationDialogOpen,
       // TODO: maybe do this only on demand
       rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
       rawTransactionOpen: false,
     })
+  }
+
+  const confirmTransaction = async (
+    state: State,
+    {
+      txConfirmType,
+      txPlan,
+      sourceAccountIndex,
+    }: {txConfirmType: TxType; txPlan: TxPlan; sourceAccountIndex: number}
+  ): Promise<void> => {
+    return await _confirmTransaction(state, {txConfirmType, txPlan, sourceAccountIndex})
+  }
+
+  const confirmTransactionOld = async (state: State, txConfirmType: TxType): Promise<void> => {
+    const txPlan = state.sendTransactionSummary.plan
+    const {sourceAccountIndex} = state
+    return await _confirmTransaction(state, {txConfirmType, txPlan, sourceAccountIndex})
   }
 
   const closeConfirmationDialog = (state) => {
@@ -233,7 +264,8 @@ export default (store: Store) => {
 
   /* SEND ADA */
 
-  const setTransactionSummary = (
+  // Refactor: remove once not used
+  const setTransactionSummaryOld = (
     plan: TxPlan,
     transactionSummary:
       | SendTransactionSummary
@@ -250,8 +282,35 @@ export default (store: Store) => {
     })
   }
 
+  const setTransactionSummary = (
+    state: State,
+    {
+      plan,
+      transactionSummary,
+    }: {
+      plan: TxPlan
+      transactionSummary:
+        | SendTransactionSummary
+        | WithdrawTransactionSummary
+        | DelegateTransactionSummary
+        | DeregisterStakingKeyTransactionSummary
+    }
+  ) => {
+    setState({
+      cachedTransactionSummaries: {
+        ...state.cachedTransactionSummaries,
+        [transactionSummary.type]: {
+          ...transactionSummary,
+          fee: plan.fee,
+          plan,
+        },
+      },
+    })
+  }
+
   const resetTransactionSummary = (state: State) => {
     setState({
+      // Refactor: remove when `setTransactionSummaryOld` will not exist
       sendTransactionSummary: {
         // TODO: we should reset this to null
         type: TxType.SEND_ADA,
@@ -262,6 +321,8 @@ export default (store: Store) => {
         fee: 0 as Lovelace,
         plan: null,
       },
+      // TODO: this can be smarter, dummy reset for now
+      cachedTransactionSummaries: {},
     })
   }
 
@@ -406,7 +467,7 @@ export default (store: Store) => {
         token,
         minimalLovelaceAmount: txPlanResult.txPlan.additionalLovelaceAmount,
       }
-      setTransactionSummary(txPlanResult.txPlan, sendTransactionSummary)
+      setTransactionSummaryOld(txPlanResult.txPlan, sendTransactionSummary)
       setState({
         calculatingFee: false,
         txSuccessTab: '',
@@ -529,8 +590,8 @@ export default (store: Store) => {
         token: null,
         minimalLovelaceAmount: 0 as Lovelace,
       }
-      setTransactionSummary(txPlanResult.txPlan, sendTransactionSummary)
-      await confirmTransaction(getState(), 'convert')
+      setTransactionSummaryOld(txPlanResult.txPlan, sendTransactionSummary)
+      await confirmTransactionOld(getState(), TxType.CONVERT_LEGACY)
     } else {
       const validationError =
         txPlanValidator(coins, 0 as Lovelace, balance, txPlanResult.estimatedFee) ||
@@ -567,8 +628,8 @@ export default (store: Store) => {
         type: TxType.WITHDRAW,
         rewards,
       }
-      setTransactionSummary(txPlanResult.txPlan, withdrawTransactionSummary)
-      await confirmTransaction(getState(), 'withdraw')
+      setTransactionSummaryOld(txPlanResult.txPlan, withdrawTransactionSummary)
+      await confirmTransactionOld(getState(), TxType.WITHDRAW)
     } else {
       const withdrawalValidationError =
         withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee) ||
@@ -654,7 +715,7 @@ export default (store: Store) => {
         deposit: txPlanResult.txPlan.deposit,
         stakePool: newState.shelleyDelegation?.selectedPool,
       }
-      setTransactionSummary(txPlanResult.txPlan, delegationTransactionSummary)
+      setTransactionSummaryOld(txPlanResult.txPlan, delegationTransactionSummary)
       setState({
         calculatingDelegationFee: false,
         txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
@@ -894,34 +955,43 @@ export default (store: Store) => {
     throw NamedError('TransactionNotFoundInBlockchainAfterSubmission')
   }
 
-  const submitTransaction = async (state: State) => {
+  const submitTransaction = async (
+    state: State,
+    {
+      txSummary,
+      sourceAccountIndex,
+      sendAddress,
+    }: {txSummary: TransactionSummary; sourceAccountIndex: number; sendAddress: string}
+  ) => {
+    const {usingHwWallet, keepConfirmationDialogOpen, hwWalletName} = state
+
     setState({
       shouldShowSendTransactionModal: false,
       shouldShowDelegationModal: false,
     })
-    if (!state.keepConfirmationDialogOpen) {
+    if (!keepConfirmationDialogOpen) {
       setState({
         shouldShowConfirmTransactionDialog: false,
       })
     }
-    if (state.usingHwWallet) {
+    if (usingHwWallet) {
       setState({waitingForHwWallet: true})
-      loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+      loadingAction(state, `Waiting for ${hwWalletName}...`)
     } else {
       loadingAction(state, 'Submitting transaction...')
     }
     let sendResponse
     let txSubmitResult
-    const txTab = state.sendTransactionSummary.type
+    const txTab = txSummary.type
     try {
       const txAux = await getWallet()
-        .getAccount(state.sourceAccountIndex)
-        .prepareTxAux(state.sendTransactionSummary.plan)
+        .getAccount(sourceAccountIndex)
+        .prepareTxAux(txSummary.plan)
       const signedTx = await getWallet()
-        .getAccount(state.sourceAccountIndex)
+        .getAccount(sourceAccountIndex)
         .signTxAux(txAux)
 
-      if (state.usingHwWallet) {
+      if (usingHwWallet) {
         setState({waitingForHwWallet: false})
         loadingAction(state, 'Submitting transaction...')
       }
@@ -934,8 +1004,7 @@ export default (store: Store) => {
 
       sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 40)
 
-      const address = state.sendAddress.fieldValue
-      const didDonate = address === getDonationAddress()
+      const didDonate = sendAddress === getDonationAddress()
       closeConfirmationDialog(state)
       if (didDonate) {
         setState({shouldShowThanksForDonation: true})
@@ -955,7 +1024,7 @@ export default (store: Store) => {
       resetSendFormState(state)
       await reloadWalletInfo(state)
       getWallet()
-        .getAccount(state.sourceAccountIndex)
+        .getAccount(sourceAccountIndex)
         .generateNewSeeds()
       resetAccountIndexes(state)
       resetDelegation()
@@ -1205,9 +1274,12 @@ export default (store: Store) => {
         deposit: txPlanResult.txPlan.deposit,
         rewards,
       } as DeregisterStakingKeyTransactionSummary
-
-      setTransactionSummary(txPlanResult.txPlan, summary)
-      await confirmTransaction(getState(), 'deregisterStakeKey')
+      setTransactionSummary(getState(), {plan: txPlanResult.txPlan, transactionSummary: summary})
+      await confirmTransaction(getState(), {
+        sourceAccountIndex: sourceAccount.accountIndex,
+        txPlan: txPlanResult.txPlan,
+        txConfirmType: TxType.DEREGISTER_STAKE_KEY,
+      })
     } else {
       // Handled the same way as for withdrawal
       const withdrawalValidationError =
@@ -1236,7 +1308,6 @@ export default (store: Store) => {
     closeWelcome,
     calculateFee,
     calculateDelegationFee,
-    confirmTransaction,
     cancelTransaction,
     submitTransaction,
     updateAddress,
@@ -1266,6 +1337,8 @@ export default (store: Store) => {
     convertNonStakingUtxos,
     loadErrorBannerContent,
     withdrawRewards,
+    confirmTransactionOld,
+    confirmTransaction,
     openInfoModal,
     closeInfoModal,
     closePremiumBanner,

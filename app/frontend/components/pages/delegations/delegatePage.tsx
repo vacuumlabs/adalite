@@ -7,7 +7,7 @@ import {AdaIcon} from '../../common/svg'
 import {getTranslation} from '../../../translations'
 import {getSourceAccountInfo, State} from '../../../state'
 import Accordion from '../../common/accordion'
-import {Lovelace, PoolRecommendation, Stakepool} from '../../../types'
+import {Lovelace, PoolRecommendation, Stakepool, TxType} from '../../../types'
 import {isBigDelegatorSelector} from '../../../selectors'
 import {StakePoolInfo} from './stakePoolInfo'
 import DelegateInput from './delegateInput'
@@ -59,7 +59,7 @@ interface Props {
   isBigDelegator: boolean
   withAccordion: boolean
   title: string
-  confirmTransaction: (txConfirmType) => Promise<void>
+  confirmTransactionOld: (txConfirmType) => Promise<void>
   selectAdaliteStakepool: () => void
 }
 
@@ -76,7 +76,7 @@ const Delegate = ({
   isBigDelegator,
   withAccordion,
   title,
-  confirmTransaction,
+  confirmTransactionOld,
 }: Props): h.JSX.Element => {
   /*
   REFACTOR (calculateFee):
@@ -85,7 +85,7 @@ const Delegate = ({
   */
 
   const delegationHandler = async (): Promise<void> => {
-    await confirmTransaction('delegate')
+    await confirmTransactionOld(TxType.DELEGATE)
   }
 
   const validationError = !!delegationValidationError || !stakePool || !!stakePool.validationError

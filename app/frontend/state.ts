@@ -10,6 +10,10 @@ import {
   PoolRegTransactionSummary,
   SendAmount,
   TransactionSummary,
+  SendTransactionSummary,
+  WithdrawTransactionSummary,
+  DelegateTransactionSummary,
+  DeregisterStakingKeyTransactionSummary,
   TxType,
 } from './types'
 
@@ -80,11 +84,24 @@ export interface State {
 
   // transaction
   sendTransactionSummary: TransactionSummary
+
+  // Note: This allows for multiple transaction summaries by TxType, to avoid race-conditions
+  // when calculating transaction summaries for more TxTypes at the same time.
+  // Note that this still does not allow for multiple cached transaction summaries from
+  // the same TxType, however, this should not be use-case for us in the near future.
+  cachedTransactionSummaries: {
+    [TxType.CONVERT_LEGACY]?: TransactionSummary & SendTransactionSummary
+    [TxType.SEND_ADA]?: TransactionSummary & SendTransactionSummary
+    [TxType.WITHDRAW]?: TransactionSummary & WithdrawTransactionSummary
+    [TxType.DELEGATE]?: TransactionSummary & DelegateTransactionSummary
+    [TxType.DEREGISTER_STAKE_KEY]?: TransactionSummary & DeregisterStakingKeyTransactionSummary
+  }
   rawTransactionOpen: boolean
   rawTransaction: string
   transactionFee?: any
   sendResponse: any // TODO
-  txConfirmType: string
+  txConfirmType?: TxType
+  isCrossAccount: boolean
   txSuccessTab: string
   transactionSubmissionError?: any
   shouldShowConfirmTransactionDialog?: boolean
@@ -192,11 +209,12 @@ const initialState: State = {
     fee: 0 as Lovelace,
     plan: null,
   },
+  cachedTransactionSummaries: {},
   rawTransactionOpen: false,
   rawTransaction: '',
   transactionFee: 0,
   sendResponse: {},
-  txConfirmType: '',
+  isCrossAccount: false,
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
 

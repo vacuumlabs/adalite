@@ -254,12 +254,26 @@ const ConvertFundsReview = ({
 }
 
 const ConfirmTransactionDialog = () => {
-  const {rawTransactionOpen, transactionSummary, txConfirmType} = useSelector((state) => ({
+  const {
+    rawTransactionOpen,
+    transactionSummary,
+    txConfirmType,
+    isCrossAccount,
+    cachedTransactionSummaries,
+    sendAddress,
+    sourceAccountIndex,
+  } = useSelector((state) => ({
     transactionSummary: state.sendTransactionSummary,
     rawTransactionOpen: state.rawTransactionOpen,
     txConfirmType: state.txConfirmType,
+    isCrossAccount: state.isCrossAccount,
+    cachedTransactionSummaries: state.cachedTransactionSummaries,
+    sendAddress: state.sendAddress.fieldValue,
+    sourceAccountIndex: state.sourceAccountIndex,
   }))
   const {setRawTransactionOpen, submitTransaction, cancelTransaction} = useActions(actions)
+
+  const hideDefaultSummary = txConfirmType === TxType.DEREGISTER_STAKE_KEY
 
   const titleMap: {[key in TxType]: string} = {
     [TxType.DELEGATE]: 'Delegation review',
@@ -268,51 +282,65 @@ const ConfirmTransactionDialog = () => {
     [TxType.WITHDRAW]: 'Rewards withdrawal review',
     [TxType.POOL_REG_OWNER]: '',
     [TxType.DEREGISTER_STAKE_KEY]: 'Deregister stake key',
-    // crossAccount: 'Transaction between accounts review',
   }
-  const hideDefaultSummary = transactionSummary.type === TxType.DEREGISTER_STAKE_KEY
-  // TODO: refactor, remove txConfirmType
+
+  const onSubmit = () => {
+    // refactored cases
+    if ([TxType.DEREGISTER_STAKE_KEY].includes(txConfirmType)) {
+      return submitTransaction({
+        sendAddress,
+        sourceAccountIndex,
+        txSummary: cachedTransactionSummaries[TxType.DEREGISTER_STAKE_KEY],
+      })
+    }
+    // to be refactored cases
+    return submitTransaction({sendAddress, sourceAccountIndex, txSummary: transactionSummary})
+  }
+
+  // Refactor: tmp util till all transactions types use "cachedTransactionSummaries"
+  const getModalBody = () => {
+    // Refactored cases:
+    if (txConfirmType === TxType.DEREGISTER_STAKE_KEY) {
+      return (
+        <DeregisterStakeKeyReview
+          transactionSummary={cachedTransactionSummaries[TxType.DEREGISTER_STAKE_KEY]}
+          onSubmit={onSubmit}
+          onCancel={cancelTransaction}
+        />
+      )
+    }
+    // To be refactored cases:
+    if (transactionSummary.type === TxType.CONVERT_LEGACY) {
+      return <ConvertFundsReview transactionSummary={transactionSummary} />
+    }
+    if (transactionSummary.type === TxType.WITHDRAW) {
+      return <WithdrawReview transactionSummary={transactionSummary} />
+    }
+    if (transactionSummary.type === TxType.DELEGATE) {
+      return <DelegateReview transactionSummary={transactionSummary} />
+    }
+    if (transactionSummary.type === TxType.SEND_ADA) {
+      return (
+        <SendAdaReview
+          transactionSummary={transactionSummary}
+          shouldShowAddressVerification={isCrossAccount}
+        />
+      )
+    }
+    return null
+  }
+
   return (
     <div>
       <Modal
         onRequestClose={cancelTransaction}
         title={
-          txConfirmType === 'crossAccount'
-            ? 'Transaction between accounts review'
-            : titleMap[transactionSummary.type]
+          isCrossAccount ? 'Transaction between accounts review' : titleMap[transactionSummary.type]
         }
       >
-        {transactionSummary.type === TxType.CONVERT_LEGACY && (
-          <ConvertFundsReview transactionSummary={transactionSummary} />
-        )}
-        {transactionSummary.type === TxType.WITHDRAW && (
-          <WithdrawReview transactionSummary={transactionSummary} />
-        )}
-
-        {transactionSummary.type === TxType.DELEGATE && (
-          <DelegateReview transactionSummary={transactionSummary} />
-        )}
-
-        {transactionSummary.type === TxType.DEREGISTER_STAKE_KEY && (
-          <DeregisterStakeKeyReview
-            transactionSummary={transactionSummary}
-            onSubmit={submitTransaction}
-            onCancel={cancelTransaction}
-          />
-        )}
-
-        {transactionSummary.type === TxType.SEND_ADA && (
-          <SendAdaReview
-            transactionSummary={transactionSummary}
-            shouldShowAddressVerification={txConfirmType === 'crossAccount'}
-          />
-        )}
+        {getModalBody()}
         {!hideDefaultSummary && (
-          <ReviewBottom
-            disabled={false}
-            onSubmit={submitTransaction}
-            onCancel={cancelTransaction}
-          />
+          <ReviewBottom disabled={false} onSubmit={onSubmit} onCancel={cancelTransaction} />
         )}
         <a href="#" className="send-raw" onClick={() => setRawTransactionOpen(true)}>
           Raw unsigned transaction

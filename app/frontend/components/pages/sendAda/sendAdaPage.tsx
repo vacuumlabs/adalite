@@ -18,6 +18,7 @@ import {
   SendTransactionSummary,
   Token,
   TransactionSummary,
+  TxType,
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
@@ -50,7 +51,7 @@ interface Props {
   sendAmountValidationError: any
   updateAddress: any
   updateAmount: (sendAmount: SendAmount) => void
-  confirmTransaction: any
+  confirmTransactionOld: any
   feeRecalculating: any
   sendMaxFunds: any
   conversionRates: any
@@ -102,7 +103,7 @@ const SendAdaPage = ({
   sendAmountValidationError,
   updateAddress,
   updateAmount,
-  confirmTransaction,
+  confirmTransactionOld,
   feeRecalculating,
   sendMaxFunds,
   conversionRates,
@@ -171,7 +172,7 @@ const SendAdaPage = ({
   }, [adaAsset, dropdownAssetItems, sendAmount])
 
   const submitHandler = async () => {
-    await confirmTransaction('send')
+    await confirmTransactionOld(TxType.SEND_ADA)
   }
 
   const searchPredicate = useCallback(
