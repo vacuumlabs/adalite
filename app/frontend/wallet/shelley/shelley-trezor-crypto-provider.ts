@@ -150,7 +150,7 @@ const ShelleyTrezorCryptoProvider = async ({
       })
     }
     const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
-    return Object.entries(tokenObject).map(([policyId, assets]) => {
+    return tokenObject.map(({policyId, assets}) => {
       const tokenAmounts = assets.map(({assetName, quantity}) => ({
         assetNameBytes: assetName,
         amount: quantity.toString(),

@@ -208,7 +208,7 @@ const ShelleyLedgerCryptoProvider = async ({
       })
     }
     const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
-    return Object.entries(tokenObject).map(([policyId, assets]) => {
+    return tokenObject.map(({policyId, assets}) => {
       const tokens = assets.map(({assetName, quantity}) => ({
         assetNameHex: assetName,
         amountStr: quantity.toString(),

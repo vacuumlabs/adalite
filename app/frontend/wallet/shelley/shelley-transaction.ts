@@ -120,7 +120,7 @@ function cborizeTxInputs(inputs: TxInput[]): CborizedTxInput[] {
 function cborizeTxOutputTokenBundle(tokenBundle: TokenBundle): CborizedTxTokenBundle {
   const policyIdMap = new Map<Buffer, Map<Buffer, number>>()
   const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
-  Object.entries(tokenObject).forEach(([policyId, assets]) => {
+  tokenObject.forEach(({policyId, assets}) => {
     const assetMap = new Map<Buffer, number>()
     assets.forEach(({assetName, quantity}) => {
       assetMap.set(Buffer.from(assetName, 'hex'), quantity)

@@ -33,11 +33,19 @@ export const aggregateTokenBundles = (tokenBundle: TokenBundle[]): TokenBundle =
     .flatten()
     .value()
 
-export const groupTokenBundleByPolicyId = (
-  tokenBundle: TokenBundle
-): {[policyId: string]: TokenBundle} => {
+export const groupTokenBundleByPolicyId = (tokenBundle: TokenBundle) => {
+  const compareStringsCanonically = (string1: string, string2: string) =>
+    string1.length - string2.length || string1.localeCompare(string2)
   return _(tokenBundle)
     .groupBy(({policyId}) => policyId)
+    .mapValues((tokens) => tokens.map(({assetName, quantity}) => ({assetName, quantity})))
+    .map((tokens, policyId) => ({
+      policyId,
+      assets: tokens.sort((token1, token2) =>
+        compareStringsCanonically(token1.assetName, token2.assetName)
+      ),
+    }))
+    .sort((token1, token2) => compareStringsCanonically(token1.policyId, token2.policyId))
     .value()
 }
 
