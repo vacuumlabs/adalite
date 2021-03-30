@@ -42,6 +42,8 @@
     "webpack-node-externals": "^1.6.0"
   },
   "devDependencies": {
+    "@testing-library/cypress": "^7.0.4",
+    "cypress": "^6.8.0",
     "fetch-mock": "^6.5.1",
     "fetch-readablestream": "^0.2.0",
     "mocha": "^5.0.1",

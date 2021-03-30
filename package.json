@@ -70,6 +70,7 @@
     "eslint": "^6.0.1",
     "eslint-config-vacuumlabs": "^1.8.2",
     "eslint-import-resolver-webpack": "^0.11.1",
+    "eslint-plugin-cypress": "^2.11.2",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-react-hooks": "^2.3.0",

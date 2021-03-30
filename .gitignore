@@ -15,3 +15,5 @@ server.cert
 server.key
 app/tests/.chrome/*
 app/tests/*.module.wasm
+app/cypress/videos/*
+app/cypress/screenshots/*
