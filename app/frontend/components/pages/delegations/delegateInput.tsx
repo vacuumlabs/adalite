@@ -53,7 +53,9 @@ const validateInput = (
     const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
     const isTickerString = fieldValue.length <= 5 && fieldValue.toUpperCase() === fieldValue
     const poolHash = null
-    if (!hasTickerMapping && isTickerString) {return {poolHash, error: {code: 'TickerSearchDisabled'}}}
+    if (!hasTickerMapping && isTickerString) {
+      return {poolHash, error: {code: 'TickerSearchDisabled'}}
+    }
     return {poolHash, error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}}
   }
 
@@ -125,6 +127,7 @@ const DelegateInput = ({
         type="text"
         className="input stake-pool-id"
         name={'pool'}
+        data-cy="PoolDelegationTextField"
         value={fieldValue}
         onInput={handleOnInput}
         autoComplete="off"

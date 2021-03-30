@@ -77,6 +77,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
           className="input fullwidth auth"
           id="mnemonic-submitted"
           name="mnemonic-submitted"
+          data-cy="MnemonicTextField"
           placeholder="Enter your wallet mnemonic"
           value={formData.mnemonicInputValue}
           onInput={updateMnemonic}

@@ -53,6 +53,7 @@ const AccountTile = ({
       className="button primary nowrap account-button"
       onClick={() => showSendTransactionModal(activeAccountIndex, accountIndex)}
       disabled={isActive}
+      data-cy="AccountTileTransferBtn"
     >
       Transfer
     </button>
@@ -64,6 +65,7 @@ const AccountTile = ({
       onClick={() => {
         showDelegationModal(accountIndex)
       }}
+      data-cy="AccountTileDelegateBtn"
     >
       Delegate
     </button>
@@ -76,6 +78,7 @@ const AccountTile = ({
       onClick={() => {
         setActiveAccount(accountIndex)
       }}
+      data-cy="AccountTileActivateBtn"
     >
       {isActive ? 'Active' : 'Activate'}
     </button>
@@ -93,7 +96,11 @@ const AccountTile = ({
   )
 
   return (
-    <div key={accountIndex} className={`card account ${isActive ? 'selected' : ''}`}>
+    <div
+      key={accountIndex}
+      className={`card account ${isActive ? 'selected' : ''}`}
+      data-cy="AccountTile"
+    >
       <div className="header-wrapper mobile">
         <h2 className="card-title small-margin">{accountLabel}</h2>
       </div>

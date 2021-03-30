@@ -73,6 +73,7 @@ const SearchableSelect = <T extends {}>({
       className={`searchable-select-wrapper ${optionalClassName(wrapperClassName)}`}
       tabIndex={0}
       ref={wrapperEl}
+      data-cy="SendAssetDropdown"
       // TODO: remove @ts-ignore when onFocusOut is added to jsx.d.ts
       // @ts-ignore
       onfocusout={(e) => onSubTreeBlur(e, wrapperEl, () => showDropdown(false))}

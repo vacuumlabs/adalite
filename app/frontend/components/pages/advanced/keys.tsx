@@ -19,7 +19,14 @@ const DownloadKey = ({cborHex}) => {
 
   const dataURI = `data:${filetype};json,${JSON.stringify(fileContents, null, 4)}`
 
-  return <a href={dataURI} download={filename} className="download-key-text" />
+  return (
+    <a
+      href={dataURI}
+      download={filename}
+      className="download-key-text"
+      data-cy="DownloadStakeKey"
+    />
+  )
 }
 
 type Props = {
@@ -31,7 +38,7 @@ type Props = {
 
 const Keys = ({byronAccountXpub, shelleyAccountXpub, stakingAddress, stakingXpub}: Props) => {
   return (
-    <div className="card">
+    <div className="card" data-cy="AdvancedKeyCard">
       <h2 className="card-title small-margin">Keys</h2>
       {byronAccountXpub && (
         <Fragment>

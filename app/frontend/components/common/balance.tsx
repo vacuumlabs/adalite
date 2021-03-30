@@ -17,7 +17,7 @@ const Balance = ({balance, reloadWalletInfo, conversionRates}: Props) => (
   <div className="balance card">
     <h2 className="card-title balance-title">Available balance</h2>
     <div className="balance-row">
-      <div className="balance-amount">
+      <div className="balance-amount" data-cy="SendBalanceAmount">
         {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>

@@ -78,14 +78,28 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.assetName} {...props}>
     {({starIcon, formattedAssetName, formattedAssetLink, formattedAmount, formattedPolicy}) => {
       return (
-        <div className="multi-asset-item">
+        <div
+          className="multi-asset-item"
+          data-cy={
+            props.type === AssetFamily.TOKEN
+              ? 'SendAssetDropdownTokenItem'
+              : 'SendAssetDropdownADAitem'
+          }
+        >
           <div className="multi-asset-name-amount">
             <div className="multi-asset-name">
               {starIcon}
               {formattedAssetName}
               {formattedAssetLink}
             </div>
-            <div className="multi-asset-amount">{formattedAmount}</div>
+            <div
+              className="multi-asset-amount"
+              data-cy={
+                props.type === AssetFamily.TOKEN ? 'SendAssetTokenQuantity' : 'SendAssetADAquantity'
+              }
+            >
+              {formattedAmount}
+            </div>
           </div>
           {formattedPolicy}
         </div>
@@ -236,6 +250,7 @@ const SendAdaPage = ({
       className={`input ${isModal ? '' : 'send-address'} fullwidth`}
       name="send-address"
       placeholder="Receiving address"
+      data-cy="AddressTextField"
       value={sendAddress}
       onInput={updateAddress}
       autoComplete="off"
@@ -245,7 +260,7 @@ const SendAdaPage = ({
   )
 
   const accountSwitch = (
-    <div className="send-values dropdowns">
+    <div className="send-values dropdowns" data-cy="AccountSwitch">
       <label className="account-label">From</label>
       <AccountDropdown accountIndex={sourceAccountIndex} setAccountFunc={setSourceAccount} />
       <button className="button account-switch" onClick={switchSourceAndTargetAccounts}>
@@ -304,6 +319,7 @@ const SendAdaPage = ({
           className="input send-amount"
           id={`${isModal ? 'account' : ''}send-amount`}
           name={`${isModal ? 'account' : ''}send-amount`}
+          data-cy={`${isModal ? 'Account' : ''}SendAmountField`}
           placeholder={selectedAsset.type === AssetFamily.ADA ? '0.000000' : '0'}
           value={sendAmount.fieldValue}
           onInput={handleAmountOnInput}
@@ -336,7 +352,9 @@ const SendAdaPage = ({
         {selectAssetDropdown}
         {amountInput}
         <div className="ada-label">Fee</div>
-        <div className="send-fee">{printAda(transactionFee)}</div>
+        <div className="send-fee" data-cy="SendFeeAmount">
+          {printAda(transactionFee)}
+        </div>
         {selectedAsset.type === AssetFamily.TOKEN && (
           <Fragment>
             <div className="send-label">
@@ -351,7 +369,9 @@ const SendAdaPage = ({
               </a>
             </div>
             {/* TODO: Connect to state when this values is calculated */}
-            <div className="send-fee">{printAda(summary.minimalLovelaceAmount)}</div>
+            <div className="send-fee" data-cy="SendAssetMinAdaAmount">
+              {printAda(summary.minimalLovelaceAmount)}
+            </div>
           </Fragment>
         )}
       </div>
@@ -394,6 +414,7 @@ const SendAdaPage = ({
           disabled={!enableSubmit || feeRecalculating}
           onClick={submitHandler}
           ref={submitTxBtn}
+          data-cy="SendButton"
         >
           Send
         </button>

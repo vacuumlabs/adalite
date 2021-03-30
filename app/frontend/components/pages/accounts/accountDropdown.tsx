@@ -19,6 +19,7 @@ const AccountDropdown = ({accountIndex, setAccountFunc, accountsInfo}) => {
         className="account-dropdown-button"
         onBlur={() => hideAccountDropdown(true)}
         onClick={() => toggleAccountDropdown()}
+        data-cy="AccountDropdownButton"
       >
         {`Account ${formatAccountIndex(accountIndex)}`}
       </button>
@@ -31,6 +32,7 @@ const AccountDropdown = ({accountIndex, setAccountFunc, accountsInfo}) => {
               setAccountFunc(i)
               hideAccountDropdown(true)
             }}
+            data-cy="AccountDropdownItem"
           >
             {`Account ${formatAccountIndex(i)}`}
           </a>

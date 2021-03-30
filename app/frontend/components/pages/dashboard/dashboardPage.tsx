@@ -255,7 +255,7 @@ const DashboardPage = ({
       {shouldShowPremiumBanner && <PremiumBanner />}
       {shouldShowSaturatedBanner && <SaturationErrorBanner />}
 
-      <ul className="tabinator">
+      <ul className="tabinator" data-cy="NavigationTabs">
         {/*
         REFACTOR: (calculateFee)
         "setActiveMainTab" should really just change tab, instead it does all the magic

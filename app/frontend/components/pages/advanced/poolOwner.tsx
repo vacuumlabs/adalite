@@ -91,7 +91,7 @@ const PoolOwnerCard = ({
   const error = poolRegTxError
   const hwWalletLimitation = 'Only hardware wallet users can use this feature.'
   return (
-    <div className="card">
+    <div className="card" data-cy="PoolRegistrationCard">
       <h2 className="card-title small-margin">
         Pool registration certificate transaction
         <a
@@ -133,6 +133,7 @@ const PoolOwnerCard = ({
           onKeyDown={(e) => {
             e.key === 'Enter' && (e.target as HTMLButtonElement).click()
           }}
+          data-cy="AdvancedSignButton"
         >
           Sign
         </button>
@@ -141,6 +142,7 @@ const PoolOwnerCard = ({
           disabled={!witness}
           {...tooltip('You have to sign the certificate\nto be able to download it.', !witness)}
           onClick={handleDownloadWitness}
+          data-cy="AdvancedDownloadSignatureButton"
         >
           Download signature
         </button>

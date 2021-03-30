@@ -49,13 +49,20 @@ const AddressItem = ({address, bip32path, isExpanded, expand}: Props): h.JSX.Ele
   )
 
   return (
-    <div className={`address ${isExpanded ? 'expanded' : ''}`} onClick={expand}>
+    <div
+      className={`address ${isExpanded ? 'expanded' : ''}`}
+      onClick={expand}
+      data-cy="ReceiveAddressItem"
+    >
       <div className="label">
         <div className="value">
           <div className="number no-select">{`/${bip32path.split('/').pop()}`}</div>
           {addressHash}
         </div>
-        <div className={`accordion-icon flex-end ${isExpanded ? 'shown' : 'hidden'}`}>
+        <div
+          className={`accordion-icon flex-end ${isExpanded ? 'shown' : 'hidden'}`}
+          data-cy="ReceiveAddressAccordion"
+        >
           <DropdownCaret />
         </div>
       </div>

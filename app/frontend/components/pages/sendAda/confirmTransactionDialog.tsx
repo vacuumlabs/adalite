@@ -77,7 +77,9 @@ const SendAdaReview = ({
             <div className="review-label">Token name</div>
             <div className="review-amount">{assetNameHex2Readable(token.assetName)}</div>
             <div className="review-label">Token amount</div>
-            <div className="review-amount">{token.quantity}</div>
+            <div className="review-amount" data-cy="SendTokenAmount">
+              {token.quantity}
+            </div>
             {/* <div className="ada-label">Minimal Lovelace amount</div>
             <div className="review-amount">{printAda(minimalLovelaceAmount)}</div> */}
           </Fragment>
@@ -86,7 +88,9 @@ const SendAdaReview = ({
         <div className="review-fee">{printAda(fee as Lovelace)}</div>
         {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Total</div>
-        <div className="review-total">{printAda(total)}</div>
+        <div className="review-total" data-cy="SendAmountTotal">
+          {printAda(total)}
+        </div>
       </div>
     </Fragment>
   )

@@ -95,7 +95,7 @@ const AccountsDashboard = ({
           <div className="balance">
             <div className="item">
               <h2 className="card-title small-margin">Wallet available balance</h2>
-              <div className="balance-amount">
+              <div className="balance-amount" data-cy="AccountsBalanceSum">
                 {printAda(totalWalletBalance as Lovelace)}
                 <AdaIcon />
               </div>
