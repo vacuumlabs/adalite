@@ -20,3 +20,39 @@ import './commands'
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+// run before each test in each file
+beforeEach('Logs in via UI', () => {
+  const mnemonic =
+    'bounce tissue tent monitor educate book neglect install armed note explain country maximum strike search'
+  cy.visit('/')
+  cy.contains('Welcome to AdaLite wallet')
+  cy.contains('Continue to AdaLite').click()
+  cy.contains('Mnemonic').click()
+  cy.contains('Unlock')
+    .should('be.visible')
+    .should('be.disabled')
+  cy.dataCy('MnemonicTextField')
+    .should('be.empty')
+    .type(mnemonic)
+    .should('have.value', mnemonic)
+  cy.contains('Unlock').click()
+  cy.url().should('include', '/txHistory')
+  cy.contains('AdaLite News')
+  cy.contains('Close').click()
+})
+
+beforeEach('Lands on sending page in a valid wallet', () => {
+  cy.contains('Available balance')
+  cy.dataCy('SendBalanceAmount')
+    .invoke('text')
+    .then(parseFloat)
+    .should('be.gt', 5)
+  cy.dataCy('SendButton')
+    .as('SendButton')
+    .should('be.visible')
+    .should('be.disabled')
+  cy.contains('Max')
+    .as('MaxButton')
+    .should('be.visible')
+    .should('be.disabled')
+})
