@@ -33,7 +33,6 @@ import {
   TxWithdrawal,
 } from '../types'
 import {aggregateTokenBundles, getTokenBundlesDifference} from '../helpers/tokenFormater'
-import distinct from '../../helpers/distinct'
 
 type TxPlanDraft = {
   outputs: TxOutput[]
@@ -166,11 +165,14 @@ export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace
   // NOTE: should be 29 but a bug in Haskell set this to 27
   const adaOnlyUtxoSize = utxoEntrySizeWithoutVal + coinSize
 
-  const distinctAssets = distinct(tokenBundle.map(({assetName}) => assetName))
+  // this ensures there are only distinct (policyId, assetName) pairs
+  const aggregatedTokenBundle = aggregateTokenBundles([tokenBundle])
+
+  const distinctAssets = aggregatedTokenBundle.map(({assetName}) => assetName)
 
   const numAssets = distinctAssets.length
   // number of unique policyIds
-  const numPIDs = distinct(tokenBundle.map(({policyId}) => policyId)).length
+  const numPIDs = aggregatedTokenBundle.map(({policyId}) => policyId).length
 
   const sumAssetNameLengths = distinctAssets.reduce(
     (acc, assetName) => acc + Math.max(Buffer.from(assetName, 'hex').byteLength, 1),
@@ -182,7 +184,7 @@ export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace
   const size =
     6 + roundupBytesToWords(numAssets * 12 + sumAssetNameLengths + numPIDs * policyIdSize)
 
-  if (tokenBundle.length === 0) {
+  if (aggregatedTokenBundle.length === 0) {
     return minUTxOValue as Lovelace
   } else {
     return Math.max(
