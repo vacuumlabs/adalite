@@ -31,7 +31,10 @@
     "eslint": "eslint . --max-warnings=0 --ext .ts,.tsx,.js,.jsx",
     "fix": "prettier-eslint --write \"{{app/frontend,app/tests/src,server}/**/*.{ts,tsx,js,jsx,json,css},package.json}\"",
     "heroku-postbuild": "cd app && yarn install && yarn build",
-    "generate-cert": "test -e server.cert && echo \"certificate already exists\" || openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj \"/C=US\""
+    "generate-cert": "test -e server.cert && echo \"certificate already exists\" || openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj \"/C=US\"",
+    "cypress:dev": "DOTENV_CONFIG_PATH='./app/cypress/.env.cypress' yarn run dev",
+    "cypress:open": "cd app && yarn run cypress open",
+    "cypress:run": "cd app && yarn run cypress run --headless --browser=chrome --config video=${VIDEO:-false}"
   },
   "husky": {
     "hooks": {

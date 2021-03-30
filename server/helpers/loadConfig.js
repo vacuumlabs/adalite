@@ -1,7 +1,11 @@
 // config intended to be passed on to frontend
 // keys in process .env must be referenced explicitly
 // so dotenv-webpack is able to include them in the test bundle for Mocha tests
-require('dotenv').config()
+// if DOTENV_CONFIG_PATH is not set, default to built-in behavior
+require('dotenv').config(
+  process.env.DOTENV_CONFIG_PATH ? {path: process.env.DOTENV_CONFIG_PATH} : {}
+)
+
 const check = require('check-types')
 
 // process.env.npm_package_version is undefined on Heroku
@@ -57,7 +61,7 @@ const checkMap = check.map(process.env, {
   ADALITE_MIN_DONATION_VALUE: isPositiveIntString,
   ADALITE_ENV: check.nonEmptyString,
   ADALITE_IP_BLACKLIST: isCommaDelimitedListOfIpsOrEmpty,
-  SENTRY_DSN: check.nonEmptyString,
+  SENTRY_DSN: check.string,
   ADALITE_ERROR_BANNER_CONTENT: check.string,
   ADALITE_NETWORK: isValidShelleyNetwork,
   ADALITE_ENABLE_TREZOR: isBoolString,

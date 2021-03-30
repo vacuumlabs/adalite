@@ -1,28 +1,17 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
+# Orb 'cypress-io/cypress@1' resolved to 'cypress-io/cypress@1.27.0'
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: circleci/node:11.10-browsers
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
+      - image: circleci/node:14.16-browsers
     working_directory: ~/repo
-
     steps:
       - checkout
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
+            - dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
 
       - run: cp .env.example .env
       - run: yarn install
@@ -34,8 +23,31 @@ jobs:
           paths:
             - node_modules
             - app/node_modules
-          key: v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
+            - ../.cache/Cypress
+          key: dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
 
       # run tests!
       - run: yarn eslint
       - run: yarn test-chrome-headless
+      - run:
+          name: Build the app so that server can be started
+          command: cd app && yarn build && cd ../
+      - run:
+          name: Start server with correct env for cypress tests
+          command: yarn cypress:dev
+          wait-on: https://localhost:3000
+          background: true
+      - run:
+          name: Run Cypress tests
+          store_artifacts: true
+          command: VIDEO=true yarn cypress:run
+      - store_artifacts:
+          path: app/cypress/videos
+      - store_artifacts:
+          path: app/cypress/screenshots
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build

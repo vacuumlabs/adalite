@@ -85,6 +85,27 @@ yarn test
 
 Open `app/tests/index.html` in browser
 
+#### Cypress tests
+
+Cypress requires the app to be running with correct environment variables. Type
+```
+yarn cypress:dev
+```
+to start the app with the correct settings. It calls `yarn dev` itself, but with correct environment variables for testing.
+
+After that, you can either type
+```
+yarn cypress:open
+```
+to start the tests with the interactive Test runner, which allows time travel, logs, pausing, etc.
+
+Or, to run the tests in a headless fashion, type
+```
+yarn cypress:run
+```
+
+If you wish to create a video of the tests, pass in `VIDEO=true yarn cypress:run` and videos of all test suites will be created in /app/cypress/videos.
+
 Check us out at https://www.adalite.io
 
 ---
