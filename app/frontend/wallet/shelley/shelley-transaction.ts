@@ -40,7 +40,7 @@ import {
 import {CertificateType, HexString, TokenBundle} from '../../types'
 import NamedError from '../../helpers/NamedError'
 import {ipv4AddressToBuf, ipv6AddressToBuf, TxRelayType} from './helpers/poolCertificateUtils'
-import {groupTokenBundleByPolicyId} from '../helpers/tokenFormater'
+import {orderTokenBundle} from '../helpers/tokenFormater'
 
 function ShelleyTxAux({
   inputs,
@@ -119,8 +119,8 @@ function cborizeTxInputs(inputs: TxInput[]): CborizedTxInput[] {
 
 function cborizeTxOutputTokenBundle(tokenBundle: TokenBundle): CborizedTxTokenBundle {
   const policyIdMap = new Map<Buffer, Map<Buffer, number>>()
-  const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
-  Object.entries(tokenObject).forEach(([policyId, assets]) => {
+  const orderedTokenBundle = orderTokenBundle(tokenBundle)
+  orderedTokenBundle.forEach(({policyId, assets}) => {
     const assetMap = new Map<Buffer, number>()
     assets.forEach(({assetName, quantity}) => {
       assetMap.set(Buffer.from(assetName, 'hex'), quantity)

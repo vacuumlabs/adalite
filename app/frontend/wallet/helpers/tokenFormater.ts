@@ -1,4 +1,4 @@
-import {Token, TokenBundle} from '../../types'
+import {OrderedTokenBundle, Token, TokenBundle} from '../../types'
 import * as _ from 'lodash' // TODO: import only needed methods
 import {TokenObject} from '../backend-types'
 
@@ -33,11 +33,21 @@ export const aggregateTokenBundles = (tokenBundle: TokenBundle[]): TokenBundle =
     .flatten()
     .value()
 
-export const groupTokenBundleByPolicyId = (
-  tokenBundle: TokenBundle
-): {[policyId: string]: TokenBundle} => {
+// we need to order the tokenBundle canonically to ensure the same order of tokens is passed to
+// ledger/trezor as is returned from the cbor encoder
+export const orderTokenBundle = (tokenBundle: TokenBundle): OrderedTokenBundle => {
+  const compareStringsCanonically = (string1: string, string2: string) =>
+    string1.length - string2.length || string1.localeCompare(string2)
   return _(tokenBundle)
     .groupBy(({policyId}) => policyId)
+    .mapValues((tokens) => tokens.map(({assetName, quantity}) => ({assetName, quantity})))
+    .map((tokens, policyId) => ({
+      policyId,
+      assets: tokens.sort((token1, token2) =>
+        compareStringsCanonically(token1.assetName, token2.assetName)
+      ),
+    }))
+    .sort((token1, token2) => compareStringsCanonically(token1.policyId, token2.policyId))
     .value()
 }
 

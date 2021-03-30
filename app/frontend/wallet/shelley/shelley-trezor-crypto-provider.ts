@@ -42,7 +42,7 @@ import {encodeAddress} from './helpers/addresses'
 import {TxRelayType, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import {cborizeCliWitness} from './shelley-transaction'
 import {removeNullFields} from '../../helpers/removeNullFiels'
-import {groupTokenBundleByPolicyId} from '../helpers/tokenFormater'
+import {orderTokenBundle} from '../helpers/tokenFormater'
 
 type CryptoProviderParams = {
   network: Network
@@ -149,8 +149,8 @@ const ShelleyTrezorCryptoProvider = async ({
           'Sending tokens is not supported on Trezor device. Please update your firmware to the latest version.',
       })
     }
-    const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
-    return Object.entries(tokenObject).map(([policyId, assets]) => {
+    const orderedTokenBundle = orderTokenBundle(tokenBundle)
+    return orderedTokenBundle.map(({policyId, assets}) => {
       const tokenAmounts = assets.map(({assetName, quantity}) => ({
         assetNameBytes: assetName,
         amount: quantity.toString(),
