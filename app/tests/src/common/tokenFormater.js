@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {groupTokenBundleByPolicyId} from '../../../frontend/wallet/helpers/tokenFormater'
+import {orderTokenBundle} from '../../../frontend/wallet/helpers/tokenFormater'
 
 describe('Token sorting', () => {
   it('should sort tokenBundle by policyId canonically', () => {
@@ -15,7 +15,7 @@ describe('Token sorting', () => {
       {policyId: 'bb', assets: [{assetName: 'xxx', quantity: 1}]},
       {policyId: 'aaa', assets: [{assetName: 'xxx', quantity: 1}]},
     ]
-    assert.deepEqual(sortedTokenBundle, groupTokenBundleByPolicyId(tokenBundle))
+    assert.deepEqual(sortedTokenBundle, orderTokenBundle(tokenBundle))
   })
 
   it('should sort assets in tokenBundle canonically', () => {
@@ -36,7 +36,7 @@ describe('Token sorting', () => {
         ],
       },
     ]
-    assert.deepEqual(sortedTokenBundle, groupTokenBundleByPolicyId(tokenBundle))
+    assert.deepEqual(sortedTokenBundle, orderTokenBundle(tokenBundle))
   })
 
   it('should sort tokenBundle canonically', () => {
@@ -75,6 +75,6 @@ describe('Token sorting', () => {
         ],
       },
     ]
-    assert.deepEqual(sortedTokenBundle, groupTokenBundleByPolicyId(tokenBundle))
+    assert.deepEqual(sortedTokenBundle, orderTokenBundle(tokenBundle))
   })
 })

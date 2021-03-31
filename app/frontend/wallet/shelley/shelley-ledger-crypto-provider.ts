@@ -59,7 +59,7 @@ import {
   LedgerWitness,
 } from './ledger-types'
 import {TxSigned, TxAux, CborizedCliWitness} from './types'
-import {groupTokenBundleByPolicyId} from '../helpers/tokenFormater'
+import {orderTokenBundle} from '../helpers/tokenFormater'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -207,8 +207,8 @@ const ShelleyLedgerCryptoProvider = async ({
           'Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
       })
     }
-    const tokenObject = groupTokenBundleByPolicyId(tokenBundle)
-    return tokenObject.map(({policyId, assets}) => {
+    const orderedTokenBundle = orderTokenBundle(tokenBundle)
+    return orderedTokenBundle.map(({policyId, assets}) => {
       const tokens = assets.map(({assetName, quantity}) => ({
         assetNameHex: assetName,
         amountStr: quantity.toString(),

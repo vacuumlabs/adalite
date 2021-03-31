@@ -74,6 +74,14 @@ export type Token = Omit<TokenObject, 'quantity'> & {
 
 export type TokenBundle = Token[]
 
+export type OrderedTokenBundle = {
+  policyId: string
+  assets: {
+    assetName: string
+    quantity: number
+  }[]
+}[]
+
 export type HexString = string
 export type TxSummaryEntry = Omit<CaTxEntry, 'fee'> & {
   fee: Lovelace
