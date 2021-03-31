@@ -1,5 +1,6 @@
 import assert from 'assert'
-import {orderTokenBundle} from '../../../frontend/wallet/helpers/tokenFormater'
+import {orderTokenBundle} from '../../frontend/wallet/helpers/tokenFormater'
+import {computeMinUTxOLovelaceAmount} from '../../frontend/wallet/shelley/shelley-transaction-planner'
 
 describe('Token sorting', () => {
   it('should sort tokenBundle by policyId canonically', () => {
@@ -78,3 +79,32 @@ describe('Token sorting', () => {
     assert.deepEqual(sortedTokenBundle, orderTokenBundle(tokenBundle))
   })
 })
+
+describe('Min ada calculation', () => {
+  it('should calculate min ADA value for empty tokens', () => {
+    assert.deepEqual(1000000, computeMinUTxOLovelaceAmount([]))
+  })
+  it('should calculate min ADA value for multiple assets under one policy', () => {
+    const tokenBundle = [
+      {policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0', assetName: '000000000000', quantity: 1},
+      {policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0', assetName: '', quantity: 1},
+    ]
+    assert.deepEqual(1629628, computeMinUTxOLovelaceAmount(tokenBundle))
+  })
+  it('should calculate min ADA value for multiple assets under multiple policies', () => {
+    const tokenBundle = [
+      {policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0', assetName: '000000000000', quantity: 1},
+      {policyId: '6b8d07d69639e9413dd637a1a815a7323c69c86abbafb66dbfdb1aa7', assetName: '111111111111', quantity: 1},
+    ]
+    assert.deepEqual(1666665, computeMinUTxOLovelaceAmount(tokenBundle))
+  })
+  it('should calculate min ADA value for multiple assets under multiple policies with same assetName', () => {
+    const tokenBundle = [
+      {policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0', assetName: '000000000000', quantity: 1},
+      {policyId: '6b8d07d69639e9413dd637a1a815a7323c69c86abbafb66dbfdb1aa7', assetName: '000000000000', quantity: 1},
+    ]
+    assert.deepEqual(1666665, computeMinUTxOLovelaceAmount(tokenBundle))
+  })
+})
+
+

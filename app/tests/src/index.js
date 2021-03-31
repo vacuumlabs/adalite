@@ -28,7 +28,7 @@ describe('AdaLite Test Suite', () => {
   describe('Account', () => {
     require('./wallet/account')
   })
-  describe('Token formater', () => {
-    require('./common/tokenFormater')
+  describe('Token bundle', () => {
+    require('./tokenBundle')
   })
 })
