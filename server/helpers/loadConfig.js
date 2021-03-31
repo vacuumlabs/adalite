@@ -73,7 +73,8 @@ const {
   PORT,
   REDIS_URL,
   ADALITE_ENABLE_DEBUGGING,
-  ADALITE_SERVER_URL,
+  HEROKU_APP_NAME,
+  HEROKU_IS_REVIEW_APP,
   ADALITE_BLOCKCHAIN_EXPLORER_URL,
   ADALITE_DEFAULT_ADDRESS_COUNT,
   ADALITE_GAP_LIMIT,
@@ -101,6 +102,19 @@ const {
   ADALITE_ENABLE_TREZOR,
   ADALITE_ENABLE_LEDGER,
 } = process.env
+
+let {ADALITE_SERVER_URL} = process.env
+if (HEROKU_IS_REVIEW_APP) {
+  /*
+  `HEROKU_IS_REVIEW_APP` is redundant, as checking for `HEROKU_APP_NAME` should be
+  sufficient. But as according to https://devcenter.heroku.com/articles/github-integration-review-apps#injected-environment-variables
+  this functionality is prone to change, prefer more "explicit" solution.
+  */
+  if (!HEROKU_APP_NAME) throw new Error('HEROKU_APP_NAME is empty!')
+  ADALITE_SERVER_URL = `https://${HEROKU_APP_NAME}.herokuapp.com`
+  // eslint-disable-next-line no-console
+  console.log(`Using ${ADALITE_SERVER_URL} as ADALITE_SERVER_URL`)
+}
 
 const ADALITE_BACKEND_TOKEN = process.env.ADALITE_BACKEND_TOKEN || undefined
 
@@ -165,6 +179,7 @@ const backendConfig = {
   ADALITE_GA_TRACKING_ID,
   ADALITE_MAILCHIMP_API_KEY,
   ADALITE_MAILCHIMP_LIST_ID,
+  HEROKU_IS_REVIEW_APP,
   ADALITE_IP_BLACKLIST: ADALITE_IP_BLACKLIST
     ? ADALITE_IP_BLACKLIST.replace(/ /g, '').split(',')
     : [],
