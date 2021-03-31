@@ -112,11 +112,11 @@ Check us out at https://www.adalite.io
 
 Donations are really appreciated!
 
-BTC: [3Qk3BDbw4yym6PM6vWA4bAsFkY76EWwtnp](https://www.blockchain.com/btc/address/3Qk3BDbw4yym6PM6vWA4bAsFkY76EWwtnp)
+BTC: [bc1q4jjxwlxs68kxv0zgv7f2sf2eh2svxlghz57e0l](https://www.blockchain.com/btc/address/bc1q4jjxwlxs68kxv0zgv7f2sf2eh2svxlghz57e0l)
 
 ETH: [0xe1575549f79742d21E56426a1F9AD26997F5B9fb](https://etherscan.io/address/0xe1575549f79742d21E56426a1F9AD26997F5B9fb)
 
-ADA: [DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5](https://cardanoexplorer.com/address/DdzFFzCqrhsqedBRRVa8dZ9eFQfQErikMsgJC2YkkLY23gK4JzV9y6jKnRL8VSDEqczdzG3WYmj1vsXxCA2j1MvTS6GfMVA2dkiFrkK5)
+ADA: [addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2mjdvnpufphgjawhyh0tg9r3sk85ls4](https://cardanoexplorer.com/address/addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2mjdvnpufphgjawhyh0tg9r3sk85ls4)
 
 ## Trezor integration
 
