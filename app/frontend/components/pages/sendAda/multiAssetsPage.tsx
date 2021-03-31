@@ -21,6 +21,8 @@ const MultiAssetsPage = () => {
       })),
   ]
 
+  if (!tokenBalance.length) return null
+
   // For now the layout is very similar as in `sendAdaPage`, however we expect it to change,
   // therefore the duplication to allow for more versatility later on
   return (
