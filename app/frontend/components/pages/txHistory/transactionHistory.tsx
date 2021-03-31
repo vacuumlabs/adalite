@@ -1,5 +1,8 @@
 import {h, Fragment} from 'preact'
-import {assetNameHex2Readable} from '../../../wallet/shelley/helpers/addresses'
+import {
+  assetNameHex2Readable,
+  encodeAssetFingerprint,
+} from '../../../wallet/shelley/helpers/addresses'
 import printAda from '../../../helpers/printAda'
 import {getActiveAccountInfo, State} from '../../../state'
 import actions from '../../../actions'
@@ -78,9 +81,10 @@ type MultiAssetProps = {
   name: string
   hash: string
   amount: number
+  fingerprint: string
 }
 
-const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
+const MultiAsset = ({star, name, hash, fingerprint, amount}: MultiAssetProps) => (
   <Fragment>
     <div className="row">
       <div className="multi-asset-name">
@@ -101,6 +105,10 @@ const MultiAsset = ({star, name, hash, amount}: MultiAssetProps) => (
     <div className="multi-asset-hash">
       <span className="ellipsis">{hash.slice(0, -6)}</span>
       {hash.slice(-6)}
+    </div>
+    <div className="multi-asset-hash">
+      <span className="ellipsis">{fingerprint.slice(0, -6)}</span>
+      {fingerprint.slice(-6)}
     </div>
   </Fragment>
 )
@@ -256,6 +264,7 @@ const TransactionHistory = ({transactionHistory, stakingHistory}: Props): h.JSX.
                 name={tokenEffect.assetName}
                 hash={tokenEffect.policyId}
                 amount={tokenEffect.quantity}
+                fingerprint={encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName)}
               />
             ))}
           </li>

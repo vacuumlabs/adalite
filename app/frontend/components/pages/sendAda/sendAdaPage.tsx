@@ -21,7 +21,10 @@ import {
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
-import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
+import {
+  assetNameHex2Readable,
+  encodeAssetFingerprint,
+} from '../../../../frontend/wallet/shelley/helpers/addresses'
 import tooltip from '../../common/tooltip'
 import {FormattedAssetItem} from '../../common/asset'
 
@@ -69,6 +72,7 @@ interface Props {
 }
 
 type DropdownAssetItem = Token & {
+  fingerprint: string
   assetNameHex: string
   type: AssetFamily
   star?: boolean
@@ -76,7 +80,14 @@ type DropdownAssetItem = Token & {
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.assetName} {...props}>
-    {({starIcon, formattedAssetName, formattedAssetLink, formattedAmount, formattedPolicy}) => {
+    {({
+      starIcon,
+      formattedAssetName,
+      formattedAssetLink,
+      formattedAmount,
+      formattedPolicy,
+      formattedFingerprint,
+    }) => {
       return (
         <div
           className="multi-asset-item"
@@ -102,6 +113,7 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
             </div>
           </div>
           {formattedPolicy}
+          {formattedFingerprint}
         </div>
       )
     }}
@@ -151,6 +163,7 @@ const SendAdaPage = ({
     policyId: null,
     assetName: 'ADA',
     assetNameHex: null,
+    fingerprint: null,
     quantity: balance,
     star: true,
   }
@@ -165,6 +178,7 @@ const SendAdaPage = ({
             ...token,
             assetNameHex: token.assetName,
             assetName: assetNameHex2Readable(token.assetName),
+            fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
             type: AssetFamily.TOKEN,
             star: false,
           })
@@ -218,7 +232,7 @@ const SendAdaPage = ({
     [updateAmount]
   )
 
-  const displayDropdownSelectedItem = ({assetName, policyId}: DropdownAssetItem) => (
+  const displayDropdownSelectedItem = ({assetName, policyId, fingerprint}: DropdownAssetItem) => (
     <div className="wrapper">
       {assetName}
       {selectedAsset.type === AssetFamily.TOKEN && (

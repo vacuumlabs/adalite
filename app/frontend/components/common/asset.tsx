@@ -14,6 +14,7 @@ export const LinkToAsset = ({policyIdHex, assetNameHex}: LinkToAssetProps) => (
 )
 
 type FormattedAssetItemProps = Token & {
+  fingerprint: string
   assetNameHex: string
   type: AssetFamily
   star?: boolean
@@ -26,6 +27,7 @@ export const FormattedAssetItem = ({
   assetName,
   assetNameHex,
   policyId,
+  fingerprint,
   quantity,
   children,
 }: FormattedAssetItemProps & {
@@ -35,6 +37,7 @@ export const FormattedAssetItem = ({
     formattedAssetLink: h.JSX.Element
     formattedAmount: string
     formattedPolicy: h.JSX.Element
+    formattedFingerprint: h.JSX.Element
   }) => h.JSX.Element
 }) => {
   return children({
@@ -53,6 +56,12 @@ export const FormattedAssetItem = ({
       <div className="multi-asset-hash">
         <span className="ellipsis">{policyId.slice(0, -6)}</span>
         <span>{policyId.slice(-6)}</span>
+      </div>
+    ),
+    formattedFingerprint: fingerprint && (
+      <div className="multi-asset-hash">
+        <span className="ellipsis">{fingerprint.slice(0, -6)}</span>
+        <span>{fingerprint.slice(-6)}</span>
       </div>
     ),
   })
