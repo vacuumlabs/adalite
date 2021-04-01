@@ -1,7 +1,7 @@
 import {State, getActiveAccountInfo} from './state'
 import {BIG_DELEGATOR_THRESHOLD, PREMIUM_MEMBER_BALANCE_TRESHOLD} from './wallet/constants'
 import {useSelector} from './helpers/connect'
-import {AccountInfo} from './types'
+import {AccountInfo, AuthMethodType} from './types'
 
 /*
 This file contains hooks/selectors shared accross multiple components which
@@ -23,6 +23,11 @@ export const isBigDelegatorSelector = (state: State): boolean => {
 export const shouldShowPremiumBannerSelector = (state: State): boolean => {
   const totalWalletBalance = totalWalletBalanceSelector(state)
   return !state.seenPremiumBanner && PREMIUM_MEMBER_BALANCE_TRESHOLD < totalWalletBalance
+}
+
+export const shouldShowExportOptionSelector = (state: State): boolean => {
+  const {authMethod} = state
+  return authMethod === AuthMethodType.MNEMONIC || authMethod === AuthMethodType.KEY_FILE
 }
 
 /*

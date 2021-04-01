@@ -168,7 +168,6 @@ export default (store: Store) => {
       walletLoadingError: undefined,
       shouldShowWalletLoadingErrorModal: false,
       authMethod: AuthMethodType.MNEMONIC,
-      shouldShowExportOption: true,
     })
   }
 

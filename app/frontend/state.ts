@@ -28,7 +28,6 @@ export interface State {
   error?: any
   activeMainTab: MainTabs
   shouldShowContactFormModal?: boolean
-  shouldShowExportOption?: boolean
   conversionRates?: {data: {USD: number; EUR: number}}
 
   // cache

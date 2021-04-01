@@ -27,7 +27,7 @@ import {useState} from 'preact/hooks'
 import {SubTabs, MainTabs} from '../../../constants'
 import {useViewport, isSmallerThanDesktop} from '../../common/viewPort'
 import {ScreenType} from '../../../types'
-import {shouldShowPremiumBannerSelector} from '../../../selectors'
+import {shouldShowExportOptionSelector, shouldShowPremiumBannerSelector} from '../../../selectors'
 import ReceiveRedirect from '../receiveAda/receiveRedirect'
 import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 import ConfirmTransactionDialog from '../sendAda/confirmTransactionDialog'
@@ -309,7 +309,7 @@ export default connect(
     shouldShowPremiumBanner: shouldShowPremiumBannerSelector(state),
     shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
     activeAccountIndex: state.activeAccountIndex,
-    shouldShowExportOption: state.shouldShowExportOption,
+    shouldShowExportOption: shouldShowExportOptionSelector(state),
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,

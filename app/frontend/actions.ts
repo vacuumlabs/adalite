@@ -64,12 +64,8 @@ export default (store: Store) => {
   } = walletActions(store)
   const {setState, getState} = store
 
-  const setAuthMethod = (state: State, option: AuthMethodType): void => {
-    setState({
-      authMethod: option,
-      shouldShowExportOption:
-        option === AuthMethodType.MNEMONIC || option === AuthMethodType.KEY_FILE,
-    })
+  const setAuthMethod = (state: State, authMethod: AuthMethodType): void => {
+    setState({authMethod})
   }
 
   const closeDemoWalletWarningDialog = (state) => {
