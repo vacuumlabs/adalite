@@ -83,6 +83,11 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     return blockchainExplorer.getStakepoolDataProvider()
   }
 
+  async function getPoolInfo(url) {
+    const poolInfo = await blockchainExplorer.getPoolInfo(url)
+    return poolInfo
+  }
+
   return {
     isHwWallet,
     getWalletName,
@@ -95,6 +100,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     getAccount: accountManager.getAccount,
     exploreNextAccount: accountManager.exploreNextAccount,
     getMaxAccountIndex,
+    getPoolInfo,
   }
 }
 

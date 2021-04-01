@@ -311,11 +311,6 @@ const Account = ({
     return selectMinimalTxPlan(shuffledUtxos, changeAddress, txPlanArgs)
   }
 
-  async function getPoolInfo(url) {
-    const poolInfo = await blockchainExplorer.getPoolInfo(url)
-    return poolInfo
-  }
-
   function isAccountUsed(): Promise<boolean> {
     //TODO: we should decouple shelley compatibility from usedness
     // in case the wallet is not shelley compatible we consider the
@@ -503,7 +498,6 @@ const Account = ({
     generateNewSeeds,
     getAccountInfo,
     getStakingInfo,
-    getPoolInfo,
     accountIndex,
     getPoolRecommendation,
     isAccountUsed,

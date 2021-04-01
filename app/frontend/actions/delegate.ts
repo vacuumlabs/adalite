@@ -25,9 +25,7 @@ export default (store: Store) => {
       return
     }
     const poolInfo = !state.shelleyDelegation?.selectedPool?.name
-      ? await getWallet()
-        .getAccount(state.sourceAccountIndex)
-        .getPoolInfo(state.shelleyDelegation?.selectedPool?.url)
+      ? await getWallet().getPoolInfo(state.shelleyDelegation?.selectedPool?.url)
       : {}
     if (hasPoolIdentifiersChanged(state)) {
       return
