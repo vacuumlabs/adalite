@@ -204,5 +204,6 @@ export default (store: Store) => {
     reloadWalletInfo,
     loadDemoWallet,
     logout,
+    getShouldShowSaturatedBanner,
   }
 }

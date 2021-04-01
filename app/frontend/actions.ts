@@ -33,6 +33,7 @@ import {
   WithdrawTransactionSummary,
   DelegateTransactionSummary,
   DeregisterStakingKeyTransactionSummary,
+  AccountInfo,
 } from './types'
 import {MainTabs} from './constants'
 import {parseCliUnsignedTx} from './wallet/shelley/helpers/stakepoolRegistrationUtils'
@@ -54,7 +55,13 @@ const debounceEvent = (callback, time) => {
 export default (store: Store) => {
   const {setError} = errorActions(store)
   const {loadingAction, stopLoadingAction} = loadingActions(store)
-  const {loadWallet, loadDemoWallet, reloadWalletInfo, logout} = walletActions(store)
+  const {
+    loadWallet,
+    loadDemoWallet,
+    reloadWalletInfo,
+    logout,
+    getShouldShowSaturatedBanner,
+  } = walletActions(store)
   const {setState, getState} = store
 
   const setAuthMethod = (state: State, option: AuthMethodType): void => {
@@ -759,12 +766,13 @@ export default (store: Store) => {
       loadingAction(state, 'Loading account')
       const nextAccount = await getWallet().exploreNextAccount()
       const accountInfo = await nextAccount.getAccountInfo(state.validStakepoolDataProvider)
-      const accountsInfo = [...state.accountsInfo, accountInfo]
+      // TODO: remove the type conversion
+      const accountsInfo = [...state.accountsInfo, accountInfo] as AccountInfo[]
+      // TODO: how about other states? is big delegator etc.
+      const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
       setState({
-        //@ts-ignore TODO: refactor type AccountInfo
         accountsInfo,
-        //@ts-ignore TODO: refactor type AccountInfo
-        ...getWalletInfo(accountsInfo),
+        shouldShowSaturatedBanner,
       })
       setActiveAccount(state, nextAccount.accountIndex)
     } catch (e) {
