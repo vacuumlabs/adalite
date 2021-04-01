@@ -1,7 +1,7 @@
-import NamedError from '../helpers/NamedError'
 import {Account} from './account'
 import {CryptoProvider, CryptoProviderFeature} from '../types'
 import blockchainExplorer from './blockchain-explorer'
+import {UnexpectedError, UnexpectedErrorReason} from '../errors'
 
 type AccountManagerParams = {
   config: any
@@ -40,7 +40,7 @@ const AccountManager = ({
       !isLastAccountUsed ||
       account.accountIndex > maxAccountIndex
     ) {
-      throw NamedError('AccountExplorationError')
+      throw new UnexpectedError(UnexpectedErrorReason.AccountExplorationError)
     }
     accounts.push(account)
   }

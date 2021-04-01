@@ -10,7 +10,7 @@ const guessDerivationSchemeFromMnemonic = (mnemonic) => {
 
 const mnemonicToWalletSecretDef = async (mnemonic) => {
   if (!validateMnemonic(mnemonic)) {
-    throw Error('Invalid mnemonic format')
+    throw new Error('Invalid mnemonic format')
   }
   if (await isMnemonicInPaperWalletFormat(mnemonic)) {
     mnemonic = await decodePaperWalletMnemonic(mnemonic)

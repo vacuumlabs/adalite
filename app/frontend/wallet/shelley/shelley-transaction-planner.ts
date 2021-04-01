@@ -7,7 +7,12 @@ import {
   cborizeTxWithdrawals,
 } from './shelley-transaction'
 import {MAX_TX_OUTPUT_SIZE, MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
-import NamedError from '../../helpers/NamedError'
+import {
+  InternalError,
+  InternalErrorReason,
+  UnexpectedError,
+  UnexpectedErrorReason,
+} from '../../errors'
 import {
   Lovelace,
   CertificateType,
@@ -118,7 +123,7 @@ export function estimateTxSize(
   // the 1 is there for the CBOR "tag" for an array of 2 elements
   const txSizeInBytes = 1 + txAuxSize + txWitnessesSize + txMetaSize
 
-  if (txSizeInBytes > MAX_TX_SIZE) throw NamedError('TxTooBig')
+  if (txSizeInBytes > MAX_TX_SIZE) throw new InternalError(InternalErrorReason.TxTooBig)
   /*
    * the slack is there for the array of tx witnesses
    * because it may have more than 1 byte of overhead
@@ -217,21 +222,21 @@ export function computeTxPlan(
   const tokenDifference = getTokenBundlesDifference(totalInputTokens, totalOutputTokens)
   // Cannot construct transaction plan, not enought tokens
   if (tokenDifference.some(({quantity}) => quantity < 0)) {
-    throw NamedError('CannotConstructTxPlan')
+    throw new UnexpectedError(UnexpectedErrorReason.CannotConstructTxPlan)
   }
 
   if (
     totalOutput > Number.MAX_SAFE_INTEGER ||
     totalOutputTokens.some(({quantity}) => quantity > Number.MAX_SAFE_INTEGER)
   ) {
-    throw NamedError('CoinAmountError')
+    throw new InternalError(InternalErrorReason.CoinAmountError)
   }
 
   const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certificates, withdrawals)
 
   // Cannot construct transaction plantotalOutput
   if (totalOutput + feeWithoutChange > totalInput) {
-    throw NamedError('CannotConstructTxPlan')
+    throw new UnexpectedError(UnexpectedErrorReason.CannotConstructTxPlan)
   }
 
   // No change necessary, perfect fit
@@ -294,7 +299,7 @@ export function computeTxPlan(
 
   // we cant build the transaction with big enough change lovelace
   if (change.tokenBundle.length > 0 && change.coins < minimalChangeLovelace) {
-    throw NamedError('ChangeOutputTooSmall')
+    throw new InternalError(InternalErrorReason.ChangeOutputTooSmall)
   }
 
   return {
@@ -318,10 +323,10 @@ const validateTxPlan = (txPlan: TxPlan): void => {
   const outputs = txPlan.change ? [...txPlan.outputs, txPlan.change] : txPlan.outputs
   // TODO: check for maximal sizes of outputs
   if (outputs.some(({coins, tokenBundle}) => coins < computeMinUTxOLovelaceAmount(tokenBundle))) {
-    throw NamedError('OutputTooSmall')
+    throw new InternalError(InternalErrorReason.OutputTooSmall)
   }
   if (outputs.some((output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE)) {
-    throw NamedError('OutputTooBig')
+    throw new InternalError(InternalErrorReason.OutputTooBig)
   }
   const totalRewards = txPlan.withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
 
@@ -330,7 +335,7 @@ const validateTxPlan = (txPlan: TxPlan): void => {
     (c) => c.type === CertificateType.STAKING_KEY_DEREGISTRATION
   )
   if (!isDeregisteringStakeKey && totalRewards > 0 && totalRewards < txPlan.fee) {
-    throw NamedError('RewardsBalanceTooLow')
+    throw new InternalError(InternalErrorReason.RewardsBalanceTooLow)
   }
 }
 
@@ -429,7 +434,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
     case TxType.CONVERT_LEGACY:
       return prepareSendAdaTx(txPlanArgs)
     default:
-      throw NamedError('InvalidTxPlanType')
+      throw new UnexpectedError(UnexpectedErrorReason.InvalidTxPlanType)
   }
 }
 

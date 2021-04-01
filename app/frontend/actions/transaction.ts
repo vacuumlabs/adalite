@@ -4,7 +4,6 @@ import loadingActions from './loading'
 import errorActions from './error'
 import commonActions from './common'
 import sleep from '../helpers/sleep'
-import NamedError from '../helpers/NamedError'
 import {MainTabs} from '../constants'
 import getDonationAddress from '../helpers/getDonationAddress'
 import {txPlanValidator, withdrawalPlanValidator} from '../helpers/validators'
@@ -18,6 +17,7 @@ import {
   CryptoProviderFeature,
 } from '../types'
 import {encode} from 'borc'
+import {InternalError, InternalErrorReason} from '../errors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -57,7 +57,7 @@ export default (store: Store) => {
           .prepareTxAux(retriedState.sendTransactionSummary.plan)
       }
     } catch (e) {
-      throw NamedError('TransactionCorrupted', {causedBy: e})
+      throw new InternalError(InternalErrorReason.TransactionCorrupted, {causedBy: e})
     } finally {
       stopLoadingAction(state)
     }
@@ -134,7 +134,7 @@ export default (store: Store) => {
         await sleep(pollingInterval)
       }
     }
-    throw NamedError('TransactionNotFoundInBlockchainAfterSubmission')
+    throw new InternalError(InternalErrorReason.TransactionNotFoundInBlockchainAfterSubmission)
   }
 
   const submitTransaction = async (state: State) => {
@@ -172,7 +172,7 @@ export default (store: Store) => {
 
       if (!txSubmitResult) {
         // TODO: this seems useless here
-        throw NamedError('TransactionRejectedByNetwork')
+        throw new InternalError(InternalErrorReason.TransactionRejectedByNetwork)
       }
 
       sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 40)

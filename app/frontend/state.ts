@@ -1,5 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
+import {InternalErrorReason} from './errors'
 import {StakepoolDataProvider} from './helpers/dataProviders/types'
 import {localStorageVars} from './localStorage'
 import {
@@ -50,7 +51,7 @@ export interface State {
   shouldShowSaturatedBanner?: boolean
   mnemonicAuthForm: {
     mnemonicInputValue: string
-    mnemonicInputError: {code: string}
+    mnemonicInputError: {code: InternalErrorReason}
     formIsValid: boolean
   }
   hwWalletName?: string

@@ -14,8 +14,7 @@ import StakingBanner from './stakingBanner'
 import ErrorBanner from './errorBanner'
 import Tag from '../../common/tag'
 import WalletLoadingErrorModal from './walletLoadingErrorModal'
-import {getTranslation} from '../../../translations'
-import {errorHasHelp} from '../../../helpers/errorsWithHelp'
+import {errorHasHelp, getErrorMessage} from '../../../errors'
 import {State} from '../../../state'
 import {AuthMethodType, ScreenType} from '../../../types'
 import {useViewport, isBiggerThanMobile} from '../../common/viewPort'
@@ -270,7 +269,7 @@ const LoginPage = () => {
         {shouldShowWalletLoadingErrorModal && (
           <WalletLoadingErrorModal
             onRequestClose={closeWalletLoadingErrorModal}
-            errorMessage={getTranslation(walletLoadingError.code, walletLoadingError.params)}
+            errorMessage={getErrorMessage(walletLoadingError.code, walletLoadingError.params)}
             showHelp={errorHasHelp(walletLoadingError.code)}
           />
         )}

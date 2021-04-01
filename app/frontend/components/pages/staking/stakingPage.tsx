@@ -2,7 +2,6 @@
 import {h} from 'preact'
 import {useState, useCallback} from 'preact/hooks'
 import submitEmailRaw from '../../../helpers/submitEmailRaw'
-import NamedError from '../../../helpers/NamedError'
 import debugLog from '../../../helpers/debugLog'
 
 const newPools = new Set(['ADLT1', 'ADLT0'])
@@ -67,7 +66,7 @@ const useEmailSubmitProps = () => {
       if (emailSubmitResult.Left) {
         didSucceed = false
         message = emailSubmitResult.Left
-        throw NamedError('EmailSubmissionRejected')
+        throw new Error('EmailSubmissionRejected')
       }
 
       didSucceed = true
@@ -130,7 +129,8 @@ const StakingPage = () => {
               <p key={i}>
                 <a href={`https://pooltool.io/pool/${hash}`} target="_blank">
                   {` ${ticker}`}
-                </a>:{' '}
+                </a>
+                :{' '}
                 <b>
                   {hash}
                   {newPools.has(ticker) && ' (NEW)'}
@@ -179,8 +179,9 @@ const StakingPage = () => {
         <div className="form-message-field">
           {!emailValid && <div className="form-alert error">{errorMessage}</div>}
           {emailSubmitSuccess && <div className="form-alert success">{emailSubmitMessage}</div>}
-          {!emailSubmitSuccess &&
-            emailSubmitMessage && <div className="form-alert error">{emailSubmitMessage}</div>}
+          {!emailSubmitSuccess && emailSubmitMessage && (
+            <div className="form-alert error">{emailSubmitMessage}</div>
+          )}
         </div>
       </div>
     </div>

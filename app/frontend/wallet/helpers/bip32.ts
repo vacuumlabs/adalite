@@ -1,5 +1,5 @@
+import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import {HARDENED_THRESHOLD} from '../constants'
-import NamedError from '../../helpers/NamedError'
 
 function toBip32Path(derivationPath) {
   // 44'/1815'
@@ -17,7 +17,7 @@ function fromBip32Path(bip32Path) {
     case 0:
       return []
     default:
-      throw NamedError('UnsupportedOperationError', {
+      throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
         message: `Unsupported derivation path: ${bip32Path}`,
       })
   }

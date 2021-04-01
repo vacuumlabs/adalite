@@ -4,7 +4,7 @@ import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import FileLoader from '../../common/fileLoader'
 import tooltip from '../../common/tooltip'
-import {getTranslation} from '../../../translations'
+import {getErrorMessage} from '../../../errors'
 import SignPoolCertTxModal from './signPoolCertTxModal'
 import {State} from '../../../state'
 import {PoolRegTransactionSummary} from '../../../../frontend/types'
@@ -116,7 +116,7 @@ const PoolOwnerCard = ({
       {error && (
         <div className="validation-error-field pool-owner">
           <div className="validation-message error pool-owner">
-            {getTranslation(error.code, error.params)}
+            {getErrorMessage(error.code, error.params)}
           </div>
         </div>
       )}

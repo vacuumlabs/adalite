@@ -5,7 +5,7 @@ import actions from '../../../actions'
 import tooltip from '../../common/tooltip'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
-import {getTranslation} from '../../../translations'
+import {getErrorMessage} from '../../../errors'
 import {getSourceAccountInfo} from '../../../state'
 import Accordion from '../../common/accordion'
 import {isBigDelegatorSelector} from '../../../selectors'
@@ -33,7 +33,7 @@ const DelegationValidation = ({
   ) : (
     delegationValidationError && (
       <div className="validation-message error">
-        {getTranslation(delegationValidationError.code)}
+        {getErrorMessage(delegationValidationError.code)}
       </div>
     )
   )

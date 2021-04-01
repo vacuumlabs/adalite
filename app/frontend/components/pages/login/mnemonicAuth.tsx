@@ -1,5 +1,5 @@
 import {h, Component} from 'preact'
-import {getTranslation} from '../../../translations'
+import {getErrorMessage} from '../../../errors'
 import {connect} from '../../../helpers/connect'
 import actions from '../../../actions'
 import mnemonicToWalletSecretDef from '../../../wallet/helpers/mnemonicToWalletSecretDef'
@@ -119,7 +119,7 @@ class LoadByMnemonicSectionClass extends Component<Props> {
           </button>
           {formData.mnemonicInputError && (
             <div className="validation-message error">
-              {getTranslation(formData.mnemonicInputError.code)}
+              {getErrorMessage(formData.mnemonicInputError.code)}
             </div>
           )}
         </div>

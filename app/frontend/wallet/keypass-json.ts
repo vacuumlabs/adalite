@@ -78,7 +78,7 @@ const [encryptWalletSecret, decryptWalletSecret] = Array(2).fill((walletSecret, 
 
 function parseWalletExportObj(walletExportObj) {
   if (walletExportObj.fileType !== 'WALLETS_EXPORT') {
-    throw Error('Invalid file type')
+    throw new Error('Invalid file type')
   }
 
   const {passwordHash: b64PasswordHash, walletSecretKey: b64WalletSecret} = walletExportObj.wallet
@@ -88,7 +88,7 @@ function parseWalletExportObj(walletExportObj) {
   )
 
   if (derivationScheme === undefined) {
-    throw Error(`Invalid file version: ${walletExportObj.fileVersion}`)
+    throw new Error(`Invalid file version: ${walletExportObj.fileVersion}`)
   }
 
   const walletSecretDef = {
@@ -114,7 +114,7 @@ async function importWalletSecretDef(walletExportObj, password) {
 
   const isPasswordVerified = await verifyPassword(password, passwordHash)
   if (!isPasswordVerified) {
-    throw Error('Wrong password')
+    throw new Error('Wrong password')
   }
 
   if (!password) {

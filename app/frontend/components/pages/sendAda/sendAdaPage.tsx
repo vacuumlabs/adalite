@@ -2,7 +2,7 @@ import {Fragment, h} from 'preact'
 import {useActions, useSelector} from '../../../helpers/connect'
 import actions from '../../../actions'
 
-import {getTranslation} from '../../../translations'
+import {getErrorMessage} from '../../../errors'
 import printAda from '../../../helpers/printAda'
 
 import Conversions from '../../common/conversions'
@@ -27,7 +27,7 @@ import {FormattedAssetItem} from '../../common/asset'
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
 const SendFormErrorMessage = ({sendFormValidationError}) => (
-  <span>{getTranslation(sendFormValidationError.code, sendFormValidationError.params)}</span>
+  <span>{getErrorMessage(sendFormValidationError.code, sendFormValidationError.params)}</span>
 )
 
 const SendValidation = ({sendFormValidationError, txSuccessTab}) =>

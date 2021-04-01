@@ -2,7 +2,12 @@
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {ADALITE_SUPPORT_EMAIL, TREZOR_ERRORS, TREZOR_VERSIONS} from '../constants'
 import derivationSchemes from '../helpers/derivation-schemes'
-import NamedError from '../../helpers/NamedError'
+import {
+  InternalError,
+  InternalErrorReason,
+  UnexpectedError,
+  UnexpectedErrorReason,
+} from '../../errors'
 import debugLog from '../../helpers/debugLog'
 import {AddressTypes, bech32} from 'cardano-crypto.js'
 import {hasRequiredVersion} from './helpers/version-check'
@@ -85,7 +90,7 @@ const ShelleyTrezorCryptoProvider = async ({
         bundle,
       })
       if (response.success === false) {
-        throw NamedError('TrezorError', {message: response.payload.error})
+        throw new InternalError(InternalErrorReason.TrezorError, {message: response.payload.error})
       }
       return response.payload.map(({publicKey}) => Buffer.from(publicKey, 'hex'))
     }
@@ -97,20 +102,22 @@ const ShelleyTrezorCryptoProvider = async ({
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
     if (!isFeatureSupported(feature)) {
-      throw NamedError(TREZOR_ERRORS[feature], {
+      throw new InternalError(TREZOR_ERRORS[feature], {
         message: `${version.major}.${version.minor}.${version.patch}`,
       })
     }
   }
 
   function getHdPassphrase(): void {
-    throw NamedError('UnsupportedOperationError', {
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
       message: 'This operation is not supported on TrezorCryptoProvider!',
     })
   }
 
   function sign(message: HexString, absDerivationPath: BIP32Path): void {
-    throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Operation not supported',
+    })
   }
 
   async function displayAddressForPath(
@@ -129,7 +136,7 @@ const ShelleyTrezorCryptoProvider = async ({
       showOnTrezor: true,
     })
     if (response.success === false) {
-      throw NamedError('TrezorError', {message: response.payload.error})
+      throw new InternalError(InternalErrorReason.TrezorError, {message: response.payload.error})
     }
   }
 
@@ -144,7 +151,7 @@ const ShelleyTrezorCryptoProvider = async ({
   const prepareTokenBundle = (tokenBundle: TokenBundle): TrezorMultiAsset | undefined => {
     // TODO: refactor
     if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
-      throw NamedError('TrezorMultiAssetNotSupported', {
+      throw new InternalError(InternalErrorReason.TrezorMultiAssetNotSupported, {
         message:
           'Sending tokens is not supported on Trezor device. Please update your firmware to the latest version.',
       })
@@ -203,7 +210,7 @@ const ShelleyTrezorCryptoProvider = async ({
             hostName: relay.params.dnsName,
           }
         default:
-          throw NamedError('InvalidRelayType')
+          throw new UnexpectedError(UnexpectedErrorReason.InvalidRelayType)
       }
     })
   }
@@ -221,7 +228,7 @@ const ShelleyTrezorCryptoProvider = async ({
         : {stakingKeyHash: owner.stakingKeyHashHex}
     })
     if (!owners.some((owner) => owner.stakingKeyPath)) {
-      throw NamedError('MissingOwner', {
+      throw new InternalError(InternalErrorReason.MissingOwner, {
         message: 'This HW device is not an owner of the pool stated in registration certificate.',
       })
     }
@@ -283,7 +290,7 @@ const ShelleyTrezorCryptoProvider = async ({
       case CertificateType.STAKEPOOL_REGISTRATION:
         return preparePoolRegistrationCertificate(certificate, path)
       default:
-        throw NamedError('InvalidCertficateType')
+        throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
     }
   }
 
@@ -332,11 +339,13 @@ const ShelleyTrezorCryptoProvider = async ({
 
     if (response.success === false) {
       debugLog(response)
-      throw NamedError('TrezorSignTxError', {message: response.payload.error})
+      throw new InternalError(InternalErrorReason.TrezorSignTxError, {
+        message: response.payload.error,
+      })
     }
 
     if (response.payload.hash !== txAux.getId()) {
-      throw NamedError('TxSerializationError', {
+      throw new InternalError(InternalErrorReason.TxSerializationError, {
         message: 'Tx serialization mismatch between Trezor and Adalite',
       })
     }
@@ -356,7 +365,9 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   function getWalletSecret(): void {
-    throw NamedError('UnsupportedOperationError', {message: 'Unsupported operation!'})
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Unsupported operation!',
+    })
   }
 
   function getDerivationScheme() {

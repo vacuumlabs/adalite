@@ -1,4 +1,4 @@
-import NamedError from '../../helpers/NamedError'
+import {InternalError, InternalErrorReason} from '../../errors'
 import sleep from '../../helpers/sleep'
 import {DELAY_AFTER_TOO_MANY_REQUESTS} from '../constants'
 
@@ -13,23 +13,27 @@ const request = async function request(url, method = 'GET', body = null, headers
     requestParams = Object.assign({}, requestParams, {body})
   }
   const response = await fetch(url, requestParams).catch((e) => {
-    throw NamedError('NetworkError', {
+    throw new InternalError(InternalErrorReason.NetworkError, {
       message: `${method} ${url} has failed with the following error: ${e}`,
     })
   })
-  if (!response) throw NamedError('NetworkError', {message: `No response from ${method} ${url}`})
+  if (!response) {
+    throw new InternalError(InternalErrorReason.NetworkError, {
+      message: `No response from ${method} ${url}`,
+    })
+  }
 
   if (response.status === 429) {
     await sleep(DELAY_AFTER_TOO_MANY_REQUESTS)
     return request(url, method, body, headers)
   } else if (response.status >= 500) {
-    throw NamedError('ServerError', {
+    throw new InternalError(InternalErrorReason.ServerError, {
       message: `${method} ${url} returns error: ${response.status} on payload: ${JSON.stringify(
         requestParams
       )}`,
     })
   } else if (response.status >= 400) {
-    throw NamedError('NetworkError', {
+    throw new InternalError(InternalErrorReason.NetworkError, {
       message: `${method} ${url} returns error: ${response.status} on payload: ${JSON.stringify(
         requestParams
       )}`,

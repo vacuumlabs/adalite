@@ -1,7 +1,6 @@
 import AddressManager from './address-manager'
 import PseudoRandom from './helpers/PseudoRandom'
 import {DEFAULT_TTL_SLOTS, MAX_INT32} from './constants'
-import NamedError from '../helpers/NamedError'
 import {
   AddressToPathMapper,
   AddressToPathMapping,
@@ -42,6 +41,7 @@ import {UTxO, TxOutput} from './types'
 import {aggregateTokenBundles} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
+import {InternalError, InternalErrorReason, UnexpectedError, UnexpectedErrorReason} from '../errors'
 
 const DummyAddressManager = () => {
   return {
@@ -255,7 +255,9 @@ const Account = ({
     const signedTx = await cryptoProvider
       .signTx(txAux, myAddresses.fixedPathMapper())
       .catch((e) => {
-        throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
+        throw new InternalError(InternalErrorReason.TransactionRejectedWhileSigning, {
+          message: e.message,
+        })
       })
     return signedTx
   }
@@ -264,7 +266,9 @@ const Account = ({
     const txWitness = await cryptoProvider
       .witnessPoolRegTx(txAux, myAddresses.fixedPathMapper())
       .catch((e) => {
-        throw NamedError('TransactionRejectedWhileSigning', {message: e.message})
+        throw new InternalError(InternalErrorReason.TransactionRejectedWhileSigning, {
+          message: e.message,
+        })
       })
     return txWitness
   }
@@ -446,7 +450,7 @@ const Account = ({
 
   async function verifyAddress(addr: string) {
     if (!('displayAddressForPath' in cryptoProvider)) {
-      throw NamedError('UnsupportedOperationError', {
+      throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
         message: 'unsupported operation: verifyAddress',
       })
     }

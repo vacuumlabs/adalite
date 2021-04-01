@@ -1,6 +1,5 @@
 import request from './helpers/request'
 import range from './helpers/range'
-import NamedError from '../helpers/NamedError'
 import debugLog from '../helpers/debugLog'
 import getHash from '../helpers/getHash'
 import {
@@ -49,6 +48,7 @@ import {UTxO} from './types'
 import {aggregateTokenBundles, parseToken, getTokenBundlesDifference} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDataProvider'
+import {InternalError, InternalErrorReason} from '../errors'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -217,11 +217,11 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     if (!('Right' in response)) {
       debugLog(`Unexpected tx submission response: ${JSON.stringify(response)}`)
       if (response.statusCode && response.statusCode === 400) {
-        throw NamedError('TransactionRejectedByNetwork', {
+        throw new InternalError(InternalErrorReason.TransactionRejectedByNetwork, {
           message: response.Left,
         })
       } else {
-        throw NamedError('ServerError')
+        throw new InternalError(InternalErrorReason.ServerError)
       }
     }
 

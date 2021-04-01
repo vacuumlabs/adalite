@@ -4,7 +4,7 @@ import {
   _PoolRelay,
   _StakepoolRegistrationCert,
 } from '../../../helpers/cliParser/types'
-import NamedError from '../../../helpers/NamedError'
+import {InternalError, InternalErrorReason} from '../../../errors'
 
 export type TxPoolParams = {
   poolKeyHashHex: string // Hex
@@ -79,14 +79,14 @@ type TxStakepoolMargin = {
 export const ensureIsSafeInt = (value: BigInt | number, variableName: string): number => {
   const valueType = typeof value
   if (valueType !== 'bigint' && valueType !== 'number') {
-    throw Error(`${variableName} has invalid type ${valueType}.`)
+    throw new Error(`${variableName} has invalid type ${valueType}.`)
   }
   const valueNumber = Number(value)
   if (!Number.isInteger(valueNumber)) {
-    throw Error(`${variableName} is not a valid integer.`)
+    throw new Error(`${variableName} is not a valid integer.`)
   }
   if (valueNumber > Number.MAX_SAFE_INTEGER || valueNumber < Number.MIN_SAFE_INTEGER) {
-    throw Error(
+    throw new Error(
       `${variableName} value is too big. Numbers bigger than ${Number.MAX_SAFE_INTEGER} are not supported.`
     )
   }
@@ -95,7 +95,9 @@ export const ensureIsSafeInt = (value: BigInt | number, variableName: string): n
 
 const buf2hexLengthCheck = (buffer: Buffer, correctByteLength: number, variableName: string) => {
   if (!Buffer.isBuffer(buffer) || Buffer.byteLength(buffer) !== correctByteLength) {
-    throw NamedError('PoolRegIncorrectBufferLength', {message: variableName})
+    throw new InternalError(InternalErrorReason.PoolRegIncorrectBufferLength, {
+      message: variableName,
+    })
   }
   return buffer.toString('hex')
 }
@@ -106,7 +108,7 @@ const parseStakepoolOwners = (poolOwners: Buffer[]): TxStakepoolOwner[] => {
   )
   const constainsDuplicates = new Set(hexOwners).size !== hexOwners.length
   if (constainsDuplicates) {
-    throw NamedError('PoolRegDuplicateOwners')
+    throw new InternalError(InternalErrorReason.PoolRegDuplicateOwners)
   }
 
   return hexOwners.map((owner) => {
@@ -123,7 +125,7 @@ const parseStakepoolMargin = (marginObj: _Margin): TxStakepoolMargin => {
     marginObj.denominator <= 0 ||
     marginObj.numerator > marginObj.denominator
   ) {
-    throw NamedError('PoolRegInvalidMargin')
+    throw new InternalError(InternalErrorReason.PoolRegInvalidMargin)
   }
   return {
     numeratorStr: marginObj.numerator.toString(),
@@ -185,7 +187,7 @@ const parseStakepoolRelays = (relays: _PoolRelay[]): TxStakepoolRelay[] =>
           },
         }
       default:
-        throw NamedError('PoolRegInvalidRelay')
+        throw new InternalError(InternalErrorReason.PoolRegInvalidRelay)
     }
   })
 
@@ -194,7 +196,7 @@ const parseStakepoolMetadata = (metadata: {metadataUrl: string; metadataHash: Bu
     return null
   }
   if (!metadata.metadataHash || !metadata.metadataUrl) {
-    throw NamedError('PoolRegInvalidMetadata')
+    throw new InternalError(InternalErrorReason.PoolRegInvalidMetadata)
   }
   return {
     metadataUrl: metadata.metadataUrl,

@@ -57,6 +57,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
     try {
+      // TODO: refactor this so it doesnt throw but return error object
       cryptoProvider.ensureFeatureIsSupported(feature)
     } catch (e) {
       return {code: e.name, params: {message: e.message}}

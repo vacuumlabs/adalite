@@ -11,6 +11,7 @@ import {
   WithdrawTransactionSummary,
 } from '../types'
 import {TxPlan, TxPlanResult} from '../wallet/shelley/shelley-transaction-planner'
+import {InternalErrorReason} from '../errors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -49,10 +50,10 @@ export default (store: Store) => {
     } catch (e) {
       // TODO: refactor setErrorState to check all errors if there unexpected
       if (
-        e.name !== 'NetworkError' &&
-        e.name !== 'ServerError' &&
-        e.name !== 'TxTooBig' &&
-        e.name !== 'OutputTooBig'
+        e.name !== InternalErrorReason.NetworkError &&
+        e.name !== InternalErrorReason.ServerError &&
+        e.name !== InternalErrorReason.TxTooBig &&
+        e.name !== InternalErrorReason.OutputTooBig
       ) {
         throw e
       }

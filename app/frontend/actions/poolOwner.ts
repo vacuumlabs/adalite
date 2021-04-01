@@ -4,7 +4,6 @@ import loadingActions from './loading'
 import errorActions from './error'
 import transactionActions from './transaction'
 import commonActions from './common'
-import NamedError from '../helpers/NamedError'
 import {
   CryptoProviderFeature,
   DeregisterStakingKeyTransactionSummary,
@@ -14,6 +13,7 @@ import {
 import debugLog from '../helpers/debugLog'
 import {withdrawalPlanValidator} from '../helpers/validators'
 import {parseCliUnsignedTx} from '../wallet/shelley/helpers/stakepoolRegistrationUtils'
+import {InternalError, InternalErrorReason} from '../errors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -89,12 +89,14 @@ export default (store: Store) => {
     try {
       // TODO: refactor feature support logic
       const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)
-      if (supportError) throw NamedError(supportError.code, {message: supportError.params.message})
+      if (supportError) {
+        throw new InternalError(supportError.code, {message: supportError.params.message})
+      }
       if (state.usingHwWallet) {
         setState({waitingForHwWallet: true})
         loadingAction(state, `Waiting for ${state.hwWalletName}...`)
       } else {
-        throw NamedError('PoolRegNoHwWallet')
+        throw new InternalError(InternalErrorReason.PoolRegNoHwWallet)
       }
 
       const {plan, ttl, validityIntervalStart} = state.poolRegTransactionSummary

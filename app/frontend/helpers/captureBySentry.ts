@@ -1,7 +1,7 @@
-import {getTranslation} from '../translations'
+import {getErrorMessage} from '../errors'
 
 function captureBySentry(e) {
-  if (!getTranslation(e.name, {message: e.message})) {
+  if (!getErrorMessage(e.name, {message: e.message})) {
     throw e
   }
   return

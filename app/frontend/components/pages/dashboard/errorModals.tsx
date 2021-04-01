@@ -1,8 +1,8 @@
 import actions from '../../../actions'
-import {errorHasHelp} from '../../../helpers/errorsWithHelp'
+import {errorHasHelp} from '../../../errors'
 import {connect} from '../../../libs/unistore/preact'
 import {State} from '../../../state'
-import {getTranslation} from '../../../translations'
+import {getErrorMessage} from '../../../errors/errorMessages'
 import {Fragment, h} from 'preact'
 import TransactionErrorModal from '../sendAda/transactionErrorModal'
 import WalletLoadingErrorModal from '../login/walletLoadingErrorModal'
@@ -20,7 +20,7 @@ const ErrorModals = ({
       {shouldShowTransactionErrorModal && (
         <TransactionErrorModal
           onRequestClose={closeTransactionErrorModal}
-          errorMessage={getTranslation(
+          errorMessage={getErrorMessage(
             transactionSubmissionError.code,
             transactionSubmissionError.params
           )}
@@ -30,7 +30,7 @@ const ErrorModals = ({
       {shouldShowWalletLoadingErrorModal && (
         <WalletLoadingErrorModal
           onRequestClose={closeWalletLoadingErrorModal}
-          errorMessage={getTranslation(walletLoadingError.code, walletLoadingError.params)}
+          errorMessage={getErrorMessage(walletLoadingError.code, walletLoadingError.params)}
           showHelp={errorHasHelp(walletLoadingError.code)}
         />
       )}

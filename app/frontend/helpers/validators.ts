@@ -4,6 +4,7 @@ import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
 import {Lovelace, Ada} from '../types'
 import {NETWORKS} from '../wallet/constants'
+import {InternalErrorReason} from '../errors'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str: string): Lovelace =>
@@ -11,7 +12,7 @@ const parseToLovelace = (str: string): Lovelace =>
 
 const sendAddressValidator = (fieldValue: string) =>
   !(isValidShelleyAddress(fieldValue) || isValidBootstrapAddress(fieldValue)) && fieldValue !== ''
-    ? {code: 'SendAddressInvalidAddress'}
+    ? {code: InternalErrorReason.SendAddressInvalidAddress}
     : null
 
 const sendAmountValidator = (fieldValue: string, coins: Lovelace, balance: Lovelace) => {
@@ -26,31 +27,31 @@ const sendAmountValidator = (fieldValue: string, coins: Lovelace, balance: Lovel
     return null
   }
   if (coins === null) {
-    return {code: 'SendAmountCantSendAnyFunds'}
+    return {code: InternalErrorReason.SendAmountCantSendAnyFunds}
   }
   if (!floatRegex.test(fieldValue) || isNaN(coins)) {
-    return {code: 'SendAmountIsNan'}
+    return {code: InternalErrorReason.SendAmountIsNan}
   }
   if (fieldValue.split('.').length === 2 && fieldValue.split('.')[1].length > 6) {
-    return {code: 'SendAmountPrecisionLimit'}
+    return {code: InternalErrorReason.SendAmountPrecisionLimit}
   }
   if (coins > maxAmount) {
-    return {code: 'SendAmountIsTooBig'}
+    return {code: InternalErrorReason.SendAmountIsTooBig}
   }
   if (coins <= 0) {
-    return {code: 'SendAmountIsNotPositive'}
+    return {code: InternalErrorReason.SendAmountIsNotPositive}
   }
   if (balance < coins) {
     return {
-      code: 'SendAmountInsufficientFunds',
+      code: InternalErrorReason.SendAmountInsufficientFunds,
       params: {balance},
     }
   }
   if (balance < 1000000) {
-    return {code: 'SendAmountBalanceTooLow'}
+    return {code: InternalErrorReason.SendAmountBalanceTooLow}
   }
   if (coins < minAmount) {
-    return {code: 'SendAmountTooLow'}
+    return {code: InternalErrorReason.SendAmountTooLow}
   }
   return null
 }
@@ -63,20 +64,20 @@ const tokenAmountValidator = (fieldValue: string, quantity: number, tokenBalance
     return null
   }
   if (quantity > maxAmount) {
-    return {code: 'SendAmountIsTooBig'}
+    return {code: InternalErrorReason.SendAmountIsTooBig}
   }
   if (quantity <= 0) {
-    return {code: 'SendAmountIsNotPositive'}
+    return {code: InternalErrorReason.SendAmountIsNotPositive}
   }
   if (!integerRegex.test(fieldValue)) {
-    return {code: 'TokenAmountOnlyWholeNumbers'}
+    return {code: InternalErrorReason.TokenAmountOnlyWholeNumbers}
   }
   if (isNaN(quantity)) {
-    return {code: 'SendAmountIsNan'}
+    return {code: InternalErrorReason.SendAmountIsNan}
   }
   if (quantity > tokenBalance) {
     return {
-      code: 'TokenAmountInsufficientFunds',
+      code: InternalErrorReason.TokenAmountInsufficientFunds,
       params: {tokenBalance},
     }
   }
@@ -89,7 +90,7 @@ const donationAmountValidator = (fieldValue: string, coins: Lovelace, balance: L
     return amountError
   }
   if (fieldValue !== '' && coins >= 0 && coins < toCoins(ADALITE_MIN_DONATION_VALUE)) {
-    return {code: 'DonationAmountTooLow'}
+    return {code: InternalErrorReason.DonationAmountTooLow}
   }
   return null
 }
@@ -102,20 +103,23 @@ const txPlanValidator = (
   donationAmount: Lovelace = 0 as Lovelace
 ) => {
   if (minimalLovelaceAmount + fee > balance) {
-    return {code: 'SendTokenNotMinimalLovelaceAmount', params: {minimalLovelaceAmount}}
+    return {
+      code: InternalErrorReason.SendTokenNotMinimalLovelaceAmount,
+      params: {minimalLovelaceAmount},
+    }
   }
   if (fee >= balance + minimalLovelaceAmount) {
-    return {code: 'SendAmountCantSendAnyFunds'}
+    return {code: InternalErrorReason.SendAmountCantSendAnyFunds}
   }
   if (coins + fee + minimalLovelaceAmount > balance) {
     return {
-      code: 'SendAmountInsufficientFunds',
+      code: InternalErrorReason.SendAmountInsufficientFunds,
       params: {balance},
     }
   }
   if (donationAmount > 0 && coins + fee + donationAmount > balance) {
     return {
-      code: 'DonationInsufficientBalance',
+      code: InternalErrorReason.DonationInsufficientBalance,
       params: {balance},
     }
   }
@@ -125,7 +129,7 @@ const txPlanValidator = (
 const delegationPlanValidator = (balance: Lovelace, deposit: Lovelace, fee: Lovelace) => {
   if (fee + deposit > balance) {
     return {
-      code: 'DelegationBalanceError',
+      code: InternalErrorReason.DelegationBalanceError,
       params: {balance},
     }
   }
@@ -135,7 +139,7 @@ const delegationPlanValidator = (balance: Lovelace, deposit: Lovelace, fee: Love
 
 const withdrawalPlanValidator = (rewardsAmount: Lovelace, balance: Lovelace, fee: Lovelace) => {
   if (fee >= rewardsAmount) {
-    return {code: 'RewardsBalanceTooLow', message: ''}
+    return {code: InternalErrorReason.RewardsBalanceTooLow, message: ''}
   }
   const txPlanError = txPlanValidator(0 as Lovelace, 0 as Lovelace, balance, fee)
   return txPlanError || null
@@ -144,7 +148,7 @@ const withdrawalPlanValidator = (rewardsAmount: Lovelace, balance: Lovelace, fee
 const mnemonicValidator = (mnemonic) => {
   if (!validateMnemonic(mnemonic)) {
     return {
-      code: 'InvalidMnemonic',
+      code: InternalErrorReason.InvalidMnemonic,
     }
   }
   return null

@@ -38,7 +38,7 @@ import {
   CborizedCliWitness,
 } from './types'
 import {CertificateType, HexString, TokenBundle} from '../../types'
-import NamedError from '../../helpers/NamedError'
+import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import {ipv4AddressToBuf, ipv6AddressToBuf, TxRelayType} from './helpers/poolCertificateUtils'
 import {orderTokenBundle} from '../helpers/tokenFormater'
 
@@ -239,7 +239,7 @@ function cborizeTxCertificates(certificates: TxCertificate[]): CborizedTxCertifi
       case CertificateType.STAKEPOOL_REGISTRATION:
         return cborizeStakepoolRegistrationCert(certificate)
       default:
-        throw NamedError('InvalidCertificateType')
+        throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
     }
   })
   return txCertificates

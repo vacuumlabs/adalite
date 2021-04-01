@@ -1,5 +1,5 @@
 import printAda from '../../../helpers/printAda'
-import {getTranslation} from '../../../translations'
+import {getErrorMessage} from '../../../errors'
 import {Stakepool, Lovelace} from '../../../types'
 import {h} from 'preact'
 import tooltip from '../../common/tooltip'
@@ -41,7 +41,7 @@ export const StakePoolInfo = ({
   return (
     <div className={`stake-pool-info ${validationError ? 'invalid' : 'valid'}`}>
       {validationError ? (
-        <div>{getTranslation(validationError.code, validationError.params)}</div>
+        <div>{getErrorMessage(validationError.code, validationError.params)}</div>
       ) : gettingPoolInfo ? (
         <div>Getting pool info..</div>
       ) : (

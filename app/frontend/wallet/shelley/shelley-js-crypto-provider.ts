@@ -22,9 +22,9 @@ import {
   HexString,
   Address,
 } from '../../types'
-import NamedError from '../../helpers/NamedError'
 import {Network, TxByronWitness, TxShelleyWitness} from '../types'
 import {TxSigned, TxAux, CborizedTxSignedStructured} from './types'
+import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 
 type CryptoProviderParams = {
   walletSecretDef: any
@@ -156,7 +156,9 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   }
 
   function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath: BIP32Path) {
-    throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Operation not supported',
+    })
   }
 
   // eslint-disable-next-line require-await
@@ -164,7 +166,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper
   ): Promise<any> {
-    throw NamedError('UnsupportedOperation')
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError)
   }
 
   return {

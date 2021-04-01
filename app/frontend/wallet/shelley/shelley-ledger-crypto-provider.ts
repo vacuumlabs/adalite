@@ -24,7 +24,6 @@ import {
 } from './helpers/addresses'
 
 import derivationSchemes from '../helpers/derivation-schemes'
-import NamedError from '../../helpers/NamedError'
 import {
   CryptoProvider,
   CryptoProviderFeature,
@@ -60,6 +59,12 @@ import {
 } from './ledger-types'
 import {TxSigned, TxAux, CborizedCliWitness} from './types'
 import {orderTokenBundle} from '../helpers/tokenFormater'
+import {
+  InternalError,
+  InternalErrorReason,
+  UnexpectedError,
+  UnexpectedErrorReason,
+} from '../../errors'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -151,20 +156,22 @@ const ShelleyLedgerCryptoProvider = async ({
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
     if (!isFeatureSupported(feature)) {
-      throw NamedError(LEDGER_ERRORS[feature], {
+      throw new InternalError(LEDGER_ERRORS[feature], {
         message: `${version.major}.${version.minor}.${version.patch}`,
       })
     }
   }
 
   function getHdPassphrase(): void {
-    throw NamedError('UnsupportedOperationError', {
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
       message: 'This operation is not supported on LedgerCryptoProvider!',
     })
   }
 
   function sign(message: HexString, absDerivationPath: BIP32Path): void {
-    throw NamedError('UnsupportedOperationError', {message: 'Operation not supported'})
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Operation not supported',
+    })
   }
 
   async function displayAddressForPath(
@@ -179,12 +186,16 @@ const ShelleyLedgerCryptoProvider = async ({
         stakingPath
       )
     } catch (err) {
-      throw NamedError('LedgerOperationError', {message: `${err.name}: ${err.message}`})
+      throw new InternalError(InternalErrorReason.LedgerOperationError, {
+        message: `${err.name}: ${err.message}`,
+      })
     }
   }
 
   function getWalletSecret(): void {
-    throw NamedError('UnsupportedOperationError', {message: 'Unsupported operation!'})
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Unsupported operation!',
+    })
   }
 
   function getDerivationScheme(): DerivationScheme {
@@ -202,7 +213,7 @@ const ShelleyLedgerCryptoProvider = async ({
   const prepareTokenBundle = (tokenBundle: TokenBundle): LedgerAssetGroup[] => {
     // TODO: refactor, we should check the whole tx againt the version beforehand
     if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
-      throw NamedError('LedgerMultiAssetNotSupported', {
+      throw new InternalError(InternalErrorReason.LedgerMultiAssetNotSupported, {
         message:
           'Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
       })
@@ -271,7 +282,7 @@ const ShelleyLedgerCryptoProvider = async ({
         : {...owner}
     })
     if (!poolOwners.some((owner) => owner.stakingPath)) {
-      throw NamedError('MissingOwner', {
+      throw new InternalError(InternalErrorReason.MissingOwner, {
         message: 'This HW device is not an owner of the pool stated in registration certificate.',
       })
     }
@@ -299,7 +310,7 @@ const ShelleyLedgerCryptoProvider = async ({
       case CertificateType.STAKEPOOL_REGISTRATION:
         return prepareStakepoolRegistrationCertificate(certificate, path)
       default:
-        throw NamedError('InvalidCertificateType')
+        throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
     }
   }
 
@@ -385,7 +396,7 @@ const ShelleyLedgerCryptoProvider = async ({
     )
 
     if (response.txHashHex !== txAux.getId()) {
-      throw NamedError('TxSerializationError', {
+      throw new InternalError(InternalErrorReason.TxSerializationError, {
         message: 'Tx serialization mismatch between Ledger and Adalite',
       })
     }

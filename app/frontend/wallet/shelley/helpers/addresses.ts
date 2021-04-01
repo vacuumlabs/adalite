@@ -54,7 +54,7 @@ export const isShelleyFormat = (address: string): boolean => {
 }
 
 export const bechAddressToHex = (address: string): HexString => {
-  if (!isShelleyFormat(address)) throw Error('Invalid address')
+  if (!isShelleyFormat(address)) throw new Error('Invalid address')
   const parsed = bech32.decode(address)
   return parsed.data.toString('hex')
 }

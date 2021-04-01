@@ -2,8 +2,8 @@ import {CryptoProviderType} from '../types'
 import ShelleyJsCryptoProvider from './shelley-js-crypto-provider'
 import ShelleyTrezorCryptoProvider from './shelley-trezor-crypto-provider'
 import ShelleyLedgerCryptoProvider from './shelley-ledger-crypto-provider'
-import NamedError from '../../helpers/NamedError'
 import {CryptoProvider} from '../../types'
+import {InternalError, InternalErrorReason} from '../../errors'
 
 const ShelleyCryptoProviderFactory = (() => {
   const getCryptoProvider = (
@@ -21,7 +21,7 @@ const ShelleyCryptoProviderFactory = (() => {
         return ShelleyJsCryptoProvider(options)
 
       default:
-        throw NamedError('CryptoProviderError', {
+        throw new InternalError(InternalErrorReason.CryptoProviderError, {
           message: `Unknown crypto provider type: ${cryptoProviderType}`,
         })
     }

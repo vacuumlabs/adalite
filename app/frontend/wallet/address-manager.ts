@@ -1,7 +1,7 @@
 import {toBip32StringPath} from './helpers/bip32'
-import NamedError from '../helpers/NamedError'
 import {AddressProvider, AddressToPathMapping, AddressWithMeta, BIP32Path, Address} from '../types'
 import blockchainExplorer from './blockchain-explorer'
+import {UnexpectedError, UnexpectedErrorReason} from '../errors'
 
 type AddressManagerParams = {
   addressProvider: AddressProvider
@@ -11,7 +11,9 @@ type AddressManagerParams = {
 
 const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: AddressManagerParams) => {
   if (!gapLimit) {
-    throw NamedError('ParamsValidationError', {message: `Invalid gap limit: ${gapLimit}`})
+    throw new UnexpectedError(UnexpectedErrorReason.ParamsValidationError, {
+      message: `Invalid gap limit: ${gapLimit}`,
+    })
   }
 
   const deriveAddressMemo: {[key: number]: {path: BIP32Path; address: Address}} = {}

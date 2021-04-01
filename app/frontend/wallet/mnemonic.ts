@@ -8,7 +8,7 @@ function generateMnemonic(wordCount) {
   wordCount = wordCount || 12
 
   if (wordCount % 3 !== 0) {
-    throw Error(`Invalid mnemonic word count supplied: ${wordCount}`)
+    throw new Error(`Invalid mnemonic word count supplied: ${wordCount}`)
   }
 
   return _generateMnemonic((32 * wordCount) / 3)

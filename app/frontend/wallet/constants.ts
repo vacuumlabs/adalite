@@ -1,3 +1,4 @@
+import {InternalErrorReason} from '../errors'
 import {CryptoProviderFeature} from '../types'
 import {Network, NetworkId, ProtocolMagic} from './types'
 export const HARDENED_THRESHOLD = 0x80000000
@@ -88,10 +89,10 @@ export const LEDGER_VERSIONS = {
 }
 
 export const LEDGER_ERRORS = {
-  [CryptoProviderFeature.MINIMAL]: 'LedgerOutdatedCardanoAppError',
-  [CryptoProviderFeature.WITHDRAWAL]: 'LedgerWithdrawalNotSupported',
-  [CryptoProviderFeature.BULK_EXPORT]: 'LedgerBulkExportNotSupported',
-  [CryptoProviderFeature.POOL_OWNER]: 'LedgerPoolRegNotSupported',
+  [CryptoProviderFeature.MINIMAL]: InternalErrorReason.LedgerOutdatedCardanoAppError,
+  [CryptoProviderFeature.WITHDRAWAL]: InternalErrorReason.LedgerWithdrawalNotSupported,
+  [CryptoProviderFeature.BULK_EXPORT]: InternalErrorReason.LedgerBulkExportNotSupported,
+  [CryptoProviderFeature.POOL_OWNER]: InternalErrorReason.LedgerPoolRegNotSupported,
 }
 
 export const TREZOR_VERSIONS = {
@@ -108,7 +109,7 @@ export const TREZOR_VERSIONS = {
 }
 
 export const TREZOR_ERRORS = {
-  [CryptoProviderFeature.POOL_OWNER]: 'TrezorPoolRegNotSupported',
+  [CryptoProviderFeature.POOL_OWNER]: InternalErrorReason.TrezorPoolRegNotSupported,
 }
 
 export const MAX_ACCOUNT_INDEX = 30

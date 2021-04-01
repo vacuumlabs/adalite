@@ -11,7 +11,7 @@ import {
   _Withdrawal,
 } from '../../../helpers/cliParser/types'
 import {TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../../../frontend/wallet/types'
-import NamedError from '../../../helpers/NamedError'
+import {InternalError, InternalErrorReason} from '../../../errors'
 import {ensureIsSafeInt, parseStakepoolRegistrationCertificate} from './poolCertificateUtils'
 import * as _ from 'lodash'
 import {TxPlan} from '../shelley-transaction-planner'
@@ -24,12 +24,12 @@ const validatePoolRegUnsignedTx = (unsignedTx: _UnsignedTxParsed) => {
     unsignedTx.certificates.length !== 1 ||
     unsignedTx.certificates[0].type !== TxCertificateKeys.STAKEPOOL_REGISTRATION
   ) {
-    throw Error(
+    throw new Error(
       'Pool registration transaction must include exactly one pool registration certficate.'
     )
   }
   if (unsignedTx.withdrawals.length > 0) {
-    throw Error("Pool registration transaction can't include reward withdrawals.")
+    throw new Error("Pool registration transaction can't include reward withdrawals.")
   }
   return null
 }
@@ -75,7 +75,7 @@ const parseCliCertificates = (
 ): TxCertificate[] => {
   return certificates.map((certificate) => {
     if (certificate.type !== TxCertificateKeys.STAKEPOOL_REGISTRATION) {
-      throw NamedError('PoolRegTxParserError') // TODO
+      throw new InternalError(InternalErrorReason.PoolRegTxParserError) // TODO
     }
     return {
       type: CertificateType.STAKEPOOL_REGISTRATION,
@@ -89,7 +89,7 @@ const parseCliWithdrawals = (
   withdrawals: _Withdrawal[],
   stakingAddress: Address
 ): TxWithdrawal[] => {
-  if (withdrawals.length > 0) throw NamedError('PoolRegTxParserError')
+  if (withdrawals.length > 0) throw new InternalError(InternalErrorReason.PoolRegTxParserError)
   return [] // pool reg tx cant have withdrawals
 }
 
