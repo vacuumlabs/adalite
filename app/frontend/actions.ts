@@ -1035,12 +1035,6 @@ export default (store: Store) => {
     })
   }
 
-  const closeWantedAddressModal = (state) => {
-    setState({
-      shouldShowWantedAddressesModal: false,
-    })
-  }
-
   const shouldShowContactFormModal = (state) => {
     setState({
       shouldShowContactFormModal: true,
@@ -1277,7 +1271,6 @@ export default (store: Store) => {
     openInfoModal,
     closeInfoModal,
     closePremiumBanner,
-    closeWantedAddressModal,
     showSendTransactionModal,
     closeSendTransactionModal,
     showDelegationModal,

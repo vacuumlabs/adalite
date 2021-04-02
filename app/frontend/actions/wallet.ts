@@ -1,4 +1,4 @@
-import {NETWORKS, WANTED_DELEGATOR_STAKING_ADDRESSES} from '../wallet/constants'
+import {NETWORKS} from '../wallet/constants'
 import {CryptoProviderType} from '../wallet/types'
 import ShelleyCryptoProviderFactory from '../wallet/shelley/shelley-crypto-provider-factory'
 import {ShelleyWallet} from '../wallet/shelley-wallet'
@@ -26,14 +26,6 @@ const fetchConversionRates = async (conversionRates, setState) => {
       conversionRates: null,
     })
   }
-}
-
-const accountsIncludeStakingAddresses = (
-  accountsInfo: Array<AccountInfo>,
-  soughtAddresses: Array<string>
-): boolean => {
-  const stakingAddresses = accountsInfo.map((accountInfo) => accountInfo.stakingAddress)
-  return stakingAddresses.some((address) => soughtAddresses.includes(address))
 }
 
 // TODO: we may be able to remove this, kept for backwards compatibility
@@ -95,10 +87,6 @@ export default (store: Store) => {
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const maxAccountIndex = wallet.getMaxAccountIndex()
-      const shouldShowWantedAddressesModal = accountsIncludeStakingAddresses(
-        accountsInfo,
-        WANTED_DELEGATOR_STAKING_ADDRESSES
-      )
       const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (
@@ -123,7 +111,6 @@ export default (store: Store) => {
         isDemoWallet,
         shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,
         shouldShowNonShelleyCompatibleDialog: !isShelleyCompatible,
-        shouldShowWantedAddressesModal,
         shouldShowGenerateMnemonicDialog: false,
         shouldShowAddressVerification: usingHwWallet,
         // send form

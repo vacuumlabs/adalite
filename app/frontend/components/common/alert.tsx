@@ -11,7 +11,6 @@ interface Props {
     | 'error event'
     | 'info auth'
     | 'news'
-    | 'wanted'
   children: ComponentChildren
 }
 

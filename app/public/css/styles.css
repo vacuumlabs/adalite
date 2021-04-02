@@ -926,13 +926,6 @@ button[data-balloon] {
   padding: 24px;
 }
 
-.alert.wanted {
-  border-color: var(--color-brand-dark);
-  padding: 16px;
-  word-wrap: break-word;
-}
-
-
 .alert-content {
   text-align: left;
   max-height: 220px;
@@ -3091,11 +3084,6 @@ li.main-tab input + label.selected:after {
 .staking-text {
   text-align: left;
   margin-bottom: 24px;
-}
-
-.wanted-text {
-  text-align: left;
-  margin-top: 24px;
 }
 
 .stakepool-info {

@@ -15,7 +15,6 @@ import ShelleyBalances from '../delegations/shelleyBalances'
 import {MainTab, SubTab} from './tabs'
 import InfoModal from '../../common/infoModal'
 import NotShelleyCompatibleDialog from '../login/nonShelleyCompatibleDialog'
-import WantedAddressesModal from '../login/wantedAddressesModal'
 import DashboardErrorBanner from './dashboardErrorBanner'
 import PremiumBanner from './premiumBanner'
 import SaturationErrorBanner from './saturationErrorBanner'
@@ -205,7 +204,6 @@ type Props = {
   shouldShowNonShelleyCompatibleDialog: boolean
   displayInfoModal: boolean
   shouldShowPremiumBanner: boolean
-  shouldShowWantedAddressesModal: boolean
   shouldShowSaturatedBanner: boolean
   activeAccountIndex: number
   shouldShowExportOption: boolean
@@ -221,7 +219,6 @@ const DashboardPage = ({
   isShelleyCompatible,
   shouldShowNonShelleyCompatibleDialog,
   shouldShowPremiumBanner,
-  shouldShowWantedAddressesModal,
   shouldShowSaturatedBanner,
   activeAccountIndex,
   shouldShowExportOption,
@@ -248,7 +245,6 @@ const DashboardPage = ({
       {shouldShowSendTransactionModal && <SendTransactionModal />}
       {shouldShowDelegationModal && <DelegationModal />}
       {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
-      {shouldShowWantedAddressesModal && <WantedAddressesModal />}
       {isShelleyCompatible && displayInfoModal && <InfoModal />}
       {shouldShowNonShelleyCompatibleDialog && <NotShelleyCompatibleDialog />}
       {!isShelleyCompatible && <DashboardErrorBanner />}
@@ -314,7 +310,6 @@ export default connect(
     shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
     activeAccountIndex: state.activeAccountIndex,
     shouldShowExportOption: state.shouldShowExportOption,
-    shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
