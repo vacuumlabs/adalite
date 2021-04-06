@@ -47,7 +47,7 @@ const shelleyBalances = ({
       <a
         className="wide-data-balloon"
         {...tooltip(
-          'This value represents balance on your rewards account. It contains all rewards received from delegation that were not transferred yet to your Available balance. This rewards are automatically staked. You need to Withdraw Rewards only when you want to spend them. Withdraw Rewards button will appear only once you have some rewards in your Rewards Balance.',
+          'This value represents balance on your rewards account. It contains all rewards received from delegation that were not transferred yet to your Available balance. These rewards are automatically staked. You need to Withdraw Rewards only when you want to spend them. Withdraw Rewards button will appear only once you have some rewards in your Rewards Balance.',
           true
         )}
       >
