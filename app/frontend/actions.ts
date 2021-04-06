@@ -653,7 +653,7 @@ export default (store: Store) => {
       setState({
         shelleyDelegation: {
           ...newState.shelleyDelegation,
-          delegationFee: txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit,
+          delegationFee: (txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit) as Lovelace,
         },
       })
       const delegationTransactionSummary: DelegateTransactionSummary = {
@@ -667,6 +667,7 @@ export default (store: Store) => {
         txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
       })
     } else {
+      // REFACTOR: (Untyped errors)
       const validationError =
         delegationPlanValidator(balance, 0 as Lovelace, txPlanResult.estimatedFee) ||
         txPlanResult.error
@@ -680,53 +681,17 @@ export default (store: Store) => {
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
 
-  const validateDelegationAndCalculateFee = () => {
-    const state = getState()
-    const selectedPool = state.shelleyDelegation.selectedPool
-    const delegationValidationError = selectedPool.validationError
-
-    setError(state, {
-      errorName: 'delegationValidationError',
-      error: delegationValidationError,
-    })
-    setState({
-      delegationValidationError,
-    })
-    if (!delegationValidationError) {
-      setState({
-        calculatingDelegationFee: true,
-        gettingPoolInfo: true,
-      })
-      debouncedCalculateDelegationFee(state)
-    } else {
-      setState({
-        shelleyDelegation: {
-          ...state.shelleyDelegation,
-          delegationFee: 0 as Lovelace,
-        },
-      })
-    }
-  }
-
-  const updateStakePoolIdentifier = (
-    state: State,
-    poolHash: string,
-    validationError: any = null
-  ): void => {
+  const updateStakePoolIdentifier = (state: State, poolHash: string): void => {
     const newPool = poolHash && state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
-    const oldPool = state.shelleyDelegation.selectedPool
-    if (newPool && newPool?.poolHash === oldPool?.poolHash) return
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        selectedPool: {
-          ...newPool,
-          validationError,
-        },
+        selectedPool: newPool,
       },
+      calculatingDelegationFee: true,
+      gettingPoolInfo: true,
     })
-    if (validationError) return
-    validateDelegationAndCalculateFee()
+    debouncedCalculateDelegationFee(state)
   }
 
   const resetStakePoolIndentifier = (): void => {
@@ -734,14 +699,6 @@ export default (store: Store) => {
     setState({
       delegationValidationError: null,
     })
-  }
-
-  const selectAdaliteStakepool = (state: State): void => {
-    const newState = getState()
-    updateStakePoolIdentifier(
-      newState,
-      getSourceAccountInfo(newState).poolRecommendation.recommendedPoolHash
-    )
   }
 
   /* MULTIPLE ACCOUNTS */
@@ -859,7 +816,6 @@ export default (store: Store) => {
       shouldShowDelegationModal: true,
       txSuccessTab: '',
     })
-    selectAdaliteStakepool(state)
   }
 
   const closeDelegationModal = (state: State) => {
@@ -966,8 +922,6 @@ export default (store: Store) => {
         .getAccount(state.sourceAccountIndex)
         .generateNewSeeds()
       resetAccountIndexes(state)
-      resetDelegation()
-      selectAdaliteStakepool(state)
       setState({
         waitingForHwWallet: false,
         // TODO: refactor txSuccesTab
@@ -1059,7 +1013,6 @@ export default (store: Store) => {
     resetTransactionSummary(state)
     resetSendFormFields(state)
     resetDelegation()
-    if (mainTab === MainTabs.STAKING) selectAdaliteStakepool(state)
   }
 
   const closeUnexpectedErrorModal = (state) => {
@@ -1264,7 +1217,6 @@ export default (store: Store) => {
     updateStakePoolIdentifier,
     resetStakePoolIndentifier,
     setActiveMainTab,
-    selectAdaliteStakepool,
     convertNonStakingUtxos,
     loadErrorBannerContent,
     withdrawRewards,

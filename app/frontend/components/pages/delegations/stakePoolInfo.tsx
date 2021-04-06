@@ -4,12 +4,24 @@ import {Stakepool, Lovelace} from '../../../types'
 import {h} from 'preact'
 import tooltip from '../../common/tooltip'
 
+// REFACTOR: (Untyped errors): move to types
+// is "hasTickerMapping" something specific or general?
+type Error = {
+  code: string
+  params?: {hasTickerMapping: boolean}
+}
+
 type StakePoolInfoProps = {
   pool?: Stakepool
   gettingPoolInfo: boolean
+  validationError: Error
 }
 
-export const StakePoolInfo = ({pool, gettingPoolInfo}: StakePoolInfoProps): h.JSX.Element => {
+export const StakePoolInfo = ({
+  pool,
+  gettingPoolInfo,
+  validationError,
+}: StakePoolInfoProps): h.JSX.Element => {
   const print = (
     fieldValue: string | number | null,
     format?: (fieldValue: string | number) => string | h.JSX.Element
@@ -27,9 +39,9 @@ export const StakePoolInfo = ({pool, gettingPoolInfo}: StakePoolInfoProps): h.JS
     }
   }
   return (
-    <div className={`stake-pool-info ${pool?.validationError ? 'invalid' : 'valid'}`}>
-      {pool?.validationError ? (
-        <div>{getTranslation(pool?.validationError.code, pool?.validationError.params)}</div>
+    <div className={`stake-pool-info ${validationError ? 'invalid' : 'valid'}`}>
+      {validationError ? (
+        <div>{getTranslation(validationError.code, validationError.params)}</div>
       ) : gettingPoolInfo ? (
         <div>Getting pool info..</div>
       ) : (

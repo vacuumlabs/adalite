@@ -3,6 +3,7 @@ import captureBySentry from '../helpers/captureBySentry'
 import {Store, State} from '../state'
 
 export default ({setState}: Store) => {
+  // REFACTOR: (Untyped errors)
   const setError = (state: State, {errorName, error}: {errorName: string; error: any}) => {
     if (error && error.name) {
       debugLog(error)

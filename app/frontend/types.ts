@@ -216,7 +216,6 @@ export type Stakepool = {
   ticker: string
   homepage: string
   poolHash: string
-  validationError?: any
 }
 
 export type SendAdaTxPlanArgs = {

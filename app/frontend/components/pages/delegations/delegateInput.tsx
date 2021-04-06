@@ -1,10 +1,5 @@
-import {Stakepool, PoolRecommendation} from '../../../types'
 import {Fragment, h} from 'preact'
-import {useEffect, useState} from 'preact/hooks'
-import {connect} from '../../../libs/unistore/preact'
-import actions from '../../../actions'
-import {getSourceAccountInfo, State} from '../../../state'
-import {StakepoolDataProvider} from '../../../../frontend/helpers/dataProviders/types'
+import {useSelector} from '../../../helpers/connect'
 import {ADALITE_CONFIG} from '../../../../frontend/config'
 
 type StakePoolLabelProps = {
@@ -29,88 +24,18 @@ const StakePoolLabel = ({
   </Fragment>
 )
 
-// TODO: move to types
-type Error = {
-  code: string
-  params?: {hasTickerMapping: boolean}
+type Props = {
+  value: string
+  onChange: (event: any) => any
 }
 
-type ValidatedInput = {
-  poolHash: string | null
-  error: Error
-}
+const DelegateInput = ({value, onChange}: Props): h.JSX.Element => {
+  const {validStakepoolDataProvider} = useSelector((state) => ({
+    validStakepoolDataProvider: state.validStakepoolDataProvider,
+  }))
 
-const validateInput = (
-  fieldValue: string,
-  validStakepoolDataProvider: StakepoolDataProvider
-): ValidatedInput => {
-  if (ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER) {
-    const pool =
-      validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue) ||
-      validStakepoolDataProvider.getPoolInfoByTicker(fieldValue)
-    if (pool) return {poolHash: pool.poolHash, error: null}
-
-    const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
-    const isTickerString = fieldValue.length <= 5 && fieldValue.toUpperCase() === fieldValue
-    const poolHash = null
-    if (!hasTickerMapping && isTickerString) {
-      return {poolHash, error: {code: 'TickerSearchDisabled'}}
-    }
-    return {poolHash, error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}}
-  }
-
-  const pool = validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue)
-  if (pool) return {poolHash: pool.poolHash, error: null}
-  return {
-    poolHash: null,
-    error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping: false}},
-  }
-}
-
-interface Props {
-  poolRecommendation: PoolRecommendation
-  pool: Stakepool
-  validStakepoolDataProvider: StakepoolDataProvider
-  updateStakePoolIdentifier: (poolHash: string, validationError?: any) => void
-  resetStakePoolIndentifier: () => void
-}
-
-const DelegateInput = ({
-  poolRecommendation,
-  pool,
-  validStakepoolDataProvider,
-  updateStakePoolIdentifier,
-  resetStakePoolIndentifier,
-}: Props): h.JSX.Element => {
-  const [fieldValue, setFieldValue] = useState('')
-  const [isTicker, setIsTicker] = useState(false)
-  const [isPoolHash, setIsPoolHash] = useState(!!fieldValue)
-
-  useEffect(() => {
-    const recommendedPoolHash = poolRecommendation?.recommendedPoolHash || pool?.poolHash
-    if (recommendedPoolHash) {
-      const {poolHash, error} = validateInput(recommendedPoolHash, validStakepoolDataProvider)
-      updateStakePoolIdentifier(poolHash, error)
-      setFieldValue(recommendedPoolHash)
-    }
-  }, [pool, poolRecommendation, validStakepoolDataProvider, updateStakePoolIdentifier])
-
-  const handleOnInput = (event: any): void => {
-    const fieldValue: string = event?.target?.value
-    const isTicker = fieldValue && !!validStakepoolDataProvider.getPoolInfoByTicker(fieldValue)
-    const isPoolHash = fieldValue && !!validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue)
-    setFieldValue(fieldValue)
-    setIsTicker(isTicker)
-    setIsPoolHash(isPoolHash)
-
-    if (fieldValue) {
-      const {poolHash, error} = validateInput(fieldValue, validStakepoolDataProvider)
-      updateStakePoolIdentifier(poolHash, error)
-    } else {
-      resetStakePoolIndentifier()
-    }
-  }
-
+  const isTicker = value && !!validStakepoolDataProvider.getPoolInfoByTicker(value)
+  const isPoolHash = value && !!validStakepoolDataProvider.getPoolInfoByPoolHash(value)
   const tickerSearchEnabled =
     ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER && validStakepoolDataProvider.hasTickerMapping
 
@@ -128,19 +53,12 @@ const DelegateInput = ({
         className="input stake-pool-id"
         name={'pool'}
         data-cy="PoolDelegationTextField"
-        value={fieldValue}
-        onInput={handleOnInput}
+        value={value}
+        onInput={onChange}
         autoComplete="off"
       />
     </Fragment>
   )
 }
 
-export default connect(
-  (state: State) => ({
-    poolRecommendation: getSourceAccountInfo(state).poolRecommendation,
-    pool: getSourceAccountInfo(state).shelleyAccountInfo.delegation,
-    validStakepoolDataProvider: state.validStakepoolDataProvider,
-  }),
-  actions
-)(DelegateInput)
+export default DelegateInput

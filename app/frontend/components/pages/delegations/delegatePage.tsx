@@ -1,16 +1,18 @@
 import {h, Fragment} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
+import {useState, useEffect, useRef, useCallback} from 'preact/hooks'
+import {useActions, useSelector} from '../../../helpers/connect'
 import actions from '../../../actions'
 import tooltip from '../../common/tooltip'
 import printAda from '../../../helpers/printAda'
 import {AdaIcon} from '../../common/svg'
 import {getTranslation} from '../../../translations'
-import {getSourceAccountInfo, State} from '../../../state'
+import {getSourceAccountInfo} from '../../../state'
 import Accordion from '../../common/accordion'
-import {Lovelace, PoolRecommendation, Stakepool} from '../../../types'
 import {isBigDelegatorSelector} from '../../../selectors'
 import {StakePoolInfo} from './stakePoolInfo'
 import DelegateInput from './delegateInput'
+import {ADALITE_CONFIG} from '../../../../frontend/config'
+import {StakepoolDataProvider} from '../../../../frontend/helpers/dataProviders/types'
 
 const CalculatingFee = (): h.JSX.Element => (
   <div className="validation-message send">Calculating fee...</div>
@@ -21,6 +23,7 @@ type DelegationValidationProps = {
   txSuccessTab: string
 }
 
+// REFACTOR: "txSuccessTab", what about using "success notification" instead?
 const DelegationValidation = ({
   delegationValidationError,
   txSuccessTab,
@@ -46,49 +49,151 @@ const BigDelegatorOffer = (): h.JSX.Element => (
   </div>
 )
 
-interface Props {
-  stakePool: Stakepool
-  delegationFee: Lovelace
-  calculatingDelegationFee: boolean
-  delegationValidationError: any
-  isShelleyCompatible: boolean
-  txSuccessTab: string
-  gettingPoolInfo: boolean
-  poolRecommendation: PoolRecommendation
-  pool: Stakepool
-  isBigDelegator: boolean
-  withAccordion: boolean
-  title: string
-  confirmTransaction: (txConfirmType) => Promise<void>
-  selectAdaliteStakepool: () => void
+// REFACTOR: (Untyped errors): move to types
+// is "hasTickerMapping" something specific or general?
+type Error = {
+  code: string
+  params?: {hasTickerMapping: boolean}
 }
 
-const Delegate = ({
-  stakePool,
-  delegationFee,
-  calculatingDelegationFee,
-  delegationValidationError,
-  isShelleyCompatible,
-  txSuccessTab,
-  gettingPoolInfo,
-  poolRecommendation,
-  pool,
-  isBigDelegator,
-  withAccordion,
-  title,
-  confirmTransaction,
-}: Props): h.JSX.Element => {
-  /*
-  REFACTOR (calculateFee):
-  Calculation of "fee" should be fired from there explicitely using "useEffect"
-  when component mounts.
-  */
+type ValidatedInput = {
+  poolHash: string | null
+  error: Error
+}
+
+const validateInput = (
+  fieldValue: string,
+  validStakepoolDataProvider: StakepoolDataProvider
+): ValidatedInput => {
+  if (ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER) {
+    const pool =
+      validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue) ||
+      validStakepoolDataProvider.getPoolInfoByTicker(fieldValue)
+    if (pool) return {poolHash: pool.poolHash, error: null}
+
+    const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
+    const isTickerString = fieldValue.length <= 5 && fieldValue.toUpperCase() === fieldValue
+    const poolHash = null
+    if (!hasTickerMapping && isTickerString) {
+      return {poolHash, error: {code: 'TickerSearchDisabled'}}
+    }
+    return {poolHash, error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}}
+  }
+
+  const pool = validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue)
+  if (pool) return {poolHash: pool.poolHash, error: null}
+  return {
+    poolHash: null,
+    error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping: false}},
+  }
+}
+
+// TODO: we may create general util from this
+const useHandleOnStopTyping = () => {
+  const debouncedHandleInputValidation = useRef(0)
+
+  useEffect(() => {
+    debouncedHandleInputValidation.current && clearTimeout(debouncedHandleInputValidation.current)
+  }, [])
+
+  return (fn: Function, timeout = 200) => {
+    clearTimeout(debouncedHandleInputValidation.current)
+    debouncedHandleInputValidation.current = window.setTimeout(fn, timeout)
+  }
+}
+
+interface Props {
+  withAccordion: boolean
+  title: string
+}
+
+const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
+  const {
+    txSuccessTab,
+    stakePool,
+    currentDelegation,
+    calculatingDelegationFee,
+    delegationFee,
+    delegationValidationError,
+    gettingPoolInfo,
+    isBigDelegator,
+    isShelleyCompatible,
+    poolRecommendation,
+    validStakepoolDataProvider,
+  } = useSelector((state) => ({
+    // REFACTOR: (Untyped errors)
+    delegationValidationError: state.delegationValidationError,
+    stakePool: state.shelleyDelegation.selectedPool,
+    currentDelegation: getSourceAccountInfo(state).shelleyAccountInfo.delegation,
+    calculatingDelegationFee: state.calculatingDelegationFee,
+    delegationFee: state.shelleyDelegation.delegationFee,
+    txSuccessTab: state.txSuccessTab,
+    gettingPoolInfo: state.gettingPoolInfo,
+    isShelleyCompatible: state.isShelleyCompatible,
+    poolRecommendation: getSourceAccountInfo(state).poolRecommendation,
+    isBigDelegator: isBigDelegatorSelector(state),
+    validStakepoolDataProvider: state.validStakepoolDataProvider,
+  }))
+  const {confirmTransaction, updateStakePoolIdentifier, resetStakePoolIndentifier} = useActions(
+    actions
+  )
+  const handleOnStopTyping = useHandleOnStopTyping()
+
+  // TODO: this reference always changes inside "useEffect" which causes infite loop.
+  // Till this is investigated, this workaround is used instead of "eslint-disable-..."
+  const _updateStakePoolIdentifier = useRef(updateStakePoolIdentifier)
+  const _resetStakePoolIndentifier = useRef(resetStakePoolIndentifier)
+
+  const [fieldValue, setFieldValue] = useState('')
+  const [error, setError] = useState<Error>(null)
+
+  const handleInputValidation = useCallback(
+    (value: string) => {
+      if (!value) {
+        _resetStakePoolIndentifier.current()
+        setError(null)
+      } else {
+        const {poolHash, error} = validateInput(value, validStakepoolDataProvider)
+        if (!error) {
+          _updateStakePoolIdentifier.current(poolHash)
+        } else {
+          _resetStakePoolIndentifier.current()
+        }
+        setError(error)
+      }
+      /*
+      Relates to REFACTOR (calculateFee):
+      This component should store all `txPlan` and `error` states & render confirmation modal
+      when user clicks on "Delegate". This could greatly simplify global state flow. For now
+      using hybrid solution involving `updateStakePoolIdentifier` (should be later removed)
+      */
+    },
+    [validStakepoolDataProvider]
+  )
+
+  const handleOnInput = (event: any): void => {
+    const newValue: string = event?.target?.value
+    setFieldValue(newValue)
+    handleOnStopTyping(() => handleInputValidation(newValue), 100)
+  }
+
+  // init "stake pool input" and refresh it when "currentDelegation" changes
+  useEffect(() => {
+    const recommendedPoolHash =
+      poolRecommendation?.recommendedPoolHash || currentDelegation?.poolHash
+
+    if (recommendedPoolHash) {
+      setFieldValue(recommendedPoolHash)
+      handleInputValidation(recommendedPoolHash)
+    }
+  }, [currentDelegation, handleInputValidation, poolRecommendation])
 
   const delegationHandler = async (): Promise<void> => {
     await confirmTransaction('delegate')
   }
 
-  const validationError = !!delegationValidationError || !stakePool || !!stakePool.validationError
+  const validationError = !!delegationValidationError || !!error || !stakePool
+
   const delegationHeader = <h2 className="card-title no-margin">{title}</h2>
   const delegationContent = (
     <Fragment>
@@ -96,8 +201,12 @@ const Delegate = ({
         <ul className="stake-pool-list">
           <li className="stake-pool-item">
             {isBigDelegator && <BigDelegatorOffer />}
-            <DelegateInput />
-            <StakePoolInfo pool={stakePool} gettingPoolInfo={gettingPoolInfo} />
+            <DelegateInput value={fieldValue} onChange={handleOnInput} />
+            <StakePoolInfo
+              pool={stakePool}
+              gettingPoolInfo={gettingPoolInfo}
+              validationError={error}
+            />
             <div />
           </li>
         </ul>
@@ -149,7 +258,7 @@ const Delegate = ({
       {withAccordion ? (
         <Accordion
           initialVisibility={
-            poolRecommendation.shouldShowSaturatedBanner || !Object.keys(pool).length
+            poolRecommendation.shouldShowSaturatedBanner || !Object.keys(currentDelegation).length
           }
           header={delegationHeader}
           body={delegationContent}
@@ -169,18 +278,4 @@ Delegate.defaultProps = {
   title: 'Delegate Stake',
 }
 
-export default connect(
-  (state: State) => ({
-    stakePool: state.shelleyDelegation.selectedPool,
-    calculatingDelegationFee: state.calculatingDelegationFee,
-    delegationFee: state.shelleyDelegation.delegationFee,
-    delegationValidationError: state.delegationValidationError,
-    txSuccessTab: state.txSuccessTab,
-    gettingPoolInfo: state.gettingPoolInfo,
-    isShelleyCompatible: state.isShelleyCompatible,
-    poolRecommendation: getSourceAccountInfo(state).poolRecommendation,
-    pool: getSourceAccountInfo(state).shelleyAccountInfo.delegation,
-    isBigDelegator: isBigDelegatorSelector(state),
-  }),
-  actions
-)(Delegate)
+export default Delegate

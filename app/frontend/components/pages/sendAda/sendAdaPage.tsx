@@ -1,5 +1,5 @@
 import {Fragment, h} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
+import {useActions, useSelector} from '../../../helpers/connect'
 import actions from '../../../actions'
 
 import {getTranslation} from '../../../translations'
@@ -9,12 +9,11 @@ import Conversions from '../../common/conversions'
 import SearchableSelect from '../../common/searchableSelect'
 
 import AccountDropdown from '../accounts/accountDropdown'
-import {getSourceAccountInfo, State} from '../../../state'
+import {getSourceAccountInfo} from '../../../state'
 import {useCallback, useMemo, useRef} from 'preact/hooks'
 import {
   AssetFamily,
   Lovelace,
-  SendAmount,
   SendTransactionSummary,
   Token,
   TransactionSummary,
@@ -41,32 +40,6 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
       </div>
     )
   )
-
-interface Props {
-  sendResponse: any
-  sendAddress: string
-  sendAddressValidationError: any
-  sendAmount: SendAmount
-  sendAmountValidationError: any
-  updateAddress: any
-  updateAmount: (sendAmount: SendAmount) => void
-  confirmTransaction: any
-  feeRecalculating: any
-  sendMaxFunds: any
-  conversionRates: any
-  sendTransactionSummary: TransactionSummary & SendTransactionSummary
-  transactionFee: any
-  txSuccessTab: any
-  balance: any
-  isModal: boolean
-  title: string
-  sourceAccountIndex: number
-  targetAccountIndex: number
-  setSourceAccount: any
-  setTargetAccount: any
-  switchSourceAndTargetAccounts: any
-  tokenBalance: Array<Token>
-}
 
 type DropdownAssetItem = Token & {
   assetNameHex: string
@@ -108,31 +81,55 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   </FormattedAssetItem>
 )
 
+interface Props {
+  isModal: boolean
+  title: string
+}
+
 const SendAdaPage = ({
-  sendResponse,
-  sendAddress,
-  sendAddressValidationError,
-  sendAmount,
-  sendAmountValidationError,
-  updateAddress,
-  updateAmount,
-  confirmTransaction,
-  feeRecalculating,
-  sendMaxFunds,
-  conversionRates,
-  sendTransactionSummary: summary,
-  transactionFee,
-  txSuccessTab,
-  balance,
   isModal, // TODO: remove
   title,
-  sourceAccountIndex,
-  targetAccountIndex,
-  setSourceAccount,
-  setTargetAccount,
-  switchSourceAndTargetAccounts,
-  tokenBalance,
 }: Props) => {
+  const {
+    sourceAccountIndex,
+    sendAddress,
+    balance,
+    conversionRates,
+    feeRecalculating,
+    sendAddressValidationError,
+    sendAmount,
+    sendAmountValidationError,
+    targetAccountIndex,
+    tokenBalance,
+    transactionFee,
+    txSuccessTab,
+    summary,
+  } = useSelector((state) => ({
+    sendAddressValidationError: state.sendAddressValidationError,
+    sendAddress: state.sendAddress.fieldValue,
+    sendAmountValidationError: state.sendAmountValidationError,
+    sendAmount: state.sendAmount,
+    feeRecalculating: state.calculatingFee,
+    conversionRates: state.conversionRates && state.conversionRates.data,
+    sendTransactionSummary: state.sendTransactionSummary,
+    transactionFee: state.transactionFee,
+    txSuccessTab: state.txSuccessTab,
+    balance: getSourceAccountInfo(state).balance,
+    sourceAccountIndex: state.sourceAccountIndex,
+    targetAccountIndex: state.targetAccountIndex,
+    tokenBalance: getSourceAccountInfo(state).tokenBalance,
+    summary: state.sendTransactionSummary as TransactionSummary & SendTransactionSummary,
+  }))
+  const {
+    updateAddress,
+    updateAmount,
+    confirmTransaction,
+    sendMaxFunds,
+    setSourceAccount,
+    setTargetAccount,
+    switchSourceAndTargetAccounts,
+  } = useActions(actions)
+
   const amountField = useRef<HTMLInputElement>(null)
   const submitTxBtn = useRef<HTMLButtonElement>(null)
   const sendCardDiv = useRef<HTMLDivElement>(null)
@@ -436,22 +433,4 @@ SendAdaPage.defaultProps = {
   title: 'Send',
 }
 
-export default connect(
-  (state: State) => ({
-    sendResponse: state.sendResponse,
-    sendAddressValidationError: state.sendAddressValidationError,
-    sendAddress: state.sendAddress.fieldValue,
-    sendAmountValidationError: state.sendAmountValidationError,
-    sendAmount: state.sendAmount,
-    feeRecalculating: state.calculatingFee,
-    conversionRates: state.conversionRates && state.conversionRates.data,
-    sendTransactionSummary: state.sendTransactionSummary,
-    transactionFee: state.transactionFee,
-    txSuccessTab: state.txSuccessTab,
-    balance: getSourceAccountInfo(state).balance,
-    sourceAccountIndex: state.sourceAccountIndex,
-    targetAccountIndex: state.targetAccountIndex,
-    tokenBalance: getSourceAccountInfo(state).tokenBalance,
-  }),
-  actions
-)(SendAdaPage)
+export default SendAdaPage
