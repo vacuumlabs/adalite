@@ -1,5 +1,3 @@
-import {saveAs} from './libs/file-saver'
-import {exportWalletSecretDef} from './wallet/keypass-json'
 import {State, Store} from './state'
 import {AuthMethodType} from './types'
 import errorActions from './actions/error'
@@ -10,6 +8,7 @@ import sendActions from './actions/send'
 import delegateActions from './actions/delegate'
 import accountsActions from './actions/accounts'
 import poolOwnerActions from './actions/poolOwner'
+import exportWalletActions from './actions/exportWallet'
 import mnemonicActions from './actions/mnemonic'
 import commonActions from './actions/common'
 import generalActions from './actions/general'
@@ -58,6 +57,7 @@ export default (store: Store) => {
     resetPoolRegTransactionSummary,
     deregisterStakingKey,
   } = poolOwnerActions(store)
+  const {exportJsonWallet} = exportWalletActions(store)
   const {
     updateMnemonic,
     updateMnemonicValidationError,
@@ -136,19 +136,6 @@ export default (store: Store) => {
         setError(state, {errorName: 'addressVerificationError', error: true})
       }
     }
-  }
-
-  /* EXPORT WALLET */
-
-  const exportJsonWallet = async (state, password, walletName) => {
-    const walletExport = JSON.stringify(
-      await exportWalletSecretDef(getWallet().getWalletSecretDef(), password, walletName)
-    )
-
-    const blob = new Blob([walletExport], {
-      type: 'application/json;charset=utf-8',
-    })
-    saveAs(blob, `${walletName}.json`)
   }
 
   return {
