@@ -118,7 +118,6 @@ export default (store: Store) => {
         // send form
         sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
         sendAddress: {fieldValue: ''},
-        sendResponse: '',
         // shelley
         isShelleyCompatible,
       })

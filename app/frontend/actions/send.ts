@@ -157,7 +157,6 @@ export default (store: Store) => {
   */
   const updateAddress = (state: State, e, address?: string) => {
     setState({
-      sendResponse: '',
       sendAddress: Object.assign({}, state.sendAddress, {
         fieldValue: address || e.target.value,
       }),
@@ -171,7 +170,6 @@ export default (store: Store) => {
   */
   const updateAmount = (state: State, sendAmount: SendAmount): void => {
     setState({
-      sendResponse: '',
       sendAmount: Object.assign({}, state.sendAmount, sendAmount),
     })
     validateSendFormAndCalculateFee()

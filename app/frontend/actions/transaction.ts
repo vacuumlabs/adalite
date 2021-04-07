@@ -35,7 +35,6 @@ export default (store: Store) => {
 
   const resetSendFormState = (state: State) => {
     setState({
-      sendResponse: '',
       loading: false,
       shouldShowConfirmTransactionDialog: false,
     })
@@ -207,7 +206,6 @@ export default (store: Store) => {
         // TODO: refactor txSuccesTab
         txSuccessTab:
           sendResponse && sendResponse.success && txTab === TxType.SEND_ADA ? 'send' : 'stake',
-        sendResponse,
       })
     }
   }

@@ -28,7 +28,6 @@ const expectedStateChanges = {
   // send form
   sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0},
   sendAddress: {fieldValue: ''},
-  sendResponse: '',
   ticker2Id: null,
 }
 

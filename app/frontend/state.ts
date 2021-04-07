@@ -81,7 +81,6 @@ export interface State {
   rawTransactionOpen: boolean
   rawTransaction: string
   transactionFee?: any
-  sendResponse: any // TODO
   txConfirmType: string
   txSuccessTab: string
   transactionSubmissionError?: any
@@ -188,7 +187,6 @@ const initialState: State = {
   rawTransactionOpen: false,
   rawTransaction: '',
   transactionFee: 0,
-  sendResponse: {},
   txConfirmType: '',
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
