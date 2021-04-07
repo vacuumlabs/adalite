@@ -1,7 +1,5 @@
 import {saveAs} from './libs/file-saver'
-import {mnemonicValidator} from './helpers/validators'
 import {exportWalletSecretDef} from './wallet/keypass-json'
-import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {State, Store} from './state'
 import {AuthMethodType} from './types'
 import errorActions from './actions/error'
@@ -12,6 +10,7 @@ import sendActions from './actions/send'
 import delegateActions from './actions/delegate'
 import accountsActions from './actions/accounts'
 import poolOwnerActions from './actions/poolOwner'
+import mnemonicActions from './actions/mnemonic'
 import commonActions from './actions/common'
 import generalActions from './actions/general'
 
@@ -60,6 +59,12 @@ export default (store: Store) => {
     deregisterStakingKey,
   } = poolOwnerActions(store)
   const {
+    updateMnemonic,
+    updateMnemonicValidationError,
+    openGenerateMnemonicDialog,
+    closeGenerateMnemonicDialog,
+  } = mnemonicActions(store)
+  const {
     resetTransactionSummary,
     resetSendFormState,
     resetSendFormFields,
@@ -102,58 +107,9 @@ export default (store: Store) => {
       shouldShowNonShelleyCompatibleDialog: true,
     })
   }
-
   const closeWalletLoadingErrorModal = (state) => {
     setState({
       shouldShowWalletLoadingErrorModal: false,
-    })
-  }
-
-  /* MNEMONIC */
-
-  const openGenerateMnemonicDialog = (state) => {
-    setState({
-      mnemonicAuthForm: {
-        mnemonicInputValue: '',
-        mnemonicInputError: null,
-        formIsValid: false,
-      },
-      shouldShowGenerateMnemonicDialog: true,
-      authMethod: AuthMethodType.MNEMONIC,
-      shouldShowMnemonicInfoAlert: true,
-    })
-  }
-
-  const closeGenerateMnemonicDialog = (state) => {
-    setState({
-      shouldShowGenerateMnemonicDialog: false,
-    })
-  }
-
-  const updateMnemonic = (state: State, e) => {
-    const mnemonicInputValue = e.target.value
-    const sanitizedMnemonic = sanitizeMnemonic(mnemonicInputValue)
-    const formIsValid = sanitizedMnemonic && mnemonicValidator(sanitizedMnemonic) === null
-
-    setState({
-      ...state,
-      mnemonicAuthForm: {
-        mnemonicInputValue,
-        mnemonicInputError: null,
-        formIsValid,
-      },
-    })
-  }
-
-  const updateMnemonicValidationError = (state: State) => {
-    setState({
-      ...state,
-      mnemonicAuthForm: {
-        ...state.mnemonicAuthForm,
-        mnemonicInputError: mnemonicValidator(
-          sanitizeMnemonic(state.mnemonicAuthForm.mnemonicInputValue)
-        ),
-      },
     })
   }
 
