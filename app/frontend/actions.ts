@@ -7,6 +7,7 @@ import transactionActions from './actions/transaction'
 import sendActions from './actions/send'
 import delegateActions from './actions/delegate'
 import accountsActions from './actions/accounts'
+import addressActions from './actions/address'
 import poolOwnerActions from './actions/poolOwner'
 import exportWalletActions from './actions/exportWallet'
 import mnemonicActions from './actions/mnemonic'
@@ -49,6 +50,7 @@ export default (store: Store) => {
     exploreNextAccount,
     switchSourceAndTargetAccounts,
   } = accountsActions(store)
+  const {verifyAddress} = addressActions(store)
   const {
     loadPoolCertificateTx,
     openPoolRegTransactionModal,
@@ -111,31 +113,6 @@ export default (store: Store) => {
     setState({
       shouldShowWalletLoadingErrorModal: false,
     })
-  }
-
-  /* ADDRESS DETAIL */
-
-  const verifyAddress = async (state: State, address?: string) => {
-    const newState = getState()
-    if (newState.usingHwWallet) {
-      try {
-        setState({
-          waitingForHwWallet: true,
-          addressVerificationError: false,
-        })
-        await getWallet()
-          .getAccount(state.targetAccountIndex)
-          .verifyAddress(address || newState.showAddressDetail.address)
-        setState({
-          waitingForHwWallet: false,
-        })
-      } catch (e) {
-        setState({
-          waitingForHwWallet: false,
-        })
-        setError(state, {errorName: 'addressVerificationError', error: true})
-      }
-    }
   }
 
   return {
