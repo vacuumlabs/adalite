@@ -1,4 +1,3 @@
-import {ADALITE_CONFIG} from './config'
 import {saveAs} from './libs/file-saver'
 import {withdrawalPlanValidator, mnemonicValidator} from './helpers/validators'
 import debugLog from './helpers/debugLog'
@@ -6,7 +5,6 @@ import NamedError from './helpers/NamedError'
 import {exportWalletSecretDef} from './wallet/keypass-json'
 import sanitizeMnemonic from './helpers/sanitizeMnemonic'
 import {State, getSourceAccountInfo, Store} from './state'
-import {localStorageVars} from './localStorage'
 import {
   Lovelace,
   CryptoProviderFeature,
@@ -14,7 +12,6 @@ import {
   AuthMethodType,
   DeregisterStakingKeyTransactionSummary,
 } from './types'
-import {MainTabs} from './constants'
 import {parseCliUnsignedTx} from './wallet/shelley/helpers/stakepoolRegistrationUtils'
 import errorActions from './actions/error'
 import loadingActions from './actions/loading'
@@ -24,6 +21,7 @@ import sendActions from './actions/send'
 import delegateActions from './actions/delegate'
 import accountsActions from './actions/accounts'
 import commonActions from './actions/common'
+import generalActions from './actions/general'
 
 export default (store: Store) => {
   const {setError} = errorActions(store)
@@ -69,6 +67,20 @@ export default (store: Store) => {
     setTransactionSummary,
     prepareTxPlan,
   } = commonActions(store)
+  const {
+    openWelcome,
+    closeWelcome,
+    setLogoutNotificationOpen,
+    closeUnexpectedErrorModal,
+    shouldShowContactFormModal,
+    closeContactFormModal,
+    closeStakingBanner,
+    setActiveMainTab,
+    loadErrorBannerContent,
+    openInfoModal,
+    closeInfoModal,
+    closePremiumBanner,
+  } = generalActions(store)
   const {setState, getState} = store
 
   const setAuthMethod = (state: State, authMethod: AuthMethodType): void => {
@@ -183,90 +195,6 @@ export default (store: Store) => {
       type: 'application/json;charset=utf-8',
     })
     saveAs(blob, `${walletName}.json`)
-  }
-
-  /* GENERAL */
-
-  const openWelcome = (state: State) => {
-    setState({
-      displayWelcome: true,
-    })
-  }
-
-  const closeWelcome = (state, dontShowDisclaimer) => {
-    // we may get an ignored click event as the second argument, check only against booleans
-    window.localStorage.setItem(localStorageVars.WELCOME, dontShowDisclaimer)
-    setState({
-      displayWelcome: false,
-    })
-  }
-
-  const openInfoModal = (state) => {
-    setState({
-      displayInfoModal: true,
-    })
-  }
-
-  const closeInfoModal = (state, dontShowInfoModal) => {
-    // we may get an ignored click event as the second argument, check only against booleans
-    window.localStorage.setItem(localStorageVars.INFO_MODAL, dontShowInfoModal)
-    setState({
-      displayInfoModal: false,
-    })
-  }
-
-  const closeStakingBanner = (state) => {
-    window.localStorage.setItem(localStorageVars.STAKING_BANNER, 'true')
-    setState({
-      shouldShowStakingBanner: false,
-    })
-  }
-
-  const closePremiumBanner = (state) => {
-    window.localStorage.setItem(localStorageVars.PREMIUM_BANNER, 'true')
-    setState({
-      seenPremiumBanner: true,
-    })
-  }
-
-  const shouldShowContactFormModal = (state) => {
-    setState({
-      shouldShowContactFormModal: true,
-    })
-  }
-
-  const closeContactFormModal = (state) => {
-    setState({
-      shouldShowContactFormModal: false,
-    })
-  }
-
-  const setLogoutNotificationOpen = (state, open) => {
-    setState({
-      logoutNotificationOpen: open,
-    })
-  }
-
-  const setActiveMainTab = (state: State, mainTab: MainTabs) => {
-    resetAccountIndexes(state)
-    setState({activeMainTab: mainTab})
-    resetTransactionSummary(state)
-    resetSendFormFields(state)
-    resetDelegation()
-  }
-
-  const closeUnexpectedErrorModal = (state) => {
-    setState({
-      shouldShowUnexpectedErrorModal: false,
-    })
-  }
-  const loadErrorBannerContent = (state) => {
-    const errorBannerContent = ADALITE_CONFIG.ADALITE_ERROR_BANNER_CONTENT
-    const shouldShowErrorBanner = !!errorBannerContent
-    setState({
-      errorBannerContent,
-      shouldShowStakingBanner: shouldShowErrorBanner ? false : state.shouldShowStakingBanner,
-    })
   }
 
   /* POOL OWNER */
