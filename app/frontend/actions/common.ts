@@ -30,14 +30,6 @@ export default (store: Store) => {
     })
   }
 
-  const resetSendFormState = (state: State) => {
-    setState({
-      sendResponse: '',
-      loading: false,
-      shouldShowConfirmTransactionDialog: false,
-    })
-  }
-
   const resetSendFormFields = (state: State) => {
     setState({
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
@@ -99,7 +91,6 @@ export default (store: Store) => {
 
   return {
     resetTransactionSummary,
-    resetSendFormState,
     resetSendFormFields,
     prepareTxPlan,
     setTransactionSummary,

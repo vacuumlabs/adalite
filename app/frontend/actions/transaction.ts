@@ -15,12 +15,15 @@ export default (store: Store) => {
   const {setError} = errorActions(store)
   const {loadingAction, stopLoadingAction} = loadingActions(store)
   const {reloadWalletInfo} = walletActions(store)
-  const {
-    resetTransactionSummary,
-    resetSendFormState,
-    resetSendFormFields,
-    resetAccountIndexes,
-  } = commonActions(store)
+  const {resetTransactionSummary, resetSendFormFields, resetAccountIndexes} = commonActions(store)
+
+  const resetSendFormState = (state: State) => {
+    setState({
+      sendResponse: '',
+      loading: false,
+      shouldShowConfirmTransactionDialog: false,
+    })
+  }
 
   const confirmTransaction = async (state: State, txConfirmType): Promise<void> => {
     let txAux
