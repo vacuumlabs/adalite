@@ -3,6 +3,7 @@ import printAda from '../../helpers/printAda'
 import {AssetFamily, Lovelace, Token} from '../../types'
 import {StarIcon} from './svg'
 import LinkIcon from './linkIcon'
+import {StringEllipsis} from '../pages/stringEllipsis'
 
 type LinkToAssetProps = {
   policyIdHex: string
@@ -14,6 +15,7 @@ export const LinkToAsset = ({policyIdHex, assetNameHex}: LinkToAssetProps) => (
 )
 
 type FormattedAssetItemProps = Token & {
+  fingerprint: string
   assetNameHex: string
   type: AssetFamily
   star?: boolean
@@ -26,6 +28,7 @@ export const FormattedAssetItem = ({
   assetName,
   assetNameHex,
   policyId,
+  fingerprint,
   quantity,
   children,
 }: FormattedAssetItemProps & {
@@ -35,6 +38,7 @@ export const FormattedAssetItem = ({
     formattedAssetLink: h.JSX.Element
     formattedAmount: string
     formattedPolicy: h.JSX.Element
+    formattedFingerprint: h.JSX.Element
   }) => h.JSX.Element
 }) => {
   return children({
@@ -51,8 +55,12 @@ export const FormattedAssetItem = ({
       type === AssetFamily.TOKEN ? `${quantity}` : printAda(Math.abs(quantity) as Lovelace),
     formattedPolicy: policyId && (
       <div className="multi-asset-hash">
-        <span className="ellipsis">{policyId.slice(0, -6)}</span>
-        <span>{policyId.slice(-6)}</span>
+        <StringEllipsis value={policyId} length={6} />
+      </div>
+    ),
+    formattedFingerprint: fingerprint && (
+      <div className="multi-asset-hash">
+        <StringEllipsis value={fingerprint} length={6} />
       </div>
     ),
   })

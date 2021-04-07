@@ -2,7 +2,10 @@ import {h} from 'preact'
 import {useSelector} from '../../../helpers/connect'
 import {getSourceAccountInfo, State} from '../../../state'
 import {AssetFamily, Token} from '../../../types'
-import {assetNameHex2Readable} from '../../../wallet/shelley/helpers/addresses'
+import {
+  assetNameHex2Readable,
+  encodeAssetFingerprint,
+} from '../../../wallet/shelley/helpers/addresses'
 import {FormattedAssetItem} from '../../common/asset'
 import CopyOnClick from '../../common/copyOnClick'
 
@@ -16,6 +19,7 @@ const MultiAssetsPage = () => {
         ...token,
         assetNameHex: token.assetName,
         assetName: assetNameHex2Readable(token.assetName),
+        fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
         type: AssetFamily.TOKEN,
         star: false,
       })),
@@ -37,6 +41,7 @@ const MultiAssetsPage = () => {
               formattedAssetLink,
               formattedAmount,
               formattedPolicy,
+              formattedFingerprint,
             }) => {
               return (
                 <div className="multi-asset-page-item multi-asset-item">
@@ -56,6 +61,20 @@ const MultiAssetsPage = () => {
                     >
                       <div className="multi-asset-page-copy-on-click">
                         {formattedPolicy}
+                        <div className="desktop">
+                          <span className="copy-text margin-left" />
+                        </div>
+                      </div>
+                    </CopyOnClick>
+                  </div>
+                  <div className="multi-asset-page-policy">
+                    <CopyOnClick
+                      value={asset.fingerprint}
+                      elementClass="copy"
+                      tooltipMessage="Fingerprint copied to clipboard"
+                    >
+                      <div className="multi-asset-page-copy-on-click">
+                        {formattedFingerprint}
                         <div className="desktop">
                           <span className="copy-text margin-left" />
                         </div>

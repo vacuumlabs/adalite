@@ -17,7 +17,10 @@ import {
   TxType,
   WithdrawTransactionSummary,
 } from '../../../types'
-import {assetNameHex2Readable} from '../../../../frontend/wallet/shelley/helpers/addresses'
+import {
+  assetNameHex2Readable,
+  encodeAssetFingerprint,
+} from '../../../../frontend/wallet/shelley/helpers/addresses'
 
 interface ReviewBottomProps {
   onSubmit: () => any
@@ -72,6 +75,10 @@ const SendAdaReview = ({
         <div className="review-amount">{printAda(lovelaceAmount as Lovelace)}</div>
         {token && (
           <Fragment>
+            <div className="review-label">Token fingerprint</div>
+            <div className="review-amount">
+              {encodeAssetFingerprint(token.policyId, token.assetName)}
+            </div>
             <div className="review-label">Token policy Id</div>
             <div className="review-amount">{token.policyId}</div>
             <div className="review-label">Token name</div>
