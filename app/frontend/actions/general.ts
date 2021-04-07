@@ -4,6 +4,7 @@ import commonActions from './common'
 import {ADALITE_CONFIG} from '../config'
 import {MainTabs} from '../constants'
 import {localStorageVars} from '../localStorage'
+import {AuthMethodType} from '../types'
 
 export default (store: Store) => {
   const {setState} = store
@@ -83,12 +84,41 @@ export default (store: Store) => {
       shouldShowUnexpectedErrorModal: false,
     })
   }
+
   const loadErrorBannerContent = (state) => {
     const errorBannerContent = ADALITE_CONFIG.ADALITE_ERROR_BANNER_CONTENT
     const shouldShowErrorBanner = !!errorBannerContent
     setState({
       errorBannerContent,
       shouldShowStakingBanner: shouldShowErrorBanner ? false : state.shouldShowStakingBanner,
+    })
+  }
+
+  const setAuthMethod = (state: State, authMethod: AuthMethodType): void => {
+    setState({authMethod})
+  }
+
+  const closeDemoWalletWarningDialog = (state) => {
+    setState({
+      shouldShowDemoWalletWarningDialog: false,
+    })
+  }
+
+  const closeNonShelleyCompatibleDialog = (state) => {
+    setState({
+      shouldShowNonShelleyCompatibleDialog: false,
+    })
+  }
+
+  const openNonShelleyCompatibleDialog = (state) => {
+    setState({
+      shouldShowNonShelleyCompatibleDialog: true,
+    })
+  }
+
+  const closeWalletLoadingErrorModal = (state) => {
+    setState({
+      shouldShowWalletLoadingErrorModal: false,
     })
   }
 
@@ -105,5 +135,10 @@ export default (store: Store) => {
     openInfoModal,
     closeInfoModal,
     closePremiumBanner,
+    setAuthMethod,
+    closeDemoWalletWarningDialog,
+    closeNonShelleyCompatibleDialog,
+    openNonShelleyCompatibleDialog,
+    closeWalletLoadingErrorModal,
   }
 }

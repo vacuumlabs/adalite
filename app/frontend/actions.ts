@@ -1,8 +1,7 @@
-import {State, Store} from './state'
-import {AuthMethodType} from './types'
+import {Store} from './state'
 import errorActions from './actions/error'
 import loadingActions from './actions/loading'
-import walletActions, {getWallet} from './actions/wallet'
+import walletActions from './actions/wallet'
 import transactionActions from './actions/transaction'
 import sendActions from './actions/send'
 import delegateActions from './actions/delegate'
@@ -85,35 +84,12 @@ export default (store: Store) => {
     openInfoModal,
     closeInfoModal,
     closePremiumBanner,
+    setAuthMethod,
+    closeDemoWalletWarningDialog,
+    closeNonShelleyCompatibleDialog,
+    openNonShelleyCompatibleDialog,
+    closeWalletLoadingErrorModal,
   } = generalActions(store)
-  const {setState, getState} = store
-
-  const setAuthMethod = (state: State, authMethod: AuthMethodType): void => {
-    setState({authMethod})
-  }
-
-  const closeDemoWalletWarningDialog = (state) => {
-    setState({
-      shouldShowDemoWalletWarningDialog: false,
-    })
-  }
-
-  const closeNonShelleyCompatibleDialog = (state) => {
-    setState({
-      shouldShowNonShelleyCompatibleDialog: false,
-    })
-  }
-
-  const openNonShelleyCompatibleDialog = (state) => {
-    setState({
-      shouldShowNonShelleyCompatibleDialog: true,
-    })
-  }
-  const closeWalletLoadingErrorModal = (state) => {
-    setState({
-      shouldShowWalletLoadingErrorModal: false,
-    })
-  }
 
   return {
     setError,
