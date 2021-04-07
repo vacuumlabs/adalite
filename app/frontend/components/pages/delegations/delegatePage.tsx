@@ -139,25 +139,20 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
   )
   const handleOnStopTyping = useHandleOnStopTyping()
 
-  // TODO: this reference always changes inside "useEffect" which causes infite loop.
-  // Till this is investigated, this workaround is used instead of "eslint-disable-..."
-  const _updateStakePoolIdentifier = useRef(updateStakePoolIdentifier)
-  const _resetStakePoolIndentifier = useRef(resetStakePoolIndentifier)
-
   const [fieldValue, setFieldValue] = useState('')
   const [error, setError] = useState<Error>(null)
 
   const handleInputValidation = useCallback(
     (value: string) => {
       if (!value) {
-        _resetStakePoolIndentifier.current()
+        resetStakePoolIndentifier()
         setError(null)
       } else {
         const {poolHash, error} = validateInput(value, validStakepoolDataProvider)
         if (!error) {
-          _updateStakePoolIdentifier.current(poolHash)
+          updateStakePoolIdentifier(poolHash)
         } else {
-          _resetStakePoolIndentifier.current()
+          resetStakePoolIndentifier()
         }
         setError(error)
       }
@@ -168,7 +163,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
       using hybrid solution involving `updateStakePoolIdentifier` (should be later removed)
       */
     },
-    [validStakepoolDataProvider]
+    [validStakepoolDataProvider, updateStakePoolIdentifier, resetStakePoolIndentifier]
   )
 
   const handleOnInput = (event: any): void => {

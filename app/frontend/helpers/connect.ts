@@ -5,6 +5,7 @@ import {mapActions} from '../libs/unistore/util'
 // eslint-disable-next-line
 import {State} from '../state'
 import {ComponentClass, FunctionComponent} from 'preact'
+import {useMemo} from 'preact/hooks'
 
 // Note(ppershing): Enjoy generic insanity!
 
@@ -51,6 +52,9 @@ type UseSelector = <T>(selector: (state: State) => T) => T
 const useSelector: UseSelector = _useSelector
 
 type UseActions = <T>(actions: (store: any) => T) => BindActions<T>
-const useActions: UseActions = (actions) => mapActions(actions, useStore())
+const useActions: UseActions = (actions) => {
+  const store = useStore()
+  return useMemo(() => mapActions(actions, store), [actions, store])
+}
 
 export {connect, useStore, useSelector, useActions}
