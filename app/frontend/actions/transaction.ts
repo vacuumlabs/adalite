@@ -1,4 +1,4 @@
-import {Store, State} from '../state'
+import {Store, State, getSourceAccountInfo} from '../state'
 import walletActions, {getWallet} from './wallet'
 import loadingActions from './loading'
 import errorActions from './error'
@@ -7,7 +7,16 @@ import sleep from '../helpers/sleep'
 import NamedError from '../helpers/NamedError'
 import {MainTabs} from '../constants'
 import getDonationAddress from '../helpers/getDonationAddress'
-import {HexString, TxType} from '../types'
+import {txPlanValidator, withdrawalPlanValidator} from '../helpers/validators'
+import {
+  HexString,
+  TxType,
+  SendTransactionSummary,
+  WithdrawTransactionSummary,
+  Lovelace,
+  AssetFamily,
+  CryptoProviderFeature,
+} from '../types'
 import {encode} from 'borc'
 
 export default (store: Store) => {
@@ -15,7 +24,13 @@ export default (store: Store) => {
   const {setError} = errorActions(store)
   const {loadingAction, stopLoadingAction} = loadingActions(store)
   const {reloadWalletInfo} = walletActions(store)
-  const {resetTransactionSummary, resetSendFormFields, resetAccountIndexes} = commonActions(store)
+  const {
+    resetTransactionSummary,
+    resetSendFormFields,
+    prepareTxPlan,
+    setTransactionSummary,
+    resetAccountIndexes,
+  } = commonActions(store)
 
   const resetSendFormState = (state: State) => {
     setState({
@@ -196,11 +211,96 @@ export default (store: Store) => {
     }
   }
 
+  const convertNonStakingUtxos = async (state: State): Promise<void> => {
+    loadingAction(state, 'Preparing transaction...')
+    const address = await getWallet()
+      .getAccount(state.sourceAccountIndex)
+      .getChangeAddress()
+    const sendAmount = await getWallet()
+      .getAccount(state.sourceAccountIndex)
+      // TODO: we should pass something more sensible
+      .getMaxNonStakingAmount(address, {
+        assetFamily: AssetFamily.ADA,
+        fieldValue: '',
+        coins: 0 as Lovelace,
+      })
+    const coins = sendAmount.assetFamily === AssetFamily.ADA && sendAmount.coins
+    const txPlanResult = await prepareTxPlan({
+      address,
+      sendAmount,
+      txType: TxType.CONVERT_LEGACY,
+    })
+    const balance = getSourceAccountInfo(state).balance as Lovelace
+
+    if (txPlanResult.success === true) {
+      const sendTransactionSummary: SendTransactionSummary = {
+        type: TxType.SEND_ADA,
+        address,
+        coins,
+        token: null,
+        minimalLovelaceAmount: 0 as Lovelace,
+      }
+      setTransactionSummary(txPlanResult.txPlan, sendTransactionSummary)
+      await confirmTransaction(getState(), 'convert')
+    } else {
+      const validationError =
+        txPlanValidator(coins, 0 as Lovelace, balance, txPlanResult.estimatedFee) ||
+        txPlanResult.error
+      setError(state, {
+        errorName: 'transactionSubmissionError',
+        error: validationError,
+      })
+      setState({shouldShowTransactionErrorModal: true})
+    }
+    stopLoadingAction(state)
+  }
+
+  const withdrawRewards = async (state: State): Promise<void> => {
+    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
+    if (supportError) {
+      setError(state, {
+        errorName: 'transactionSubmissionError',
+        error: supportError,
+      })
+      setState({shouldShowTransactionErrorModal: true})
+      return
+    }
+    loadingAction(state, 'Preparing transaction...')
+    // TODO: rewards should be of type Lovelace
+    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
+    const stakingAddress = getSourceAccountInfo(state).stakingAddress
+    const txPlanResult = await prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
+    // TODO: balance should be of type Lovelace
+    const balance = getSourceAccountInfo(state).balance as Lovelace
+
+    if (txPlanResult.success === true) {
+      const withdrawTransactionSummary: WithdrawTransactionSummary = {
+        type: TxType.WITHDRAW,
+        rewards,
+      }
+      setTransactionSummary(txPlanResult.txPlan, withdrawTransactionSummary)
+      await confirmTransaction(getState(), 'withdraw')
+    } else {
+      const withdrawalValidationError =
+        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee) ||
+        getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
+        txPlanResult.error
+      setError(state, {
+        errorName: 'transactionSubmissionError',
+        error: withdrawalValidationError,
+      })
+      setState({shouldShowTransactionErrorModal: true})
+    }
+    stopLoadingAction(state)
+  }
+
   return {
     confirmTransaction,
     cancelTransaction,
     setRawTransactionOpen,
     closeTransactionErrorModal,
     submitTransaction,
+    convertNonStakingUtxos,
+    withdrawRewards,
   }
 }
