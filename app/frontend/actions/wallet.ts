@@ -14,6 +14,9 @@ import {State, Store} from '../state'
 import errorActions from './error'
 import loadingActions from './loading'
 
+import {saveAs} from '../libs/file-saver'
+import {exportWalletSecretDef} from '../wallet/keypass-json'
+
 // TODO: (refactor), this should not call "setState" as it is not action
 const fetchConversionRates = async (conversionRates, setState) => {
   try {
@@ -185,11 +188,23 @@ export default (store: Store) => {
     window.history.pushState({}, '/', '/')
   }
 
+  const exportJsonWallet = async (state, password, walletName) => {
+    const walletExport = JSON.stringify(
+      await exportWalletSecretDef(getWallet().getWalletSecretDef(), password, walletName)
+    )
+
+    const blob = new Blob([walletExport], {
+      type: 'application/json;charset=utf-8',
+    })
+    saveAs(blob, `${walletName}.json`)
+  }
+
   return {
     loadWallet,
     reloadWalletInfo,
     loadDemoWallet,
     logout,
     getShouldShowSaturatedBanner,
+    exportJsonWallet,
   }
 }

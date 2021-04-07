@@ -4,7 +4,6 @@ import addressActions from './actions/address'
 import commonActions from './actions/common'
 import delegateActions from './actions/delegate'
 import errorActions from './actions/error'
-import exportWalletActions from './actions/exportWallet'
 import generalActions from './actions/general'
 import loadingActions from './actions/loading'
 import mnemonicActions from './actions/mnemonic'
@@ -19,7 +18,6 @@ export default (store: Store) => ({
   ...commonActions(store),
   ...delegateActions(store),
   ...errorActions(store),
-  ...exportWalletActions(store),
   ...generalActions(store),
   ...loadingActions(store),
   ...mnemonicActions(store),
