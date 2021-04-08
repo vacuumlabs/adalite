@@ -293,6 +293,8 @@ const mock = (ADALITE_CONFIG) => {
           recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
           isInRecommendedPoolSet: true,
           status: 'GivedPoolOk',
+          isInPrivatePoolSet: false,
+          isRecommendationPrivate: false,
         },
         sendAsJson: true,
       },

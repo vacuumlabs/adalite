@@ -111,6 +111,8 @@ export type Lovelace = number & {__typeLovelace: any}
 
 export type PoolRecommendation = {
   isInRecommendedPoolSet: boolean
+  isInPrivatePoolSet: boolean
+  isRecommendationPrivate: boolean
   recommendedPoolHash: string
   status: string
   shouldShowSaturatedBanner: boolean
