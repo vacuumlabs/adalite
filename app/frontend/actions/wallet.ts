@@ -57,7 +57,7 @@ export default (store: Store) => {
     }: {
       cryptoProviderType: CryptoProviderType
       walletSecretDef: any
-      forceWebUsb: boolean
+      forceWebUsb?: boolean
       shouldExportPubKeyBulk: boolean
     }
   ) => {
