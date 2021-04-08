@@ -18,7 +18,7 @@ module.exports = function(app, env) {
       })
     }
 
-    await sleep(5000)
+    await sleep(100)
 
     const success = process.env.ADALITE_MOCK_TX_SUBMISSION_SUCCESS === 'true'
 
@@ -46,7 +46,7 @@ module.exports = function(app, env) {
       }
     }
 
-    await sleep(1000)
+    await sleep(100)
 
     return res.json(response)
   })
@@ -62,7 +62,7 @@ module.exports = function(app, env) {
       })
     }
 
-    await sleep(600)
+    await sleep(100)
 
     return res.json({
       Right: 'Successfuly subscribed',

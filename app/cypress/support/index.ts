@@ -17,11 +17,37 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
+
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+/*
+ Source: https://gist.github.com/iperelivskiy/4110988
+*/
+const getHash = function(s: string) {
+  let h = 0xdeadbeef
+  for (let i = 0; i < s.length; i++) {
+    h = Math.imul(h ^ s.charCodeAt(i), 2654435761)
+  }
+  return ((h ^ (h >>> 16)) >>> 0).toString(16)
+}
+
+const cachedBackendResponses = {}
+
 // run before each test in each file
 beforeEach('Logs in via UI', () => {
+  cy.intercept({url: `${Cypress.config('baseUrl')}/api`}, (req) => {
+    const hash = getHash(`${req.url}${JSON.stringify(req.body)}`)
+    if (cachedBackendResponses[hash]) {
+      req.reply(cachedBackendResponses[hash])
+    } else {
+      req.reply((res) => {
+        cachedBackendResponses[hash] = res.body
+        return res
+      })
+    }
+
+  })
   const mnemonic =
     'bounce tissue tent monitor educate book neglect install armed note explain country maximum strike search'
   cy.visit('/')
