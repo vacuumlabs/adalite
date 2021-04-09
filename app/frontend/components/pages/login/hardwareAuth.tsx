@@ -3,16 +3,13 @@ import {CryptoProviderType} from '../../../wallet/types'
 import {TrezorLogoWhite, LedgerLogoWhite} from '../../common/svg'
 import {ADALITE_CONFIG} from '../../../config'
 import tooltip from '../../common/tooltip'
-import {connect} from '../../../helpers/connect'
+import {useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import {useState, useCallback} from 'preact/hooks'
 import {localStorageVars} from '../../../localStorage'
 
-interface Props {
-  loadWallet: any
-}
-
-const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
+const LoadByHardwareWalletSection = () => {
+  const {loadWallet} = useActions(actions)
   const [enableBulkExport, setBulkExport] = useState(
     window.localStorage.getItem(localStorageVars.BULK_EXPORT) !== 'true'
   )
@@ -133,4 +130,4 @@ const LoadByHardwareWalletSection = ({loadWallet}: Props) => {
   )
 }
 
-export default connect((state) => ({}), actions)(LoadByHardwareWalletSection)
+export default LoadByHardwareWalletSection

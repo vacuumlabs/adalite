@@ -56,8 +56,8 @@ export default (store: Store) => {
       shouldExportPubKeyBulk,
     }: {
       cryptoProviderType: CryptoProviderType
-      walletSecretDef: any
-      forceWebUsb?: boolean
+      walletSecretDef?: any // TODO: until now, arguments came in freestyle combinations, refactor
+      forceWebUsb?: boolean // into strict combinations and types
       shouldExportPubKeyBulk: boolean
     }
   ) => {
