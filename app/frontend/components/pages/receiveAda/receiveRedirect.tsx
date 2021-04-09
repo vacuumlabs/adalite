@@ -1,17 +1,15 @@
 import {h} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import {MainTabs} from '../../../../frontend/constants'
+import {useActions} from '../../../helpers/connect'
 
-type ReceiveRedirectProps = {
-  setActiveMainTab: (mainTab: MainTabs) => void
-}
-
-const ReceiveRedirect = ({setActiveMainTab}: ReceiveRedirectProps) => {
+const ReceiveRedirect = (): h.JSX.Element => {
+  const {setActiveMainTab} = useActions(actions)
   const redirect = () => {
     setActiveMainTab(MainTabs.RECEIVE)
     window.scrollTo(0, 0)
   }
+
   return (
     <div className="addresses card">
       <h2 className="card-title">My Addresses</h2>
@@ -22,4 +20,4 @@ const ReceiveRedirect = ({setActiveMainTab}: ReceiveRedirectProps) => {
   )
 }
 
-export default connect(null, actions)(ReceiveRedirect)
+export default ReceiveRedirect
