@@ -1,24 +1,22 @@
 import {h} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Modal from '../../common/modal'
+import {State} from '../../../state'
 
-class RawTransactionModal {
-  render({rawTransaction, setRawTransactionOpen}) {
-    return (
-      <Modal onRequestClose={() => setRawTransactionOpen(false)} bodyClass="width-auto">
-        <div className="width-auto">
-          <h4>Raw unsigned transaction</h4>
-          <div className="raw-transaction one-click-select">{rawTransaction}</div>
-        </div>
-      </Modal>
-    )
-  }
+const RawTransactionModal = (): h.JSX.Element => {
+  const {rawTransaction} = useSelector((state: State) => ({
+    rawTransaction: state.rawTransaction,
+  }))
+  const {setRawTransactionOpen} = useActions(actions)
+  return (
+    <Modal onRequestClose={() => setRawTransactionOpen(false)} bodyClass="width-auto">
+      <div className="width-auto">
+        <h4>Raw unsigned transaction</h4>
+        <div className="raw-transaction one-click-select">{rawTransaction}</div>
+      </div>
+    </Modal>
+  )
 }
 
-export default connect(
-  (state) => ({
-    rawTransaction: state.rawTransaction,
-  }),
-  actions
-)(RawTransactionModal)
+export default RawTransactionModal
