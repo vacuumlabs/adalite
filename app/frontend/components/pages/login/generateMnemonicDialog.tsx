@@ -1,15 +1,12 @@
 import {h} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {useActions} from '../../../helpers/connect'
 import {useMemo} from 'preact/hooks'
 import actions from '../../../actions'
 import Modal from '../../common/modal'
 import {generateMnemonic} from '../../../wallet/mnemonic'
 
-interface Props {
-  closeGenerateMnemonicDialog: () => void
-}
-
-const GenerateMnemonicDialog = ({closeGenerateMnemonicDialog}: Props) => {
+const GenerateMnemonicDialog = (): h.JSX.Element => {
+  const {closeGenerateMnemonicDialog} = useActions(actions)
   const newWalletMnemonic = useMemo(() => generateMnemonic(15), [])
 
   return (
@@ -36,7 +33,4 @@ const GenerateMnemonicDialog = ({closeGenerateMnemonicDialog}: Props) => {
   )
 }
 
-export default connect(
-  (state) => ({}),
-  actions
-)(GenerateMnemonicDialog)
+export default GenerateMnemonicDialog
