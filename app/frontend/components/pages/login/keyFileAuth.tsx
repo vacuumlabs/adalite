@@ -1,6 +1,6 @@
 import {h} from 'preact'
 import {useState, useEffect, useRef} from 'preact/hooks'
-import {connect} from '../../../helpers/connect'
+import {useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import debugLog from '../../../helpers/debugLog'
 import tooltip from '../../common/tooltip'
@@ -9,13 +9,9 @@ import FileLoader from '../../common/fileLoader'
 import * as KeypassJson from '../../../wallet/keypass-json'
 import {CryptoProviderType} from '../../../wallet/types'
 
-interface Props {
-  loadingAction: any
-  loadWallet: any
-  stopLoadingAction: any
-}
+const LoadKeyFile = (): h.JSX.Element => {
+  const {loadingAction, loadWallet, stopLoadingAction} = useActions(actions)
 
-const LoadKeyFile = ({loadingAction, loadWallet, stopLoadingAction}: Props) => {
   const [fileName, setFileName] = useState<string>('')
   const [keyFile, setKeyFile] = useState<any>(undefined)
   const [encrypted, setEncrypted] = useState<boolean>(false)
@@ -38,12 +34,9 @@ const LoadKeyFile = ({loadingAction, loadWallet, stopLoadingAction}: Props) => {
     }
   }, [])
 
-  useEffect(
-    () => {
-      encrypted && filePasswordField.current.focus()
-    },
-    [encrypted]
-  )
+  useEffect(() => {
+    encrypted && filePasswordField.current.focus()
+  }, [encrypted])
 
   const onPasswordInput = (e) => {
     setPassword(e.target.value)
@@ -155,7 +148,4 @@ const LoadKeyFile = ({loadingAction, loadWallet, stopLoadingAction}: Props) => {
   )
 }
 
-export default connect(
-  undefined,
-  actions
-)(LoadKeyFile)
+export default LoadKeyFile
