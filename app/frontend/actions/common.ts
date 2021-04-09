@@ -64,6 +64,7 @@ export default (store: Store) => {
         success: false,
         estimatedFee: 0 as Lovelace,
         minimalLovelaceAmount: 0 as Lovelace,
+        deposit: 0 as Lovelace,
         error: {code: e.name},
       }
     }

@@ -54,8 +54,10 @@ export type TxPlanResult =
       success: false
       error: any
       estimatedFee: Lovelace
+      deposit: Lovelace
       minimalLovelaceAmount: Lovelace
     }
+
 export interface TxPlan {
   inputs: Array<TxInput>
   outputs: Array<TxOutput>
@@ -64,6 +66,7 @@ export interface TxPlan {
   deposit: Lovelace
   additionalLovelaceAmount: Lovelace
   fee: Lovelace
+  baseFee: Lovelace
   withdrawals: Array<TxWithdrawal>
 }
 
@@ -205,12 +208,12 @@ export function computeTxPlan(
   possibleChange: TxOutput,
   certificates: Array<TxCertificate>,
   withdrawals: Array<TxWithdrawal>
-): TxPlan {
+): TxPlanResult {
   const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
   const totalInputTokens = aggregateTokenBundles(inputs.map(({tokenBundle}) => tokenBundle))
   const deposit = computeRequiredDeposit(certificates)
-  const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit + totalRewards
+  const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit
   const totalOutputTokens = aggregateTokenBundles(outputs.map(({tokenBundle}) => tokenBundle))
 
   // total amount of lovelace that had to be added to token-containing outputs
@@ -222,34 +225,43 @@ export function computeTxPlan(
   const tokenDifference = getTokenBundlesDifference(totalInputTokens, totalOutputTokens)
   // Cannot construct transaction plan, not enought tokens
   if (tokenDifference.some(({quantity}) => quantity < 0)) {
-    throw new UnexpectedError(UnexpectedErrorReason.CannotConstructTxPlan)
-  }
-
-  if (
-    totalOutput > Number.MAX_SAFE_INTEGER ||
-    totalOutputTokens.some(({quantity}) => quantity > Number.MAX_SAFE_INTEGER)
-  ) {
-    throw new InternalError(InternalErrorReason.CoinAmountError)
+    return {
+      success: false,
+      minimalLovelaceAmount: additionalLovelaceAmount,
+      estimatedFee: 0 as Lovelace,
+      deposit,
+      error: {code: UnexpectedErrorReason.CannotConstructTxPlan},
+    }
   }
 
   const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certificates, withdrawals)
 
-  // Cannot construct transaction plantotalOutput
-  if (totalOutput + feeWithoutChange > totalInput) {
-    throw new UnexpectedError(UnexpectedErrorReason.CannotConstructTxPlan)
+  // Cannot construct transaction plan
+  if (inputs.length === 0 || totalOutput + feeWithoutChange > totalInput) {
+    return {
+      success: false,
+      minimalLovelaceAmount: additionalLovelaceAmount,
+      estimatedFee: feeWithoutChange,
+      deposit,
+      error: {code: UnexpectedErrorReason.CannotConstructTxPlan},
+    }
   }
 
   // No change necessary, perfect fit
   if (totalOutput + feeWithoutChange === totalInput && tokenDifference.length === 0) {
     return {
-      inputs,
-      outputs,
-      change: null,
-      certificates,
-      deposit,
-      additionalLovelaceAmount,
-      fee: feeWithoutChange,
-      withdrawals,
+      success: true,
+      txPlan: {
+        inputs,
+        outputs,
+        change: null,
+        certificates,
+        deposit,
+        additionalLovelaceAmount,
+        fee: feeWithoutChange,
+        baseFee: feeWithoutChange,
+        withdrawals,
+      },
     }
   }
 
@@ -264,21 +276,25 @@ export function computeTxPlan(
     // We cannot fit the change output into the transaction
     // Instead, just increase the fee
     return {
-      inputs,
-      outputs,
-      change: null,
-      certificates,
-      deposit,
-      additionalLovelaceAmount,
-      fee: (totalInput - totalOutput) as Lovelace,
-      withdrawals,
+      success: true,
+      txPlan: {
+        inputs,
+        outputs,
+        change: null,
+        certificates,
+        deposit,
+        additionalLovelaceAmount,
+        fee: (totalInput - totalOutput) as Lovelace,
+        baseFee: feeWithoutChange,
+        withdrawals,
+      },
     }
   }
 
   const change: TxOutput = {
     ...possibleChange,
     tokenBundle: tokenDifference,
-    coins: (totalInput - totalOutput - feeWithChange + totalRewards) as Lovelace,
+    coins: (totalInput - totalOutput - feeWithChange) as Lovelace,
   }
 
   const minimalChangeLovelace = computeMinUTxOLovelaceAmount(change.tokenBundle)
@@ -286,57 +302,110 @@ export function computeTxPlan(
   // if we cannot create a change output with minimal ada we add it to the fee
   if (change.tokenBundle.length === 0 && change.coins < minimalChangeLovelace) {
     return {
-      inputs,
-      outputs,
-      change: null,
-      certificates,
-      deposit,
-      additionalLovelaceAmount,
-      fee: (feeWithChange + change.coins) as Lovelace,
-      withdrawals,
+      success: true,
+      txPlan: {
+        inputs,
+        outputs,
+        change: null,
+        certificates,
+        deposit,
+        additionalLovelaceAmount,
+        // we need to add feeWithChange to change since the change was previously
+        // computed counting with the feeWithChange
+        fee: (feeWithChange + change.coins) as Lovelace,
+        baseFee: feeWithoutChange,
+        withdrawals,
+      },
     }
   }
 
-  // we cant build the transaction with big enough change lovelace
-  if (change.tokenBundle.length > 0 && change.coins < minimalChangeLovelace) {
-    throw new InternalError(InternalErrorReason.ChangeOutputTooSmall)
-  }
-
   return {
-    inputs,
-    outputs,
+    success: true,
+    txPlan: {
+      inputs,
+      outputs,
+      change,
+      certificates,
+      deposit,
+      additionalLovelaceAmount,
+      fee: feeWithChange,
+      baseFee: feeWithChange,
+      withdrawals,
+    },
+  }
+}
+
+const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
+  if (txPlanResult.success === false) {
+    return txPlanResult
+  }
+  const {txPlan} = txPlanResult
+  const {
     change,
+    outputs,
+    withdrawals,
+    fee,
+    additionalLovelaceAmount,
     certificates,
     deposit,
-    additionalLovelaceAmount,
-    fee: feeWithChange,
-    withdrawals,
+    baseFee,
+  } = txPlan
+
+  const noTxPlan: TxPlanResult = {
+    success: false,
+    error: null,
+    estimatedFee: fee,
+    deposit,
+    minimalLovelaceAmount: additionalLovelaceAmount,
   }
-}
 
-// TODO: remove this altogether, since shelley all utxos are profitable
-export const isUtxoProfitable = (utxo: UTxO): boolean => {
-  return true
-}
+  const outputsWithChange = change ? [...outputs, change] : outputs
+  if (
+    outputsWithChange.some(({coins, tokenBundle}) => {
+      coins > Number.MAX_SAFE_INTEGER ||
+        tokenBundle.some(({quantity}) => quantity > Number.MAX_SAFE_INTEGER)
+    })
+  ) {
+    throw new InternalError(InternalErrorReason.CoinAmountError)
+  }
 
-const validateTxPlan = (txPlan: TxPlan): void => {
-  const outputs = txPlan.change ? [...txPlan.outputs, txPlan.change] : txPlan.outputs
-  // TODO: check for maximal sizes of outputs
+  // we cant build the transaction with big enough change lovelace
+  if (change && change.coins < computeMinUTxOLovelaceAmount(change.tokenBundle)) {
+    return {
+      ...noTxPlan,
+      error: {code: InternalErrorReason.ChangeOutputTooSmall},
+    }
+  }
+
   if (outputs.some(({coins, tokenBundle}) => coins < computeMinUTxOLovelaceAmount(tokenBundle))) {
-    throw new InternalError(InternalErrorReason.OutputTooSmall)
+    return {
+      ...noTxPlan,
+      error: {code: InternalErrorReason.OutputTooSmall},
+    }
   }
-  if (outputs.some((output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE)) {
-    throw new InternalError(InternalErrorReason.OutputTooBig)
-  }
-  const totalRewards = txPlan.withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
 
+  if (outputs.some((output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE)) {
+    return {
+      ...noTxPlan,
+      error: {code: InternalErrorReason.OutputTooBig},
+    }
+  }
+
+  const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   // When deregistering stake key, returned "deposit" should be in all cases higher than the Tx fee
-  const isDeregisteringStakeKey = txPlan.certificates.some(
+  const isDeregisteringStakeKey = certificates.some(
     (c) => c.type === CertificateType.STAKING_KEY_DEREGISTRATION
   )
-  if (!isDeregisteringStakeKey && totalRewards > 0 && totalRewards < txPlan.fee) {
-    throw new InternalError(InternalErrorReason.RewardsBalanceTooLow)
+  if (
+    !isDeregisteringStakeKey &&
+    ((totalRewards > 0 && totalRewards < fee) || (totalRewards > 0 && fee > baseFee))
+  ) {
+    return {
+      ...noTxPlan,
+      error: {code: InternalErrorReason.RewardsBalanceTooLow},
+    }
   }
+  return txPlanResult
 }
 
 const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
@@ -443,7 +512,6 @@ export const selectMinimalTxPlan = (
   changeAddress: Address,
   txPlanArgs: TxPlanArgs
 ): TxPlanResult => {
-  const inputs: TxInput[] = []
   const {outputs, certificates, withdrawals} = prepareTxPlanDraft(txPlanArgs)
   const change: TxOutput = {
     isChange: false,
@@ -452,41 +520,17 @@ export const selectMinimalTxPlan = (
     tokenBundle: [],
   }
 
-  // TODO: refactor this
-  for (const utxo of utxos) {
-    inputs.push(utxo)
-    try {
-      const plan = computeTxPlan(inputs, outputs, change, certificates, withdrawals)
-      validateTxPlan(plan)
-      return {
-        success: true,
-        txPlan: plan,
-      }
-    } catch (e) {
-      if (inputs.length === utxos.length) {
-        return {
-          success: false,
-          estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
-          error: {code: e.name},
-          minimalLovelaceAmount: outputs.reduce(
-            (acc, output) =>
-              output.tokenBundle.length > 0
-                ? acc + computeMinUTxOLovelaceAmount(output.tokenBundle)
-                : 0,
-            0
-          ) as Lovelace,
-        }
+  let txPlanResult: TxPlanResult
+  let numInputs = 0
+  while (numInputs <= utxos.length) {
+    const inputs: TxInput[] = utxos.slice(0, numInputs)
+    txPlanResult = validateTxPlan(computeTxPlan(inputs, outputs, change, certificates, withdrawals))
+    if (txPlanResult.success === true) {
+      if (txPlanResult.txPlan.baseFee === txPlanResult.txPlan.fee || numInputs === utxos.length) {
+        return txPlanResult
       }
     }
+    numInputs += 1
   }
-  return {
-    success: false,
-    estimatedFee: computeRequiredTxFee(inputs, outputs, certificates, withdrawals),
-    error: {code: 'CannotConstructTxPlan'},
-    minimalLovelaceAmount: outputs.reduce(
-      (acc, output) =>
-        output.tokenBundle.length > 0 ? acc + computeMinUTxOLovelaceAmount(output.tokenBundle) : 0,
-      0
-    ) as Lovelace,
-  }
+  return txPlanResult
 }

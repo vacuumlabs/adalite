@@ -83,10 +83,14 @@ export default (store: Store) => {
         calculatingDelegationFee: false,
         txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
       })
+      setError(state, {
+        errorName: 'delegationValidationError',
+        error: null,
+      })
     } else {
       // REFACTOR: (Untyped errors)
       const validationError =
-        delegationPlanValidator(balance, 0 as Lovelace, txPlanResult.estimatedFee) ||
+        delegationPlanValidator(balance, txPlanResult.deposit, txPlanResult.estimatedFee) ||
         txPlanResult.error
       setError(state, {
         errorName: 'delegationValidationError',

@@ -21,12 +21,7 @@ import {
   getStakingXpub,
 } from './shelley/shelley-address-provider'
 
-import {
-  selectMinimalTxPlan,
-  isUtxoProfitable,
-  TxPlan,
-  TxPlanResult,
-} from './shelley/shelley-transaction-planner'
+import {selectMinimalTxPlan, TxPlan, TxPlanResult} from './shelley/shelley-transaction-planner'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {
@@ -275,7 +270,7 @@ const Account = ({
 
   async function getMaxSendableAmount(address: Address, sendAmount: SendAmount) {
     // TODO: why do we need hasDonation?
-    const utxos = (await getUtxos()).filter(isUtxoProfitable)
+    const utxos = await getUtxos()
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 

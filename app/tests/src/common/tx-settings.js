@@ -61,6 +61,7 @@ const transactionSettings = {
         certificates: [],
         deposit: 0,
         fee: 174850,
+        baseFee: 174850,
         additionalLovelaceAmount: 0,
         withdrawals: [],
       },
@@ -137,6 +138,7 @@ const transactionSettings = {
         certificates: [],
         deposit: 0,
         fee: 176871,
+        baseFee: 176871,
         additionalLovelaceAmount: 1481480,
         withdrawals: [],
       },
@@ -185,6 +187,7 @@ const transactionSettings = {
         ],
         deposit: 2000000,
         fee: 187989,
+        baseFee: 187989,
         additionalLovelaceAmount: 0,
         withdrawals: [],
       },
@@ -222,6 +225,7 @@ const transactionSettings = {
         certificates: [],
         deposit: 0,
         fee: 179156,
+        baseFee: 179156,
         additionalLovelaceAmount: 0,
         withdrawals: [
           {
