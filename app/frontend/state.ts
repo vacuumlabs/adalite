@@ -69,7 +69,6 @@ export interface State {
 
   // delegation form
   calculatingDelegationFee?: any
-  isDelegationValid?: any
   shelleyDelegation?: {
     selectedPool?: Stakepool
     delegationFee?: Lovelace
@@ -117,10 +116,6 @@ export interface State {
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean
 
-  currentDelegation?: {
-    // TODO: probably useless
-    stakePool?: any
-  }
   validStakepoolDataProvider?: StakepoolDataProvider
 }
 
