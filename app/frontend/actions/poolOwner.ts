@@ -14,6 +14,7 @@ import debugLog from '../helpers/debugLog'
 import {withdrawalPlanValidator} from '../helpers/validators'
 import {parseCliUnsignedTx} from '../wallet/shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason} from '../errors'
+import {usingHwWalletSelector} from '../selectors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -92,7 +93,7 @@ export default (store: Store) => {
       if (supportError) {
         throw new InternalError(supportError.code, {message: supportError.params.message})
       }
-      if (state.usingHwWallet) {
+      if (usingHwWalletSelector(state)) {
         setState({waitingForHwWallet: true})
         loadingAction(state, `Waiting for ${state.hwWalletName}...`)
       } else {

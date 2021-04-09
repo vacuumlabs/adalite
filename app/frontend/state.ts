@@ -47,7 +47,6 @@ export interface State {
   shouldShowNonShelleyCompatibleDialog: any
   walletLoadingError?: any
   shouldShowWalletLoadingErrorModal?: boolean
-  usingHwWallet?: boolean
   shouldShowSaturatedBanner?: boolean
   mnemonicAuthForm: {
     mnemonicInputValue: string

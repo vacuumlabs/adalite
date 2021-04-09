@@ -2,6 +2,7 @@ import {State, getActiveAccountInfo} from './state'
 import {BIG_DELEGATOR_THRESHOLD, PREMIUM_MEMBER_BALANCE_TRESHOLD} from './wallet/constants'
 import {useSelector} from './helpers/connect'
 import {AccountInfo, AuthMethodType} from './types'
+import {WalletName} from './wallet/types'
 
 /*
 This file contains hooks/selectors shared accross multiple components which
@@ -28,6 +29,10 @@ export const shouldShowPremiumBannerSelector = (state: State): boolean => {
 export const shouldShowExportOptionSelector = (state: State): boolean => {
   const {authMethod} = state
   return authMethod === AuthMethodType.MNEMONIC || authMethod === AuthMethodType.KEY_FILE
+}
+
+export const usingHwWalletSelector = (state: State): boolean => {
+  return state.hwWalletName === WalletName.TREZOR || state.hwWalletName === WalletName.LEDGER
 }
 
 /*

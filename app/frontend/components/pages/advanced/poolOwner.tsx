@@ -11,6 +11,7 @@ import {PoolRegTransactionSummary} from '../../../../frontend/types'
 import * as cbor from 'borc'
 import {saveAs} from '../../../libs/file-saver'
 import {CborizedCliWitness} from '../../../wallet/shelley/types'
+import {usingHwWalletSelector} from '../../../../frontend/selectors'
 
 interface Props {
   loadPoolCertificateTx: any
@@ -175,7 +176,7 @@ export default connect(
   (state: State) => ({
     poolRegTxError: state.poolRegTxError,
     poolRegTransactionSummary: state.poolRegTransactionSummary,
-    usingHwWallet: state.usingHwWallet,
+    usingHwWallet: usingHwWalletSelector(state),
   }),
   actions
 )(PoolOwnerCard)

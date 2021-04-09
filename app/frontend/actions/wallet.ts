@@ -109,7 +109,6 @@ export default (store: Store) => {
           mnemonicInputError: null,
           formIsValid: false,
         },
-        usingHwWallet,
         hwWalletName,
         isDemoWallet,
         shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,

@@ -1,6 +1,7 @@
 import {Store, State} from '../state'
 import {getWallet} from './wallet'
 import errorActions from './error'
+import {usingHwWalletSelector} from '../selectors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -8,7 +9,7 @@ export default (store: Store) => {
 
   const verifyAddress = async (state: State, address?: string) => {
     const newState = getState()
-    if (newState.usingHwWallet) {
+    if (usingHwWalletSelector(newState)) {
       try {
         setState({
           waitingForHwWallet: true,

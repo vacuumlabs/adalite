@@ -18,6 +18,7 @@ import {
 } from '../types'
 import {encode} from 'borc'
 import {InternalError, InternalErrorReason} from '../errors'
+import {usingHwWalletSelector} from '../selectors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -147,7 +148,7 @@ export default (store: Store) => {
         shouldShowConfirmTransactionDialog: false,
       })
     }
-    if (state.usingHwWallet) {
+    if (usingHwWalletSelector(state)) {
       setState({waitingForHwWallet: true})
       loadingAction(state, `Waiting for ${state.hwWalletName}...`)
     } else {
@@ -164,7 +165,7 @@ export default (store: Store) => {
         .getAccount(state.sourceAccountIndex)
         .signTxAux(txAux)
 
-      if (state.usingHwWallet) {
+      if (usingHwWalletSelector(state)) {
         setState({waitingForHwWallet: false})
         loadingAction(state, 'Submitting transaction...')
       }

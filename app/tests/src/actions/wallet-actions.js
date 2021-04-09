@@ -21,7 +21,6 @@ const expectedStateChanges = {
     mnemonicInputError: null,
     formIsValid: false,
   },
-  usingHwWallet: false,
   hwWalletName: null,
   isDemoWallet: false,
   shouldShowDemoWalletWarningDialog: false,
