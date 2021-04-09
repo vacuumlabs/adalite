@@ -90,7 +90,7 @@ export default (store: Store) => {
       const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const maxAccountIndex = wallet.getMaxAccountIndex()
-      const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
+      const hwWalletName = usingHwWallet ? wallet.getWalletName() : null
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (
         await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)

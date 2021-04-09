@@ -22,7 +22,7 @@ import {
   HexString,
   Address,
 } from '../../types'
-import {Network, TxByronWitness, TxShelleyWitness} from '../types'
+import {Network, TxByronWitness, TxShelleyWitness, WalletName} from '../types'
 import {TxSigned, TxAux, CborizedTxSignedStructured} from './types'
 import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 
@@ -42,7 +42,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
 
   const isHwWallet = () => false
 
-  const getWalletName = () => 'Mnemonic'
+  const getWalletName = (): WalletName.MNEMONIC => WalletName.MNEMONIC
 
   const getWalletSecret = () => masterHdNode.toBuffer()
 

@@ -16,7 +16,6 @@ const shelleyBalances = ({
   convertNonStakingUtxos,
   withdrawRewards,
   calculatingDelegationFee,
-  hwWalletName,
   isShelleyCompatible,
   nearestReward,
 }) => (
@@ -97,11 +96,10 @@ const shelleyBalances = ({
         </div>
       </div>
 
-      {isShelleyCompatible &&
-        !!nonStakingBalance && (
+      {isShelleyCompatible && !!nonStakingBalance && (
         <Fragment>
           <h2 className="card-title staking-balances-title">
-              Non-staking balance
+            Non-staking balance
             <a
               {...tooltip(
                 'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address by clicking on the "Convert to stakeable" button. (minimum is 1.5 ADA)',
@@ -137,7 +135,6 @@ export default connect(
     rewardsAccountBalance: getActiveAccountInfo(state).shelleyBalances.rewardsAccountBalance,
     balance: getActiveAccountInfo(state).balance,
     calculatingDelegationFee: state.calculatingDelegationFee,
-    hwWalletName: state.hwWalletName,
     isShelleyCompatible: state.isShelleyCompatible,
     nearestReward: getActiveAccountInfo(state).shelleyAccountInfo.rewardDetails.nearest,
   }),

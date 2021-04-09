@@ -30,6 +30,7 @@ import {
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
+  WalletName,
 } from '../types'
 import {
   TrezorAddressParameters,
@@ -79,7 +80,7 @@ const ShelleyTrezorCryptoProvider = async ({
   const getVersion = (): string => `${version.major}.${version.minor}.${version.patch}`
 
   const isHwWallet = (): boolean => true
-  const getWalletName = (): string => 'Trezor' // TODO: return enum
+  const getWalletName = (): WalletName.TREZOR => WalletName.TREZOR
 
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,

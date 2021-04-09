@@ -1,6 +1,6 @@
 import {TxSigned, TxAux, CborizedCliWitness} from './wallet/shelley/types'
 import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
-import {Network} from './wallet/types'
+import {Network, WalletName} from './wallet/types'
 import {TxPlan} from './wallet/shelley/shelley-transaction-planner'
 import {_UnsignedTxParsed} from './helpers/cliParser/types'
 
@@ -35,7 +35,7 @@ export interface CryptoProvider {
     addressToPathMapper: AddressToPathMapper
   ) => Promise<CborizedCliWitness>
   getWalletSecret: () => Buffer | void
-  getWalletName: () => string
+  getWalletName: () => WalletName
   getDerivationScheme: () => DerivationScheme
   deriveXpub: (derivationPath: BIP32Path) => Promise<Buffer>
   isHwWallet: () => boolean

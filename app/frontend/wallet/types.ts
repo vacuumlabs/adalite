@@ -1,6 +1,12 @@
 import {TxPoolParams} from './shelley/helpers/poolCertificateUtils'
 import {BIP32Path, CertificateType, Lovelace, Address, TokenBundle} from '../types'
 
+export const enum WalletName {
+  LEDGER = 'Ledger',
+  TREZOR = 'Trezor',
+  MNEMONIC = 'Mnemonic',
+}
+
 export const enum NetworkId {
   MAINNET = 1,
   TESTNET = 0,

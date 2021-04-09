@@ -46,6 +46,7 @@ import {
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
+  WalletName,
 } from '../types'
 import {
   LedgerAssetGroup,
@@ -126,7 +127,7 @@ const ShelleyLedgerCryptoProvider = async ({
   ensureFeatureIsSupported(CryptoProviderFeature.MINIMAL)
 
   const isHwWallet = () => true
-  const getWalletName = () => 'Ledger'
+  const getWalletName = (): WalletName.LEDGER => WalletName.LEDGER
 
   const exportPublicKeys = async (
     derivationPaths: BIP32Path[]

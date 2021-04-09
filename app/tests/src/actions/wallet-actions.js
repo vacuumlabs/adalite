@@ -22,7 +22,7 @@ const expectedStateChanges = {
     formIsValid: false,
   },
   usingHwWallet: false,
-  hwWalletName: undefined,
+  hwWalletName: null,
   isDemoWallet: false,
   shouldShowDemoWalletWarningDialog: false,
   shouldShowGenerateMnemonicDialog: false,
