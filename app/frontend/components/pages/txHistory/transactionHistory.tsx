@@ -5,8 +5,6 @@ import {
 } from '../../../wallet/shelley/helpers/addresses'
 import printAda from '../../../helpers/printAda'
 import {getActiveAccountInfo, State} from '../../../state'
-import actions from '../../../actions'
-import {connect} from '../../../libs/unistore/preact'
 import toLocalDate from '../../../helpers/toLocalDate'
 import {
   RewardWithdrawal,
@@ -21,6 +19,7 @@ import {
 import {AdaIcon, StarIcon} from '../../common/svg'
 import {LinkToAsset} from '../../common/asset'
 import {StringEllipsis} from '../stringEllipsis'
+import {useSelector} from '../../../helpers/connect'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -232,51 +231,52 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
   )
 }
 
-const TransactionHistory = ({transactionHistory, stakingHistory}: Props): h.JSX.Element => (
-  <div className="transactions card">
-    <div className="transactions-header">
-      <h2 className="card-title">Transaction History</h2>
-      <div className="download-transaction">
-        <ExportCSV transactionHistory={transactionHistory} stakingHistory={stakingHistory} />
-      </div>
-    </div>
-    {transactionHistory.length === 0 ? (
-      <div className="transactions-empty">No transactions found</div>
-    ) : (
-      <ul className="transactions-content">
-        {transactionHistory.map((transaction: TxSummaryEntry) => (
-          <li key={transaction.ctbId} className="transaction-item">
-            <div className="row">
-              <div className="transaction-date">
-                {toLocalDate(new Date(transaction.ctbTimeIssued * 1000))}
-              </div>
-              <FormattedAmount amount={transaction.effect} />
-            </div>
-            <div className="row">
-              <FormattedTransaction txid={transaction.ctbId} />
-              <FormattedFee fee={transaction.fee} />
-            </div>
-            {transaction.tokenEffects.map((tokenEffect: Token) => (
-              <MultiAsset
-                key={tokenEffect.policyId}
-                star={false}
-                name={tokenEffect.assetName}
-                hash={tokenEffect.policyId}
-                amount={tokenEffect.quantity}
-                fingerprint={encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName)}
-              />
-            ))}
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-)
-
-export default connect(
-  (state: State) => ({
+const TransactionHistory = (): h.JSX.Element => {
+  const {transactionHistory, stakingHistory} = useSelector((state: State) => ({
     transactionHistory: getActiveAccountInfo(state).transactionHistory,
     stakingHistory: getActiveAccountInfo(state).stakingHistory,
-  }),
-  actions
-)(TransactionHistory)
+  }))
+
+  return (
+    <div className="transactions card">
+      <div className="transactions-header">
+        <h2 className="card-title">Transaction History</h2>
+        <div className="download-transaction">
+          <ExportCSV transactionHistory={transactionHistory} stakingHistory={stakingHistory} />
+        </div>
+      </div>
+      {transactionHistory.length === 0 ? (
+        <div className="transactions-empty">No transactions found</div>
+      ) : (
+        <ul className="transactions-content">
+          {transactionHistory.map((transaction: TxSummaryEntry) => (
+            <li key={transaction.ctbId} className="transaction-item">
+              <div className="row">
+                <div className="transaction-date">
+                  {toLocalDate(new Date(transaction.ctbTimeIssued * 1000))}
+                </div>
+                <FormattedAmount amount={transaction.effect} />
+              </div>
+              <div className="row">
+                <FormattedTransaction txid={transaction.ctbId} />
+                <FormattedFee fee={transaction.fee} />
+              </div>
+              {transaction.tokenEffects.map((tokenEffect: Token) => (
+                <MultiAsset
+                  key={tokenEffect.policyId}
+                  star={false}
+                  name={tokenEffect.assetName}
+                  hash={tokenEffect.policyId}
+                  amount={tokenEffect.quantity}
+                  fingerprint={encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName)}
+                />
+              ))}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+export default TransactionHistory
