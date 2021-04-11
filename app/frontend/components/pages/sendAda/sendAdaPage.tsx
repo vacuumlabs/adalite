@@ -17,6 +17,7 @@ import {
   SendTransactionSummary,
   Token,
   TransactionSummary,
+  TxType,
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
 import {parseCoins} from '../../../../frontend/helpers/validators'
@@ -135,7 +136,7 @@ const SendAdaPage = ({
   const {
     updateAddress,
     updateAmount,
-    confirmTransaction,
+    confirmTransactionOld,
     sendMaxFunds,
     setSourceAccount,
     setTargetAccount,
@@ -196,7 +197,7 @@ const SendAdaPage = ({
   }, [adaAsset, dropdownAssetItems, sendAmount])
 
   const submitHandler = async () => {
-    await confirmTransaction('send')
+    await confirmTransactionOld(TxType.SEND_ADA)
   }
 
   const searchPredicate = useCallback(

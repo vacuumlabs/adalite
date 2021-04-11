@@ -13,6 +13,7 @@ import {StakePoolInfo} from './stakePoolInfo'
 import DelegateInput from './delegateInput'
 import {ADALITE_CONFIG} from '../../../../frontend/config'
 import {StakepoolDataProvider} from '../../../../frontend/helpers/dataProviders/types'
+import {TxType} from '../../../types'
 
 const CalculatingFee = (): h.JSX.Element => (
   <div className="validation-message send">Calculating fee...</div>
@@ -134,7 +135,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
     isBigDelegator: isBigDelegatorSelector(state),
     validStakepoolDataProvider: state.validStakepoolDataProvider,
   }))
-  const {confirmTransaction, updateStakePoolIdentifier, resetStakePoolIndentifier} = useActions(
+  const {confirmTransactionOld, updateStakePoolIdentifier, resetStakePoolIndentifier} = useActions(
     actions
   )
   const handleOnStopTyping = useHandleOnStopTyping()
@@ -184,7 +185,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
   }, [currentDelegation, handleInputValidation, poolRecommendation])
 
   const delegationHandler = async (): Promise<void> => {
-    await confirmTransaction('delegate')
+    await confirmTransactionOld(TxType.DELEGATE)
   }
 
   const validationError = !!delegationValidationError || !!error || !stakePool

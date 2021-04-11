@@ -9,7 +9,7 @@ import {delegationPlanValidator} from '../helpers/validators'
 export default (store: Store) => {
   const {setState, getState} = store
   const {setError} = errorActions(store)
-  const {prepareTxPlan, setTransactionSummary} = commonActions(store)
+  const {prepareTxPlan, setTransactionSummaryOld} = commonActions(store)
 
   const hasPoolIdentifiersChanged = (state: State) => {
     const {shelleyDelegation: newShelleyDelegation} = getState()
@@ -78,7 +78,7 @@ export default (store: Store) => {
         deposit: txPlanResult.txPlan.deposit,
         stakePool: newState.shelleyDelegation?.selectedPool,
       }
-      setTransactionSummary(txPlanResult.txPlan, delegationTransactionSummary)
+      setTransactionSummaryOld(txPlanResult.txPlan, delegationTransactionSummary)
       setState({
         calculatingDelegationFee: false,
         txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
