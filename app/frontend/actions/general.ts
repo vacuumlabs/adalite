@@ -122,6 +122,12 @@ export default (store: Store) => {
     })
   }
 
+  const closeWantedAddressModal = (state) => {
+    setState({
+      shouldShowWantedAddressesModal: false,
+    })
+  }
+
   return {
     openWelcome,
     closeWelcome,
@@ -140,5 +146,6 @@ export default (store: Store) => {
     closeNonShelleyCompatibleDialog,
     openNonShelleyCompatibleDialog,
     closeWalletLoadingErrorModal,
+    closeWantedAddressModal,
   }
 }

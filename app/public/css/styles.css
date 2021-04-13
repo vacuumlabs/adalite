@@ -3086,6 +3086,17 @@ li.main-tab input + label.selected:after {
   margin-bottom: 24px;
 }
 
+.wanted-text {
+  text-align: left;
+  margin-top: 24px;
+}
+
+.alert.wanted {
+  border-color: var(--color-brand-dark);
+  padding: 16px;
+  word-wrap: break-word;
+}
+
 .stakepool-info {
   padding-left: 16px;
   text-align: left;
