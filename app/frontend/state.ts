@@ -12,6 +12,7 @@ import {
   SendAmount,
   Stakepool,
   TransactionSummary,
+  CachedTransactionSummaries,
   TxType,
 } from './types'
 
@@ -79,10 +80,12 @@ export interface State {
 
   // transaction
   sendTransactionSummary: TransactionSummary
+  cachedTransactionSummaries: CachedTransactionSummaries
   rawTransactionOpen: boolean
   rawTransaction: string
   transactionFee?: any
-  txConfirmType: string
+  txConfirmType?: TxType
+  isCrossAccount: boolean
   txSuccessTab: string
   transactionSubmissionError?: any
   shouldShowConfirmTransactionDialog?: boolean
@@ -186,10 +189,11 @@ const initialState: State = {
     fee: 0 as Lovelace,
     plan: null,
   },
+  cachedTransactionSummaries: {},
   rawTransactionOpen: false,
   rawTransaction: '',
   transactionFee: 0,
-  txConfirmType: '',
+  isCrossAccount: false,
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
 

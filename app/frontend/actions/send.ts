@@ -14,7 +14,7 @@ import debounceEvent from '../helpers/debounceEvent'
 export default (store: Store) => {
   const {setState, getState} = store
   const {setError} = errorActions(store)
-  const {resetTransactionSummary, setTransactionSummary, prepareTxPlan} = commonActions(store)
+  const {resetTransactionSummary, setTransactionSummaryOld, prepareTxPlan} = commonActions(store)
 
   const validateSendForm = (state: State) => {
     setError(state, {
@@ -105,7 +105,7 @@ export default (store: Store) => {
         token,
         minimalLovelaceAmount: txPlanResult.txPlan.additionalLovelaceAmount,
       }
-      setTransactionSummary(txPlanResult.txPlan, sendTransactionSummary)
+      setTransactionSummaryOld(txPlanResult.txPlan, sendTransactionSummary)
       setState({
         calculatingFee: false,
         txSuccessTab: '',

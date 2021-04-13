@@ -155,8 +155,12 @@ export default (store: Store) => {
         rewards,
       } as DeregisterStakingKeyTransactionSummary
 
-      setTransactionSummary(txPlanResult.txPlan, summary)
-      await confirmTransaction(getState(), 'deregisterStakeKey')
+      setTransactionSummary(getState(), {plan: txPlanResult.txPlan, transactionSummary: summary})
+      await confirmTransaction(getState(), {
+        sourceAccountIndex: sourceAccount.accountIndex,
+        txPlan: txPlanResult.txPlan,
+        txConfirmType: TxType.DEREGISTER_STAKE_KEY,
+      })
     } else {
       // Handled the same way as for withdrawal
       const withdrawalValidationError =

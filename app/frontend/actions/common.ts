@@ -18,6 +18,7 @@ export default (store: Store) => {
 
   const resetTransactionSummary = (state: State) => {
     setState({
+      // Refactor: remove when `setTransactionSummaryOld` will not exist
       sendTransactionSummary: {
         // TODO: we should reset this to null
         type: TxType.SEND_ADA,
@@ -28,6 +29,8 @@ export default (store: Store) => {
         fee: 0 as Lovelace,
         plan: null,
       },
+      // TODO: this can be smarter, dummy reset for now
+      cachedTransactionSummaries: {},
     })
   }
 
@@ -66,7 +69,8 @@ export default (store: Store) => {
     }
   }
 
-  const setTransactionSummary = (
+  // Refactor: remove once not used
+  const setTransactionSummaryOld = (
     plan: TxPlan,
     transactionSummary:
       | SendTransactionSummary
@@ -83,6 +87,33 @@ export default (store: Store) => {
     })
   }
 
+  // Refactor: remove once not used
+  const setTransactionSummary = (
+    state: State,
+    {
+      plan,
+      transactionSummary,
+    }: {
+      plan: TxPlan
+      transactionSummary:
+        | SendTransactionSummary
+        | WithdrawTransactionSummary
+        | DelegateTransactionSummary
+        | DeregisterStakingKeyTransactionSummary
+    }
+  ) => {
+    setState({
+      cachedTransactionSummaries: {
+        ...state.cachedTransactionSummaries,
+        [transactionSummary.type]: {
+          ...transactionSummary,
+          fee: plan.fee,
+          plan,
+        },
+      },
+    })
+  }
+
   const resetAccountIndexes = (state: State) => {
     setState({
       targetAccountIndex: state.activeAccountIndex,
@@ -95,6 +126,7 @@ export default (store: Store) => {
     resetSendFormFields,
     prepareTxPlan,
     setTransactionSummary,
+    setTransactionSummaryOld,
     resetAccountIndexes,
   }
 }
