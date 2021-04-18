@@ -3,6 +3,7 @@ const express = require('express')
 const compression = require('compression')
 const fs = require('fs')
 const https = require('https')
+const {enableHotReload} = require('./hotReload')
 const {frontendConfig, backendConfig} = require('./helpers/loadConfig')
 const ipfilter = require('express-ipfilter').IpFilter
 const errorHandler = require('./middlewares/errorHandler')
@@ -10,6 +11,13 @@ const errorHandler = require('./middlewares/errorHandler')
 let app = express()
 const Sentry = require('@sentry/node')
 const dropSensitiveEventData = require('./helpers/dropSensitiveEventData')
+
+const isProd = process.env.NODE_ENV === 'production'
+
+let devServerReady
+if (!isProd) {
+  devServerReady = enableHotReload(app)
+}
 
 Sentry.init({
   dsn: 'https://43eac31915bb40caa03798a51048e756@o150853.ingest.sentry.io/5421403',
@@ -149,7 +157,12 @@ if (enableHttps) {
   app = https.createServer(options, app)
 }
 
-app.listen(backendConfig.PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server is listening on ${enableHttps ? 'secure' : ''} port ${backendConfig.PORT}!`)
-})
+;(() =>
+  (isProd ? Promise.resolve() : devServerReady).then(() => {
+    app.listen(backendConfig.PORT, () => {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Server is listening on ${enableHttps ? 'secure' : ''} port ${backendConfig.PORT}!`
+      )
+    })
+  }))()

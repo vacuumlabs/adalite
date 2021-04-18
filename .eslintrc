@@ -23,7 +23,15 @@
         "args": "none"
       }
     ],
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "import/no-restricted-paths": [
+      "error",
+      {
+        "zones": [
+          { "target": "./app", "from": "./node_modules" }
+         ]
+       }
+    ]
   },
   "overrides": [
     {

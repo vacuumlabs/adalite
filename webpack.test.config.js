@@ -1,7 +1,7 @@
 module.exports = {
-  entry: `${__dirname}/tests/src/index.js`,
+  entry: `${__dirname}/app/tests/src/index.js`,
   output: {
-    path: `${__dirname}/tests`,
+    path: `${__dirname}/app/tests`,
     filename: 'dist/index.bundle.js',
   },
   node: {

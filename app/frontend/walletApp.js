@@ -2,7 +2,6 @@
 import {h, render} from 'preact'
 import {Provider as UnistoreStoreProvider} from './libs/unistore/preact'
 import {StoreProvider as HooksStoreProvider} from './libs/preact-hooks-unistore'
-import App from './components/app'
 
 import {createStore} from './store'
 import {ADALITE_CONFIG} from './config'
@@ -29,6 +28,16 @@ if (ADALITE_CONFIG.ADALITE_TREZOR_CONNECT_URL) {
 })(window.history)
 
 const store = createStore()
+
+// Keep state after hot-reload
+// https://github.com/developit/unistore/issues/81#issuecomment-378244539
+function addMemory(store) {
+  if (window.STATE) store.setState(window.STATE)
+  store.subscribe((state) => {
+    window.STATE = state
+  })
+}
+addMemory(store)
 
 // complete routing here
 window.history.onpushstate = () =>
@@ -81,6 +90,14 @@ init({
   ],
 })
 
-const Wrapper = h(HooksStoreProvider, {value: store}, h(UnistoreStoreProvider, {store}, h(App)))
+function reload() {
+  const App = require('./components/app').default
+  const Wrapper = h(HooksStoreProvider, {value: store}, h(UnistoreStoreProvider, {store}, h(App)))
+  render(Wrapper, document.getElementById('root'))
+}
 
-render(Wrapper, document.getElementById('root'))
+if (module.hot) {
+  module.hot.accept()
+}
+
+reload()
