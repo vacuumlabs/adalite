@@ -127,3 +127,8 @@ Some notes on how to implement new coin into Trezor can be found here: https://g
 Hot reloading is not working well with components that use `connect`. The project is leading towards removal of `connect` and its
 replacement by `useSelector` so eventually this issue should be solved.
 The issue you can experience with `connect` is that components would stop receiving state updates and you therefore need to reload the app.
+
+## Refactoring
+
+As all projects also this one would appreciate some refactoring love. To save some time on identifying potential source for refactoring
+see [refactoring-proposal](https://docs.google.com/document/d/1rlEI2KvzVmWMgITuK86YEN_WVjH8h6fJH9EvZN9Isko/edit?usp=sharing).
