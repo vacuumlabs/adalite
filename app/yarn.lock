@@ -4405,10 +4405,10 @@ tough-cookie@~2.5.0:
     psl "^1.1.28"
     punycode "^2.1.1"
 
-trezor-connect@^8.1.22:
-  version "8.1.22"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.22.tgz#a6b713c621fb9a108827a2b51253dd6baf05a7a1"
-  integrity sha512-majbYoNlUqNG6AncdXiOdyF02SS73rWkel1of4qHK1T1bNp92cIq8yZMoWXxil3p2b45qs5PA8pK1TBexZCQ9g==
+trezor-connect@^8.1.26:
+  version "8.1.26"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.1.26.tgz#f5c1cebecd89c4cf1fa61b3c7571ad879196e5b6"
+  integrity sha512-FC2ebYVFkOxzDF5i7ZuyS9/jh0F7hsY6e9j8hqJDzgYe+RG1vpTK3v3sNaKNfu6tt6/MwzS2usR7YkoYfN/mCA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     events "^3.2.0"
