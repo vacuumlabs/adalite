@@ -48,7 +48,7 @@ jobs:
       - setup
       - run:
           name: Build the app so that server can be started
-          command: cd app && yarn build && cd ../
+          command: yarn build
       - run:
           name: Start server with correct env for cypress tests
           command: yarn cypress:dev

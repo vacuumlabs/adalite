@@ -121,3 +121,9 @@ ADA: [addr1qxfxlatvpnl7wywyz6g4vqyfgmf9mdyjsh3hnec0yuvrhk8jh8axm6pzha46j5e7j3a2m
 ## Trezor integration
 
 Some notes on how to implement new coin into Trezor can be found here: https://github.com/vacuumlabs/trezor-core/wiki/Trezor-Development
+
+## Hot reloading
+
+Hot reloading is not working well with components that use `connect`. The project is leading towards removal of `connect` and its
+replacement by `useSelector` so eventually this issue should be solved.
+The issue you can experience with `connect` is that components would stop receiving state updates and you therefore need to reload the app.

@@ -74,4 +74,4 @@ const addressManagerSettings = {
   },
 }
 
-export {byronAddressManagerSettings, addressManagerSettings, addressManagerSettings2}
+export {byronAddressManagerSettings, addressManagerSettings}

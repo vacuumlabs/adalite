@@ -21,16 +21,14 @@
   },
   "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "scripts": {
-    "start-server": "node server/index.js",
-    "build": "cd app && yarn install && yarn build",
+    "start-server": "NODE_ENV=production node server/index.js",
+    "build": "NODE_ENV=production webpack --progress --config webpack.build.config.js",
     "install": "cd app && yarn install && cd ..",
-    "dev": "yarn generate-cert && ADALITE_ENABLE_HTTPS=true PORT=${PORT:-3000} node server/index.js & (cd app && yarn install && yarn dev)",
-    "test": "cd app && yarn install && yarn test",
-    "test-chrome-headless": "cd app && yarn install && yarn test-chrome-headless",
-    "mocha": "cd app && mocha-chrome --help",
+    "dev": "yarn generate-cert && ADALITE_ENABLE_HTTPS=true PORT=${PORT:-3000} node server/index.js",
+    "test:build": "webpack --config webpack.test.config.js",
+    "test-chrome-headless": "yarn test:build && node node_modules/.bin/mocha-headless-chrome -f app/tests/index.html -a disable-web-security -a user-data-dir=app/tests/.chrome -a disable-site-isolation-trials",
     "eslint": "eslint . --max-warnings=0 --ext .ts,.tsx,.js,.jsx",
     "fix": "prettier-eslint --write \"{{app/frontend,app/tests/src,server}/**/*.{ts,tsx,js,jsx,json,css},package.json}\"",
-    "heroku-postbuild": "cd app && yarn install && yarn build",
     "generate-cert": "test -e server.cert && echo \"certificate already exists\" || openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj \"/C=US\"",
     "cypress:dev": "DOTENV_CONFIG_PATH='./app/cypress/.env.cypress' yarn run dev",
     "cypress:open": "cd app && yarn run cypress open",
@@ -49,6 +47,7 @@
   },
   "dependencies": {
     "@sentry/node": "^5.22.3",
+    "babel-regenerator-runtime": "^6.5.0",
     "body-parser": "^1.18.2",
     "borc": "^2.1.0",
     "check-types": "^8.0.2",
@@ -60,16 +59,21 @@
     "express-ipfilter": "^1.1.2",
     "express-mung": "^0.5.1",
     "isomorphic-fetch": "^3.0.0",
+    "mocha-headless-chrome": "^2.0.3",
     "moment": "^2.27.0",
     "normalize-url": "^4.0.0",
     "redis": "^2.8.0",
     "redisscan": "^2.0.0",
-    "universal-analytics": "^0.4.20"
+    "universal-analytics": "^0.4.20",
+    "webpack": "^4.1.1",
+    "webpack-dev-middleware": "^4.1.0",
+    "webpack-hot-middleware": "^2.25.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "2",
     "@typescript-eslint/parser": "2",
     "babel-eslint": "^8.2.2",
+    "css-loader": "^5.2.2",
     "eslint": "^6.0.1",
     "eslint-config-vacuumlabs": "^1.8.2",
     "eslint-import-resolver-webpack": "^0.11.1",
@@ -77,12 +81,19 @@
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-react-hooks": "^2.3.0",
+    "file-loader": "^6.2.0",
     "husky": "^3.0.0",
     "lint-staged": "^9.2.0",
     "prettier": "^1.19.1",
     "prettier-eslint-cli": "^5.0.0",
     "release-it": "^13.6.2",
+    "style-loader": "^2.0.0",
     "ts-loader": "^6.2.1",
-    "typescript": "3.9.2"
+    "typescript": "3.9.2",
+    "url-loader": "^4.1.1",
+    "webpack-cli": "^4.6.0"
+  },
+  "resolutions": {
+    "ssri": ">=8.0.1"
   }
 }
