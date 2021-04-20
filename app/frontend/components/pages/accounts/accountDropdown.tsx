@@ -1,14 +1,15 @@
 import {h} from 'preact'
-import {connect} from '../../../libs/unistore/preact'
-import actions from '../../../actions'
+import {useSelector} from '../../../helpers/connect'
 import {useState, useCallback} from 'preact/hooks'
 
 import range from '../../../wallet/helpers/range'
-import {State} from '../../../state'
 import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 
-const AccountDropdown = ({accountIndex, setAccountFunc, accountsInfo}) => {
+const AccountDropdown = ({setAccountFunc, accountIndex}) => {
   const [shouldHideAccountDropdown, hideAccountDropdown] = useState(true)
+
+  const accountsInfo = useSelector((state) => state.accountsInfo)
+
   const toggleAccountDropdown = useCallback(() => {
     hideAccountDropdown(!shouldHideAccountDropdown)
   }, [shouldHideAccountDropdown])
@@ -42,10 +43,4 @@ const AccountDropdown = ({accountIndex, setAccountFunc, accountsInfo}) => {
   )
 }
 
-export default connect(
-  (state: State) => ({
-    accountsInfo: state.accountsInfo,
-    activeAccountIndex: state.activeAccountIndex,
-  }),
-  actions
-)(AccountDropdown)
+export default AccountDropdown

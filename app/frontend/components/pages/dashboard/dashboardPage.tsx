@@ -1,5 +1,5 @@
 import {h, Fragment} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'
 import TransactionHistory from '../txHistory/transactionHistory'
@@ -21,7 +21,6 @@ import PremiumBanner from './premiumBanner'
 import SaturationErrorBanner from './saturationErrorBanner'
 import Keys from '../advanced/keys'
 import AccountsDashboard from '../accounts/accountsDashboard'
-import {State} from '../../../state'
 import PoolOwner from '../advanced/poolOwner'
 import ErrorModals from './errorModals'
 import {useState} from 'preact/hooks'
@@ -198,37 +197,36 @@ const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.MY_ADDRESSES_REDIRECT]: <ReceiveRedirect />,
 }
 
-type Props = {
-  setActiveMainTab: (name: MainTabs) => void
-  activeMainTab: MainTabs
-  isShelleyCompatible: boolean
-  shouldShowNonShelleyCompatibleDialog: boolean
-  displayInfoModal: boolean
-  shouldShowPremiumBanner: boolean
-  shouldShowWantedAddressesModal: boolean
-  shouldShowSaturatedBanner: boolean
-  activeAccountIndex: number
-  shouldShowExportOption: boolean
-  shouldShowConfirmTransactionDialog: boolean
-  shouldShowSendTransactionModal: boolean
-  shouldShowDelegationModal: boolean
-}
+const DashboardPage = () => {
+  const {setActiveMainTab} = useActions(actions)
+  const {
+    activeMainTab,
+    displayInfoModal,
+    isShelleyCompatible,
+    shouldShowNonShelleyCompatibleDialog,
+    shouldShowPremiumBanner,
+    shouldShowSaturatedBanner,
+    activeAccountIndex,
+    shouldShowExportOption,
+    shouldShowWantedAddressesModal,
+    shouldShowConfirmTransactionDialog,
+    shouldShowSendTransactionModal,
+    shouldShowDelegationModal,
+  } = useSelector((state) => ({
+    activeMainTab: state.activeMainTab,
+    displayInfoModal: state.displayInfoModal,
+    isShelleyCompatible: state.isShelleyCompatible,
+    shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
+    shouldShowPremiumBanner: shouldShowPremiumBannerSelector(state),
+    shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
+    activeAccountIndex: state.activeAccountIndex,
+    shouldShowExportOption: shouldShowExportOptionSelector(state),
+    shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
+    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
+    shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
+    shouldShowDelegationModal: state.shouldShowDelegationModal,
+  }))
 
-const DashboardPage = ({
-  setActiveMainTab,
-  activeMainTab,
-  displayInfoModal,
-  isShelleyCompatible,
-  shouldShowNonShelleyCompatibleDialog,
-  shouldShowPremiumBanner,
-  shouldShowWantedAddressesModal,
-  shouldShowSaturatedBanner,
-  activeAccountIndex,
-  shouldShowExportOption,
-  shouldShowConfirmTransactionDialog,
-  shouldShowSendTransactionModal,
-  shouldShowDelegationModal,
-}: Props) => {
   const screenType = useViewport()
 
   const MainPages: {[key in MainTabs]: any} = {
@@ -304,20 +302,4 @@ const DashboardMobileContent = ({subTabs, defaultSubTab, mainSubTab}: DashboardM
   )
 }
 
-export default connect(
-  (state: State) => ({
-    activeMainTab: state.activeMainTab,
-    displayInfoModal: state.displayInfoModal,
-    isShelleyCompatible: state.isShelleyCompatible,
-    shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
-    shouldShowPremiumBanner: shouldShowPremiumBannerSelector(state),
-    shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
-    activeAccountIndex: state.activeAccountIndex,
-    shouldShowExportOption: shouldShowExportOptionSelector(state),
-    shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
-    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
-    shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
-    shouldShowDelegationModal: state.shouldShowDelegationModal,
-  }),
-  actions
-)(DashboardPage)
+export default DashboardPage

@@ -1,8 +1,7 @@
 import {Fragment, h} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
-import {State} from '../../../state'
 import {
   totalWalletBalanceSelector,
   totalRewardsBalanceSelector,
@@ -11,26 +10,27 @@ import {
 import {AdaIcon} from '../../common/svg'
 import Alert from '../../common/alert'
 import AccountTile from './accountTile'
-import {AccountInfo, Lovelace} from '../../../../frontend/types'
+import {Lovelace} from '../../../../frontend/types'
 import Conversions from '../../common/conversions'
 
-type DashboardProps = {
-  accountsInfo: Array<AccountInfo>
-  maxAccountIndex: number
-  reloadWalletInfo: any
-  totalWalletBalance: number
-  totalRewardsBalance: number
-  conversionRates: any
-}
+const AccountsDashboard = () => {
+  const {reloadWalletInfo} = useActions(actions)
+  const {
+    accountsInfo,
+    maxAccountIndex,
+    totalWalletBalance,
+    totalRewardsBalance,
+    conversionRates,
+  } = useSelector((state) => ({
+    accountsInfo: state.accountsInfo,
+    maxAccountIndex: state.maxAccountIndex,
+    activeAccountIndex: state.activeAccountIndex,
+    // TODO: refactor to get .data elsewhere
+    conversionRates: state.conversionRates && state.conversionRates.data,
+    totalWalletBalance: totalWalletBalanceSelector(state),
+    totalRewardsBalance: totalRewardsBalanceSelector(state),
+  }))
 
-const AccountsDashboard = ({
-  accountsInfo,
-  maxAccountIndex,
-  reloadWalletInfo,
-  totalWalletBalance,
-  totalRewardsBalance,
-  conversionRates,
-}: DashboardProps) => {
   const InfoAlert = () => (
     <Fragment>
       <div className="dashboard-column account sidebar-item info">
@@ -168,15 +168,4 @@ const AccountsDashboard = ({
   )
 }
 
-export default connect(
-  (state: State) => ({
-    accountsInfo: state.accountsInfo,
-    maxAccountIndex: state.maxAccountIndex,
-    activeAccountIndex: state.activeAccountIndex,
-    // TODO: refactor to get .data elsewhere
-    conversionRates: state.conversionRates && state.conversionRates.data,
-    totalWalletBalance: totalWalletBalanceSelector(state),
-    totalRewardsBalance: totalRewardsBalanceSelector(state),
-  }),
-  actions
-)(AccountsDashboard)
+export default AccountsDashboard

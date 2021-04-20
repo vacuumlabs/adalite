@@ -1,8 +1,7 @@
 import {Fragment, h} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
-import {State} from '../../../state'
 import {AdaIcon} from '../../common/svg'
 import tooltip from '../../common/tooltip'
 import {Lovelace} from '../../../types'
@@ -14,11 +13,6 @@ type TileProps = {
   availableBalance: number | null
   rewardsBalance: number | null
   shouldShowSaturatedBanner: boolean
-  setActiveAccount: any
-  exploreNextAccount: any
-  activeAccountIndex: number
-  showDelegationModal: any
-  showSendTransactionModal: any
   shouldShowAccountInfo?: boolean
 }
 
@@ -28,13 +22,15 @@ const AccountTile = ({
   availableBalance,
   rewardsBalance,
   shouldShowSaturatedBanner,
-  setActiveAccount,
-  exploreNextAccount,
-  activeAccountIndex,
-  showDelegationModal,
-  showSendTransactionModal,
   shouldShowAccountInfo,
 }: TileProps) => {
+  const {
+    setActiveAccount,
+    exploreNextAccount,
+    showDelegationModal,
+    showSendTransactionModal,
+  } = useActions(actions)
+  const activeAccountIndex = useSelector((state) => state.activeAccountIndex)
   const isActive = activeAccountIndex === accountIndex
   const accountLabel = `Account ${formatAccountIndex(accountIndex)}`
 
@@ -162,9 +158,4 @@ const AccountTile = ({
   )
 }
 
-export default connect(
-  (state: State) => ({
-    activeAccountIndex: state.activeAccountIndex,
-  }),
-  actions
-)(AccountTile)
+export default AccountTile
