@@ -38,14 +38,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-2.2.1.tgz#775e4f34ccfd071eaf09b7bdd0dffe175b42d238"
-  integrity sha512-E37/vIGBpFFF9qyoWFccj7lW2iqCoYAGvC5hKIdMLqU8c6R0heyQHG0uIbsGLS+/TrhSih4UnIJtYG3fM2XMlQ==
+"@cardano-foundation/ledgerjs-hw-app-cardano@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-3.0.0.tgz#5faf169c9ce4aadfb1f4f26b7308dd031f151eed"
+  integrity sha512-H8SGJnQyKWDh+XGMIxYg7w9l71jH16eDCrADfREotj3FauSxF1tdCgc4q3fOX2Eu/kOd2qWWln+oIyqVcqmP/w==
   dependencies:
     "@ledgerhq/hw-transport" "^5.12.0"
-    babel-polyfill "^6.26.0"
-    babel-runtime "^6.26.0"
+    "@types/ledgerhq__hw-transport" "^4.21.3"
     base-x "^3.0.5"
     bech32 "^1.1.4"
     node-int64 "^0.4.0"
@@ -343,6 +342,13 @@
   integrity sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==
   dependencies:
     "@types/istanbul-lib-report" "*"
+
+"@types/ledgerhq__hw-transport@^4.21.3":
+  version "4.21.3"
+  resolved "https://registry.yarnpkg.com/@types/ledgerhq__hw-transport/-/ledgerhq__hw-transport-4.21.3.tgz#1e658da6b5d01ffab92f9660cf57121aecfa7e2c"
+  integrity sha512-6QveiZLsFLq9WZDk8HWAZhivoGzyz5S8WV36hpUe7KrVDaTR1fDdB+syorrNRhYbyjraAuUJrIdJR5p/7doq8g==
+  dependencies:
+    "@types/node" "*"
 
 "@types/lodash@^4.14.168":
   version "4.14.168"

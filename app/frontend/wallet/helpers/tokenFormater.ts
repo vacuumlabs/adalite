@@ -39,6 +39,7 @@ export const orderTokenBundle = (tokenBundle: TokenBundle): OrderedTokenBundle =
   const compareStringsCanonically = (string1: string, string2: string) =>
     string1.length - string2.length || string1.localeCompare(string2)
   return _(tokenBundle)
+    .orderBy(['policyId', 'assetName'], ['asc', 'asc'])
     .groupBy(({policyId}) => policyId)
     .mapValues((tokens) => tokens.map(({assetName, quantity}) => ({assetName, quantity})))
     .map((tokens, policyId) => ({

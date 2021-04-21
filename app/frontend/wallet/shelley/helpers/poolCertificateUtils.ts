@@ -34,7 +34,7 @@ const enum PoolParamsByteLengths {
   METADATA_HASH = 32,
 }
 
-type TxStakepoolOwner = {
+export type TxStakepoolOwner = {
   stakingKeyHashHex?: string
 }
 

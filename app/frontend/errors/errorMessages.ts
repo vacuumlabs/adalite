@@ -143,6 +143,14 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
 }
 
 const externalErrorMessages: {[key: string]: (params?: any) => string} = {
+  [knownExternalErrors.DeviceStatusError]: ({message}) => {
+    const errors = {
+      'Ledger device: Wrong Ledger app':
+        'Please make sure that the Cardano Ledger App is opened before initiating the connection.',
+      'Ledger device: Device is locked': 'Please unlock your device.',
+    }
+    return `DeviceStatusError: ${message}. ${errors[message] || ''}`
+  },
   [knownExternalErrors.InvalidDataProviderInitilization]: () =>
     'Invalid data provider initilization',
   [knownExternalErrors.PoolRegNoTtl]: () =>

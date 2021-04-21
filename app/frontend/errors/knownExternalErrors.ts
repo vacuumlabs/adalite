@@ -1,4 +1,5 @@
 export const knownExternalErrors = {
+  DeviceStatusError: 'DeviceStatusError',
   InvalidDataProviderInitilization: 'InvalidDataProviderInitilization',
   PoolRegNoTtl: 'PoolRegNoTtl', // TODO: probably useless
   PoolRegNotTheOwner: 'PoolRegNotTheOwner', // TODO: probably useless

@@ -1,10 +1,5 @@
-interface Version {
-  major: string
-  minor: string
-  patch: string
-}
-
-export const hasRequiredVersion = (currentVersionStr: Version, requiredVersionStr) => {
+// TODO: type version
+export const hasRequiredVersion = (currentVersionStr, requiredVersionStr) => {
   const current = {
     major: parseInt(currentVersionStr.major, 10),
     minor: parseInt(currentVersionStr.minor, 10),
