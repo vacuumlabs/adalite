@@ -12,9 +12,22 @@ if (!isProd) {
   /*
   Till we do not import css from react components, we need to have
   this workaround for Hot reload to work with global css.
+  We are not using "glob" to get all files in "css" folder as order of files matters.
   */
-  const globalCssPathnames = glob.sync('./app/public/css/**/*.css') || []
-  entry = entry.concat(globalCssPathnames)
+  const cssPathnames = [
+    './app/public/css/styles.css',
+    './app/public/css/0-767px.css',
+    './app/public/css/0-1366px.css',
+    './app/public/css/767-1366px.css',
+    './app/public/css/768-1024px.css',
+    './app/public/css/1024-1112px.css',
+  ]
+  // Check if "cssPathnames" are up-to-date with css files stored in "app/public/css" folder
+  if (JSON.stringify([...cssPathnames].sort()) !== JSON.stringify(glob.sync('./app/public/css/**/*.css').sort())) {
+    throw new Error('Webpack: CSS pathnames are outdated!')
+  }
+
+  entry = entry.concat(cssPathnames)
   entry.push('webpack-hot-middleware/client?path=/__webpack_hmr')
 }
 
