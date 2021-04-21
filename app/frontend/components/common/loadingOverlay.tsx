@@ -1,13 +1,12 @@
 import {h} from 'preact'
-import {connect} from '../../helpers/connect'
+import {useSelector} from '../../helpers/connect'
 
-interface Props {
-  loading: boolean
-  loadingMessage: string
-}
-
-const _LoadingOverlay = ({loading, loadingMessage}: Props) =>
-  loading ? (
+const LoadingOverlay = () => {
+  const {loading, loadingMessage} = useSelector((state) => ({
+    loadingMessage: state.loadingMessage,
+    loading: state.loading,
+  }))
+  return loading ? (
     <div className="loading">
       <div className="spinner">
         <span />
@@ -15,10 +14,6 @@ const _LoadingOverlay = ({loading, loadingMessage}: Props) =>
       {loadingMessage ? <p className="loading-message">{loadingMessage}</p> : ''}
     </div>
   ) : null
-
-const LoadingOverlay = connect((state) => ({
-  loadingMessage: state.loadingMessage,
-  loading: state.loading,
-}))(_LoadingOverlay)
+}
 
 export default LoadingOverlay

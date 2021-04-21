@@ -128,6 +128,9 @@ Hot reloading is not working well with components that use `connect`. The projec
 replacement by `useSelector` so eventually this issue should be solved.
 The issue you can experience with `connect` is that components would stop receiving state updates and you therefore need to reload the app.
 
+Known issue with `unistore` and `connect`
+https://github.com/developit/unistore/issues/116
+
 ## Refactoring
 
 As all projects also this one would appreciate some refactoring love. To save some time on identifying potential source for refactoring
