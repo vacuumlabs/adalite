@@ -4375,3 +4375,144 @@ label.button.primary.disabled {
 }
 
 /* STAKE KEY DEREGISTER: (END) */
+
+/* VOTING: (START) */
+.progress-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 2px 1fr;
+  grid-auto-flow: column;
+  text-align: center;
+  margin: 32px 0;
+}
+
+.progress-step {
+  margin: 0 20px;
+  border: 2px solid var(--color-brand-light);
+  background-color: var(--color-brand-light);
+  border-radius: 5px;
+}
+
+.progress-step.active {
+  border-color: var(--color-brand);
+  background-color: var(--color-brand);
+}
+
+.progress-step-text {
+  margin: 4px 0;
+  color: var(--color-brand-light);
+  font-weight: bold;
+}
+
+.progress-step-text.active {
+  color: var(--color-brand);
+}
+
+.pin-codes {
+  display: grid;
+  margin-bottom: 32px;
+  margin-top: 8px;
+  grid-template-columns: 100px 120px;
+  grid-row-gap: 20px;
+  grid-column-gap: 32px;
+  align-items: center;
+  padding-left: 48px;
+  font-weight: bold;
+}
+
+.voting-info-row {
+  margin-bottom: 32px;
+  padding-top: 32px;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  grid-row-gap: 16px;
+  grid-column-gap: 96px;
+  align-items: center;
+  color: var(--color-grey);
+  border-top: 1px solid var(--color-border);
+}
+
+.voting-info-row .fee-label {
+  justify-self: end;
+  align-self: start;
+}
+
+.voting-info-row svg {
+  margin-left: 8px;
+  width: 8px;
+} 
+
+.voting-info-row svg path {
+  fill: var(--color-grey-medium);
+}
+
+.voting-fee {
+  padding-left: 16px;
+  color: var(--color-text);
+}
+
+.voting-apps {
+  margin: 16px 0;
+  display: flex;
+  justify-content: space-around;
+  border: 2px dashed var(--color-error);
+}
+
+.button.voting {
+  margin-top: 16px;
+}
+
+.app-download {
+  width: 150px;
+  height: 46px;
+  margin-top: 8px;
+}
+
+.voting-modal .alert {
+  margin-top: 0px;
+  margin-left: -22px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border: none;
+}
+
+.voting-dialog-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 32px;
+}
+
+.review-transaction-row {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.voting-qr {
+  display: flex;
+  justify-content: center;
+}
+
+.voting-transaction-success {
+  padding-left: 37px;
+  position: relative;
+  color: var(--color-success);
+  font-weight: bold;
+}
+
+.voting-transaction-success::before {
+  content: '';
+  position: absolute;
+  left: 0px;
+  width: 24px;
+  height: 24px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('../assets/alert_icon_success.svg');
+}
+
+/* VOTING: (END) */

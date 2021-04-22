@@ -39,6 +39,7 @@ export enum InternalErrorReason {
   LedgerOutdatedCardanoAppError = 'LedgerOutdatedCardanoAppError',
   LedgerWithdrawalNotSupported = 'LedgerWithdrawalNotSupported',
   LedgerPoolRegNotSupported = 'LedgerPoolRegNotSupported',
+  LedgerCatalystNotSupported = 'LedgerCatalystNotSupported',
   LedgerBulkExportNotSupported = 'LedgerBulkExportNotSupported',
   TrezorPoolRegNotSupported = 'TrezorPoolRegNotSupported',
   TrezorMultiAssetNotSupported = 'TrezorMultiAssetNotSupported',

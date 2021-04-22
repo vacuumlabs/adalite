@@ -8,6 +8,8 @@ import {
   ShelleySignedTransactionStructured,
   cborizeTxWitnesses,
   cborizeCliWitness,
+  cborizeTxAuxiliaryVotingData,
+  ShelleyTxAux,
 } from './shelley-transaction'
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
@@ -37,6 +39,7 @@ import {
 } from '../../types'
 import {
   Network,
+  TxAuxiliaryData,
   TxByronWitness,
   TxCertificate,
   TxDelegationCert,
@@ -442,6 +445,27 @@ const ShelleyLedgerCryptoProvider = async ({
     return {shelleyWitnesses, byronWitnesses}
   }
 
+  const formatVotingAuxiliaryAdata = (
+    txAuxiliaryData: TxAuxiliaryData
+  ): LedgerTypes.TxAuxiliaryData => {
+    return {
+      type: LedgerTypes.TxAuxiliaryDataType.CATALYST_REGISTRATION,
+      params: {
+        votingPublicKeyHex: txAuxiliaryData.votingPubKey,
+        stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+        //addressToAbsPathMapper(txAuxiliaryData.stakePubKey),
+        rewardsDestination: {
+          type: LedgerTypes.AddressType.BASE,
+          params: {
+            spendingPath: txAuxiliaryData.rewardDestinationAddress.spendingPath,
+            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+          },
+        },
+        nonce: `${txAuxiliaryData.nonce}`,
+      },
+    }
+  }
+
   async function ledgerSignTransaction(
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper,
@@ -461,7 +485,9 @@ const ShelleyLedgerCryptoProvider = async ({
     const validityIntervalStart = txAux.validityIntervalStart
       ? `${txAux.validityIntervalStart}`
       : null
-
+    const votingAuxiliaryData = txAux.auxiliaryData
+      ? formatVotingAuxiliaryAdata(txAux.auxiliaryData)
+      : null
     const response = await ledger.signTransaction({
       signingMode,
       tx: {
@@ -472,21 +498,34 @@ const ShelleyLedgerCryptoProvider = async ({
         ttl: ttlStr,
         certificates,
         withdrawals,
-        auxiliaryData: null,
+        auxiliaryData: votingAuxiliaryData,
         validityIntervalStart,
       },
     })
 
-    if (response.txHashHex !== txAux.getId()) {
+    let _txAux = txAux
+    let txMeta = null
+    if (txAux.auxiliaryData) {
+      txMeta = cborizeTxAuxiliaryVotingData(
+        txAux.auxiliaryData,
+        response.auxiliaryDataSupplement.catalystRegistrationSignatureHex
+      )
+      _txAux = ShelleyTxAux({
+        ...txAux,
+        metadataHash: response.auxiliaryDataSupplement.auxiliaryDataHashHex,
+        //use as sanity check, not as default
+      })
+    }
+
+    if (response.txHashHex !== _txAux.getId()) {
       throw new InternalError(InternalErrorReason.TxSerializationError, {
         message: 'Tx serialization mismatch between Ledger and Adalite',
       })
     }
 
-    const txMeta = null
     const {shelleyWitnesses, byronWitnesses} = await prepareWitnesses(response.witnesses)
     const txWitnesses = cborizeTxWitnesses(byronWitnesses, shelleyWitnesses)
-    const structuredTx = ShelleySignedTransactionStructured(txAux, txWitnesses, txMeta)
+    const structuredTx = ShelleySignedTransactionStructured(_txAux, txWitnesses, txMeta)
 
     return {
       txHash: response.txHashHex,

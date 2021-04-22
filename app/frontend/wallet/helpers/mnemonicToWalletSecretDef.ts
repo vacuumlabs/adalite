@@ -1,4 +1,5 @@
 import {decodePaperWalletMnemonic, mnemonicToRootKeypair} from 'cardano-crypto.js'
+import {WalletSecretDef} from '../../types'
 
 import {validateMnemonic, isMnemonicInPaperWalletFormat} from '../mnemonic'
 
@@ -8,7 +9,7 @@ const guessDerivationSchemeFromMnemonic = (mnemonic) => {
   return mnemonic.split(' ').length === 12 ? derivationSchemes.v1 : derivationSchemes.v2
 }
 
-const mnemonicToWalletSecretDef = async (mnemonic) => {
+const mnemonicToWalletSecretDef = async (mnemonic): Promise<WalletSecretDef> => {
   if (!validateMnemonic(mnemonic)) {
     throw new Error('Invalid mnemonic format')
   }

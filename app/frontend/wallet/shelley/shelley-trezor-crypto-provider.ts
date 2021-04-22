@@ -22,6 +22,7 @@ import {
 } from '../../types'
 import {
   Network,
+  TxAuxiliaryData,
   TxCertificate,
   TxDelegationCert,
   TxInput,
@@ -43,12 +44,13 @@ import {
   TrezorTxCertificate,
   TrezorWithdrawal,
 } from './trezor-types'
-import {TxSigned, TxAux, CborizedCliWitness} from './types'
+import {TxSigned, TxAux, CborizedCliWitness, TxBodyKey} from './types'
 import {encodeAddress} from './helpers/addresses'
 import {TxRelayType, TxStakepoolRelay} from './helpers/poolCertificateUtils'
-import {cborizeCliWitness} from './shelley-transaction'
+import {cborizeCliWitness, ShelleyTxAux} from './shelley-transaction'
 import {removeNullFields} from '../../helpers/removeNullFiels'
 import {orderTokenBundle} from '../helpers/tokenFormater'
+import {decode} from 'borc'
 
 type CryptoProviderParams = {
   network: Network
@@ -317,6 +319,22 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
+  // TODO: export type from trezor if possible
+  const formatVotingAuxiliaryAdata = (txAuxiliaryData: TxAuxiliaryData): any => {
+    return {
+      catalystRegistrationParameters: {
+        votingPublicKey: txAuxiliaryData.votingPubKey,
+        stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+        rewardAddressParameters: {
+          addressType: 0, // base address type TODO
+          path: txAuxiliaryData.rewardDestinationAddress.spendingPath,
+          stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+        },
+        nonce: Number(txAuxiliaryData.nonce),
+      },
+    }
+  }
+
   async function signTx(
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper
@@ -335,7 +353,9 @@ const ShelleyTrezorCryptoProvider = async ({
     const validityIntervalStart = txAux.validityIntervalStart
       ? `${txAux.validityIntervalStart}`
       : null
-
+    const votingAuxiliaryData = txAux.auxiliaryData
+      ? formatVotingAuxiliaryAdata(txAux.auxiliaryData)
+      : null
     const response: TrezorSignTxResponse = await TrezorConnect.cardanoSignTransaction(
       removeNullFields({
         inputs,
@@ -346,6 +366,7 @@ const ShelleyTrezorCryptoProvider = async ({
         networkId: network.networkId,
         certificates,
         withdrawals,
+        auxiliaryData: votingAuxiliaryData,
         validityIntervalStart,
       })
     )
@@ -357,7 +378,17 @@ const ShelleyTrezorCryptoProvider = async ({
       })
     }
 
-    if (response.payload.hash !== txAux.getId()) {
+    let _txAux = txAux
+    if (txAux.auxiliaryData) {
+      const decodedTx = decode(response.payload.serializedTx)
+      const metadataHash = decodedTx[0].get(TxBodyKey.META_DATA_HASH).toString('hex')
+      _txAux = ShelleyTxAux({
+        ...txAux,
+        metadataHash,
+      })
+    }
+
+    if (response.payload.hash !== _txAux.getId()) {
       throw new InternalError(InternalErrorReason.TxSerializationError, {
         message: 'Tx serialization mismatch between Trezor and Adalite',
       })

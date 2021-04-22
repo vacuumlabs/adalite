@@ -15,11 +15,13 @@ import {
   SendTransactionSummary,
   TransactionSummary,
   TxType,
+  VotingRegistrationTransactionSummary,
   WithdrawTransactionSummary,
 } from '../../../types'
 import {
   assetNameHex2Readable,
   encodeAssetFingerprint,
+  encodeCatalystVotingKey,
 } from '../../../../frontend/wallet/shelley/helpers/addresses'
 
 interface ReviewBottomProps {
@@ -31,7 +33,12 @@ interface ReviewBottomProps {
 const ReviewBottom = ({onSubmit, onCancel, disabled}: ReviewBottomProps) => {
   return (
     <div className="review-bottom">
-      <button className="button primary" onClick={onSubmit} disabled={disabled}>
+      <button
+        className="button primary"
+        onClick={onSubmit}
+        disabled={disabled}
+        data-cy="ConfirmTransactionBtn"
+      >
         Confirm Transaction
       </button>
       <a
@@ -231,6 +238,46 @@ const WithdrawReview = ({
   )
 }
 
+const VotingRegistrationReview = ({
+  transactionSummary,
+  onSubmit,
+  onCancel,
+}: {
+  transactionSummary: TransactionSummary & VotingRegistrationTransactionSummary
+  onSubmit: () => any
+  onCancel: () => any
+}) => {
+  const {fee} = transactionSummary
+  const total = fee as Lovelace
+  return (
+    <Fragment>
+      <div className="review">
+        <div className="review-label">Reward address</div>
+        <div className="review-address">
+          {transactionSummary.plan.change.address}
+          <div className="review-address-verification">
+            <AddressVerification address={transactionSummary.plan.change.address} />
+          </div>
+        </div>
+        <div className="review-label">Voting key</div>
+        <div className="review-amount">
+          {encodeCatalystVotingKey(transactionSummary.plan.auxiliaryData.votingPubKey)}
+        </div>
+        <div className="review-label">Nonce</div>
+        <div className="review-amount">{`${transactionSummary.plan.auxiliaryData.nonce}`}</div>
+        <div className="ada-label">Fee</div>
+        <div className="review-fee" data-cy="VotingFeeAmount">
+          {printAda(fee)}
+        </div>
+        <div className="ada-label">Total</div>
+        <div className="review-total" data-cy="VotingTotalAmount">
+          {printAda(total)}
+        </div>
+      </div>
+    </Fragment>
+  )
+}
+
 const ConvertFundsReview = ({
   transactionSummary,
 }: {
@@ -286,7 +333,9 @@ const ConfirmTransactionDialog = () => {
 
   // Tmp, till all transaction types use `cachedTransactionSummaries`
   const isRefactoredCase =
-    txConfirmType === TxType.DELEGATE || txConfirmType === TxType.DEREGISTER_STAKE_KEY
+    txConfirmType === TxType.DELEGATE ||
+    txConfirmType === TxType.DEREGISTER_STAKE_KEY ||
+    txConfirmType === TxType.REGISTER_VOTING
 
   const titleMap: {[key in TxType]: string} = {
     [TxType.DELEGATE]: 'Delegation review',
@@ -295,6 +344,7 @@ const ConfirmTransactionDialog = () => {
     [TxType.WITHDRAW]: 'Rewards withdrawal review',
     [TxType.POOL_REG_OWNER]: '',
     [TxType.DEREGISTER_STAKE_KEY]: 'Deregister stake key',
+    [TxType.REGISTER_VOTING]: 'Voting registration review',
     // crossAccount: 'Transaction between accounts review',
   }
   const hideDefaultSummary = txConfirmType === TxType.DEREGISTER_STAKE_KEY
@@ -320,6 +370,16 @@ const ConfirmTransactionDialog = () => {
     }
     if (txConfirmType === TxType.DELEGATE) {
       return <DelegateReview transactionSummary={cachedTransactionSummaries[TxType.DELEGATE]} />
+    }
+
+    if (txConfirmType === TxType.REGISTER_VOTING) {
+      return (
+        <VotingRegistrationReview
+          transactionSummary={cachedTransactionSummaries[TxType.REGISTER_VOTING]}
+          onSubmit={onSubmit}
+          onCancel={cancelTransaction}
+        />
+      )
     }
 
     // To be refactored cases:
