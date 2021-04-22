@@ -1,5 +1,5 @@
 import {HexString, Lovelace} from '../../types'
-import {TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../types'
+import {TxCertificate, TxInput, TxOutput, TxWithdrawal, TxAuxiliaryData} from '../types'
 import {TxRelayType} from './helpers/poolCertificateUtils'
 
 type encodeCBORFn = any // TODO: type
@@ -12,6 +12,8 @@ export type TxAux = {
   ttl: number
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
+  auxiliaryData: TxAuxiliaryData
+  metadataHash: string
   validityIntervalStart: number
   encodeCBOR: encodeCBORFn
 }
@@ -65,6 +67,8 @@ export type CborizedTxAmount = Lovelace | [Lovelace, CborizedTxTokenBundle]
 export type CborizedTxOutput = [Buffer, CborizedTxAmount]
 
 export type CborizedTxWithdrawals = Map<Buffer, Lovelace>
+
+export type CborizedVotingRegistrationMetadata = [Map<number, Map<number, Buffer | BigInt>>, []]
 
 export type CborizedTxStakingKeyRegistrationCert = [
   TxCertificateKey.STAKING_KEY_REGISTRATION,

@@ -43,6 +43,17 @@ const isCommaDelimitedListOfIpsOrEmpty = (str) => {
   })
 }
 
+const isStartEndUnixDatePair = (str) => {
+  if (!str) {
+    return false
+  }
+  const dates = str.replace(/ /g, '').split(',')
+  if (dates.length !== 2 || new Date(dates[0]).getTime() > 0 || new Date(dates[1]).getTime() > 0) {
+    return false
+  }
+  return true
+}
+
 const checkMap = check.map(process.env, {
   PORT: isPositiveIntString,
   ADALITE_ENABLE_DEBUGGING: isBoolString,
@@ -67,6 +78,7 @@ const checkMap = check.map(process.env, {
   ADALITE_ENABLE_TREZOR: isBoolString,
   ADALITE_ENABLE_LEDGER: isBoolString,
   ADALITE_ENFORCE_STAKEPOOL: isBoolString,
+  ADALITE_NEXT_VOTING_UNIX_PAIR: isStartEndUnixDatePair,
 })
 
 const {
@@ -101,6 +113,7 @@ const {
   ADALITE_NETWORK,
   ADALITE_ENABLE_TREZOR,
   ADALITE_ENABLE_LEDGER,
+  ADALITE_NEXT_VOTING_UNIX_PAIR,
 } = process.env
 
 let {ADALITE_SERVER_URL} = process.env
@@ -163,6 +176,9 @@ const frontendConfig = {
   ADALITE_ENABLE_LEDGER: ADALITE_ENABLE_LEDGER === 'true',
   ADALITE_ENFORCE_STAKEPOOL: ADALITE_ENFORCE_STAKEPOOL === 'true',
   ADALITE_ENABLE_SEARCH_BY_TICKER: ADALITE_ENABLE_SEARCH_BY_TICKER === 'true',
+  ADALITE_NEXT_VOTING_UNIX_PAIR: ADALITE_NEXT_VOTING_UNIX_PAIR.replace(/ /g, '')
+    .split(',')
+    .map((timestamp) => parseInt(timestamp, 10)),
 }
 
 const backendConfig = {

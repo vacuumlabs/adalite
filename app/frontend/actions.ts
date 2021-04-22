@@ -11,6 +11,7 @@ import poolOwnerActions from './actions/poolOwner'
 import sendActions from './actions/send'
 import transactionActions from './actions/transaction'
 import walletActions from './actions/wallet'
+import votingActions from './actions/voting'
 
 export default (store: Store) => ({
   ...accountsActions(store),
@@ -25,4 +26,5 @@ export default (store: Store) => ({
   ...sendActions(store),
   ...transactionActions(store),
   ...walletActions(store),
+  ...votingActions(store),
 })

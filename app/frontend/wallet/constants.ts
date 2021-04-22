@@ -19,6 +19,9 @@ export const TX_WITNESS_SIZES = {
 
 export const MAX_TX_SIZE = 16384
 export const MAX_TX_OUTPUT_SIZE = 4000
+export const CATALYST_SIGNATURE_BYTE_LENGTH = 64
+export const METADATA_HASH_BYTE_LENGTH = 32
+export const VOTING_PIN_LENGTH = 4
 
 export const PROTOCOL_MAGIC_KEY = 2
 
@@ -90,6 +93,11 @@ export const LEDGER_VERSIONS = {
     minor: 2,
     patch: 0,
   },
+  [CryptoProviderFeature.VOTING]: {
+    major: 2,
+    minor: 3,
+    patch: 1,
+  },
 }
 
 export const LEDGER_ERRORS = {
@@ -97,6 +105,7 @@ export const LEDGER_ERRORS = {
   [CryptoProviderFeature.WITHDRAWAL]: InternalErrorReason.LedgerWithdrawalNotSupported,
   [CryptoProviderFeature.BULK_EXPORT]: InternalErrorReason.LedgerBulkExportNotSupported,
   [CryptoProviderFeature.POOL_OWNER]: InternalErrorReason.LedgerPoolRegNotSupported,
+  [CryptoProviderFeature.VOTING]: InternalErrorReason.LedgerCatalystNotSupported,
 }
 
 export const TREZOR_VERSIONS = {
@@ -106,6 +115,12 @@ export const TREZOR_VERSIONS = {
     patch: 5,
   },
   [CryptoProviderFeature.MULTI_ASSET]: {
+    major: 2,
+    minor: 3,
+    patch: 5,
+  },
+  [CryptoProviderFeature.VOTING]: {
+    //TODO
     major: 2,
     minor: 3,
     patch: 5,

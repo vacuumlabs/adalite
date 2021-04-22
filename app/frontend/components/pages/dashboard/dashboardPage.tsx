@@ -33,6 +33,8 @@ import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 import ConfirmTransactionDialog from '../sendAda/confirmTransactionDialog'
 import SendTransactionModal from '../accounts/sendTransactionModal'
 import DelegationModal from '../accounts/delegationModal'
+import VotingCard from '../voting/votingCard'
+import VotingDialog from '../voting/votingDialog'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -134,11 +136,13 @@ const AdvancedPage = ({screenType}: {screenType: ScreenType}) => {
             defaultSubTab={defaultSubTab}
             mainSubTab={mainSubTab}
           />
+          <VotingCard />
         </div>
       ) : (
         <div className="dashboard desktop">
           <div className="dashboard-column">
             <Keys />
+            <VotingCard />
           </div>
           <div className="dashboard-column">
             <PoolOwner />
@@ -212,6 +216,7 @@ const DashboardPage = () => {
     shouldShowConfirmTransactionDialog,
     shouldShowSendTransactionModal,
     shouldShowDelegationModal,
+    shouldShowVotingDialog,
   } = useSelector((state) => ({
     activeMainTab: state.activeMainTab,
     displayInfoModal: state.displayInfoModal,
@@ -225,6 +230,7 @@ const DashboardPage = () => {
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
+    shouldShowVotingDialog: state.shouldShowVotingDialog,
   }))
 
   const screenType = useViewport()
@@ -245,6 +251,7 @@ const DashboardPage = () => {
       `ConfirmTransactionDialog` */}
       {shouldShowSendTransactionModal && <SendTransactionModal />}
       {shouldShowDelegationModal && <DelegationModal />}
+      {shouldShowVotingDialog && <VotingDialog />}
       {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
       {shouldShowWantedAddressesModal && <WantedAddressesModal />}
       {isShelleyCompatible && displayInfoModal && <InfoModal />}

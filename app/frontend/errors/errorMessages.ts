@@ -102,6 +102,12 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     }.${LEDGER_VERSIONS[CryptoProviderFeature.POOL_OWNER].minor}.${
       LEDGER_VERSIONS[CryptoProviderFeature.POOL_OWNER].patch
     }`,
+  [InternalErrorReason.LedgerCatalystNotSupported]: ({message}) =>
+    `Catalyst voting is not supported on this device. Your current version is ${message} and the required version is ${
+      LEDGER_VERSIONS[CryptoProviderFeature.VOTING].major
+    }.${LEDGER_VERSIONS[CryptoProviderFeature.VOTING].minor}.${
+      LEDGER_VERSIONS[CryptoProviderFeature.VOTING].patch
+    }`,
   [InternalErrorReason.LedgerBulkExportNotSupported]: () => '', // TODO
   [InternalErrorReason.TrezorPoolRegNotSupported]: ({message}) =>
     `Pool registration is not supported on this device. Your current version is ${message} and the required version is ${

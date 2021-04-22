@@ -83,7 +83,8 @@ export default (store: Store) => {
       isTxBetweenAccounts ||
       txConfirmType === TxType.CONVERT_LEGACY ||
       txConfirmType === TxType.WITHDRAW ||
-      txConfirmType === TxType.DEREGISTER_STAKE_KEY
+      txConfirmType === TxType.DEREGISTER_STAKE_KEY ||
+      txConfirmType === TxType.REGISTER_VOTING
 
     setState({
       shouldShowConfirmTransactionDialog: true,
@@ -168,6 +169,18 @@ export default (store: Store) => {
     throw new InternalError(InternalErrorReason.TransactionNotFoundInBlockchainAfterSubmission)
   }
 
+  const getTxSuccessTabMapping = (txTab: TxType): string => {
+    switch (txTab) {
+      case TxType.SEND_ADA:
+        return 'send'
+      case TxType.REGISTER_VOTING:
+        return 'voting'
+      default:
+        // preserves past functionality, needs refactor
+        return 'stake'
+    }
+  }
+
   const submitTransaction = async (
     state: State,
     {
@@ -194,7 +207,7 @@ export default (store: Store) => {
     }
     let sendResponse
     let txSubmitResult
-    const txTab = state.sendTransactionSummary.type
+    const txTab = txSummary.type
     try {
       const txAux = await getWallet()
         .getAccount(sourceAccountIndex)
@@ -202,7 +215,6 @@ export default (store: Store) => {
       const signedTx = await getWallet()
         .getAccount(sourceAccountIndex)
         .signTxAux(txAux)
-
       if (usingHwWalletSelector(state)) {
         setState({waitingForHwWallet: false})
         loadingAction(state, 'Submitting transaction...')
@@ -228,6 +240,7 @@ export default (store: Store) => {
       })
       setState({
         shouldShowTransactionErrorModal: true,
+        shouldShowVotingDialog: false,
       })
     } finally {
       closeConfirmationDialog(state)
@@ -241,9 +254,8 @@ export default (store: Store) => {
       resetAccountIndexes(state)
       setState({
         waitingForHwWallet: false,
-        // TODO: refactor txSuccesTab
-        txSuccessTab:
-          sendResponse && sendResponse.success && txTab === TxType.SEND_ADA ? 'send' : 'stake',
+        // TODO: refactor txSuccesTab!
+        txSuccessTab: sendResponse && sendResponse.success ? getTxSuccessTabMapping(txTab) : '',
       })
     }
   }

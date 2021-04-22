@@ -32,7 +32,7 @@ import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresse
 import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {TxAux} from './shelley/types'
-import {UTxO, TxOutput} from './types'
+import {UTxO, TxOutput, TxAuxiliaryData} from './types'
 import {aggregateTokenBundles} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
@@ -219,11 +219,11 @@ const Account = ({
   }
 
   async function prepareTxAux(txPlan: TxPlan, ttl?: number, validityIntervalStart?: number) {
-    const {inputs, outputs, change, fee, certificates, withdrawals} = txPlan
+    const {inputs, outputs, change, fee, certificates, withdrawals, auxiliaryData} = txPlan
     const txOutputs = [...outputs]
+    const stakingAddress = await myAddresses.getStakingAddress()
     if (change) {
       // TODO: do this with map
-      const stakingAddress = await myAddresses.getStakingAddress()
       const changeOutput: TxOutput = {
         ...change,
         isChange: true,
@@ -235,6 +235,16 @@ const Account = ({
     // tll is null if it's deliberately empty
     const txTtl = ttl === undefined ? await calculateTtl() : ttl
     const txValidityIntervalStart = validityIntervalStart ?? null
+    const mappedAuxiliaryData: TxAuxiliaryData = auxiliaryData
+      ? {
+        ...auxiliaryData,
+        rewardDestinationAddress: {
+          address: change.address,
+          spendingPath: myAddresses.getAddressToAbsPathMapper()(change.address),
+          stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
+        },
+      }
+      : null
     return ShelleyTxAux({
       inputs,
       outputs: txOutputs,
@@ -242,6 +252,8 @@ const Account = ({
       ttl: txTtl,
       certificates,
       withdrawals,
+      metadataHash: '',
+      auxiliaryData: mappedAuxiliaryData,
       validityIntervalStart: txValidityIntervalStart,
     })
   }
@@ -499,6 +511,7 @@ const Account = ({
     ensureXpubIsExported,
     _getAccountXpubs: getAccountXpubs,
     getPoolRegistrationTxPlan,
+    calculateTtl,
   }
 }
 
