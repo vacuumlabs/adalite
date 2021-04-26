@@ -1,27 +1,18 @@
-import {Store, State, getSourceAccountInfo} from '../state'
+import {Store, State} from '../state'
 import {getWallet} from './wallet'
 import loadingActions from './loading'
 import errorActions from './error'
-import transactionActions from './transaction'
-import commonActions from './common'
-import {
-  CryptoProviderFeature,
-  DeregisterStakingKeyTransactionSummary,
-  Lovelace,
-  TxType,
-} from '../types'
+import {CryptoProviderFeature, TxType} from '../types'
 import debugLog from '../helpers/debugLog'
-import {withdrawalPlanValidator} from '../helpers/validators'
+
 import {parseCliUnsignedTx} from '../wallet/shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason} from '../errors'
 import {usingHwWalletSelector} from '../selectors'
 
 export default (store: Store) => {
-  const {setState, getState} = store
+  const {setState} = store
   const {setError} = errorActions(store)
   const {loadingAction, stopLoadingAction} = loadingActions(store)
-  const {confirmTransaction} = transactionActions(store)
-  const {prepareTxPlan, setTransactionSummary} = commonActions(store)
 
   const loadPoolCertificateTx = async (state: State, fileContentStr: string) => {
     try {
@@ -125,63 +116,11 @@ export default (store: Store) => {
     }
   }
 
-  const deregisterStakingKey = async (state: State): Promise<void> => {
-    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
-    if (supportError) {
-      setError(state, {
-        errorName: 'transactionSubmissionError',
-        error: supportError,
-      })
-      setState({shouldShowTransactionErrorModal: true})
-      return
-    }
-
-    state = getState()
-    const sourceAccount = getSourceAccountInfo(state)
-    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
-    const balance = getSourceAccountInfo(state).balance as Lovelace
-
-    loadingAction(state, 'Preparing transaction...')
-
-    const txPlanResult = await prepareTxPlan({
-      txType: TxType.DEREGISTER_STAKE_KEY,
-      rewards,
-      stakingAddress: sourceAccount.stakingAddress,
-    })
-    if (txPlanResult.success === true) {
-      const summary = {
-        type: TxType.DEREGISTER_STAKE_KEY,
-        deposit: txPlanResult.txPlan.deposit,
-        rewards,
-      } as DeregisterStakingKeyTransactionSummary
-
-      setTransactionSummary(getState(), {plan: txPlanResult.txPlan, transactionSummary: summary})
-      await confirmTransaction(getState(), {
-        sourceAccountIndex: sourceAccount.accountIndex,
-        txPlan: txPlanResult.txPlan,
-        txConfirmType: TxType.DEREGISTER_STAKE_KEY,
-      })
-    } else {
-      // Handled the same way as for withdrawal
-      const withdrawalValidationError =
-        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee) ||
-        getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
-        txPlanResult.error
-      setError(state, {
-        errorName: 'transactionSubmissionError',
-        error: withdrawalValidationError,
-      })
-      setState({shouldShowTransactionErrorModal: true})
-    }
-    stopLoadingAction(state)
-  }
-
   return {
     loadPoolCertificateTx,
     openPoolRegTransactionModal,
     closePoolRegTransactionModal,
     signPoolCertificateTx,
     resetPoolRegTransactionSummary,
-    deregisterStakingKey,
   }
 }

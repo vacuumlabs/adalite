@@ -284,6 +284,10 @@ const ConfirmTransactionDialog = () => {
   }))
   const {setRawTransactionOpen, submitTransaction, cancelTransaction} = useActions(actions)
 
+  // Tmp, till all transaction types use `cachedTransactionSummaries`
+  const isRefactoredCase =
+    txConfirmType === TxType.DELEGATE || txConfirmType === TxType.DEREGISTER_STAKE_KEY
+
   const titleMap: {[key in TxType]: string} = {
     [TxType.DELEGATE]: 'Delegation review',
     [TxType.SEND_ADA]: 'Transaction review',
@@ -296,16 +300,10 @@ const ConfirmTransactionDialog = () => {
   const hideDefaultSummary = txConfirmType === TxType.DEREGISTER_STAKE_KEY
 
   const onSubmit = () => {
-    // refactored cases
-    if ([TxType.DEREGISTER_STAKE_KEY].includes(txConfirmType)) {
-      return submitTransaction({
-        sendAddress,
-        sourceAccountIndex,
-        txSummary: cachedTransactionSummaries[TxType.DEREGISTER_STAKE_KEY],
-      })
-    }
-    // to be refactored cases
-    return submitTransaction({sendAddress, sourceAccountIndex, txSummary: transactionSummary})
+    const txSummary = isRefactoredCase
+      ? cachedTransactionSummaries[txConfirmType]
+      : transactionSummary
+    return submitTransaction({sendAddress, sourceAccountIndex, txSummary})
   }
 
   // Refactor: tmp util till all transactions types use "cachedTransactionSummaries"
@@ -320,6 +318,9 @@ const ConfirmTransactionDialog = () => {
         />
       )
     }
+    if (txConfirmType === TxType.DELEGATE) {
+      return <DelegateReview transactionSummary={cachedTransactionSummaries[TxType.DELEGATE]} />
+    }
 
     // To be refactored cases:
     switch (transactionSummary.type) {
@@ -327,8 +328,6 @@ const ConfirmTransactionDialog = () => {
         return <ConvertFundsReview transactionSummary={transactionSummary} />
       case TxType.WITHDRAW:
         return <WithdrawReview transactionSummary={transactionSummary} />
-      case TxType.DELEGATE:
-        return <DelegateReview transactionSummary={transactionSummary} />
       case TxType.SEND_ADA:
         return (
           <SendAdaReview
@@ -341,14 +340,14 @@ const ConfirmTransactionDialog = () => {
     }
   }
 
+  const modalTitle = (() => {
+    if (isCrossAccount) return 'Transaction between accounts review'
+    return isRefactoredCase ? titleMap[txConfirmType] : titleMap[transactionSummary.type]
+  })()
+
   return (
     <div>
-      <Modal
-        onRequestClose={cancelTransaction}
-        title={
-          isCrossAccount ? 'Transaction between accounts review' : titleMap[transactionSummary.type]
-        }
-      >
+      <Modal onRequestClose={cancelTransaction} title={modalTitle}>
         {getModalBody()}
         {!hideDefaultSummary && (
           <ReviewBottom disabled={false} onSubmit={onSubmit} onCancel={cancelTransaction} />

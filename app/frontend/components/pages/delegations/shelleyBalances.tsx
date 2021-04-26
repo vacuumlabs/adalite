@@ -15,7 +15,6 @@ const shelleyBalances = ({
   reloadWalletInfo,
   convertNonStakingUtxos,
   withdrawRewards,
-  calculatingDelegationFee,
   isShelleyCompatible,
   nearestReward,
 }) => (
@@ -66,11 +65,7 @@ const shelleyBalances = ({
         )}
       </div>
       {!!rewardsAccountBalance && (
-        <button
-          disabled={calculatingDelegationFee}
-          className="button secondary balance withdraw"
-          onClick={withdrawRewards}
-        >
+        <button className="button secondary balance withdraw" onClick={withdrawRewards}>
           Withdraw
         </button>
       )}
@@ -116,11 +111,7 @@ const shelleyBalances = ({
                 : `${printAda(nonStakingBalance)}`}
               <AdaIcon />
             </div>
-            <button
-              disabled={calculatingDelegationFee}
-              className="button secondary convert"
-              onClick={convertNonStakingUtxos}
-            />
+            <button className="button secondary convert" onClick={convertNonStakingUtxos} />
           </div>
         </Fragment>
       )}
@@ -134,7 +125,6 @@ export default connect(
     nonStakingBalance: getActiveAccountInfo(state).shelleyBalances.nonStakingBalance,
     rewardsAccountBalance: getActiveAccountInfo(state).shelleyBalances.rewardsAccountBalance,
     balance: getActiveAccountInfo(state).balance,
-    calculatingDelegationFee: state.calculatingDelegationFee,
     isShelleyCompatible: state.isShelleyCompatible,
     nearestReward: getActiveAccountInfo(state).shelleyAccountInfo.rewardDetails.nearest,
   }),
