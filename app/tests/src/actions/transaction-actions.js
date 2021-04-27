@@ -5,7 +5,7 @@ import {CryptoProviderType} from '../../../frontend/wallet/types'
 import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import assert from 'assert'
 import {walletSettings} from '../common/wallet-settings'
-import {AssetFamily} from '../../../frontend/types'
+import {AssetFamily, TxType} from '../../../frontend/types'
 
 let state, action
 
@@ -111,7 +111,10 @@ describe('Delegation fee calculation', () => {
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
       await action.calculateDelegationFee(setting.state)
-      assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
+      assert.deepEqual(
+        state.cachedTransactionSummaries[TxType.DELEGATE].fee,
+        setting.sendTransactionSummary.fee
+      )
     })
   )
 })

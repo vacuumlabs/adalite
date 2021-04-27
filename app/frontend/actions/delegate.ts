@@ -1,15 +1,25 @@
 import {Store, State, getSourceAccountInfo} from '../state'
+import {withdrawalPlanValidator, delegationPlanValidator} from '../helpers/validators'
 import {getWallet} from './wallet'
 import errorActions from './error'
+import loadingActions from './loading'
 import commonActions from './common'
-import {DelegateTransactionSummary, Lovelace, TxType} from '../types'
+import transactionActions from './transaction'
+import {
+  DelegateTransactionSummary,
+  CryptoProviderFeature,
+  Lovelace,
+  TxType,
+  DeregisterStakingKeyTransactionSummary,
+} from '../types'
 import debounceEvent from '../helpers/debounceEvent'
-import {delegationPlanValidator} from '../helpers/validators'
 
 export default (store: Store) => {
   const {setState, getState} = store
   const {setError} = errorActions(store)
-  const {prepareTxPlan, setTransactionSummaryOld} = commonActions(store)
+  const {loadingAction, stopLoadingAction} = loadingActions(store)
+  const {prepareTxPlan, setTransactionSummary} = commonActions(store)
+  const {confirmTransaction} = transactionActions(store)
 
   const hasPoolIdentifiersChanged = (state: State) => {
     const {shelleyDelegation: newShelleyDelegation} = getState()
@@ -78,7 +88,10 @@ export default (store: Store) => {
         deposit: txPlanResult.txPlan.deposit,
         stakePool: newState.shelleyDelegation?.selectedPool,
       }
-      setTransactionSummaryOld(txPlanResult.txPlan, delegationTransactionSummary)
+      setTransactionSummary(getState(), {
+        plan: txPlanResult.txPlan,
+        transactionSummary: delegationTransactionSummary,
+      })
       setState({
         calculatingDelegationFee: false,
         txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
@@ -131,10 +144,71 @@ export default (store: Store) => {
     })
   }
 
+  const delegate = async (state: State): Promise<void> => {
+    return await confirmTransaction(state, {
+      txConfirmType: TxType.DELEGATE,
+      txPlan: state.cachedTransactionSummaries[TxType.DELEGATE].plan,
+      sourceAccountIndex: state.sourceAccountIndex,
+    })
+  }
+
+  const deregisterStakingKey = async (state: State): Promise<void> => {
+    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
+    if (supportError) {
+      setError(state, {
+        errorName: 'transactionSubmissionError',
+        error: supportError,
+      })
+      setState({shouldShowTransactionErrorModal: true})
+      return
+    }
+
+    state = getState()
+    const sourceAccount = getSourceAccountInfo(state)
+    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
+    const balance = getSourceAccountInfo(state).balance as Lovelace
+
+    loadingAction(state, 'Preparing transaction...')
+
+    const txPlanResult = await prepareTxPlan({
+      txType: TxType.DEREGISTER_STAKE_KEY,
+      rewards,
+      stakingAddress: sourceAccount.stakingAddress,
+    })
+    if (txPlanResult.success === true) {
+      const summary = {
+        type: TxType.DEREGISTER_STAKE_KEY,
+        deposit: txPlanResult.txPlan.deposit,
+        rewards,
+      } as DeregisterStakingKeyTransactionSummary
+
+      setTransactionSummary(getState(), {plan: txPlanResult.txPlan, transactionSummary: summary})
+      await confirmTransaction(getState(), {
+        sourceAccountIndex: sourceAccount.accountIndex,
+        txPlan: txPlanResult.txPlan,
+        txConfirmType: TxType.DEREGISTER_STAKE_KEY,
+      })
+    } else {
+      // Handled the same way as for withdrawal
+      const withdrawalValidationError =
+        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee) ||
+        getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
+        txPlanResult.error
+      setError(state, {
+        errorName: 'transactionSubmissionError',
+        error: withdrawalValidationError,
+      })
+      setState({shouldShowTransactionErrorModal: true})
+    }
+    stopLoadingAction(state)
+  }
+
   return {
+    delegate,
     calculateDelegationFee,
     resetDelegation,
     updateStakePoolIdentifier,
     resetStakePoolIndentifier,
+    deregisterStakingKey,
   }
 }
