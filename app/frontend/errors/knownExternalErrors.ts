@@ -20,4 +20,5 @@ export const knownExternalErrors = {
   TransportWebUSBGestureRequired: 'TransportWebUSBGestureRequired',
   DelegationFeeError: 'DelegationFeeError', // TODO: probably useless
   RedundantStakePool: 'RedundantStakePool', // TODO: probably useless
+  DeviceVersionUnsupported: 'DeviceVersionUnsupported',
 }

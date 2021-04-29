@@ -201,6 +201,8 @@ const externalErrorMessages: {[key: string]: (params?: any) => string} = {
   [knownExternalErrors.SecurityError]: () => `Access denied: ${ledgerTroubleshootingSuggestion}`,
   [knownExternalErrors.RedundantStakePool]: () => 'This stake pool is already chosen.',
   [knownExternalErrors.DelegationFeeError]: () => 'Unsuccessful delegation fee calculation.',
+  [knownExternalErrors.DeviceVersionUnsupported]: ({message}) =>
+    `DeviceVersionUnsupported: ${message}. Please make sure you are using the latest version of the Cardano application.`,
 }
 
 // TODO: refactor this to receive error class as argument intead of code
