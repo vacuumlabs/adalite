@@ -3,7 +3,6 @@ import {AccountManager} from './account-manager'
 import {AccountInfo, CryptoProvider, CryptoProviderFeature} from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
-import {WalletName} from './types'
 
 type WalletParams = {
   config: any
@@ -12,12 +11,7 @@ type WalletParams = {
 
 const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   const blockchainExplorer = BlockchainExplorer(config)
-
-  let maxAccountIndex = MAX_ACCOUNT_INDEX
-  if (cryptoProvider.getWalletName() === WalletName.TREZOR) {
-    // hotfix because of https://github.com/vacuumlabs/trezor-firmware/issues/43
-    maxAccountIndex = 20
-  }
+  const maxAccountIndex = MAX_ACCOUNT_INDEX
 
   const accountManager = AccountManager({
     config,
