@@ -121,6 +121,7 @@ app.get('*', (req, res) => {
           <link rel="stylesheet" type="text/css" href="css/768-1024px.css">
           <link rel="stylesheet" type="text/css" href="css/1024-1112px.css">
           <link rel="icon" type="image/ico" href="assets/favicon.ico">
+          ${isProd ? '<link rel="stylesheet" type="text/css" href="css/modules.css">' : ''}
           ${
   backendConfig.ADALITE_TREZOR_CONNECT_URL
     ? `<script src="${backendConfig.ADALITE_TREZOR_CONNECT_URL}"></script>`

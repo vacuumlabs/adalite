@@ -1,0 +1,55 @@
+@import '../../variables.scss';
+
+.balanceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.balanceTitle {
+  margin-bottom: 0;
+}
+
+.refreshButton {
+  padding: 10px 24px 10px 58px;
+  position: relative;
+
+  &::before {
+    content: '';
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 20px;
+    height: 20px;
+    background-image: url('../../../public/assets/refresh_button_symbol.svg');
+  }
+
+  &:hover::before {
+    background-image: url('../../../public/assets/refresh_button_symbol_active.svg');
+  }
+
+  @media screen and (min-width: $breakpoint-tablet) and (max-width: $breakpoint-desktop-small) {
+    text-indent: -9999em;
+    padding-left: 24px;
+  
+    &::before {
+      left: 0;
+      right: 0;
+    }
+  }
+  
+  @media screen and (max-width: $breakpoint-mobile) {
+    text-indent: -9999em;
+    padding-left: 24px;
+  
+    &::before {
+      left: 0;
+      right: 0;
+    }
+  }
+}

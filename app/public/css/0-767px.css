@@ -79,16 +79,6 @@
     font-size: 14px;
   }
 
-  .button.secondary.refresh {
-    text-indent: -9999em;
-    padding-left: 24px;
-  }
-
-  .button.secondary.refresh::before {
-    left: 0;
-    right: 0;
-  }
-
   .button.secondary.withdraw {
     text-indent: -9999em;
     padding-left: 24px;

@@ -1,12 +1,12 @@
 const webpack = require('webpack')
 const glob = require('glob')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const env = process.env.NODE_ENV
 const isProd = env === 'production'
 
 let entry = [
   'babel-regenerator-runtime', // babel-regenerator-runtime is required for ledger
-  './app/frontend/walletApp.js',
 ]
 if (!isProd) {
   /*
@@ -30,15 +30,18 @@ if (!isProd) {
   entry = entry.concat(cssPathnames)
   entry.push('webpack-hot-middleware/client?path=/__webpack_hmr')
 }
+// This one must be after global css, so that css-modules which are imported from js
+// can override global css
+entry.push('./app/frontend/walletApp.js')
 
 module.exports = {
   entry,
   output: {
-    filename: 'frontend.bundle.js',
+    filename: 'js/frontend.bundle.js',
     libraryTarget: 'var',
     library: 'CardanoFrontend',
-    path: `${__dirname}/app/dist/js`,
-    publicPath: '/js/',
+    path: `${__dirname}/app/dist`,
+    publicPath: '/',
   },
   optimization: {
     minimize: false,
@@ -59,9 +62,32 @@ module.exports = {
         loader: 'ts-loader',
         exclude: /node_modules/,
       },
+      // For hot reloading of globally injected css
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        test: /^((?!\.module).)*\.css$/,
+        use: [!isProd && 'style-loader', 'css-loader'].filter(Boolean),
+      },
+      {
+        test: /\.module\.scss$/,
+        use: [
+          isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]',
+              },
+              sourceMap: !isProd,
+              importLoaders: 1,
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: !isProd,
+            },
+          },
+        ],
       },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
@@ -110,5 +136,8 @@ module.exports = {
   },
   plugins: [
     !isProd && new webpack.HotModuleReplacementPlugin(),
+    isProd && new MiniCssExtractPlugin({
+      filename: 'css/modules.css',
+    }),
   ].filter(Boolean),
 }
