@@ -5,7 +5,6 @@ export const stripNonNumericCharacters = (text: string): string => text.replace(
 export const isVotingRegistrationOpen = () => {
   const now = Date.now()
   return (
-    now > ADALITE_CONFIG.ADALITE_NEXT_VOTING_UNIX_PAIR[0] &&
-    now < ADALITE_CONFIG.ADALITE_NEXT_VOTING_UNIX_PAIR[1]
+    now > ADALITE_CONFIG.ADALITE_NEXT_VOTING_START && now < ADALITE_CONFIG.ADALITE_NEXT_VOTING_END
   )
 }
