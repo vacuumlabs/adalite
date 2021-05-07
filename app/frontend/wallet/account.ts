@@ -252,7 +252,7 @@ const Account = ({
       ttl: txTtl,
       certificates,
       withdrawals,
-      metadataHash: '',
+      auxiliaryDataHash: '',
       auxiliaryData: mappedAuxiliaryData,
       validityIntervalStart: txValidityIntervalStart,
     })

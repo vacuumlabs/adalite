@@ -5,7 +5,7 @@ export enum TxBodyKeys {
   TTL = 3,
   CERTIFICATES = 4,
   WITHDRAWALS = 5,
-  META_DATA_HASH = 7,
+  AUXILIARY_DATA_HASH = 7,
   VALIDITY_INTERVAL_START = 8,
   MINT = 9, // unsupported in current version
 }

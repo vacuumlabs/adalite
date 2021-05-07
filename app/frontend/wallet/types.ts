@@ -93,7 +93,10 @@ export type TxWithdrawal = {
   rewards: Lovelace
 }
 
+export type TxAuxiliaryDataTypes = 'CATALYST_VOTING'
+
 export type TxAuxiliaryData = {
+  type: TxAuxiliaryDataTypes
   votingPubKey: string
   stakePubKey: HexString
   nonce: BigInt

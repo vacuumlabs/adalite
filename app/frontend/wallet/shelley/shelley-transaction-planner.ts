@@ -537,6 +537,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   const prepareVotingRegistrationTx = (txPlanArgs: VotingRegistrationTxPlanArgs): TxPlanDraft => {
     const {votingPubKey, stakePubKey, rewardDestinationAddress, nonce} = txPlanArgs
     const auxiliaryData: TxAuxiliaryData = {
+      type: 'CATALYST_VOTING',
       votingPubKey,
       stakePubKey,
       rewardDestinationAddress: {
