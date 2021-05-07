@@ -281,6 +281,7 @@ const transactionSettings = {
         additionalLovelaceAmount: 0,
         withdrawals: [],
         auxiliaryData: {
+          type: 'CATALYST_VOTING',
           nonce: BigInt(25000000),
           rewardDestinationAddress: {
             address:
