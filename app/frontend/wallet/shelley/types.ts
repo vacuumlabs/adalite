@@ -13,9 +13,14 @@ export type TxAux = {
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
   auxiliaryData: TxAuxiliaryData
-  metadataHash: string
+  auxiliaryDataHash: string
   validityIntervalStart: number
   encodeCBOR: encodeCBORFn
+}
+
+export type FinalizedAuxiliaryDataTx = {
+  finalizedTxAux: TxAux
+  txAuxiliaryData: CborizedVotingRegistrationMetadata | null
 }
 
 export type CborizedTxSignedStructured = {
@@ -37,7 +42,7 @@ export const enum TxBodyKey {
   TTL = 3,
   CERTIFICATES = 4,
   WITHDRAWALS = 5,
-  META_DATA_HASH = 7,
+  AUXILIARY_DATA_HASH = 7,
   VALIDITY_INTERVAL_START = 8,
 }
 

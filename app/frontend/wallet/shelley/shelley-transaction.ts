@@ -51,7 +51,7 @@ function ShelleyTxAux({
   ttl,
   certificates,
   withdrawals,
-  metadataHash,
+  auxiliaryDataHash,
   auxiliaryData,
   validityIntervalStart,
 }: {
@@ -61,7 +61,7 @@ function ShelleyTxAux({
   ttl: number
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
-  metadataHash: string
+  auxiliaryDataHash: string
   auxiliaryData: TxAuxiliaryData
   validityIntervalStart: number
 }): TxAux {
@@ -75,7 +75,7 @@ function ShelleyTxAux({
           ttl,
           certificates,
           withdrawals,
-          metadataHash,
+          auxiliaryDataHash,
           auxiliaryData,
           validityIntervalStart,
         })
@@ -98,8 +98,8 @@ function ShelleyTxAux({
     if (withdrawals.length) {
       txBody.set(TxBodyKey.WITHDRAWALS, cborizeTxWithdrawals(withdrawals))
     }
-    if (metadataHash) {
-      txBody.set(TxBodyKey.META_DATA_HASH, Buffer.from(metadataHash, 'hex'))
+    if (auxiliaryDataHash) {
+      txBody.set(TxBodyKey.AUXILIARY_DATA_HASH, Buffer.from(auxiliaryDataHash, 'hex'))
     }
     if (validityIntervalStart !== null) {
       txBody.set(TxBodyKey.VALIDITY_INTERVAL_START, validityIntervalStart)
@@ -115,7 +115,7 @@ function ShelleyTxAux({
     ttl,
     certificates,
     withdrawals,
-    metadataHash,
+    auxiliaryDataHash,
     auxiliaryData,
     validityIntervalStart,
     encodeCBOR,

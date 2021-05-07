@@ -44,13 +44,14 @@ import {
   TrezorTxCertificate,
   TrezorWithdrawal,
 } from './trezor-types'
-import {TxSigned, TxAux, CborizedCliWitness, TxBodyKey} from './types'
+import {TxSigned, TxAux, CborizedCliWitness, TxBodyKey, FinalizedAuxiliaryDataTx} from './types'
 import {encodeAddress} from './helpers/addresses'
 import {TxRelayType, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import {cborizeCliWitness, ShelleyTxAux} from './shelley-transaction'
 import {removeNullFields} from '../../helpers/removeNullFiels'
 import {orderTokenBundle} from '../helpers/tokenFormater'
 import {decode} from 'borc'
+import assertUnreachable from '../../helpers/assertUnreachable'
 
 type CryptoProviderParams = {
   network: Network
@@ -335,6 +336,33 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
+  function finalizeTxAuxWithMetadata(
+    txAux: TxAux,
+    encodedSeriazedTx: string
+  ): FinalizedAuxiliaryDataTx {
+    if (!txAux.auxiliaryData) {
+      return {
+        finalizedTxAux: txAux,
+        txAuxiliaryData: null,
+      }
+    }
+    switch (txAux.auxiliaryData.type) {
+      case 'CATALYST_VOTING': {
+        const decodedTx = decode(encodedSeriazedTx)
+        const auxiliaryDataHash = decodedTx[0].get(TxBodyKey.AUXILIARY_DATA_HASH).toString('hex')
+        return {
+          finalizedTxAux: ShelleyTxAux({
+            ...txAux,
+            auxiliaryDataHash,
+          }),
+          txAuxiliaryData: null,
+        }
+      }
+      default:
+        return assertUnreachable(txAux.auxiliaryData.type)
+    }
+  }
+
   async function signTx(
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper
@@ -378,17 +406,9 @@ const ShelleyTrezorCryptoProvider = async ({
       })
     }
 
-    let _txAux = txAux
-    if (txAux.auxiliaryData) {
-      const decodedTx = decode(response.payload.serializedTx)
-      const metadataHash = decodedTx[0].get(TxBodyKey.META_DATA_HASH).toString('hex')
-      _txAux = ShelleyTxAux({
-        ...txAux,
-        metadataHash,
-      })
-    }
+    const {finalizedTxAux} = finalizeTxAuxWithMetadata(txAux, response.payload.serializedTx)
 
-    if (response.payload.hash !== _txAux.getId()) {
+    if (response.payload.hash !== finalizedTxAux.getId()) {
       throw new InternalError(InternalErrorReason.TxSerializationError, {
         message: 'Tx serialization mismatch between Trezor and Adalite',
       })
