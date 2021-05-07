@@ -39,5 +39,8 @@
     "fetch-mock": "^6.5.1",
     "fetch-readablestream": "^0.2.0",
     "sinon": "^7.3.2"
+  },
+  "resolutions": {
+    "lodash": ">=4.17.21"
   }
 }
