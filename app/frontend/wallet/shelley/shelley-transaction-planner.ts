@@ -47,6 +47,7 @@ import {
   TxAuxiliaryData,
 } from '../types'
 import {aggregateTokenBundles, getTokenBundlesDifference} from '../helpers/tokenFormater'
+import assertUnreachable from '../../helpers/assertUnreachable'
 
 type TxPlanDraft = {
   outputs: TxOutput[]
@@ -88,6 +89,17 @@ export function txFeeFunction(txSizeInBytes: number): Lovelace {
   return Math.ceil(a + txSizeInBytes * b) as Lovelace
 }
 
+function estimateAuxiliaryDataSize(auxiliaryData: TxAuxiliaryData) {
+  switch (auxiliaryData.type) {
+    case 'CATALYST_VOTING': {
+      const placeholderMetaSignature = 'x'.repeat(CATALYST_SIGNATURE_BYTE_LENGTH * 2)
+      return encode(cborizeTxAuxiliaryVotingData(auxiliaryData, placeholderMetaSignature)).length
+    }
+    default:
+      return assertUnreachable(auxiliaryData.type)
+  }
+}
+
 // Estimates size of final transaction in bytes.
 // Note(ppershing): can overshoot a bit
 export function estimateTxSize(
@@ -116,7 +128,7 @@ export function estimateTxSize(
   const txWithdrawalsSize = encode(cborizeTxWithdrawals(withdrawals)).length + 1
   const txTllSize = encode(Number.MAX_SAFE_INTEGER).length + 1
   const txFeeSize = encode(Number.MAX_SAFE_INTEGER).length + 1
-  const txMetadataHashSize = auxiliaryData
+  const txAuxiliaryDataHashSize = auxiliaryData
     ? encode('x'.repeat(METADATA_HASH_BYTE_LENGTH * 2)).length + 1
     : 0
   const txAuxSize =
@@ -126,7 +138,7 @@ export function estimateTxSize(
     txWithdrawalsSize +
     txFeeSize +
     txTllSize +
-    txMetadataHashSize
+    txAuxiliaryDataHashSize
 
   const shelleyInputs = inputs.filter(({address}) => isShelleyFormat(address))
   const byronInputs = inputs.filter(({address}) => !isShelleyFormat(address))
@@ -141,14 +153,11 @@ export function estimateTxSize(
 
   const txWitnessesSize = shelleyWitnessesSize + byronWitnessesSize
 
-  const placeholderMetaSignature = 'x'.repeat(CATALYST_SIGNATURE_BYTE_LENGTH * 2)
-  const txAuxiliaraDataSize = auxiliaryData
-    ? encode(cborizeTxAuxiliaryVotingData(auxiliaryData, placeholderMetaSignature)).length + 1
-    : 0
-  const txMetaSize = txAuxiliaraDataSize + 1
+  const txAuxiliaryDataEstimate = auxiliaryData ? estimateAuxiliaryDataSize(auxiliaryData) + 1 : 0
+  const txAuxiliaryDataSize = txAuxiliaryDataEstimate + 1
 
   // the 1 is there for the CBOR "tag" for an array of 2 elements
-  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize + txMetaSize
+  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize + txAuxiliaryDataSize
 
   if (txSizeInBytes > MAX_TX_SIZE) throw new InternalError(InternalErrorReason.TxTooBig)
   /*

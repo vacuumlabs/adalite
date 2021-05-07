@@ -305,14 +305,14 @@ function cborizeTxWitnesses(
 function ShelleySignedTransactionStructured(
   txAux: TxAux,
   txWitnesses: CborizedTxWitnesses,
-  txMeta: CborizedVotingRegistrationMetadata | null
+  txAuxiliaryData: CborizedVotingRegistrationMetadata | null
 ): CborizedTxSignedStructured {
   function getId(): HexString {
     return txAux.getId()
   }
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny([txAux, txWitnesses, txMeta])
+    return encoder.pushAny([txAux, txWitnesses, txAuxiliaryData])
   }
 
   return {
