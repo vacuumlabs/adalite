@@ -14,7 +14,7 @@ const DownloadKey = ({cborHex}) => {
     description: 'Stake Verification Key',
     cborHex,
   }
-  const filename = 'stake.vrf'
+  const filename = 'stake.vkey'
   const filetype = 'application/json'
 
   const dataURI = `data:${filetype};json,${JSON.stringify(fileContents, null, 4)}`
