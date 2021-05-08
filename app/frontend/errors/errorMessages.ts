@@ -202,7 +202,7 @@ const externalErrorMessages: {[key: string]: (params?: any) => string} = {
   [knownExternalErrors.RedundantStakePool]: () => 'This stake pool is already chosen.',
   [knownExternalErrors.DelegationFeeError]: () => 'Unsuccessful delegation fee calculation.',
   [knownExternalErrors.DeviceVersionUnsupported]: ({message}) =>
-    `DeviceVersionUnsupported: ${message}. Please make sure you are using the latest version of the Cardano application.`,
+    `DeviceVersionUnsupported: ${message}. Please make sure you are using the latest version of the Cardano application. You can do this update in Ledger Live > Manager section.  (If you dont see this update available there, please update your Ledger Live and Ledger Firmware first).`,
 }
 
 // TODO: refactor this to receive error class as argument intead of code
