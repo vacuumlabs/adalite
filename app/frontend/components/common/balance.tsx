@@ -22,10 +22,7 @@ const Balance = () => {
           {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
           <AdaIcon />
         </div>
-        <button
-          className={`button secondary balance ${styles.refreshButton}`}
-          onClick={reloadWalletInfo}
-        >
+        <button className={'button secondary balance refresh'} onClick={reloadWalletInfo}>
           Refresh
         </button>
       </div>

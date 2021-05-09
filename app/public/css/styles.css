@@ -388,6 +388,30 @@ p.hey {
   line-height: 24px;
 }
 
+.button.secondary.refresh {
+  padding: 10px 24px 10px 58px;
+  position: relative;
+}
+
+.button.secondary.refresh::before {
+  content: '';
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  background-image: url('../assets/refresh_button_symbol.svg');
+}
+
+.button.secondary.refresh:hover::before {
+  background-image: url('../assets/refresh_button_symbol_active.svg');
+}
+
 .button.secondary.withdraw {
   padding: 10px 24px 10px 58px;
   position: relative;
