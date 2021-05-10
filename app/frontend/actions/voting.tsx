@@ -56,20 +56,15 @@ export default (store: Store) => {
     const stakePubKey = xpub2pub(
       Buffer.from(getSourceAccountInfo(state).stakingXpub.xpubHex, 'hex')
     ).toString('hex')
-    const changeAddress = await getWallet()
-      .getAccount(state.sourceAccountIndex)
-      .getChangeAddress()
     const nonce = await getWallet()
       .getAccount(state.sourceAccountIndex)
       .calculateTtl()
-
+    const sourceAccount = getSourceAccountInfo(state)
     const txPlanResult = await prepareTxPlan({
       txType: TxType.REGISTER_VOTING,
       votingPubKey,
       stakePubKey,
-      rewardDestinationAddress: {
-        address: changeAddress,
-      },
+      stakingAddress: sourceAccount.stakingAddress,
       nonce: BigInt(nonce),
     })
 
@@ -82,7 +77,6 @@ export default (store: Store) => {
         plan: txPlanResult.txPlan,
         transactionSummary: summary,
       })
-      const sourceAccount = getSourceAccountInfo(state)
       await confirmTransaction(getState(), {
         sourceAccountIndex: sourceAccount.accountIndex,
         txPlan: txPlanResult.txPlan,

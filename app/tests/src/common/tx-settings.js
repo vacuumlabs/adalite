@@ -247,10 +247,7 @@ const transactionSettings = {
       txType: TxType.REGISTER_VOTING,
       votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
       stakePubKey: '2ef8d7c9e19bb688860a900123e5bbe2eff7187336590b3928d43a830110cd62',
-      rewardDestinationAddress: {
-        address:
-          'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-      },
+      stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
       nonce: BigInt(25000000),
     },
     txPlanResult: {
@@ -271,22 +268,20 @@ const transactionSettings = {
           isChange: false,
           address:
             'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 9818998,
+          coins: 9820228,
           tokenBundle: inputTokens,
         },
         certificates: [],
         deposit: 0,
-        fee: 181002,
-        baseFee: 181002,
+        fee: 179772,
+        baseFee: 179772,
         additionalLovelaceAmount: 0,
         withdrawals: [],
         auxiliaryData: {
           type: 'CATALYST_VOTING',
           nonce: BigInt(25000000),
           rewardDestinationAddress: {
-            address:
-              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            spendingPath: null,
+            address: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
             stakingPath: null,
           },
           stakePubKey: '2ef8d7c9e19bb688860a900123e5bbe2eff7187336590b3928d43a830110cd62',
@@ -295,7 +290,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: '8311efe33e4033b1a630b70dbf22525ea6f9ecbffa37d5420c29148ba7fef0f6',
+    txHash: '009d1b3a4b1ae81719322fa02149cd126a2f348950424014cbae0c99ea17fcac',
   },
 }
 

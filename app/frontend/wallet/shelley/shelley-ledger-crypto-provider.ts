@@ -454,11 +454,9 @@ const ShelleyLedgerCryptoProvider = async ({
           params: {
             votingPublicKeyHex: txAuxiliaryData.votingPubKey,
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
-            //addressToAbsPathMapper(txAuxiliaryData.stakePubKey),
             rewardsDestination: {
-              type: LedgerTypes.AddressType.BASE,
+              type: LedgerTypes.AddressType.REWARD,
               params: {
-                spendingPath: txAuxiliaryData.rewardDestinationAddress.spendingPath,
                 stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
               },
             },
@@ -516,7 +514,7 @@ const ShelleyLedgerCryptoProvider = async ({
     const validityIntervalStart = txAux.validityIntervalStart
       ? `${txAux.validityIntervalStart}`
       : null
-    const votingAuxiliaryData = txAux.auxiliaryData
+    const formattedAuxiliaryData = txAux.auxiliaryData
       ? formatAuxiliaryAdata(txAux.auxiliaryData)
       : null
     const response = await ledger.signTransaction({
@@ -529,7 +527,7 @@ const ShelleyLedgerCryptoProvider = async ({
         ttl: ttlStr,
         certificates,
         withdrawals,
-        auxiliaryData: votingAuxiliaryData,
+        auxiliaryData: formattedAuxiliaryData,
         validityIntervalStart,
       },
     })

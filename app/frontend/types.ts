@@ -267,9 +267,7 @@ export type VotingRegistrationTxPlanArgs = {
   txType: TxType.REGISTER_VOTING
   votingPubKey: HexString
   stakePubKey: HexString
-  rewardDestinationAddress: {
-    address: Address
-  }
+  stakingAddress: Address
   nonce: BigInt
 }
 
