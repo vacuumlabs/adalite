@@ -101,7 +101,7 @@ const votingSettings = {
     state: {},
     votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
     sendTransactionSummary: {
-      fee: 181002,
+      fee: 179772,
     },
   },
 }

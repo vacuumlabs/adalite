@@ -548,15 +548,13 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   }
 
   const prepareVotingRegistrationTx = (txPlanArgs: VotingRegistrationTxPlanArgs): TxPlanDraft => {
-    const {votingPubKey, stakePubKey, rewardDestinationAddress, nonce} = txPlanArgs
+    const {votingPubKey, stakePubKey, nonce, stakingAddress} = txPlanArgs
     const auxiliaryData: TxAuxiliaryData = {
       type: 'CATALYST_VOTING',
       votingPubKey,
       stakePubKey,
       rewardDestinationAddress: {
-        //TODO: refactor type
-        ...rewardDestinationAddress,
-        spendingPath: null,
+        address: stakingAddress,
         stakingPath: null,
       },
       nonce,

@@ -321,18 +321,23 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   // TODO: export type from trezor if possible
-  const formatVotingAuxiliaryAdata = (txAuxiliaryData: TxAuxiliaryData): any => {
-    return {
-      catalystRegistrationParameters: {
-        votingPublicKey: txAuxiliaryData.votingPubKey,
-        stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
-        rewardAddressParameters: {
-          addressType: 0, // base address type TODO
-          path: txAuxiliaryData.rewardDestinationAddress.spendingPath,
-          stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
-        },
-        nonce: Number(txAuxiliaryData.nonce),
-      },
+  const formatAuxiliaryAdata = (txAuxiliaryData: TxAuxiliaryData): any => {
+    switch (txAuxiliaryData.type) {
+      case 'CATALYST_VOTING':
+        return {
+          catalystRegistrationParameters: {
+            votingPublicKey: txAuxiliaryData.votingPubKey,
+            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+            rewardAddressParameters: {
+              addressType: AddressTypes.REWARD,
+              path: txAuxiliaryData.rewardDestinationAddress.stakingPath, //TODO: del, avoids error
+              stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+            },
+            nonce: `${txAuxiliaryData.nonce}`,
+          },
+        }
+      default:
+        return assertUnreachable(txAuxiliaryData.type)
     }
   }
 
@@ -381,8 +386,8 @@ const ShelleyTrezorCryptoProvider = async ({
     const validityIntervalStart = txAux.validityIntervalStart
       ? `${txAux.validityIntervalStart}`
       : null
-    const votingAuxiliaryData = txAux.auxiliaryData
-      ? formatVotingAuxiliaryAdata(txAux.auxiliaryData)
+    const formattedAuxiliaryData = txAux.auxiliaryData
+      ? formatAuxiliaryAdata(txAux.auxiliaryData)
       : null
     const response: TrezorSignTxResponse = await TrezorConnect.cardanoSignTransaction(
       removeNullFields({
@@ -394,7 +399,7 @@ const ShelleyTrezorCryptoProvider = async ({
         networkId: network.networkId,
         certificates,
         withdrawals,
-        auxiliaryData: votingAuxiliaryData,
+        auxiliaryData: formattedAuxiliaryData,
         validityIntervalStart,
       })
     )

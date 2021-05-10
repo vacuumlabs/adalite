@@ -240,12 +240,8 @@ const WithdrawReview = ({
 
 const VotingRegistrationReview = ({
   transactionSummary,
-  onSubmit,
-  onCancel,
 }: {
   transactionSummary: TransactionSummary & VotingRegistrationTransactionSummary
-  onSubmit: () => any
-  onCancel: () => any
 }) => {
   const {fee} = transactionSummary
   const total = fee as Lovelace
@@ -254,10 +250,7 @@ const VotingRegistrationReview = ({
       <div className="review">
         <div className="review-label">Reward address</div>
         <div className="review-address">
-          {transactionSummary.plan.change.address}
-          <div className="review-address-verification">
-            <AddressVerification address={transactionSummary.plan.change.address} />
-          </div>
+          {transactionSummary.plan.auxiliaryData.rewardDestinationAddress.address}
         </div>
         <div className="review-label">Voting key</div>
         <div className="review-amount">
@@ -376,8 +369,6 @@ const ConfirmTransactionDialog = () => {
       return (
         <VotingRegistrationReview
           transactionSummary={cachedTransactionSummaries[TxType.REGISTER_VOTING]}
-          onSubmit={onSubmit}
-          onCancel={cancelTransaction}
         />
       )
     }

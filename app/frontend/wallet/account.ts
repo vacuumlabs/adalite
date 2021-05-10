@@ -37,6 +37,7 @@ import {aggregateTokenBundles} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason, UnexpectedError, UnexpectedErrorReason} from '../errors'
+import assertUnreachable from '../helpers/assertUnreachable'
 
 const DummyAddressManager = () => {
   return {
@@ -218,6 +219,22 @@ const Account = ({
     }
   }
 
+  function mapAuxiliaryData(auxiliaryData: TxAuxiliaryData): TxAuxiliaryData {
+    if (!auxiliaryData) return null
+    if (auxiliaryData.type === 'CATALYST_VOTING') {
+      const rewardAddress = auxiliaryData.rewardDestinationAddress.address
+      return {
+        ...auxiliaryData,
+        rewardDestinationAddress: {
+          address: rewardAddress,
+          stakingPath: myAddresses.getAddressToAbsPathMapper()(rewardAddress),
+        },
+      }
+    } else {
+      return assertUnreachable(auxiliaryData.type)
+    }
+  }
+
   async function prepareTxAux(txPlan: TxPlan, ttl?: number, validityIntervalStart?: number) {
     const {inputs, outputs, change, fee, certificates, withdrawals, auxiliaryData} = txPlan
     const txOutputs = [...outputs]
@@ -235,16 +252,8 @@ const Account = ({
     // tll is null if it's deliberately empty
     const txTtl = ttl === undefined ? await calculateTtl() : ttl
     const txValidityIntervalStart = validityIntervalStart ?? null
-    const mappedAuxiliaryData: TxAuxiliaryData = auxiliaryData
-      ? {
-        ...auxiliaryData,
-        rewardDestinationAddress: {
-          address: change.address,
-          spendingPath: myAddresses.getAddressToAbsPathMapper()(change.address),
-          stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
-        },
-      }
-      : null
+    const mappedAuxiliaryData = mapAuxiliaryData(auxiliaryData)
+
     return ShelleyTxAux({
       inputs,
       outputs: txOutputs,

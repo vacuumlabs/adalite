@@ -13,7 +13,7 @@ export type TxAux = {
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
   auxiliaryData: TxAuxiliaryData
-  auxiliaryDataHash: string
+  auxiliaryDataHash: HexString
   validityIntervalStart: number
   encodeCBOR: encodeCBORFn
 }

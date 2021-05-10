@@ -95,14 +95,15 @@ export type TxWithdrawal = {
 
 export type TxAuxiliaryDataTypes = 'CATALYST_VOTING'
 
-export type TxAuxiliaryData = {
+export type TxAuxiliaryData = TxVotingAuxiliaryData
+
+export type TxVotingAuxiliaryData = {
   type: TxAuxiliaryDataTypes
   votingPubKey: string
   stakePubKey: HexString
   nonce: BigInt
   rewardDestinationAddress: {
     address: Address
-    spendingPath: BIP32Path
     stakingPath: BIP32Path
   }
 }
