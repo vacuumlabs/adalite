@@ -37,4 +37,7 @@ describe('AdaLite Test Suite', () => {
   describe('Ada parsing', () => {
     require('./helpers/parseCoins')
   })
+  describe('Miscellaneous', () => {
+    require('./miscellaneous')
+  })
 })
