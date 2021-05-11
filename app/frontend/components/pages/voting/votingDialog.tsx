@@ -12,6 +12,7 @@ import PinPage from './pinPage'
 import ProgressBar from './progressBar'
 import QRPage from './QRPage'
 import TransactionPage from './transactionPage'
+import styles from './voting.module.scss'
 
 enum RegistrationSteps {
   PIN = 0,
@@ -129,7 +130,7 @@ const VotingDialog = (): h.JSX.Element => {
   return (
     <Modal
       onRequestClose={closeVotingDialog}
-      bodyClass="voting-modal"
+      bodyClass={styles.votingModal}
       title="Voting Registration"
       showWarning
     >

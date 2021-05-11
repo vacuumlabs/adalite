@@ -1,4 +1,5 @@
 import {h} from 'preact'
+import styles from './voting.module.scss'
 
 const VotingDialogBottom = ({
   nextStep,
@@ -14,7 +15,7 @@ const VotingDialogBottom = ({
   nextButtonDisabled?: boolean
 }) => {
   return (
-    <div className="voting-dialog-bottom">
+    <div className={styles.votingDialogBottom}>
       <button className="button secondary" onClick={previousStep} data-cy="VotingBottomPreviousBtn">
         {previousButtonName}
       </button>

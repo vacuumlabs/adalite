@@ -7,10 +7,11 @@ import {hasStakingKey, useActiveAccount, useHasEnoughFundsForCatalyst} from '../
 import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
+import styles from './voting.module.scss'
 
 const AppDownloadImage = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   <a href={url} target="_blank">
-    <img src={imageSrc} className="app-download" />
+    <img src={imageSrc} className={styles.appDownload} />
   </a>
 )
 
@@ -47,7 +48,7 @@ const VotingCard = (): h.JSX.Element => {
         In order to participate in Catalyst Funds, first you have to download the Catalyst mobile
         application:
       </p>
-      <div className="voting-apps">
+      <div className={styles.votingApps}>
         <AppDownloadImage
           url="https://apps.apple.com/kg/app/catalyst-voting/id1517473397"
           imageSrc="assets/app_store_download.svg"
@@ -59,7 +60,7 @@ const VotingCard = (): h.JSX.Element => {
       </div>
       <p>Once you've downloaded the app, you can register for voting.</p>
       <button
-        className="button primary voting"
+        className={`button primary ${styles.votingButton}`}
         disabled={isRegistrationDisabled}
         onClick={openVotingDialog}
         {...tooltip(getTooltipMessage(), isRegistrationDisabled)}

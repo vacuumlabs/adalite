@@ -4,6 +4,7 @@ import {encryptWithPassword} from '../../../helpers/catalyst'
 import * as QRious from '../../../libs/qrious'
 import Alert from '../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
+import styles from './voting.module.scss'
 
 const QRPage = ({
   nextStep,
@@ -37,7 +38,7 @@ const QRPage = ({
         You will not be able to access this code after closing this dialog. Take a screenshot or a
         photo of this QR code as a backup!
       </Alert>
-      <div className="voting-qr" data-cy="VotingQRCode">
+      <div className={styles.votingQr} data-cy="VotingQRCode">
         <img
           src={new QRious({
             value: encryptedKey,

@@ -4,6 +4,7 @@ import {stripNonNumericCharacters} from '../../../helpers/common'
 import {VOTING_PIN_LENGTH} from '../../../wallet/constants'
 import Alert from '../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
+import styles from './voting.module.scss'
 
 const PinPage = ({
   pin,
@@ -44,7 +45,7 @@ const PinPage = ({
         Application on your phone. Make sure to <strong>write it down</strong>! Losing this PIN will
         require a <strong>new</strong> Voting Key registration!
       </Alert>
-      <div className="pin-codes">
+      <div className={styles.pinCodes}>
         <label htmlFor="first-pin">{VOTING_PIN_LENGTH}-digit PIN</label>
         <input
           type="password"

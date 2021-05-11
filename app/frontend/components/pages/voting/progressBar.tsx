@@ -1,10 +1,11 @@
 import {Fragment, h} from 'preact'
+import styles from './voting.module.scss'
 
 const ProgressStep = ({active, name}: {active: boolean; name: string}): h.JSX.Element => {
   return (
     <Fragment>
-      <div className={`progress-step ${active ? 'active' : ''}`} />
-      <div className={`progress-step-text ${active ? 'active' : ''}`}>{name}</div>
+      <div className={`${styles.progressStep} ${active ? styles.active : ''}`} />
+      <div className={`${styles.progressStepText} ${active ? styles.active : ''}`}>{name}</div>
     </Fragment>
   )
 }
@@ -17,7 +18,7 @@ const ProgressBar = ({
   activeStep: number
 }): h.JSX.Element => {
   return (
-    <div className="progress-bar">
+    <div className={styles.progressBar}>
       {stepNames.map((step, i) => (
         <ProgressStep name={step} active={activeStep >= i} key={i} />
       ))}
