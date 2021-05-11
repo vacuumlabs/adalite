@@ -4,10 +4,11 @@ import {useActions, useSelector} from '../../../helpers/connect'
 import {HexString} from '../../../types'
 import Alert from '../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
+import styles from './voting.module.scss'
 
 const TransactionValidation = ({txSuccessTab}) =>
   txSuccessTab === 'voting' ? (
-    <div className="voting-transaction-success">Transaction successful!</div>
+    <div className={styles.votingTransactionSuccess}>Transaction successful!</div>
   ) : null
 
 const TransactionPage = ({
@@ -36,7 +37,7 @@ const TransactionPage = ({
         <strong>No funds are supposed to leave your wallet</strong>. However, the registration
         requires paying the transaction fees.
       </Alert>
-      <div className="review-transaction-row">
+      <div className={styles.reviewTransactionRow}>
         <button
           className="button primary"
           disabled={txSuccessTab === 'voting'}
