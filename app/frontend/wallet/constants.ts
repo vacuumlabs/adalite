@@ -58,13 +58,9 @@ export const PREMIUM_MEMBER_BALANCE_TRESHOLD = 2500000000000
 
 export const BIG_DELEGATOR_THRESHOLD = 10000000000000
 
-export const WANTED_DELEGATOR_ADDRESSES = [
-  'addr1qydvz4treq0gzg5ad9lsqa0j2jz8627j7tzr54yn5guzv409frlvyagke2z70mh4eexu8yyxczynmqwvyd3jznrwcxnqs92h66',
-]
+export const WANTED_DELEGATOR_ADDRESSES = []
 
-export const WANTED_DELEGATOR_STAKING_ADDRESSES = [
-  'stake1u8j53lkzw5tv4p08am6uunwrjzrvpzfas8xzxcepf3hvrfsr7u3yu',
-]
+export const WANTED_DELEGATOR_STAKING_ADDRESSES = []
 
 export const SATURATION_POINT = 62224967000000
 
