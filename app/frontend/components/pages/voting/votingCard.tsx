@@ -3,6 +3,10 @@ import actions from '../../../actions'
 import {useActions} from '../../../helpers/connect'
 import tooltip from '../../common/tooltip'
 import {isVotingRegistrationOpen} from '../../../helpers/common'
+import {hasStakingKey, useActiveAccount, useHasEnoughFundsForCatalyst} from '../../../selectors'
+import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
+import {Lovelace} from '../../../types'
+import {toAda} from '../../../helpers/adaConverters'
 
 const AppDownloadImage = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   <a href={url} target="_blank">
@@ -13,6 +17,27 @@ const AppDownloadImage = ({url, imageSrc}: {url: string; imageSrc: string}) => (
 const VotingCard = (): h.JSX.Element => {
   const {openVotingDialog} = useActions(actions)
   const isRegistrationClosed = !isVotingRegistrationOpen()
+  const hasEnoughFundsForCatalyst = useHasEnoughFundsForCatalyst()
+  const activeAccount = useActiveAccount()
+  const hasRegisteredStakingKey = hasStakingKey(activeAccount)
+
+  const getTooltipMessage = (): string => {
+    if (isRegistrationClosed) {
+      return 'Voting is currently closed.\nPlease wait for the next round.'
+    }
+    if (!hasEnoughFundsForCatalyst) {
+      return `Only users with more than ${toAda(
+        CATALYST_MIN_THRESHOLD as Lovelace
+      )} ADA\ncan participate in voting.`
+    }
+    if (!hasRegisteredStakingKey) {
+      return 'Your staking key is not registered.\nDelegate to a pool to register it.'
+    }
+    return ''
+  }
+
+  const isRegistrationDisabled =
+    isRegistrationClosed || !hasEnoughFundsForCatalyst || !hasRegisteredStakingKey
 
   return (
     <div className="card" data-cy="VotingCard">
@@ -35,12 +60,9 @@ const VotingCard = (): h.JSX.Element => {
       <p>Once you've downloaded the app, you can register for voting.</p>
       <button
         className="button primary voting"
-        disabled={isRegistrationClosed}
+        disabled={isRegistrationDisabled}
         onClick={openVotingDialog}
-        {...tooltip(
-          'Voting is currently closed.\nPlease wait for the next round.',
-          isRegistrationClosed
-        )}
+        {...tooltip(getTooltipMessage(), isRegistrationDisabled)}
         data-cy="VotingRegisterBtn"
       >
         Register
