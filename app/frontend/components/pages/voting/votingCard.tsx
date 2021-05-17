@@ -32,7 +32,7 @@ const VotingCard = (): h.JSX.Element => {
       )} ADA\ncan participate in voting.`
     }
     if (!hasRegisteredStakingKey) {
-      return 'Your staking key is not registered.\nDelegate to a pool to register it.'
+      return 'You should delegate to a stake pool\nin order to participate in Catalyst voting.'
     }
     return ''
   }

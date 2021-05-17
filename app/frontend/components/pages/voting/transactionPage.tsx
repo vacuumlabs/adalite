@@ -37,6 +37,10 @@ const TransactionPage = ({
         <strong>No funds are supposed to leave your wallet</strong>. However, the registration
         requires paying the transaction fees.
       </Alert>
+      <Alert alertType="warning">
+        Make sure to keep your account balance above 500 ADA at least until the voting round starts,
+        otherwise your voting key registration would be dismissed.
+      </Alert>
       <div className={styles.reviewTransactionRow}>
         <button
           className="button primary"
