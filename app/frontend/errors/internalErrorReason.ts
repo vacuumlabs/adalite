@@ -33,6 +33,7 @@ export enum InternalErrorReason {
   CryptoProviderError = 'CryptoProviderError',
   NetworkError = 'NetworkError',
   ServerError = 'ServerError',
+  EpochBoundaryUnderway = 'EpochBoundaryUnderway',
   LedgerMultiAssetNotSupported = 'LedgerMultiAssetNotSupported',
   LedgerOutdatedCardanoAppError = 'LedgerOutdatedCardanoAppError',
   LedgerWithdrawalNotSupported = 'LedgerWithdrawalNotSupported',

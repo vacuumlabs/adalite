@@ -49,6 +49,7 @@ import {aggregateTokenBundles, parseToken, getTokenBundlesDifference} from './he
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDataProvider'
 import {InternalError, InternalErrorReason} from '../errors'
+import {probeEpochBoundary} from '../helpers/epochBoundaryUtils'
 
 const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
   const wrapped = (...args) => {
@@ -221,6 +222,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
           message: response.Left,
         })
       } else {
+        probeEpochBoundary()
         throw new InternalError(InternalErrorReason.ServerError)
       }
     }

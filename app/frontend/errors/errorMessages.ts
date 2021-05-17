@@ -4,7 +4,6 @@ import {ADALITE_CONFIG} from '../config'
 import {LEDGER_VERSIONS, TREZOR_VERSIONS} from '../wallet/constants'
 import {Lovelace, CryptoProviderFeature} from '../types'
 import {knownExternalErrors, InternalErrorReason} from '.'
-import isEpochBoundaryUnderway from '../helpers/isEpochBoundaryUnderway'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -80,12 +79,10 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.CryptoProviderError]: ({message}) => `CryptoProviderError: ${message}`,
   [InternalErrorReason.NetworkError]: () =>
     'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
-  [InternalErrorReason.ServerError]: () => {
-    if (isEpochBoundaryUnderway()) {
-      return 'Cardano is undergoing an epoch boundary. We should be back in a few minutes.'
-    }
-    return 'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.'
-  },
+  [InternalErrorReason.ServerError]: () =>
+    'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
+  [InternalErrorReason.EpochBoundaryUnderway]: () =>
+    'Our servers are temporarily down while Cardano is undergoing an epoch boundary. We should be back in a few minutes.',
   [InternalErrorReason.LedgerMultiAssetNotSupported]: () =>
     'LedgerMultiAssetNotSupported: Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
   [InternalErrorReason.LedgerOutdatedCardanoAppError]: ({message}) =>

@@ -20,5 +20,3 @@ export enum SubTabs {
   BALANCE = 'Balance',
   SHELLEY_BALANCES = 'Shelley Balances',
 }
-
-export const EPOCH_TRANSITION_MAX_MINUTES = 60
