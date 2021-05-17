@@ -136,18 +136,42 @@ const AdvancedPage = ({screenType}: {screenType: ScreenType}) => {
             defaultSubTab={defaultSubTab}
             mainSubTab={mainSubTab}
           />
-          <VotingCard />
         </div>
       ) : (
         <div className="dashboard desktop">
           <div className="dashboard-column">
             <Keys />
-            <VotingCard />
           </div>
           <div className="dashboard-column">
             <PoolOwner />
             <div />
           </div>
+        </div>
+      )}
+    </Fragment>
+  )
+}
+
+const VotingPage = ({screenType}: {screenType: ScreenType}) => {
+  const subTabs = []
+  const defaultSubTab = null
+  const mainSubTab = SubTabs.VOTING
+  return (
+    <Fragment>
+      {screenType < ScreenType.DESKTOP ? (
+        <div className="dashboard mobile">
+          <DashboardMobileContent
+            subTabs={subTabs}
+            defaultSubTab={defaultSubTab}
+            mainSubTab={mainSubTab}
+          />
+        </div>
+      ) : (
+        <div className="dashboard desktop">
+          <div className="dashboard-column">
+            <VotingCard />
+          </div>
+          <div className="dashboard-column" />
         </div>
       )}
     </Fragment>
@@ -199,6 +223,7 @@ const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.BALANCE]: <Balance />,
   [SubTabs.SHELLEY_BALANCES]: <ShelleyBalances />,
   [SubTabs.MY_ADDRESSES_REDIRECT]: <ReceiveRedirect />,
+  [SubTabs.VOTING]: <VotingCard />,
 }
 
 const DashboardPage = () => {
@@ -243,11 +268,12 @@ const DashboardPage = () => {
     ),
     [MainTabs.RECEIVE]: <ReceivePage screenType={screenType} />,
     [MainTabs.ADVANCED]: <AdvancedPage screenType={screenType} />,
+    [MainTabs.VOTING]: <VotingPage screenType={screenType} />,
   }
   return (
     <div className="page-wrapper">
       <ErrorModals />
-      {/* `SendTransactionModal` and `DelegationModal` should be before
+      {/* `SendTransactionModal`, `DelegationModal`, VotingDialog should be before
       `ConfirmTransactionDialog` */}
       {shouldShowSendTransactionModal && <SendTransactionModal />}
       {shouldShowDelegationModal && <DelegationModal />}

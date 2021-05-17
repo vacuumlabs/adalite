@@ -4,6 +4,7 @@ export enum MainTabs {
   RECEIVE = 'Receive',
   STAKING = 'Staking',
   ADVANCED = 'Advanced',
+  VOTING = 'Voting',
 }
 
 export enum SubTabs {
@@ -19,4 +20,5 @@ export enum SubTabs {
   MY_ADDRESSES_REDIRECT = 'Receive ADA',
   BALANCE = 'Balance',
   SHELLEY_BALANCES = 'Shelley Balances',
+  VOTING = 'Voting',
 }
