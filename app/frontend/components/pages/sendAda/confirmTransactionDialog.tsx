@@ -391,6 +391,7 @@ const ConfirmTransactionDialog = () => {
     }
   }
 
+  const enablesRawTransaction = !(txConfirmType === TxType.REGISTER_VOTING)
   const modalTitle = (() => {
     if (isCrossAccount) return 'Transaction between accounts review'
     return isRefactoredCase ? titleMap[txConfirmType] : titleMap[transactionSummary.type]
@@ -403,9 +404,11 @@ const ConfirmTransactionDialog = () => {
         {!hideDefaultSummary && (
           <ReviewBottom disabled={false} onSubmit={onSubmit} onCancel={cancelTransaction} />
         )}
-        <a href="#" className="send-raw" onClick={() => setRawTransactionOpen(true)}>
-          Raw unsigned transaction
-        </a>
+        {enablesRawTransaction && (
+          <a href="#" className="send-raw" onClick={() => setRawTransactionOpen(true)}>
+            Raw unsigned transaction
+          </a>
+        )}
         {rawTransactionOpen && <RawTransactionModal />}
       </Modal>
     </div>
