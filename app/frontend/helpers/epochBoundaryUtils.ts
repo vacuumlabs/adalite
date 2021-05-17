@@ -14,7 +14,7 @@ export function isEpochBoundaryUnderway(): boolean {
   return false
 }
 
-export function probeEpochBoundary(params?: OptionalParams): void {
+export function throwIfEpochBoundary(params?: OptionalParams): void {
   if (isEpochBoundaryUnderway()) {
     throw new InternalError(InternalErrorReason.EpochBoundaryUnderway, params)
   }

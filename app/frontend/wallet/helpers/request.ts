@@ -1,5 +1,5 @@
 import {InternalError, InternalErrorReason} from '../../errors'
-import {probeEpochBoundary} from '../../helpers/epochBoundaryUtils'
+import {throwIfEpochBoundary} from '../../helpers/epochBoundaryUtils'
 import sleep from '../../helpers/sleep'
 import {DELAY_AFTER_TOO_MANY_REQUESTS} from '../constants'
 
@@ -33,7 +33,7 @@ const request = async function request(url, method = 'GET', body = null, headers
         requestParams
       )}`,
     }
-    probeEpochBoundary(errorParams)
+    throwIfEpochBoundary(errorParams)
     throw new InternalError(InternalErrorReason.ServerError, errorParams)
   } else if (response.status >= 400) {
     throw new InternalError(InternalErrorReason.NetworkError, {
