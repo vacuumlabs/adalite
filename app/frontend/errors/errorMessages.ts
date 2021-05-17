@@ -81,7 +81,8 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     'NetworkError: Request to our servers has failed. Please check your network connection and if the problem persists, contact us.',
   [InternalErrorReason.ServerError]: () =>
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
-
+  [InternalErrorReason.EpochBoundaryUnderway]: () =>
+    'Our servers are temporarily down while Cardano is undergoing an epoch boundary. We should be back in a few minutes.',
   [InternalErrorReason.LedgerMultiAssetNotSupported]: () =>
     'LedgerMultiAssetNotSupported: Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
   [InternalErrorReason.LedgerOutdatedCardanoAppError]: ({message}) =>

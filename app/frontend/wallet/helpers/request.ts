@@ -1,4 +1,5 @@
 import {InternalError, InternalErrorReason} from '../../errors'
+import {throwIfEpochBoundary} from '../../helpers/epochBoundaryUtils'
 import sleep from '../../helpers/sleep'
 import {DELAY_AFTER_TOO_MANY_REQUESTS} from '../constants'
 
@@ -27,11 +28,13 @@ const request = async function request(url, method = 'GET', body = null, headers
     await sleep(DELAY_AFTER_TOO_MANY_REQUESTS)
     return request(url, method, body, headers)
   } else if (response.status >= 500) {
-    throw new InternalError(InternalErrorReason.ServerError, {
+    const errorParams = {
       message: `${method} ${url} returns error: ${response.status} on payload: ${JSON.stringify(
         requestParams
       )}`,
-    })
+    }
+    throwIfEpochBoundary(errorParams)
+    throw new InternalError(InternalErrorReason.ServerError, errorParams)
   } else if (response.status >= 400) {
     throw new InternalError(InternalErrorReason.NetworkError, {
       message: `${method} ${url} returns error: ${response.status} on payload: ${JSON.stringify(
