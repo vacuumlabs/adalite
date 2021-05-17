@@ -122,10 +122,9 @@ export const TREZOR_VERSIONS = {
     patch: 5,
   },
   [CryptoProviderFeature.VOTING]: {
-    //TODO
     major: 2,
-    minor: 3,
-    patch: 5,
+    minor: 4,
+    patch: 0,
   },
 }
 
