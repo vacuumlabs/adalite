@@ -153,7 +153,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   async function prepareVotingAuxiliaryData(
     auxiliaryData: TxAuxiliaryData
   ): Promise<CborizedVotingRegistrationMetadata> {
-    const cborizedRegistrationData = cborizeTxVotingRegistration(auxiliaryData)
+    const cborizedRegistrationData = new Map([cborizeTxVotingRegistration(auxiliaryData)])
     const registrationDataHash = blake2b(encode(cborizedRegistrationData), 32).toString('hex')
     const stakingPath = auxiliaryData.rewardDestinationAddress.stakingPath
     const registrationDataWitness = await prepareShelleyWitness(registrationDataHash, stakingPath)

@@ -321,7 +321,7 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   // TODO: export type from trezor if possible
-  const formatAuxiliaryAdata = (txAuxiliaryData: TxAuxiliaryData): any => {
+  const formatAuxiliaryData = (txAuxiliaryData: TxAuxiliaryData): any => {
     switch (txAuxiliaryData.type) {
       case 'CATALYST_VOTING':
         return {
@@ -330,7 +330,7 @@ const ShelleyTrezorCryptoProvider = async ({
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             rewardAddressParameters: {
               addressType: AddressTypes.REWARD,
-              path: txAuxiliaryData.rewardDestinationAddress.stakingPath, //TODO: del, avoids error
+              path: txAuxiliaryData.rewardDestinationAddress.stakingPath, //TODO: required now
               stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             },
             nonce: `${txAuxiliaryData.nonce}`,
@@ -387,7 +387,7 @@ const ShelleyTrezorCryptoProvider = async ({
       ? `${txAux.validityIntervalStart}`
       : null
     const formattedAuxiliaryData = txAux.auxiliaryData
-      ? formatAuxiliaryAdata(txAux.auxiliaryData)
+      ? formatAuxiliaryData(txAux.auxiliaryData)
       : null
     const response: TrezorSignTxResponse = await TrezorConnect.cardanoSignTransaction(
       removeNullFields({

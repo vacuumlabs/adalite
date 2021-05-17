@@ -446,7 +446,7 @@ const ShelleyLedgerCryptoProvider = async ({
     return {shelleyWitnesses, byronWitnesses}
   }
 
-  const formatAuxiliaryAdata = (txAuxiliaryData: TxAuxiliaryData): LedgerTypes.TxAuxiliaryData => {
+  const formatAuxiliaryData = (txAuxiliaryData: TxAuxiliaryData): LedgerTypes.TxAuxiliaryData => {
     switch (txAuxiliaryData.type) {
       case 'CATALYST_VOTING':
         return {
@@ -515,7 +515,7 @@ const ShelleyLedgerCryptoProvider = async ({
       ? `${txAux.validityIntervalStart}`
       : null
     const formattedAuxiliaryData = txAux.auxiliaryData
-      ? formatAuxiliaryAdata(txAux.auxiliaryData)
+      ? formatAuxiliaryData(txAux.auxiliaryData)
       : null
     const response = await ledger.signTransaction({
       signingMode,
