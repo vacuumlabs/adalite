@@ -17,13 +17,12 @@ const AppDownloadImage = ({url, imageSrc}: {url: string; imageSrc: string}) => (
 
 const VotingCard = (): h.JSX.Element => {
   const {openVotingDialog} = useActions(actions)
-  const isRegistrationClosed = !isVotingRegistrationOpen()
   const hasEnoughFundsForCatalyst = useHasEnoughFundsForCatalyst()
   const activeAccount = useActiveAccount()
   const hasRegisteredStakingKey = hasStakingKey(activeAccount)
 
-  const getTooltipMessage = (): string => {
-    if (isRegistrationClosed) {
+  const getValidationMessage = (): string => {
+    if (!isVotingRegistrationOpen()) {
       return 'Voting is currently closed.\nPlease wait for the next round.'
     }
     if (!hasEnoughFundsForCatalyst) {
@@ -37,8 +36,8 @@ const VotingCard = (): h.JSX.Element => {
     return ''
   }
 
-  const isRegistrationDisabled =
-    isRegistrationClosed || !hasEnoughFundsForCatalyst || !hasRegisteredStakingKey
+  const validationMessage = getValidationMessage()
+  const isRegistrationDisabled = validationMessage !== ''
 
   return (
     <div className="card" data-cy="VotingCard">
@@ -59,15 +58,18 @@ const VotingCard = (): h.JSX.Element => {
         />
       </div>
       <p>Once you've downloaded the app, you can register for voting.</p>
-      <button
-        className={`button primary ${styles.votingButton}`}
-        disabled={isRegistrationDisabled}
-        onClick={openVotingDialog}
-        {...tooltip(getTooltipMessage(), isRegistrationDisabled)}
-        data-cy="VotingRegisterBtn"
-      >
-        Register
-      </button>
+      <div className={styles.validationRow}>
+        <button
+          className="button primary"
+          disabled={isRegistrationDisabled}
+          onClick={openVotingDialog}
+          {...tooltip(validationMessage, isRegistrationDisabled)}
+          data-cy="VotingRegisterBtn"
+        >
+          Register
+        </button>
+        {isRegistrationDisabled && <div className={styles.error}>{validationMessage}</div>}
+      </div>
     </div>
   )
 }

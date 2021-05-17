@@ -54,10 +54,6 @@
   border: 2px dashed var(--color-error);
 }
 
-.votingButton {
-  margin-top: 16px;
-}
-
 .appDownload {
   width: 150px;
   height: 46px;
@@ -112,5 +108,17 @@
     background-repeat: no-repeat;
     background-size: contain;
     background-image: url('../../../../public/assets/alert_icon_success.svg');
+  }
+}
+
+.validationRow {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  & .error {
+    padding-left: 20px;
+    color: var(--color-error);
   }
 }
