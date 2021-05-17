@@ -53,6 +53,7 @@ const TransactionPage = ({
         previousStep={previousStep}
         nextButtonName="Proceed"
         nextButtonDisabled={txSuccessTab !== 'voting'}
+        previousButtonDisabled={txSuccessTab === 'voting'}
       />
     </Fragment>
   )
