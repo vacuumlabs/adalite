@@ -384,7 +384,11 @@ const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
     }
   }
 
-  if (outputs.some((output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE)) {
+  if (
+    outputsWithChange.some(
+      (output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE
+    )
+  ) {
     return {
       ...noTxPlan,
       error: {code: InternalErrorReason.OutputTooBig},
