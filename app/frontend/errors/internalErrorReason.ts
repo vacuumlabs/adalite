@@ -1,5 +1,6 @@
 export enum InternalErrorReason {
   SendAddressInvalidAddress = 'SendAddressInvalidAddress',
+  SendAddressPoolId = 'SendAddressPoolId',
   SendAmountIsNan = 'SendAmountIsNan',
   SendAmountIsNotPositive = 'SendAmountIsNotPositive',
   SendAmountInsufficientFunds = 'SendAmountInsufficientFunds',

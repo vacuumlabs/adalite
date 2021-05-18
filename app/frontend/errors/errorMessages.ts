@@ -14,6 +14,8 @@ const updateHwWalletAppSuggestion =
 
 const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => string} = {
   [InternalErrorReason.SendAddressInvalidAddress]: () => 'Invalid address',
+  [InternalErrorReason.SendAddressPoolId]: () =>
+    'Invalid address, to stake your funds use the Staking tab',
   [InternalErrorReason.SendAmountIsNan]: () => 'Invalid format: Amount has to be a number',
   [InternalErrorReason.SendAmountIsNotPositive]: () =>
     'Invalid format: Amount has to be a positive number',
