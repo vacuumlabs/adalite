@@ -116,6 +116,6 @@ export const TREZOR_ERRORS = {
   [CryptoProviderFeature.POOL_OWNER]: InternalErrorReason.TrezorPoolRegNotSupported,
 }
 
-export const MAX_ACCOUNT_INDEX = 30
+export const MAX_ACCOUNT_INDEX = 29
 
-export const MAX_BULK_EXPORT_AMOUNT = 5
+export const EXPORTED_PATHS_SLICE_SIZE = 5
