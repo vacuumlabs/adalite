@@ -258,7 +258,17 @@ const ShelleyTrezorCryptoProvider = async ({
   }
 
   function prepareStakingKeyRegistrationCertificate(
-    certificate: TxStakingKeyRegistrationCert | TxStakingKeyDeregistrationCert,
+    certificate: TxStakingKeyRegistrationCert,
+    path: BIP32Path
+  ): TrezorTxCertificate {
+    return {
+      type: certificate.type,
+      path,
+    }
+  }
+
+  function prepareStakingKeyDeregistrationCertificate(
+    certificate: TxStakingKeyDeregistrationCert,
     path: BIP32Path
   ): TrezorTxCertificate {
     return {
@@ -286,6 +296,8 @@ const ShelleyTrezorCryptoProvider = async ({
     switch (certificate.type) {
       case CertificateType.STAKING_KEY_REGISTRATION:
         return prepareStakingKeyRegistrationCertificate(certificate, path)
+      case CertificateType.STAKING_KEY_DEREGISTRATION:
+        return prepareStakingKeyDeregistrationCertificate(certificate, path)
       case CertificateType.DELEGATION:
         return prepareDelegationCertificate(certificate, path)
       case CertificateType.STAKEPOOL_REGISTRATION:
