@@ -27,23 +27,17 @@ const Balance = () => {
         </button>
       </div>
       {conversionRates && <Conversions balance={balance} conversionRates={conversionRates} />}
-      {/* <div className="buy-ada-partner-wrapper">
-        <a
-          className="button primary outline buy-ada-partner-link"
-          href="https://exchange.adalite.io/"
-          target="_blank"
-        >
+      <div className="buy-ada-partner-wrapper">
+        <a className="button primary outline buy-ada-partner-link" href="/exchange" target="_blank">
           Buy/Sell ADA
         </a>
         <span className="buy-ada-partner-logo">
-          Powered by
-          <img
-            className="buy-ada-partner-logo-img"
-            src="assets/coinswitch-logo.svg"
-            alt="CoinSwitch logo"
-          />
+          <div>Powered by</div>
+          <div>
+            <strong>Changelly</strong>
+          </div>
         </span>
-      </div> */}
+      </div>
     </div>
   )
 }
