@@ -1,8 +1,9 @@
 import indexIsHardened from './indexIsHardened'
-import {HARDENED_THRESHOLD, EXPORTED_PATHS_SLICE_SIZE} from './../constants'
+import {HARDENED_THRESHOLD} from './../constants'
 import {derivePublic as deriveChildXpub} from 'cardano-crypto.js'
 import {isShelleyPath} from '../../wallet/shelley/helpers/addresses'
 import {BIP32Path} from '../../types'
+import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 
 const BYRON_V2_PATH = [HARDENED_THRESHOLD + 44, HARDENED_THRESHOLD + 1815, HARDENED_THRESHOLD]
 
@@ -48,25 +49,31 @@ function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriv
     return deriveChildXpub(parentXpub, lastIndex, derivationScheme.ed25519Mode)
   }
 
-  function getExportedBulkSize(currentAccountSlice: number) {
-    if (currentAccountSlice === 0) {
-      return 5
+  function* makeBulkAccountIndexIterator() {
+    yield [0, 4]
+    yield [5, 16]
+    for (let i = 17; true; i += 18) {
+      yield [i, i + 17]
     }
-    if (currentAccountSlice === 1) {
-      return 10
+  }
+
+  function getAccountIndexExportInterval(accountIndex: number): [number, number] {
+    const bulkAccountIndexIterator = makeBulkAccountIndexIterator()
+    for (const [startIndex, endIndex] of bulkAccountIndexIterator) {
+      if (accountIndex >= startIndex && accountIndex <= endIndex) {
+        return [startIndex, endIndex]
+      }
     }
-    return 15
+    throw new UnexpectedError(UnexpectedErrorReason.BulkExportCreationError)
   }
 
   function createPathBulk(derivationPath: BIP32Path): BIP32Path[] {
     const paths: BIP32Path[] = []
     const accountIndex = derivationPath[2] - HARDENED_THRESHOLD
-    const currentAccountSlice = Math.floor(accountIndex / EXPORTED_PATHS_SLICE_SIZE)
-    const exportedBulkSize = getExportedBulkSize(currentAccountSlice)
+    const [startIndex, endIndex] = getAccountIndexExportInterval(accountIndex)
 
-    for (let i = 0; i < exportedBulkSize; i += 1) {
-      const nextAccountIndex =
-        currentAccountSlice * EXPORTED_PATHS_SLICE_SIZE + i + HARDENED_THRESHOLD
+    for (let i = startIndex; i <= endIndex; i += 1) {
+      const nextAccountIndex = i + HARDENED_THRESHOLD
       const nextAccountPath = [...derivationPath.slice(0, -1), nextAccountIndex]
       paths.push(nextAccountPath)
     }
@@ -76,7 +83,6 @@ function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriv
      * since during byron era only the first account was used
      */
     if (accountIndex === 0 && !paths.includes(BYRON_V2_PATH)) paths.push(BYRON_V2_PATH)
-
     return paths
   }
 
