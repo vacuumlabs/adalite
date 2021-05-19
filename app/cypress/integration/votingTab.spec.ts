@@ -115,6 +115,9 @@ describe('Voting tab', () => {
     cy.contains('Transaction successful!').should('be.visible')
     cy.dataCy('VotingBottomNextBtn').click()
 
+    // downloads QR
+    cy.dataCy('DownloadQrCode').click()
+
     // finishes
     cy.dataCy('VotingBottomNextBtn').click()
   })
