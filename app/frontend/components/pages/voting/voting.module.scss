@@ -60,6 +60,12 @@
   margin-top: 8px;
 }
 
+.catalystAppPair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .votingModal {
   // workaround for now to overwrite .alert class and not change it's name
   // https://tahoeninjas.blog/2019/07/28/prevent-scss-from-changing-your-css-class-names/

@@ -8,11 +8,22 @@ import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
 import styles from './voting.module.scss'
+import * as QRious from '../../../libs/qrious'
 
-const AppDownloadImage = ({url, imageSrc}: {url: string; imageSrc: string}) => (
-  <a href={url} target="_blank">
-    <img src={imageSrc} className={styles.appDownload} />
-  </a>
+const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
+  <div className={styles.catalystAppPair}>
+    <a href={url} target="_blank">
+      <img src={imageSrc} className={styles.appDownload} />
+    </a>
+    <img
+      src={new QRious({
+        value: url,
+        level: 'L',
+        size: 120,
+        padding: null,
+      }).toDataURL()}
+    />
+  </div>
 )
 
 const VotingCard = (): h.JSX.Element => {
@@ -48,11 +59,11 @@ const VotingCard = (): h.JSX.Element => {
         application:
       </p>
       <div className={styles.votingApps}>
-        <AppDownloadImage
-          url="https://apps.apple.com/kg/app/catalyst-voting/id1517473397"
+        <AppDownloadInfo
+          url="https://apps.apple.com/in/app/catalyst-voting/id1517473397"
           imageSrc="assets/app_store_download.svg"
         />
-        <AppDownloadImage
+        <AppDownloadInfo
           url="https://play.google.com/store/apps/details?id=io.iohk.vitvoting"
           imageSrc="assets/google_play_download.svg"
         />
