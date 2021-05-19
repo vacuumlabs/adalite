@@ -3,8 +3,8 @@ export enum MainTabs {
   SEND = 'Send',
   RECEIVE = 'Receive',
   STAKING = 'Staking',
-  ADVANCED = 'Advanced',
   VOTING = 'Voting',
+  ADVANCED = 'Advanced',
 }
 
 export enum SubTabs {
