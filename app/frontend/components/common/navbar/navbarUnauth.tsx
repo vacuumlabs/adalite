@@ -60,7 +60,7 @@ const NavbarUnauth = connect(
           Help
         </a>
       </div>
-      {pathname === '/staking' || pathname === '/exchange' ? (
+      {pathname === '/staking' ? (
         <button
           className="button outline navbar"
           onClick={(e) => {
