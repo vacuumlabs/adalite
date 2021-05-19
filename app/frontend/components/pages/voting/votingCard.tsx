@@ -40,7 +40,7 @@ const VotingCard = (): h.JSX.Element => {
   const activeAccount = useActiveAccount()
   const hasRegisteredStakingKey = hasStakingKey(activeAccount)
 
-  const getValidationMessage = (): string => {
+  const getUnmetPreconditionMessage = (): string => {
     if (!isVotingRegistrationOpen()) {
       return 'Voting is currently closed.\nPlease wait for the next round.'
     }
@@ -55,11 +55,11 @@ const VotingCard = (): h.JSX.Element => {
     if (!hasRegisteredStakingKey) {
       return 'You should delegate to a stake pool\nin order to participate in Catalyst voting.'
     }
-    return ''
+    return null
   }
 
-  const validationMessage = getValidationMessage()
-  const isRegistrationDisabled = validationMessage !== ''
+  const unmetPreconditionMessage = getUnmetPreconditionMessage()
+  const isRegistrationDisabled = unmetPreconditionMessage !== null
 
   return (
     <div className="card" data-cy="VotingCard">
@@ -85,12 +85,12 @@ const VotingCard = (): h.JSX.Element => {
           className="button primary"
           disabled={isRegistrationDisabled}
           onClick={openVotingDialog}
-          {...tooltip(validationMessage, isRegistrationDisabled)}
+          {...tooltip(unmetPreconditionMessage, isRegistrationDisabled)}
           data-cy="VotingRegisterBtn"
         >
           Register
         </button>
-        {isRegistrationDisabled && <div className={styles.error}>{validationMessage}</div>}
+        {isRegistrationDisabled && <div className={styles.error}>{unmetPreconditionMessage}</div>}
       </div>
     </div>
   )
