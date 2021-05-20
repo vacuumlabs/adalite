@@ -1,10 +1,9 @@
 @import '../../../variables.scss';
 
-.wrapper {
+.content {
   display: flex;
-  height: 100%;
+  flex: 1;
   justify-content: center;
-  align-items: center;
 }
 
 .card {
@@ -17,7 +16,7 @@
     display: flex;
     max-width: unset;
     justify-content: center;
-    height: 100%;
+    height: unset;
   }
 }
 
@@ -28,6 +27,6 @@
   height: 398px;
   @media screen and (max-width: $breakpoint-mobile) {
     box-sizing: border-box;
-    height: 100%;
+    height: unset;
   }
 }
