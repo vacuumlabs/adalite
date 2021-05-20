@@ -8,7 +8,7 @@ import {InternalErrorReason} from '../errors'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str: string): Lovelace =>
-  // Math.round to solve edge cases in floating number precision
+  // Math.round to solve edge cases in floating number precision like '8.131699'
   Math.round(toCoins(parseFloat(str) as Ada)) as Lovelace
 
 const sendAddressValidator = (fieldValue: string) => {
