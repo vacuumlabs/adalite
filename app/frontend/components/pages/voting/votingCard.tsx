@@ -40,7 +40,7 @@ const VotingCard = (): h.JSX.Element => {
   const activeAccount = useActiveAccount()
   const hasRegisteredStakingKey = hasStakingKey(activeAccount)
 
-  const getUnmetPreconditionMessage = (): string => {
+  const getUnmetPreconditionMessage = (): string | null => {
     if (!isVotingRegistrationOpen()) {
       return 'Voting is currently closed.\nPlease wait for the next round.'
     }
