@@ -64,6 +64,7 @@ const transactionSettings = {
         baseFee: 174850,
         additionalLovelaceAmount: 0,
         withdrawals: [],
+        auxiliaryData: null,
       },
     },
     ttl,
@@ -141,6 +142,7 @@ const transactionSettings = {
         baseFee: 176871,
         additionalLovelaceAmount: 1481480,
         withdrawals: [],
+        auxiliaryData: null,
       },
     },
     ttl,
@@ -190,6 +192,7 @@ const transactionSettings = {
         baseFee: 187989,
         additionalLovelaceAmount: 0,
         withdrawals: [],
+        auxiliaryData: null,
       },
     },
     ttl,
@@ -233,10 +236,61 @@ const transactionSettings = {
             rewards: 5000000,
           },
         ],
+        auxiliaryData: null,
       },
     },
     ttl,
     txHash: 'e9eb23bbea1fd11bb84f7c0f201bdebc86329bd9bc1f78404b802585d3bdf0c9',
+  },
+  voting: {
+    args: {
+      txType: TxType.REGISTER_VOTING,
+      votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
+      stakePubKey: '2ef8d7c9e19bb688860a900123e5bbe2eff7187336590b3928d43a830110cd62',
+      stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+      nonce: BigInt(25000000),
+    },
+    txPlanResult: {
+      success: true,
+      txPlan: {
+        inputs: [
+          {
+            txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 10000000,
+            outputIndex: 1,
+            tokenBundle: inputTokens,
+          },
+        ],
+        outputs: [],
+        change: {
+          isChange: false,
+          address:
+            'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+          coins: 9820228,
+          tokenBundle: inputTokens,
+        },
+        certificates: [],
+        deposit: 0,
+        fee: 179772,
+        baseFee: 179772,
+        additionalLovelaceAmount: 0,
+        withdrawals: [],
+        auxiliaryData: {
+          type: 'CATALYST_VOTING',
+          nonce: BigInt(25000000),
+          rewardDestinationAddress: {
+            address: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+            stakingPath: null,
+          },
+          stakePubKey: '2ef8d7c9e19bb688860a900123e5bbe2eff7187336590b3928d43a830110cd62',
+          votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
+        },
+      },
+    },
+    ttl,
+    txHash: '009d1b3a4b1ae81719322fa02149cd126a2f348950424014cbae0c99ea17fcac',
   },
 }
 

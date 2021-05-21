@@ -118,6 +118,7 @@ export interface State {
 
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean
+  shouldShowVotingDialog: boolean
 
   validStakepoolDataProvider?: StakepoolDataProvider
 }
@@ -268,6 +269,7 @@ const initialState: State = {
 
   shouldShowSendTransactionModal: false,
   shouldShowDelegationModal: false,
+  shouldShowVotingDialog: false,
 }
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State

@@ -8,6 +8,7 @@ import {
   SendTransactionSummary,
   TxPlanArgs,
   TxType,
+  VotingRegistrationTransactionSummary,
   WithdrawTransactionSummary,
 } from '../types'
 import {TxPlan, TxPlanResult} from '../wallet/shelley/shelley-transaction-planner'
@@ -101,6 +102,7 @@ export default (store: Store) => {
         | WithdrawTransactionSummary
         | DelegateTransactionSummary
         | DeregisterStakingKeyTransactionSummary
+        | VotingRegistrationTransactionSummary
     }
   ) => {
     setState({

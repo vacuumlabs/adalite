@@ -33,6 +33,8 @@ import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 import ConfirmTransactionDialog from '../sendAda/confirmTransactionDialog'
 import SendTransactionModal from '../accounts/sendTransactionModal'
 import DelegationModal from '../accounts/delegationModal'
+import VotingCard from '../voting/votingCard'
+import VotingDialog from '../voting/votingDialog'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -150,6 +152,32 @@ const AdvancedPage = ({screenType}: {screenType: ScreenType}) => {
   )
 }
 
+const VotingPage = ({screenType}: {screenType: ScreenType}) => {
+  const subTabs = []
+  const defaultSubTab = null
+  const mainSubTab = SubTabs.VOTING
+  return (
+    <Fragment>
+      {screenType < ScreenType.DESKTOP ? (
+        <div className="dashboard mobile">
+          <DashboardMobileContent
+            subTabs={subTabs}
+            defaultSubTab={defaultSubTab}
+            mainSubTab={mainSubTab}
+          />
+        </div>
+      ) : (
+        <div className="dashboard desktop">
+          <div className="dashboard-column">
+            <VotingCard />
+          </div>
+          <div className="dashboard-column" />
+        </div>
+      )}
+    </Fragment>
+  )
+}
+
 const AccountsPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.ACCOUNTS]
   const defaultSubTab = SubTabs.ACCOUNTS
@@ -195,6 +223,7 @@ const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.BALANCE]: <Balance />,
   [SubTabs.SHELLEY_BALANCES]: <ShelleyBalances />,
   [SubTabs.MY_ADDRESSES_REDIRECT]: <ReceiveRedirect />,
+  [SubTabs.VOTING]: <VotingCard />,
 }
 
 const DashboardPage = () => {
@@ -212,6 +241,7 @@ const DashboardPage = () => {
     shouldShowConfirmTransactionDialog,
     shouldShowSendTransactionModal,
     shouldShowDelegationModal,
+    shouldShowVotingDialog,
   } = useSelector((state) => ({
     activeMainTab: state.activeMainTab,
     displayInfoModal: state.displayInfoModal,
@@ -225,6 +255,7 @@ const DashboardPage = () => {
     shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
+    shouldShowVotingDialog: state.shouldShowVotingDialog,
   }))
 
   const screenType = useViewport()
@@ -237,14 +268,16 @@ const DashboardPage = () => {
     ),
     [MainTabs.RECEIVE]: <ReceivePage screenType={screenType} />,
     [MainTabs.ADVANCED]: <AdvancedPage screenType={screenType} />,
+    [MainTabs.VOTING]: <VotingPage screenType={screenType} />,
   }
   return (
     <div className="page-wrapper">
       <ErrorModals />
-      {/* `SendTransactionModal` and `DelegationModal` should be before
+      {/* `SendTransactionModal`, `DelegationModal`, VotingDialog should be before
       `ConfirmTransactionDialog` */}
       {shouldShowSendTransactionModal && <SendTransactionModal />}
       {shouldShowDelegationModal && <DelegationModal />}
+      {shouldShowVotingDialog && <VotingDialog />}
       {shouldShowConfirmTransactionDialog && <ConfirmTransactionDialog />}
       {shouldShowWantedAddressesModal && <WantedAddressesModal />}
       {isShelleyCompatible && displayInfoModal && <InfoModal />}

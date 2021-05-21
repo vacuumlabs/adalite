@@ -258,7 +258,7 @@ const parseUnsignedTx = ([txBody, meta]: _UnsignedTxDecoded): _UnsignedTxParsed 
   const ttl = parseTtl(txBody.get(TxBodyKeys.TTL))
   const certificates = parseTxCerts(txBody.get(TxBodyKeys.CERTIFICATES) || [])
   const withdrawals = parseTxWithdrawals(txBody.get(TxBodyKeys.WITHDRAWALS) || new Map())
-  const metaDataHash = parseMetaDataHash(txBody.get(TxBodyKeys.META_DATA_HASH))
+  const metaDataHash = parseMetaDataHash(txBody.get(TxBodyKeys.AUXILIARY_DATA_HASH))
   const validityIntervalStart = parseValidityIntervalStart(
     txBody.get(TxBodyKeys.VALIDITY_INTERVAL_START)
   )

@@ -32,11 +32,12 @@ import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresse
 import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {TxAux} from './shelley/types'
-import {UTxO, TxOutput} from './types'
+import {UTxO, TxOutput, TxAuxiliaryData} from './types'
 import {aggregateTokenBundles} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason, UnexpectedError, UnexpectedErrorReason} from '../errors'
+import assertUnreachable from '../helpers/assertUnreachable'
 
 const DummyAddressManager = () => {
   return {
@@ -218,12 +219,28 @@ const Account = ({
     }
   }
 
+  function mapAuxiliaryData(auxiliaryData: TxAuxiliaryData): TxAuxiliaryData {
+    if (!auxiliaryData) return null
+    if (auxiliaryData.type === 'CATALYST_VOTING') {
+      const rewardAddress = auxiliaryData.rewardDestinationAddress.address
+      return {
+        ...auxiliaryData,
+        rewardDestinationAddress: {
+          address: rewardAddress,
+          stakingPath: myAddresses.getAddressToAbsPathMapper()(rewardAddress),
+        },
+      }
+    } else {
+      return assertUnreachable(auxiliaryData.type)
+    }
+  }
+
   async function prepareTxAux(txPlan: TxPlan, ttl?: number, validityIntervalStart?: number) {
-    const {inputs, outputs, change, fee, certificates, withdrawals} = txPlan
+    const {inputs, outputs, change, fee, certificates, withdrawals, auxiliaryData} = txPlan
     const txOutputs = [...outputs]
+    const stakingAddress = await myAddresses.getStakingAddress()
     if (change) {
       // TODO: do this with map
-      const stakingAddress = await myAddresses.getStakingAddress()
       const changeOutput: TxOutput = {
         ...change,
         isChange: true,
@@ -235,6 +252,8 @@ const Account = ({
     // tll is null if it's deliberately empty
     const txTtl = ttl === undefined ? await calculateTtl() : ttl
     const txValidityIntervalStart = validityIntervalStart ?? null
+    const mappedAuxiliaryData = mapAuxiliaryData(auxiliaryData)
+
     return ShelleyTxAux({
       inputs,
       outputs: txOutputs,
@@ -242,6 +261,8 @@ const Account = ({
       ttl: txTtl,
       certificates,
       withdrawals,
+      auxiliaryDataHash: '',
+      auxiliaryData: mappedAuxiliaryData,
       validityIntervalStart: txValidityIntervalStart,
     })
   }
@@ -499,6 +520,7 @@ const Account = ({
     ensureXpubIsExported,
     _getAccountXpubs: getAccountXpubs,
     getPoolRegistrationTxPlan,
+    calculateTtl,
   }
 }
 

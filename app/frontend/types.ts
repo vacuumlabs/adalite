@@ -61,11 +61,17 @@ export const enum CryptoProviderFeature {
   BULK_EXPORT,
   POOL_OWNER,
   MULTI_ASSET,
+  VOTING,
 }
 export type DerivationScheme = {
   type: 'v1' | 'v2'
   ed25519Mode: number
   keyfileVersion: string
+}
+
+export type WalletSecretDef = {
+  rootSecret: Buffer
+  derivationScheme: DerivationScheme
 }
 
 export type Token = Omit<TokenObject, 'quantity'> & {
@@ -165,6 +171,7 @@ export const enum TxType {
   WITHDRAW,
   POOL_REG_OWNER,
   DEREGISTER_STAKE_KEY,
+  REGISTER_VOTING,
 }
 
 export enum StakingHistoryItemType {
@@ -256,6 +263,14 @@ export type DeregisterStakingKeyTxPlanArgs = {
   stakingAddress: Address
 }
 
+export type VotingRegistrationTxPlanArgs = {
+  txType: TxType.REGISTER_VOTING
+  votingPubKey: HexString
+  stakePubKey: HexString
+  stakingAddress: Address
+  nonce: BigInt
+}
+
 // Note: This allows for multiple transaction summaries by TxType, to avoid race-conditions
 // when calculating transaction summaries for more TxTypes at the same time.
 // Note that this still does not allow for multiple cached transaction summaries from
@@ -266,6 +281,7 @@ export type CachedTransactionSummaries = {
   [TxType.WITHDRAW]?: TransactionSummary & WithdrawTransactionSummary
   [TxType.DELEGATE]?: TransactionSummary & DelegateTransactionSummary
   [TxType.DEREGISTER_STAKE_KEY]?: TransactionSummary & DeregisterStakingKeyTransactionSummary
+  [TxType.REGISTER_VOTING]?: TransactionSummary & VotingRegistrationTransactionSummary
 }
 
 export type TxPlanArgs =
@@ -275,6 +291,7 @@ export type TxPlanArgs =
   | DelegateAdaTxPlanArgs
   | PoolOwnerTxPlanArgs
   | DeregisterStakingKeyTxPlanArgs
+  | VotingRegistrationTxPlanArgs
 
 export type HostedPoolMetadata = {
   name: string
@@ -330,6 +347,7 @@ export type TransactionSummary = {
   | WithdrawTransactionSummary
   | DelegateTransactionSummary
   | DeregisterStakingKeyTransactionSummary
+  | VotingRegistrationTransactionSummary
 )
 
 export type SendTransactionSummary = {
@@ -350,10 +368,15 @@ export type WithdrawTransactionSummary = {
   type: TxType.WITHDRAW
   rewards: Lovelace
 }
+
 export type DelegateTransactionSummary = {
   type: TxType.DELEGATE
   deposit: Lovelace
   stakePool: any // TODO:
+}
+
+export type VotingRegistrationTransactionSummary = {
+  type: TxType.REGISTER_VOTING
 }
 
 export type PoolRegTransactionSummary = {

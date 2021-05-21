@@ -43,6 +43,13 @@ const isCommaDelimitedListOfIpsOrEmpty = (str) => {
   })
 }
 
+function isIsoString(str) {
+  if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) {
+    return false
+  }
+  return new Date(str).toISOString() === str
+}
+
 const checkMap = check.map(process.env, {
   PORT: isPositiveIntString,
   ADALITE_ENABLE_DEBUGGING: isBoolString,
@@ -67,6 +74,8 @@ const checkMap = check.map(process.env, {
   ADALITE_ENABLE_TREZOR: isBoolString,
   ADALITE_ENABLE_LEDGER: isBoolString,
   ADALITE_ENFORCE_STAKEPOOL: isBoolString,
+  ADALITE_NEXT_VOTING_START: isIsoString,
+  ADALITE_NEXT_VOTING_END: isIsoString,
 })
 
 const {
@@ -101,6 +110,8 @@ const {
   ADALITE_NETWORK,
   ADALITE_ENABLE_TREZOR,
   ADALITE_ENABLE_LEDGER,
+  ADALITE_NEXT_VOTING_START,
+  ADALITE_NEXT_VOTING_END,
 } = process.env
 
 let {ADALITE_SERVER_URL} = process.env
@@ -163,6 +174,8 @@ const frontendConfig = {
   ADALITE_ENABLE_LEDGER: ADALITE_ENABLE_LEDGER === 'true',
   ADALITE_ENFORCE_STAKEPOOL: ADALITE_ENFORCE_STAKEPOOL === 'true',
   ADALITE_ENABLE_SEARCH_BY_TICKER: ADALITE_ENABLE_SEARCH_BY_TICKER === 'true',
+  ADALITE_NEXT_VOTING_START: Date.parse(ADALITE_NEXT_VOTING_START),
+  ADALITE_NEXT_VOTING_END: Date.parse(ADALITE_NEXT_VOTING_END),
 }
 
 const backendConfig = {

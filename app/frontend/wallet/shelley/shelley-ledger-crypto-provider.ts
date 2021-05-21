@@ -8,6 +8,8 @@ import {
   ShelleySignedTransactionStructured,
   cborizeTxWitnesses,
   cborizeCliWitness,
+  cborizeTxAuxiliaryVotingData,
+  ShelleyTxAux,
 } from './shelley-transaction'
 import * as platform from 'platform'
 import {hasRequiredVersion} from './helpers/version-check'
@@ -37,6 +39,7 @@ import {
 } from '../../types'
 import {
   Network,
+  TxAuxiliaryData,
   TxByronWitness,
   TxCertificate,
   TxDelegationCert,
@@ -49,7 +52,7 @@ import {
   TxWithdrawal,
   WalletName,
 } from '../types'
-import {TxSigned, TxAux, CborizedCliWitness} from './types'
+import {TxSigned, TxAux, CborizedCliWitness, FinalizedAuxiliaryDataTx} from './types'
 import {orderTokenBundle} from '../helpers/tokenFormater'
 import {
   InternalError,
@@ -58,6 +61,7 @@ import {
   UnexpectedErrorReason,
 } from '../../errors'
 import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCertificateUtils'
+import assertUnreachable from '../../helpers/assertUnreachable'
 
 const isWebUsbSupported = async () => {
   const isSupported = await LedgerTransportWebusb.isSupported()
@@ -442,6 +446,55 @@ const ShelleyLedgerCryptoProvider = async ({
     return {shelleyWitnesses, byronWitnesses}
   }
 
+  const formatAuxiliaryData = (txAuxiliaryData: TxAuxiliaryData): LedgerTypes.TxAuxiliaryData => {
+    switch (txAuxiliaryData.type) {
+      case 'CATALYST_VOTING':
+        return {
+          type: LedgerTypes.TxAuxiliaryDataType.CATALYST_REGISTRATION,
+          params: {
+            votingPublicKeyHex: txAuxiliaryData.votingPubKey,
+            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+            rewardsDestination: {
+              type: LedgerTypes.AddressType.REWARD,
+              params: {
+                stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+              },
+            },
+            nonce: `${txAuxiliaryData.nonce}`,
+          },
+        }
+      default:
+        return assertUnreachable(txAuxiliaryData.type)
+    }
+  }
+
+  function finalizeTxAuxWithMetadata(
+    txAux: TxAux,
+    auxiliaryDataSupplement: LedgerTypes.TxAuxiliaryDataSupplement
+  ): FinalizedAuxiliaryDataTx {
+    if (!txAux.auxiliaryData) {
+      return {
+        finalizedTxAux: txAux,
+        txAuxiliaryData: null,
+      }
+    }
+    switch (txAux.auxiliaryData.type) {
+      case 'CATALYST_VOTING':
+        return {
+          finalizedTxAux: ShelleyTxAux({
+            ...txAux,
+            auxiliaryDataHash: auxiliaryDataSupplement.auxiliaryDataHashHex,
+          }),
+          txAuxiliaryData: cborizeTxAuxiliaryVotingData(
+            txAux.auxiliaryData,
+            auxiliaryDataSupplement.catalystRegistrationSignatureHex
+          ),
+        }
+      default:
+        return assertUnreachable(txAux.auxiliaryData.type)
+    }
+  }
+
   async function ledgerSignTransaction(
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper,
@@ -461,7 +514,9 @@ const ShelleyLedgerCryptoProvider = async ({
     const validityIntervalStart = txAux.validityIntervalStart
       ? `${txAux.validityIntervalStart}`
       : null
-
+    const formattedAuxiliaryData = txAux.auxiliaryData
+      ? formatAuxiliaryData(txAux.auxiliaryData)
+      : null
     const response = await ledger.signTransaction({
       signingMode,
       tx: {
@@ -472,21 +527,29 @@ const ShelleyLedgerCryptoProvider = async ({
         ttl: ttlStr,
         certificates,
         withdrawals,
-        auxiliaryData: null,
+        auxiliaryData: formattedAuxiliaryData,
         validityIntervalStart,
       },
     })
 
-    if (response.txHashHex !== txAux.getId()) {
+    const {finalizedTxAux, txAuxiliaryData} = finalizeTxAuxWithMetadata(
+      txAux,
+      response.auxiliaryDataSupplement
+    )
+
+    if (response.txHashHex !== finalizedTxAux.getId()) {
       throw new InternalError(InternalErrorReason.TxSerializationError, {
         message: 'Tx serialization mismatch between Ledger and Adalite',
       })
     }
 
-    const txMeta = null
     const {shelleyWitnesses, byronWitnesses} = await prepareWitnesses(response.witnesses)
     const txWitnesses = cborizeTxWitnesses(byronWitnesses, shelleyWitnesses)
-    const structuredTx = ShelleySignedTransactionStructured(txAux, txWitnesses, txMeta)
+    const structuredTx = ShelleySignedTransactionStructured(
+      finalizedTxAux,
+      txWitnesses,
+      txAuxiliaryData
+    )
 
     return {
       txHash: response.txHashHex,

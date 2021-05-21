@@ -10,7 +10,7 @@ type MainTabProps = {
 
 export const MainTab = ({name, setActiveTab, isActive, displayName = null}: MainTabProps) => {
   return (
-    <li className={`main-tab ${name === MainTabs.RECEIVE ? 'primary' : ''}`}>
+    <li className={`main-tab ${name === MainTabs.VOTING ? 'primary' : ''}`}>
       <input type="radio" id={name} name="tabs" onClick={() => setActiveTab(name)} />
       <label className={isActive ? 'selected' : ''} htmlFor={name}>
         {displayName || name}

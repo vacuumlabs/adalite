@@ -12,6 +12,7 @@ interface Props {
     | 'info auth'
     | 'news'
     | 'wanted'
+    | 'info'
   children: ComponentChildren
 }
 

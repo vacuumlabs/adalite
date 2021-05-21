@@ -1,5 +1,5 @@
 import {TxPoolParams} from './shelley/helpers/poolCertificateUtils'
-import {BIP32Path, CertificateType, Lovelace, Address, TokenBundle} from '../types'
+import {BIP32Path, CertificateType, Lovelace, Address, TokenBundle, HexString} from '../types'
 
 export const enum WalletName {
   LEDGER = 'Ledger',
@@ -91,6 +91,21 @@ export type TxStakepoolRegistrationCert = {
 export type TxWithdrawal = {
   stakingAddress: Address
   rewards: Lovelace
+}
+
+export type TxAuxiliaryDataTypes = 'CATALYST_VOTING'
+
+export type TxAuxiliaryData = TxVotingAuxiliaryData
+
+export type TxVotingAuxiliaryData = {
+  type: TxAuxiliaryDataTypes
+  votingPubKey: string
+  stakePubKey: HexString
+  nonce: BigInt
+  rewardDestinationAddress: {
+    address: Address
+    stakingPath: BIP32Path
+  }
 }
 
 export type TxShelleyWitness = {

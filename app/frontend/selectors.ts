@@ -1,5 +1,9 @@
 import {State, getActiveAccountInfo} from './state'
-import {BIG_DELEGATOR_THRESHOLD, PREMIUM_MEMBER_BALANCE_TRESHOLD} from './wallet/constants'
+import {
+  BIG_DELEGATOR_THRESHOLD,
+  CATALYST_MIN_THRESHOLD,
+  PREMIUM_MEMBER_BALANCE_TRESHOLD,
+} from './wallet/constants'
 import {useSelector} from './helpers/connect'
 import {AccountInfo, AuthMethodType} from './types'
 import {WalletName} from './wallet/types'
@@ -49,4 +53,9 @@ export const useIsActiveAccountDelegating = (): boolean => {
   const activeAccount = useActiveAccount()
   const pool = activeAccount.shelleyAccountInfo.delegation
   return hasStakingKey(activeAccount) && Object.keys(pool).length > 0
+}
+
+export const useHasEnoughFundsForCatalyst = (): boolean => {
+  const activeAccount = useActiveAccount()
+  return activeAccount.balance > CATALYST_MIN_THRESHOLD
 }

@@ -114,6 +114,7 @@ const unsignedPoolTxToTxPlan = (unsignedTx: _UnsignedTxParsed, stakingAddress: A
     fee: parseCliFee(unsignedTx.fee) as Lovelace,
     baseFee: parseCliFee(unsignedTx.fee) as Lovelace,
     withdrawals: parseCliWithdrawals(unsignedTx.withdrawals, stakingAddress),
+    auxiliaryData: null,
   }
 }
 

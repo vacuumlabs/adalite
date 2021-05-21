@@ -1,12 +1,19 @@
 import {encode} from 'borc'
 import {
   cborizeSingleTxOutput,
+  cborizeTxAuxiliaryVotingData,
   cborizeTxCertificates,
   cborizeTxInputs,
   cborizeTxOutputs,
   cborizeTxWithdrawals,
 } from './shelley-transaction'
-import {MAX_TX_OUTPUT_SIZE, MAX_TX_SIZE, TX_WITNESS_SIZES} from '../constants'
+import {
+  CATALYST_SIGNATURE_BYTE_LENGTH,
+  MAX_TX_OUTPUT_SIZE,
+  MAX_TX_SIZE,
+  METADATA_HASH_BYTE_LENGTH,
+  TX_WITNESS_SIZES,
+} from '../constants'
 import {
   InternalError,
   InternalErrorReason,
@@ -26,6 +33,7 @@ import {
   DeregisterStakingKeyTxPlanArgs,
   AssetFamily,
   TokenBundle,
+  VotingRegistrationTxPlanArgs,
 } from '../../types'
 import {isShelleyFormat, isV1Address} from './helpers/addresses'
 import {
@@ -36,13 +44,16 @@ import {
   TxOutput,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
+  TxAuxiliaryData,
 } from '../types'
 import {aggregateTokenBundles, getTokenBundlesDifference} from '../helpers/tokenFormater'
+import assertUnreachable from '../../helpers/assertUnreachable'
 
 type TxPlanDraft = {
   outputs: TxOutput[]
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
+  auxiliaryData: TxAuxiliaryData
 }
 
 export type TxPlanResult =
@@ -68,6 +79,7 @@ export interface TxPlan {
   fee: Lovelace
   baseFee: Lovelace
   withdrawals: Array<TxWithdrawal>
+  auxiliaryData: TxAuxiliaryData
 }
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
@@ -77,13 +89,25 @@ export function txFeeFunction(txSizeInBytes: number): Lovelace {
   return Math.ceil(a + txSizeInBytes * b) as Lovelace
 }
 
+function estimateAuxiliaryDataSize(auxiliaryData: TxAuxiliaryData) {
+  switch (auxiliaryData.type) {
+    case 'CATALYST_VOTING': {
+      const placeholderMetaSignature = 'x'.repeat(CATALYST_SIGNATURE_BYTE_LENGTH * 2)
+      return encode(cborizeTxAuxiliaryVotingData(auxiliaryData, placeholderMetaSignature)).length
+    }
+    default:
+      return assertUnreachable(auxiliaryData.type)
+  }
+}
+
 // Estimates size of final transaction in bytes.
 // Note(ppershing): can overshoot a bit
 export function estimateTxSize(
   inputs: Array<TxInput>,
   outputs: Array<TxOutput>,
   certificates: Array<TxCertificate>,
-  withdrawals: Array<TxWithdrawal>
+  withdrawals: Array<TxWithdrawal>,
+  auxiliaryData: TxAuxiliaryData
 ): Lovelace {
   // the 1 is there for the key in the tx map
   const txInputsSize = encode(cborizeTxInputs(inputs)).length + 1
@@ -104,9 +128,17 @@ export function estimateTxSize(
   const txWithdrawalsSize = encode(cborizeTxWithdrawals(withdrawals)).length + 1
   const txTllSize = encode(Number.MAX_SAFE_INTEGER).length + 1
   const txFeeSize = encode(Number.MAX_SAFE_INTEGER).length + 1
-
+  const txAuxiliaryDataHashSize = auxiliaryData
+    ? encode('x'.repeat(METADATA_HASH_BYTE_LENGTH * 2)).length + 1
+    : 0
   const txAuxSize =
-    txInputsSize + txOutputsSize + txCertificatesSize + txWithdrawalsSize + txFeeSize + txTllSize
+    txInputsSize +
+    txOutputsSize +
+    txCertificatesSize +
+    txWithdrawalsSize +
+    txFeeSize +
+    txTllSize +
+    txAuxiliaryDataHashSize
 
   const shelleyInputs = inputs.filter(({address}) => isShelleyFormat(address))
   const byronInputs = inputs.filter(({address}) => !isShelleyFormat(address))
@@ -121,10 +153,11 @@ export function estimateTxSize(
 
   const txWitnessesSize = shelleyWitnessesSize + byronWitnessesSize
 
-  const txMetaSize = 1 // currently null
+  const txAuxiliaryDataEstimate = auxiliaryData ? estimateAuxiliaryDataSize(auxiliaryData) + 1 : 0
+  const txAuxiliaryDataSize = txAuxiliaryDataEstimate + 1
 
   // the 1 is there for the CBOR "tag" for an array of 2 elements
-  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize + txMetaSize
+  const txSizeInBytes = 1 + txAuxSize + txWitnessesSize + txAuxiliaryDataSize
 
   if (txSizeInBytes > MAX_TX_SIZE) throw new InternalError(InternalErrorReason.TxTooBig)
   /*
@@ -141,9 +174,12 @@ export function computeRequiredTxFee(
   inputs: Array<TxInput>,
   outputs: Array<TxOutput>,
   certificates: Array<TxCertificate> = [],
-  withdrawals: Array<TxWithdrawal> = []
+  withdrawals: Array<TxWithdrawal> = [],
+  auxiliaryData: TxAuxiliaryData = null
 ): Lovelace {
-  const fee = txFeeFunction(estimateTxSize(inputs, outputs, certificates, withdrawals))
+  const fee = txFeeFunction(
+    estimateTxSize(inputs, outputs, certificates, withdrawals, auxiliaryData)
+  )
   return fee
 }
 
@@ -207,7 +243,8 @@ export function computeTxPlan(
   outputs: Array<TxOutput>,
   possibleChange: TxOutput,
   certificates: Array<TxCertificate>,
-  withdrawals: Array<TxWithdrawal>
+  withdrawals: Array<TxWithdrawal>,
+  auxiliaryData: TxAuxiliaryData
 ): TxPlanResult {
   const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
@@ -234,7 +271,13 @@ export function computeTxPlan(
     }
   }
 
-  const feeWithoutChange = computeRequiredTxFee(inputs, outputs, certificates, withdrawals)
+  const feeWithoutChange = computeRequiredTxFee(
+    inputs,
+    outputs,
+    certificates,
+    withdrawals,
+    auxiliaryData
+  )
 
   // Cannot construct transaction plan
   if (inputs.length === 0 || totalOutput + feeWithoutChange > totalInput) {
@@ -261,6 +304,7 @@ export function computeTxPlan(
         fee: feeWithoutChange,
         baseFee: feeWithoutChange,
         withdrawals,
+        auxiliaryData,
       },
     }
   }
@@ -269,7 +313,8 @@ export function computeTxPlan(
     inputs,
     [...outputs, {...possibleChange, tokenBundle: tokenDifference}],
     certificates,
-    withdrawals
+    withdrawals,
+    auxiliaryData
   )
 
   if (totalOutput + feeWithChange > totalInput && tokenDifference.length === 0) {
@@ -287,6 +332,7 @@ export function computeTxPlan(
         fee: (totalInput - totalOutput) as Lovelace,
         baseFee: feeWithoutChange,
         withdrawals,
+        auxiliaryData,
       },
     }
   }
@@ -315,6 +361,7 @@ export function computeTxPlan(
         fee: (feeWithChange + change.coins) as Lovelace,
         baseFee: feeWithoutChange,
         withdrawals,
+        auxiliaryData,
       },
     }
   }
@@ -331,6 +378,7 @@ export function computeTxPlan(
       fee: feeWithChange,
       baseFee: feeWithChange,
       withdrawals,
+      auxiliaryData,
     },
   }
 }
@@ -437,6 +485,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       outputs,
       certificates: [],
       withdrawals: [],
+      auxiliaryData: null,
     }
   }
 
@@ -461,6 +510,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       outputs: [],
       certificates,
       withdrawals: [],
+      auxiliaryData: null,
     }
   }
 
@@ -471,6 +521,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       outputs: [],
       certificates: [],
       withdrawals,
+      auxiliaryData: null,
     }
   }
 
@@ -492,6 +543,27 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       outputs,
       certificates,
       withdrawals: withdrawals.filter((w) => w.rewards > 0),
+      auxiliaryData: null,
+    }
+  }
+
+  const prepareVotingRegistrationTx = (txPlanArgs: VotingRegistrationTxPlanArgs): TxPlanDraft => {
+    const {votingPubKey, stakePubKey, nonce, stakingAddress} = txPlanArgs
+    const auxiliaryData: TxAuxiliaryData = {
+      type: 'CATALYST_VOTING',
+      votingPubKey,
+      stakePubKey,
+      rewardDestinationAddress: {
+        address: stakingAddress,
+        stakingPath: null,
+      },
+      nonce,
+    }
+    return {
+      outputs: [],
+      certificates: [],
+      withdrawals: [],
+      auxiliaryData,
     }
   }
 
@@ -506,6 +578,8 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       return prepareWithdrawalTx(txPlanArgs)
     case TxType.CONVERT_LEGACY:
       return prepareSendAdaTx(txPlanArgs)
+    case TxType.REGISTER_VOTING:
+      return prepareVotingRegistrationTx(txPlanArgs)
     default:
       throw new UnexpectedError(UnexpectedErrorReason.InvalidTxPlanType)
   }
@@ -516,7 +590,7 @@ export const selectMinimalTxPlan = (
   changeAddress: Address,
   txPlanArgs: TxPlanArgs
 ): TxPlanResult => {
-  const {outputs, certificates, withdrawals} = prepareTxPlanDraft(txPlanArgs)
+  const {outputs, certificates, withdrawals, auxiliaryData} = prepareTxPlanDraft(txPlanArgs)
   const change: TxOutput = {
     isChange: false,
     address: changeAddress,
@@ -528,7 +602,9 @@ export const selectMinimalTxPlan = (
   let numInputs = 0
   while (numInputs <= utxos.length) {
     const inputs: TxInput[] = utxos.slice(0, numInputs)
-    txPlanResult = validateTxPlan(computeTxPlan(inputs, outputs, change, certificates, withdrawals))
+    txPlanResult = validateTxPlan(
+      computeTxPlan(inputs, outputs, change, certificates, withdrawals, auxiliaryData)
+    )
     if (txPlanResult.success === true) {
       if (txPlanResult.txPlan.baseFee === txPlanResult.txPlan.fee || numInputs === utxos.length) {
         return txPlanResult

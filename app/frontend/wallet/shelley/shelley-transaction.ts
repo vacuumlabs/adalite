@@ -2,6 +2,7 @@ import * as cbor from 'borc'
 import {blake2b, base58, bech32} from 'cardano-crypto.js'
 import {isShelleyFormat} from './helpers/addresses'
 import {
+  TxAuxiliaryData,
   TxByronWitness,
   TxCertificate,
   TxDelegationCert,
@@ -36,6 +37,7 @@ import {
   CborizedTxStakepoolRegistrationCert,
   TxSigned,
   CborizedCliWitness,
+  CborizedVotingRegistrationMetadata,
 } from './types'
 import {CertificateType, HexString, TokenBundle} from '../../types'
 import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
@@ -49,6 +51,8 @@ function ShelleyTxAux({
   ttl,
   certificates,
   withdrawals,
+  auxiliaryDataHash,
+  auxiliaryData,
   validityIntervalStart,
 }: {
   inputs: TxInput[]
@@ -57,6 +61,8 @@ function ShelleyTxAux({
   ttl: number
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
+  auxiliaryDataHash: HexString
+  auxiliaryData: TxAuxiliaryData
   validityIntervalStart: number
 }): TxAux {
   function getId() {
@@ -69,6 +75,8 @@ function ShelleyTxAux({
           ttl,
           certificates,
           withdrawals,
+          auxiliaryDataHash,
+          auxiliaryData,
           validityIntervalStart,
         })
       ),
@@ -90,6 +98,9 @@ function ShelleyTxAux({
     if (withdrawals.length) {
       txBody.set(TxBodyKey.WITHDRAWALS, cborizeTxWithdrawals(withdrawals))
     }
+    if (auxiliaryDataHash) {
+      txBody.set(TxBodyKey.AUXILIARY_DATA_HASH, Buffer.from(auxiliaryDataHash, 'hex'))
+    }
     if (validityIntervalStart !== null) {
       txBody.set(TxBodyKey.VALIDITY_INTERVAL_START, validityIntervalStart)
     }
@@ -104,6 +115,8 @@ function ShelleyTxAux({
     ttl,
     certificates,
     withdrawals,
+    auxiliaryDataHash,
+    auxiliaryData,
     validityIntervalStart,
     encodeCBOR,
   }
@@ -292,14 +305,14 @@ function cborizeTxWitnesses(
 function ShelleySignedTransactionStructured(
   txAux: TxAux,
   txWitnesses: CborizedTxWitnesses,
-  txMeta: Buffer | null
+  txAuxiliaryData: CborizedVotingRegistrationMetadata | null
 ): CborizedTxSignedStructured {
   function getId(): HexString {
     return txAux.getId()
   }
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny([txAux, txWitnesses, txMeta])
+    return encoder.pushAny([txAux, txWitnesses, txAuxiliaryData])
   }
 
   return {
@@ -315,6 +328,32 @@ function cborizeCliWitness(txSigned: TxSigned): CborizedCliWitness {
   return [key, data]
 }
 
+const cborizeTxVotingRegistration = ({
+  votingPubKey,
+  stakePubKey,
+  rewardDestinationAddress,
+  nonce,
+}: TxAuxiliaryData): [number, Map<number, Buffer | BigInt>] => [
+  61284,
+  new Map<number, Buffer | BigInt>([
+    [1, Buffer.from(votingPubKey, 'hex')],
+    [2, Buffer.from(stakePubKey, 'hex')],
+    [3, bech32.decode(rewardDestinationAddress.address).data],
+    [4, Number(nonce)],
+  ]),
+]
+
+const cborizeTxAuxiliaryVotingData = (
+  txAuxiliaryData: TxAuxiliaryData,
+  signatureHex: string
+): CborizedVotingRegistrationMetadata => [
+  new Map<number, Map<number, Buffer | BigInt>>([
+    cborizeTxVotingRegistration(txAuxiliaryData),
+    [61285, new Map<number, Buffer>([[1, Buffer.from(signatureHex, 'hex')]])],
+  ]),
+  [],
+]
+
 export {
   ShelleyTxAux,
   cborizeTxWitnesses,
@@ -326,4 +365,6 @@ export {
   cborizeTxWithdrawals,
   cborizeSingleTxOutput,
   cborizeCliWitness,
+  cborizeTxVotingRegistration,
+  cborizeTxAuxiliaryVotingData,
 }

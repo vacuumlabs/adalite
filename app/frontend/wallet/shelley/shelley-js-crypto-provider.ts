@@ -6,11 +6,18 @@ import {
   xpubToHdPassphrase,
   base58,
   getBootstrapAddressAttributes,
+  blake2b,
 } from 'cardano-crypto.js'
 import {encode} from 'borc'
 
 import HdNode, {_HdNode} from '../helpers/hd-node'
-import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
+import {
+  ShelleySignedTransactionStructured,
+  cborizeTxWitnesses,
+  cborizeTxAuxiliaryVotingData,
+  cborizeTxVotingRegistration,
+  ShelleyTxAux,
+} from './shelley-transaction'
 
 import {isShelleyPath, xpub2ChainCode, xpub2pub} from './helpers/addresses'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
@@ -22,9 +29,16 @@ import {
   HexString,
   Address,
 } from '../../types'
-import {Network, TxByronWitness, TxShelleyWitness, WalletName} from '../types'
-import {TxSigned, TxAux, CborizedTxSignedStructured} from './types'
+import {Network, TxAuxiliaryData, TxByronWitness, TxShelleyWitness, WalletName} from '../types'
+import {
+  TxSigned,
+  TxAux,
+  CborizedTxSignedStructured,
+  CborizedVotingRegistrationMetadata,
+  FinalizedAuxiliaryDataTx,
+} from './types'
 import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
+import assertUnreachable from '../../helpers/assertUnreachable'
 
 type CryptoProviderParams = {
   walletSecretDef: any
@@ -136,15 +150,54 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     return {shelleyWitnesses, byronWitnesses}
   }
 
+  async function prepareVotingAuxiliaryData(
+    auxiliaryData: TxAuxiliaryData
+  ): Promise<CborizedVotingRegistrationMetadata> {
+    const cborizedRegistrationData = new Map([cborizeTxVotingRegistration(auxiliaryData)])
+    const registrationDataHash = blake2b(encode(cborizedRegistrationData), 32).toString('hex')
+    const stakingPath = auxiliaryData.rewardDestinationAddress.stakingPath
+    const registrationDataWitness = await prepareShelleyWitness(registrationDataHash, stakingPath)
+    const registrationDataSignature = registrationDataWitness.signature.toString('hex')
+    const txAuxiliaryData = cborizeTxAuxiliaryVotingData(auxiliaryData, registrationDataSignature)
+    return txAuxiliaryData
+  }
+
+  async function finalizeTxAuxWithMetadata(txAux: TxAux): Promise<FinalizedAuxiliaryDataTx> {
+    if (!txAux.auxiliaryData) {
+      return {
+        finalizedTxAux: txAux,
+        txAuxiliaryData: null,
+      }
+    }
+    switch (txAux.auxiliaryData.type) {
+      case 'CATALYST_VOTING': {
+        const txAuxiliaryData = await prepareVotingAuxiliaryData(txAux.auxiliaryData)
+        return {
+          finalizedTxAux: ShelleyTxAux({
+            ...txAux,
+            auxiliaryDataHash: blake2b(encode(txAuxiliaryData), 32).toString('hex'),
+          }),
+          txAuxiliaryData,
+        }
+      }
+      default:
+        return assertUnreachable(txAux.auxiliaryData.type)
+    }
+  }
+
   async function signTxGetStructured(
     txAux: TxAux,
     addressToPathMapper: AddressToPathMapper
   ): Promise<CborizedTxSignedStructured> {
-    const {shelleyWitnesses, byronWitnesses} = await prepareWitnesses(txAux, addressToPathMapper)
-    const txWitnesses = cborizeTxWitnesses(byronWitnesses, shelleyWitnesses)
-    const txMeta = null
+    const {finalizedTxAux, txAuxiliaryData} = await finalizeTxAuxWithMetadata(txAux)
 
-    return ShelleySignedTransactionStructured(txAux, txWitnesses, txMeta)
+    const {shelleyWitnesses, byronWitnesses} = await prepareWitnesses(
+      finalizedTxAux,
+      addressToPathMapper
+    )
+    const txWitnesses = cborizeTxWitnesses(byronWitnesses, shelleyWitnesses)
+
+    return ShelleySignedTransactionStructured(finalizedTxAux, txWitnesses, txAuxiliaryData)
   }
 
   function isFeatureSupported(feature: CryptoProviderFeature) {

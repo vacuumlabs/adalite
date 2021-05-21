@@ -96,6 +96,16 @@ const withdrawalSettings = {
   },
 }
 
+const votingSettings = {
+  voting: {
+    state: {},
+    votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
+    sendTransactionSummary: {
+      fee: 179772,
+    },
+  },
+}
+
 describe('Send ADA fee calculation', () => {
   Object.entries(sendAdaTxSettings).forEach(([name, setting]) =>
     it(`should calculate fee for tx with ${name}`, async () => {
@@ -125,6 +135,19 @@ describe('Withdrawal fee calculation', () => {
       await loadTestWallet(setting.state)
       await action.withdrawRewards(state)
       assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
+    })
+  )
+})
+
+describe('Voting fee calculation', () => {
+  Object.entries(votingSettings).forEach(([name, setting]) =>
+    it(`should calculate fee for tx with ${name}`, async () => {
+      await loadTestWallet(setting.state)
+      await action.registerVotingKey(state, {votingPubKey: setting.votingPubKey})
+      assert.deepEqual(
+        state.cachedTransactionSummaries[TxType.REGISTER_VOTING].fee,
+        setting.sendTransactionSummary.fee
+      )
     })
   )
 })
