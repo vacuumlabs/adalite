@@ -20,13 +20,19 @@
   }
 }
 
-.iframeWrapper {
-  box-sizing: content-box;
-  max-width: 568px;
-  width: 100%;
-  height: 398px;
+.navbarVersion {
   @media screen and (max-width: $breakpoint-mobile) {
-    box-sizing: border-box;
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+}
+
+.navbarWrapper {
+  height: 48px;
+  justify-content: flex-start;
+  @media screen and (max-width: $breakpoint-mobile) {
     height: unset;
+    justify-content: unset;
+    grid-template-rows: 48px auto;
   }
 }
