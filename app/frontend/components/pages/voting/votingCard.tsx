@@ -3,17 +3,13 @@ import actions from '../../../actions'
 import {useActions, useSelector} from '../../../helpers/connect'
 import tooltip from '../../common/tooltip'
 import {isVotingRegistrationOpen} from '../../../helpers/common'
-import {
-  hasStakingKey,
-  useActiveAccount,
-  useHasEnoughFundsForCatalyst,
-  usingHwWalletSelector,
-} from '../../../selectors'
+import {hasStakingKey, useActiveAccount, useHasEnoughFundsForCatalyst} from '../../../selectors'
 import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
 import styles from './voting.module.scss'
 import * as QRious from '../../../libs/qrious'
+import {WalletName} from '../../../wallet/types'
 
 const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   <div className={styles.catalystAppPair}>
@@ -33,8 +29,8 @@ const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
 
 const VotingCard = (): h.JSX.Element => {
   const {openVotingDialog} = useActions(actions)
-  const {usingHwWallet} = useSelector((state) => ({
-    usingHwWallet: usingHwWalletSelector(state),
+  const {hwWalletName} = useSelector((state) => ({
+    hwWalletName: state.hwWalletName,
   }))
   const hasEnoughFundsForCatalyst = useHasEnoughFundsForCatalyst()
   const activeAccount = useActiveAccount()
@@ -44,8 +40,8 @@ const VotingCard = (): h.JSX.Element => {
     if (!isVotingRegistrationOpen()) {
       return 'Voting is currently closed.\nPlease wait for the next round.'
     }
-    if (usingHwWallet) {
-      return 'Only mnemonic wallets can participate in Catalyst Fund4 Voting.'
+    if (hwWalletName === WalletName.TREZOR) {
+      return 'Only mnemonic and ledger wallets can participate in Catalyst Fund4 Voting.'
     }
     if (!hasEnoughFundsForCatalyst) {
       return `Only users with more than ${toAda(
