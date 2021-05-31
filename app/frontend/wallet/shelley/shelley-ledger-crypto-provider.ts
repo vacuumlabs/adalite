@@ -4,7 +4,6 @@ import LedgerTransportWebHid from '@ledgerhq/hw-transport-webhid'
 import Ledger, * as LedgerTypes from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
-import debugLog from '../../helpers/debugLog'
 import {
   ShelleySignedTransactionStructured,
   cborizeTxWitnesses,
@@ -15,7 +14,6 @@ import {
 import {isWindows, isOpera} from 'react-device-detect'
 import {hasRequiredVersion} from './helpers/version-check'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
-import {captureMessage} from '@sentry/browser'
 import {bech32} from 'cardano-crypto.js'
 import {
   bechAddressToHex,
@@ -79,31 +77,15 @@ const getLedgerTransport = async (forceWebUsb: boolean): Promise<any> => {
   }
 
   let transport
-  try {
-    const supportWebHid = await isWebHidSupported()
-    const supportWebUsb = await isWebUsbSupported()
+  const supportWebHid = await isWebHidSupported()
+  const supportWebUsb = await isWebUsbSupported()
 
-    if (supportWebHid) {
-      transport = await LedgerTransportWebHid.create()
-    } else if (supportWebUsb) {
-      transport = await LedgerTransportWebUsb.create()
-    } else {
-      transport = await LedgerTransportU2F.create()
-    }
-  } catch (hwTransportError) {
-    // fallback to U2F in any case
-    try {
-      transport = await LedgerTransportU2F.create()
-    } catch (u2fError) {
-      debugLog(u2fError)
-      captureMessage(
-        JSON.stringify({
-          u2fError: {name: u2fError.name, message: u2fError.message},
-          hwTransportError: {name: hwTransportError.name, message: hwTransportError.message},
-        })
-      )
-      throw hwTransportError
-    }
+  if (supportWebHid) {
+    transport = await LedgerTransportWebHid.create()
+  } else if (supportWebUsb) {
+    transport = await LedgerTransportWebUsb.create()
+  } else {
+    transport = await LedgerTransportU2F.create()
   }
 
   return transport
