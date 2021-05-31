@@ -1,5 +1,6 @@
 import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
-import LedgerTransportWebusb from '@ledgerhq/hw-transport-webusb'
+import LedgerTransportWebUsb from '@ledgerhq/hw-transport-webusb'
+import LedgerTransportWebHid from '@ledgerhq/hw-transport-webhid'
 import Ledger, * as LedgerTypes from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
@@ -63,21 +64,29 @@ import {
 import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import assertUnreachable from '../../helpers/assertUnreachable'
 
-const isWebUsbSupported = async () => {
-  const isSupported = await LedgerTransportWebusb.isSupported()
+const isWebUsbSupported = async (): Promise<boolean> => {
+  const isSupported = await LedgerTransportWebUsb.isSupported()
   return isSupported && platform.os.family !== 'Windows' && platform.name !== 'Opera'
+}
+
+const isWebHidSupported = async (): Promise<boolean> => {
+  return await LedgerTransportWebHid.isSupported()
 }
 
 const getLedgerTransport = async (forceWebUsb: boolean): Promise<any> => {
   if (forceWebUsb) {
-    return await LedgerTransportWebusb.create()
+    return await LedgerTransportWebUsb.create()
   }
 
   let transport
   try {
-    const support = await isWebUsbSupported()
-    if (support) {
-      transport = await LedgerTransportWebusb.create()
+    const supportWebHid = await isWebHidSupported()
+    const supportWebUsb = await isWebUsbSupported()
+
+    if (supportWebHid) {
+      transport = await LedgerTransportWebHid.create()
+    } else if (supportWebUsb) {
+      transport = await LedgerTransportWebUsb.create()
     } else {
       transport = await LedgerTransportU2F.create()
     }
