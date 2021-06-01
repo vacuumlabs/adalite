@@ -7,10 +7,8 @@ import {knownExternalErrors, InternalErrorReason} from '.'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
-const ledgerTroubleshootingSuggestion =
-  'If you are using Ledger, please make sure Ledger Live app is closed and try connecting your device using the "Connect with WebUSB" functionality (the button underneath "Unlock with Ledger"). For more information please read the section concerning Ledger in our troubleshooting suggestions.'
-const updateHwWalletAppSuggestion =
-  'If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.'
+const hwWalletTroubleshootingSuggestion =
+  'Make sure to use the latest available version of the Cardano app/firmware on your HW wallet and web browser. Also make sure other apps (e.g. Ledger Live) or websites interacting with your HW wallet are closed.'
 
 const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => string} = {
   [InternalErrorReason.SendAddressInvalidAddress]: () => 'Invalid address',
@@ -53,7 +51,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.TransactionRejectedByNetwork]: () =>
     'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
   [InternalErrorReason.TransactionRejectedWhileSigning]: ({message}) =>
-    `Transaction rejected while signing. ${message || updateHwWalletAppSuggestion}`,
+    `Transaction rejected while signing. ${message || hwWalletTroubleshootingSuggestion}`,
   [InternalErrorReason.TransactionNotFoundInBlockchainAfterSubmission]: ({txHash}) =>
     `TransactionNotFoundInBlockchainAfterSubmission: 
     Transaction ${txHash ||
@@ -139,11 +137,11 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     'TransactionCorrupted: Transaction assembling failure.',
   [InternalErrorReason.Error]: ({message}) => {
     const errors = {
-      'NotFoundError: The device was disconnected.': `${message}${ledgerTroubleshootingSuggestion}`,
-      'AbortError: The transfer was cancelled.': `${message}${ledgerTroubleshootingSuggestion}`,
+      'NotFoundError: The device was disconnected.': `${message} ${hwWalletTroubleshootingSuggestion}`,
+      'AbortError: The transfer was cancelled.': `${message} ${hwWalletTroubleshootingSuggestion}`,
       // an issue with CryptoToken extension allowing 2-step verification
       // https://askubuntu.com/questions/844090/what-is-cryptotokenextension-in-chromium-extensions
-      "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'chrome-extension://kmendfapggjehodndflmmgagdbamhnfd' in a call to 'postMessage'": `${message}${ledgerTroubleshootingSuggestion}`,
+      "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'chrome-extension://kmendfapggjehodndflmmgagdbamhnfd' in a call to 'postMessage'": `${message} ${hwWalletTroubleshootingSuggestion}`,
     }
     // we return undefined in case of unmached message on purpose since we
     // want to treat such errors as unexpected
@@ -187,12 +185,12 @@ const externalErrorMessages: {[key: string]: (params?: any) => string} = {
     return `TransportCanceledByUser: ${message}. ${errors[message] || ''}`
   },
   [knownExternalErrors.TransportError]: ({message}) =>
-    `TransportError: ${message}.If you are using a hardware wallet, please make sure you are using the latest version of the Cardano application.`,
+    `TransportError: ${message}. ${hwWalletTroubleshootingSuggestion}`,
   [knownExternalErrors.TransportStatusError]: ({message}) => {
     const errors = {
-      'Failed to sign with Ledger device: U2F DEVICE_INELIGIBLE': ledgerTroubleshootingSuggestion,
+      'Failed to sign with Ledger device: U2F DEVICE_INELIGIBLE': hwWalletTroubleshootingSuggestion,
     }
-    return `TransportError: ${message}. ${errors[message] || updateHwWalletAppSuggestion}`
+    return `TransportError: ${message}. ${errors[message] || hwWalletTroubleshootingSuggestion}`
   },
   [knownExternalErrors.TransportInterfaceNotAvailable]: ({message}) => {
     const errors = {
@@ -202,12 +200,12 @@ const externalErrorMessages: {[key: string]: (params?: any) => string} = {
     return `TransportInterfaceNotAvailable: ${message} ${errors[message] || ''}`
   },
   [knownExternalErrors.DisconnectedDeviceDuringOperation]: () =>
-    `DisconnectedDeviceDuringOperation: ${ledgerTroubleshootingSuggestion}`,
+    `DisconnectedDeviceDuringOperation: ${hwWalletTroubleshootingSuggestion}`,
   [knownExternalErrors.TransportWebUSBGestureRequired]: () =>
-    `TransportWebUSBGestureRequired: ${ledgerTroubleshootingSuggestion}`,
-  [knownExternalErrors.NotFoundError]: () => `NotFoundError: ${ledgerTroubleshootingSuggestion}`,
-  [knownExternalErrors.AbortError]: () => `NotFoundError: ${ledgerTroubleshootingSuggestion}`,
-  [knownExternalErrors.SecurityError]: () => `Access denied: ${ledgerTroubleshootingSuggestion}`,
+    `TransportWebUSBGestureRequired: ${hwWalletTroubleshootingSuggestion}`,
+  [knownExternalErrors.NotFoundError]: () => `NotFoundError: ${hwWalletTroubleshootingSuggestion}`,
+  [knownExternalErrors.AbortError]: () => `NotFoundError: ${hwWalletTroubleshootingSuggestion}`,
+  [knownExternalErrors.SecurityError]: () => `Access denied: ${hwWalletTroubleshootingSuggestion}`,
   [knownExternalErrors.RedundantStakePool]: () => 'This stake pool is already chosen.',
   [knownExternalErrors.DelegationFeeError]: () => 'Unsuccessful delegation fee calculation.',
   [knownExternalErrors.DeviceVersionUnsupported]: ({message}) =>

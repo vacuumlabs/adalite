@@ -8,6 +8,7 @@ const errorsWithHelp = new Set([
   'TransportWebUSBGestureRequired',
   'NotFoundError',
   'AbortError',
+  'TransportError',
   'Error',
 ])
 

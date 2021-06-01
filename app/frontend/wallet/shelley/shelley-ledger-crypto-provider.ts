@@ -1,3 +1,4 @@
+import Transport from '@ledgerhq/hw-transport'
 import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
 import LedgerTransportWebUsb from '@ledgerhq/hw-transport-webusb'
 import LedgerTransportWebHid from '@ledgerhq/hw-transport-webhid'
@@ -68,27 +69,41 @@ const isWebUsbSupported = async (): Promise<boolean> => {
 }
 
 const isWebHidSupported = async (): Promise<boolean> => {
-  return await LedgerTransportWebHid.isSupported()
+  // On Opera the device-selection pop-up appears but there's no apparent way to
+  // select the device, resulting in an "Operation rejected by user" error
+  const isSupported = await LedgerTransportWebHid.isSupported()
+  return isSupported && !isOpera
 }
 
-const getLedgerTransport = async (forceWebUsb: boolean): Promise<any> => {
-  if (forceWebUsb) {
-    return await LedgerTransportWebUsb.create()
+let _activeTransport: Transport | null = null
+const getLedgerTransport = async (forceWebUsb: boolean): Promise<Transport> => {
+  if (_activeTransport != null) {
+    /*
+     * this is needed for WebHID transport where .create() is not idempotent
+     * and requires closing the previous transport first. Relevant e.g. for
+     * wallet logout and repeated login
+     */
+    try {
+      await _activeTransport.close()
+    } finally {
+      _activeTransport = null
+    }
   }
 
-  let transport
   const supportWebHid = await isWebHidSupported()
   const supportWebUsb = await isWebUsbSupported()
 
-  if (supportWebHid) {
-    transport = await LedgerTransportWebHid.create()
+  if (forceWebUsb) {
+    _activeTransport = await LedgerTransportWebUsb.create()
+  } else if (supportWebHid) {
+    _activeTransport = await LedgerTransportWebHid.create()
   } else if (supportWebUsb) {
-    transport = await LedgerTransportWebUsb.create()
+    _activeTransport = await LedgerTransportWebUsb.create()
   } else {
-    transport = await LedgerTransportU2F.create()
+    _activeTransport = await LedgerTransportU2F.create()
   }
 
-  return transport
+  return _activeTransport
 }
 
 type CryptoProviderParams = {
