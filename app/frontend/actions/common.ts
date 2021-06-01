@@ -56,6 +56,7 @@ export default (store: Store) => {
       if (
         e.name !== InternalErrorReason.NetworkError &&
         e.name !== InternalErrorReason.ServerError &&
+        e.name !== InternalErrorReason.EpochBoundaryUnderway &&
         e.name !== InternalErrorReason.TxTooBig &&
         e.name !== InternalErrorReason.OutputTooBig
       ) {
