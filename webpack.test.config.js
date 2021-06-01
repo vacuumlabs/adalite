@@ -23,5 +23,8 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      react: 'preact/compat',
+    },
   },
 }
