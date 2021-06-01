@@ -51,7 +51,7 @@ module.exports = function(app, env) {
         isSameOrigin(req.get('origin'), backendConfig.ADALITE_SERVER_URL)
       ) {
         Sentry.captureException(new Error('TransactionSubmissionFailed'), {
-          contexts: [{...JSON.parse(errorMessage)}],
+          contexts: [{errorMessage}],
         })
       }
 
