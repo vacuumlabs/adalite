@@ -131,6 +131,7 @@ module.exports = {
       'unistore': `${__dirname}/app/frontend/libs/unistore`,
       'file-saver': `${__dirname}/app/frontend/libs/file-saver`,
       'qrious': `${__dirname}/app/frontend/libs/qrious`,
+      'react': 'preact/compat',
     },
     extensions: ['.tsx', '.ts', '.js', '.wasm'],
   },

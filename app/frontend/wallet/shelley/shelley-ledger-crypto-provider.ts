@@ -12,7 +12,7 @@ import {
   cborizeTxAuxiliaryVotingData,
   ShelleyTxAux,
 } from './shelley-transaction'
-import * as platform from 'platform'
+import {isWindows, isOpera} from 'react-device-detect'
 import {hasRequiredVersion} from './helpers/version-check'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
 import {captureMessage} from '@sentry/browser'
@@ -66,7 +66,7 @@ import assertUnreachable from '../../helpers/assertUnreachable'
 
 const isWebUsbSupported = async (): Promise<boolean> => {
   const isSupported = await LedgerTransportWebUsb.isSupported()
-  return isSupported && platform.os.family !== 'Windows' && platform.name !== 'Opera'
+  return isSupported && !isWindows && !isOpera
 }
 
 const isWebHidSupported = async (): Promise<boolean> => {
