@@ -38,7 +38,7 @@ const VotingCard = (): h.JSX.Element => {
 
   const getUnmetPreconditionMessage = (): string | null => {
     if (!isVotingRegistrationOpen()) {
-      return 'Voting is currently closed.\nPlease wait for the next round.'
+      return 'Voting is currently closed.\nRegistration for Fund4 starts on 3rd of June, 16:00 UTC.'
     }
     if (hwWalletName === WalletName.TREZOR) {
       return 'Only mnemonic and ledger wallets can participate in Catalyst Fund4 Voting.'
