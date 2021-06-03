@@ -22,7 +22,7 @@
     "@ledgerhq/hw-transport": "^5.51.1",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webhid": "^5.51.1",
-    "@ledgerhq/hw-transport-webusb": "^5.51.1",
+    "@ledgerhq/hw-transport-webusb": "^5.53.0",
     "@sentry/browser": "5.22.3",
     "@types/lodash": "^4.14.168",
     "bip39-light": "^1.0.7",
