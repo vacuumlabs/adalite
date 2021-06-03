@@ -139,6 +139,8 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     const errors = {
       'NotFoundError: The device was disconnected.': `${message} ${hwWalletTroubleshootingSuggestion}`,
       'AbortError: The transfer was cancelled.': `${message} ${hwWalletTroubleshootingSuggestion}`,
+      // happens sometimes for WebHID on MacOS
+      'NotAllowedError: Failed to open the device.': `${message} ${hwWalletTroubleshootingSuggestion}`,
       // an issue with CryptoToken extension allowing 2-step verification
       // https://askubuntu.com/questions/844090/what-is-cryptotokenextension-in-chromium-extensions
       "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'chrome-extension://kmendfapggjehodndflmmgagdbamhnfd' in a call to 'postMessage'": `${message} ${hwWalletTroubleshootingSuggestion}`,

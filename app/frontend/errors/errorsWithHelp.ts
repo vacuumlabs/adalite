@@ -7,6 +7,7 @@ const errorsWithHelp = new Set([
   'DisconnectedDeviceDuringOperation',
   'TransportWebUSBGestureRequired',
   'NotFoundError',
+  'NotAllowedError',
   'AbortError',
   'TransportError',
   'Error',
