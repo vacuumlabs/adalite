@@ -41,8 +41,9 @@ const QRPage = ({
         Scan this QR code using the Catalyst Voting Application and follow the instructions.
       </Alert>
       <Alert alertType="warning">
-        You will not be able to access this code after closing this dialog. Download this QR code as
-        a backup!
+        You will not be able to access this code after closing this dialog.{' '}
+        <strong>Download</strong> this QR code as a backup! Not having access to this QR code might{' '}
+        <strong>prevent you from participating</strong> in voting.
       </Alert>
       <div className={styles.votingQr} data-cy="VotingQRCode">
         <img src={QRCode} />
