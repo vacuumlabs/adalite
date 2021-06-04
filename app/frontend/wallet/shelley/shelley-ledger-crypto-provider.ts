@@ -1,7 +1,6 @@
 import Transport from '@ledgerhq/hw-transport'
 import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
 import LedgerTransportWebUsb from '@ledgerhq/hw-transport-webusb'
-import LedgerTransportWebHid from '@ledgerhq/hw-transport-webhid'
 import Ledger, * as LedgerTypes from '@cardano-foundation/ledgerjs-hw-app-cardano'
 import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
@@ -12,7 +11,6 @@ import {
   cborizeTxAuxiliaryVotingData,
   ShelleyTxAux,
 } from './shelley-transaction'
-import {isWindows, isOpera} from 'react-device-detect'
 import {hasRequiredVersion} from './helpers/version-check'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
 import {bech32} from 'cardano-crypto.js'
@@ -63,18 +61,6 @@ import {
 import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import assertUnreachable from '../../helpers/assertUnreachable'
 
-const isWebUsbSupported = async (): Promise<boolean> => {
-  const isSupported = await LedgerTransportWebUsb.isSupported()
-  return isSupported && !isWindows && !isOpera
-}
-
-const isWebHidSupported = async (): Promise<boolean> => {
-  // On Opera the device-selection pop-up appears but there's no apparent way to
-  // select the device, resulting in an "Operation rejected by user" error
-  const isSupported = await LedgerTransportWebHid.isSupported()
-  return isSupported && !isOpera
-}
-
 let _activeTransport: Transport | null = null
 const getLedgerTransport = async (forceWebUsb: boolean): Promise<Transport> => {
   if (_activeTransport != null) {
@@ -90,14 +76,7 @@ const getLedgerTransport = async (forceWebUsb: boolean): Promise<Transport> => {
     }
   }
 
-  const supportWebHid = await isWebHidSupported()
-  const supportWebUsb = await isWebUsbSupported()
-
   if (forceWebUsb) {
-    _activeTransport = await LedgerTransportWebUsb.create()
-  } else if (supportWebHid) {
-    _activeTransport = await LedgerTransportWebHid.create()
-  } else if (supportWebUsb) {
     _activeTransport = await LedgerTransportWebUsb.create()
   } else {
     _activeTransport = await LedgerTransportU2F.create()
