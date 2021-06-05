@@ -8,7 +8,7 @@ import {knownExternalErrors, InternalErrorReason} from '.'
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
 const hwWalletTroubleshootingSuggestion =
-  'Make sure to use the latest available version of the Cardano app/firmware on your HW wallet and web browser. Also make sure other apps (e.g. Ledger Live) or websites interacting with your HW wallet are closed.'
+  'Make sure other apps (e.g. Ledger Live) or websites interacting with your HW wallet are closed. Also make sure to use the latest available version of the Cardano app/firmware on your HW wallet and web browser. '
 
 const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => string} = {
   [InternalErrorReason.SendAddressInvalidAddress]: () => 'Invalid address',
