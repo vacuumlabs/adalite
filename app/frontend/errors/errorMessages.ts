@@ -153,12 +153,16 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
 
 const externalErrorMessages: {[key: string]: (params?: any) => string} = {
   [knownExternalErrors.DeviceStatusError]: ({message}) => {
+    const cardanoAppOpenSuggestion =
+      'Please make sure that the Cardano Ledger App is opened before initiating the connection.'
+
     const errors = {
-      'Ledger device: Wrong Ledger app':
-        'Please make sure that the Cardano Ledger App is opened before initiating the connection.',
-      'Ledger device: Device is locked': 'Please unlock your device.',
+      'Ledger device: Wrong Ledger app': `Ledger device: Wrong Ledger app. ${cardanoAppOpenSuggestion}`,
+      'Ledger device: Device is locked':
+        'Ledger device: Device is locked. Please unlock your device.',
+      'General error 0x6e01. Please consult https://github.com/cardano-foundation/ledger-app-cardano/blob/master/src/errors.h': `General error 0x6e01. ${cardanoAppOpenSuggestion}`,
     }
-    return `DeviceStatusError: ${message}. ${errors[message] || ''}`
+    return `DeviceStatusError: ${errors[message] || message}`
   },
   [knownExternalErrors.InvalidDataProviderInitilization]: () =>
     'Invalid data provider initilization',
