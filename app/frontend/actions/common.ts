@@ -11,7 +11,7 @@ import {
   VotingRegistrationTransactionSummary,
   WithdrawTransactionSummary,
 } from '../types'
-import {TxPlan, TxPlanResult} from '../wallet/shelley/shelley-transaction-planner'
+import {TxPlan, TxPlanResult} from '../wallet/shelley/transaction'
 import {InternalErrorReason} from '../errors'
 
 export default (store: Store) => {

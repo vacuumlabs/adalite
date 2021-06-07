@@ -21,7 +21,7 @@ import {
   getStakingXpub,
 } from './shelley/shelley-address-provider'
 
-import {selectMinimalTxPlan, TxPlan, TxPlanResult} from './shelley/shelley-transaction-planner'
+import {selectMinimalTxPlan, TxPlan, TxPlanResult} from './shelley/transaction'
 import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {

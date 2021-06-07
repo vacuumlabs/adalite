@@ -1,9 +1,6 @@
 import {AssetFamily, Lovelace, SendAmount, Address} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
-import {
-  computeMinUTxOLovelaceAmount,
-  computeRequiredTxFee,
-} from './shelley/shelley-transaction-planner'
+import {computeMinUTxOLovelaceAmount, computeRequiredTxFee} from './shelley/transaction'
 import {UTxO, TxOutput} from './types'
 import {aggregateTokenBundles} from './helpers/tokenFormater'
 import printAda from '../helpers/printAda'

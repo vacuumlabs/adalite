@@ -17,7 +17,7 @@ import {
   CryptoProviderFeature,
   TransactionSummary,
 } from '../types'
-import {TxPlan} from '../wallet/shelley/shelley-transaction-planner'
+import {TxPlan} from '../wallet/shelley/transaction'
 import {encode} from 'borc'
 import {InternalError, InternalErrorReason} from '../errors'
 import {usingHwWalletSelector} from '../selectors'

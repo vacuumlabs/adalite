@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {selectMinimalTxPlan} from '../../frontend/wallet/shelley/shelley-transaction-planner'
+import {selectMinimalTxPlan} from '../../frontend/wallet/shelley/transaction'
 import {AssetFamily, TxType} from '../..//frontend/types'
 
 const utxos = {

@@ -1,7 +1,7 @@
 import assert from 'assert'
 import {orderTokenBundle} from '../../frontend/wallet/helpers/tokenFormater'
 import {encodeAssetFingerprint} from '../../frontend/wallet/shelley/helpers/addresses'
-import {computeMinUTxOLovelaceAmount} from '../../frontend/wallet/shelley/shelley-transaction-planner'
+import {computeMinUTxOLovelaceAmount} from '../../frontend/wallet/shelley/transaction'
 
 describe('Token sorting', () => {
   it('should sort tokenBundle by policyId canonically', () => {

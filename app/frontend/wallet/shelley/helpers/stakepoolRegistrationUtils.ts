@@ -14,7 +14,7 @@ import {TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../../../fronte
 import {InternalError, InternalErrorReason} from '../../../errors'
 import {ensureIsSafeInt, parseStakepoolRegistrationCertificate} from './poolCertificateUtils'
 import * as _ from 'lodash'
-import {TxPlan} from '../shelley-transaction-planner'
+import {TxPlan} from '../transaction/types'
 import {encodeAddress} from './addresses'
 
 const validatePoolRegUnsignedTx = (unsignedTx: _UnsignedTxParsed) => {
