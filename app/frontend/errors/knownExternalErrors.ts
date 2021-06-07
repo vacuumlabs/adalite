@@ -21,4 +21,5 @@ export const knownExternalErrors = {
   DelegationFeeError: 'DelegationFeeError', // TODO: probably useless
   RedundantStakePool: 'RedundantStakePool', // TODO: probably useless
   DeviceVersionUnsupported: 'DeviceVersionUnsupported',
+  NotAllowedError: 'NotAllowedError',
 }

@@ -137,10 +137,6 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     'TransactionCorrupted: Transaction assembling failure.',
   [InternalErrorReason.Error]: ({message}) => {
     const errors = {
-      'NotFoundError: The device was disconnected.': `${message} ${hwWalletTroubleshootingSuggestion}`,
-      'AbortError: The transfer was cancelled.': `${message} ${hwWalletTroubleshootingSuggestion}`,
-      // happens sometimes for WebHID on MacOS
-      'NotAllowedError: Failed to open the device.': `${message} ${hwWalletTroubleshootingSuggestion}`,
       // an issue with CryptoToken extension allowing 2-step verification
       // https://askubuntu.com/questions/844090/what-is-cryptotokenextension-in-chromium-extensions
       "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'chrome-extension://kmendfapggjehodndflmmgagdbamhnfd' in a call to 'postMessage'": `${message} ${hwWalletTroubleshootingSuggestion}`,
@@ -212,6 +208,9 @@ const externalErrorMessages: {[key: string]: (params?: any) => string} = {
   [knownExternalErrors.NotFoundError]: () => `NotFoundError: ${hwWalletTroubleshootingSuggestion}`,
   [knownExternalErrors.AbortError]: () => `NotFoundError: ${hwWalletTroubleshootingSuggestion}`,
   [knownExternalErrors.SecurityError]: () => `Access denied: ${hwWalletTroubleshootingSuggestion}`,
+  // happens sometimes for WebHID on MacOS
+  [knownExternalErrors.NotAllowedError]: ({message}) =>
+    `Failed to open the device.': ${message} ${hwWalletTroubleshootingSuggestion}`,
   [knownExternalErrors.RedundantStakePool]: () => 'This stake pool is already chosen.',
   [knownExternalErrors.DelegationFeeError]: () => 'Unsuccessful delegation fee calculation.',
   [knownExternalErrors.DeviceVersionUnsupported]: ({message}) =>
