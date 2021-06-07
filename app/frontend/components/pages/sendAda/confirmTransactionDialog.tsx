@@ -221,9 +221,9 @@ const WithdrawReview = ({
       <div className="review">
         <div className="review-label">Address</div>
         <div className="review-address">
-          {transactionSummary.plan.change.address}
+          {transactionSummary.plan.change[0].address}
           <div className="review-address-verification">
-            <AddressVerification address={transactionSummary.plan.change.address} />
+            <AddressVerification address={transactionSummary.plan.change[0].address} />
           </div>
         </div>
         <div className="ada-label">Rewards</div>

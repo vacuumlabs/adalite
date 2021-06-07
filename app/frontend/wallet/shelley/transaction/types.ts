@@ -24,7 +24,7 @@ export type TxPlanResult =
 export interface TxPlan {
   inputs: Array<TxInput>
   outputs: Array<TxOutput>
-  change: TxOutput | null
+  change: Array<TxOutput>
   certificates: Array<TxCertificate>
   deposit: Lovelace
   additionalLovelaceAmount: Lovelace

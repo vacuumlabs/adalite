@@ -1,9 +1,11 @@
 import {AssetFamily, Lovelace, SendAmount, Address} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
-import {computeMinUTxOLovelaceAmount, computeRequiredTxFee} from './shelley/transaction'
+import {computeRequiredTxFee} from './shelley/transaction'
 import {UTxO, TxOutput} from './types'
 import {aggregateTokenBundles} from './helpers/tokenFormater'
 import printAda from '../helpers/printAda'
+import {MAX_OUTPUT_TOKENS} from './shelley/transaction/constants'
+import {createTokenChangeOutputs} from './shelley/transaction/utils'
 
 function getInputBalance(inputs: Array<UTxO>): Lovelace {
   return inputs.reduce((acc, input) => acc + input.coins, 0) as Lovelace
@@ -21,18 +23,26 @@ export const MaxAmountCalculator = () => {
         profitableInputs.map(({tokenBundle}) => tokenBundle)
       )
       const inputBalance = getInputBalance(profitableInputs)
-      const additionalLovelaceAmount =
+
+      const tokenChangeOutputs = createTokenChangeOutputs(
+        address,
+        inputsTokenBundle,
+        MAX_OUTPUT_TOKENS
+      )
+
+      const minimalTokenChangeLovelace: Lovelace =
         inputsTokenBundle.length > 0
-          ? computeMinUTxOLovelaceAmount(inputsTokenBundle)
+          ? (tokenChangeOutputs.reduce((acc, {coins}) => acc + coins, 0) as Lovelace)
           : (0 as Lovelace)
+
       // we also need a change output leaving tokenBundle in account
       // TODO: we should probably leave there sufficient amount of ada for sending them somewhere
       const outputs: TxOutput[] = [
         {isChange: false, address, coins: 0 as Lovelace, tokenBundle: []},
-        {isChange: false, address, coins: additionalLovelaceAmount, tokenBundle: inputsTokenBundle},
+        ...tokenChangeOutputs,
       ]
       const txFee = computeRequiredTxFee(profitableInputs, outputs)
-      const coins = Math.max(inputBalance - txFee - additionalLovelaceAmount, 0) as Lovelace
+      const coins = Math.max(inputBalance - txFee - minimalTokenChangeLovelace, 0) as Lovelace
 
       return {assetFamily: AssetFamily.ADA, coins, fieldValue: `${printAda(coins)}`}
     } else {

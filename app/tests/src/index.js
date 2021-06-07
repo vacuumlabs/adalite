@@ -34,6 +34,9 @@ describe('AdaLite Test Suite', () => {
   describe('Transaction planning', () => {
     require('./transaction-planner')
   })
+  describe('Change computing', () => {
+    require('./computeChange')
+  })
   describe('Ada parsing', () => {
     require('./helpers/parseCoins')
   })

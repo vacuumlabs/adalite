@@ -51,13 +51,15 @@ const transactionSettings = {
             tokenBundle: [],
           },
         ],
-        change: {
-          isChange: false,
-          address:
-            'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 8325150,
-          tokenBundle: inputTokens,
-        },
+        change: [
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 8325150,
+            tokenBundle: inputTokens,
+          },
+        ],
         certificates: [],
         deposit: 0,
         fee: 174850,
@@ -113,29 +115,31 @@ const transactionSettings = {
             ],
           },
         ],
-        change: {
-          isChange: false,
-          address:
-            'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 8341649,
-          tokenBundle: [
-            {
-              policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
-              assetName: '66697273746173736574',
-              quantity: 8,
-            },
-            {
-              policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
-              assetName: '7365636f6e646173736574',
-              quantity: 2,
-            },
-            {
-              policyId: '6b8d07d69639e9413dd637a1a815a7323c69c86abbafb66dbfdb1aa7',
-              assetName: '',
-              quantity: 2,
-            },
-          ],
-        },
+        change: [
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 8341649,
+            tokenBundle: [
+              {
+                policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
+                assetName: '66697273746173736574',
+                quantity: 8,
+              },
+              {
+                policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
+                assetName: '7365636f6e646173736574',
+                quantity: 2,
+              },
+              {
+                policyId: '6b8d07d69639e9413dd637a1a815a7323c69c86abbafb66dbfdb1aa7',
+                assetName: '',
+                quantity: 2,
+              },
+            ],
+          },
+        ],
         certificates: [],
         deposit: 0,
         fee: 176871,
@@ -169,13 +173,15 @@ const transactionSettings = {
           },
         ],
         outputs: [],
-        change: {
-          isChange: false,
-          address:
-            'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 7812011,
-          tokenBundle: inputTokens,
-        },
+        change: [
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 7812011,
+            tokenBundle: inputTokens,
+          },
+        ],
         certificates: [
           {
             type: 0,
@@ -218,13 +224,15 @@ const transactionSettings = {
           },
         ],
         outputs: [],
-        change: {
-          isChange: false,
-          address:
-            'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 14820844,
-          tokenBundle: inputTokens,
-        },
+        change: [
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 14820844,
+            tokenBundle: inputTokens,
+          },
+        ],
         certificates: [],
         deposit: 0,
         fee: 179156,
@@ -264,13 +272,15 @@ const transactionSettings = {
           },
         ],
         outputs: [],
-        change: {
-          isChange: false,
-          address:
-            'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-          coins: 9820228,
-          tokenBundle: inputTokens,
-        },
+        change: [
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 9820228,
+            tokenBundle: inputTokens,
+          },
+        ],
         certificates: [],
         deposit: 0,
         fee: 179772,

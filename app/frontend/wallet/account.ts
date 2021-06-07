@@ -237,26 +237,20 @@ const Account = ({
 
   async function prepareTxAux(txPlan: TxPlan, ttl?: number, validityIntervalStart?: number) {
     const {inputs, outputs, change, fee, certificates, withdrawals, auxiliaryData} = txPlan
-    const txOutputs = [...outputs]
     const stakingAddress = await myAddresses.getStakingAddress()
-    if (change) {
-      // TODO: do this with map
-      const changeOutput: TxOutput = {
-        ...change,
-        isChange: true,
-        spendingPath: myAddresses.getAddressToAbsPathMapper()(change.address),
-        stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
-      }
-      txOutputs.push(changeOutput)
-    }
-    // tll is null if it's deliberately empty
+    const changeOutputs: TxOutput[] = change.map((output) => ({
+      ...output,
+      isChange: true,
+      spendingPath: myAddresses.getAddressToAbsPathMapper()(output.address),
+      stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
+    }))
     const txTtl = ttl === undefined ? await calculateTtl() : ttl
     const txValidityIntervalStart = validityIntervalStart ?? null
     const mappedAuxiliaryData = mapAuxiliaryData(auxiliaryData)
 
     return ShelleyTxAux({
       inputs,
-      outputs: txOutputs,
+      outputs: [...outputs, ...changeOutputs],
       fee,
       ttl: txTtl,
       certificates,

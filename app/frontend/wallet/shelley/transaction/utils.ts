@@ -1,6 +1,7 @@
-import {CertificateType, Lovelace, TokenBundle} from '../../../types'
+import {Address, CertificateType, Lovelace, TokenBundle} from '../../../types'
 import {aggregateTokenBundles} from '../../helpers/tokenFormater'
 import {TxAuxiliaryData, TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../types'
+import {MIN_UTXO_VALUE} from './constants'
 import {estimateTxSize} from './estimateTxSize'
 
 export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace => {
@@ -8,7 +9,7 @@ export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace
   const quot = (x: number, y: number) => Math.floor(x / y)
   const roundupBytesToWords = (x: number) => quot(x + 7, 8)
   // TODO: this to network config or constants
-  const minUTxOValue = 1000000
+  const minUTxOValue = MIN_UTXO_VALUE
   // NOTE: should be 2, but a bug in Haskell set this to 0
   const coinSize = 0
   const txOutLenNoVal = 14
@@ -76,4 +77,23 @@ export function computeRequiredDeposit(certificates: Array<TxCertificate>): Love
     [CertificateType.STAKING_KEY_DEREGISTRATION]: -2000000,
   }
   return certificates.reduce((acc, {type}) => acc + CertificateDeposit[type], 0) as Lovelace
+}
+
+export const createTokenChangeOutputs = (
+  changeAddress: Address,
+  changeTokenBundle: TokenBundle,
+  maxOutputTokens: number
+): TxOutput[] => {
+  const nOutputs = Math.ceil(changeTokenBundle.length / maxOutputTokens)
+  const outputs: TxOutput[] = []
+  for (let i = 0; i < nOutputs; i++) {
+    const tokenBundle = changeTokenBundle.slice(i * maxOutputTokens, (i + 1) * maxOutputTokens)
+    outputs.push({
+      isChange: false,
+      address: changeAddress,
+      coins: computeMinUTxOLovelaceAmount(tokenBundle),
+      tokenBundle,
+    })
+  }
+  return outputs
 }
