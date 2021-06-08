@@ -8,7 +8,7 @@ import actions from '../../../actions'
 import {useState, useCallback} from 'preact/hooks'
 import {localStorageVars} from '../../../localStorage'
 import {isMobileOnly} from 'react-device-detect'
-import LedgerTransportationSelect from './ledgerTransportationSelect'
+import LedgerTransportSelect from './ledgerTransportSelect'
 import {LedgerTransportType} from '../../../../frontend/types'
 import styles from './hardwareAuth.module.scss'
 
@@ -85,7 +85,7 @@ const LoadByHardwareWalletSection = () => {
             {LedgerAffiliateLink('Support us by buying one')}
           </div>
           <div>
-            <LedgerTransportationSelect onSelect={setLedgerTransportType} />
+            <LedgerTransportSelect onSelect={setLedgerTransportType} />
             <button
               {...tooltip(
                 'Support for Ledger is temporarily disabled',

@@ -1,13 +1,13 @@
 import {h} from 'preact'
 import SearchableSelect from '../../common/searchableSelect'
-import {LedgerTransportType} from '../../../../frontend/types'
-import styles from './ledgerTransportationSelect.module.scss'
+import {LedgerTransportType} from '../../../types'
+import styles from './ledgerTransportSelect.module.scss'
 
 interface Props {
   onSelect: (ledgerTransportType: LedgerTransportType) => void
 }
 
-const LedgerTransportationSelect = ({onSelect}: Props) => {
+const LedgerTransportSelect = ({onSelect}: Props) => {
   const dropdownAssetItems = [
     LedgerTransportType.DEFAULT,
     LedgerTransportType.U2F,
@@ -33,4 +33,4 @@ const LedgerTransportationSelect = ({onSelect}: Props) => {
   )
 }
 
-export default LedgerTransportationSelect
+export default LedgerTransportSelect
