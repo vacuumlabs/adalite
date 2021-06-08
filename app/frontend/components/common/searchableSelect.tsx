@@ -1,13 +1,11 @@
 import {h} from 'preact'
-import {connect} from '../../helpers/connect'
-import actions from '../../actions'
-import {State} from '../../state'
 import {useEffect, useLayoutEffect, useRef, useState} from 'preact/hooks'
 import onSubTreeBlur from '../../../frontend/helpers/onSubTreeBlur'
 
 interface Props<T> {
   wrapperClassName?: string
   label?: string
+  labelClassName?: string
   defaultItem: T
   items: T[]
   displaySelectedItem: (t: T) => string | h.JSX.Element
@@ -15,8 +13,8 @@ interface Props<T> {
   displayItem: (t: T) => string | h.JSX.Element
   onSelect: (t: T) => void
   showSearch: boolean
-  searchPredicate: (query: string, t: T) => boolean
-  searchPlaceholder: string
+  searchPredicate?: (query: string, t: T) => boolean
+  searchPlaceholder?: string
   dropdownClassName?: string
   getDropdownWidth?: () => string
 }
@@ -25,7 +23,8 @@ interface Props<T> {
 const SearchableSelect = <T extends {}>({
   wrapperClassName,
   label,
-  defaultItem, // TODO: do we need this, should default item by in state of the parent component?
+  labelClassName,
+  defaultItem,
   items,
   displaySelectedItem,
   displaySelectedItemClassName,
@@ -41,9 +40,10 @@ const SearchableSelect = <T extends {}>({
   const dropdownEl = useRef<HTMLDivElement>(null)
   const wrapperEl = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
-  const [dropdownWidth, setDropdownWidth] = useState(getDropdownWidth())
+  const [dropdownWidth, setDropdownWidth] = useState(getDropdownWidth ? getDropdownWidth() : '')
   const [search, setSearch] = useState('')
-  const shouldShowItem = (item: T) => searchPredicate(search, item)
+  const [selectedItem, setSelectedItem] = useState(defaultItem)
+  const shouldShowItem = (item: T) => (searchPredicate ? searchPredicate(search, item) : true)
   const showDropdown = (bool: boolean) => {
     setVisible(bool)
     setSearch('')
@@ -78,14 +78,18 @@ const SearchableSelect = <T extends {}>({
       // @ts-ignore
       onfocusout={(e) => onSubTreeBlur(e, wrapperEl, () => showDropdown(false))}
     >
-      {label && <div className="searchable-select-label">{label}</div>}
+      {label && (
+        <div className={`searchable-select-label ${optionalClassName(labelClassName)}`}>
+          {label}
+        </div>
+      )}
       <div
         className={`searchable-select ${visible ? 'focus ' : ''}${optionalClassName(
           displaySelectedItemClassName
         )}`}
         onClick={() => showDropdown(!visible)}
       >
-        {displaySelectedItem(defaultItem)}
+        {displaySelectedItem(selectedItem)}
       </div>
       <div
         ref={dropdownEl}
@@ -101,7 +105,7 @@ const SearchableSelect = <T extends {}>({
             className="searchable-select-input"
             value={search}
             onInput={(event: any) => setSearch(event.target.value)}
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder != null ? searchPlaceholder : ''}
           />
         )}
         <div>
@@ -113,6 +117,7 @@ const SearchableSelect = <T extends {}>({
                 onClick={() => {
                   setVisible(false)
                   onSelect(item)
+                  setSelectedItem(item)
                 }}
               >
                 {displayItem(item)}
@@ -124,4 +129,4 @@ const SearchableSelect = <T extends {}>({
   )
 }
 
-export default connect((state: State) => ({}), actions)(SearchableSelect)
+export default SearchableSelect

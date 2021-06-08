@@ -231,10 +231,10 @@ const SendAdaPage = ({
     [updateAmount]
   )
 
-  const displayDropdownSelectedItem = ({assetName, policyId}: DropdownAssetItem) => (
+  const displayDropdownSelectedItem = ({assetName, policyId, type}: DropdownAssetItem) => (
     <div className="wrapper">
       {assetName}
-      {selectedAsset.type === AssetFamily.TOKEN && (
+      {type === AssetFamily.TOKEN && (
         <div className="hash">
           (<div className="ellipsis">{policyId}</div>)
         </div>
