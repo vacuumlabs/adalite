@@ -4,7 +4,7 @@ import onSubTreeBlur from '../../../frontend/helpers/onSubTreeBlur'
 
 interface Props<T> {
   wrapperClassName?: string
-  label?: string
+  label?: string | h.JSX.Element
   labelClassName?: string
   defaultItem: T
   items: T[]
