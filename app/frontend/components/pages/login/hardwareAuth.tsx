@@ -87,7 +87,6 @@ const LoadByHardwareWalletSection = () => {
             {LedgerAffiliateLink('Support us by buying one')}
           </div>
           <div>
-            <LedgerTransportSelect onSelect={setSelectedLedgerTransportType} />
             <button
               {...tooltip(
                 'Support for Ledger is temporarily disabled',
@@ -108,6 +107,20 @@ const LoadByHardwareWalletSection = () => {
                 <LedgerLogoWhite />
               </div>
             </button>
+            <div className={styles.transportWrapper}>
+              <div>
+                Transport
+                <a
+                  {...tooltip(
+                    'If the "default" option doesn\'t work for you, try selecting other options from the list',
+                    true
+                  )}
+                >
+                  <span className="show-info">{''}</span>
+                </a>
+              </div>
+              <LedgerTransportSelect onSelect={setSelectedLedgerTransportType} />
+            </div>
           </div>
         </div>
       </div>
