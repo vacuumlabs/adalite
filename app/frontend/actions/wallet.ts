@@ -8,7 +8,7 @@ import debugLog from '../helpers/debugLog'
 import getConversionRates from '../helpers/getConversionRates'
 
 import {ADALITE_CONFIG} from '../config'
-import {AccountInfo, Lovelace, AssetFamily, AuthMethodType} from '../types'
+import {AccountInfo, Lovelace, AssetFamily, AuthMethodType, LedgerTransportType} from '../types'
 import {initialState} from '../store'
 import {State, Store} from '../state'
 import errorActions from './error'
@@ -60,19 +60,24 @@ export default (store: Store) => {
     {
       cryptoProviderType,
       walletSecretDef,
-      forceWebUsb,
+      ledgerTransportType,
       shouldExportPubKeyBulk,
     }: {
       cryptoProviderType: CryptoProviderType
       walletSecretDef?: any // TODO: until now, arguments came in freestyle combinations, refactor
-      forceWebUsb?: boolean // into strict combinations and types
+      ledgerTransportType?: LedgerTransportType
       shouldExportPubKeyBulk: boolean
     }
   ) => {
     loadingAction(state, 'Loading wallet data...')
     setState({walletLoadingError: undefined})
     const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
-    const config = {...ADALITE_CONFIG, isShelleyCompatible, shouldExportPubKeyBulk}
+    const config = {
+      ...ADALITE_CONFIG,
+      isShelleyCompatible,
+      shouldExportPubKeyBulk,
+      ledgerTransportType,
+    }
     try {
       const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
         cryptoProviderType,
@@ -80,7 +85,6 @@ export default (store: Store) => {
           walletSecretDef,
           network: NETWORKS[ADALITE_CONFIG.ADALITE_NETWORK],
           config,
-          forceWebUsb, // TODO: into config
         }
       )
 

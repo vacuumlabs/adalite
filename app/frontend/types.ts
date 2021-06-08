@@ -106,6 +106,13 @@ export enum AuthMethodType {
   KEY_FILE = 'file',
 }
 
+export enum LedgerTransportType {
+  DEFAULT = 'Default',
+  U2F = 'U2F',
+  WEB_USB = 'WebUSB',
+  WEB_HID = 'WebHID',
+}
+
 export enum ScreenType {
   MOBILE,
   TABLET,

@@ -36,6 +36,7 @@ import {
   CertificateType,
   TokenBundle,
   Address,
+  LedgerTransportType,
 } from '../../types'
 import {
   Network,
@@ -76,7 +77,7 @@ const isWebHidSupported = async (): Promise<boolean> => {
 }
 
 let _activeTransport: Transport | null = null
-const getLedgerTransport = async (forceWebUsb: boolean): Promise<Transport> => {
+const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
   if (_activeTransport != null) {
     /*
      * this is needed for WebHID transport where .create() is not idempotent
@@ -93,14 +94,24 @@ const getLedgerTransport = async (forceWebUsb: boolean): Promise<Transport> => {
   const supportWebHid = await isWebHidSupported()
   const supportWebUsb = await isWebUsbSupported()
 
-  if (forceWebUsb) {
-    _activeTransport = await LedgerTransportWebUsb.create()
-  } else if (supportWebHid) {
-    _activeTransport = await LedgerTransportWebHid.create()
-  } else if (supportWebUsb) {
-    _activeTransport = await LedgerTransportWebUsb.create()
-  } else {
-    _activeTransport = await LedgerTransportU2F.create()
+  switch (ledgerTransportType) {
+    case LedgerTransportType.WEB_HID:
+      _activeTransport = await LedgerTransportWebHid.create()
+      break
+    case LedgerTransportType.U2F:
+      _activeTransport = await LedgerTransportU2F.create()
+      break
+    case LedgerTransportType.WEB_USB:
+      _activeTransport = await LedgerTransportWebUsb.create()
+      break
+    default:
+      if (supportWebHid) {
+        _activeTransport = await LedgerTransportWebHid.create()
+      } else if (supportWebUsb) {
+        _activeTransport = await LedgerTransportWebUsb.create()
+      } else {
+        _activeTransport = await LedgerTransportU2F.create()
+      }
   }
 
   return _activeTransport
@@ -109,15 +120,13 @@ const getLedgerTransport = async (forceWebUsb: boolean): Promise<Transport> => {
 type CryptoProviderParams = {
   network: Network
   config: any
-  forceWebUsb: boolean
 }
 
 const ShelleyLedgerCryptoProvider = async ({
   network,
   config,
-  forceWebUsb,
 }: CryptoProviderParams): Promise<CryptoProvider> => {
-  const transport = await getLedgerTransport(forceWebUsb)
+  const transport = await getLedgerTransport(config.ledgerTransportType)
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
   const derivationScheme = derivationSchemes.v2

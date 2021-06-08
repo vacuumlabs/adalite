@@ -8,12 +8,16 @@ import actions from '../../../actions'
 import {useState, useCallback} from 'preact/hooks'
 import {localStorageVars} from '../../../localStorage'
 import {isMobileOnly} from 'react-device-detect'
+import LedgerTransportationSelect from './ledgerTransportationSelect'
+import {LedgerTransportType} from '../../../../frontend/types'
+import styles from './hardwareAuth.module.scss'
 
 const LoadByHardwareWalletSection = () => {
   const {loadWallet} = useActions(actions)
   const [enableBulkExport, setBulkExport] = useState(
     window.localStorage.getItem(localStorageVars.BULK_EXPORT) !== 'true'
   )
+  const [ledgerTransportType, setLedgerTransportType] = useState(LedgerTransportType.DEFAULT)
   const toggleBulkExport = useCallback(() => {
     window.localStorage.setItem(localStorageVars.BULK_EXPORT, `${enableBulkExport}`)
     setBulkExport(!enableBulkExport)
@@ -80,40 +84,29 @@ const LoadByHardwareWalletSection = () => {
           <div className="authentication-paragraph small">
             {LedgerAffiliateLink('Support us by buying one')}
           </div>
-          <button
-            {...tooltip(
-              'Support for Ledger is temporarily disabled',
-              !ADALITE_CONFIG.ADALITE_ENABLE_LEDGER
-            )}
-            disabled={!ADALITE_CONFIG.ADALITE_ENABLE_LEDGER}
-            className="button primary ledger thin-data-balloon"
-            onClick={() =>
-              loadWallet({
-                cryptoProviderType: CryptoProviderType.LEDGER,
-                shouldExportPubKeyBulk: enableBulkExport,
-              })
-            }
-          >
-            Unlock with
-            <div className="ledger-logo-container">
-              <LedgerLogoWhite />
-            </div>
-          </button>
-          <div className="authentication-paragraph small">
-            alternatively, if the above does not work:
+          <div>
+            <LedgerTransportationSelect onSelect={setLedgerTransportType} />
+            <button
+              {...tooltip(
+                'Support for Ledger is temporarily disabled',
+                !ADALITE_CONFIG.ADALITE_ENABLE_LEDGER
+              )}
+              disabled={!ADALITE_CONFIG.ADALITE_ENABLE_LEDGER}
+              className={`button primary ledger thin-data-balloon ${styles.ledgerButton}`}
+              onClick={() =>
+                loadWallet({
+                  cryptoProviderType: CryptoProviderType.LEDGER,
+                  shouldExportPubKeyBulk: enableBulkExport,
+                  ledgerTransportType,
+                })
+              }
+            >
+              Unlock with
+              <div className="ledger-logo-container">
+                <LedgerLogoWhite />
+              </div>
+            </button>
           </div>
-          <button
-            className="button secondary ledger-webusb"
-            onClick={() =>
-              loadWallet({
-                cryptoProviderType: CryptoProviderType.LEDGER,
-                forceWebUsb: true,
-                shouldExportPubKeyBulk: enableBulkExport,
-              })
-            }
-          >
-            Connect with WebUSB
-          </button>
         </div>
       </div>
       <div className="authentication-hw-bulk-public-export">
