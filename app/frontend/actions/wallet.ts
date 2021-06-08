@@ -84,11 +84,17 @@ export default (store: Store) => {
       shouldExportPubKeyBulk,
       ledgerTransportType,
     }
+
     try {
-      loadingAction(
-        state,
-        'Please allow access to your device. Select your device in dropdown and then click Connect.'
-      )
+      if (
+        ledgerTransportType === LedgerTransportType.WEB_HID ||
+        ledgerTransportType === LedgerTransportType.WEB_USB
+      ) {
+        loadingAction(state, [
+          'Loading wallet data...',
+          'If a prompt appears, click on the Ledger device, then click "Connect."',
+        ])
+      }
       const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
         cryptoProviderType,
         {
