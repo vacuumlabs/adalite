@@ -79,6 +79,10 @@ export default (store: Store) => {
       ledgerTransportType,
     }
     try {
+      loadingAction(
+        state,
+        'Please allow access to your device. Select your device in dropdown and then click Connect.'
+      )
       const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
         cryptoProviderType,
         {
@@ -87,6 +91,7 @@ export default (store: Store) => {
           config,
         }
       )
+      loadingAction(state, 'Loading wallet data...')
 
       setWallet(
         await ShelleyWallet({
