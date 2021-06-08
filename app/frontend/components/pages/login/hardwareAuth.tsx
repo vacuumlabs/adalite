@@ -17,7 +17,9 @@ const LoadByHardwareWalletSection = () => {
   const [enableBulkExport, setBulkExport] = useState(
     window.localStorage.getItem(localStorageVars.BULK_EXPORT) !== 'true'
   )
-  const [ledgerTransportType, setLedgerTransportType] = useState(LedgerTransportType.DEFAULT)
+  const [selectedLedgerTransportType, setSelectedLedgerTransportType] = useState(
+    LedgerTransportType.DEFAULT
+  )
   const toggleBulkExport = useCallback(() => {
     window.localStorage.setItem(localStorageVars.BULK_EXPORT, `${enableBulkExport}`)
     setBulkExport(!enableBulkExport)
@@ -85,7 +87,7 @@ const LoadByHardwareWalletSection = () => {
             {LedgerAffiliateLink('Support us by buying one')}
           </div>
           <div>
-            <LedgerTransportSelect onSelect={setLedgerTransportType} />
+            <LedgerTransportSelect onSelect={setSelectedLedgerTransportType} />
             <button
               {...tooltip(
                 'Support for Ledger is temporarily disabled',
@@ -97,7 +99,7 @@ const LoadByHardwareWalletSection = () => {
                 loadWallet({
                   cryptoProviderType: CryptoProviderType.LEDGER,
                   shouldExportPubKeyBulk: enableBulkExport,
-                  ledgerTransportType,
+                  selectedLedgerTransportType,
                 })
               }
             >

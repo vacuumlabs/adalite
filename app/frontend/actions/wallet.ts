@@ -17,6 +17,8 @@ import loadingActions from './loading'
 import {saveAs} from '../libs/file-saver'
 import {exportWalletSecretDef} from '../wallet/keypass-json'
 
+import {getDefaultTransport} from '../../frontend/helpers/transports'
+
 // TODO: (refactor), this should not call "setState" as it is not action
 const fetchConversionRates = async (conversionRates, setState) => {
   try {
@@ -60,18 +62,22 @@ export default (store: Store) => {
     {
       cryptoProviderType,
       walletSecretDef,
-      ledgerTransportType,
+      selectedLedgerTransportType,
       shouldExportPubKeyBulk,
     }: {
       cryptoProviderType: CryptoProviderType
       walletSecretDef?: any // TODO: until now, arguments came in freestyle combinations, refactor
-      ledgerTransportType?: LedgerTransportType
+      selectedLedgerTransportType?: LedgerTransportType
       shouldExportPubKeyBulk: boolean
     }
   ) => {
     loadingAction(state, 'Loading wallet data...')
     setState({walletLoadingError: undefined})
     const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
+    const ledgerTransportType =
+      selectedLedgerTransportType === LedgerTransportType.DEFAULT
+        ? await getDefaultTransport()
+        : selectedLedgerTransportType
     const config = {
       ...ADALITE_CONFIG,
       isShelleyCompatible,

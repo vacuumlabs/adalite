@@ -12,7 +12,6 @@ import {
   cborizeTxAuxiliaryVotingData,
   ShelleyTxAux,
 } from './shelley-transaction'
-import {isWindows, isOpera} from 'react-device-detect'
 import {hasRequiredVersion} from './helpers/version-check'
 import {LEDGER_VERSIONS, LEDGER_ERRORS} from '../constants'
 import {bech32} from 'cardano-crypto.js'
@@ -64,18 +63,6 @@ import {
 import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import assertUnreachable from '../../helpers/assertUnreachable'
 
-const isWebUsbSupported = async (): Promise<boolean> => {
-  const isSupported = await LedgerTransportWebUsb.isSupported()
-  return isSupported && !isWindows && !isOpera
-}
-
-const isWebHidSupported = async (): Promise<boolean> => {
-  // On Opera the device-selection pop-up appears but there's no apparent way to
-  // select the device, resulting in an "Operation rejected by user" error
-  const isSupported = await LedgerTransportWebHid.isSupported()
-  return isSupported && !isOpera
-}
-
 let _activeTransport: Transport | null = null
 const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
   if (_activeTransport != null) {
@@ -91,9 +78,6 @@ const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Pro
     }
   }
 
-  const supportWebHid = await isWebHidSupported()
-  const supportWebUsb = await isWebUsbSupported()
-
   switch (ledgerTransportType) {
     case LedgerTransportType.WEB_HID:
       _activeTransport = await LedgerTransportWebHid.create()
@@ -105,13 +89,7 @@ const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Pro
       _activeTransport = await LedgerTransportWebUsb.create()
       break
     default:
-      if (supportWebHid) {
-        _activeTransport = await LedgerTransportWebHid.create()
-      } else if (supportWebUsb) {
-        _activeTransport = await LedgerTransportWebUsb.create()
-      } else {
-        _activeTransport = await LedgerTransportU2F.create()
-      }
+      break
   }
 
   return _activeTransport
