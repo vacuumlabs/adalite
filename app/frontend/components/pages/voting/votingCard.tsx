@@ -1,6 +1,6 @@
 import {h} from 'preact'
 import actions from '../../../actions'
-import {useActions, useSelector} from '../../../helpers/connect'
+import {useActions} from '../../../helpers/connect'
 import tooltip from '../../common/tooltip'
 import {isVotingRegistrationOpen} from '../../../helpers/common'
 import {hasStakingKey, useActiveAccount, useHasEnoughFundsForCatalyst} from '../../../selectors'
@@ -9,7 +9,6 @@ import {Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
 import styles from './voting.module.scss'
 import * as QRious from '../../../libs/qrious'
-import {WalletName} from '../../../wallet/types'
 
 const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   <div className={styles.catalystAppPair}>
@@ -29,9 +28,6 @@ const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
 
 const VotingCard = (): h.JSX.Element => {
   const {openVotingDialog} = useActions(actions)
-  const {hwWalletName} = useSelector((state) => ({
-    hwWalletName: state.hwWalletName,
-  }))
   const hasEnoughFundsForCatalyst = useHasEnoughFundsForCatalyst()
   const activeAccount = useActiveAccount()
   const hasRegisteredStakingKey = hasStakingKey(activeAccount)
@@ -39,9 +35,6 @@ const VotingCard = (): h.JSX.Element => {
   const getUnmetPreconditionMessage = (): string | null => {
     if (!isVotingRegistrationOpen()) {
       return 'Voting is currently closed.\nRegistration for Fund4 starts on 3rd of June, 16:00 UTC.'
-    }
-    if (hwWalletName === WalletName.TREZOR) {
-      return 'Only mnemonic and ledger wallets can participate in Catalyst Fund4 Voting.'
     }
     if (!hasEnoughFundsForCatalyst) {
       return `Only users with more than ${toAda(
