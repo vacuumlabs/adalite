@@ -108,7 +108,7 @@ const LoadByHardwareWalletSection = () => {
               </div>
             </button>
             <div className={styles.transportWrapper}>
-              <div>
+              <div className={styles.transportLabel}>
                 Transport
                 <a
                   {...tooltip(
