@@ -8,9 +8,9 @@ interface Props<T> {
   labelClassName?: string
   defaultItem: T
   items: T[]
-  displaySelectedItem: (t: T) => string | h.JSX.Element
+  displaySelectedItem?: (t: T) => string | h.JSX.Element
   displaySelectedItemClassName?: string
-  displayItem: (t: T) => string | h.JSX.Element
+  displayItem?: (t: T) => string | h.JSX.Element
   onSelect: (t: T) => void
   showSearch: boolean
   searchPredicate?: (query: string, t: T) => boolean
@@ -89,7 +89,7 @@ const SearchableSelect = <T extends {}>({
         )}`}
         onClick={() => showDropdown(!visible)}
       >
-        {displaySelectedItem(selectedItem)}
+        {displaySelectedItem ? displaySelectedItem(selectedItem) : <div>{selectedItem}</div>}
       </div>
       <div
         ref={dropdownEl}
@@ -120,7 +120,7 @@ const SearchableSelect = <T extends {}>({
                   setSelectedItem(item)
                 }}
               >
-                {displayItem(item)}
+                {displayItem ? displayItem(item) : <div>{item}</div>}
               </div>
             ))}
         </div>

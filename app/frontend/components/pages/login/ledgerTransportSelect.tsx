@@ -15,16 +15,12 @@ const LedgerTransportSelect = ({onSelect}: Props) => {
     LedgerTransportType.WEB_HID,
   ]
 
-  const displayItem = (item: LedgerTransportType) => <div>{item}</div>
-
   return (
     <SearchableSelect
       wrapperClassName={`no-margin ${styles.wrapper}`}
       defaultItem={LedgerTransportType.DEFAULT}
-      displaySelectedItem={displayItem}
       displaySelectedItemClassName={`input dropdown ${styles.dropdown}`}
       items={dropdownAssetItems}
-      displayItem={displayItem}
       onSelect={onSelect}
       showSearch={false}
     />
