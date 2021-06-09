@@ -330,8 +330,7 @@ const ShelleyTrezorCryptoProvider = async ({
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             rewardAddressParameters: {
               addressType: AddressTypes.REWARD,
-              path: txAuxiliaryData.rewardDestinationAddress.stakingPath, //TODO: required now
-              stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+              path: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             },
             nonce: `${txAuxiliaryData.nonce}`,
           },
