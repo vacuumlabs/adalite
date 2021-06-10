@@ -50,6 +50,24 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">06/10/2021</h3>
+            <Article title="Catalyst voting for hardware wallets" icon="">
+              We implemented the catalyst voting support for hardware wallets (Ledger, Trezor) and
+              mnemonic wallets. The voting feature can be found in the "Voting" interface. To
+              participate, follow the instructions within Adalite and the registration dialog.
+              Alternatively, consult our{' '}
+              <a
+                href="https://adalite.medium.com/catalyst-voting-registration-on-adalite-71d975f75755"
+                target="_blank"
+                rel="noopener"
+              >
+                medium article
+              </a>{' '}
+              on how to register for Catalyst voting using Adalite. The registration ends on 11th of
+              June, during which a snapshot of your balance is taken. Make sure to possess at least
+              500 ADA on your wallet at that time if you want your registration to count.
+            </Article>
+            <hr className="info-separator" />
             <h3 className="info-date">03/01/2021</h3>
             <Article title="Mary hard fork update" icon="">
               We successfully updated AdaLite to support Mary hard fork. No action needed by the
