@@ -1,7 +1,7 @@
 import {Store, State} from '../state'
 
 export default ({setState}: Store) => {
-  const loadingAction = (state: State, message: string | string[]) => {
+  const loadingAction = (state: State, message: string) => {
     return setState({
       loading: true,
       loadingMessage: message,

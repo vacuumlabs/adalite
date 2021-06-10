@@ -89,10 +89,10 @@ export default (store: Store) => {
         ledgerTransportType === LedgerTransportType.WEB_HID ||
         ledgerTransportType === LedgerTransportType.WEB_USB
       ) {
-        loadingAction(state, [
-          'Loading wallet data...',
-          'If a prompt appears, click on the Ledger device, then click "Connect."',
-        ])
+        loadingAction(
+          state,
+          'Loading wallet data...\nIf a prompt appears, click on the Ledger device, then click "Connect."'
+        )
       }
       const cryptoProvider = await ShelleyCryptoProviderFactory.getCryptoProvider(
         cryptoProviderType,

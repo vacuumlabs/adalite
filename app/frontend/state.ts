@@ -19,7 +19,7 @@ import {
 export interface State {
   // general
   loading: boolean
-  loadingMessage: string | string[]
+  loadingMessage: string
   alert: any // TODO
   sendSentry: {
     event?: any
