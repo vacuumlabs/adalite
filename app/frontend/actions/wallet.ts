@@ -16,8 +16,7 @@ import loadingActions from './loading'
 
 import {saveAs} from '../libs/file-saver'
 import {exportWalletSecretDef} from '../wallet/keypass-json'
-
-import {getDefaultTransport} from '../../frontend/helpers/transports'
+import {getDefaultLedgerTransportType} from '../wallet/shelley/helpers/transports'
 
 // TODO: (refactor), this should not call "setState" as it is not action
 const fetchConversionRates = async (conversionRates, setState) => {
@@ -76,7 +75,7 @@ export default (store: Store) => {
     const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
     const ledgerTransportType =
       selectedLedgerTransportType === LedgerTransportType.DEFAULT
-        ? await getDefaultTransport()
+        ? await getDefaultLedgerTransportType()
         : selectedLedgerTransportType
     const config = {
       ...ADALITE_CONFIG,

@@ -109,7 +109,7 @@ const LoadByHardwareWalletSection = () => {
             </button>
             <div className={styles.transportWrapper}>
               <div className={styles.transportLabel}>
-                Transport
+                Method
                 <a
                   {...tooltip(
                     'If the "default" option doesn\'t work for you, try selecting other options from the list',
