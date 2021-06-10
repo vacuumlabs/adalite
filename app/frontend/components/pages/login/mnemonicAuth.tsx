@@ -13,19 +13,14 @@ import {useEffect, useRef} from 'preact/hooks'
 const {ADALITE_DEMO_WALLET_MNEMONIC} = ADALITE_CONFIG
 
 const MnemonicAuth = (): h.JSX.Element => {
-  const {
-    formData,
-    shouldShowMnemonicInfoAlert,
-    autoLogin,
-    displayWelcome,
-    shouldShowDemoWalletWarningDialog,
-  } = useSelector((state) => ({
-    formData: state.mnemonicAuthForm,
-    displayWelcome: state.displayWelcome,
-    shouldShowDemoWalletWarningDialog: state.shouldShowDemoWalletWarningDialog,
-    shouldShowMnemonicInfoAlert: state.shouldShowMnemonicInfoAlert,
-    autoLogin: state.autoLogin,
-  }))
+  const {formData, shouldShowMnemonicInfoAlert, autoLogin, displayWelcome} = useSelector(
+    (state) => ({
+      formData: state.mnemonicAuthForm,
+      displayWelcome: state.displayWelcome,
+      shouldShowMnemonicInfoAlert: state.shouldShowMnemonicInfoAlert,
+      autoLogin: state.autoLogin,
+    })
+  )
   const {
     updateMnemonic,
     updateMnemonicValidationError,
@@ -37,10 +32,10 @@ const MnemonicAuth = (): h.JSX.Element => {
   const goBtn = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    if (!formData.mnemonicInputValue && !displayWelcome && !shouldShowDemoWalletWarningDialog) {
+    if (!formData.mnemonicInputValue && !displayWelcome) {
       mnemonicField.current.focus()
     }
-  }, [formData.mnemonicInputValue, displayWelcome, shouldShowDemoWalletWarningDialog])
+  }, [formData.mnemonicInputValue, displayWelcome])
 
   useEffect(() => {
     // meant only for development in order to speed up the process of unlocking wallet

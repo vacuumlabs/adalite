@@ -11,11 +11,10 @@ import StakingPage from './pages/staking/stakingPage'
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
   walletIsLoaded: state.walletIsLoaded,
-  shouldShowDemoWalletWarningDialog: state.shouldShowDemoWalletWarningDialog,
-}))(({pathname, walletIsLoaded, shouldShowDemoWalletWarningDialog}) => {
+}))(({pathname, walletIsLoaded}) => {
   // unlock not wrapped in main
   const currentTab = pathname.split('/')[1]
-  if ((!walletIsLoaded || shouldShowDemoWalletWarningDialog) && currentTab !== 'staking') {
+  if (!walletIsLoaded && currentTab !== 'staking') {
     window.history.pushState({}, '/', '/')
     return <LoginPage />
   }

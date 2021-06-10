@@ -42,7 +42,6 @@ export interface State {
   // login / logout
   autoLogin: boolean
   authMethod: AuthMethodType | null
-  shouldShowDemoWalletWarningDialog: boolean
   logoutNotificationOpen: boolean
   walletIsLoaded: boolean
   isShelleyCompatible: any
@@ -155,7 +154,6 @@ const initialState: State = {
   authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash)
     ? AuthMethodType.HW_WALLET
     : null,
-  shouldShowDemoWalletWarningDialog: false,
   logoutNotificationOpen: false,
   walletIsLoaded: false,
   isShelleyCompatible: true,

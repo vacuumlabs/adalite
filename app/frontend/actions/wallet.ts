@@ -108,7 +108,6 @@ export default (store: Store) => {
         await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)
       ).rootSecret
       const isDemoWallet = walletSecretDef && walletSecretDef.rootSecret.equals(demoRootSecret)
-      const autoLogin = state.autoLogin
       setState({
         validStakepoolDataProvider,
         accountsInfo,
@@ -123,7 +122,6 @@ export default (store: Store) => {
         },
         hwWalletName,
         isDemoWallet,
-        shouldShowDemoWalletWarningDialog: isDemoWallet && !autoLogin,
         shouldShowNonShelleyCompatibleDialog: !isShelleyCompatible,
         shouldShowWantedAddressesModal,
         shouldShowGenerateMnemonicDialog: false,

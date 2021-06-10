@@ -23,7 +23,6 @@ const expectedStateChanges = {
   },
   hwWalletName: null,
   isDemoWallet: false,
-  shouldShowDemoWalletWarningDialog: false,
   shouldShowGenerateMnemonicDialog: false,
   // send form
   sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0},

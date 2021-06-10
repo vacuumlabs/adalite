@@ -98,12 +98,6 @@ export default (store: Store) => {
     setState({authMethod})
   }
 
-  const closeDemoWalletWarningDialog = (state) => {
-    setState({
-      shouldShowDemoWalletWarningDialog: false,
-    })
-  }
-
   const closeNonShelleyCompatibleDialog = (state) => {
     setState({
       shouldShowNonShelleyCompatibleDialog: false,
@@ -142,7 +136,6 @@ export default (store: Store) => {
     closeInfoModal,
     closePremiumBanner,
     setAuthMethod,
-    closeDemoWalletWarningDialog,
     closeNonShelleyCompatibleDialog,
     openNonShelleyCompatibleDialog,
     closeWalletLoadingErrorModal,

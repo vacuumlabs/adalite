@@ -2,11 +2,9 @@ import {h} from 'preact'
 import {useState, useEffect} from 'preact/hooks'
 import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
-import isLeftClick from '../../../helpers/isLeftClick'
 import KeyFileAuth from './keyFileAuth'
 import MnemonicAuth from './mnemonicAuth'
 import HardwareAuth from './hardwareAuth'
-import DemoWalletWarningDialog from './demoWalletWarningDialog'
 import GenerateMnemonicDialog from './generateMnemonicDialog'
 import LogoutNotification from './logoutNotification'
 import LoginPageSidebar from './loginPageSidebar'
@@ -205,7 +203,6 @@ const LoginPage = () => {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
   const {
     authMethod,
-    shouldShowDemoWalletWarningDialog,
     logoutNotificationOpen,
     walletLoadingError,
     shouldShowGenerateMnemonicDialog,
@@ -215,7 +212,6 @@ const LoginPage = () => {
     errorBannerContent,
   } = useSelector((state: State) => ({
     authMethod: state.authMethod,
-    shouldShowDemoWalletWarningDialog: state.shouldShowDemoWalletWarningDialog,
     logoutNotificationOpen: state.logoutNotificationOpen,
     walletLoadingError: state.walletLoadingError,
     shouldShowGenerateMnemonicDialog: state.shouldShowGenerateMnemonicDialog,
@@ -226,7 +222,6 @@ const LoginPage = () => {
   }))
   const {
     closeStakingBanner,
-    loadDemoWallet,
     setAuthMethod,
     closeWalletLoadingErrorModal,
     loadErrorBannerContent,
@@ -255,15 +250,8 @@ const LoginPage = () => {
               toggleDropdown={toggleDropdown}
             />
           )}
-          <div className="page-demo">
-            Try the{' '}
-            <a href="#" onMouseDown={(e) => isLeftClick(e, loadDemoWallet)}>
-              demo wallet
-            </a>
-          </div>
         </main>
         <LoginPageSidebar />
-        {shouldShowDemoWalletWarningDialog && <DemoWalletWarningDialog />}
         {shouldShowGenerateMnemonicDialog && <GenerateMnemonicDialog />}
         {logoutNotificationOpen && <LogoutNotification />}
         {shouldShowWalletLoadingErrorModal && (
