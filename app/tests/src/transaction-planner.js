@@ -48,14 +48,6 @@ const utxos = {
     outputIndex: 0,
     tokenBundle: [...Object.values(tokens)],
   },
-  // utxoWithTokens2: {
-  //   txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
-  //   address:
-  //     'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-  //   coins: 5000000,
-  //   outputIndex: 0,
-  //   tokenBundle: range(0, MAX_OUTPUT_TOKENS).flatMap(() => [...Object.values(tokens)]),
-  // },
 }
 
 const sendAdaAmountArgs = (lovelace) => ({

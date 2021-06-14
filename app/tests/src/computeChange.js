@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {computeChange} from '../../frontend/wallet/shelley/transaction/utils'
+import {createTokenChangeOutputs} from '../../frontend/wallet/shelley/transaction/utils'
 
 const tokens = {
   // TODO: move to constants
@@ -29,7 +29,6 @@ const createOutput = (coins, tokenBundle) => ({
 })
 
 const maxOutputTokens = 3
-const maxOutputSize = 0
 
 const address =
   'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3'
@@ -56,13 +55,13 @@ const fixtures = {
   },
   'without tokens': {
     tokenBundle: [],
-    outputs: [createOutput(1000000, [])],
+    outputs: [],
   },
 }
 
 Object.entries(fixtures).forEach(([name, setting]) =>
   it(`should compute change ${name}`, () => {
     const {tokenBundle, outputs} = setting
-    assert.deepEqual(outputs, computeChange(address, tokenBundle, maxOutputSize, maxOutputTokens))
+    assert.deepEqual(outputs, createTokenChangeOutputs(address, tokenBundle, maxOutputTokens))
   })
 )

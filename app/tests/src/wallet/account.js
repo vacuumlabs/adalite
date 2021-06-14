@@ -89,6 +89,7 @@ describe('Tx plan', () => {
     it(`should create the right tx plan for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
       const txPlanResult = await account.getTxPlan({...setting.args})
+      // console.log(JSON.stringify(txPlanResult))
       assert.deepEqual(txPlanResult, setting.txPlanResult)
     })
   )

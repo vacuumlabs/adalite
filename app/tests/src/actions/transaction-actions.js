@@ -48,7 +48,7 @@ const sendAdaTxSettings = {
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '1', coins: 1500000},
     },
     sendTransactionSummary: {
-      fee: 174850,
+      fee: 177882,
     },
   },
   // TODO:
@@ -82,7 +82,7 @@ const delegationSettings = {
       },
     },
     sendTransactionSummary: {
-      fee: 187989,
+      fee: 191022,
     },
   },
 }
@@ -91,7 +91,7 @@ const withdrawalSettings = {
   rewardWithdrawal: {
     state: {},
     sendTransactionSummary: {
-      fee: 179156,
+      fee: 182189,
     },
   },
 }
@@ -101,7 +101,7 @@ const votingSettings = {
     state: {},
     votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
     sendTransactionSummary: {
-      fee: 179772,
+      fee: 182804,
     },
   },
 }

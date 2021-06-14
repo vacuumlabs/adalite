@@ -56,21 +56,28 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 8325150,
+            coins: 6433231,
+            tokenBundle: [],
+          },
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 1888887,
             tokenBundle: inputTokens,
           },
         ],
         certificates: [],
         deposit: 0,
-        fee: 174850,
-        baseFee: 174850,
         additionalLovelaceAmount: 0,
+        fee: 177882,
+        baseFee: 177882,
         withdrawals: [],
         auxiliaryData: null,
       },
     },
     ttl,
-    txHash: '95e89dc2a9d11568d1de54c179b973e25f9be197bd36212b63703fe8e2c1e319',
+    txHash: '186e6f496e87a9dac39688dcaccbc5e3a4297e891a56a07bfec479c7ee597225',
   },
   sendToken: {
     args: {
@@ -120,7 +127,14 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 8341649,
+            coins: 6449730,
+            tokenBundle: [],
+          },
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 1888887,
             tokenBundle: [
               {
                 policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
@@ -142,15 +156,15 @@ const transactionSettings = {
         ],
         certificates: [],
         deposit: 0,
-        fee: 176871,
-        baseFee: 176871,
         additionalLovelaceAmount: 1481480,
+        fee: 179903,
+        baseFee: 179903,
         withdrawals: [],
         auxiliaryData: null,
       },
     },
     ttl,
-    txHash: '0f3979c1f43e6cdc62ca9aa0516b126917b053d0bc7751b5906fdc94a8b5d0b0',
+    txHash: '9ac6b55f250cb15a9e93d36a1edf7faf1853dabb9d01baa930ee1ab43965d024',
   },
   delegation: {
     args: {
@@ -178,7 +192,14 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 7812011,
+            coins: 5920091,
+            tokenBundle: [],
+          },
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 1888887,
             tokenBundle: inputTokens,
           },
         ],
@@ -194,15 +215,15 @@ const transactionSettings = {
           },
         ],
         deposit: 2000000,
-        fee: 187989,
-        baseFee: 187989,
         additionalLovelaceAmount: 0,
+        fee: 191022,
+        baseFee: 191022,
         withdrawals: [],
         auxiliaryData: null,
       },
     },
     ttl,
-    txHash: '0ebd31e3a3c3b4d16fd12b4dd99024ed8270667a43ebdcd208eed082737c7ba6',
+    txHash: '007b558ee98ea911a377e369e1d1949cece4f737c699b6455c1d58325c961446',
   },
   rewardWithdrawal: {
     args: {
@@ -229,15 +250,22 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 14820844,
+            coins: 12928924,
+            tokenBundle: [],
+          },
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 1888887,
             tokenBundle: inputTokens,
           },
         ],
         certificates: [],
         deposit: 0,
-        fee: 179156,
-        baseFee: 179156,
         additionalLovelaceAmount: 0,
+        fee: 182189,
+        baseFee: 182189,
         withdrawals: [
           {
             stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
@@ -248,7 +276,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: 'e9eb23bbea1fd11bb84f7c0f201bdebc86329bd9bc1f78404b802585d3bdf0c9',
+    txHash: '445ad4faa81cb91381a59abf43fc4f6d3a9889f5115fd70015907a5b4140da69',
   },
   voting: {
     args: {
@@ -277,14 +305,21 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 9820228,
+            coins: 7928309,
+            tokenBundle: [],
+          },
+          {
+            isChange: false,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
+            coins: 1888887,
             tokenBundle: inputTokens,
           },
         ],
         certificates: [],
         deposit: 0,
-        fee: 179772,
-        baseFee: 179772,
+        fee: 182804,
+        baseFee: 182804,
         additionalLovelaceAmount: 0,
         withdrawals: [],
         auxiliaryData: {
@@ -300,7 +335,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: '009d1b3a4b1ae81719322fa02149cd126a2f348950424014cbae0c99ea17fcac',
+    txHash: 'ef22be382e71ee1f5d05874f8e41f767ef9e77ce623fe6728aaa1865c6da71eb',
   },
 }
 
