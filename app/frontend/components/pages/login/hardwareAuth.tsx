@@ -74,14 +74,19 @@ const LoadByHardwareWalletSection = () => {
             </div>
           </button>
           <div className={styles.trezorWarning}>
-            <a
-              className="wide-data-balloon"
-              {...tooltip(
-                'Trezor firmware version 2.4.0 with a blank passphrase is not working properly. This issue will be solved in the next release.\nFor now you can either: \n1. Turn off the passphrase\n2. Confirm the blank passphrase multiple times until it works\n3. Downgrade to Trezor firmware version 2.3.6',
-                true
-              )}
-            >
-              <WarningIcon />
+            <div className={styles.trezorWarningLabel}>
+              <a
+                className="wide-data-balloon"
+                {...tooltip(
+                  'Trezor firmware version 2.4.0 with a blank passphrase is not working properly. This issue will be solved in the next release.\nFor now you can either: \n1. Turn off the passphrase\n2. Confirm the blank passphrase multiple times until it works\n3. Downgrade to Trezor firmware version 2.3.6',
+                  true
+                )}
+              >
+                <WarningIcon />
+              </a>
+            </div>
+            <a href="https://github.com/vacuumlabs/adalite/wiki/Troubleshooting#blank-phrase-on-trezor-login-issue">
+              Known issue
             </a>
           </div>
         </div>

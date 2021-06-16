@@ -10,5 +10,12 @@
 }
 
 .trezorWarning {
+  display: flex;
+  flex-direction: row;
   margin-top: 12px;
+}
+
+.trezorWarningLabel {
+  margin-top: 2px;
+  margin-right: 4px;
 }
