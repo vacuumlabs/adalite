@@ -14,6 +14,25 @@ import {
 import {encode} from 'borc'
 import {MAX_OUTPUT_TOKENS, MIN_UTXO_VALUE} from './constants'
 
+/*
+  computing tx plan happens in multiple stages, first we calculate sums of inputs, outputs and
+  tokenDifference, then we validate the basic condition for creating the plan, that the inputs
+  are big enough to pay for the outputs, then some of the edge cases are handled, perfect fit
+  and adding change to fee since it too small
+
+  if conditions for these cases are not met, its sure the resulting tx will contain a change output
+  change is either only in ada, or it contains also some tokens
+
+  if change is only in ada, it can be added to the fee in case its too small, or is given a
+  separate change output,
+
+  if change also includes tokens, we first of all split these token into outputs so they dont
+  exceed max utxo size, note that these token change outputs have minAda value which has to be
+  payed for by provided inputs
+  we calculate remaining change which can be of two types, its either big enough for separate
+  adaOnly change output or its not and we add it to the first token change output
+*/
+
 export function computeTxPlan(
   inputs: Array<TxInput>,
   outputs: Array<TxOutput>,
