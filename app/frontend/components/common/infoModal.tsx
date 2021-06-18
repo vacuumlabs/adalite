@@ -50,6 +50,55 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <h3 className="info-date">06/18/2021</h3>
+            <Article title="Catalyst voting information" icon="">
+              <p className="info-spaced-paragraph">
+                If you registered your vote for Catalyst Fund 4, you can vote until June 25. Please
+                find more information on this{' '}
+                <a
+                  href="https://www.reddit.com/r/cardano/comments/nziy41/all_you_need_to_know_fund4_voting_updated/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  link
+                </a>
+                .
+              </p>
+              <p className="info-spaced-paragraph">
+                If you missed this round, please note that the registration for Fund 5 should start
+                around July 6th. We will try to give you more upfront notice.
+              </p>
+              <p className="info-spaced-paragraph">
+                If you are thinking who to support in this Catalyst round, we have two good
+                candidates for you:
+                <ul>
+                  <li>
+                    CardanoScan.io is the best block explorer in Cardano ecosystem. You can support
+                    their project{' '}
+                    <a
+                      href="https://cardano.ideascale.com/a/dtd/Ouroboros-Networking-Lib-in-JS/342248-48088"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      here
+                    </a>
+                    .
+                  </li>
+                  <li>
+                    Dusan would like to build a security passphrase recovery tool for HW wallets
+                    users. Support him{' '}
+                    <a
+                      href="https://cardano.ideascale.com/a/dtd/HW-wallet-passphrase-recovery-tool/341440-48088"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      here
+                    </a>
+                    .
+                  </li>
+                </ul>
+              </p>
+            </Article>
             <h3 className="info-date">06/10/2021</h3>
             <Article title="Catalyst voting for hardware wallets" icon="">
               We implemented the catalyst voting support for hardware wallets (Ledger, Trezor) and

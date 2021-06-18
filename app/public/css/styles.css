@@ -3031,6 +3031,11 @@ li.main-tab input + label.selected:after {
   margin: 42px 0;
 }
 
+.info-spaced-paragraph {
+  text-align: left;
+  margin-bottom: 12px;
+}
+
 /* STAKING PAGE */
 
 .staking-wrapper {
