@@ -107,7 +107,7 @@ const unsignedPoolTxToTxPlan = (unsignedTx: _UnsignedTxParsed, stakingAddress: A
   return {
     inputs: parseCliInputs(unsignedTx.inputs),
     outputs: parseCliOutputs(unsignedTx.outputs),
-    change: null,
+    change: [],
     certificates: parseCliCertificates(unsignedTx.certificates, stakingAddress),
     deposit: 0 as Lovelace,
     additionalLovelaceAmount: 0 as Lovelace,

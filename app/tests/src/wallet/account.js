@@ -6,7 +6,9 @@ import BlockchainExplorer from '../../../frontend/wallet/blockchain-explorer'
 import ShelleyJsCryptoProvider from '../../../frontend/wallet/shelley/shelley-js-crypto-provider'
 import {ADALITE_CONFIG} from '../../../frontend/config'
 import {transactionSettings} from '../common/tx-settings'
+import {poolRegTxSettings} from '../common/pool-reg-tx-settings'
 import mockNetwork from '../common/mock'
+import {TxType} from '../../../frontend/types'
 
 const accounts = {}
 
@@ -94,12 +96,28 @@ describe('Tx plan', () => {
   )
 })
 
-describe('TxAux', () => {
-  Object.entries(transactionSettings).forEach(([name, setting]) =>
-    it(`should calculate the right tx hash for tx with ${name}`, async () => {
+describe('Tx plan', () => {
+  Object.entries(poolRegTxSettings).forEach(([name, setting]) =>
+    it(`should create the right tx plan for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
-      const txHash = (await account.prepareTxAux(setting.txPlanResult.txPlan, setting.ttl)).getId()
-      assert.deepEqual(txHash, setting.txHash)
+      const txPlan = await account.getPoolRegistrationTxPlan({
+        txType: TxType.POOL_REG_OWNER,
+        unsignedTxParsed: setting.unsignedTxParsed,
+      })
+      assert.deepEqual(txPlan, setting.txPlanResult.txPlan)
     })
+  )
+})
+
+describe('TxAux', () => {
+  ;[...Object.entries(transactionSettings), ...Object.entries(poolRegTxSettings)].forEach(
+    ([name, setting]) =>
+      it(`should calculate the right tx hash for tx with ${name}`, async () => {
+        const account = await accounts.ShelleyAccount0
+        const txHash = (
+          await account.prepareTxAux(setting.txPlanResult.txPlan, setting.ttl)
+        ).getId()
+        assert.deepEqual(txHash, setting.txHash)
+      })
   )
 })

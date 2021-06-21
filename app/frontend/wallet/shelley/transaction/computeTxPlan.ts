@@ -292,7 +292,7 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
     minimalLovelaceAmount: additionalLovelaceAmount,
   }
 
-  const outputsWithChange = change ? [...outputs, ...change] : outputs
+  const outputsWithChange = [...outputs, ...change]
   if (
     outputsWithChange.some(({coins, tokenBundle}) => {
       coins > Number.MAX_SAFE_INTEGER ||
