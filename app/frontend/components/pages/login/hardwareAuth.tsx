@@ -85,7 +85,10 @@ const LoadByHardwareWalletSection = () => {
                 <WarningIcon />
               </a>
             </div>
-            <a href="https://github.com/vacuumlabs/adalite/wiki/Troubleshooting#blank-phrase-on-trezor-login-issue">
+            <a
+              href="https://github.com/vacuumlabs/adalite/wiki/Troubleshooting#blank-phrase-on-trezor-login-issue"
+              target="_blank"
+            >
               Known issue
             </a>
           </div>
