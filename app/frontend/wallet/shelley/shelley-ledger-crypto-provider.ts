@@ -361,6 +361,18 @@ const ShelleyLedgerCryptoProvider = async ({
       type: LedgerTypes.CertificateType.STAKE_POOL_REGISTRATION,
       params: {
         ...poolRegistrationParams,
+        poolKey: {
+          type: LedgerTypes.PoolKeyType.THIRD_PARTY,
+          params: {
+            keyHashHex: poolRegistrationParams.poolKeyHashHex,
+          },
+        },
+        rewardAccount: {
+          type: LedgerTypes.PoolRewardAccountType.THIRD_PARTY,
+          params: {
+            rewardAccountHex: poolRegistrationParams.rewardAccountHex,
+          },
+        },
         poolOwners,
         margin,
         pledge: poolRegistrationParams.pledgeStr,
