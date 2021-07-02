@@ -1,10 +1,18 @@
-import {h, Component} from 'preact'
+import {h, Component, Fragment} from 'preact'
 import {connect} from '../../helpers/connect'
 import actions from '../../actions'
 import Modal from './modal'
 import Alert from './alert'
 import ImageModal from './imageModal'
 import {localStorageVars} from '../../localStorage'
+
+const NewsSection = ({children, date}) => (
+  <Fragment>
+    <h3 className="info-date">{date}</h3>
+    {children}
+    <hr className="info-separator" />
+  </Fragment>
+)
 
 const Article = ({children, title, icon}) => (
   <article className="article">
@@ -50,6 +58,71 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
         <section className="welcome">
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
+            <NewsSection
+              date={'07/02/2021'}
+              children={
+                <Article title="We are hiring!" icon="">
+                  We are looking for enthusiastic and skilled people to join our growing team. You
+                  will be working on a next generation of AdaLite wallet.
+                  <ul>
+                    <li>
+                      Community Manager{' '}
+                      <a
+                        href="https://docs.google.com/document/d/1aoNyYnQNxLe9l54rj7LT1wDy2jScELwCTPkl4wMKhFw/edit?usp=sharing"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        .docx
+                      </a>{' '}
+                      <a
+                        href="https://drive.google.com/file/d/1HrUGw0_f85EetKHY04PbuzrctSeT8hJS/view?usp=sharing"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        .pdf
+                      </a>
+                    </li>
+                    <li>
+                      Technical Writer{' '}
+                      <a
+                        href="https://docs.google.com/document/d/1iog_Gmpf6jsBBd0HnxojJq841fiL34P1fz-kMVr2214/edit?usp=sharing"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        .docx
+                      </a>{' '}
+                      <a
+                        href="https://drive.google.com/file/d/1e2Euzbe4tYyiGiyEPqdj-wlmL3Gs9CSn/view?usp=sharing"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        .pdf
+                      </a>
+                    </li>
+                    <li>
+                      Consumer Insights & Research{' '}
+                      <a
+                        href="https://docs.google.com/document/d/1xoX27phF7-5Q6gt2YfBvbfRHESouTpMU_lYoE3P4EbI/edit?usp=sharing"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        .docx
+                      </a>{' '}
+                      <a
+                        href="https://drive.google.com/file/d/1jAJWtaqHiukn7JPvuYQDUkbh3WMlGEPk/view?usp=sharing"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        .pdf
+                      </a>
+                    </li>
+                  </ul>
+                  Didn't find what you are looking for? Are you enthusiastic for crypto and do you
+                  have some special skills that you think can be useful for us? Feel free to drop us
+                  a line and your CV to <a href={'mailto:michal@adalite.io'}>michal@adalite.io</a>
+                </Article>
+              }
+            />
             <h3 className="info-date">06/18/2021</h3>
             <Article title="Catalyst voting information" icon="">
               <p className="info-spaced-paragraph">
