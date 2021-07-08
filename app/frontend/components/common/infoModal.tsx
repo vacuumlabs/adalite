@@ -59,6 +59,37 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'07/08/2021'}
+              children={
+                <Article title="Catalyst Fund5 registration" icon="">
+                  Adalite supports Catalyst Fund5 voting registration beginning 8th of July, 16:00
+                  UTC. Check out our{' '}
+                  <a
+                    href="https://adalite.medium.com/catalyst-voting-registration-on-adalite-71d975f75755"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    voting registration article
+                  </a>{' '}
+                  to find out more about the registration. Please note that if you successfully
+                  registered and voted in Fund4 and you still have the QR code and PIN code, your
+                  registration is valid in Fund5 as well. You can find additional information on the{' '}
+                  <a href="https://catalyst.ideascale.com/" target="_blank" rel="noopener">
+                    Catalyst webpage
+                  </a>{' '}
+                  or in{' '}
+                  <a
+                    href="https://www.reddit.com/r/cardano/comments/ofo1bz/fund_5_register_to_vote_all_you_need_to_know/"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    this Reddit post
+                  </a>
+                  .
+                </Article>
+              }
+            />
+            <NewsSection
               date={'07/02/2021'}
               children={
                 <Article title="We are hiring!" icon="">
