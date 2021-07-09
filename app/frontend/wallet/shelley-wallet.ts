@@ -1,6 +1,6 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
-import {AccountInfo, CryptoProvider, CryptoProviderFeature} from '../types'
+import {AccountInfo, CryptoProvider, CryptoProviderFeature, TxType} from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 
@@ -28,11 +28,12 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     return cryptoProvider.getWalletName()
   }
 
-  function submitTx(signedTx): Promise<any> {
+  function submitTx(signedTx, txType: TxType): Promise<any> {
     const params = {
       walletType: getWalletName(),
       walletVersion: cryptoProvider.getVersion(),
       walletDerivationScheme: cryptoProvider.getDerivationScheme().type,
+      txType,
       // TODO: add stake key for debugging purposes
     }
     const {txBody, txHash} = signedTx

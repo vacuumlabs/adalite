@@ -28,6 +28,7 @@ const getStats = async () => {
       'Mnemonic:total': [],
       'Mnemonic:monthly': [],
       'Mnemonic:daily': [],
+      'votingRegistration:daily': [],
     },
     otherTxSubmissions: {
       'successful:total': [],
