@@ -172,13 +172,14 @@ export type AccountInfo = {
 }
 
 export const enum TxType {
-  SEND_ADA,
-  CONVERT_LEGACY,
-  DELEGATE,
-  WITHDRAW,
-  POOL_REG_OWNER,
-  DEREGISTER_STAKE_KEY,
-  REGISTER_VOTING,
+  // string values are bound to redis/GA transaction tracking
+  SEND_ADA = 'send',
+  CONVERT_LEGACY = 'convertLegacy',
+  DELEGATE = 'delegate',
+  WITHDRAW = 'withdraw',
+  POOL_REG_OWNER = 'poolRegistration',
+  DEREGISTER_STAKE_KEY = 'stakeKeyDeregistration',
+  REGISTER_VOTING = 'votingRegistration',
 }
 
 export enum StakingHistoryItemType {

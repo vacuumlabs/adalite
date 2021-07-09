@@ -219,7 +219,7 @@ export default (store: Store) => {
         setState({waitingForHwWallet: false})
         loadingAction(state, 'Submitting transaction...')
       }
-      txSubmitResult = await getWallet().submitTx(signedTx)
+      txSubmitResult = await getWallet().submitTx(signedTx, txSummary.type)
 
       if (!txSubmitResult) {
         // TODO: this seems useless here

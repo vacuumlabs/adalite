@@ -102,6 +102,14 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
         value: undefined,
       })
 
+      const txType = req.get('txType')
+      await trackEvent({
+        ...baseEventData,
+        action: `${txSubmissionType}:${txType}`,
+        label: 'Transaction type',
+        value: undefined,
+      })
+
       if (txSubmissionSuccess === 'successful') {
         const {txBody} = req.body
 
