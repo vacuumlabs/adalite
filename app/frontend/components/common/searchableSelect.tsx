@@ -45,7 +45,8 @@ const SearchableSelect = <T extends {}>({
   const [dropdownWidth, setDropdownWidth] = useState(getDropdownWidth ? getDropdownWidth() : '')
   const [search, setSearch] = useState('')
   const [selectedItem, setSelectedItem] = useState(defaultItem)
-  const shouldShowItem = (item: T) => (searchPredicate ? searchPredicate(search, item) : true)
+  const shouldShowItem = (item: T) =>
+    !search || (searchPredicate ? searchPredicate(search, item) : true)
   const showDropdown = (bool: boolean) => {
     setVisible(bool)
     setSearch('')
