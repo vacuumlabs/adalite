@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {Fragment, h} from 'preact'
 import {useSelector} from '../../../helpers/connect'
 import {getSourceAccountInfo, State} from '../../../state'
 import {AssetFamily, Token} from '../../../types'
@@ -8,11 +8,25 @@ import {
 } from '../../../wallet/shelley/helpers/addresses'
 import {FormattedAssetItem} from '../../common/asset'
 import CopyOnClick from '../../common/copyOnClick'
+import {useState} from 'preact/hooks'
+import styles from './multiAssetsPage.module.scss'
+import {DropdownCaret} from '../../common/svg'
 
 const MultiAssetsPage = () => {
   const {tokenBalance} = useSelector((state: State) => getSourceAccountInfo(state))
 
-  const multiAssets = [
+  const [expandedAsset, setExpandedAsset] = useState(-1)
+
+  type MultiAsset = {
+    assetNameHex: string
+    assetName: string
+    fingerprint: string
+    type: AssetFamily
+    policyId: string
+    quantity: number
+  }
+
+  const multiAssets: MultiAsset[] = [
     ...tokenBalance
       .sort((a: Token, b: Token) => b.quantity - a.quantity)
       .map((token: Token) => ({
@@ -21,41 +35,60 @@ const MultiAssetsPage = () => {
         assetName: assetNameHex2Readable(token.assetName),
         fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
         type: AssetFamily.TOKEN,
-        star: false,
       })),
   ]
 
   if (!tokenBalance.length) return null
 
-  // For now the layout is very similar as in `sendAdaPage`, however we expect it to change,
-  // therefore the duplication to allow for more versatility later on
   return (
     <div className="card">
       <h2 className="card-title">Digital assets</h2>
       <div className="multi-assets-page-list">
-        {multiAssets.map((asset) => (
-          <FormattedAssetItem key={asset.assetName} {...asset}>
+        {multiAssets.map((asset, i) => (
+          <FormattedAssetItem key={asset?.assetName} {...asset}>
             {({
-              starIcon,
+              icon,
               formattedAssetName,
               formattedAssetLink,
               formattedAmount,
               formattedPolicy,
               formattedFingerprint,
+              formattedDescription,
+              formattedUrl,
             }) => {
-              return (
-                <div className="multi-asset-page-item multi-asset-item">
-                  <div className="multi-asset-name-amount">
-                    <div className="multi-asset-name">
-                      {starIcon}
-                      {formattedAssetName}
-                      {formattedAssetLink}
-                    </div>
-                    <div className="multi-asset-amount">{formattedAmount}</div>
+              const isExpanded = i === expandedAsset
+              const header = (
+                <div
+                  className={styles.header}
+                  onClick={() => {
+                    if (i === expandedAsset) {
+                      setExpandedAsset(-1)
+                    } else {
+                      setExpandedAsset(i)
+                    }
+                  }}
+                >
+                  <div className={styles.name}>
+                    {icon}
+                    {formattedAssetName}
+                    {formattedAssetLink}
                   </div>
+                  <div className={styles.right}>
+                    <div className={styles.amount}>{formattedAmount}</div>
+                    <div
+                      className={`accordion-icon flex-end ${isExpanded ? 'shown' : 'hidden'}`}
+                      data-cy="ReceiveAddressAccordion"
+                    >
+                      <DropdownCaret />
+                    </div>
+                  </div>
+                </div>
+              )
+              const details = (
+                <div className={`${styles.details} ${isExpanded ? styles.expanded : ''}`}>
                   <div className="multi-asset-page-policy">
                     <CopyOnClick
-                      value={asset.policyId}
+                      value={asset?.policyId}
                       elementClass="copy"
                       tooltipMessage="Policy id copied to clipboard"
                     >
@@ -69,7 +102,7 @@ const MultiAssetsPage = () => {
                   </div>
                   <div className="multi-asset-page-policy">
                     <CopyOnClick
-                      value={asset.fingerprint}
+                      value={asset?.fingerprint}
                       elementClass="copy"
                       tooltipMessage="Fingerprint copied to clipboard"
                     >
@@ -81,6 +114,19 @@ const MultiAssetsPage = () => {
                       </div>
                     </CopyOnClick>
                   </div>
+                  {formattedDescription && (
+                    <Fragment>
+                      <div className={styles.detailsLabel}>Details</div>
+                      {formattedDescription}
+                      {formattedUrl && <div className={styles.homepage}>{formattedUrl}</div>}
+                    </Fragment>
+                  )}
+                </div>
+              )
+              return (
+                <div className={`${styles.asset} ${isExpanded ? styles.expanded : ''}`}>
+                  {header}
+                  {details}
                 </div>
               )
             }}

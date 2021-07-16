@@ -707,6 +707,8 @@ p.hey {
 }
 
 .multi-asset-name {
+  display: flex;
+  align-items: center;
   margin: unset;
 }
 
@@ -3537,11 +3539,6 @@ input:checked + .slider:before {
   color: var(--color-grey-medium);
 }
 
-.multi-asset-name svg {
-  padding-top: 6px;
-  margin-right: 2px;
-}
-
 .multi-asset-amount {
   margin-top: 8px;
   text-align: right;
@@ -3834,7 +3831,7 @@ input:checked + .slider:before {
   padding-top: 12px;
   margin-top: -12px;
 
-  max-height: 300px;
+  max-height: 400px;
   overflow: auto;
 }
 
