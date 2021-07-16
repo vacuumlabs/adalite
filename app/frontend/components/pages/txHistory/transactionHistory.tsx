@@ -1,8 +1,5 @@
 import {h, Fragment} from 'preact'
-import {
-  assetNameHex2Readable,
-  encodeAssetFingerprint,
-} from '../../../wallet/shelley/helpers/addresses'
+import {encodeAssetFingerprint} from '../../../wallet/shelley/helpers/addresses'
 import printAda from '../../../helpers/printAda'
 import {getActiveAccountInfo, State} from '../../../state'
 import toLocalDate from '../../../helpers/toLocalDate'
@@ -15,11 +12,13 @@ import {
   Lovelace,
   TxSummaryEntry,
   Token,
+  AssetFamily,
 } from '../../../types'
-import {AdaIcon, StarIcon} from '../../common/svg'
-import {LinkToAsset} from '../../common/asset'
-import {StringEllipsis} from '../stringEllipsis'
+import {AdaIcon} from '../../common/svg'
+import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
 import {useSelector} from '../../../helpers/connect'
+
+import styles from './transactionHistory.module.scss'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -76,40 +75,31 @@ const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
   </div>
 )
 
-type MultiAssetProps = {
-  star: boolean
-  name: string
-  hash: string
-  amount: number
-  fingerprint: string
+const MultiAsset = (props: FormattedAssetItemProps) => {
+  return (
+    <FormattedAssetItem {...props}>
+      {({icon, formattedAssetName, formattedAssetLink, formattedPolicy, formattedFingerprint}) => {
+        const {quantity} = props
+        return (
+          <Fragment>
+            <div className={`${styles.multiAssetRow} row`}>
+              <div className="multi-asset-name">
+                {icon}
+                {formattedAssetName}
+                {formattedAssetLink}
+              </div>
+              <div className={`multi-asset-amount ${quantity > 0 ? 'credit' : 'debit'}`}>
+                {quantity > 0 ? `+${quantity}` : quantity}
+              </div>
+            </div>
+            {formattedPolicy}
+            {formattedFingerprint}
+          </Fragment>
+        )
+      }}
+    </FormattedAssetItem>
+  )
 }
-
-const MultiAsset = ({star, name, hash, fingerprint, amount}: MultiAssetProps) => (
-  <Fragment>
-    <div className="row">
-      <div className="multi-asset-name">
-        {star && <StarIcon />}
-        {name ? (
-          assetNameHex2Readable(name)
-        ) : (
-          <span className="empty">
-            {'<'}no-name{'>'}
-          </span>
-        )}
-        <LinkToAsset policyIdHex={hash} assetNameHex={name} />
-      </div>
-      <div className={`multi-asset-amount ${amount > 0 ? 'credit' : 'debit'}`}>
-        {amount > 0 ? `+${amount}` : amount}
-      </div>
-    </div>
-    <div className="multi-asset-hash">
-      <StringEllipsis value={hash} length={6} />
-    </div>
-    <div className="multi-asset-hash">
-      <StringEllipsis value={fingerprint} length={6} />
-    </div>
-  </Fragment>
-)
 
 interface Props {
   transactionHistory: Array<TxSummaryEntry>
@@ -264,10 +254,10 @@ const TransactionHistory = (): h.JSX.Element => {
               {transaction.tokenEffects.map((tokenEffect: Token) => (
                 <MultiAsset
                   key={tokenEffect.policyId}
-                  star={false}
-                  name={tokenEffect.assetName}
-                  hash={tokenEffect.policyId}
-                  amount={tokenEffect.quantity}
+                  type={AssetFamily.TOKEN}
+                  assetName={tokenEffect.assetName}
+                  policyId={tokenEffect.policyId}
+                  quantity={tokenEffect.quantity}
                   fingerprint={encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName)}
                 />
               ))}
