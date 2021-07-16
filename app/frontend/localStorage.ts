@@ -1,6 +1,6 @@
 const localStorageVars = {
   WELCOME: 'dontShowDisclaimer',
-  INFO_MODAL: 'dontShowInfoModal_8.7.2021',
+  INFO_MODAL: 'dontShowInfoModal_16.7.2021',
   PREMIUM_BANNER: 'dontShowPremiumBanner',
   STAKING_BANNER: 'dontShowStakingBannerTestnet3',
   BULK_EXPORT: 'dontBulkExportPubKeys',

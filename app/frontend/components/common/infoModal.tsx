@@ -59,6 +59,16 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'07/16/2021'}
+              children={
+                <Article title="Staking rewards withdrawal bug" icon="">
+                  There is a bug in rewards withdrawal affecting users who voted and are eligible
+                  for Catalyst Fund 4 rewards. These users are currently unable to withdraw their
+                  rewards. This should be fixed in the next epoch 279 starting on 20th of July 2021.
+                </Article>
+              }
+            />
+            <NewsSection
               date={'07/08/2021'}
               children={
                 <Article title="Catalyst Fund5 registration" icon="">
