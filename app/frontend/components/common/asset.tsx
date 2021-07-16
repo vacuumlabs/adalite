@@ -1,7 +1,7 @@
 import {h} from 'preact'
 import printAda from '../../helpers/printAda'
 import {AssetFamily, Lovelace, Token} from '../../types'
-import {HomePageIcon, QuestionFillIcon, StarIcon} from './svg'
+import {AdaIcon, HomePageIcon, QuestionFillIcon, StarIcon} from './svg'
 import LinkIcon from './linkIcon'
 import {StringEllipsis} from '../pages/stringEllipsis'
 import {useSelector} from '../../helpers/connect'
@@ -48,7 +48,7 @@ export const FormattedAssetItem = ({
   const metadata = useSelector((state) => state.tokensMetadata[`${policyId}${assetNameHex}`])
 
   const Icon = () => {
-    if (type === AssetFamily.ADA) return <StarIcon />
+    if (type === AssetFamily.ADA) return <AdaIcon />
     if (metadata) {
       if (metadata.logoHex) {
         return (
