@@ -53,14 +53,7 @@ type DropdownAssetItem = Token & {
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.assetName} {...props}>
-    {({
-      icon,
-      formattedAssetName,
-      formattedAssetLink,
-      formattedAmount,
-      formattedPolicy,
-      formattedFingerprint,
-    }) => {
+    {({icon, formattedAssetName, formattedAssetLink, formattedAmount}) => {
       return (
         <div
           className="multi-asset-item"
@@ -85,8 +78,6 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
               {formattedAmount}
             </div>
           </div>
-          {formattedPolicy}
-          {formattedFingerprint}
         </div>
       )
     }}
