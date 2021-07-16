@@ -683,8 +683,8 @@ p.hey {
 
 .searchable-select-item {
   padding-left: 12px;
-  padding-top: 13px;
-  padding-bottom: 13px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   background-color: white;
 }
 
@@ -3531,16 +3531,7 @@ input:checked + .slider:before {
   fill: var(--color-grey)
 }
 
-.multi-asset-name {
-  margin-top: 8px;
-}
-
-.multi-asset-name .empty {
-  color: var(--color-grey-medium);
-}
-
 .multi-asset-amount {
-  margin-top: 8px;
   text-align: right;
   font-weight: bold;
 }

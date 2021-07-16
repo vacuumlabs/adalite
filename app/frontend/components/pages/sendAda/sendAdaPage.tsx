@@ -223,15 +223,15 @@ const SendAdaPage = ({
   )
 
   const displayDropdownSelectedItem = (dropdownAssetItem: DropdownAssetItem) => {
-    const {assetName, policyId, type} = dropdownAssetItem
+    const {policyId, type} = dropdownAssetItem
     return (
       <div className="wrapper">
         <FormattedAssetItem {...dropdownAssetItem}>
-          {({icon}) => {
+          {({icon, formattedAssetName}) => {
             return (
               <Fragment>
                 {icon}
-                {assetName}
+                {formattedAssetName}
                 {type === AssetFamily.TOKEN && (
                   <div className="hash">
                     (<div className="ellipsis">{policyId}</div>)

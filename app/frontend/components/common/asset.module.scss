@@ -17,3 +17,12 @@
   width: 12px;
   height: 12px;
 }
+
+.empty {
+  white-space: nowrap;
+  color: var(--color-grey-medium);
+}
+
+.assetName {
+  white-space: nowrap;
+}
