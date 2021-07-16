@@ -48,12 +48,11 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
 
 type DropdownAssetItem = Token & {
   fingerprint: string
-  assetNameHex: string
   type: AssetFamily
 }
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
-  <FormattedAssetItem key={props.assetName} {...props}>
+  <FormattedAssetItem key={props.fingerprint} {...props}>
     {({icon, formattedAssetName, formattedAssetLink, formattedAmount}) => {
       return (
         <div
@@ -153,7 +152,6 @@ const SendAdaPage = ({
     type: AssetFamily.ADA,
     policyId: null,
     assetName: 'ADA',
-    assetNameHex: null,
     fingerprint: null,
     quantity: balance,
   }
@@ -166,8 +164,6 @@ const SendAdaPage = ({
         .map(
           (token: Token): DropdownAssetItem => ({
             ...token,
-            assetNameHex: token.assetName,
-            assetName: assetNameHex2Readable(token.assetName),
             fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
             type: AssetFamily.TOKEN,
           })
@@ -182,8 +178,7 @@ const SendAdaPage = ({
     }
     return dropdownAssetItems.find(
       (item) =>
-        item.assetNameHex === sendAmount.token.assetName &&
-        item.policyId === sendAmount.token.policyId
+        item.assetName === sendAmount.token.assetName && item.policyId === sendAmount.token.policyId
     )
   }, [adaAsset, dropdownAssetItems, sendAmount])
 
@@ -213,7 +208,7 @@ const SendAdaPage = ({
           fieldValue,
           token: {
             policyId: dropdownAssetItem.policyId,
-            assetName: dropdownAssetItem.assetNameHex,
+            assetName: dropdownAssetItem.assetName,
             quantity: parseFloat(fieldValue),
           },
         })
