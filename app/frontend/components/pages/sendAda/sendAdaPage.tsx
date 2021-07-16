@@ -49,13 +49,12 @@ type DropdownAssetItem = Token & {
   fingerprint: string
   assetNameHex: string
   type: AssetFamily
-  star?: boolean
 }
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.assetName} {...props}>
     {({
-      starIcon,
+      icon,
       formattedAssetName,
       formattedAssetLink,
       formattedAmount,
@@ -73,7 +72,7 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
         >
           <div className="multi-asset-name-amount">
             <div className="multi-asset-name">
-              {starIcon}
+              {icon}
               {formattedAssetName}
               {formattedAssetLink}
             </div>
@@ -163,7 +162,6 @@ const SendAdaPage = ({
     assetNameHex: null,
     fingerprint: null,
     quantity: balance,
-    star: true,
   }
 
   const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
@@ -178,7 +176,6 @@ const SendAdaPage = ({
             assetName: assetNameHex2Readable(token.assetName),
             fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
             type: AssetFamily.TOKEN,
-            star: false,
           })
         ),
     ],

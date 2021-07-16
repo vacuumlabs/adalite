@@ -1,0 +1,68 @@
+.asset {
+  border-top: 1px solid var(--color-border);
+  padding: 0px 16px;
+}
+
+.asset.expanded {
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.08);
+  background-color: var(--color-selected);
+  transition: background-color 0.25s ease-out 0.25s, box-shadow 0.25s ease-out 0.25s;
+}
+
+.asset:not(.expanded) {
+  transition: background-color 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+
+.asset .header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0px;
+}
+
+.asset .name {
+  display: flex;
+  align-items: center;
+}
+
+.asset .right {
+  display: flex;
+  align-items: center;
+}
+
+.asset .right svg {
+  width: 16px;
+}
+
+.asset .amount {
+  font-weight: 700;
+  margin-right: 12px;
+}
+
+.asset .details.expanded {
+  max-height: 600px;
+  overflow: hidden;
+  border-top: 1px solid var(--color-border);
+  padding: 12px 0px;
+  transition: max-height 0.25s ease-out, padding 0.25s ease-out;
+}
+
+.asset .details:not(.expanded) {
+  max-height: 0px;
+  overflow: hidden;
+  padding: 0px;
+  transition: max-height 0.25s ease-out, padding 0.25s ease-out;
+}
+
+.hash {
+  display: flex;
+}
+
+.detailsLabel {
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.homepage {
+  margin-top: 6px;
+}
