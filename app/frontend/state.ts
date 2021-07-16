@@ -15,6 +15,7 @@ import {
   CachedTransactionSummaries,
   TxType,
   WalletOperationStatusType,
+  RegisteredTokenMetadata,
 } from './types'
 
 export interface State {
@@ -116,6 +117,7 @@ export interface State {
   sourceAccountIndex: number
   activeAccountIndex: number
   targetAccountIndex: number
+  tokensMetadata: {[subject: string]: RegisteredTokenMetadata}
 
   shouldShowSendTransactionModal: boolean
   shouldShowDelegationModal: boolean
@@ -267,6 +269,7 @@ const initialState: State = {
   sourceAccountIndex: 0,
   activeAccountIndex: 0,
   targetAccountIndex: 0,
+  tokensMetadata: {},
 
   shouldShowSendTransactionModal: false,
   shouldShowDelegationModal: false,

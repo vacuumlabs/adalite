@@ -116,6 +116,7 @@ export default (store: Store) => {
 
       const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
       const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
+      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
       const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
 
       const conversionRatesPromise = getConversionRates(state)
@@ -134,6 +135,7 @@ export default (store: Store) => {
       setState({
         validStakepoolDataProvider,
         accountsInfo,
+        tokensMetadata,
         maxAccountIndex,
         shouldShowSaturatedBanner,
         walletIsLoaded: true,
