@@ -73,8 +73,12 @@ export const FormattedAssetItem = ({
         <Icon />
       </div>
     ),
-    formattedAssetName: `${assetName}${metadata?.ticker ? ` (${metadata?.ticker})` : ''}` || (
-      <span className="empty">
+    formattedAssetName: assetName ? (
+      <span className={styles.assetName}>
+        {`${assetName}${metadata?.ticker ? ` (${metadata?.ticker})` : ''}`}
+      </span>
+    ) : (
+      <span className={styles.empty}>
         {'<'}no-name{'>'}
       </span>
     ),
