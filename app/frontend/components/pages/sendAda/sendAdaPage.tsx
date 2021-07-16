@@ -231,16 +231,28 @@ const SendAdaPage = ({
     [updateAmount]
   )
 
-  const displayDropdownSelectedItem = ({assetName, policyId, type}: DropdownAssetItem) => (
-    <div className="wrapper">
-      {assetName}
-      {type === AssetFamily.TOKEN && (
-        <div className="hash">
-          (<div className="ellipsis">{policyId}</div>)
-        </div>
-      )}
-    </div>
-  )
+  const displayDropdownSelectedItem = (dropdownAssetItem: DropdownAssetItem) => {
+    const {assetName, policyId, type} = dropdownAssetItem
+    return (
+      <div className="wrapper">
+        <FormattedAssetItem {...dropdownAssetItem}>
+          {({icon}) => {
+            return (
+              <Fragment>
+                {icon}
+                {assetName}
+                {type === AssetFamily.TOKEN && (
+                  <div className="hash">
+                    (<div className="ellipsis">{policyId}</div>)
+                  </div>
+                )}
+              </Fragment>
+            )
+          }}
+        </FormattedAssetItem>
+      </div>
+    )
+  }
 
   const handleDropdownOnSelect = useCallback(
     (dropdownAssetItem: DropdownAssetItem): void => {
