@@ -6,6 +6,7 @@ import LinkIcon from './linkIcon'
 import {StringEllipsis} from '../pages/stringEllipsis'
 import {useSelector} from '../../helpers/connect'
 import styles from './asset.module.scss'
+import {assetNameHex2Readable} from '../../wallet/shelley/helpers/addresses'
 
 type LinkToAssetProps = {
   policyIdHex: string
@@ -16,18 +17,15 @@ export const LinkToAsset = ({policyIdHex, assetNameHex}: LinkToAssetProps) => (
   <LinkIcon url={`https://cardanoscan.io/token/${policyIdHex}.${assetNameHex}`} />
 )
 
-type FormattedAssetItemProps = Token & {
+export type FormattedAssetItemProps = Token & {
   fingerprint: string
-  assetNameHex: string
   type: AssetFamily
-  star?: boolean
 }
 
 // Use to share common formatting, but allow for usage in different layouts
 export const FormattedAssetItem = ({
   type,
   assetName,
-  assetNameHex,
   policyId,
   fingerprint,
   quantity,
@@ -45,7 +43,7 @@ export const FormattedAssetItem = ({
     formattedUrl: h.JSX.Element
   }) => h.JSX.Element
 }) => {
-  const metadata = useSelector((state) => state.tokensMetadata[`${policyId}${assetNameHex}`])
+  const metadata = useSelector((state) => state.tokensMetadata[`${policyId}${assetName}`])
 
   const Icon = () => {
     if (type === AssetFamily.ADA) return <AdaIcon />
@@ -67,23 +65,32 @@ export const FormattedAssetItem = ({
     }
   }
 
+  const FormattedAssetName = () => {
+    if (type === AssetFamily.ADA) return <span className={styles.assetName}>ADA</span>
+    if (assetName) {
+      return (
+        <span className={styles.assetName}>
+          {`${assetNameHex2Readable(assetName)}${metadata?.ticker ? ` (${metadata?.ticker})` : ''}`}
+        </span>
+      )
+    } else {
+      return (
+        <span className={styles.empty}>
+          {'<'}no-name{'>'}
+        </span>
+      )
+    }
+  }
+
   return children({
     icon: (
       <div className={styles.icon}>
         <Icon />
       </div>
     ),
-    formattedAssetName: assetName ? (
-      <span className={styles.assetName}>
-        {`${assetName}${metadata?.ticker ? ` (${metadata?.ticker})` : ''}`}
-      </span>
-    ) : (
-      <span className={styles.empty}>
-        {'<'}no-name{'>'}
-      </span>
-    ),
+    formattedAssetName: <FormattedAssetName />,
     formattedAssetLink: type === AssetFamily.TOKEN && (
-      <LinkToAsset policyIdHex={policyId} assetNameHex={assetNameHex} />
+      <LinkToAsset policyIdHex={policyId} assetNameHex={assetName} />
     ),
     formattedAmount:
       type === AssetFamily.TOKEN ? `${quantity}` : printAda(Math.abs(quantity) as Lovelace),

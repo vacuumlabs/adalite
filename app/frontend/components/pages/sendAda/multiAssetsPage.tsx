@@ -2,11 +2,8 @@ import {Fragment, h} from 'preact'
 import {useSelector} from '../../../helpers/connect'
 import {getSourceAccountInfo, State} from '../../../state'
 import {AssetFamily, Token} from '../../../types'
-import {
-  assetNameHex2Readable,
-  encodeAssetFingerprint,
-} from '../../../wallet/shelley/helpers/addresses'
-import {FormattedAssetItem} from '../../common/asset'
+import {encodeAssetFingerprint} from '../../../wallet/shelley/helpers/addresses'
+import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
 import CopyOnClick from '../../common/copyOnClick'
 import {useState} from 'preact/hooks'
 import styles from './multiAssetsPage.module.scss'
@@ -17,22 +14,12 @@ const MultiAssetsPage = () => {
 
   const [expandedAsset, setExpandedAsset] = useState(-1)
 
-  type MultiAsset = {
-    assetNameHex: string
-    assetName: string
-    fingerprint: string
-    type: AssetFamily
-    policyId: string
-    quantity: number
-  }
-
-  const multiAssets: MultiAsset[] = [
+  const multiAssets: FormattedAssetItemProps[] = [
     ...tokenBalance
       .sort((a: Token, b: Token) => b.quantity - a.quantity)
       .map((token: Token) => ({
         ...token,
         assetNameHex: token.assetName,
-        assetName: assetNameHex2Readable(token.assetName),
         fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
         type: AssetFamily.TOKEN,
       })),
@@ -45,7 +32,7 @@ const MultiAssetsPage = () => {
       <h2 className="card-title">Digital assets</h2>
       <div className="multi-assets-page-list">
         {multiAssets.map((asset, i) => (
-          <FormattedAssetItem key={asset?.assetName} {...asset}>
+          <FormattedAssetItem key={asset.fingerprint} {...asset}>
             {({
               icon,
               formattedAssetName,
