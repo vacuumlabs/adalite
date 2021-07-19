@@ -20,13 +20,14 @@ import {
   TxType,
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
-import {parseCoins} from '../../../../frontend/helpers/validators'
+import {parseCoins, parseTokenAmount} from '../../../../frontend/helpers/validators'
 import {
   assetNameHex2Readable,
   encodeAssetFingerprint,
 } from '../../../../frontend/wallet/shelley/helpers/addresses'
 import tooltip from '../../common/tooltip'
 import {FormattedAssetItem} from '../../common/asset'
+import printTokenAmount from '../../../helpers/printTokenAmount'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -45,23 +46,21 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
     )
   )
 
-type DropdownAssetItem = Token & {
-  fingerprint: string
-  assetNameHex: string
-  type: AssetFamily
-  star?: boolean
+type Searchable = {
+  searchable: {
+    ticker: string
+    assetNameReadable: string
+  }
 }
 
+type DropdownAssetItem = Token & {
+  fingerprint: string
+  type: AssetFamily
+} & Searchable
+
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
-  <FormattedAssetItem key={props.assetName} {...props}>
-    {({
-      starIcon,
-      formattedAssetName,
-      formattedAssetLink,
-      formattedAmount,
-      formattedPolicy,
-      formattedFingerprint,
-    }) => {
+  <FormattedAssetItem key={props.fingerprint} {...props}>
+    {({formattedAssetIconName, formattedAssetLink, formattedAmount}) => {
       return (
         <div
           className="multi-asset-item"
@@ -73,8 +72,7 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
         >
           <div className="multi-asset-name-amount">
             <div className="multi-asset-name">
-              {starIcon}
-              {formattedAssetName}
+              {formattedAssetIconName}
               {formattedAssetLink}
             </div>
             <div
@@ -86,8 +84,6 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
               {formattedAmount}
             </div>
           </div>
-          {formattedPolicy}
-          {formattedFingerprint}
         </div>
       )
     }}
@@ -111,6 +107,8 @@ const SendAdaPage = ({
     feeRecalculating,
     sendAddressValidationError,
     sendAmount,
+    tokenDecimals,
+    tokensMetadata,
     sendAmountValidationError,
     targetAccountIndex,
     tokenBalance,
@@ -122,6 +120,13 @@ const SendAdaPage = ({
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount,
+    tokenDecimals:
+      state.sendAmount.assetFamily === AssetFamily.TOKEN
+        ? state.tokensMetadata[
+          `${state.sendAmount.token.policyId}${state.sendAmount.token.assetName}`
+        ]?.decimals || 0
+        : null,
+    tokensMetadata: state.tokensMetadata,
     feeRecalculating: state.calculatingFee,
     conversionRates: state.conversionRates && state.conversionRates.data,
     sendTransactionSummary: state.sendTransactionSummary,
@@ -160,10 +165,12 @@ const SendAdaPage = ({
     type: AssetFamily.ADA,
     policyId: null,
     assetName: 'ADA',
-    assetNameHex: null,
     fingerprint: null,
     quantity: balance,
-    star: true,
+    searchable: {
+      assetNameReadable: 'ADA',
+      ticker: 'ADA',
+    },
   }
 
   const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
@@ -174,15 +181,17 @@ const SendAdaPage = ({
         .map(
           (token: Token): DropdownAssetItem => ({
             ...token,
-            assetNameHex: token.assetName,
-            assetName: assetNameHex2Readable(token.assetName),
             fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
             type: AssetFamily.TOKEN,
-            star: false,
+            searchable: {
+              assetNameReadable: assetNameHex2Readable(token.assetName),
+              ticker:
+                tokensMetadata && tokensMetadata[`${token.policyId}${token.assetName}`]?.ticker,
+            },
           })
         ),
     ],
-    [adaAsset, tokenBalance]
+    [adaAsset, tokenBalance, tokensMetadata]
   )
 
   const selectedAsset = useMemo(() => {
@@ -191,8 +200,7 @@ const SendAdaPage = ({
     }
     return dropdownAssetItems.find(
       (item) =>
-        item.assetNameHex === sendAmount.token.assetName &&
-        item.policyId === sendAmount.token.policyId
+        item.assetName === sendAmount.token.assetName && item.policyId === sendAmount.token.policyId
     )
   }, [adaAsset, dropdownAssetItems, sendAmount])
 
@@ -200,11 +208,16 @@ const SendAdaPage = ({
     await confirmTransactionOld(TxType.SEND_ADA)
   }
 
+  const safeIncludes = (subString: string, string: string) =>
+    !!string && !!subString && string.toLowerCase().includes(subString.toLocaleLowerCase())
+
   const searchPredicate = useCallback(
-    (query: string, {policyId, assetName, fingerprint}: DropdownAssetItem): boolean =>
-      (fingerprint && fingerprint.toLowerCase().includes(query.toLowerCase())) ||
-      assetName.toLowerCase().includes(query.toLowerCase()) ||
-      (policyId && policyId.toLowerCase().includes(query.toLowerCase())),
+    (query: string, {policyId, assetName, fingerprint, searchable}: DropdownAssetItem): boolean =>
+      safeIncludes(query, fingerprint) ||
+      safeIncludes(query, assetName) ||
+      safeIncludes(query, policyId) ||
+      safeIncludes(query, searchable.assetNameReadable) ||
+      safeIncludes(query, searchable.ticker),
     []
   )
 
@@ -222,25 +235,42 @@ const SendAdaPage = ({
           fieldValue,
           token: {
             policyId: dropdownAssetItem.policyId,
-            assetName: dropdownAssetItem.assetNameHex,
-            quantity: parseFloat(fieldValue),
+            assetName: dropdownAssetItem.assetName,
+            // `tokenDecimals` would result in previously selected asset value,
+            // so we have to make a lookup for new decimals value
+            quantity: parseTokenAmount(
+              fieldValue,
+              tokensMetadata[`${dropdownAssetItem.policyId}${dropdownAssetItem.assetName}`]
+                ?.decimals || 0
+            ),
           },
         })
       }
     },
-    [updateAmount]
+    [tokensMetadata, updateAmount]
   )
 
-  const displayDropdownSelectedItem = ({assetName, policyId, type}: DropdownAssetItem) => (
-    <div className="wrapper">
-      {assetName}
-      {type === AssetFamily.TOKEN && (
-        <div className="hash">
-          (<div className="ellipsis">{policyId}</div>)
-        </div>
-      )}
-    </div>
-  )
+  const displayDropdownSelectedItem = (dropdownAssetItem: DropdownAssetItem) => {
+    const {policyId, type} = dropdownAssetItem
+    return (
+      <div className="wrapper">
+        <FormattedAssetItem {...dropdownAssetItem}>
+          {({formattedAssetIconName}) => {
+            return (
+              <Fragment>
+                {formattedAssetIconName}
+                {type === AssetFamily.TOKEN && (
+                  <div className="hash">
+                    (<div className="ellipsis">{policyId}</div>)
+                  </div>
+                )}
+              </Fragment>
+            )
+          }}
+        </FormattedAssetItem>
+      </div>
+    )
+  }
 
   const handleDropdownOnSelect = useCallback(
     (dropdownAssetItem: DropdownAssetItem): void => {
@@ -286,7 +316,7 @@ const SendAdaPage = ({
   )
 
   // TODO: is this possible to do in raw CSS?
-  // dropdown width is dependand on div that is much higher in HTML DOM
+  // dropdown width is dependent on div that is much higher in HTML DOM
   const calculateDropdownWidth = () => {
     const deriveFrom = sendCardDiv?.current
     if (deriveFrom) {
@@ -312,7 +342,7 @@ const SendAdaPage = ({
         onSelect={handleDropdownOnSelect}
         showSearch={dropdownAssetItems.length >= 4}
         searchPredicate={searchPredicate}
-        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or policy ID`}
+        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by ticker, name, fingerprint or policy ID`}
         dropdownClassName="modal-dropdown"
         getDropdownWidth={calculateDropdownWidth}
       />
@@ -348,7 +378,7 @@ const SendAdaPage = ({
         />
         <button
           className="button send-max"
-          onClick={sendMaxFunds}
+          onClick={() => sendMaxFunds(tokenDecimals)}
           disabled={!isSendAddressValid || !balance}
         >
           Max
@@ -398,8 +428,14 @@ const SendAdaPage = ({
             </div>
           ) : (
             <div className="send-total-ada">
-              {totalTokens?.quantity != null ? totalTokens.quantity : 0}{' '}
-              {totalTokens ? assetNameHex2Readable(totalTokens.assetName) : selectedAsset.assetName}
+              {totalTokens?.quantity != null
+                ? printTokenAmount(totalTokens.quantity, tokenDecimals)
+                : 0}{' '}
+              <FormattedAssetItem {...selectedAsset}>
+                {({formattedAssetIconName}) => {
+                  return <Fragment>{formattedAssetIconName}</Fragment>
+                }}
+              </FormattedAssetItem>
             </div>
           )}
           {selectedAsset.type === AssetFamily.ADA

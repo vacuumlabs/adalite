@@ -97,7 +97,6 @@ const SendingPage = ({
           <div className="dashboard-column shrinkable">
             <SendAdaPage />
             <MultiAssetsPage />
-            <ReceiveRedirect />
             {shouldShowExportOption && <ExportCard />}
           </div>
         </div>
