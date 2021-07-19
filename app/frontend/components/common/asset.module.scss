@@ -25,3 +25,14 @@
 .assetName {
   white-space: nowrap;
 }
+
+.iconName {
+  display: flex;
+  align-items: center;
+}
+
+.iconName svg, .iconName img {
+  margin-right: 6px;
+  width: 12px;
+  height: 12px;
+}

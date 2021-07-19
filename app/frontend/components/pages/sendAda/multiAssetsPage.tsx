@@ -34,8 +34,7 @@ const MultiAssetsPage = () => {
         {multiAssets.map((asset, i) => (
           <FormattedAssetItem key={asset.fingerprint} {...asset}>
             {({
-              icon,
-              formattedAssetName,
+              formattedAssetIconName,
               formattedAssetLink,
               formattedAmount,
               formattedPolicy,
@@ -56,8 +55,7 @@ const MultiAssetsPage = () => {
                   }}
                 >
                   <div className={styles.name}>
-                    {icon}
-                    {formattedAssetName}
+                    {formattedAssetIconName}
                     {formattedAssetLink}
                   </div>
                   <div className={styles.right}>
