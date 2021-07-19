@@ -3694,14 +3694,16 @@ input:checked + .slider:before {
 }
 
 .send-total-ada {
+  display: flex;
   padding-left: 16px;
   text-align: left;
   font-size: 24px;
 }
 
-.send-total-ada svg {
+.send-total-ada svg, .send-total-ada img {
   margin-left: 6px;
-  height: 18px;
+  height: 18px !important;
+  width: unset !important;
 }
 
 .send-total-title {

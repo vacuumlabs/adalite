@@ -20,7 +20,7 @@ import {
   TxType,
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
-import {parseCoins} from '../../../../frontend/helpers/validators'
+import {parseCoins, parseTokenAmount} from '../../../../frontend/helpers/validators'
 import {
   assetNameHex2Readable,
   encodeAssetFingerprint,
@@ -28,6 +28,7 @@ import {
 import tooltip from '../../common/tooltip'
 import {FormattedAssetItem} from '../../common/asset'
 import {shouldDisableSendingButton} from '../../../helpers/common'
+import printTokenAmount from '../../../helpers/printTokenAmount'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -107,6 +108,8 @@ const SendAdaPage = ({
     feeRecalculating,
     sendAddressValidationError,
     sendAmount,
+    tokenDecimals,
+    tokensMetadata,
     sendAmountValidationError,
     targetAccountIndex,
     tokenBalance,
@@ -119,6 +122,13 @@ const SendAdaPage = ({
     sendAddress: state.sendAddress.fieldValue,
     sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount,
+    tokenDecimals:
+      state.sendAmount.assetFamily === AssetFamily.TOKEN
+        ? state.tokensMetadata[
+          `${state.sendAmount.token.policyId}${state.sendAmount.token.assetName}`
+        ]?.decimals || 0
+        : null,
+    tokensMetadata: state.tokensMetadata,
     feeRecalculating: state.calculatingFee,
     conversionRates: state.conversionRates && state.conversionRates.data,
     sendTransactionSummary: state.sendTransactionSummary,
@@ -232,12 +242,18 @@ const SendAdaPage = ({
           token: {
             policyId: dropdownAssetItem.policyId,
             assetName: dropdownAssetItem.assetName,
-            quantity: parseFloat(fieldValue),
+            // `tokenDecimals` would result in previously selected asset value,
+            // so we have to make a lookup for new decimals value
+            quantity: parseTokenAmount(
+              fieldValue,
+              tokensMetadata[`${dropdownAssetItem.policyId}${dropdownAssetItem.assetName}`]
+                ?.decimals || 0
+            ),
           },
         })
       }
     },
-    [updateAmount]
+    [tokensMetadata, updateAmount]
   )
 
   const displayDropdownSelectedItem = (dropdownAssetItem: DropdownAssetItem) => {
@@ -370,7 +386,7 @@ const SendAdaPage = ({
         />
         <button
           className="button send-max"
-          onClick={sendMaxFunds}
+          onClick={() => sendMaxFunds(tokenDecimals)}
           disabled={!isSendAddressValid || !balance}
         >
           Max
@@ -420,8 +436,14 @@ const SendAdaPage = ({
             </div>
           ) : (
             <div className="send-total-ada">
-              {totalTokens?.quantity != null ? totalTokens.quantity : 0}{' '}
-              {totalTokens ? assetNameHex2Readable(totalTokens.assetName) : selectedAsset.assetName}
+              {totalTokens?.quantity != null
+                ? printTokenAmount(totalTokens.quantity, tokenDecimals)
+                : 0}{' '}
+              <FormattedAssetItem {...selectedAsset}>
+                {({formattedAssetIconName}) => {
+                  return <Fragment>{formattedAssetIconName}</Fragment>
+                }}
+              </FormattedAssetItem>
             </div>
           )}
           {selectedAsset.type === AssetFamily.ADA

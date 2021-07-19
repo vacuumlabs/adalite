@@ -7,6 +7,7 @@ import {StringEllipsis} from '../pages/stringEllipsis'
 import {useSelector} from '../../helpers/connect'
 import styles from './asset.module.scss'
 import {assetNameHex2Readable} from '../../wallet/shelley/helpers/addresses'
+import printTokenAmount from '../../helpers/printTokenAmount'
 
 type LinkToAssetProps = {
   policyIdHex: string
@@ -85,10 +86,7 @@ export const FormattedAssetItem = ({
 
   const FormattedAmount = () => {
     if (type === AssetFamily.TOKEN) {
-      if (metadata?.decimals) {
-        return (quantity / Math.pow(10, metadata.decimals)).toFixed(metadata.decimals)
-      }
-      return `${quantity}`
+      return printTokenAmount(quantity, metadata?.decimals || 0)
     } else {
       return printAda(Math.abs(quantity) as Lovelace)
     }

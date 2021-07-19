@@ -38,10 +38,12 @@ export default (store: Store) => {
       const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
         (token) => token.policyId === policyId && token.assetName === assetName
       ).quantity
+      const decimals = getState().tokensMetadata[`${policyId}${assetName}`]?.decimals || 0
       const sendAmountValidationError = tokenAmountValidator(
         state.sendAmount.fieldValue,
         quantity,
-        tokenBalance
+        tokenBalance,
+        decimals
       )
       setError(state, {
         errorName: 'sendAmountValidationError',
@@ -181,12 +183,12 @@ export default (store: Store) => {
     updateAmount(state, maxAmount)
   }
 
-  const sendMaxFunds = async (state: State) => {
+  const sendMaxFunds = async (state: State, decimals: number) => {
     setState({calculatingFee: true})
     try {
       const maxAmounts = await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .getMaxSendableAmount(state.sendAddress.fieldValue as Address, state.sendAmount)
+        .getMaxSendableAmount(state.sendAddress.fieldValue as Address, state.sendAmount, decimals)
       validateAndSetMaxFunds(state, maxAmounts)
     } catch (e) {
       setState({
