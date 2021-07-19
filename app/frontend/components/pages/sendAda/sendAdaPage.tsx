@@ -60,7 +60,7 @@ type DropdownAssetItem = Token & {
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.fingerprint} {...props}>
-    {({icon, formattedAssetName, formattedAssetLink, formattedAmount}) => {
+    {({formattedAssetIconName, formattedAssetLink, formattedAmount}) => {
       return (
         <div
           className="multi-asset-item"
@@ -72,8 +72,7 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
         >
           <div className="multi-asset-name-amount">
             <div className="multi-asset-name">
-              {icon}
-              {formattedAssetName}
+              {formattedAssetIconName}
               {formattedAssetLink}
             </div>
             <div
@@ -246,11 +245,10 @@ const SendAdaPage = ({
     return (
       <div className="wrapper">
         <FormattedAssetItem {...dropdownAssetItem}>
-          {({icon, formattedAssetName}) => {
+          {({formattedAssetIconName}) => {
             return (
               <Fragment>
-                {icon}
-                {formattedAssetName}
+                {formattedAssetIconName}
                 {type === AssetFamily.TOKEN && (
                   <div className="hash">
                     (<div className="ellipsis">{policyId}</div>)

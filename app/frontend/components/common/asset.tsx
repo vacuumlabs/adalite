@@ -34,6 +34,7 @@ export const FormattedAssetItem = ({
   children: (props: {
     icon: h.JSX.Element
     formattedAssetName: h.JSX.Element | string
+    formattedAssetIconName: h.JSX.Element
     formattedAssetLink: h.JSX.Element
     formattedAmount: string
     formattedPolicy: h.JSX.Element
@@ -100,6 +101,12 @@ export const FormattedAssetItem = ({
       </div>
     ),
     formattedAssetName: <FormattedAssetName />,
+    formattedAssetIconName: (
+      <div className={styles.iconName}>
+        <Icon />
+        <FormattedAssetName />
+      </div>
+    ),
     formattedAssetLink: type === AssetFamily.TOKEN && (
       <LinkToAsset policyIdHex={policyId} assetNameHex={assetName} />
     ),
