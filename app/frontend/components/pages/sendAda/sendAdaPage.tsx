@@ -319,7 +319,7 @@ const SendAdaPage = ({
   )
 
   // TODO: is this possible to do in raw CSS?
-  // dropdown width is dependand on div that is much higher in HTML DOM
+  // dropdown width is dependent on div that is much higher in HTML DOM
   const calculateDropdownWidth = () => {
     const deriveFrom = sendCardDiv?.current
     if (deriveFrom) {
@@ -345,7 +345,7 @@ const SendAdaPage = ({
         onSelect={handleDropdownOnSelect}
         showSearch={dropdownAssetItems.length >= 4}
         searchPredicate={searchPredicate}
-        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or policy ID`}
+        searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by ticker, name, fingerprint or policy ID`}
         dropdownClassName="modal-dropdown"
         getDropdownWidth={calculateDropdownWidth}
         disabled={shouldDisableSendingButton(walletOperationStatusType)}
