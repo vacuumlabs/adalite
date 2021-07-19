@@ -188,16 +188,13 @@ const SendAdaPage = ({
             type: AssetFamily.TOKEN,
             searchable: {
               assetNameReadable: assetNameHex2Readable(token.assetName),
-              ticker: useSelector(
-                (state) =>
-                  state.tokensMetadata &&
-                  state.tokensMetadata[`${token.policyId}${token.assetName}`]?.ticker
-              ),
+              ticker:
+                tokensMetadata && tokensMetadata[`${token.policyId}${token.assetName}`]?.ticker,
             },
           })
         ),
     ],
-    [adaAsset, tokenBalance]
+    [adaAsset, tokenBalance, tokensMetadata]
   )
 
   const selectedAsset = useMemo(() => {
