@@ -82,6 +82,17 @@ export const FormattedAssetItem = ({
     }
   }
 
+  const FormattedAmount = () => {
+    if (type === AssetFamily.TOKEN) {
+      if (metadata?.decimals) {
+        return (quantity / Math.pow(10, metadata.decimals)).toFixed(metadata.decimals)
+      }
+      return `${quantity}`
+    } else {
+      return printAda(Math.abs(quantity) as Lovelace)
+    }
+  }
+
   return children({
     icon: (
       <div className={styles.icon}>
@@ -92,8 +103,7 @@ export const FormattedAssetItem = ({
     formattedAssetLink: type === AssetFamily.TOKEN && (
       <LinkToAsset policyIdHex={policyId} assetNameHex={assetName} />
     ),
-    formattedAmount:
-      type === AssetFamily.TOKEN ? `${quantity}` : printAda(Math.abs(quantity) as Lovelace),
+    formattedAmount: FormattedAmount(),
     formattedPolicy: policyId && (
       <div className="multi-asset-hash">
         <StringEllipsis value={policyId} length={6} />

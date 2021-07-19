@@ -25,6 +25,10 @@
   align-items: center;
 }
 
+.asset .name svg, .asset .name img {
+  margin-right: 6px;
+}
+
 .asset .right {
   display: flex;
   align-items: center;

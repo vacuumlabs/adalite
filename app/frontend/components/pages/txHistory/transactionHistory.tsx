@@ -78,18 +78,27 @@ const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
 const MultiAsset = (props: FormattedAssetItemProps) => {
   return (
     <FormattedAssetItem {...props}>
-      {({icon, formattedAssetName, formattedAssetLink, formattedPolicy, formattedFingerprint}) => {
+      {({
+        icon,
+        formattedAssetName,
+        formattedAmount,
+        formattedAssetLink,
+        formattedPolicy,
+        formattedFingerprint,
+      }) => {
         const {quantity} = props
         return (
           <Fragment>
             <div className={`${styles.multiAssetRow} row`}>
               <div className="multi-asset-name">
-                {icon}
                 {formattedAssetName}
                 {formattedAssetLink}
               </div>
-              <div className={`multi-asset-amount ${quantity > 0 ? 'credit' : 'debit'}`}>
-                {quantity > 0 ? `+${quantity}` : quantity}
+              <div className={`${styles.amount} ${quantity > 0 ? 'credit' : 'debit'}`}>
+                <div className={`${styles.quantity}`}>
+                  {quantity > 0 ? `+${formattedAmount}` : formattedAmount}
+                </div>
+                {icon}
               </div>
             </div>
             {formattedPolicy}
