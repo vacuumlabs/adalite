@@ -626,6 +626,10 @@ p.hey {
   padding-right: 16px;
 }
 
+.searchable-select .wrapper svg, .searchable-select .wrapper img {
+  margin-right: 6px;
+}
+
 .searchable-select .hash{
   display: flex;
   padding-left: 4px;
@@ -710,6 +714,10 @@ p.hey {
   display: flex;
   align-items: center;
   margin: unset;
+}
+
+.multi-asset-name svg, .multi-asset-name img {
+  margin-right: 6px;
 }
 
 .multi-asset-amount {
@@ -3536,11 +3544,11 @@ input:checked + .slider:before {
   font-weight: bold;
 }
 
-.multi-asset-amount.credit {
+.credit {
   color: var(--color-success);
 }
 
-.multi-asset-amount.debit {
+.debit {
   color: var(--color-error);
 }
 
