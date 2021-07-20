@@ -1,14 +1,15 @@
 import assert from 'assert'
-import {accountSettings} from '../common/account-settings'
-import {Account} from '../../../frontend/wallet/account'
-import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
-import BlockchainExplorer from '../../../frontend/wallet/blockchain-explorer'
-import ShelleyJsCryptoProvider from '../../../frontend/wallet/shelley/shelley-js-crypto-provider'
-import {ADALITE_CONFIG} from '../../../frontend/config'
-import {transactionSettings} from '../common/tx-settings'
-import {poolRegTxSettings} from '../common/pool-reg-tx-settings'
-import mockNetwork from '../common/mock'
-import {TxType} from '../../../frontend/types'
+import {accountSettings} from '../../common/account-settings'
+import {Account} from '../../../../frontend/wallet/account'
+import mnemonicToWalletSecretDef from '../../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
+import BlockchainExplorer from '../../../../frontend/wallet/blockchain-explorer'
+import ShelleyJsCryptoProvider from '../../../../frontend/wallet/shelley/shelley-js-crypto-provider'
+import {ADALITE_CONFIG} from '../../../../frontend/config'
+import {transactionSettings} from '../../common/tx-settings'
+import {poolRegTxSettings} from '../../common/pool-reg-tx-settings'
+import mockNetwork from '../../common/mock'
+import {TxType} from '../../../../frontend/types'
+import {utxoSettings} from './utxo-settings'
 
 const accounts = {}
 
@@ -119,5 +120,15 @@ describe('TxAux', () => {
         ).getId()
         assert.deepEqual(txHash, setting.txHash)
       })
+  )
+})
+
+describe('Utxo selection', () => {
+  Object.entries(utxoSettings).forEach(([name, setting]) =>
+    it(`should select utxos correctly when ${name}`, async () => {
+      const account = await accounts.ShelleyAccount0
+      const selectedUtxos = account._arrangeUtxos(setting.availableUtxos, setting.txPlanArgs)
+      assert.deepEqual(selectedUtxos, setting.selectedUtxos)
+    })
   )
 })
