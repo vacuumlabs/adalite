@@ -8,7 +8,7 @@ module.exports = function(app, env) {
     try {
       const responses = await Promise.all(
         req.body.subjects.map((subject) =>
-          fetch(`${backendConfig.TOKEN_REGISTRY_URL}/metadata/${subject}`)
+          fetch(`${backendConfig.ADALITE_TOKEN_REGISTRY_URL}/metadata/${subject}`)
         )
       )
 
@@ -29,7 +29,9 @@ module.exports = function(app, env) {
         req.body.subjects.includes(
           'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a066697273746173736574'
         )
-      ) {tokensMetadata.push(mockData)}
+      ) {
+        tokensMetadata.push(mockData)
+      }
 
       return res.json({
         Right: tokensMetadata,
