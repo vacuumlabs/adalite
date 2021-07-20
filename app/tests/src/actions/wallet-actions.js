@@ -55,6 +55,8 @@ it('Should properly load shelley wallet', async () => {
   mockNet.mockWithdrawalHistory()
   mockNet.mockRewardHistory()
   mockNet.mockPoolRecommendation()
+  mockNet.mockPoolRecommendation()
+  mockNet.mockTokenRegistry()
 
   await action.loadWallet(state, {
     cryptoProviderType: CryptoProviderType.WALLET_SECRET,

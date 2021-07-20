@@ -28,6 +28,7 @@ before(() => {
   mockNet.mockWithdrawalHistory()
   mockNet.mockRewardHistory()
   mockNet.mockPoolRecommendation()
+  mockNet.mockTokenRegistry()
 })
 
 const loadTestWallet = async (mockState) => {
