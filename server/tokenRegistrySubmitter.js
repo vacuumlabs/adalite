@@ -7,7 +7,7 @@ module.exports = function(app, env) {
     try {
       const responses = await Promise.all(
         req.body.subjects.map((subject) =>
-          fetch(`${backendConfig.TOKEN_REGISTRY_URL}/metadata/${subject}`)
+          fetch(`${backendConfig.ADALITE_TOKEN_REGISTRY_URL}/metadata/${subject}`)
         )
       )
 

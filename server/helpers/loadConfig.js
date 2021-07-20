@@ -76,7 +76,7 @@ const checkMap = check.map(process.env, {
   ADALITE_ENFORCE_STAKEPOOL: isBoolString,
   ADALITE_NEXT_VOTING_START: isIsoString,
   ADALITE_NEXT_VOTING_END: isIsoString,
-  TOKEN_REGISTRY_URL: check.nonEmptyString,
+  ADALITE_TOKEN_REGISTRY_URL: check.nonEmptyString,
 })
 
 const {
@@ -113,7 +113,7 @@ const {
   ADALITE_ENABLE_LEDGER,
   ADALITE_NEXT_VOTING_START,
   ADALITE_NEXT_VOTING_END,
-  TOKEN_REGISTRY_URL,
+  ADALITE_TOKEN_REGISTRY_URL,
 } = process.env
 
 let {ADALITE_SERVER_URL} = process.env
@@ -198,7 +198,7 @@ const backendConfig = {
   ADALITE_IP_BLACKLIST: ADALITE_IP_BLACKLIST
     ? ADALITE_IP_BLACKLIST.replace(/ /g, '').split(',')
     : [],
-  TOKEN_REGISTRY_URL,
+  ADALITE_TOKEN_REGISTRY_URL,
 }
 
 module.exports = {
