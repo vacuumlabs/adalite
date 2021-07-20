@@ -13,6 +13,7 @@ import {
   TxType,
   Address,
   PoolOwnerTxPlanArgs,
+  AssetFamily,
 } from '../types'
 import {
   getAccountXpub as getAccoutXpubShelley,
@@ -294,30 +295,43 @@ const Account = ({
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  const selectUTxOs = async (txType: TxType): Promise<UTxO[]> => {
-    const availableUtxos = await getUtxos()
-    const nonStakingUtxos = availableUtxos.filter(({address}) => !isBase(addressToHex(address)))
-    const baseAddressUtxos = availableUtxos.filter(({address}) => isBase(addressToHex(address)))
+  const selectUTxOs = (utxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
+    const nonStakingUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
+    const baseAddressUtxos = utxos.filter(({address}) => isBase(addressToHex(address)))
+    const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
+    const tokenUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    // TODO: ideally we want to do nonStaking, with token, only ada, the rest
-    if (txType === TxType.SEND_ADA || txType === TxType.CONVERT_LEGACY) {
+
+    if (
+      txPlanArgs.txType === TxType.SEND_ADA &&
+      txPlanArgs.sendAmount.assetFamily === AssetFamily.TOKEN
+    ) {
+      const {policyId, assetName} = txPlanArgs.sendAmount.token
+      const utxosWithToken = tokenUtxos.filter(({tokenBundle}) =>
+        tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
+      )
+      const utxosWithoutToken = tokenUtxos.filter(
+        ({tokenBundle}) =>
+          !tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
+      )
       return [
+        ...shuffleArray(utxosWithToken, randomGenerator),
         ...shuffleArray(nonStakingUtxos, randomGenerator),
-        ...shuffleArray(baseAddressUtxos, randomGenerator),
+        ...shuffleArray(adaOnlyUtxos, randomGenerator),
+        ...shuffleArray(utxosWithoutToken, randomGenerator),
       ]
     }
-    const adaUTxOs = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
-    const tokenUTxOs = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
     return [
       ...shuffleArray(nonStakingUtxos, randomGenerator),
-      ...shuffleArray(adaUTxOs, randomGenerator),
-      ...shuffleArray(tokenUTxOs, randomGenerator),
+      ...shuffleArray(adaOnlyUtxos, randomGenerator),
+      ...shuffleArray(tokenUtxos, randomGenerator),
     ]
   }
 
   const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
+    const utxos = await getUtxos()
     const changeAddress = await getChangeAddress()
-    const shuffledUtxos = await selectUTxOs(txPlanArgs.txType)
+    const shuffledUtxos = await selectUTxOs(utxos, txPlanArgs)
     return selectMinimalTxPlan(shuffledUtxos, changeAddress, txPlanArgs)
   }
 
@@ -515,6 +529,7 @@ const Account = ({
     _getAccountXpubs: getAccountXpubs,
     getPoolRegistrationTxPlan,
     calculateTtl,
+    _selectUTxOs: selectUTxOs,
   }
 }
 
