@@ -3824,6 +3824,7 @@ input:checked + .slider:before {
   padding-top: 12px;
   margin-top: -12px;
 
+  border-bottom: 1px solid var(--color-border);
   max-height: 400px;
   overflow: auto;
 }
