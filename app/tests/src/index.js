@@ -26,7 +26,7 @@ describe('AdaLite Test Suite', () => {
     require('./wallet/account-manager')
   })
   describe('Account', () => {
-    require('./wallet/account')
+    require('./wallet/account/account')
   })
   describe('Token bundle', () => {
     require('./tokenBundle')

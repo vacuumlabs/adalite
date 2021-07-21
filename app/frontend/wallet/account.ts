@@ -295,37 +295,29 @@ const Account = ({
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  const selectUTxOs = (utxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
+  const selectUTxOs = (availableUtxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
+    const randomGenerator = PseudoRandom(seeds.randomInputSeed)
+    const utxos = shuffleArray(availableUtxos, randomGenerator)
     const nonStakingUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
     const baseAddressUtxos = utxos.filter(({address}) => isBase(addressToHex(address)))
     const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
     const tokenUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
-    const randomGenerator = PseudoRandom(seeds.randomInputSeed)
 
     if (
       txPlanArgs.txType === TxType.SEND_ADA &&
       txPlanArgs.sendAmount.assetFamily === AssetFamily.TOKEN
     ) {
       const {policyId, assetName} = txPlanArgs.sendAmount.token
-      const utxosWithToken = tokenUtxos.filter(({tokenBundle}) =>
+      const targetTokenUtxos = tokenUtxos.filter(({tokenBundle}) =>
         tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
       )
-      const utxosWithoutToken = tokenUtxos.filter(
+      const nonTargetTokenUtxos = tokenUtxos.filter(
         ({tokenBundle}) =>
           !tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
       )
-      return [
-        ...shuffleArray(utxosWithToken, randomGenerator),
-        ...shuffleArray(nonStakingUtxos, randomGenerator),
-        ...shuffleArray(adaOnlyUtxos, randomGenerator),
-        ...shuffleArray(utxosWithoutToken, randomGenerator),
-      ]
+      return [...targetTokenUtxos, ...nonStakingUtxos, ...adaOnlyUtxos, ...nonTargetTokenUtxos]
     }
-    return [
-      ...shuffleArray(nonStakingUtxos, randomGenerator),
-      ...shuffleArray(adaOnlyUtxos, randomGenerator),
-      ...shuffleArray(tokenUtxos, randomGenerator),
-    ]
+    return [...nonStakingUtxos, ...adaOnlyUtxos, ...tokenUtxos]
   }
 
   const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
