@@ -124,12 +124,11 @@ describe('TxAux', () => {
 })
 
 describe('Utxo selection', () => {
-  Object.entries(utxoSettings).forEach(
-    ([name, setting]) =>
-      it(`should select utxos correctly when ${name}`, async () => {
-        const account = await accounts.ShelleyAccount0
-        const selectedUtxos = account._selectUTxOs(setting.availableUtxos, setting.txPlanArgs)
-        assert.deepEqual(selectedUtxos, setting.selectedUtxos)
-      })
+  Object.entries(utxoSettings).forEach(([name, setting]) =>
+    it(`should select utxos correctly when ${name}`, async () => {
+      const account = await accounts.ShelleyAccount0
+      const selectedUtxos = account._arrangeUtxos(setting.availableUtxos, setting.txPlanArgs)
+      assert.deepEqual(selectedUtxos, setting.selectedUtxos)
+    })
   )
 })

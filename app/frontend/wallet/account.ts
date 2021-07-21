@@ -295,8 +295,9 @@ const Account = ({
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  const selectUTxOs = (availableUtxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
+  const arrangeUtxos = (availableUtxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
     const randomGenerator = PseudoRandom(seeds.randomInputSeed)
+    // TODO: remove the shuffeling of utxos altogether
     const utxos = shuffleArray(availableUtxos, randomGenerator)
     const nonStakingUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
     const baseAddressUtxos = utxos.filter(({address}) => isBase(addressToHex(address)))
@@ -323,8 +324,8 @@ const Account = ({
   const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
     const utxos = await getUtxos()
     const changeAddress = await getChangeAddress()
-    const shuffledUtxos = await selectUTxOs(utxos, txPlanArgs)
-    return selectMinimalTxPlan(shuffledUtxos, changeAddress, txPlanArgs)
+    const arrangedUtxos = arrangeUtxos(utxos, txPlanArgs)
+    return selectMinimalTxPlan(arrangedUtxos, changeAddress, txPlanArgs)
   }
 
   function isAccountUsed(): Promise<boolean> {
@@ -521,7 +522,7 @@ const Account = ({
     _getAccountXpubs: getAccountXpubs,
     getPoolRegistrationTxPlan,
     calculateTtl,
-    _selectUTxOs: selectUTxOs,
+    _arrangeUtxos: arrangeUtxos,
   }
 }
 
