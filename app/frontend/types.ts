@@ -87,15 +87,6 @@ export type RegisteredTokenMetadata = {
   decimals?: number
 }
 
-export type UnregisteredToken = Token & {
-  registered: false
-}
-
-export type RegisteredToken = Token &
-  RegisteredTokenMetadata & {
-    registered: true
-  }
-
 export type TokenBundle = Token[]
 
 export type OrderedTokenBundle = {
