@@ -4,16 +4,17 @@ import {RegisteredTokenMetadata} from '../types'
 import {TokenRegistryApi} from './types'
 
 export default (): TokenRegistryApi => {
-  const getTokensMetadata = async (
-    subjects: string[]
-  ): Promise<{[subject: string]: RegisteredTokenMetadata}> => {
+  const fetchTokensMetadata = (subjects: string[]): Promise<any> => {
     const url = `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/tokenRegistry/getTokensMetadata`
     const requestBody = {subjects}
-    const response = await request(url, 'POST', JSON.stringify(requestBody), {
+    return request(url, 'POST', JSON.stringify(requestBody), {
       'Content-Type': 'application/json',
     })
-    if (response?.Right) {
-      return response.Right.reduce((acc, tokenMetadata) => {
+  }
+
+  const parseTokensMetadata = (toParse: any): {[subject: string]: RegisteredTokenMetadata} => {
+    if (toParse?.Right) {
+      return toParse.Right.reduce((acc, tokenMetadata) => {
         const {subject, description, ticker, url, logoHex} = tokenMetadata
         acc[subject] = {subject, description, ticker, url, logoHex}
         acc[tokenMetadata.subject] = {
@@ -27,11 +28,19 @@ export default (): TokenRegistryApi => {
         return acc
       }, {})
     } else {
-      return new Promise((resolve, reject) => resolve({}))
+      return {}
     }
   }
 
+  const getTokensMetadata = async (
+    subjects: string[]
+  ): Promise<{[subject: string]: RegisteredTokenMetadata}> => {
+    const tokensMetadata = await fetchTokensMetadata(subjects)
+    return parseTokensMetadata(tokensMetadata)
+  }
+
   return {
+    parseTokensMetadata,
     getTokensMetadata,
   }
 }
