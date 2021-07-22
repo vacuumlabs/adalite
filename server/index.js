@@ -82,7 +82,7 @@ if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
 } else {
   require('./transactionSubmitter')(app)
   require('./emailSubmitter')(app)
-  require('./tokenRegistrySubmitter')(app)
+  require('./tokenRegistryProxy')(app)
 }
 require('./poolInfoGetter')(app)
 
