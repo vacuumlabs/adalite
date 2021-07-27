@@ -68,10 +68,9 @@ const SendAdaReview = ({
   const {address, coins, fee, minimalLovelaceAmount, token} = transactionSummary
   const lovelaceAmount = (coins + minimalLovelaceAmount) as Lovelace
   const total = (coins + fee + minimalLovelaceAmount) as Lovelace
-  const fingerprint = encodeAssetFingerprint(token.policyId, token.assetName)
-  const formattedAssetItemProps: FormattedAssetItemProps = {
+  const formattedAssetItemProps: FormattedAssetItemProps = token && {
     ...token,
-    fingerprint,
+    fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
     type: AssetFamily.TOKEN,
   }
 
