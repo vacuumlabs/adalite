@@ -1,27 +1,24 @@
 require('isomorphic-fetch')
 const Sentry = require('@sentry/node')
 const {backendConfig} = require('./helpers/loadConfig')
+const cachedFetch = require('./helpers/cachedFetch')
+
+const CACHE_TIMEOUT = 24 * 60 * 60 * 1000 // 1 day
 
 module.exports = function(app, env) {
   app.post('/api/tokenRegistry/getTokensMetadata', async (req, res) => {
     try {
       const responses = await Promise.all(
         req.body.subjects.map((subject) =>
-          fetch(`${backendConfig.ADALITE_TOKEN_REGISTRY_URL}/metadata/${subject}`)
+          cachedFetch(
+            'tokenRegistry:',
+            `${backendConfig.ADALITE_TOKEN_REGISTRY_URL}/metadata/${subject}`,
+            CACHE_TIMEOUT
+          )
         )
       )
 
-      const tokensMetadata = await Promise.all(
-        responses
-          .map((response) => {
-            if (response.status === 200) {
-              return response.json()
-            } else {
-              return null
-            }
-          })
-          .filter((e) => e !== null)
-      )
+      const tokensMetadata = await Promise.all(responses.filter((e) => e !== null))
 
       return res.json({
         Right: tokensMetadata,
