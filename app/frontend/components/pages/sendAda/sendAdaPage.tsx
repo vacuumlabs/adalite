@@ -47,17 +47,12 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
     )
   )
 
-type Searchable = {
-  searchable: {
-    ticker: string
-    assetNameReadable: string
-  }
-}
-
 type DropdownAssetItem = Token & {
   fingerprint: string
   type: AssetFamily
-} & Searchable
+  ticker: string
+  assetNameReadable: string
+}
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.fingerprint} {...props}>
@@ -170,10 +165,8 @@ const SendAdaPage = ({
     assetName: 'ADA',
     fingerprint: null,
     quantity: balance,
-    searchable: {
-      assetNameReadable: 'ADA',
-      ticker: 'ADA',
-    },
+    assetNameReadable: 'ADA',
+    ticker: 'ADA',
   }
 
   const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
@@ -186,11 +179,8 @@ const SendAdaPage = ({
             ...token,
             fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
             type: AssetFamily.TOKEN,
-            searchable: {
-              assetNameReadable: assetNameHex2Readable(token.assetName),
-              ticker:
-                tokensMetadata && tokensMetadata[`${token.policyId}${token.assetName}`]?.ticker,
-            },
+            assetNameReadable: assetNameHex2Readable(token.assetName),
+            ticker: tokensMetadata && tokensMetadata[`${token.policyId}${token.assetName}`]?.ticker,
           })
         ),
     ],
@@ -215,12 +205,15 @@ const SendAdaPage = ({
     !!string && !!subString && string.toLowerCase().includes(subString.toLocaleLowerCase())
 
   const searchPredicate = useCallback(
-    (query: string, {policyId, assetName, fingerprint, searchable}: DropdownAssetItem): boolean =>
+    (
+      query: string,
+      {policyId, assetName, fingerprint, assetNameReadable, ticker}: DropdownAssetItem
+    ): boolean =>
       safeIncludes(query, fingerprint) ||
       safeIncludes(query, assetName) ||
       safeIncludes(query, policyId) ||
-      safeIncludes(query, searchable.assetNameReadable) ||
-      safeIncludes(query, searchable.ticker),
+      safeIncludes(query, assetNameReadable) ||
+      safeIncludes(query, ticker),
     []
   )
 
