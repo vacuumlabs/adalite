@@ -77,7 +77,7 @@ module.exports = function(app, env) {
   })
 
   app.post('/api/*', async (req, res, next) => {
-    if (req.url === '/api/poolMeta' || req.url === '/api/tokenRegistry/getTokensMetadata') {
+    if (req.url === '/api/poolMeta' || req.url === '/api/bulk/tokens/metadata') {
       return next()
     }
 

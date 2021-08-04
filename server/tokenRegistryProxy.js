@@ -6,7 +6,7 @@ const cachedFetch = require('./helpers/cachedFetch')
 const CACHE_TIMEOUT = 24 * 60 * 60 * 1000 // 1 day
 
 module.exports = function(app, env) {
-  app.post('/api/tokenRegistry/getTokensMetadata', async (req, res) => {
+  app.post('/api/bulk/tokens/metadata', async (req, res) => {
     try {
       const responses = await Promise.all(
         req.body.subjects.map((subject) =>

@@ -303,7 +303,7 @@ const mock = (ADALITE_CONFIG) => {
 
   function mockTokenRegistry() {
     fetchMock.post({
-      matcher: `begin:${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/tokenRegistry/getTokensMetadata`,
+      matcher: `begin:${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/bulk/tokens/metadata`,
       response: {
         status: 200,
         body: [],
