@@ -1,6 +1,6 @@
 import request from '../wallet/helpers/request'
 import {ADALITE_CONFIG} from '../config'
-import {RegisteredTokenMetadata} from '../types'
+import {RegisteredTokenMetadata, Token} from '../types'
 import {TokenRegistryApi} from './types'
 
 export default (): TokenRegistryApi => {
@@ -33,8 +33,9 @@ export default (): TokenRegistryApi => {
   }
 
   const getTokensMetadata = async (
-    subjects: string[]
+    tokens: Token[]
   ): Promise<{[subject: string]: RegisteredTokenMetadata}> => {
+    const subjects = tokens.map(({policyId, assetName}) => `${policyId}${assetName}`)
     const tokensMetadata = await fetchTokensMetadata(subjects)
     return parseTokensMetadata(tokensMetadata)
   }
