@@ -51,7 +51,7 @@ type DropdownAssetItem = Token & {
   fingerprint: string
   type: AssetFamily
   ticker: string
-  assetNameReadable: string
+  assetNameUtf8: string
 }
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
@@ -165,7 +165,7 @@ const SendAdaPage = ({
     assetName: 'ADA',
     fingerprint: null,
     quantity: balance,
-    assetNameReadable: 'ADA',
+    assetNameUtf8: 'ADA',
     ticker: 'ADA',
   }
 
@@ -179,7 +179,7 @@ const SendAdaPage = ({
             ...token,
             fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
             type: AssetFamily.TOKEN,
-            assetNameReadable: assetNameHex2Readable(token.assetName),
+            assetNameUtf8: assetNameHex2Readable(token.assetName),
             ticker: tokensMetadata && tokensMetadata[`${token.policyId}${token.assetName}`]?.ticker,
           })
         ),
@@ -207,12 +207,12 @@ const SendAdaPage = ({
   const searchPredicate = useCallback(
     (
       query: string,
-      {policyId, assetName, fingerprint, assetNameReadable, ticker}: DropdownAssetItem
+      {policyId, assetName, fingerprint, assetNameUtf8, ticker}: DropdownAssetItem
     ): boolean =>
       safeIncludes(query, fingerprint) ||
       safeIncludes(query, assetName) ||
       safeIncludes(query, policyId) ||
-      safeIncludes(query, assetNameReadable) ||
+      safeIncludes(query, assetNameUtf8) ||
       safeIncludes(query, ticker),
     []
   )
