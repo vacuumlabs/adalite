@@ -83,7 +83,7 @@ export type RegisteredTokenMetadata = {
   description: string
   ticker?: string
   url?: string
-  logoHex?: string
+  logoBase64?: string
   decimals?: number
 }
 

@@ -50,10 +50,10 @@ export const FormattedAssetItem = ({
   const Icon = () => {
     if (type === AssetFamily.ADA) return <AdaIcon />
     if (metadata) {
-      if (metadata.logoHex) {
+      if (metadata.logoBase64) {
         return (
           <img
-            src={`data:image/png;base64,${metadata.logoHex}`}
+            src={`data:image/png;base64,${metadata.logoBase64}`}
             alt="logo"
             width="12"
             height="12"

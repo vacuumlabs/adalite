@@ -15,14 +15,14 @@ export default (): TokenRegistryApi => {
   const parseTokensMetadata = (toParse: any): {[subject: string]: RegisteredTokenMetadata} => {
     if (toParse?.Right) {
       return toParse.Right.reduce((acc, tokenMetadata) => {
-        const {subject, description, ticker, url, logoHex} = tokenMetadata
-        acc[subject] = {subject, description, ticker, url, logoHex}
+        const {subject, description, ticker, url, logoBase64} = tokenMetadata
+        acc[subject] = {subject, description, ticker, url, logoBase64}
         acc[tokenMetadata.subject] = {
           subject: tokenMetadata.subject,
           description: tokenMetadata.description.value,
           ticker: tokenMetadata?.ticker?.value,
           url: tokenMetadata?.url?.value,
-          logoHex: tokenMetadata?.logo?.value,
+          logoBase64: tokenMetadata?.logo?.value,
           decimals: tokenMetadata?.decimals?.value,
         }
         return acc
