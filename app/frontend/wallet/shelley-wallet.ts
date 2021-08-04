@@ -86,7 +86,12 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     accountInfo: Array<AccountInfo>
   ): Promise<{[subject: string]: RegisteredTokenMetadata}> {
     return tokenRegistry.getTokensMetadata([
-      ...new Set(accountInfo.flatMap(({tokenBalance}) => tokenBalance)),
+      ...new Set(
+        accountInfo.flatMap(({tokenBalance, transactionHistory}) => [
+          ...tokenBalance,
+          ...transactionHistory.flatMap(({tokenEffects}) => tokenEffects),
+        ])
+      ),
     ])
   }
 
