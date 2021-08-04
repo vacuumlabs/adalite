@@ -2,15 +2,20 @@ import request from '../wallet/helpers/request'
 import {ADALITE_CONFIG} from '../config'
 import {RegisteredTokenMetadata, Token} from '../types'
 import {TokenRegistryApi} from './types'
+import cacheResults from '../helpers/cacheResults'
 
 export default (): TokenRegistryApi => {
-  const fetchTokensMetadata = (subjects: string[]): Promise<any> => {
-    const url = `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/tokenRegistry/getTokensMetadata`
-    const requestBody = {subjects}
-    return request(url, 'POST', JSON.stringify(requestBody), {
-      'Content-Type': 'application/json',
-    })
-  }
+  const CACHE_TIMEOUT = 5 * 60 * 1000
+
+  const fetchTokensMetadata = cacheResults(CACHE_TIMEOUT)(
+    (subjects: string[]): Promise<any> => {
+      const url = `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/tokenRegistry/getTokensMetadata`
+      const requestBody = {subjects}
+      return request(url, 'POST', JSON.stringify(requestBody), {
+        'Content-Type': 'application/json',
+      })
+    }
+  )
 
   const parseTokensMetadata = (toParse: any): {[subject: string]: RegisteredTokenMetadata} => {
     if (toParse?.Right) {
