@@ -32,7 +32,7 @@ describe('AdaLite Test Suite', () => {
     require('./tokenBundle')
   })
   describe('Token registry api', () => {
-    require('./tokenRegistryApi')
+    require('./tokenRegistry')
   })
   describe('Transaction planning', () => {
     require('./transaction-planner')

@@ -1,23 +1,28 @@
 import request from '../wallet/helpers/request'
-import {ADALITE_CONFIG} from '../config'
 import {RegisteredTokenMetadata, Token} from '../types'
-import {TokenRegistryApi} from './types'
 import cacheResults from '../helpers/cacheResults'
 
-export default (): TokenRegistryApi => {
-  const CACHE_TIMEOUT = 5 * 60 * 1000
+export class TokenRegistry {
+  private readonly url: string
+  private readonly fetchTokensMetadata: (subjects: string[]) => Promise<any>
 
-  const fetchTokensMetadata = cacheResults(CACHE_TIMEOUT)(
-    (subjects: string[]): Promise<any> => {
-      const url = `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/tokenRegistry/getTokensMetadata`
-      const requestBody = {subjects}
-      return request(url, 'POST', JSON.stringify(requestBody), {
-        'Content-Type': 'application/json',
-      })
-    }
-  )
+  constructor(url: string, cacheTimeout?: number) {
+    this.url = url
+    this.fetchTokensMetadata = cacheTimeout
+      ? cacheResults(cacheTimeout)(this._fetchTokensMetadata)
+      : this._fetchTokensMetadata
+  }
 
-  const parseTokensMetadata = (toParse: any): {[subject: string]: RegisteredTokenMetadata} => {
+  private readonly _fetchTokensMetadata = (subjects: string[]): Promise<any> => {
+    const requestBody = {subjects}
+    return request(this.url, 'POST', JSON.stringify(requestBody), {
+      'Content-Type': 'application/json',
+    })
+  }
+
+  public readonly parseTokensMetadata = (
+    toParse: any
+  ): {[subject: string]: RegisteredTokenMetadata} => {
     if (toParse?.Right) {
       return toParse.Right.reduce((acc, tokenMetadata) => {
         const {subject, description, ticker, url, logoBase64} = tokenMetadata
@@ -37,16 +42,11 @@ export default (): TokenRegistryApi => {
     }
   }
 
-  const getTokensMetadata = async (
+  public readonly getTokensMetadata = async (
     tokens: Token[]
   ): Promise<{[subject: string]: RegisteredTokenMetadata}> => {
     const subjects = tokens.map(({policyId, assetName}) => `${policyId}${assetName}`)
-    const tokensMetadata = await fetchTokensMetadata(subjects)
-    return parseTokensMetadata(tokensMetadata)
-  }
-
-  return {
-    parseTokensMetadata,
-    getTokensMetadata,
+    const tokensMetadata = await this.fetchTokensMetadata(subjects)
+    return this.parseTokensMetadata(tokensMetadata)
   }
 }

@@ -9,7 +9,7 @@ import {
 } from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
-import TokenRegistryApi from '../tokenRegistry/tokenRegistryApi'
+import {TokenRegistry} from '../tokenRegistry/tokenRegistry'
 
 type WalletParams = {
   config: any
@@ -18,6 +18,10 @@ type WalletParams = {
 
 const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   const blockchainExplorer = BlockchainExplorer(config)
+  const tokenRegistry = new TokenRegistry(
+    `${config.ADALITE_SERVER_URL}/api/tokenRegistry/getTokensMetadata`,
+    5 * 60 * 1000
+  )
   const maxAccountIndex = MAX_ACCOUNT_INDEX
 
   const accountManager = AccountManager({
@@ -81,7 +85,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   function getTokensMetadata(
     accountInfo: Array<AccountInfo>
   ): Promise<{[subject: string]: RegisteredTokenMetadata}> {
-    return TokenRegistryApi().getTokensMetadata([
+    return tokenRegistry.getTokensMetadata([
       ...new Set(accountInfo.flatMap(({tokenBalance}) => tokenBalance)),
     ])
   }

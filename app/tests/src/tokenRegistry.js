@@ -1,4 +1,4 @@
-import TokenRegistryApi from '../../frontend/tokenRegistry/tokenRegistryApi'
+import {TokenRegistry} from '../../frontend/tokenRegistry/tokenRegistry'
 import assert from 'assert'
 
 describe('Token registry api', () => {
@@ -121,7 +121,7 @@ describe('Token registry api', () => {
         decimals: 6,
       },
     }
-    const actual = TokenRegistryApi().parseTokensMetadata({Right: [wmtMetadata]})
+    const actual = (new TokenRegistry()).parseTokensMetadata({Right: [wmtMetadata]})
 
     assert.deepStrictEqual(expected, actual)
   }).timeout(5000)
