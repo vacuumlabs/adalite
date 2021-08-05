@@ -78,6 +78,7 @@ const MultiAssetsPage = () => {
                       tooltipMessage="Policy id copied to clipboard"
                     >
                       <div className="multi-asset-page-copy-on-click">
+                        <span className={styles.hashLabel}>Policy ID:</span>
                         {formattedPolicy}
                         <div className="desktop">
                           <span className="copy-text margin-left" />
@@ -92,6 +93,7 @@ const MultiAssetsPage = () => {
                       tooltipMessage="Fingerprint copied to clipboard"
                     >
                       <div className="multi-asset-page-copy-on-click">
+                        <span className={styles.hashLabel}>Fingerprint:</span>
                         {formattedFingerprint}
                         <div className="desktop">
                           <span className="copy-text margin-left" />
