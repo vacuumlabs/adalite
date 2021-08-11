@@ -330,7 +330,7 @@ const SendAdaPage = ({
       <label className="send-label">Asset</label>
       <SearchableSelect
         wrapperClassName="no-margin"
-        defaultItem={selectedAsset}
+        selectedItem={selectedAsset}
         displaySelectedItem={displayDropdownSelectedItem}
         displaySelectedItemClassName="input dropdown"
         items={dropdownAssetItems}
