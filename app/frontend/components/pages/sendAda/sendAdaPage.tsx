@@ -29,6 +29,7 @@ import tooltip from '../../common/tooltip'
 import {FormattedAssetItem} from '../../common/asset'
 import {shouldDisableSendingButton} from '../../../helpers/common'
 import printTokenAmount from '../../../helpers/printTokenAmount'
+import {createTokenRegistrySubject} from '../../../../frontend/tokenRegistry/tokenRegistry'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -119,9 +120,12 @@ const SendAdaPage = ({
     sendAmount: state.sendAmount,
     tokenDecimals:
       state.sendAmount.assetFamily === AssetFamily.TOKEN
-        ? state.tokensMetadata[
-          `${state.sendAmount.token.policyId}${state.sendAmount.token.assetName}`
-        ]?.decimals || 0
+        ? state.tokensMetadata.get(
+          createTokenRegistrySubject(
+            state.sendAmount.token.policyId,
+            state.sendAmount.token.assetName
+          )
+        )?.decimals || 0
         : null,
     tokensMetadata: state.tokensMetadata,
     feeRecalculating: state.calculatingFee,
@@ -180,7 +184,10 @@ const SendAdaPage = ({
             fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
             type: AssetFamily.TOKEN,
             assetNameUtf8: assetNameHex2Readable(token.assetName),
-            ticker: tokensMetadata && tokensMetadata[`${token.policyId}${token.assetName}`]?.ticker,
+            ticker:
+              tokensMetadata &&
+              tokensMetadata.get(createTokenRegistrySubject(token.policyId, token.assetName))
+                ?.ticker,
           })
         ),
     ],
@@ -236,8 +243,9 @@ const SendAdaPage = ({
             // so we have to make a lookup for new decimals value
             quantity: parseTokenAmount(
               fieldValue,
-              tokensMetadata[`${dropdownAssetItem.policyId}${dropdownAssetItem.assetName}`]
-                ?.decimals || 0
+              tokensMetadata.get(
+                createTokenRegistrySubject(dropdownAssetItem.policyId, dropdownAssetItem.assetName)
+              )?.decimals || 0
             ),
           },
         })

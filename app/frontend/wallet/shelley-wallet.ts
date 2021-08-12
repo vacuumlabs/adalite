@@ -6,6 +6,7 @@ import {
   CryptoProviderFeature,
   TxType,
   RegisteredTokenMetadata,
+  TokenRegistrySubject,
 } from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
@@ -84,7 +85,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
 
   function getTokensMetadata(
     accountInfo: Array<AccountInfo>
-  ): Promise<{[subject: string]: RegisteredTokenMetadata}> {
+  ): Promise<Map<TokenRegistrySubject, RegisteredTokenMetadata>> {
     return tokenRegistry.getTokensMetadata([
       ...new Set(
         accountInfo.flatMap(({tokenBalance, transactionHistory}) => [

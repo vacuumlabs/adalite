@@ -1,5 +1,5 @@
 import request from '../wallet/helpers/request'
-import {RegisteredTokenMetadata, Token} from '../types'
+import {RegisteredTokenMetadata, Token, TokenRegistrySubject} from '../types'
 import cacheResults from '../helpers/cacheResults'
 
 export class TokenRegistry {
@@ -22,31 +22,34 @@ export class TokenRegistry {
 
   public readonly parseTokensMetadata = (
     toParse: any
-  ): {[subject: string]: RegisteredTokenMetadata} => {
+  ): Map<TokenRegistrySubject, RegisteredTokenMetadata> => {
+    const map = new Map()
     if (toParse?.Right) {
-      return toParse.Right.reduce((acc, tokenMetadata) => {
-        const {subject, description, ticker, url, logoBase64} = tokenMetadata
-        acc[subject] = {subject, description, ticker, url, logoBase64}
-        acc[tokenMetadata.subject] = {
+      toParse.Right.forEach((tokenMetadata) =>
+        map.set(tokenMetadata.subject, {
           subject: tokenMetadata.subject,
           description: tokenMetadata.description.value,
           ticker: tokenMetadata?.ticker?.value,
           url: tokenMetadata?.url?.value,
           logoBase64: tokenMetadata?.logo?.value,
           decimals: tokenMetadata?.decimals?.value,
-        }
-        return acc
-      }, {})
-    } else {
-      return {}
+        })
+      )
     }
+
+    return map
   }
 
   public readonly getTokensMetadata = async (
     tokens: Token[]
-  ): Promise<{[subject: string]: RegisteredTokenMetadata}> => {
+  ): Promise<Map<TokenRegistrySubject, RegisteredTokenMetadata>> => {
     const subjects = tokens.map(({policyId, assetName}) => `${policyId}${assetName}`)
     const tokensMetadata = await this.fetchTokensMetadata(subjects)
     return this.parseTokensMetadata(tokensMetadata)
   }
 }
+
+export const createTokenRegistrySubject = (
+  policyId: string,
+  assetName: string
+): TokenRegistrySubject => `${policyId}${assetName}` as TokenRegistrySubject

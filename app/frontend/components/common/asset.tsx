@@ -8,6 +8,7 @@ import {useSelector} from '../../helpers/connect'
 import styles from './asset.module.scss'
 import {assetNameHex2Readable} from '../../wallet/shelley/helpers/addresses'
 import printTokenAmount from '../../helpers/printTokenAmount'
+import {createTokenRegistrySubject} from '../../../frontend/tokenRegistry/tokenRegistry'
 
 type LinkToAssetProps = {
   policyIdHex: string
@@ -45,7 +46,9 @@ export const FormattedAssetItem = ({
     formattedUrl: h.JSX.Element
   }) => h.JSX.Element
 }) => {
-  const metadata = useSelector((state) => state.tokensMetadata[`${policyId}${assetName}`])
+  const metadata = useSelector((state) =>
+    state.tokensMetadata.get(createTokenRegistrySubject(policyId, assetName))
+  )
 
   const Icon = () => {
     if (type === AssetFamily.ADA) return <AdaIcon />

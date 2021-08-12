@@ -10,6 +10,7 @@ import {
 } from '../helpers/validators'
 import {SendTransactionSummary, TxType, Lovelace, AssetFamily, Address, SendAmount} from '../types'
 import debounceEvent from '../helpers/debounceEvent'
+import {createTokenRegistrySubject} from '../tokenRegistry/tokenRegistry'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -38,7 +39,9 @@ export default (store: Store) => {
       const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
         (token) => token.policyId === policyId && token.assetName === assetName
       ).quantity
-      const decimals = getState().tokensMetadata[`${policyId}${assetName}`]?.decimals || 0
+      const decimals =
+        getState().tokensMetadata.get(createTokenRegistrySubject(policyId, assetName))?.decimals ||
+        0
       const sendAmountValidationError = tokenAmountValidator(
         state.sendAmount.fieldValue,
         quantity,

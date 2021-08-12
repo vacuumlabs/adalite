@@ -78,8 +78,10 @@ export type Token = Omit<TokenObject, 'quantity'> & {
   quantity: number
 }
 
+export type TokenRegistrySubject = string & {__typeTokenRegistrySubject: any}
+
 export type RegisteredTokenMetadata = {
-  subject: string
+  subject: TokenRegistrySubject
   description: string
   ticker?: string
   url?: string
