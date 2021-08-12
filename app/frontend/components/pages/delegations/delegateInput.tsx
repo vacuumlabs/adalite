@@ -25,11 +25,12 @@ const StakePoolLabel = ({
 )
 
 type Props = {
+  disabled: boolean
   value: string
   onChange: (event: any) => any
 }
 
-const DelegateInput = ({value, onChange}: Props): h.JSX.Element => {
+const DelegateInput = ({disabled, value, onChange}: Props): h.JSX.Element => {
   const {validStakepoolDataProvider} = useSelector((state) => ({
     validStakepoolDataProvider: state.validStakepoolDataProvider,
   }))
@@ -49,6 +50,7 @@ const DelegateInput = ({value, onChange}: Props): h.JSX.Element => {
         />
       </div>
       <input
+        disabled={disabled}
         type="text"
         className="input stake-pool-id"
         name={'pool'}

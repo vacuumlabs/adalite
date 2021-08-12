@@ -38,7 +38,7 @@ describe('Sending tab', () => {
 
     cy.contains('Confirm Transaction').click()
     cy.contains('Submitting transaction...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('be.visible')
+    cy.contains('Reloading wallet...').should('be.visible')
     cy.contains('Transaction successful!').should('be.visible')
   })
 
@@ -132,7 +132,7 @@ describe('Sending tab', () => {
 
     cy.contains('Confirm Transaction').click()
     cy.contains('Submitting transaction...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('be.visible')
+    cy.contains('Reloading wallet...').should('be.visible')
     cy.contains('Transaction successful!').should('be.visible')
   })
 })

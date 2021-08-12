@@ -12,6 +12,7 @@ import Alert from '../../common/alert'
 import AccountTile from './accountTile'
 import {Lovelace} from '../../../../frontend/types'
 import Conversions from '../../common/conversions'
+import {shouldDisableSendingButton} from '../../../helpers/common'
 
 const AccountsDashboard = () => {
   const {reloadWalletInfo} = useActions(actions)
@@ -21,6 +22,7 @@ const AccountsDashboard = () => {
     totalWalletBalance,
     totalRewardsBalance,
     conversionRates,
+    walletOperationStatusType,
   } = useSelector((state) => ({
     accountsInfo: state.accountsInfo,
     maxAccountIndex: state.maxAccountIndex,
@@ -29,6 +31,7 @@ const AccountsDashboard = () => {
     conversionRates: state.conversionRates && state.conversionRates.data,
     totalWalletBalance: totalWalletBalanceSelector(state),
     totalRewardsBalance: totalRewardsBalanceSelector(state),
+    walletOperationStatusType: state.walletOperationStatusType,
   }))
 
   const InfoAlert = () => (
@@ -121,7 +124,11 @@ const AccountsDashboard = () => {
             </div>
           </div>
           <div className="refresh-wrapper">
-            <button className="button secondary balance refresh" onClick={reloadWalletInfo}>
+            <button
+              className="button secondary balance refresh"
+              disabled={shouldDisableSendingButton(walletOperationStatusType)}
+              onClick={reloadWalletInfo}
+            >
               Refresh
             </button>
           </div>

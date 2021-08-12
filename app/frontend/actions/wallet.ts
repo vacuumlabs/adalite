@@ -13,10 +13,12 @@ import {initialState} from '../store'
 import {State, Store} from '../state'
 import errorActions from './error'
 import loadingActions from './loading'
+import commonActions from './common'
 
 import {saveAs} from '../libs/file-saver'
 import {exportWalletSecretDef} from '../wallet/keypass-json'
 import {getDefaultLedgerTransportType} from '../wallet/shelley/helpers/transports'
+import sleep from '../helpers/sleep'
 
 // TODO: (refactor), this should not call "setState" as it is not action
 const fetchConversionRates = async (conversionRates, setState) => {
@@ -55,6 +57,7 @@ export default (store: Store) => {
   const {loadingAction} = loadingActions(store)
   const {setError} = errorActions(store)
   const {setState} = store
+  const {setWalletOperationStatusType} = commonActions(store)
 
   const loadWallet = async (
     state: State,
@@ -167,22 +170,23 @@ export default (store: Store) => {
   }
 
   const reloadWalletInfo = async (state: State) => {
-    loadingAction(state, 'Reloading wallet info...')
+    setWalletOperationStatusType(state, 'reloading')
     try {
       const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
       const conversionRates = getConversionRates(state)
 
-      // timeout setting loading state, so that loading shows even if everything was cached
-      setTimeout(() => setState({loading: false}), 500)
       setState({
         accountsInfo,
         shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
       })
       await fetchConversionRates(conversionRates, setState)
+      // timeout setting loading state, so that loading shows even if everything was cached
+      await sleep(500)
+      if (state.walletOperationStatusType !== 'txPending') {
+        setWalletOperationStatusType(state, null)
+      }
     } catch (e) {
-      setState({
-        loading: false,
-      })
+      setWalletOperationStatusType(state, 'reloadFailed')
       setError(state, {errorName: 'walletLoadingError', error: e})
       setState({
         shouldShowWalletLoadingErrorModal: true,

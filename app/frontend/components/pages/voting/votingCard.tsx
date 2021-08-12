@@ -1,8 +1,8 @@
 import {h} from 'preact'
 import actions from '../../../actions'
-import {useActions} from '../../../helpers/connect'
+import {useActions, useSelector} from '../../../helpers/connect'
 import tooltip from '../../common/tooltip'
-import {isVotingRegistrationOpen} from '../../../helpers/common'
+import {isVotingRegistrationOpen, shouldDisableSendingButton} from '../../../helpers/common'
 import {hasStakingKey, useActiveAccount, useHasEnoughFundsForCatalyst} from '../../../selectors'
 import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
@@ -28,6 +28,9 @@ const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
 
 const VotingCard = (): h.JSX.Element => {
   const {openVotingDialog} = useActions(actions)
+  const {walletOperationStatusType} = useSelector((state) => ({
+    walletOperationStatusType: state.walletOperationStatusType,
+  }))
   const hasEnoughFundsForCatalyst = useHasEnoughFundsForCatalyst()
   const activeAccount = useActiveAccount()
   const hasRegisteredStakingKey = hasStakingKey(activeAccount)
@@ -71,8 +74,12 @@ const VotingCard = (): h.JSX.Element => {
       <p>Once you've downloaded the app, you can register for voting.</p>
       <div className={styles.validationRow}>
         <button
+          {...tooltip(
+            'Cannot register for voting transaction is pending or reloading',
+            shouldDisableSendingButton(walletOperationStatusType)
+          )}
           className="button primary"
-          disabled={isRegistrationDisabled}
+          disabled={isRegistrationDisabled || shouldDisableSendingButton(walletOperationStatusType)}
           onClick={openVotingDialog}
           {...tooltip(unmetPreconditionMessage, isRegistrationDisabled)}
           data-cy="VotingRegisterBtn"

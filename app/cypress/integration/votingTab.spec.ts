@@ -63,7 +63,6 @@ describe('Voting tab', () => {
       .should('be.visible')
       .and('be.enabled')
       .click()
-    cy.contains('Preparing transaction...').should('be.visible')
 
     // confirmation modal opens
     cy.contains('Voting registration review').should('be.visible')
@@ -87,8 +86,6 @@ describe('Voting tab', () => {
 
     // sends tx
     cy.dataCy('ConfirmTransactionBtn').click()
-    cy.contains('Submitting transaction...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('be.visible')
     cy.contains('Transaction successful!').should('be.visible')
 
     cy.dataCy('VotingReviewTransactionBtn')

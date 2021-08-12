@@ -33,11 +33,11 @@ export default (store: Store) => {
     prepareTxPlan,
     setTransactionSummaryOld,
     resetAccountIndexes,
+    setWalletOperationStatusType,
   } = commonActions(store)
 
   const resetSendFormState = (state: State) => {
     setState({
-      loading: false,
       shouldShowConfirmTransactionDialog: false,
     })
   }
@@ -145,9 +145,8 @@ export default (store: Store) => {
     pollingInterval: number,
     maxRetries: number
   ) => {
-    loadingAction(state, 'Transaction submitted - syncing wallet...')
-
     for (let pollingCounter = 0; pollingCounter < maxRetries; pollingCounter++) {
+      setWalletOperationStatusType(state, 'txPending')
       if ((await getWallet().fetchTxInfo(txHash)) !== undefined) {
         /*
          * theoretically we should clear the request cache of the wallet
@@ -155,14 +154,13 @@ export default (store: Store) => {
          * but submitting the transaction and syncing of the explorer
          * should take enough time to invalidate the request cache anyway
          */
+        await reloadWalletInfo(state)
+        setWalletOperationStatusType(state, 'txSuccess')
         return {
           success: true,
           txHash,
         }
-      } else if (pollingCounter < maxRetries - 1) {
-        if (pollingCounter === 21) {
-          loadingAction(state, 'Syncing wallet - this might take a while...')
-        }
+      } else {
         await sleep(pollingInterval)
       }
     }
@@ -203,7 +201,7 @@ export default (store: Store) => {
       setState({waitingForHwWallet: true})
       loadingAction(state, `Waiting for ${hwWalletName}...`)
     } else {
-      loadingAction(state, 'Submitting transaction...')
+      setWalletOperationStatusType(state, 'txSubmitting')
     }
     let sendResponse
     let txSubmitResult
@@ -217,7 +215,8 @@ export default (store: Store) => {
         .signTxAux(txAux)
       if (usingHwWalletSelector(state)) {
         setState({waitingForHwWallet: false})
-        loadingAction(state, 'Submitting transaction...')
+        stopLoadingAction(state)
+        setWalletOperationStatusType(state, 'txSubmitting')
       }
       txSubmitResult = await getWallet().submitTx(signedTx, txSummary.type)
 
@@ -226,13 +225,19 @@ export default (store: Store) => {
         throw new InternalError(InternalErrorReason.TransactionRejectedByNetwork)
       }
 
-      sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 40)
+      closeConfirmationDialog(state)
+      resetTransactionSummary(state)
+      resetSendFormFields(state)
+      resetSendFormState(state)
+      resetAccountIndexes(state)
 
       const didDonate = sendAddress === getDonationAddress()
       closeConfirmationDialog(state)
       if (didDonate) {
         setState({shouldShowThanksForDonation: true})
       }
+
+      sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 180)
     } catch (e) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -242,16 +247,18 @@ export default (store: Store) => {
         shouldShowTransactionErrorModal: true,
         shouldShowVotingDialog: false,
       })
-    } finally {
+
       closeConfirmationDialog(state)
       resetTransactionSummary(state)
       resetSendFormFields(state)
       resetSendFormState(state)
+      resetAccountIndexes(state)
       await reloadWalletInfo(state)
+      setWalletOperationStatusType(state, 'txFailed')
+    } finally {
       getWallet()
         .getAccount(sourceAccountIndex)
         .generateNewSeeds()
-      resetAccountIndexes(state)
       setState({
         waitingForHwWallet: false,
         // TODO: refactor txSuccesTab!

@@ -14,10 +14,12 @@ import {
   TransactionSummary,
   CachedTransactionSummaries,
   TxType,
+  WalletOperationStatusType,
 } from './types'
 
 export interface State {
   // general
+  walletOperationStatusType: WalletOperationStatusType
   loading: boolean
   loadingMessage: string
   alert: any // TODO
@@ -124,6 +126,7 @@ export interface State {
 
 const initialState: State = {
   //general
+  walletOperationStatusType: null,
   loading: false,
   loadingMessage: '',
   alert: {

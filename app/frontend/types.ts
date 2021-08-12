@@ -395,3 +395,12 @@ export type PoolRegTransactionSummary = {
   plan: TxPlan
   txBodyType: string
 }
+
+export type WalletOperationStatusType =
+  | null
+  | 'reloading'
+  | 'txSubmitting'
+  | 'txPending'
+  | 'txSuccess'
+  | 'txFailed'
+  | 'reloadFailed'

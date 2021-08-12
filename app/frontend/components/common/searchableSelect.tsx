@@ -17,6 +17,7 @@ interface Props<T> {
   searchPlaceholder?: string
   dropdownClassName?: string
   getDropdownWidth?: () => string
+  disabled: boolean
 }
 
 // <T extends {}> is workaround for <T> being recognized as JSX element instead of generics
@@ -35,6 +36,7 @@ const SearchableSelect = <T extends {}>({
   searchPlaceholder,
   dropdownClassName,
   getDropdownWidth,
+  disabled,
 }: Props<T>) => {
   const inputEl = useRef<HTMLInputElement>(null)
   const dropdownEl = useRef<HTMLDivElement>(null)
@@ -87,7 +89,7 @@ const SearchableSelect = <T extends {}>({
         className={`searchable-select ${visible ? 'focus ' : ''}${optionalClassName(
           displaySelectedItemClassName
         )}`}
-        onClick={() => showDropdown(!visible)}
+        onClick={() => showDropdown(!disabled && !visible)}
       >
         {displaySelectedItem ? displaySelectedItem(selectedItem) : <div>{selectedItem}</div>}
       </div>

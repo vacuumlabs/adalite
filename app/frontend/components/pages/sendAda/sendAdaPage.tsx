@@ -27,6 +27,7 @@ import {
 } from '../../../../frontend/wallet/shelley/helpers/addresses'
 import tooltip from '../../common/tooltip'
 import {FormattedAssetItem} from '../../common/asset'
+import {shouldDisableSendingButton} from '../../../helpers/common'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -117,6 +118,7 @@ const SendAdaPage = ({
     transactionFee,
     txSuccessTab,
     summary,
+    walletOperationStatusType,
   } = useSelector((state) => ({
     sendAddressValidationError: state.sendAddressValidationError,
     sendAddress: state.sendAddress.fieldValue,
@@ -132,6 +134,7 @@ const SendAdaPage = ({
     targetAccountIndex: state.targetAccountIndex,
     tokenBalance: getSourceAccountInfo(state).tokenBalance,
     summary: state.sendTransactionSummary as TransactionSummary & SendTransactionSummary,
+    walletOperationStatusType: state.walletOperationStatusType,
   }))
   const {
     updateAddress,
@@ -268,7 +271,7 @@ const SendAdaPage = ({
       onInput={updateAddress}
       autoComplete="off"
       onKeyDown={(e) => e.key === 'Enter' && amountField?.current.focus()}
-      disabled={isModal}
+      disabled={isModal || shouldDisableSendingButton(walletOperationStatusType)}
     />
   )
 
@@ -315,6 +318,7 @@ const SendAdaPage = ({
         searchPlaceholder={`Search from ${dropdownAssetItems.length} assets by name or policy ID`}
         dropdownClassName="modal-dropdown"
         getDropdownWidth={calculateDropdownWidth}
+        disabled={shouldDisableSendingButton(walletOperationStatusType)}
       />
     </Fragment>
   )
@@ -345,6 +349,7 @@ const SendAdaPage = ({
               e.preventDefault()
             }
           }}
+          disabled={shouldDisableSendingButton(walletOperationStatusType)}
         />
         <button
           className="button send-max"
@@ -423,8 +428,16 @@ const SendAdaPage = ({
       </div>
       <div className="validation-row">
         <button
+          {...tooltip(
+            'Cannot send funds while transaction is pending or reloading',
+            shouldDisableSendingButton(walletOperationStatusType)
+          )}
           className="button primary medium"
-          disabled={!enableSubmit || feeRecalculating}
+          disabled={
+            !enableSubmit ||
+            feeRecalculating ||
+            shouldDisableSendingButton(walletOperationStatusType)
+          }
           onClick={submitHandler}
           ref={submitTxBtn}
           data-cy="SendButton"

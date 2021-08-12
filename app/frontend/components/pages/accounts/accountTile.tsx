@@ -6,6 +6,7 @@ import {AdaIcon} from '../../common/svg'
 import tooltip from '../../common/tooltip'
 import {Lovelace} from '../../../types'
 import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
+import {shouldDisableSendingButton} from '../../../helpers/common'
 
 type TileProps = {
   accountIndex: number
@@ -30,7 +31,10 @@ const AccountTile = ({
     showDelegationModal,
     showSendTransactionModal,
   } = useActions(actions)
-  const activeAccountIndex = useSelector((state) => state.activeAccountIndex)
+  const {activeAccountIndex, walletOperationStatusType} = useSelector((state) => ({
+    activeAccountIndex: state.activeAccountIndex,
+    walletOperationStatusType: state.walletOperationStatusType,
+  }))
   const isActive = activeAccountIndex === accountIndex
   const accountLabel = `Account ${formatAccountIndex(accountIndex)}`
 
@@ -46,9 +50,13 @@ const AccountTile = ({
 
   const TransferButton = () => (
     <button
+      {...tooltip(
+        'Cannot send funds while transaction is pending or reloading',
+        shouldDisableSendingButton(walletOperationStatusType)
+      )}
       className="button primary nowrap account-button"
       onClick={() => showSendTransactionModal(activeAccountIndex, accountIndex)}
-      disabled={isActive}
+      disabled={isActive || shouldDisableSendingButton(walletOperationStatusType)}
       data-cy="AccountTileTransferBtn"
     >
       Transfer
@@ -57,10 +65,15 @@ const AccountTile = ({
 
   const DelegateButton = () => (
     <button
+      {...tooltip(
+        'Cannot delegate funds while transaction is pending or reloading',
+        shouldDisableSendingButton(walletOperationStatusType)
+      )}
       className="button primary nowrap account-button"
       onClick={() => {
         showDelegationModal(accountIndex)
       }}
+      disabled={shouldDisableSendingButton(walletOperationStatusType)}
       data-cy="AccountTileDelegateBtn"
     >
       Delegate

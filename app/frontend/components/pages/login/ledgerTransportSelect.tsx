@@ -23,6 +23,7 @@ const LedgerTransportSelect = ({onSelect}: Props) => {
       items={dropdownAssetItems}
       onSelect={onSelect}
       showSearch={false}
+      disabled={false}
     />
   )
 }

@@ -22,6 +22,16 @@
     width: 100%;
   }
 
+  .page-wrapper-header {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-message {
+    height: 38px;
+    margin: 16px 0px -42px;
+  }
+
   /* BANNER */
 
   .banner {
@@ -296,6 +306,7 @@
   /* MAIN TABS */
 
   .tabinator {
+    width: 100%;
     padding-bottom: unset;
     margin: 32px 0 -12px 0;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);

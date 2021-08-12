@@ -47,8 +47,8 @@ describe('Staking tab', () => {
     cy.contains('Confirm Transaction').click()
 
     cy.contains('Submitting transaction...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('not.exist')
+    cy.contains('Reloading wallet...').should('be.visible')
+    cy.contains('Reloading wallet...').should('not.exist')
   })
 
   it('Validate invalid stake pool id', () => {

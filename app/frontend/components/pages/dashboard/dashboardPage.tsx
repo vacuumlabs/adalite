@@ -35,6 +35,7 @@ import SendTransactionModal from '../accounts/sendTransactionModal'
 import DelegationModal from '../accounts/delegationModal'
 import VotingCard from '../voting/votingCard'
 import VotingDialog from '../voting/votingDialog'
+import {WalletOperationStatusType} from './walletOperationStatus'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -256,6 +257,7 @@ const DashboardPage = () => {
     shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
     shouldShowDelegationModal: state.shouldShowDelegationModal,
     shouldShowVotingDialog: state.shouldShowVotingDialog,
+    walletOperationStatusType: state.walletOperationStatusType,
   }))
 
   const screenType = useViewport()
@@ -286,24 +288,30 @@ const DashboardPage = () => {
       {shouldShowPremiumBanner && <PremiumBanner />}
       {shouldShowSaturatedBanner && <SaturationErrorBanner />}
 
-      <ul className="tabinator" data-cy="NavigationTabs">
-        {/*
-        REFACTOR: (calculateFee)
-        "setActiveMainTab" should really just change tab, instead it does all the magic
-        behind the scenes (e.g. calculate fee), this should be responsibility of screen of interest
-        */}
-        {Object.values(MainTabs).map((name, i) => (
-          <MainTab
-            key={i}
-            name={name}
-            isActive={name === activeMainTab}
-            setActiveTab={setActiveMainTab}
-            displayName={
-              name === MainTabs.ACCOUNT && `Account ${formatAccountIndex(activeAccountIndex)}`
-            }
-          />
-        ))}
-      </ul>
+      <div className="page-wrapper-header">
+        <ul className="tabinator" data-cy="NavigationTabs">
+          {/*
+          REFACTOR: (calculateFee)
+          "setActiveMainTab" should really just change tab, instead it does all the magic
+          behind the scenes (e.g. calculate fee), this should be responsibility of screen of
+          interest
+          */}
+          {Object.values(MainTabs).map((name, i) => (
+            <MainTab
+              key={i}
+              name={name}
+              isActive={name === activeMainTab}
+              setActiveTab={setActiveMainTab}
+              displayName={
+                name === MainTabs.ACCOUNT && `Account ${formatAccountIndex(activeAccountIndex)}`
+              }
+            />
+          ))}
+        </ul>
+        <div style={'min-width: 200px;'}>
+          <WalletOperationStatusType />
+        </div>
+      </div>
       {MainPages[activeMainTab]}
     </div>
   )
@@ -320,16 +328,18 @@ const DashboardMobileContent = ({subTabs, defaultSubTab, mainSubTab}: DashboardM
   return (
     <div className="dashboard-content">
       {mainSubTab && SubPages[mainSubTab]}
-      <ul className="dashboard-tabs">
-        {subTabs.map((name, i) => (
-          <SubTab
-            key={i}
-            name={name}
-            isActive={name === activeSubTab}
-            setActiveTab={setActiveSubTab}
-          />
-        ))}
-      </ul>
+      {subTabs.length > 1 && (
+        <ul className="dashboard-tabs">
+          {subTabs.map((name, i) => (
+            <SubTab
+              key={i}
+              name={name}
+              isActive={name === activeSubTab}
+              setActiveTab={setActiveSubTab}
+            />
+          ))}
+        </ul>
+      )}
       {SubPages[activeSubTab]}
     </div>
   )

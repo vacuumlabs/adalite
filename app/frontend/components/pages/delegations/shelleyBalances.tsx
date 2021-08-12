@@ -6,6 +6,7 @@ import {connect} from '../../../libs/unistore/preact'
 import tooltip from '../../common/tooltip'
 import toLocalDate from '../../../../frontend/helpers/toLocalDate'
 import {getActiveAccountInfo, State} from '../../../state'
+import {shouldDisableSendingButton} from '../../../helpers/common'
 
 const shelleyBalances = ({
   stakingBalance,
@@ -17,6 +18,7 @@ const shelleyBalances = ({
   withdrawRewards,
   isShelleyCompatible,
   nearestReward,
+  walletOperationStatusType,
 }) => (
   <div className="rewards card">
     <h2 className="card-title staking-balances-title">
@@ -65,7 +67,15 @@ const shelleyBalances = ({
         )}
       </div>
       {!!rewardsAccountBalance && (
-        <button className="button secondary balance withdraw" onClick={withdrawRewards}>
+        <button
+          {...tooltip(
+            'Cannot withdraw funds while transaction is pending or reloading',
+            shouldDisableSendingButton(walletOperationStatusType)
+          )}
+          className="button secondary balance withdraw"
+          onClick={withdrawRewards}
+          disabled={shouldDisableSendingButton(walletOperationStatusType)}
+        >
           Withdraw
         </button>
       )}
@@ -111,7 +121,15 @@ const shelleyBalances = ({
                 : `${printAda(nonStakingBalance)}`}
               <AdaIcon />
             </div>
-            <button className="button secondary convert" onClick={convertNonStakingUtxos} />
+            <button
+              {...tooltip(
+                'Cannot convert funds while transaction is pending or reloading',
+                shouldDisableSendingButton(walletOperationStatusType)
+              )}
+              className="button secondary convert"
+              onClick={convertNonStakingUtxos}
+              disabled={shouldDisableSendingButton(walletOperationStatusType)}
+            />
           </div>
         </Fragment>
       )}
@@ -127,6 +145,7 @@ export default connect(
     balance: getActiveAccountInfo(state).balance,
     isShelleyCompatible: state.isShelleyCompatible,
     nearestReward: getActiveAccountInfo(state).shelleyAccountInfo.rewardDetails.nearest,
+    walletOperationStatusType: state.walletOperationStatusType,
   }),
   actions
 )(shelleyBalances)

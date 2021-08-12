@@ -13,6 +13,7 @@ import {StakePoolInfo} from './stakePoolInfo'
 import DelegateInput from './delegateInput'
 import {ADALITE_CONFIG} from '../../../../frontend/config'
 import {StakepoolDataProvider} from '../../../../frontend/helpers/dataProviders/types'
+import {shouldDisableSendingButton} from '../../../helpers/common'
 
 const CalculatingFee = (): h.JSX.Element => (
   <div className="validation-message send">Calculating fee...</div>
@@ -120,6 +121,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
     isShelleyCompatible,
     poolRecommendation,
     validStakepoolDataProvider,
+    walletOperationStatusType,
   } = useSelector((state) => ({
     // REFACTOR: (Untyped errors)
     delegationValidationError: state.delegationValidationError,
@@ -133,6 +135,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
     poolRecommendation: getSourceAccountInfo(state).poolRecommendation,
     isBigDelegator: isBigDelegatorSelector(state),
     validStakepoolDataProvider: state.validStakepoolDataProvider,
+    walletOperationStatusType: state.walletOperationStatusType,
   }))
   const {delegate, updateStakePoolIdentifier, resetStakePoolIndentifier} = useActions(actions)
   const handleOnStopTyping = useHandleOnStopTyping()
@@ -192,7 +195,11 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
         <ul className="stake-pool-list">
           <li className="stake-pool-item">
             {isBigDelegator && <BigDelegatorOffer />}
-            <DelegateInput value={fieldValue} onChange={handleOnInput} />
+            <DelegateInput
+              disabled={shouldDisableSendingButton(walletOperationStatusType)}
+              value={fieldValue}
+              onChange={handleOnInput}
+            />
             <StakePoolInfo
               pool={stakePool}
               gettingPoolInfo={gettingPoolInfo}
@@ -214,12 +221,17 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
       </div>
       <div className="validation-row">
         <button
+          {...tooltip(
+            'Cannot delegate funds while transaction is pending or reloading',
+            shouldDisableSendingButton(walletOperationStatusType)
+          )}
           className="button primary medium"
           disabled={
             !isShelleyCompatible ||
             validationError ||
             calculatingDelegationFee ||
-            !stakePool?.poolHash
+            !stakePool?.poolHash ||
+            shouldDisableSendingButton(walletOperationStatusType)
           }
           data-cy="DelegateButton"
           onClick={delegationHandler}

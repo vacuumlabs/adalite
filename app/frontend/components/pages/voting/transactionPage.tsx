@@ -5,11 +5,7 @@ import {HexString} from '../../../types'
 import Alert from '../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
 import styles from './voting.module.scss'
-
-const TransactionValidation = ({txSuccessTab}) =>
-  txSuccessTab === 'voting' ? (
-    <div className={styles.votingTransactionSuccess}>Transaction successful!</div>
-  ) : null
+import {WalletOperationStatusType} from '../dashboard/walletOperationStatus'
 
 const TransactionPage = ({
   nextStep,
@@ -23,6 +19,7 @@ const TransactionPage = ({
   const {registerVotingKey} = useActions(actions)
   const {txSuccessTab} = useSelector((state) => ({
     txSuccessTab: state.txSuccessTab,
+    walletOperationStatusType: state.walletOperationStatusType,
   }))
 
   const submitHandler = async () => {
@@ -41,6 +38,7 @@ const TransactionPage = ({
         Make sure to keep your account balance above 500 ADA at least until the voting round starts,
         otherwise your voting key registration would be dismissed.
       </Alert>
+      <WalletOperationStatusType />
       <div className={styles.reviewTransactionRow}>
         <button
           className="button primary"
@@ -51,7 +49,6 @@ const TransactionPage = ({
           Review transaction
         </button>
       </div>
-      <TransactionValidation txSuccessTab={txSuccessTab} />
       <VotingDialogBottom
         nextStep={nextStep}
         previousStep={previousStep}

@@ -5,6 +5,8 @@ import {VOTING_PIN_LENGTH} from '../../../wallet/constants'
 import Alert from '../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
 import styles from './voting.module.scss'
+import {useActions} from '../../../../frontend/helpers/connect'
+import actions from '../../../../frontend/actions'
 
 const PinPage = ({
   pin,
@@ -23,8 +25,10 @@ const PinPage = ({
   // PIN is encapsulated due to bug in preact which makes inputs uncontrolled
   const [confirmPin, setConfirmPin] = useState({value: ''})
   const [validationError, setValidationError] = useState(null)
+  const {resetWalletOperationStatusType} = useActions(actions)
 
   const updateConfirmPin = (e): void => {
+    resetWalletOperationStatusType()
     const strippedConfirmPin = stripNonNumericCharacters(e.target.value)
     setConfirmPin({value: strippedConfirmPin})
     if (

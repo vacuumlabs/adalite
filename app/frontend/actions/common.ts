@@ -4,6 +4,7 @@ import {
   AssetFamily,
   DelegateTransactionSummary,
   DeregisterStakingKeyTransactionSummary,
+  WalletOperationStatusType,
   Lovelace,
   SendTransactionSummary,
   TxPlanArgs,
@@ -125,6 +126,18 @@ export default (store: Store) => {
     })
   }
 
+  const setWalletOperationStatusType = (state: State, type: WalletOperationStatusType) => {
+    return setState({
+      walletOperationStatusType: type,
+    })
+  }
+
+  const resetWalletOperationStatusType = (state: State) => {
+    return setState({
+      walletOperationStatusType: null,
+    })
+  }
+
   return {
     resetTransactionSummary,
     resetSendFormFields,
@@ -132,5 +145,7 @@ export default (store: Store) => {
     setTransactionSummary,
     setTransactionSummaryOld,
     resetAccountIndexes,
+    resetWalletOperationStatusType,
+    setWalletOperationStatusType,
   }
 }

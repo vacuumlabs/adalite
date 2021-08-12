@@ -109,8 +109,8 @@ describe('Account tab', () => {
     cy.contains('Confirm Transaction').click()
 
     cy.contains('Submitting transaction...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('not.exist')
+    cy.contains('Reloading wallet...').should('be.visible')
+    cy.contains('Reloading wallet...').should('not.exist')
   })
 
   it('Activates second account', () => {
@@ -198,7 +198,7 @@ describe('Account tab', () => {
     cy.contains('Transaction between accounts review').should('be.visible')
     cy.contains('Confirm Transaction').click()
     cy.contains('Submitting transaction...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('be.visible')
-    cy.contains('Reloading wallet info...').should('not.exist')
+    cy.contains('Reloading wallet...').should('be.visible')
+    cy.contains('Reloading wallet...').should('not.exist')
   })
 })
