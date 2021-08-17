@@ -72,19 +72,18 @@ export const FormattedAssetItem = ({
 
   const FormattedAssetName = () => {
     if (type === AssetFamily.ADA) return <span className={styles.assetName}>ADA</span>
-    if (assetName) {
-      return (
-        <span className={styles.assetName}>
-          {`${assetNameHex2Readable(assetName)}${metadata?.ticker ? ` (${metadata?.ticker})` : ''}`}
-        </span>
-      )
-    } else {
-      return (
-        <span className={styles.empty}>
-          {'<'}no-name{'>'}
-        </span>
-      )
-    }
+    return (
+      <span>
+        {assetName ? (
+          <span className={styles.assetName}>{assetNameHex2Readable(assetName)}</span>
+        ) : (
+          <span className={styles.empty}>
+            {'<'}no name{'>'}
+          </span>
+        )}
+        <span className={styles.assetName}>{metadata?.ticker ? ` (${metadata?.ticker})` : ''}</span>
+      </span>
+    )
   }
 
   const FormattedAmount = () => {
