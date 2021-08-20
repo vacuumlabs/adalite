@@ -7,7 +7,6 @@ import {useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import {useState, useCallback} from 'preact/hooks'
 import {localStorageVars} from '../../../localStorage'
-import {isMobileOnly} from 'react-device-detect'
 import LedgerTransportSelect from './ledgerTransportSelect'
 import {LedgerTransportType} from '../../../../frontend/types'
 import styles from './hardwareAuth.module.scss'
@@ -54,12 +53,11 @@ const LoadByHardwareWalletSection = () => {
             dangerouslySetInnerHTML={{__html: '&nbsp;'}}
           />
           <button
-            disabled={!ADALITE_CONFIG.ADALITE_ENABLE_TREZOR || isMobileOnly}
+            disabled={!ADALITE_CONFIG.ADALITE_ENABLE_TREZOR}
             {...tooltip(
               'Support for Trezor is temporarily disabled',
               !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR
             )}
-            {...tooltip('Not supported on mobile devices', isMobileOnly)}
             className="button primary trezor thin-data-balloon"
             onClick={() =>
               loadWallet({
