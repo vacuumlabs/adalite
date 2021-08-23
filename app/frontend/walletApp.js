@@ -1,3 +1,5 @@
+import 'babel-polyfill'
+
 // import 'preact/debug' // uncomment to use preact dev tools
 import {h, render} from 'preact'
 import {Provider as UnistoreStoreProvider} from './libs/unistore/preact'

@@ -73,6 +73,7 @@
     "@typescript-eslint/eslint-plugin": "2",
     "@typescript-eslint/parser": "2",
     "babel-eslint": "^8.2.2",
+    "babel-polyfill": "^6.26.0",
     "css-loader": "^5.2.2",
     "eslint": "^6.0.1",
     "eslint-config-vacuumlabs": "^1.8.2",

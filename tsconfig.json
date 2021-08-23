@@ -4,7 +4,7 @@
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "target": "es2019",
+    "target": "es5",
     "jsx": "react",
     "jsxFactory": "h",
     "baseUrl": ".",
@@ -13,7 +13,18 @@
         "app/node_modules/preact/dist/preact.d.ts"
       ]
     },
-    "noErrorTruncation": true
+    "noErrorTruncation": true,
+    "downlevelIteration": true,
+    "lib": [
+      "ES2015",
+      "ES2016",
+      "ES2017",
+      "ES2018",
+      "ES2019",
+      "ES2020",
+      "ESNext",
+      "dom"
+    ]
   },
   "include": [
     "app/**/*"
