@@ -10,7 +10,6 @@ import {
 } from '../helpers/validators'
 import {SendTransactionSummary, TxType, Lovelace, AssetFamily, Address, SendAmount} from '../types'
 import debounceEvent from '../helpers/debounceEvent'
-import {createTokenRegistrySubject} from '../tokenRegistry/tokenRegistry'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -39,14 +38,10 @@ export default (store: Store) => {
       const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
         (token) => token.policyId === policyId && token.assetName === assetName
       ).quantity
-      const decimals =
-        getState().tokensMetadata.get(createTokenRegistrySubject(policyId, assetName))?.decimals ||
-        0
       const sendAmountValidationError = tokenAmountValidator(
         state.sendAmount.fieldValue,
         quantity,
-        tokenBalance,
-        decimals
+        tokenBalance
       )
       setError(state, {
         errorName: 'sendAmountValidationError',
@@ -186,12 +181,12 @@ export default (store: Store) => {
     updateAmount(state, maxAmount)
   }
 
-  const sendMaxFunds = async (state: State, decimals: number) => {
+  const sendMaxFunds = async (state: State) => {
     setState({calculatingFee: true})
     try {
       const maxAmounts = await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .getMaxSendableAmount(state.sendAddress.fieldValue as Address, state.sendAmount, decimals)
+        .getMaxSendableAmount(state.sendAddress.fieldValue as Address, state.sendAmount)
       validateAndSetMaxFunds(state, maxAmounts)
     } catch (e) {
       setState({

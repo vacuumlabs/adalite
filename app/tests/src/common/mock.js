@@ -301,17 +301,6 @@ const mock = (ADALITE_CONFIG) => {
     })
   }
 
-  function mockTokenRegistry() {
-    fetchMock.post({
-      matcher: `begin:${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/bulk/tokens/metadata`,
-      response: {
-        status: 200,
-        body: [],
-        sendAsJson: true,
-      },
-    })
-  }
-
   return {
     mockBulkAddressSummaryEndpoint,
     mockGetAccountInfo,
@@ -327,7 +316,6 @@ const mock = (ADALITE_CONFIG) => {
     mockWithdrawalHistory,
     mockRewardHistory,
     mockPoolRecommendation,
-    mockTokenRegistry,
     clean,
   }
 }

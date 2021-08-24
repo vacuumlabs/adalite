@@ -284,14 +284,10 @@ const Account = ({
     return txWitness
   }
 
-  async function getMaxSendableAmount(
-    address: Address,
-    sendAmount: SendAmount,
-    decimals: number = 0
-  ) {
+  async function getMaxSendableAmount(address: Address, sendAmount: SendAmount) {
     // TODO: why do we need hasDonation?
     const utxos = await getUtxos()
-    return _getMaxSendableAmount(utxos, address, sendAmount, decimals)
+    return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
   async function getMaxNonStakingAmount(address: Address, sendAmount: SendAmount) {

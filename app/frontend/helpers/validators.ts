@@ -5,16 +5,11 @@ import {validateMnemonic} from '../wallet/mnemonic'
 import {Lovelace, Ada} from '../types'
 import {NETWORKS} from '../wallet/constants'
 import {InternalErrorReason} from '../errors'
-import printTokenAmount from './printTokenAmount'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 const parseToLovelace = (str: string): Lovelace =>
   // Math.round to solve edge cases in floating number precision like '8.131699'
   Math.round(toCoins(parseFloat(str) as Ada)) as Lovelace
-
-const parseTokenAmount = (str: string, decimals: number): number =>
-  // Math.round to solve edge cases in floating number precision
-  Math.round(parseFloat(str) * Math.pow(10, decimals || 0))
 
 const sendAddressValidator = (fieldValue: string) => {
   if (fieldValue === '') {
@@ -73,15 +68,9 @@ const sendAmountValidator = (fieldValue: string, coins: Lovelace, balance: Lovel
   return null
 }
 
-const tokenAmountValidator = (
-  fieldValue: string,
-  quantity: number,
-  tokenBalance: number,
-  decimals: number = 0
-) => {
+const tokenAmountValidator = (fieldValue: string, quantity: number, tokenBalance: number) => {
   const maxAmount = Number.MAX_SAFE_INTEGER
   const integerRegex = /^\d+$/
-  const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
 
   if (fieldValue === '') {
     return null
@@ -89,25 +78,19 @@ const tokenAmountValidator = (
   if (quantity > maxAmount) {
     return {code: InternalErrorReason.SendAmountIsTooBig}
   }
-  if (fieldValue.split('.').length === 2 && fieldValue.split('.')[1].length > decimals) {
-    return {
-      code: InternalErrorReason.TokenSendAmountPrecisionLimit,
-      params: {decimals},
-    }
-  }
   if (quantity <= 0) {
     return {code: InternalErrorReason.SendAmountIsNotPositive}
   }
-  if (!decimals && !integerRegex.test(fieldValue)) {
+  if (!integerRegex.test(fieldValue)) {
     return {code: InternalErrorReason.TokenAmountOnlyWholeNumbers}
   }
-  if (!floatRegex.test(fieldValue) || isNaN(quantity)) {
+  if (isNaN(quantity)) {
     return {code: InternalErrorReason.SendAmountIsNan}
   }
   if (quantity > tokenBalance) {
     return {
       code: InternalErrorReason.TokenAmountInsufficientFunds,
-      params: {tokenBalance: printTokenAmount(tokenBalance, decimals)},
+      params: {tokenBalance},
     }
   }
   return null
@@ -185,7 +168,6 @@ const mnemonicValidator = (mnemonic) => {
 
 export {
   parseToLovelace as parseCoins,
-  parseTokenAmount,
   sendAddressValidator,
   sendAmountValidator,
   txPlanValidator,

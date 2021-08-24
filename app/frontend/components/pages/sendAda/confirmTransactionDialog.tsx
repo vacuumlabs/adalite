@@ -9,8 +9,6 @@ import AddressVerification from '../../common/addressVerification'
 import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import {
-  AssetFamily,
-  AuthMethodType,
   DelegateTransactionSummary,
   DeregisterStakingKeyTransactionSummary,
   Lovelace,
@@ -21,10 +19,10 @@ import {
   WithdrawTransactionSummary,
 } from '../../../types'
 import {
+  assetNameHex2Readable,
   encodeAssetFingerprint,
   encodeCatalystVotingKey,
 } from '../../../../frontend/wallet/shelley/helpers/addresses'
-import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
 
 interface ReviewBottomProps {
   onSubmit: () => any
@@ -63,16 +61,9 @@ const SendAdaReview = ({
   transactionSummary: TransactionSummary & SendTransactionSummary
   shouldShowAddressVerification: boolean
 }) => {
-  const authMethod = useSelector((state) => state.authMethod)
-  const hwWalletName = useSelector((state) => state.hwWalletName)
   const {address, coins, fee, minimalLovelaceAmount, token} = transactionSummary
   const lovelaceAmount = (coins + minimalLovelaceAmount) as Lovelace
   const total = (coins + fee + minimalLovelaceAmount) as Lovelace
-  const formattedAssetItemProps: FormattedAssetItemProps = token && {
-    ...token,
-    fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
-    type: AssetFamily.TOKEN,
-  }
 
   return (
     <Fragment>
@@ -86,37 +77,26 @@ const SendAdaReview = ({
             </div>
           )}
         </div>
+        {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Amount</div>
         <div className="review-amount">{printAda(lovelaceAmount as Lovelace)}</div>
         {token && (
-          <FormattedAssetItem {...formattedAssetItemProps}>
-            {({formattedAssetIconName, formattedAmount, formattedFingerprint}) => {
-              return (
-                <Fragment>
-                  <div className="review-label">Token fingerprint</div>
-                  <div className="review-amount">{formattedFingerprint}</div>
-                  <div className="review-label">Token policy Id</div>
-                  <div className="review-amount">{token.policyId}</div>
-                  <div className="review-label">Token name</div>
-                  <div className="review-amount">{formattedAssetIconName}</div>
-                  <div className="review-label">Token amount</div>
-                  <div className="review-amount" data-cy="SendTokenAmount">
-                    {formattedAmount}
-                  </div>
-                  {authMethod === AuthMethodType.HW_WALLET && (
-                    <Fragment>
-                      <div className="review-label">Token amount on {hwWalletName}</div>
-                      <div className="review-amount" data-cy="SendTokenAmount">
-                        {token.quantity}
-                      </div>
-                    </Fragment>
-                  )}
-                  {/* <div className="ada-label">Minimal Lovelace amount</div>
-                  <div className="review-amount">{printAda(minimalLovelaceAmount)}</div> */}
-                </Fragment>
-              )
-            }}
-          </FormattedAssetItem>
+          <Fragment>
+            <div className="review-label">Token fingerprint</div>
+            <div className="review-amount">
+              {encodeAssetFingerprint(token.policyId, token.assetName)}
+            </div>
+            <div className="review-label">Token policy Id</div>
+            <div className="review-amount">{token.policyId}</div>
+            <div className="review-label">Token name</div>
+            <div className="review-amount">{assetNameHex2Readable(token.assetName)}</div>
+            <div className="review-label">Token amount</div>
+            <div className="review-amount" data-cy="SendTokenAmount">
+              {token.quantity}
+            </div>
+            {/* <div className="ada-label">Minimal Lovelace amount</div>
+            <div className="review-amount">{printAda(minimalLovelaceAmount)}</div> */}
+          </Fragment>
         )}
         <div className="ada-label">Fee</div>
         <div className="review-fee">{printAda(fee as Lovelace)}</div>

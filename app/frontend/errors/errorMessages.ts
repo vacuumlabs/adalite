@@ -26,9 +26,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.SendAmountIsTooBig]: () =>
     `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER as Lovelace)}`,
   [InternalErrorReason.TokenAmountOnlyWholeNumbers]: () =>
-    'Invalid format: This asset amount has to be a whole number',
-  [InternalErrorReason.TokenSendAmountPrecisionLimit]: ({decimals}) =>
-    `Invalid format: Maximum allowed precision for this token is ${decimals} decimal places`,
+    'Invalid format: Asset amount has to be a whole number',
   [InternalErrorReason.TokenAmountInsufficientFunds]: ({tokenBalance}) =>
     `Insufficient funds for the transaction. Your balance is ${tokenBalance}`,
   [InternalErrorReason.SendTokenNotMinimalLovelaceAmount]: ({minimalLovelaceAmount}) =>

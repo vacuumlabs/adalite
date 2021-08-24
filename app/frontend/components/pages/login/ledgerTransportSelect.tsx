@@ -4,11 +4,10 @@ import {LedgerTransportType} from '../../../types'
 import styles from './ledgerTransportSelect.module.scss'
 
 interface Props {
-  selectedItem: LedgerTransportType
   onSelect: (ledgerTransportType: LedgerTransportType) => void
 }
 
-const LedgerTransportSelect = ({selectedItem, onSelect}: Props) => {
+const LedgerTransportSelect = ({onSelect}: Props) => {
   const dropdownAssetItems = [
     LedgerTransportType.DEFAULT,
     LedgerTransportType.U2F,
@@ -19,7 +18,7 @@ const LedgerTransportSelect = ({selectedItem, onSelect}: Props) => {
   return (
     <SearchableSelect
       wrapperClassName={`no-margin ${styles.wrapper}`}
-      selectedItem={selectedItem}
+      defaultItem={LedgerTransportType.DEFAULT}
       displaySelectedItemClassName={`input dropdown ${styles.dropdown}`}
       items={dropdownAssetItems}
       onSelect={onSelect}

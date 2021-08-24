@@ -116,7 +116,6 @@ export default (store: Store) => {
 
       const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
       const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
-      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
       const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
 
       const conversionRatesPromise = getConversionRates(state)
@@ -135,7 +134,6 @@ export default (store: Store) => {
       setState({
         validStakepoolDataProvider,
         accountsInfo,
-        tokensMetadata,
         maxAccountIndex,
         shouldShowSaturatedBanner,
         walletIsLoaded: true,
@@ -175,12 +173,10 @@ export default (store: Store) => {
     setWalletOperationStatusType(state, 'reloading')
     try {
       const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
-      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
       const conversionRates = getConversionRates(state)
 
       setState({
         accountsInfo,
-        tokensMetadata,
         shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
       })
       await fetchConversionRates(conversionRates, setState)

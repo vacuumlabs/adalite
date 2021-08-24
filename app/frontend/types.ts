@@ -78,17 +78,6 @@ export type Token = Omit<TokenObject, 'quantity'> & {
   quantity: number
 }
 
-export type TokenRegistrySubject = string & {__typeTokenRegistrySubject: any}
-
-export type RegisteredTokenMetadata = {
-  subject: TokenRegistrySubject
-  description: string
-  ticker?: string
-  url?: string
-  logoBase64?: string
-  decimals?: number
-}
-
 export type TokenBundle = Token[]
 
 export type OrderedTokenBundle = {

@@ -1,6 +1,7 @@
 import request from './helpers/request'
 import range from './helpers/range'
 import debugLog from '../helpers/debugLog'
+import getHash from '../helpers/getHash'
 import {
   StakingHistoryItemType,
   RewardWithdrawal,
@@ -49,7 +50,21 @@ import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDataProvider'
 import {InternalError, InternalErrorReason} from '../errors'
 import {throwIfEpochBoundary} from '../helpers/epochBoundaryUtils'
-import cacheResults from '../helpers/cacheResults'
+
+const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
+  const wrapped = (...args) => {
+    const hash = getHash(JSON.stringify(args))
+    if (!cache_obj[hash] || cache_obj[hash].timestamp + maxAge < Date.now()) {
+      cache_obj[hash] = {
+        timestamp: Date.now(),
+        data: fn(...args),
+      }
+    }
+    return cache_obj[hash].data
+  }
+
+  return (wrapped as any) as T
+}
 
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT

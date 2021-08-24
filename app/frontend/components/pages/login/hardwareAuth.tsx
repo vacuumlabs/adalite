@@ -139,10 +139,7 @@ const LoadByHardwareWalletSection = () => {
                   <span className="show-info">{''}</span>
                 </a>
               </div>
-              <LedgerTransportSelect
-                selectedItem={selectedLedgerTransportType}
-                onSelect={setSelectedLedgerTransportType}
-              />
+              <LedgerTransportSelect onSelect={setSelectedLedgerTransportType} />
             </div>
           </div>
         </div>
