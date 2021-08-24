@@ -59,6 +59,23 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'08/24/2021'}
+              children={
+                <Fragment>
+                  <Article title="Token registry bug" icon="">
+                    We had to roll back token registry support due to a bug where wallets with many
+                    distinct tokens were not able to load. We will investigate this issue further
+                    and provide a fix as soon as possible.
+                  </Article>
+                  <Article title="Reward withdrawal issues" icon="">
+                    There is a bug in rewards withdrawal affecting users who voted and are eligible
+                    for Catalyst Fund 5 rewards. These users are currently unable to withdraw their
+                    rewards. The fix will be available by the next epoch (287).
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'08/12/2021'}
               children={
                 <Article title="Catalyst Fund6 registration" icon="">
