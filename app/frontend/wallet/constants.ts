@@ -35,10 +35,10 @@ export const NETWORKS: {[key: string]: Network} = {
     epochsToRewardDistribution: 4,
     minimalOutput: 1000000,
   },
-  MARY_TESTNET: {
-    name: 'mary-testnet',
+  TESTNET: {
+    name: 'public-testnet',
     networkId: NetworkId.TESTNET,
-    protocolMagic: ProtocolMagic.MARY_TESTNET,
+    protocolMagic: ProtocolMagic.TESTNET,
     eraStartSlot: 0,
     eraStartDateTime: Date.parse('24 Jul 2019 20:20:16 UTC'),
     epochsToRewardDistribution: 4,
