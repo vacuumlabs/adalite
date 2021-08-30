@@ -20,8 +20,8 @@ import {
   isShelleyPath,
   isShelleyFormat,
   base58AddressToHex,
-  xpub2pub,
   xpub2ChainCode,
+  xpub2pub,
 } from './helpers/addresses'
 
 import derivationSchemes from '../helpers/derivation-schemes'

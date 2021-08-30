@@ -31,6 +31,9 @@ describe('AdaLite Test Suite', () => {
   describe('Token bundle', () => {
     require('./tokenBundle')
   })
+  describe('Token registry api', () => {
+    require('./tokenRegistry')
+  })
   describe('Transaction planning', () => {
     require('./transaction-planner')
   })

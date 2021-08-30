@@ -8,6 +8,7 @@ export enum InternalErrorReason {
   SendAmountPrecisionLimit = 'SendAmountPrecisionLimit',
   SendAmountIsTooBig = 'SendAmountIsTooBig',
   TokenAmountOnlyWholeNumbers = 'TokenAmountOnlyWholeNumbers',
+  TokenSendAmountPrecisionLimit = 'TokenSendAmountPrecisionLimit',
   TokenAmountInsufficientFunds = 'TokenAmountInsufficientFunds',
   SendTokenNotMinimalLovelaceAmount = 'SendTokenNotMinimalLovelaceAmount',
   DonationAmountTooLow = 'DonationAmountTooLow',

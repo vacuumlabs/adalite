@@ -6,8 +6,8 @@ interface Props<T> {
   wrapperClassName?: string
   label?: string | h.JSX.Element
   labelClassName?: string
-  defaultItem: T
   items: T[]
+  selectedItem: T
   displaySelectedItem?: (t: T) => string | h.JSX.Element
   displaySelectedItemClassName?: string
   displayItem?: (t: T) => string | h.JSX.Element
@@ -25,8 +25,8 @@ const SearchableSelect = <T extends {}>({
   wrapperClassName,
   label,
   labelClassName,
-  defaultItem,
   items,
+  selectedItem,
   displaySelectedItem,
   displaySelectedItemClassName,
   displayItem,
@@ -44,8 +44,8 @@ const SearchableSelect = <T extends {}>({
   const [visible, setVisible] = useState(false)
   const [dropdownWidth, setDropdownWidth] = useState(getDropdownWidth ? getDropdownWidth() : '')
   const [search, setSearch] = useState('')
-  const [selectedItem, setSelectedItem] = useState(defaultItem)
-  const shouldShowItem = (item: T) => (searchPredicate ? searchPredicate(search, item) : true)
+  const shouldShowItem = (item: T) =>
+    !search || (searchPredicate ? searchPredicate(search, item) : true)
   const showDropdown = (bool: boolean) => {
     setVisible(bool)
     setSearch('')
@@ -119,7 +119,6 @@ const SearchableSelect = <T extends {}>({
                 onClick={() => {
                   setVisible(false)
                   onSelect(item)
-                  setSelectedItem(item)
                 }}
               >
                 {displayItem ? displayItem(item) : <div>{item}</div>}

@@ -6,6 +6,7 @@ import {aggregateTokenBundles} from './helpers/tokenFormater'
 import printAda from '../helpers/printAda'
 import {MAX_OUTPUT_TOKENS} from './shelley/transaction/constants'
 import {createTokenChangeOutputs} from './shelley/transaction/utils'
+import printTokenAmount from '../helpers/printTokenAmount'
 
 function getInputBalance(inputs: Array<UTxO>): Lovelace {
   return inputs.reduce((acc, input) => acc + input.coins, 0) as Lovelace
@@ -16,7 +17,8 @@ export const MaxAmountCalculator = () => {
   function getMaxSendableAmount(
     profitableInputs: Array<UTxO>,
     address: Address,
-    sendAmount: SendAmount
+    sendAmount: SendAmount,
+    decimals: number = 0
   ): SendAmount {
     if (sendAmount.assetFamily === AssetFamily.ADA) {
       const inputsTokenBundle = aggregateTokenBundles(
@@ -58,7 +60,7 @@ export const MaxAmountCalculator = () => {
       return {
         assetFamily: AssetFamily.TOKEN,
         token: sendToken,
-        fieldValue: `${sendToken.quantity}`,
+        fieldValue: printTokenAmount(sendToken.quantity, decimals),
       }
     }
   }

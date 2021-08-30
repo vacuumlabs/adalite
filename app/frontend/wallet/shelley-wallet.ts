@@ -1,8 +1,16 @@
 import BlockchainExplorer from './blockchain-explorer'
 import {AccountManager} from './account-manager'
-import {AccountInfo, CryptoProvider, CryptoProviderFeature, TxType} from '../types'
+import {
+  AccountInfo,
+  CryptoProvider,
+  CryptoProviderFeature,
+  TxType,
+  RegisteredTokenMetadata,
+  TokenRegistrySubject,
+} from '../types'
 import {MAX_ACCOUNT_INDEX} from './constants'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
+import {TokenRegistry} from '../tokenRegistry/tokenRegistry'
 
 type WalletParams = {
   config: any
@@ -11,6 +19,10 @@ type WalletParams = {
 
 const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   const blockchainExplorer = BlockchainExplorer(config)
+  const tokenRegistry = new TokenRegistry(
+    `${config.ADALITE_SERVER_URL}/api/bulk/tokens/metadata`,
+    5 * 60 * 1000
+  )
   const maxAccountIndex = MAX_ACCOUNT_INDEX
 
   const accountManager = AccountManager({
@@ -71,6 +83,19 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     )
   }
 
+  function getTokensMetadata(
+    accountInfo: Array<AccountInfo>
+  ): Promise<Map<TokenRegistrySubject, RegisteredTokenMetadata>> {
+    return tokenRegistry.getTokensMetadata([
+      ...new Set(
+        accountInfo.flatMap(({tokenBalance, transactionHistory}) => [
+          ...tokenBalance,
+          ...transactionHistory.flatMap(({tokenEffects}) => tokenEffects),
+        ])
+      ),
+    ])
+  }
+
   function getMaxAccountIndex() {
     return maxAccountIndex
   }
@@ -92,6 +117,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     fetchTxInfo,
     ensureFeatureIsSupported,
     getAccountsInfo,
+    getTokensMetadata,
     getStakepoolDataProvider,
     getAccount: accountManager.getAccount,
     exploreNextAccount: accountManager.exploreNextAccount,
