@@ -1,10 +1,16 @@
 import request from '../wallet/helpers/request'
 import {RegisteredTokenMetadata, Token, TokenRegistrySubject} from '../types'
 import cacheResults from '../helpers/cacheResults'
+import {SuccessResponse, TokenMetadata, TokenMetadataResponse} from '../wallet/backend-types'
+
+export const createTokenRegistrySubject = (
+  policyId: string,
+  assetName: string
+): TokenRegistrySubject => `${policyId}${assetName}` as TokenRegistrySubject
 
 export class TokenRegistry {
   private readonly url: string
-  private readonly fetchTokensMetadata: (subjects: string[]) => Promise<any>
+  private readonly fetchTokensMetadata: (subjects: string[]) => Promise<TokenMetadataResponse>
 
   constructor(url: string, cacheTimeout?: number) {
     this.url = url
@@ -13,18 +19,29 @@ export class TokenRegistry {
       : this._fetchTokensMetadata
   }
 
-  private readonly _fetchTokensMetadata = (subjects: string[]): Promise<any> => {
+  private readonly _fetchTokensMetadata = async (
+    subjects: string[]
+  ): Promise<TokenMetadataResponse> => {
     const requestBody = {subjects}
-    return request(this.url, 'POST', JSON.stringify(requestBody), {
-      'Content-Type': 'application/json',
-    })
+    try {
+      return await request(this.url, 'POST', JSON.stringify(requestBody), {
+        'Content-Type': 'application/json',
+      })
+    } catch (e) {
+      return Promise.resolve({Left: 'An unexpected error has occurred'})
+    }
   }
 
   public readonly parseTokensMetadata = (
-    toParse: any
+    toParse: TokenMetadataResponse
   ): Map<TokenRegistrySubject, RegisteredTokenMetadata> => {
+    const isSuccessResponse = (
+      response: TokenMetadataResponse
+    ): response is SuccessResponse<TokenMetadata[]> =>
+      (response as SuccessResponse<TokenMetadata[]>).Right !== undefined
+
     const map = new Map()
-    if (toParse?.Right) {
+    if (isSuccessResponse(toParse)) {
       toParse.Right.forEach((tokenMetadata) =>
         map.set(tokenMetadata.subject, {
           subject: tokenMetadata.subject,
@@ -43,13 +60,12 @@ export class TokenRegistry {
   public readonly getTokensMetadata = async (
     tokens: Token[]
   ): Promise<Map<TokenRegistrySubject, RegisteredTokenMetadata>> => {
-    const subjects = tokens.map(({policyId, assetName}) => `${policyId}${assetName}`)
+    const subjects = [
+      ...new Set(
+        tokens.map(({policyId, assetName}) => createTokenRegistrySubject(policyId, assetName))
+      ),
+    ]
     const tokensMetadata = await this.fetchTokensMetadata(subjects)
     return this.parseTokensMetadata(tokensMetadata)
   }
 }
-
-export const createTokenRegistrySubject = (
-  policyId: string,
-  assetName: string
-): TokenRegistrySubject => `${policyId}${assetName}` as TokenRegistrySubject

@@ -31,7 +31,7 @@ app.use(Sentry.Handlers.requestHandler())
 
 express.static.mime.types.wasm = 'application/wasm'
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '256kb'}))
 app.use(compression())
 
 app.enable('trust proxy') // to get the actual request protocol on heroku (important for redirect)

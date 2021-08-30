@@ -157,3 +157,22 @@ export type _Utxo = {
   cuCoins: CoinObject
 }
 export type BulkAdressesUtxoResponse = SuccessResponse<Array<_Utxo>> | TxSubmissionFailure
+export type TokenMetadaField = {
+  sequenceNumber: number
+  value: string
+  signatures: {
+    signature: string
+    publicKey: string
+  }
+}
+export type TokenMetadata = {
+  subject: string
+  name: TokenMetadaField
+  description: TokenMetadaField
+  policy?: string
+  ticker?: TokenMetadaField
+  url?: TokenMetadaField
+  logo?: TokenMetadaField
+  decimals?: TokenMetadaField
+}
+export type TokenMetadataResponse = SuccessResponse<TokenMetadata[]> | FailureResponse
