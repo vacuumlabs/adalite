@@ -119,7 +119,7 @@ const WalletContent = () => (
     <div className="sidebar-item">
       <a
         className="sidebar-link"
-        href="https://github.com/vacuumlabs/adalite/wiki/How-to-use-Ledger-Nano-S-and-Nano-X-with-AdaLite"
+        href="https://github.com/vacuumlabs/adalite/wiki/Ledger-before-you-start"
         rel="noopener"
         target="blank"
       >
