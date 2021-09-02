@@ -59,6 +59,16 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'09/06/2021'}
+              children={
+                <Fragment>
+                  <Article title="Token registry" icon="">
+                    We fixed a bug related to the token registry support and re-enabled the feature.
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'08/24/2021'}
               children={
                 <Fragment>
