@@ -59,6 +59,18 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'09/07/2021'}
+              children={
+                <Fragment>
+                  <Article title="Trezor signing planned outage" icon="">
+                    On September 8th, between 14:00 and 15:00 UTC signing transactions with the
+                    Trezor hardware wallet won't work while we update Adalite to support the
+                    upcoming Trezor firmware.
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'09/06/2021'}
               children={
                 <Fragment>
