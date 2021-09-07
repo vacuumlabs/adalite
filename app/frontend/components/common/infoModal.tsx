@@ -63,8 +63,8 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
               children={
                 <Fragment>
                   <Article title="Trezor signing planned outage" icon="">
-                    On September 8th, between 14:00 and 15:00 UTC signing transactions with the
-                    Trezor hardware wallet won't work while we update Adalite to support the
+                    On September 8th, between 14:00 and 15:00 UTC, signing transactions with Trezor
+                    hardware wallets is expected to fail while we update Adalite to support the
                     upcoming Trezor firmware.
                   </Article>
                 </Fragment>

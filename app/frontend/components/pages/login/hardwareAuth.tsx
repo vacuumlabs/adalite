@@ -11,7 +11,6 @@ import {isMobileOnly} from 'react-device-detect'
 import LedgerTransportSelect from './ledgerTransportSelect'
 import {LedgerTransportType} from '../../../../frontend/types'
 import styles from './hardwareAuth.module.scss'
-import {WarningIcon} from './../../common/svg'
 
 const LoadByHardwareWalletSection = () => {
   const {loadWallet} = useActions(actions)
@@ -73,25 +72,6 @@ const LoadByHardwareWalletSection = () => {
               <TrezorLogoWhite />
             </div>
           </button>
-          <div className={styles.trezorWarning}>
-            <div className={styles.trezorWarningLabel}>
-              <a
-                className="wide-data-balloon"
-                {...tooltip(
-                  'Trezor firmware version 2.4.0 with a blank passphrase is not working properly. This issue will be solved in the next release.\nFor now you can either: \n1. Turn off the passphrase\n2. Confirm the blank passphrase multiple times until it works\n3. Downgrade to Trezor firmware version 2.3.6',
-                  true
-                )}
-              >
-                <WarningIcon />
-              </a>
-            </div>
-            <a
-              href="https://github.com/vacuumlabs/adalite/wiki/Troubleshooting#blank-phrase-on-trezor-login-issue"
-              target="_blank"
-            >
-              Known issue
-            </a>
-          </div>
         </div>
         <div className="authentication-wallet">
           <div className="authentication-image-container">
