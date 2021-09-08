@@ -20,20 +20,6 @@ import {exportWalletSecretDef} from '../wallet/keypass-json'
 import {getDefaultLedgerTransportType} from '../wallet/shelley/helpers/transports'
 import sleep from '../helpers/sleep'
 
-// TODO: (refactor), this should not call "setState" as it is not action
-const fetchConversionRates = async (conversionRates, setState) => {
-  try {
-    setState({
-      conversionRates: await conversionRates,
-    })
-  } catch (e) {
-    debugLog('Could not fetch conversion rates.')
-    setState({
-      conversionRates: null,
-    })
-  }
-}
-
 // TODO: we may be able to remove this, kept for backwards compatibility
 const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
   accountsInfo.some(({poolRecommendation}) => poolRecommendation.shouldShowSaturatedBanner)
@@ -56,8 +42,36 @@ const accountsIncludeStakingAddresses = (
 export default (store: Store) => {
   const {loadingAction} = loadingActions(store)
   const {setError} = errorActions(store)
-  const {setState} = store
+  const {getState, setState} = store
   const {setWalletOperationStatusType} = commonActions(store)
+
+  const loadAsyncWalletData = async (): Promise<void> => {
+    const asyncFetchAndUpdate = async <T extends Partial<State>>(
+      fetch: () => Promise<T>,
+      fallbackValue: T,
+      debugMessage: string = null
+    ): Promise<void> => {
+      try {
+        setState(await fetch())
+      } catch (e) {
+        debugMessage ?? debugLog(debugMessage)
+        setState(fallbackValue)
+      }
+    }
+
+    await Promise.all([
+      asyncFetchAndUpdate(
+        async () => ({conversionRates: await getConversionRates(getState())}),
+        {conversionRates: null},
+        'Could not fetch conversion rates.'
+      ),
+      asyncFetchAndUpdate(
+        async () => ({tokensMetadata: await wallet.getTokensMetadata(getState().accountsInfo)}),
+        {tokensMetadata: new Map()},
+        'Could not fetch tokens metadata.'
+      ),
+    ])
+  }
 
   const loadWallet = async (
     state: State,
@@ -116,10 +130,8 @@ export default (store: Store) => {
 
       const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
       const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
-      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
       const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
 
-      const conversionRatesPromise = getConversionRates(state)
       const usingHwWallet = wallet.isHwWallet()
       const maxAccountIndex = wallet.getMaxAccountIndex()
       const shouldShowWantedAddressesModal = accountsIncludeStakingAddresses(
@@ -135,7 +147,6 @@ export default (store: Store) => {
       setState({
         validStakepoolDataProvider,
         accountsInfo,
-        tokensMetadata,
         maxAccountIndex,
         shouldShowSaturatedBanner,
         walletIsLoaded: true,
@@ -157,7 +168,7 @@ export default (store: Store) => {
         // shelley
         isShelleyCompatible,
       })
-      await fetchConversionRates(conversionRatesPromise, setState)
+      loadAsyncWalletData()
     } catch (e) {
       setState({
         loading: false,
@@ -176,14 +187,13 @@ export default (store: Store) => {
     try {
       const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
       const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
-      const conversionRates = getConversionRates(state)
 
       setState({
         accountsInfo,
         tokensMetadata,
         shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
       })
-      await fetchConversionRates(conversionRates, setState)
+      loadAsyncWalletData()
       // timeout setting loading state, so that loading shows even if everything was cached
       await sleep(500)
       if (state.walletOperationStatusType !== 'txPending') {

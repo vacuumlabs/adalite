@@ -1,6 +1,8 @@
+import {State} from '../state'
+import {ConvectionRates} from '../types'
 import request from '../wallet/helpers/request'
 
-async function getConversionRates(state) {
+async function getConversionRates(state: State): Promise<ConvectionRates> {
   let conversionRates = state.conversionRates
   const maxConversionRatesAge = 1000 * 60 * 5
 
@@ -13,7 +15,8 @@ async function getConversionRates(state) {
 
   return conversionRates
 }
-async function fetchConversionRates() {
+
+async function fetchConversionRates(): Promise<ConvectionRates['data']> {
   return await request('https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR').catch(
     (e) => null
   )

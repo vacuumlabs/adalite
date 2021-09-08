@@ -17,6 +17,7 @@ import {
   WalletOperationStatusType,
   RegisteredTokenMetadata,
   TokenRegistrySubject,
+  ConvectionRates,
 } from './types'
 
 export interface State {
@@ -34,7 +35,7 @@ export interface State {
   error?: any
   activeMainTab: MainTabs
   shouldShowContactFormModal?: boolean
-  conversionRates?: {data: {USD: number; EUR: number}}
+  conversionRates?: ConvectionRates
 
   // cache
   displayWelcome: boolean

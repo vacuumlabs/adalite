@@ -415,3 +415,11 @@ export type WalletOperationStatusType =
   | 'txSuccess'
   | 'txFailed'
   | 'reloadFailed'
+
+export type ConvectionRates = {
+  data: {
+    USD: number
+    EUR: number
+  }
+  timestamp: number
+}
