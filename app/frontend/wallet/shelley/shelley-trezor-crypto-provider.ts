@@ -23,33 +23,35 @@ import {
 import {
   Network,
   TxAuxiliaryData,
-  TxByronWitness,
   TxCertificate,
   TxDelegationCert,
   TxInput,
   TxOutput,
-  TxShelleyWitness,
   TxStakepoolRegistrationCert,
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
   WalletName,
 } from '../types'
-import {TxSigned, TxAux, CborizedCliWitness, FinalizedAuxiliaryDataTx} from './types'
+import {
+  TrezorAddressParameters,
+  TrezorGetAddressResponse,
+  TrezorGetPublicKeyResponse,
+  TrezorInput,
+  TrezorMultiAsset,
+  TrezorOutput,
+  TrezorSignTxResponse,
+  TrezorTxCertificate,
+  TrezorWithdrawal,
+} from './trezor-types'
+import {TxSigned, TxAux, CborizedCliWitness, TxBodyKey, FinalizedAuxiliaryDataTx} from './types'
 import {encodeAddress} from './helpers/addresses'
 import {TxRelayType, TxStakepoolRelay} from './helpers/poolCertificateUtils'
-import {
-  cborizeCliWitness,
-  cborizeTxAuxiliaryVotingData,
-  cborizeTxWitnesses,
-  ShelleySignedTransactionStructured,
-  ShelleyTxAux,
-} from './shelley-transaction'
+import {cborizeCliWitness, ShelleyTxAux} from './shelley-transaction'
 import {removeNullFields} from '../../helpers/removeNullFiels'
 import {orderTokenBundle} from '../helpers/tokenFormater'
+import {decode} from 'borc'
 import assertUnreachable from '../../helpers/assertUnreachable'
-import TrezorConnect, * as TrezorTypes from 'trezor-connect'
-import * as cbor from 'borc'
 
 type CryptoProviderParams = {
   network: Network
@@ -62,20 +64,17 @@ const ShelleyTrezorCryptoProvider = async ({
 }: CryptoProviderParams): Promise<CryptoProvider> => {
   const derivationScheme = derivationSchemes.v2
 
+  const TrezorConnect = require('trezor-connect').default
+
   TrezorConnect.manifest({
     email: ADALITE_SUPPORT_EMAIL,
     appUrl: config.ADALITE_SERVER_URL,
   })
 
   const getTrezorVersion = async (): Promise<any> => {
-    const {payload} = await TrezorConnect.getFeatures()
-    const isSuccessful = (value: any): value is TrezorTypes.Features => !value.error
-
-    if (!isSuccessful(payload)) {
-      throw new InternalError(InternalErrorReason.TrezorError, {message: payload.error})
-    }
-
-    const {major_version: major, minor_version: minor, patch_version: patch} = payload
+    // TODO: add return type
+    const {payload: features} = await TrezorConnect.getFeatures()
+    const {major_version: major, minor_version: minor, patch_version: patch} = features
     return {major, minor, patch}
   }
 
@@ -91,13 +90,10 @@ const ShelleyTrezorCryptoProvider = async ({
     config.shouldExportPubKeyBulk,
     async (absDerivationPaths: BIP32Path[]) => {
       const bundle = absDerivationPaths.map((path: BIP32Path) => ({path, showOnTrezor: false}))
-      const response = await TrezorConnect.cardanoGetPublicKey({
+      const response: TrezorGetPublicKeyResponse = await TrezorConnect.cardanoGetPublicKey({
         bundle,
       })
-
-      const isSuccessful = (value: any): value is TrezorTypes.CardanoPublicKey[] => !value.error
-
-      if (!isSuccessful(response.payload)) {
+      if (response.success === false) {
         throw new InternalError(InternalErrorReason.TrezorError, {message: response.payload.error})
       }
       return response.payload.map(({publicKey}) => Buffer.from(publicKey, 'hex'))
@@ -132,12 +128,12 @@ const ShelleyTrezorCryptoProvider = async ({
     absDerivationPath: BIP32Path,
     stakingPath?: BIP32Path
   ): Promise<void> {
-    const addressParameters: TrezorTypes.CardanoAddressParameters = {
+    const addressParameters: TrezorAddressParameters = {
       addressType: AddressTypes.BASE, // TODO: retrieve from address
       path: absDerivationPath,
       stakingPath,
     }
-    const response = await TrezorConnect.cardanoGetAddress({
+    const response: TrezorGetAddressResponse = await TrezorConnect.cardanoGetAddress({
       addressParameters,
       networkId: network.networkId,
       protocolMagic: network.protocolMagic,
@@ -148,10 +144,7 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  function prepareInput(
-    input: TxInput,
-    addressToAbsPathMapper: AddressToPathMapper
-  ): TrezorTypes.CardanoInput {
+  function prepareInput(input: TxInput, addressToAbsPathMapper: AddressToPathMapper): TrezorInput {
     return {
       ...(input.address && {path: addressToAbsPathMapper(input.address)}),
       prev_hash: input.txHash,
@@ -159,9 +152,7 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  const prepareTokenBundle = (
-    tokenBundle: TokenBundle
-  ): TrezorTypes.CardanoAssetGroup[] | undefined => {
+  const prepareTokenBundle = (tokenBundle: TokenBundle): TrezorMultiAsset | undefined => {
     // TODO: refactor
     if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
       throw new InternalError(InternalErrorReason.TrezorMultiAssetNotSupported, {
@@ -182,7 +173,7 @@ const ShelleyTrezorCryptoProvider = async ({
     })
   }
 
-  function prepareOutput(output: TxOutput): TrezorTypes.CardanoOutput {
+  function prepareOutput(output: TxOutput): TrezorOutput {
     const tokenBundle = prepareTokenBundle(output.tokenBundle)
     return output.isChange === false
       ? {
@@ -201,25 +192,25 @@ const ShelleyTrezorCryptoProvider = async ({
       }
   }
 
-  function prepareStakepoolRelays(relays: TxStakepoolRelay[]): TrezorTypes.CardanoPoolRelay[] {
+  function prepareStakepoolRelays(relays: TxStakepoolRelay[]) {
     return relays.map((relay) => {
       switch (relay.type) {
         case TxRelayType.SINGLE_HOST_IP:
           return {
-            type: relay.type as number,
+            type: relay.type,
             ipv4Address: relay.params.ipv4,
             ipv6Address: relay.params.ipv6,
             port: relay.params.portNumber,
           }
         case TxRelayType.SINGLE_HOST_NAME:
           return {
-            type: relay.type as number,
+            type: relay.type,
             port: relay.params.portNumber,
             hostName: relay.params.dnsName,
           }
         case TxRelayType.MULTI_HOST_NAME:
           return {
-            type: relay.type as number,
+            type: relay.type,
             hostName: relay.params.dnsName,
           }
         default:
@@ -231,7 +222,7 @@ const ShelleyTrezorCryptoProvider = async ({
   function preparePoolRegistrationCertificate(
     certificate: TxStakepoolRegistrationCert,
     path: BIP32Path
-  ): TrezorTypes.CardanoCertificate {
+  ): TrezorTxCertificate {
     const {type, poolRegistrationParams} = certificate
     const {data} = bech32.decode(certificate.stakingAddress)
     const owners = certificate.poolRegistrationParams.poolOwners.map((owner) => {
@@ -246,8 +237,7 @@ const ShelleyTrezorCryptoProvider = async ({
       })
     }
     return {
-      type: type as number,
-      path: null,
+      type,
       poolParameters: {
         poolId: poolRegistrationParams.poolKeyHashHex,
         vrfKeyHash: poolRegistrationParams.vrfKeyHashHex,
@@ -273,9 +263,9 @@ const ShelleyTrezorCryptoProvider = async ({
   function prepareStakingKeyRegistrationCertificate(
     certificate: TxStakingKeyRegistrationCert,
     path: BIP32Path
-  ): TrezorTypes.CardanoCertificate {
+  ): TrezorTxCertificate {
     return {
-      type: certificate.type as number,
+      type: certificate.type,
       path,
     }
   }
@@ -283,9 +273,9 @@ const ShelleyTrezorCryptoProvider = async ({
   function prepareStakingKeyDeregistrationCertificate(
     certificate: TxStakingKeyDeregistrationCert,
     path: BIP32Path
-  ): TrezorTypes.CardanoCertificate {
+  ): TrezorTxCertificate {
     return {
-      type: certificate.type as number,
+      type: certificate.type,
       path,
     }
   }
@@ -293,9 +283,9 @@ const ShelleyTrezorCryptoProvider = async ({
   function prepareDelegationCertificate(
     certificate: TxDelegationCert,
     path: BIP32Path
-  ): TrezorTypes.CardanoCertificate {
+  ): TrezorTxCertificate {
     return {
-      type: certificate.type as number,
+      type: certificate.type,
       path,
       pool: certificate.poolHash,
     }
@@ -304,7 +294,7 @@ const ShelleyTrezorCryptoProvider = async ({
   function prepareCertificate(
     certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
-  ): TrezorTypes.CardanoCertificate {
+  ): TrezorTxCertificate {
     const path = addressToAbsPathMapper(certificate.stakingAddress)
     switch (certificate.type) {
       case CertificateType.STAKING_KEY_REGISTRATION:
@@ -323,51 +313,15 @@ const ShelleyTrezorCryptoProvider = async ({
   function prepareWithdrawal(
     withdrawal: TxWithdrawal,
     addressToAbsPathMapper: AddressToPathMapper
-  ): TrezorTypes.CardanoWithdrawal {
+  ): TrezorWithdrawal {
     return {
       path: addressToAbsPathMapper(withdrawal.stakingAddress),
       amount: `${withdrawal.rewards}`,
     }
   }
 
-  const prepareByronWitness = (witness: TrezorTypes.CardanoSignedTxWitness): TxByronWitness => {
-    const publicKey = Buffer.from(witness.pubKey, 'hex')
-    const chainCode = Buffer.from(witness.chainCode, 'hex')
-    // only v1 witnesses has address atributes
-    // since trezor is v2 they are always {}
-    const addressAttributes = cbor.encode({})
-    const signature = Buffer.from(witness.signature, 'hex')
-    return {
-      publicKey,
-      signature,
-      chainCode,
-      addressAttributes,
-    }
-  }
-
-  const prepareShelleyWitness = (witness: TrezorTypes.CardanoSignedTxWitness): TxShelleyWitness => {
-    const publicKey = Buffer.from(witness.pubKey, 'hex')
-    const signature = Buffer.from(witness.signature, 'hex')
-    return {
-      publicKey,
-      signature,
-    }
-  }
-
-  const prepareWitnesses = (witnesses: TrezorTypes.CardanoSignedTxWitness[]) => {
-    const shelleyWitnesses: TxShelleyWitness[] = []
-    const byronWitnesses: TxByronWitness[] = []
-    witnesses.forEach((witness) => {
-      witness.type === TrezorTypes.CardanoTxWitnessType.SHELLEY_WITNESS
-        ? shelleyWitnesses.push(prepareShelleyWitness(witness))
-        : byronWitnesses.push(prepareByronWitness(witness))
-    })
-    return {shelleyWitnesses, byronWitnesses}
-  }
-
-  const formatAuxiliaryData = (
-    txAuxiliaryData: TxAuxiliaryData
-  ): TrezorTypes.CardanoAuxiliaryData => {
+  // TODO: export type from trezor if possible
+  const formatAuxiliaryData = (txAuxiliaryData: TxAuxiliaryData): any => {
     switch (txAuxiliaryData.type) {
       case 'CATALYST_VOTING':
         return {
@@ -388,7 +342,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   function finalizeTxAuxWithMetadata(
     txAux: TxAux,
-    auxiliaryDataSupplement: TrezorTypes.CardanoAuxiliaryDataSupplement
+    encodedSeriazedTx: string
   ): FinalizedAuxiliaryDataTx {
     if (!txAux.auxiliaryData) {
       return {
@@ -397,17 +351,17 @@ const ShelleyTrezorCryptoProvider = async ({
       }
     }
     switch (txAux.auxiliaryData.type) {
-      case 'CATALYST_VOTING':
+      case 'CATALYST_VOTING': {
+        const decodedTx = decode(encodedSeriazedTx)
+        const auxiliaryDataHash = decodedTx[0].get(TxBodyKey.AUXILIARY_DATA_HASH).toString('hex')
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,
-            auxiliaryDataHash: auxiliaryDataSupplement.auxiliaryDataHash,
+            auxiliaryDataHash,
           }),
-          txAuxiliaryData: cborizeTxAuxiliaryVotingData(
-            txAux.auxiliaryData,
-            auxiliaryDataSupplement.catalystSignature
-          ),
+          txAuxiliaryData: null,
         }
+      }
       default:
         return assertUnreachable(txAux.auxiliaryData.type)
     }
@@ -434,20 +388,20 @@ const ShelleyTrezorCryptoProvider = async ({
     const formattedAuxiliaryData = txAux.auxiliaryData
       ? formatAuxiliaryData(txAux.auxiliaryData)
       : null
-    const request: TrezorTypes.CommonParams & TrezorTypes.CardanoSignTransaction = {
-      signingMode: TrezorTypes.CardanoTxSigningMode.ORDINARY_TRANSACTION,
-      inputs,
-      outputs,
-      protocolMagic: network.protocolMagic,
-      fee,
-      ttl,
-      networkId: network.networkId,
-      certificates,
-      withdrawals,
-      auxiliaryData: formattedAuxiliaryData,
-      validityIntervalStart,
-    }
-    const response = await TrezorConnect.cardanoSignTransaction(removeNullFields(request))
+    const response: TrezorSignTxResponse = await TrezorConnect.cardanoSignTransaction(
+      removeNullFields({
+        inputs,
+        outputs,
+        protocolMagic: network.protocolMagic,
+        fee,
+        ttl,
+        networkId: network.networkId,
+        certificates,
+        withdrawals,
+        auxiliaryData: formattedAuxiliaryData,
+        validityIntervalStart,
+      })
+    )
 
     if (response.success === false) {
       debugLog(response)
@@ -456,10 +410,7 @@ const ShelleyTrezorCryptoProvider = async ({
       })
     }
 
-    const {finalizedTxAux, txAuxiliaryData} = finalizeTxAuxWithMetadata(
-      txAux,
-      response.payload.auxiliaryDataSupplement
-    )
+    const {finalizedTxAux} = finalizeTxAuxWithMetadata(txAux, response.payload.serializedTx)
 
     if (response.payload.hash !== finalizedTxAux.getId()) {
       throw new InternalError(InternalErrorReason.TxSerializationError, {
@@ -467,17 +418,9 @@ const ShelleyTrezorCryptoProvider = async ({
       })
     }
 
-    const {shelleyWitnesses, byronWitnesses} = prepareWitnesses(response.payload.witnesses)
-    const txWitnesses = cborizeTxWitnesses(byronWitnesses, shelleyWitnesses)
-    const structuredTx = ShelleySignedTransactionStructured(
-      finalizedTxAux,
-      txWitnesses,
-      txAuxiliaryData
-    )
-
     return {
       txHash: response.payload.hash,
-      txBody: cbor.encode(structuredTx).toString('hex'),
+      txBody: response.payload.serializedTx,
     }
   }
 
