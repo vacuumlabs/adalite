@@ -3,6 +3,8 @@ import {RegisteredTokenMetadata, Token, TokenRegistrySubject} from '../types'
 import cacheResults from '../helpers/cacheResults'
 import {SuccessResponse, TokenMetadata, TokenMetadataResponse} from '../wallet/backend-types'
 
+const MAX_REQUEST_SIZE = 2000
+
 export const createTokenRegistrySubject = (
   policyId: string,
   assetName: string
@@ -22,6 +24,12 @@ export class TokenRegistry {
   private readonly _fetchTokensMetadata = async (
     subjects: string[]
   ): Promise<TokenMetadataResponse> => {
+    if (subjects.length > MAX_REQUEST_SIZE) {
+      return Promise.resolve({Left: 'Request over max limit'})
+    }
+    if (subjects.length === 0) {
+      return Promise.resolve({Right: []})
+    }
     const requestBody = {subjects}
     try {
       return await request(this.url, 'POST', JSON.stringify(requestBody), {

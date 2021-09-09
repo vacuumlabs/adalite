@@ -5,6 +5,7 @@ const chunk = require('./helpers/chunk')
 const Cache = require('./helpers/cache')
 
 const REQUEST_CHUNK_SIZE = 100
+const MAX_REQUEST_SIZE = 2000
 
 const cache = (() => {
   // We expect far more tokens to not be in token registry, we keep that information in nullCache
@@ -34,6 +35,14 @@ module.exports = function(app, env) {
   app.post('/api/bulk/tokens/metadata', async (req, res) => {
     try {
       const subjects = req.body.subjects
+
+      if (subjects.length > MAX_REQUEST_SIZE) {
+        return res.json({
+          statusCode: 400,
+          Left: 'Request over max limit',
+        })
+      }
+
       // Retrieve subjects that are cached form cache and determine
       // which subjects need to be fetched from remote
       const {cached: cachedTokensMetadata, toFetch} = subjects.reduce(
