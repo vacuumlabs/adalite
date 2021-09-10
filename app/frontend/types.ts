@@ -416,7 +416,7 @@ export type WalletOperationStatusType =
   | 'txFailed'
   | 'reloadFailed'
 
-export type ConvectionRates = {
+export type ConversionRates = {
   data: {
     USD: number
     EUR: number

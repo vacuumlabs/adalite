@@ -47,12 +47,12 @@ export default (store: Store) => {
 
   const loadAsyncWalletData = async (): Promise<void> => {
     const asyncFetchAndUpdate = async <T extends Partial<State>>(
-      fetch: () => Promise<T>,
+      fetchFn: () => Promise<T>,
       fallbackValue: T,
       debugMessage: string = null
     ): Promise<void> => {
       try {
-        setState(await fetch())
+        setState(await fetchFn())
       } catch (e) {
         debugMessage ?? debugLog(debugMessage)
         setState(fallbackValue)

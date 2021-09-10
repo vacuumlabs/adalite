@@ -4,8 +4,8 @@ const {backendConfig} = require('./helpers/loadConfig')
 const chunk = require('./helpers/chunk')
 const Cache = require('./helpers/cache')
 
-const REQUEST_CHUNK_SIZE = 100
-const MAX_REQUEST_SIZE = 2000
+const MAX_SUBJECTS_PER_REQUEST = 100
+const MAX_SUBJECTS_COUNT = 2000
 
 const cache = (() => {
   // We expect far more tokens to not be in token registry, we keep that information in nullCache
@@ -14,11 +14,9 @@ const cache = (() => {
   const cache = new Cache(1000)
   const nullCache = new Cache(100000)
 
-  const get = (key) => {
-    const value = cache.get(key)
-    if (value === undefined) return nullCache.get(key)
-    return value
-  }
+  const has = (key) => cache.has(key) || nullCache.has(key)
+
+  const get = (key) => (cache.has(key) ? cache.get(key) : nullCache.get(key))
 
   const set = (key, value) => {
     if (value === null) {
@@ -28,7 +26,7 @@ const cache = (() => {
     }
   }
 
-  return {get, set}
+  return {has, get, set}
 })()
 
 module.exports = function(app, env) {
@@ -36,34 +34,26 @@ module.exports = function(app, env) {
     try {
       const subjects = req.body.subjects
 
-      if (subjects.length > MAX_REQUEST_SIZE) {
+      if (subjects.length > MAX_SUBJECTS_COUNT) {
         return res.json({
           statusCode: 400,
           Left: 'Request over max limit',
         })
       }
 
-      // Retrieve subjects that are cached form cache and determine
+      // Retrieve subjects that are cached from cache and determine
       // which subjects need to be fetched from remote
-      const {cached: cachedTokensMetadata, toFetch} = subjects.reduce(
-        (acc, subject) => {
-          const cachedValue = cache.get(subject)
-          if (cachedValue === undefined) {
-            acc.toFetch.push(subject)
-          } else {
-            if (cachedValue !== null) acc.cached.push(cachedValue)
-          }
-          return acc
-        },
-        {cached: [], toFetch: []}
-      )
+      const toFetch = subjects.filter((s) => !cache.has(s))
+
+      // filter both - undefined (to fetch) and null (no metadata) entries
+      const cachedNonNullTokensMetadata = subjects.map((s) => cache.get(s)).filter((s) => s != null)
 
       // Fetch subjects from remote that are not present in cache
       const responses = (
         await Promise.all(
           (
             await Promise.all(
-              chunk(toFetch, REQUEST_CHUNK_SIZE).map((subjects) =>
+              chunk(toFetch, MAX_SUBJECTS_PER_REQUEST).map((subjects) =>
                 fetch(`${backendConfig.ADALITE_TOKEN_REGISTRY_URL}/metadata/query`, {
                   method: 'POST',
                   headers: {'Content-Type': 'application/json'},
@@ -89,7 +79,7 @@ module.exports = function(app, env) {
         responses.map((response) => response.subject)
       ).forEach((entry) => cache.set(entry, null))
 
-      const tokensMetadata = [...cachedTokensMetadata, ...responses]
+      const tokensMetadata = [...cachedNonNullTokensMetadata, ...responses]
 
       return res.json({
         Right: tokensMetadata,

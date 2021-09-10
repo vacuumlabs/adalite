@@ -5,33 +5,40 @@ class Cache {
   constructor(limit, maxAge = TIMEOUT) {
     this.limit = limit
     this.maxAge = maxAge
-    this.cache = {}
-    this.size = 0
+    this.cache = new Map()
+  }
+
+  has(key) {
+    if (this.cache.has(key)) {
+      if (this.cache.get(key).timestamp + this.maxAge > Date.now()) {
+        return true
+      }
+      this.cache.delete(key)
+    }
+    return false
   }
 
   get(key) {
-    if (key in this.cache && this.cache[key].timestamp + this.maxAge > Date.now()) {
-      return this.cache[key].data
+    if (this.has(key)) {
+      return this.cache.get(key).data
     }
     return undefined
   }
 
   set(key, value) {
-    if (this.get(key) === undefined) this.size++
-    this.cache[key] = {
+    this.cache.set(key, {
       timestamp: Date.now(),
       data: value,
-    }
-    if (this.size > this.limit) this.prune()
+    })
+    if (this.cache.size > this.limit) this._prune()
   }
 
-  prune() {
+  _prune() {
     const pruneSize = Math.round(PRUNE_RATIO * this.limit)
-    Object.entries(this.cache)
-      .sort((a, b) => a[1].timestamp - b[1].timestamp)
+    // Map preserves the order of insertion
+    Array.from(this.cache.keys())
       .slice(0, pruneSize)
-      .forEach(([key, value]) => delete this.cache[key])
-    this.size -= pruneSize
+      .forEach((key) => this.cache.delete(key))
   }
 }
 
