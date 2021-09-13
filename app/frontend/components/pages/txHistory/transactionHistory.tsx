@@ -19,6 +19,7 @@ import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
 import {useSelector} from '../../../helpers/connect'
 
 import styles from './transactionHistory.module.scss'
+import Alert from '../../common/alert'
 import moment = require('moment')
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -243,6 +244,18 @@ const TransactionHistory = (): h.JSX.Element => {
         <div className="download-transaction">
           <ExportCSV transactionHistory={transactionHistory} stakingHistory={stakingHistory} />
         </div>
+      </div>
+      <div className="staking-history-warning">
+        <Alert alertType="warning">
+          CSV exports might be wrong due to possibly missing rewards.{' '}
+          <a
+            href="https://github.com/vacuumlabs/adalite/wiki/Known-issue-with-missing-rewards"
+            target="_blank"
+            rel="noopener"
+          >
+            More info
+          </a>
+        </Alert>
       </div>
       {transactionHistory.length === 0 ? (
         <div className="transactions-empty">No transactions found</div>

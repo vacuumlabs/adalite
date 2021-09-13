@@ -50,6 +50,7 @@ import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDat
 import {InternalError, InternalErrorReason} from '../errors'
 import {throwIfEpochBoundary} from '../helpers/epochBoundaryUtils'
 import cacheResults from '../helpers/cacheResults'
+import {filterValidTransactions} from '../helpers/common'
 
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
@@ -100,8 +101,10 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       if (!tx.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(tx)}`)
       return prepareTxHistoryEntry(tx, addresses)
     })
-
-    return txHistoryEntries.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
+    const validTransactions = filterValidTransactions(txHistoryEntries) // TODO temporary workaround
+    // until collateral inputs in adalite-backend are exposed to properly show effect
+    // of invalid transactions in UI/csv export
+    return validTransactions.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
   function prepareTxHistoryEntry(tx: CaTxEntry, addresses: string[]): TxSummaryEntry {
@@ -163,19 +166,19 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
 
   async function getBalance(addresses: Array<string>): Promise<Balance> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const txHistory = await Promise.all(
+    const addressInfos = await Promise.all(
       chunks.map(async (index) => {
         const beginIndex = index * gapLimit
         return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )
-    const addressTokenBundles = txHistory.map((txHistoryEntry) => {
-      return txHistoryEntry.caBalance.getTokens.map((token) => parseToken(token))
+    const addressTokenBundles = addressInfos.map((addressSummary) => {
+      return addressSummary.caBalance.getTokens.map((token) => parseToken(token))
     })
     const tokenBundle = aggregateTokenBundles(addressTokenBundles).filter(
       (token) => token.quantity > 0
     )
-    const coins = txHistory.reduce(
+    const coins = addressInfos.reduce(
       (acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10),
       0
     ) as Lovelace

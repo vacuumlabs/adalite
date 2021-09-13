@@ -1,5 +1,6 @@
 import {ADALITE_CONFIG} from '../config'
-import {WalletOperationStatusType} from '../types'
+import {TxSummaryEntry, WalletOperationStatusType} from '../types'
+import {CaTxEntry} from '../wallet/backend-types'
 
 export const stripNonNumericCharacters = (text: string): string => text.replace(/[^0-9]/gi, '')
 
@@ -17,3 +18,8 @@ export const shouldDisableSendingButton = (
   (walletOperationStatusType === 'reloading' ||
     walletOperationStatusType === 'txPending' ||
     walletOperationStatusType === 'txSubmitting')
+
+export function filterValidTransactions<T extends CaTxEntry | TxSummaryEntry>(txs: T[]): T[] {
+  // filters txs that did not pass alonzo block script validation
+  return txs.filter((tx) => tx.isValid)
+}

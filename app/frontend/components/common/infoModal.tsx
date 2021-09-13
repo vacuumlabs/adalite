@@ -59,11 +59,24 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
-              date={'09/07/2021'}
+              date={'09/13/2021'}
+              children={
+                <Fragment>
+                  <Article title="Possibly missing rewards in staking history" icon="">
+                    One of the cardano components we use may be missing some of the rewards. For
+                    this reason, staking history and CSV exports may be wrong. However, your staking
+                    balance is unaffected by this issue and you can freely withdraw your correct
+                    amount of rewards.
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
+              date={'09/13/2021'}
               children={
                 <Fragment>
                   <Article title="Trezor signing planned outage" icon="">
-                    On September 8th, between 14:00 and 15:00 UTC, signing transactions with Trezor
+                    On September 15th, between 14:00 and 15:00 UTC, signing transactions with Trezor
                     hardware wallets is expected to fail while we update Adalite to support the
                     upcoming Trezor firmware.
                   </Article>

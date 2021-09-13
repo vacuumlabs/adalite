@@ -111,6 +111,8 @@ export type CaTxEntry = {
   ctbInputSum: CoinObject
   ctbOutputSum: CoinObject
   fee: string
+  isValid: boolean
+  scriptSize: number
 }
 
 export type BulkAddressesSummary = {
