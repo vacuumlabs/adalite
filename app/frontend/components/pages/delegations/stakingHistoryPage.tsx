@@ -192,9 +192,7 @@ class StakingHistoryPage extends Component<Props> {
       <div className="staking-history card">
         <h2 className="card-title">Staking and Rewards History</h2>
         <div className="staking-history-warning">
-          <Alert alertType="warning">
-            Temporarily, some rewards may be missing in the history.
-          </Alert>
+          <Alert alertType="warning">Some rewards may be missing in the history.</Alert>
         </div>
         {stakingHistory.length === 0 ? (
           <div className="transactions-empty">No history found</div>

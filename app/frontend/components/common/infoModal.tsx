@@ -72,7 +72,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
               }
             />
             <NewsSection
-              date={'09/07/2021'}
+              date={'09/13/2021'}
               children={
                 <Fragment>
                   <Article title="Trezor signing planned outage" icon="">
