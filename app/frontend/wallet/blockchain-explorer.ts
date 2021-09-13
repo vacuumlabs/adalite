@@ -50,6 +50,7 @@ import {createStakepoolDataProvider} from '../helpers/dataProviders/stakepoolDat
 import {InternalError, InternalErrorReason} from '../errors'
 import {throwIfEpochBoundary} from '../helpers/epochBoundaryUtils'
 import cacheResults from '../helpers/cacheResults'
+import {filterValidTransactions} from '../helpers/common'
 
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
@@ -100,8 +101,8 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       if (!tx.ctbId) captureMessage(`Tx without hash: ${JSON.stringify(tx)}`)
       return prepareTxHistoryEntry(tx, addresses)
     })
-
-    return txHistoryEntries.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
+    const validTransactions = filterValidTransactions(txHistoryEntries)
+    return validTransactions.sort((a, b) => b.ctbTimeIssued - a.ctbTimeIssued)
   }
 
   function prepareTxHistoryEntry(tx: CaTxEntry, addresses: string[]): TxSummaryEntry {
@@ -169,13 +170,19 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )
-    const addressTokenBundles = txHistory.map((txHistoryEntry) => {
+    const validTxHistory = txHistory.map((txHistoryEntry) => {
+      return {
+        ...txHistoryEntry,
+        caTxList: filterValidTransactions(txHistoryEntry.caTxList),
+      }
+    })
+    const addressTokenBundles = validTxHistory.map((txHistoryEntry) => {
       return txHistoryEntry.caBalance.getTokens.map((token) => parseToken(token))
     })
     const tokenBundle = aggregateTokenBundles(addressTokenBundles).filter(
       (token) => token.quantity > 0
     )
-    const coins = txHistory.reduce(
+    const coins = validTxHistory.reduce(
       (acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10),
       0
     ) as Lovelace
