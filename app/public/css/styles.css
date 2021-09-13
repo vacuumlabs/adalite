@@ -4433,3 +4433,7 @@ label.button.primary.disabled {
 }
 
 /* STAKE KEY DEREGISTER: (END) */
+
+.staking-history-warning {
+  margin-bottom: 32px;
+}
