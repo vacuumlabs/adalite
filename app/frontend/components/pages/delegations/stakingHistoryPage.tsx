@@ -192,7 +192,16 @@ class StakingHistoryPage extends Component<Props> {
       <div className="staking-history card">
         <h2 className="card-title">Staking and Rewards History</h2>
         <div className="staking-history-warning">
-          <Alert alertType="warning">Some rewards may be missing in the history.</Alert>
+          <Alert alertType="warning">
+            Some rewards may be missing in the history.{' '}
+            <a
+              href="https://github.com/vacuumlabs/adalite/wiki/Known-issue-with-missing-rewards"
+              target="_blank"
+              rel="noopener"
+            >
+              More info
+            </a>
+          </Alert>
         </div>
         {stakingHistory.length === 0 ? (
           <div className="transactions-empty">No history found</div>
