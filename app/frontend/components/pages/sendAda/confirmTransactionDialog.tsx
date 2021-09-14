@@ -419,7 +419,7 @@ const ConfirmTransactionDialog = () => {
 
   return (
     <div>
-      <Modal onRequestClose={cancelTransaction} title={modalTitle}>
+      <Modal onRequestClose={cancelTransaction} title={modalTitle} closeOnClickOutside={false}>
         {getModalBody()}
         {!hideDefaultSummary && (
           <ReviewBottom disabled={false} onSubmit={onSubmit} onCancel={cancelTransaction} />

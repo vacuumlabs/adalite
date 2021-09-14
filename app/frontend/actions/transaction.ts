@@ -244,8 +244,8 @@ export default (store: Store) => {
         error: e,
       })
       setState({
-        shouldShowTransactionErrorModal: true,
         shouldShowVotingDialog: false,
+        shouldShowTransactionErrorModal: true,
       })
 
       closeConfirmationDialog(state)
@@ -264,6 +264,7 @@ export default (store: Store) => {
         // TODO: refactor txSuccesTab!
         txSuccessTab: sendResponse && sendResponse.success ? getTxSuccessTabMapping(txTab) : '',
       })
+      stopLoadingAction(state)
     }
   }
 

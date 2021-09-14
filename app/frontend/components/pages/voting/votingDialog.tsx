@@ -133,6 +133,7 @@ const VotingDialog = (): h.JSX.Element => {
       bodyClass={styles.votingModal}
       title="Voting Registration"
       showWarning
+      closeOnClickOutside={false}
     >
       <ProgressBar stepNames={Object.values(REGISTRATION_STEP_NAMES)} activeStep={currentStep} />
       {renderStepPage(currentStep)}

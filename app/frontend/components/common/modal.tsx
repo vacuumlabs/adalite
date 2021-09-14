@@ -8,6 +8,7 @@ interface Props {
   bodyClass?: string
   title?: string
   showWarning?: boolean
+  closeOnClickOutside?: boolean
 }
 
 class Modal extends Component<Props, {}> {
@@ -19,10 +20,17 @@ class Modal extends Component<Props, {}> {
     document.body.classList.remove('no-scroll')
   }
 
-  render({children, onRequestClose, bodyClass = '', title = '', showWarning = false}) {
+  render({
+    children,
+    onRequestClose,
+    bodyClass = '',
+    title = '',
+    showWarning = false,
+    closeOnClickOutside = true,
+  }) {
     return (
       <div className="modal">
-        <div className="modal-overlay" onClick={onRequestClose} />
+        <div className="modal-overlay" onClick={closeOnClickOutside ? onRequestClose : null} />
         <div
           className={`modal-body ${bodyClass}`}
           onKeyDown={(e) => {
