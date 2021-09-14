@@ -6,6 +6,7 @@ import Alert from '../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
 import styles from './voting.module.scss'
 import {WalletOperationStatusType} from '../dashboard/walletOperationStatus'
+import {shouldDisableSendingButton} from '../../../helpers/common'
 
 const TransactionPage = ({
   nextStep,
@@ -17,7 +18,7 @@ const TransactionPage = ({
   votingPublicKey: HexString
 }): h.JSX.Element => {
   const {registerVotingKey} = useActions(actions)
-  const {txSuccessTab} = useSelector((state) => ({
+  const {txSuccessTab, walletOperationStatusType} = useSelector((state) => ({
     txSuccessTab: state.txSuccessTab,
     walletOperationStatusType: state.walletOperationStatusType,
   }))
@@ -42,7 +43,9 @@ const TransactionPage = ({
       <div className={styles.reviewTransactionRow}>
         <button
           className="button primary"
-          disabled={txSuccessTab === 'voting'}
+          disabled={
+            txSuccessTab === 'voting' || shouldDisableSendingButton(walletOperationStatusType)
+          }
           onClick={submitHandler}
           data-cy="VotingReviewTransactionBtn"
         >
