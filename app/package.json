@@ -33,7 +33,7 @@
     "pbkdf2": "^3.1.2",
     "preact": "^10.5.11",
     "react-device-detect": "^1.17.0",
-    "trezor-connect": "^8.1.26"
+    "trezor-connect": "8.1.30-beta.4"
   },
   "devDependencies": {
     "@testing-library/cypress": "^7.0.4",
