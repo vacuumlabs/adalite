@@ -6,6 +6,7 @@ const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parse
 const {captureException} = require('@sentry/node')
 const {isSameOrigin, tokenMatches} = require('../helpers/checkOrigin')
 const {backendConfig} = require('../helpers/loadConfig')
+const getRequestIp = require('../helpers/getRequestIp')
 
 const knownIps = new Set()
 
@@ -24,8 +25,7 @@ const incrCountersBy = (key, value) => {
 }
 
 const trackVisits = (req, res, next) => {
-  // 'x-forwarded-for' due to internal heroku routing
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  const ip = getRequestIp(req)
 
   const mydevice = device(req.headers['user-agent'])
 

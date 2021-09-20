@@ -5,6 +5,7 @@ const ua = require('universal-analytics')
 const {backendConfig} = require('../helpers/loadConfig')
 const {captureException} = require('@sentry/node')
 const {isSameOrigin, tokenMatches} = require('../helpers/checkOrigin')
+const getRequestIp = require('../helpers/getRequestIp')
 
 const knownIps = new Set()
 
@@ -44,8 +45,7 @@ const trackEvent = async ({category, action, label, value, path, originTestSucce
 }
 
 const trackVisits = async (req, res, next) => {
-  // 'x-forwarded-for' due to internal heroku routing
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  const ip = getRequestIp(req)
   const mydevice = device(req.headers['user-agent'])
 
   if (!knownIps.has(ip) && !mydevice.is('bot')) {

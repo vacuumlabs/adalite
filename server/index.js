@@ -11,6 +11,7 @@ const errorHandler = require('./middlewares/errorHandler')
 let app = express()
 const Sentry = require('@sentry/node')
 const dropSensitiveEventData = require('./helpers/dropSensitiveEventData')
+const getRequestIp = require('./helpers/getRequestIp')
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -56,7 +57,7 @@ if (backendConfig.REDIS_URL) {
 if (backendConfig.ADALITE_IP_BLACKLIST.length > 0) {
   app.use(
     ipfilter(backendConfig.ADALITE_IP_BLACKLIST, {
-      detectIp: (req) => req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+      detectIp: (req) => getRequestIp(req),
       mode: 'deny',
       logLevel: 'deny', // logs "Access denied to IP address: <ip>" for denied IPs
     })
