@@ -1,3 +1,4 @@
+import distinct from '../../../helpers/distinct'
 import {Address, CertificateType, Lovelace, TokenBundle} from '../../../types'
 import {aggregateTokenBundles} from '../../helpers/tokenFormater'
 import {TxAuxiliaryData, TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../types'
@@ -26,7 +27,7 @@ export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace
 
   const numAssets = distinctAssets.length
   // number of unique policyIds
-  const numPIDs = aggregatedTokenBundle.map(({policyId}) => policyId).length
+  const numPIDs = distinct(aggregatedTokenBundle.map(({policyId}) => policyId)).length
 
   const sumAssetNameLengths = distinctAssets.reduce(
     (acc, assetName) => acc + Math.max(Buffer.from(assetName, 'hex').byteLength, 1),

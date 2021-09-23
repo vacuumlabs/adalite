@@ -36,17 +36,17 @@ const address =
 const fixtures = {
   'with number of tokens equal to max': {
     tokenBundle: Object.values(tokens),
-    outputs: [createOutput(1888887, Object.values(tokens))],
+    outputs: [createOutput(1777776, Object.values(tokens))],
   },
   'with number of tokens smaller than max': {
     tokenBundle: [tokens.token1, tokens.token2],
-    outputs: [createOutput(1703702, [tokens.token1, tokens.token2])],
+    outputs: [createOutput(1592591, [tokens.token1, tokens.token2])],
   },
   'with number of tokens bigger than max': {
     tokenBundle: [...Object.values(tokens), tokens.token1, tokens.token2],
     outputs: [
-      createOutput(1888887, Object.values(tokens)),
-      createOutput(1703702, [tokens.token1, tokens.token2]),
+      createOutput(1777776, Object.values(tokens)),
+      createOutput(1592591, [tokens.token1, tokens.token2]),
     ],
   },
   'with one token': {

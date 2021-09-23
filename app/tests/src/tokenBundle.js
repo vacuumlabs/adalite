@@ -98,7 +98,7 @@ describe('Min ada calculation', () => {
         quantity: 1,
       },
     ]
-    assert.deepEqual(1629628, computeMinUTxOLovelaceAmount(tokenBundle))
+    assert.deepEqual(1518517, computeMinUTxOLovelaceAmount(tokenBundle))
   })
   it('should calculate min ADA value for multiple assets under multiple policies', () => {
     const tokenBundle = [

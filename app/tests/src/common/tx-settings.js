@@ -56,14 +56,14 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 6433231,
+            coins: 6544342,
             tokenBundle: [],
           },
           {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 1888887,
+            coins: 1777776,
             tokenBundle: inputTokens,
           },
         ],
@@ -77,7 +77,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: '186e6f496e87a9dac39688dcaccbc5e3a4297e891a56a07bfec479c7ee597225',
+    txHash: '059cce8e6c1d404798237b36ee45f74dafb0cf463ad236def4bf305474b6a666',
   },
   sendToken: {
     args: {
@@ -127,14 +127,14 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 6449730,
+            coins: 6560841,
             tokenBundle: [],
           },
           {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 1888887,
+            coins: 1777776,
             tokenBundle: [
               {
                 policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',
@@ -164,7 +164,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: '9ac6b55f250cb15a9e93d36a1edf7faf1853dabb9d01baa930ee1ab43965d024',
+    txHash: '53fd4e279c36779d2a005ea339d96d5f4f9d221918f65d8c2a74050bbe43826f',
   },
   delegation: {
     args: {
@@ -192,14 +192,14 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 5920091,
+            coins: 6031202,
             tokenBundle: [],
           },
           {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 1888887,
+            coins: 1777776,
             tokenBundle: inputTokens,
           },
         ],
@@ -223,7 +223,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: '007b558ee98ea911a377e369e1d1949cece4f737c699b6455c1d58325c961446',
+    txHash: 'b195266615c6cff1aa099a4569d435838630ed946a97be626fc0100e8e1849f1',
   },
   rewardWithdrawal: {
     args: {
@@ -250,14 +250,14 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 12928924,
+            coins: 13040035,
             tokenBundle: [],
           },
           {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 1888887,
+            coins: 1777776,
             tokenBundle: inputTokens,
           },
         ],
@@ -276,7 +276,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: '445ad4faa81cb91381a59abf43fc4f6d3a9889f5115fd70015907a5b4140da69',
+    txHash: '96820946d577d47c1b979762536878c04b8fe900ae82d7b373fc30bf09d60207',
   },
   voting: {
     args: {
@@ -305,14 +305,14 @@ const transactionSettings = {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 7928309,
+            coins: 8039420,
             tokenBundle: [],
           },
           {
             isChange: false,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-            coins: 1888887,
+            coins: 1777776,
             tokenBundle: inputTokens,
           },
         ],
@@ -335,7 +335,7 @@ const transactionSettings = {
       },
     },
     ttl,
-    txHash: 'ef22be382e71ee1f5d05874f8e41f767ef9e77ce623fe6728aaa1865c6da71eb',
+    txHash: '88913ad717860e531796597c16108ef35c8a189634971051905e635b6ee78d6a',
   },
 }
 
