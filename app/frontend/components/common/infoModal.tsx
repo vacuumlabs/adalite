@@ -59,6 +59,39 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'09/23/2021'}
+              children={
+                <Fragment>
+                  <Article title="Adalite 2.0 Rebranding Survey" icon="">
+                    <p className="info-spaced-paragraph">
+                      We have some exciting news for our loyal Adalite wallet users. Not long ago,
+                      we asked you, our valued community members for feedback regarding improvements
+                      and the future direction of our product. The resounding response was to add
+                      functionality such as: access to multiple blockchains (predominantly PoS),
+                      easy staking, simple integrated trading and swaps, just to name a few. The
+                      ultimate goal is to provide a superior Crypto Wealth Management Platform. As
+                      part of this activity we will be rebranding to{' '}
+                      <strong>NuFi (New Finance)</strong>. Please take a 2 minute Rebranding survey
+                      to aid us in enhancing the product and service for you:{' '}
+                      <a
+                        href="https://www.surveymonkey.com/r/Adalite"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        SURVEY
+                      </a>
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      Thank you for your participation - it’s appreciated!
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      <strong>Note:</strong> Cardano will still be our top priority!
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'09/13/2021'}
               children={
                 <Fragment>
