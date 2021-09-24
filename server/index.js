@@ -96,6 +96,14 @@ app.get('*', (req, res) => {
   // which doesn't seem worth it at the moment. The frontend bundle changes most often and the
   // rest of assets (css mostly) is several tens of kB combined anyway.
   const appVersionQueryParam = encodeURIComponent(backendConfig.ADALITE_APP_VERSION)
+
+  // Don't cache this page to ensure users always have the latest js/css loaded
+  // inspired by https://github.com/helmetjs/nocache/blob/main/index.ts
+  res.setHeader('Surrogate-Control', 'no-store')
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+  res.setHeader('Pragma', 'no-cache')
+  res.setHeader('Expires', '0')
+
   return res.status(200).send(`
       <!doctype html>
       <html>
