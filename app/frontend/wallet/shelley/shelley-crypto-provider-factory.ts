@@ -1,5 +1,6 @@
 import {CryptoProviderType} from '../types'
 import ShelleyJsCryptoProvider from './shelley-js-crypto-provider'
+import ShelleyBitBox02CryptoProvider from './shelley-bitbox02-crypto-provider'
 import ShelleyTrezorCryptoProvider from './shelley-trezor-crypto-provider'
 import ShelleyLedgerCryptoProvider from './shelley-ledger-crypto-provider'
 import {CryptoProvider} from '../../types'
@@ -11,6 +12,8 @@ const ShelleyCryptoProviderFactory = (() => {
     options: any
   ): Promise<CryptoProvider> => {
     switch (cryptoProviderType) {
+      case CryptoProviderType.BITBOX02:
+        return ShelleyBitBox02CryptoProvider(options)
       case CryptoProviderType.TREZOR:
         return ShelleyTrezorCryptoProvider(options)
 

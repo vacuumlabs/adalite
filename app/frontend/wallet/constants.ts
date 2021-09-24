@@ -69,6 +69,28 @@ export const WANTED_DELEGATOR_STAKING_ADDRESSES = []
 
 export const SATURATION_POINT = 62224967000000
 
+export const BITBOX02_VERSIONS = {
+  [CryptoProviderFeature.MINIMAL]: {
+    major: 9,
+    minor: 8,
+    patch: 0,
+  },
+  [CryptoProviderFeature.WITHDRAWAL]: {
+    major: 9,
+    minor: 8,
+    patch: 0,
+  },
+  [CryptoProviderFeature.BULK_EXPORT]: {
+    major: 9,
+    minor: 8,
+    patch: 0,
+  },
+}
+
+export const BITBOX02_ERRORS = {
+  [CryptoProviderFeature.MINIMAL]: InternalErrorReason.BitBox02OutdatedFirmwareError,
+}
+
 export const LEDGER_VERSIONS = {
   [CryptoProviderFeature.MINIMAL]: {
     major: 2,

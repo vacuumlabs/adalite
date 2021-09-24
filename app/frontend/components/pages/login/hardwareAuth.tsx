@@ -1,6 +1,6 @@
 import {Fragment, h} from 'preact'
 import {CryptoProviderType} from '../../../wallet/types'
-import {TrezorLogoWhite, LedgerLogoWhite} from '../../common/svg'
+import {TrezorLogoWhite, LedgerLogoWhite, BitBoxLogoWhite} from '../../common/svg'
 import {ADALITE_CONFIG} from '../../../config'
 import tooltip from '../../common/tooltip'
 import {useActions} from '../../../helpers/connect'
@@ -24,6 +24,12 @@ const LoadByHardwareWalletSection = () => {
     window.localStorage.setItem(localStorageVars.BULK_EXPORT, `${enableBulkExport}`)
     setBulkExport(!enableBulkExport)
   }, [enableBulkExport])
+
+  const BitBox02AffiliateLink = (title) => (
+    <a href="https://shiftcrypto.ch/bitbox02/" target="blank">
+      {title}
+    </a>
+  )
 
   const TrezorAffiliateLink = (title) => (
     <a href="https://shop.trezor.io/?offer_id=10&aff_id=1071" target="blank">
@@ -59,7 +65,7 @@ const LoadByHardwareWalletSection = () => {
               !ADALITE_CONFIG.ADALITE_ENABLE_TREZOR
             )}
             {...tooltip('Not supported on mobile devices', isMobileOnly)}
-            className="button primary trezor thin-data-balloon"
+            className="button primary thin-data-balloon"
             onClick={() =>
               loadWallet({
                 cryptoProviderType: CryptoProviderType.TREZOR,
@@ -67,7 +73,7 @@ const LoadByHardwareWalletSection = () => {
               })
             }
           >
-            Unlock with
+            <span className="authentication-button-label">Unlock with</span>
             <div className="trezor-logo-container">
               <TrezorLogoWhite />
             </div>
@@ -93,7 +99,7 @@ const LoadByHardwareWalletSection = () => {
                 !ADALITE_CONFIG.ADALITE_ENABLE_LEDGER
               )}
               disabled={!ADALITE_CONFIG.ADALITE_ENABLE_LEDGER}
-              className={`button primary ledger thin-data-balloon ${styles.ledgerButton}`}
+              className={`button primary thin-data-balloon ${styles.ledgerButton}`}
               onClick={() =>
                 loadWallet({
                   cryptoProviderType: CryptoProviderType.LEDGER,
@@ -102,7 +108,7 @@ const LoadByHardwareWalletSection = () => {
                 })
               }
             >
-              Unlock with
+              <span className="authentication-button-label">Unlock with</span>
               <div className="ledger-logo-container">
                 <LedgerLogoWhite />
               </div>
@@ -125,6 +131,39 @@ const LoadByHardwareWalletSection = () => {
               />
             </div>
           </div>
+        </div>
+        <div className="authentication-wallet">
+          <div className="authentication-image-container">
+            <img className="authentication-image" src="assets/bitbox02.png" alt="BitBox02" />
+          </div>
+          <div className="authentication-paragraph">BitBox02</div>
+          <div className="authentication-paragraph small">
+            {BitBox02AffiliateLink('Support us by buying one')}
+          </div>
+          <div
+            className="authentication-paragraph small"
+            dangerouslySetInnerHTML={{__html: '&nbsp;'}}
+          />
+          <button
+            disabled={!ADALITE_CONFIG.ADALITE_ENABLE_BITBOX02 || isMobileOnly}
+            {...tooltip(
+              'Support for BitBox02 is temporarily disabled',
+              !ADALITE_CONFIG.ADALITE_ENABLE_BITBOX02
+            )}
+            {...tooltip('Not supported on mobile devices', isMobileOnly)}
+            className="button primary thin-data-balloon"
+            onClick={() =>
+              loadWallet({
+                cryptoProviderType: CryptoProviderType.BITBOX02,
+                shouldExportPubKeyBulk: enableBulkExport,
+              })
+            }
+          >
+            <span className="authentication-button-label">Unlock with</span>
+            <div className="bitbox-logo-container">
+              <BitBoxLogoWhite />
+            </div>
+          </button>
         </div>
       </div>
       <div className="authentication-hw-bulk-public-export">

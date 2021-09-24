@@ -36,7 +36,11 @@ export const shouldShowExportOptionSelector = (state: State): boolean => {
 }
 
 export const usingHwWalletSelector = (state: State): boolean => {
-  return state.hwWalletName === WalletName.TREZOR || state.hwWalletName === WalletName.LEDGER
+  return (
+    state.hwWalletName === WalletName.BITBOX02 ||
+    state.hwWalletName === WalletName.TREZOR ||
+    state.hwWalletName === WalletName.LEDGER
+  )
 }
 
 /*

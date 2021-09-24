@@ -17,7 +17,7 @@
 /* VARIABLES */
 
 :root {
-  --width: 1320px;  
+  --width: 1320px;
   --color-staking: #6495ed;
   --color-staking-dark: #2e73ee;
   --color-staking-light: #80a9f2;
@@ -478,29 +478,40 @@ p.hey {
   margin-top: 8px;
 }
 
-.button.trezor {
+.authentication-wallet .button {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.authentication-button-label {
+  flex-grow: 1;
+  white-space: nowrap;
+}
+
+.bitbox-logo-container {
+  flex-grow: 1;
+  padding-left: 10px;
   position: relative;
-  padding-right: 119px;
+  width: 86px;
+  height: 21px;
 }
 
 .trezor-logo-container {
-  position: absolute; 
-  right: 24px; 
-  top: 16px; 
-  width: 79px; 
+  flex-grow: 1;
+  padding-left: 10px;
+  position: relative;
+  width: 86px;
   height: 22px;
 }
 
-.button.ledger {
-  position: relative;
-  padding-right: 119px;
-}
-
 .ledger-logo-container {
-  position: absolute; 
-  right: 24px; 
-  top: 19px;
-  width: 82px;
+  flex-grow: 1;
+  padding-left: 10px;
+  position: relative;
+  width: 86px;
   height: 20px;
 }
 
@@ -731,7 +742,7 @@ p.hey {
 
 .form-message-field {
   margin-top: 16px;
-  height: 24px;  
+  height: 24px;
 }
 
 .form-alert {
@@ -1811,10 +1822,10 @@ li.main-tab input + label.selected:after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 56px 48px;
+  padding: 56px 10px;
 }
 
-.authentication-wallet:first-child::after {
+.authentication-wallet:not(:last-child)::after {
   position: absolute;
   content: '';
   top: 0;
@@ -1842,7 +1853,7 @@ li.main-tab input + label.selected:after {
 
 .authentication-image-container {
   position: relative;
-  padding-bottom: 202px; 
+  padding-bottom: 202px;
   height: 0;
   overflow: hidden;
 }
@@ -2518,7 +2529,7 @@ li.main-tab input + label.selected:after {
 .balance-amount.small svg {
   margin-left: 12px;
   width: 14px;
-} 
+}
 
 
 .balance-amount svg path {
@@ -3285,7 +3296,7 @@ input:checked + .slider:before {
 .delegation-info-row svg {
   margin-left: 8px;
   width: 8px;
-} 
+}
 
 .delegation-info-row svg path {
   fill: var(--color-grey-medium);
