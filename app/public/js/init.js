@@ -50,9 +50,18 @@ function playsNice(cb) {
 function loadScript(success) {
   if (success) {
     // if everything goes well, load the main script
+    const appVersion = JSON.parse(document.body.attributes['data-config'].textContent).ADALITE_APP_VERSION
+    const appVersionQueryParam = encodeURIComponent(appVersion)
+
     const mainScriptTag = document.createElement('script')
     mainScriptTag.type = 'text/javascript'
-    mainScriptTag.src = 'js/frontend.bundle.js'
+
+    // This fix to invalidate browser cache with appVersionQueryParam after app deploy is not ideal
+    // because it invalidates even files that didn't really change.
+    // A proper fix would require reworking the index HTML and to be assembled by webpack
+    // which doesn't seem worth it at the moment. The frontend bundle changes most often and the
+    // rest of assets (css mostly) is several tens of kB combined anyway.
+    mainScriptTag.src = `js/frontend.bundle.js?v=${appVersionQueryParam}`
     mainScriptTag.setAttribute('defer', '')
     document.getElementsByTagName('head')[0].appendChild(mainScriptTag)
   } else {

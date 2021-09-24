@@ -89,6 +89,13 @@ require('./poolInfoGetter')(app)
 
 app.get('*', (req, res) => {
   const serverUrl = backendConfig.ADALITE_SERVER_URL
+
+  // This fix to invalidate browser cache with appVersionQueryParam after app deploy is not ideal
+  // because it invalidates even files that didn't really change.
+  // A proper fix would require reworking the index HTML and to be assembled by webpack
+  // which doesn't seem worth it at the moment. The frontend bundle changes most often and the
+  // rest of assets (css mostly) is several tens of kB combined anyway.
+  const appVersionQueryParam = encodeURIComponent(backendConfig.ADALITE_APP_VERSION)
   return res.status(200).send(`
       <!doctype html>
       <html>
@@ -115,15 +122,19 @@ app.get('*', (req, res) => {
           <meta property="og:description" content="Free open-source web-browser Cardano wallet with Trezor and Ledger Nano S and Nano X support">
           <meta property="og:image" content="${serverUrl}/assets/og-image.png">
 
-          <script src="js/init.js"></script>
-          <link rel="stylesheet" type="text/css" href="css/styles.css">
-          <link rel="stylesheet" type="text/css" href="css/0-767px.css">
-          <link rel="stylesheet" type="text/css" href="css/0-1366px.css">
-          <link rel="stylesheet" type="text/css" href="css/767-1366px.css">
-          <link rel="stylesheet" type="text/css" href="css/768-1024px.css">
-          <link rel="stylesheet" type="text/css" href="css/1024-1112px.css">
+          <script src="js/init.js?v=${appVersionQueryParam}"></script>
+          <link rel="stylesheet" type="text/css" href="css/styles.css?v=${appVersionQueryParam}">
+          <link rel="stylesheet" type="text/css" href="css/0-767px.css?v=${appVersionQueryParam}">
+          <link rel="stylesheet" type="text/css" href="css/0-1366px.css?v=${appVersionQueryParam}">
+          <link rel="stylesheet" type="text/css" href="css/767-1366px.css?v=${appVersionQueryParam}">
+          <link rel="stylesheet" type="text/css" href="css/768-1024px.css?v=${appVersionQueryParam}">
+          <link rel="stylesheet" type="text/css" href="css/1024-1112px.css?v=${appVersionQueryParam}">
           <link rel="icon" type="image/ico" href="assets/favicon.ico">
-          ${isProd ? '<link rel="stylesheet" type="text/css" href="css/modules.css">' : ''}
+          ${
+  isProd
+    ? `<link rel="stylesheet" type="text/css" href="css/modules.css?v=${appVersionQueryParam}">`
+    : ''
+}
           ${
   backendConfig.ADALITE_TREZOR_CONNECT_URL
     ? `<script src="${backendConfig.ADALITE_TREZOR_CONNECT_URL}"></script>`

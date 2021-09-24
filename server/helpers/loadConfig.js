@@ -183,6 +183,7 @@ const frontendConfig = {
 const backendConfig = {
   PORT,
   REDIS_URL,
+  ADALITE_APP_VERSION: appVersion,
   ADALITE_STATS_PWD,
   ADALITE_TREZOR_CONNECT_URL,
   ADALITE_ENABLE_SERVER_MOCKING_MODE,
