@@ -1,4 +1,10 @@
-import {AddressProvider, CryptoProvider, HexString, _XPubKey} from '../../types'
+import {
+  AddressProvider,
+  CryptoProvider,
+  CryptoProviderFeature,
+  HexString,
+  _XPubKey,
+} from '../../types'
 import {packBootstrapAddress} from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../constants'
 import {encodeAddress} from '../shelley/helpers/addresses'
@@ -25,7 +31,9 @@ export const getAccountXpub = async (
   cryptoProvider: CryptoProvider,
   accountIndex: number
 ): Promise<_XPubKey> => {
-  if (accountIndex !== 0) return null
+  if (accountIndex !== 0 || !cryptoProvider.isFeatureSupported(CryptoProviderFeature.BYRON)) {
+    return null
+  }
   const scheme = cryptoProvider.getDerivationScheme()
   const pathMapper = {
     v1: v1Path,

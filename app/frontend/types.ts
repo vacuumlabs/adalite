@@ -62,6 +62,7 @@ export const enum CryptoProviderFeature {
   POOL_OWNER,
   MULTI_ASSET,
   VOTING,
+  BYRON,
 }
 export type DerivationScheme = {
   type: 'v1' | 'v2'

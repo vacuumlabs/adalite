@@ -7,7 +7,12 @@ import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 
 const BYRON_V2_PATH = [HARDENED_THRESHOLD + 44, HARDENED_THRESHOLD + 1815, HARDENED_THRESHOLD]
 
-function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriveXpubsHardenedFn) {
+function CachedDeriveXpubFactory(
+  derivationScheme,
+  shouldExportPubKeyBulk,
+  deriveXpubsHardenedFn,
+  shouldIncludeByronPath = true
+) {
   const derivedXpubs = {}
 
   async function deriveXpub(absDerivationPath: BIP32Path): Promise<Buffer> {
@@ -82,7 +87,9 @@ function CachedDeriveXpubFactory(derivationScheme, shouldExportPubKeyBulk, deriv
      * in case of the account 0 we append also the byron path
      * since during byron era only the first account was used
      */
-    if (accountIndex === 0 && !paths.includes(BYRON_V2_PATH)) paths.push(BYRON_V2_PATH)
+    if (shouldIncludeByronPath && accountIndex === 0 && !paths.includes(BYRON_V2_PATH)) {
+      paths.push(BYRON_V2_PATH)
+    }
     return paths
   }
 
