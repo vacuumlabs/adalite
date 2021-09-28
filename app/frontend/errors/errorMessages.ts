@@ -1,7 +1,7 @@
 import printAda from '../helpers/printAda'
 import debugLog from '../helpers/debugLog'
 import {ADALITE_CONFIG} from '../config'
-import {LEDGER_VERSIONS, TREZOR_VERSIONS} from '../wallet/constants'
+import {BITBOX02_VERSIONS, LEDGER_VERSIONS, TREZOR_VERSIONS} from '../wallet/constants'
 import {Lovelace, CryptoProviderFeature} from '../types'
 import {knownExternalErrors, InternalErrorReason} from '.'
 
@@ -55,7 +55,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.TransactionRejectedWhileSigning]: ({message}) =>
     `Transaction rejected while signing. ${message || hwWalletTroubleshootingSuggestion}`,
   [InternalErrorReason.TransactionNotFoundInBlockchainAfterSubmission]: ({txHash}) =>
-    `TransactionNotFoundInBlockchainAfterSubmission: 
+    `TransactionNotFoundInBlockchainAfterSubmission:
     Transaction ${txHash ||
       ''} not found in blockchain after being submitted. The transaction may or may not have succeeded, check again later please.`,
   [InternalErrorReason.TransactionSubmissionTimedOut]: () =>
@@ -87,6 +87,30 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
   [InternalErrorReason.EpochBoundaryUnderway]: () =>
     'Our servers are temporarily down while Cardano is undergoing an epoch boundary. We should be back in a few minutes.',
+  [InternalErrorReason.BitBox02MultiAssetNotSupported]: () =>
+    'BitBox02MultiAssetNotSupported: The BitBox02 does not support this feature at the moment.',
+  [InternalErrorReason.BitBox02OutdatedFirmwareError]: ({message}) =>
+    `BitBox02OutdatedFirmwareError: Your BitBox02 firmware (version ${message}) is outdated. Please update your firmware to version ${
+      BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL].major
+    }.${BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL].minor}.${
+      BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL].patch
+    } or later, using the latest release of the BitBoxApp.`,
+  [InternalErrorReason.BitBox02WithdrawalNotSupported]: ({message}) =>
+    `BitBox02WithdrawalNotSupported: Your BitBox02 firmware (version ${message}) is outdated. Please update your firmware to version ${
+      BITBOX02_VERSIONS[CryptoProviderFeature.WITHDRAWAL].major
+    }.${BITBOX02_VERSIONS[CryptoProviderFeature.WITHDRAWAL].minor}.${
+      BITBOX02_VERSIONS[CryptoProviderFeature.WITHDRAWAL].patch
+    } or later, using the latest release of the BitBoxApp.`,
+  [InternalErrorReason.BitBox02PoolRegNotSupported]: () =>
+    'BitBox02PoolRegNotSupported: The BitBox02 does not support this feature at the moment.',
+  [InternalErrorReason.BitBox02CatalystNotSupported]: () =>
+    'BitBox02CatalystNotSupported: The BitBox02 does not support this feature at the moment.',
+  [InternalErrorReason.BitBox02BulkExportNotSupported]: ({message}) =>
+    `BitBox02BulkExportNotSupported: Your BitBox02 firmware (version ${message}) is outdated. Please update your firmware to version ${
+      BITBOX02_VERSIONS[CryptoProviderFeature.BULK_EXPORT].major
+    }.${BITBOX02_VERSIONS[CryptoProviderFeature.BULK_EXPORT].minor}.${
+      BITBOX02_VERSIONS[CryptoProviderFeature.BULK_EXPORT].patch
+    } or later, using the latest release of the BitBoxApp.`,
   [InternalErrorReason.LedgerMultiAssetNotSupported]: () =>
     'LedgerMultiAssetNotSupported: Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
   [InternalErrorReason.LedgerOutdatedCardanoAppError]: ({message}) =>
@@ -149,6 +173,8 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     // want to treat such errors as unexpected
     return errors[message]
   },
+  [InternalErrorReason.BitBox02Error]: ({message}) =>
+    `BitBox02Error: BitBox02 operation failed, please make sure you are using the latest version of the BitBox02 firmware. ${message}`,
 }
 
 const externalErrorMessages: {[key: string]: (params?: any) => string} = {

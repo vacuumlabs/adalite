@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "esnext",
     "removeComments": false,
     "preserveConstEnums": true,
+    "moduleResolution": "node",
     "sourceMap": true,
     "strictNullChecks": true,
     "target": "es5",

@@ -5,6 +5,7 @@ import {
   AddressToPathMapping,
   AddressWithMeta,
   CryptoProvider,
+  CryptoProviderFeature,
   Lovelace,
   SendAmount,
   StakingHistoryObject,
@@ -62,23 +63,23 @@ const MyAddresses = ({
   gapLimit,
   blockchainExplorer,
 }: MyAddressesParams) => {
-  const legacyExtManager =
-    accountIndex === 0
-      ? AddressManager({
-        addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
-        gapLimit,
-        blockchainExplorer,
-      })
-      : DummyAddressManager()
+  const includeByron =
+    cryptoProvider.isFeatureSupported(CryptoProviderFeature.BYRON) && accountIndex === 0
+  const legacyExtManager = includeByron
+    ? AddressManager({
+      addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
+      gapLimit,
+      blockchainExplorer,
+    })
+    : DummyAddressManager()
 
-  const legacyIntManager =
-    accountIndex === 0
-      ? AddressManager({
-        addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
-        gapLimit,
-        blockchainExplorer,
-      })
-      : DummyAddressManager()
+  const legacyIntManager = includeByron
+    ? AddressManager({
+      addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
+      gapLimit,
+      blockchainExplorer,
+    })
+    : DummyAddressManager()
 
   const accountAddrManager = AddressManager({
     addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),

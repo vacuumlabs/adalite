@@ -37,6 +37,12 @@ export enum InternalErrorReason {
   NetworkError = 'NetworkError',
   ServerError = 'ServerError',
   EpochBoundaryUnderway = 'EpochBoundaryUnderway',
+  BitBox02MultiAssetNotSupported = 'BitBox02MultiAssetNotSupported',
+  BitBox02OutdatedFirmwareError = 'BitBox02OutdatedFirmwareError',
+  BitBox02WithdrawalNotSupported = 'BitBox02WithdrawalNotSupported',
+  BitBox02PoolRegNotSupported = 'BitBox02PoolRegNotSupported',
+  BitBox02CatalystNotSupported = 'BitBox02CatalystNotSupported',
+  BitBox02BulkExportNotSupported = 'BitBox02BulkExportNotSupported',
   LedgerMultiAssetNotSupported = 'LedgerMultiAssetNotSupported',
   LedgerOutdatedCardanoAppError = 'LedgerOutdatedCardanoAppError',
   LedgerWithdrawalNotSupported = 'LedgerWithdrawalNotSupported',
@@ -55,4 +61,5 @@ export enum InternalErrorReason {
   MissingOwner = 'MissingOwner',
   Error = 'Error',
   TransactionCorrupted = 'TransactionCorrupted', // TODO: i dont think this should be expected
+  BitBox02Error = 'BitBox02Error',
 }

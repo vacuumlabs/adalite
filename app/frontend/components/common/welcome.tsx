@@ -74,8 +74,8 @@ class Welcome extends Component<WelcomeProps, {dontShowAgainCheckbox: boolean}> 
               </Article>
               <Article title="Consider using a hardware wallet" icon="wallet">
                 AdaLite allows you to access your funds using a hardware wallet. It currently
-                supports Trezor model T, Ledger Nano X and Ledger Nano S. This enables you to
-                interact with AdaLite in the safest manner possible without giving away your
+                supports Trezor model T, Ledger Nano X, Ledger Nano S and BitBox02. This enables you
+                to interact with AdaLite in the safest manner possible without giving away your
                 mnemonic. An attacker can’t steal your mnemonic or private key since they don’t
                 leave Ledger.
               </Article>
@@ -115,7 +115,4 @@ class Welcome extends Component<WelcomeProps, {dontShowAgainCheckbox: boolean}> 
   }
 }
 
-export default connect(
-  null,
-  actions
-)(Welcome)
+export default connect(null, actions)(Welcome)

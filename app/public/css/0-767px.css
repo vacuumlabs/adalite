@@ -586,7 +586,7 @@
   }
 
   .authentication-content.hardware {
-    flex-wrap: wrap;
+    flex-direction: column;
     padding-top: 16px;
   }
 

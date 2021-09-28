@@ -131,7 +131,7 @@ const AuthCardInitial = () => (
       />
       <AuthOption
         tabName={AuthMethodType.HW_WALLET}
-        texts={['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger']}
+        texts={['Trezor T', 'Ledger Nano S/X', 'Android device & Ledger', 'BitBox02']}
         tag={'recommended'}
       />
       <AuthOption tabName={AuthMethodType.KEY_FILE} texts={['Encrypted .JSON file']} tag={''} />

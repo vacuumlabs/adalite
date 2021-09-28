@@ -10,7 +10,7 @@ import {State} from '../../../state'
 import {PoolRegTransactionSummary} from '../../../../frontend/types'
 import {saveAs} from '../../../libs/file-saver'
 import {CborizedCliWitness} from '../../../wallet/shelley/types'
-import {usingHwWalletSelector} from '../../../../frontend/selectors'
+import {usingHwWalletWithPoolSupportSelector} from '../../../../frontend/selectors'
 import {transformSignatureToCliFormat} from '../../../../frontend/wallet/shelley/helpers/stakepoolRegistrationUtils'
 import * as assert from 'assert'
 
@@ -20,7 +20,7 @@ interface Props {
   poolRegTxError: any
   downloadPoolSignature: any
   openPoolRegTransactionModal: any
-  usingHwWallet: boolean
+  usingHwWalletWithPoolSupport: boolean
   resetPoolRegTransactionSummary: any
 }
 
@@ -38,7 +38,7 @@ const PoolOwnerCard = ({
   poolRegTransactionSummary,
   poolRegTxError,
   openPoolRegTransactionModal,
-  usingHwWallet,
+  usingHwWalletWithPoolSupport,
 }: Props) => {
   const {
     plan: poolTxPlan,
@@ -76,7 +76,7 @@ const PoolOwnerCard = ({
   }, [poolTxPlan])
 
   const error = poolRegTxError
-  const hwWalletLimitation = 'Only hardware wallet users can use this feature.'
+  const hwWalletLimitation = 'Only Trezor and Ledger users can use this feature.'
   return (
     <div className="card" data-cy="PoolRegistrationCard">
       <h2 className="card-title small-margin">
@@ -96,7 +96,7 @@ const PoolOwnerCard = ({
         fileDescription="transaction"
         acceptedFiles="*"
         error
-        isDisabled={!usingHwWallet}
+        isDisabled={!usingHwWalletWithPoolSupport}
         disabledReason={hwWalletLimitation}
       />
 
@@ -109,14 +109,14 @@ const PoolOwnerCard = ({
       )}
       <div className="pool-owner-content-bottom">
         <button
-          disabled={!usingHwWallet || fileName === '' || !!error || !poolTxPlan}
+          disabled={!usingHwWalletWithPoolSupport || fileName === '' || !!error || !poolTxPlan}
           onClick={handleTxSign}
           className="button primary"
           {...tooltip(
             'Please insert a valid certificate\nJSON file before proceeding.',
-            usingHwWallet && fileName === ''
+            usingHwWalletWithPoolSupport && fileName === ''
           )}
-          {...tooltip(hwWalletLimitation, !usingHwWallet)}
+          {...tooltip(hwWalletLimitation, !usingHwWalletWithPoolSupport)}
           onKeyDown={(e) => {
             e.key === 'Enter' && (e.target as HTMLButtonElement).click()
           }}
@@ -162,7 +162,7 @@ export default connect(
   (state: State) => ({
     poolRegTxError: state.poolRegTxError,
     poolRegTransactionSummary: state.poolRegTransactionSummary,
-    usingHwWallet: usingHwWalletSelector(state),
+    usingHwWalletWithPoolSupport: usingHwWalletWithPoolSupportSelector(state),
   }),
   actions
 )(PoolOwnerCard)

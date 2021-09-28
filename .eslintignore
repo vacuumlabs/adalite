@@ -1,4 +1,5 @@
 node_modules/
+app/bitbox02-api.d.ts
 app/dist/
 app/tests/dist/
 app/node_modules/

@@ -49,7 +49,7 @@ const accountsIncludeStakingAddresses = (
 }
 
 export default (store: Store) => {
-  const {loadingAction} = loadingActions(store)
+  const {loadingAction, stopLoadingAction} = loadingActions(store)
   const {setError} = errorActions(store)
   const {getState, setState} = store
 
@@ -103,11 +103,19 @@ export default (store: Store) => {
       ledgerTransportChoice === LedgerTransportChoice.DEFAULT
         ? await getDefaultLedgerTransportType()
         : ledgerTransportChoice
+    const bitbox02OnPairingCode = (pairingCode: string) => {
+      if (pairingCode !== null) {
+        loadingAction(state, `BitBox02 pairing code:\n${pairingCode}`)
+      } else {
+        stopLoadingAction(state)
+      }
+    }
     const config = {
       ...ADALITE_CONFIG,
       isShelleyCompatible,
       shouldExportPubKeyBulk,
       ledgerTransportType,
+      bitbox02OnPairingCode,
     }
 
     try {
