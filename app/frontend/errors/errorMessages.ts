@@ -57,7 +57,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.TransactionNotFoundInBlockchainAfterSubmission]: ({txHash}) =>
     `TransactionNotFoundInBlockchainAfterSubmission: 
     Transaction ${txHash ||
-      ''} not found in blockchain after being submitted, check it later please.`,
+      ''} not found in blockchain after being submitted. The transaction may or may not have succeeded, check again later please.`,
   [InternalErrorReason.TxSerializationError]: ({message}) => `TxSerializationError: ${message}`,
 
   [InternalErrorReason.TrezorSignTxError]: ({message}) => `TrezorSignTxError: ${message}`,

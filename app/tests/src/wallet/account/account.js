@@ -16,8 +16,6 @@ const accounts = {}
 const initAccount = async (settings, i) => {
   const {
     network,
-    randomInputSeed,
-    randomChangeSeed,
     type,
     derivationSchemeType,
     secret,
@@ -46,8 +44,6 @@ const initAccount = async (settings, i) => {
 
   return Account({
     config,
-    randomInputSeed,
-    randomChangeSeed,
     cryptoProvider,
     blockchainExplorer,
     accountIndex,

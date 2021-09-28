@@ -21,6 +21,7 @@ import {TxPlan} from '../wallet/shelley/transaction'
 import {encode} from 'borc'
 import {InternalError, InternalErrorReason} from '../errors'
 import {usingHwWalletSelector} from '../selectors'
+import {TxSummary} from '../wallet/backend-types'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -147,7 +148,12 @@ export default (store: Store) => {
   ) => {
     for (let pollingCounter = 0; pollingCounter < maxRetries; pollingCounter++) {
       setWalletOperationStatusType(state, 'txPending')
-      if ((await getWallet().fetchTxInfo(txHash)) !== undefined) {
+      let txInfo: TxSummary | undefined
+      try {
+        txInfo = await getWallet().fetchTxInfo(txHash)
+        // eslint-disable-next-line no-empty
+      } catch {}
+      if (txInfo !== undefined) {
         /*
          * theoretically we should clear the request cache of the wallet
          * to be sure that we fetch the current wallet state
@@ -256,9 +262,6 @@ export default (store: Store) => {
       await reloadWalletInfo(state)
       setWalletOperationStatusType(state, 'txFailed')
     } finally {
-      getWallet()
-        .getAccount(sourceAccountIndex)
-        .generateNewSeeds()
       setState({
         waitingForHwWallet: false,
         // TODO: refactor txSuccesTab!

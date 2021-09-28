@@ -1,14 +1,10 @@
 import {accountManagerSettings} from './account-manager-settings'
 
-const testSeed = 39
-
 export const accountSettings = {
   ShelleyAccount0: {
     ...accountManagerSettings.withMultipleUsedAccounts,
     description: '',
     accountIndex: 0,
-    randomInputSeed: testSeed,
-    randomChangeSeed: testSeed,
     internalAddresses: [
       'addr1q9p4n2m7tnrvckjlu5y2y2t73c9g2j7ykwz48dcxhlw6tlg2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsrhcxe0',
       'addr1q86s0h8020kv93f6uqndm6zg9t93nsrjmll4hsea3a55vjq2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpstqypk3',
@@ -71,8 +67,6 @@ export const accountSettings = {
     ...accountManagerSettings.withMultipleUsedAccounts,
     description: '',
     accountIndex: 1,
-    randomInputSeed: testSeed,
-    randomChangeSeed: testSeed,
     internalAddresses: [
       'addr1qy7sntl48nnrsz2zjwraxh8e732jrzzs0ngqp5k5ujhh6nl4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8qsqkd6y',
       'addr1q85xs0g86ygpze3xg3dth3a6xg8c8jgq68qx6lvpehfdefh4nns4m7jjdmrc6qh6dae4yt4aqm8j9v29ccvz7ph5ve8quha566',

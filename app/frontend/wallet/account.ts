@@ -1,6 +1,5 @@
 import AddressManager from './address-manager'
-import PseudoRandom from './helpers/PseudoRandom'
-import {DEFAULT_TTL_SLOTS, MAX_INT32} from './constants'
+import {DEFAULT_TTL_SLOTS} from './constants'
 import {
   AddressToPathMapper,
   AddressToPathMapping,
@@ -23,7 +22,6 @@ import {
 } from './shelley/shelley-address-provider'
 
 import {selectMinimalTxPlan, TxPlan, TxPlanResult} from './shelley/transaction'
-import shuffleArray from './helpers/shuffleArray'
 import {MaxAmountCalculator} from './max-amount-calculator'
 import {
   ByronAddressProvider,
@@ -173,29 +171,13 @@ const MyAddresses = ({
 
 type AccountParams = {
   config: any
-  randomInputSeed?: any
-  randomChangeSeed?: any
   cryptoProvider: CryptoProvider
   blockchainExplorer: ReturnType<typeof blockchainExplorer>
   accountIndex: number
 }
 
-const Account = ({
-  config,
-  randomInputSeed,
-  randomChangeSeed,
-  cryptoProvider,
-  blockchainExplorer,
-  accountIndex,
-}: AccountParams) => {
+const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: AccountParams) => {
   const {getMaxSendableAmount: _getMaxSendableAmount} = MaxAmountCalculator()
-
-  let seeds = {
-    randomInputSeed,
-    randomChangeSeed,
-  }
-
-  generateNewSeeds()
 
   const myAddresses = MyAddresses({
     accountIndex,
@@ -299,10 +281,7 @@ const Account = ({
     return _getMaxSendableAmount(utxos, address, sendAmount)
   }
 
-  const arrangeUtxos = (availableUtxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
-    const randomGenerator = PseudoRandom(seeds.randomInputSeed)
-    // TODO: remove the shuffeling of utxos altogether
-    const utxos = shuffleArray(availableUtxos, randomGenerator)
+  const arrangeUtxos = (utxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
     const nonStakingUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
     const baseAddressUtxos = utxos.filter(({address}) => isBase(addressToHex(address)))
     const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
@@ -444,10 +423,8 @@ const Account = ({
      */
     const candidates = await getVisibleAddresses()
 
-    // const randomSeedGenerator = PseudoRandom(rngSeed)
     const choice = candidates[0]
     return choice.address
-    // return myAddresses.getChangeAddress(seeds.randomChangeSeed)
   }
 
   async function getUtxos(): Promise<Array<UTxO>> {
@@ -474,13 +451,6 @@ const Account = ({
     const stakingAddress = await myAddresses.accountAddrManager._deriveAddress(accountIndex)
     const stakingPath = myAddresses.getAddressToAbsPathMapper()(stakingAddress)
     return await cryptoProvider.displayAddressForPath(absDerivationPath, stakingPath)
-  }
-
-  function generateNewSeeds() {
-    seeds = {
-      randomInputSeed: randomInputSeed || Math.floor(Math.random() * MAX_INT32),
-      randomChangeSeed: randomChangeSeed || Math.floor(Math.random() * MAX_INT32),
-    }
   }
 
   async function getPoolRecommendation(pool: any, stakeAmount: Lovelace): Promise<any> {
@@ -516,7 +486,6 @@ const Account = ({
     getVisibleAddresses,
     prepareTxAux,
     verifyAddress,
-    generateNewSeeds,
     getAccountInfo,
     getStakingInfo,
     accountIndex,
