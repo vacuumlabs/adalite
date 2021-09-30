@@ -19,6 +19,7 @@ import {saveAs} from '../libs/file-saver'
 import {exportWalletSecretDef} from '../wallet/keypass-json'
 import {getDefaultLedgerTransportType} from '../wallet/shelley/helpers/transports'
 import sleep from '../helpers/sleep'
+import {getDateDiffInSeconds} from '../helpers/common'
 
 // TODO: we may be able to remove this, kept for backwards compatibility
 const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
@@ -182,18 +183,25 @@ export default (store: Store) => {
     return true
   }
 
-  const reloadWalletInfo = async (state: State) => {
+  let lastReloadTime = new Date()
+  const reloadWalletInfo = async (state: State): Promise<void> => {
     setWalletOperationStatusType(state, 'reloading')
+    const currentTime = new Date()
     try {
-      const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
-      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
+      if (getDateDiffInSeconds(lastReloadTime, currentTime) < 30) {
+        await sleep(2000) // fake loading
+      } else {
+        lastReloadTime = currentTime
+        const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
+        const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
 
-      setState({
-        accountsInfo,
-        tokensMetadata,
-        shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
-      })
-      loadAsyncWalletData()
+        setState({
+          accountsInfo,
+          tokensMetadata,
+          shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
+        })
+        loadAsyncWalletData()
+      }
       // timeout setting loading state, so that loading shows even if everything was cached
       await sleep(500)
       if (state.walletOperationStatusType !== 'txPending') {

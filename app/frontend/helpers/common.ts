@@ -23,3 +23,7 @@ export function filterValidTransactions<T extends CaTxEntry | TxSummaryEntry>(tx
   // filters txs that did not pass alonzo block script validation
   return txs.filter((tx) => tx.isValid)
 }
+
+export function getDateDiffInSeconds(date1: Date, date2: Date) {
+  return Math.abs((date1.getTime() - date2.getTime()) / 1000)
+}
