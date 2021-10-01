@@ -160,7 +160,7 @@ export default (store: Store) => {
          * but submitting the transaction and syncing of the explorer
          * should take enough time to invalidate the request cache anyway
          */
-        await reloadWalletInfo(state)
+        await reloadWalletInfo(state, false)
         setWalletOperationStatusType(state, 'txSuccess')
         return {
           success: true,
@@ -259,7 +259,7 @@ export default (store: Store) => {
       resetSendFormFields(state)
       resetSendFormState(state)
       resetAccountIndexes(state)
-      await reloadWalletInfo(state)
+      await reloadWalletInfo(state, false)
       setWalletOperationStatusType(state, 'txFailed')
     } finally {
       setState({

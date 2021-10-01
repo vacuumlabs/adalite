@@ -184,11 +184,14 @@ export default (store: Store) => {
   }
 
   let lastReloadTime = new Date()
-  const reloadWalletInfo = async (state: State): Promise<void> => {
+  const reloadWalletInfo = async (
+    state: State,
+    shouldThrottleReloading: boolean
+  ): Promise<void> => {
     setWalletOperationStatusType(state, 'reloading')
     const currentTime = new Date()
     try {
-      if (getDateDiffInSeconds(lastReloadTime, currentTime) < 30) {
+      if (shouldThrottleReloading && getDateDiffInSeconds(lastReloadTime, currentTime) < 30) {
         await sleep(2000) // fake loading
       } else {
         lastReloadTime = currentTime

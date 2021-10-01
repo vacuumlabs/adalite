@@ -127,7 +127,7 @@ const AccountsDashboard = () => {
             <button
               className="button secondary balance refresh"
               disabled={shouldDisableSendingButton(walletOperationStatusType)}
-              onClick={reloadWalletInfo}
+              onClick={() => reloadWalletInfo(true)}
             >
               Refresh
             </button>
