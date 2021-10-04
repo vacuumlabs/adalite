@@ -21,6 +21,7 @@ export default (store: Store) => {
   const reloadWalletInfo = async (state: State): Promise<void> => {
     setWalletOperationStatusType(state, 'reloading')
     try {
+      updateLastReloadTime()
       const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
       const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
 
@@ -36,7 +37,6 @@ export default (store: Store) => {
       if (state.walletOperationStatusType !== 'txPending') {
         setWalletOperationStatusType(state, null)
       }
-      updateLastReloadTime()
     } catch (e) {
       setWalletOperationStatusType(state, 'reloadFailed')
       setError(state, {errorName: 'walletLoadingError', error: e})
@@ -53,7 +53,6 @@ export default (store: Store) => {
       await sleep(2000) // fake loading
       setWalletOperationStatusType(state, null)
     } else {
-      updateLastReloadTime()
       await reloadWalletInfo(state)
     }
   }
