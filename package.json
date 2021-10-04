@@ -67,7 +67,7 @@
     "universal-analytics": "^0.4.20",
     "webpack": "^4.1.1",
     "webpack-dev-middleware": "^4.1.0",
-    "webpack-hot-middleware": "^2.25.0"
+    "webpack-hot-middleware": "^2.25.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "2",
@@ -87,7 +87,7 @@
     "lint-staged": "^9.2.0",
     "mini-css-extract-plugin": "^1.5.0",
     "prettier": "^1.19.1",
-    "prettier-eslint-cli": "^5.0.0",
+    "prettier-eslint-cli": "^5.0.1",
     "release-it": "^13.6.2",
     "sass": "^1.32.11",
     "sass-loader": "^10.1.1",
@@ -103,6 +103,9 @@
     "hosted-git-info": ">=3.0.8",
     "lodash": ">=4.17.21",
     "ws": ">=7.4.6",
-    "glob-parent": ">=5.1.2"
+    "glob-parent": ">=5.1.2",
+    "set-value": ">=4.0.1",
+    "acorn": ">=5.7.4",
+    "ansi-regex": "<6.0.0"
   }
 }

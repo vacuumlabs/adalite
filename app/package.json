@@ -44,6 +44,7 @@
     "sinon": "^7.3.2"
   },
   "resolutions": {
-    "lodash": ">=4.17.21"
+    "lodash": ">=4.17.21",
+    "ansi-regex": "<6.0.0"
   }
 }
