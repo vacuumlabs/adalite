@@ -13,13 +13,10 @@ import {initialState} from '../store'
 import {State, Store} from '../state'
 import errorActions from './error'
 import loadingActions from './loading'
-import commonActions from './common'
 
 import {saveAs} from '../libs/file-saver'
 import {exportWalletSecretDef} from '../wallet/keypass-json'
 import {getDefaultLedgerTransportType} from '../wallet/shelley/helpers/transports'
-import sleep from '../helpers/sleep'
-import {getDateDiffInSeconds} from '../helpers/common'
 
 // TODO: we may be able to remove this, kept for backwards compatibility
 const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
@@ -44,7 +41,6 @@ export default (store: Store) => {
   const {loadingAction} = loadingActions(store)
   const {setError} = errorActions(store)
   const {getState, setState} = store
-  const {setWalletOperationStatusType} = commonActions(store)
 
   const loadAsyncWalletData = async (): Promise<void> => {
     const asyncFetchAndUpdate = async <T extends Partial<State>>(
@@ -183,46 +179,6 @@ export default (store: Store) => {
     return true
   }
 
-  const reloadWalletInfo = async (state: State): Promise<void> => {
-    setWalletOperationStatusType(state, 'reloading')
-    try {
-      const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
-      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
-
-      setState({
-        accountsInfo,
-        tokensMetadata,
-        shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
-      })
-      loadAsyncWalletData()
-
-      // timeout setting loading state, so that loading shows even if everything was cached
-      await sleep(500)
-      if (state.walletOperationStatusType !== 'txPending') {
-        setWalletOperationStatusType(state, null)
-      }
-    } catch (e) {
-      setWalletOperationStatusType(state, 'reloadFailed')
-      setError(state, {errorName: 'walletLoadingError', error: e})
-      setState({
-        shouldShowWalletLoadingErrorModal: true,
-      })
-    }
-  }
-
-  let lastReloadTime = new Date()
-  const debouncedReloadWalletInfo = async (state: State) => {
-    const currentTime = new Date()
-    if (getDateDiffInSeconds(lastReloadTime, currentTime) < 30) {
-      setWalletOperationStatusType(state, 'reloading')
-      await sleep(2000) // fake loading
-      setWalletOperationStatusType(state, null)
-    } else {
-      lastReloadTime = currentTime
-      await reloadWalletInfo(state)
-    }
-  }
-
   const loadDemoWallet = (state: State) => {
     setState({
       mnemonicAuthForm: {
@@ -263,9 +219,8 @@ export default (store: Store) => {
 
   return {
     loadWallet,
-    reloadWalletInfo,
-    debouncedReloadWalletInfo,
     loadDemoWallet,
+    loadAsyncWalletData,
     logout,
     getShouldShowSaturatedBanner,
     exportJsonWallet,

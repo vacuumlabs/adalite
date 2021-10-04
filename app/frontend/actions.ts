@@ -12,6 +12,7 @@ import sendActions from './actions/send'
 import transactionActions from './actions/transaction'
 import walletActions from './actions/wallet'
 import votingActions from './actions/voting'
+import reloadWalletActions from './actions/reloadWallet'
 
 export default (store: Store) => ({
   ...accountsActions(store),
@@ -27,4 +28,5 @@ export default (store: Store) => ({
   ...transactionActions(store),
   ...walletActions(store),
   ...votingActions(store),
+  ...reloadWalletActions(store),
 })
