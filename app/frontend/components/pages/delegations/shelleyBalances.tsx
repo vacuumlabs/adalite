@@ -13,7 +13,7 @@ const shelleyBalances = ({
   nonStakingBalance,
   rewardsAccountBalance,
   balance,
-  reloadWalletInfo,
+  debouncedReloadWalletInfo,
   convertNonStakingUtxos,
   withdrawRewards,
   isShelleyCompatible,
@@ -37,7 +37,7 @@ const shelleyBalances = ({
         {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
         <AdaIcon />
       </div>
-      <button className="button secondary balance refresh" onClick={() => reloadWalletInfo(true)}>
+      <button className="button secondary balance refresh" onClick={debouncedReloadWalletInfo}>
         Refresh
       </button>
     </div>

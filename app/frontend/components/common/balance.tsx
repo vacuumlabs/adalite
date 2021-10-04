@@ -9,7 +9,7 @@ import {Lovelace} from '../../types'
 import styles from './balance.module.scss'
 
 const Balance = () => {
-  const {reloadWalletInfo} = useActions(actions)
+  const {debouncedReloadWalletInfo} = useActions(actions)
   const {conversionRates, balance} = useSelector((state) => ({
     conversionRates: state.conversionRates && state.conversionRates.data,
     balance: getActiveAccountInfo(state).balance as Lovelace,
@@ -22,10 +22,7 @@ const Balance = () => {
           {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
           <AdaIcon />
         </div>
-        <button
-          className={'button secondary balance refresh'}
-          onClick={() => reloadWalletInfo(true)}
-        >
+        <button className={'button secondary balance refresh'} onClick={debouncedReloadWalletInfo}>
           Refresh
         </button>
       </div>

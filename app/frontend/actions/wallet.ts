@@ -183,28 +183,19 @@ export default (store: Store) => {
     return true
   }
 
-  let lastReloadTime = new Date()
-  const reloadWalletInfo = async (
-    state: State,
-    shouldThrottleReloading: boolean
-  ): Promise<void> => {
+  const reloadWalletInfo = async (state: State): Promise<void> => {
     setWalletOperationStatusType(state, 'reloading')
-    const currentTime = new Date()
     try {
-      if (shouldThrottleReloading && getDateDiffInSeconds(lastReloadTime, currentTime) < 30) {
-        await sleep(2000) // fake loading
-      } else {
-        lastReloadTime = currentTime
-        const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
-        const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
+      const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
+      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
 
-        setState({
-          accountsInfo,
-          tokensMetadata,
-          shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
-        })
-        loadAsyncWalletData()
-      }
+      setState({
+        accountsInfo,
+        tokensMetadata,
+        shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
+      })
+      loadAsyncWalletData()
+
       // timeout setting loading state, so that loading shows even if everything was cached
       await sleep(500)
       if (state.walletOperationStatusType !== 'txPending') {
@@ -216,6 +207,19 @@ export default (store: Store) => {
       setState({
         shouldShowWalletLoadingErrorModal: true,
       })
+    }
+  }
+
+  let lastReloadTime = new Date()
+  const debouncedReloadWalletInfo = async (state: State) => {
+    const currentTime = new Date()
+    if (getDateDiffInSeconds(lastReloadTime, currentTime) < 30) {
+      setWalletOperationStatusType(state, 'reloading')
+      await sleep(2000) // fake loading
+      setWalletOperationStatusType(state, null)
+    } else {
+      lastReloadTime = currentTime
+      await reloadWalletInfo(state)
     }
   }
 
@@ -260,6 +264,7 @@ export default (store: Store) => {
   return {
     loadWallet,
     reloadWalletInfo,
+    debouncedReloadWalletInfo,
     loadDemoWallet,
     logout,
     getShouldShowSaturatedBanner,

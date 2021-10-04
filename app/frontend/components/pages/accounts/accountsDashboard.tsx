@@ -15,7 +15,7 @@ import Conversions from '../../common/conversions'
 import {shouldDisableSendingButton} from '../../../helpers/common'
 
 const AccountsDashboard = () => {
-  const {reloadWalletInfo} = useActions(actions)
+  const {debouncedReloadWalletInfo} = useActions(actions)
   const {
     accountsInfo,
     maxAccountIndex,
@@ -127,7 +127,7 @@ const AccountsDashboard = () => {
             <button
               className="button secondary balance refresh"
               disabled={shouldDisableSendingButton(walletOperationStatusType)}
-              onClick={() => reloadWalletInfo(true)}
+              onClick={debouncedReloadWalletInfo}
             >
               Refresh
             </button>
