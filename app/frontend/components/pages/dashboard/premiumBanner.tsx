@@ -8,7 +8,7 @@ interface Props {
 
 const PremiumBanner = ({closePremiumBanner}: Props) => {
   const premiumMessage =
-    'VIP STAKING SERVICES - Do you own more than 3 million ADA? Contact us on  adalite@vacuumlabs.com to join our VIP staking services. We will assign you a dedicated account manager and provide you with priority support.'
+    'VIP STAKING SERVICES - Do you own more than 3 million ADA? Contact us on info@adalite.io to join our VIP staking services. We will assign you a dedicated account manager and provide you with priority support.'
   return (
     <div className="banner premium">
       <div className="banner-text">{premiumMessage}</div>
@@ -25,7 +25,4 @@ const PremiumBanner = ({closePremiumBanner}: Props) => {
   )
 }
 
-export default connect(
-  () => null,
-  actions
-)(PremiumBanner)
+export default connect(() => null, actions)(PremiumBanner)
