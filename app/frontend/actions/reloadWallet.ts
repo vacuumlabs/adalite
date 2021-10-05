@@ -13,13 +13,17 @@ export default (store: Store) => {
 
   const wallet = getWallet()
   let _lastWalletReloadTime = new Date(0)
+  const setLastReloadTime = (time: Date) => {
+    _lastWalletReloadTime = time
+  }
   const updateLastReloadTime = () => {
     const currentTime = new Date()
-    _lastWalletReloadTime = currentTime
+    setLastReloadTime(currentTime)
   }
 
   const reloadWalletInfo = async (state: State): Promise<void> => {
     setWalletOperationStatusType(state, 'reloading')
+    const previousWalletReloadTime = _lastWalletReloadTime
     try {
       updateLastReloadTime()
       const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
@@ -38,6 +42,7 @@ export default (store: Store) => {
         setWalletOperationStatusType(state, null)
       }
     } catch (e) {
+      setLastReloadTime(previousWalletReloadTime)
       setWalletOperationStatusType(state, 'reloadFailed')
       setError(state, {errorName: 'walletLoadingError', error: e})
       setState({
