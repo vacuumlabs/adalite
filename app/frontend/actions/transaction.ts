@@ -1,5 +1,6 @@
 import {Store, State, getSourceAccountInfo} from '../state'
-import walletActions, {getWallet} from './wallet'
+import {getWallet} from './wallet'
+import reloadWalletActions from './reloadWallet'
 import loadingActions from './loading'
 import errorActions from './error'
 import commonActions from './common'
@@ -27,7 +28,7 @@ export default (store: Store) => {
   const {setState, getState} = store
   const {setError} = errorActions(store)
   const {loadingAction, stopLoadingAction} = loadingActions(store)
-  const {reloadWalletInfo} = walletActions(store)
+  const {reloadWalletInfo} = reloadWalletActions(store)
   const {
     resetTransactionSummary,
     resetSendFormFields,
