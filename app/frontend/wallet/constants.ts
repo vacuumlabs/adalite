@@ -50,7 +50,7 @@ export const DEFAULT_TTL_SLOTS = 3600
 
 export const DELAY_AFTER_TOO_MANY_REQUESTS = 2000
 
-export const ADALITE_SUPPORT_EMAIL = 'adalite@vacuumlabs.com'
+export const ADALITE_SUPPORT_EMAIL = 'info@adalite.io'
 
 export const SENTRY_USER_FEEDBACK_API =
   'https://sentry.io/api/0/projects/vacuumlabs-sro/adalite-frontend/user-feedback/'

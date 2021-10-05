@@ -40,9 +40,7 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
               troubleshooting suggestions
             </a>
             <span> before contacting us. You can also reach us out via </span>
-            <a href={`mailto:${ADALITE_CONFIG.ADALITE_SUPPORT_EMAIL}`}>
-              {ADALITE_CONFIG.ADALITE_SUPPORT_EMAIL}
-            </a>
+            <a href={'mailto:info@adalite.io'}>info@adalite.io</a>
             <span>.</span>
           </p>
           <form
@@ -123,7 +121,4 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
   }
 }
 
-export default connect(
-  null,
-  actions
-)(ContactForm)
+export default connect(null, actions)(ContactForm)

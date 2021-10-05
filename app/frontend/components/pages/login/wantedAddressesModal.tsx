@@ -30,7 +30,7 @@ const WantedAddressesModal = () => {
         We have setup a dedicated staking infrastructure with the same conditions as your current
         pool but it will be dedicated just for you. Please redelegate to the pre-filled Private
         Adalite pool in the Staking tab. Feel free to contact us at{' '}
-        <a href={'mailto:adalite@vacuumlabs.com'}>adalite@vacuumlabs.com</a>
+        <a href={'mailto:info@adalite.io'}>info@adalite.io</a>
         {', '}
         <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a> or +421 907
         189 842 to avoid saturation in the future.
