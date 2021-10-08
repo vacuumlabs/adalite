@@ -18,7 +18,7 @@
   "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "scripts": {},
   "dependencies": {
-    "@cardano-foundation/ledgerjs-hw-app-cardano": "^3.2.1",
+    "@cardano-foundation/ledgerjs-hw-app-cardano": "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v4.0.0-multisig-rc4/cardano-foundation-ledgerjs-hw-app-cardano-v4.0.0-rc4.tgz",
     "@ledgerhq/hw-transport": "^5.51.1",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webhid": "^5.51.1",

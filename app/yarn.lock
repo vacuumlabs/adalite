@@ -38,16 +38,15 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-3.2.1.tgz#7c7539003eb9b60da33600715b03ac529738fe4b"
-  integrity sha512-qdYeXWDzHE6zEaQeajrKvop9D9mzGDta3OdzlYkFvjiMM0lr/VBLIkhPOd5t6I2vv/LnkhAY8izziVa+my+ifA==
+"@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v4.0.0-multisig-rc4/cardano-foundation-ledgerjs-hw-app-cardano-v4.0.0-rc4.tgz":
+  version "4.0.0-rc4"
+  resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v4.0.0-multisig-rc4/cardano-foundation-ledgerjs-hw-app-cardano-v4.0.0-rc4.tgz#5fc8887dff96786a3b5111de71102a371ea708f4"
   dependencies:
     "@ledgerhq/hw-transport" "^5.12.0"
     "@types/ledgerhq__hw-transport" "^4.21.3"
     base-x "^3.0.5"
     bech32 "^1.1.4"
-    node-int64 "^0.4.0"
+    int64-buffer "^1.0.1"
 
 "@cypress/listr-verbose-renderer@^0.4.1":
   version "0.4.1"
@@ -1430,6 +1429,11 @@ ini@1.3.7:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.7.tgz#a09363e1911972ea16d7a8851005d84cf09a9a84"
   integrity sha512-iKpRpXP+CrP2jyrxvg1kMUpXDyRUFDWurxbnVT1vQPx+Wz9uCYsMIqYuSBLV+PAaZG/d7kRLKRFc9oDMsH+mFQ==
 
+int64-buffer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/int64-buffer/-/int64-buffer-1.0.1.tgz#c78d841b444cadf036cd04f8683696c740f15dca"
+  integrity sha512-+3azY4pXrjAupJHU1V9uGERWlhoqNswJNji6aD/02xac7oxol508AsMC5lxKhEqyZeDFy3enq5OGWXF4u75hiw==
+
 is-arguments@^1.0.4:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-arguments/-/is-arguments-1.1.0.tgz#62353031dfbee07ceb34656a6bde59efecae8dd9"
@@ -1857,11 +1861,6 @@ nise@^1.4.10:
     just-extend "^4.0.2"
     lolex "^4.1.0"
     path-to-regexp "^1.7.0"
-
-node-int64@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
-  integrity sha1-h6kGXNs1XTGC2PlM4RGIuCXGijs=
 
 npm-run-path@^4.0.0:
   version "4.0.1"

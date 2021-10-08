@@ -172,7 +172,7 @@ const ShelleyLedgerCryptoProvider = async ({
       await ledger.showAddress({
         network: {networkId: network.networkId, protocolMagic: network.protocolMagic},
         address: {
-          type: LedgerTypes.AddressType.BASE,
+          type: LedgerTypes.AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
           params: {
             spendingPath: absDerivationPath,
             stakingPath,
@@ -247,7 +247,7 @@ const ShelleyLedgerCryptoProvider = async ({
         destination: {
           type: LedgerTypes.TxOutputDestinationType.DEVICE_OWNED,
           params: {
-            type: LedgerTypes.AddressType.BASE,
+            type: LedgerTypes.AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             params: {
               spendingPath: output.spendingPath,
               stakingPath: output.stakingPath,
@@ -265,7 +265,12 @@ const ShelleyLedgerCryptoProvider = async ({
   ): LedgerTypes.Certificate {
     return {
       type: LedgerTypes.CertificateType.STAKE_REGISTRATION,
-      params: {path},
+      params: {
+        stakeCredential: {
+          type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+          keyPath: path,
+        },
+      },
     }
   }
 
@@ -275,7 +280,12 @@ const ShelleyLedgerCryptoProvider = async ({
   ): LedgerTypes.Certificate {
     return {
       type: LedgerTypes.CertificateType.STAKE_DEREGISTRATION,
-      params: {path},
+      params: {
+        stakeCredential: {
+          type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+          keyPath: path,
+        },
+      },
     }
   }
 
@@ -287,7 +297,10 @@ const ShelleyLedgerCryptoProvider = async ({
       type: LedgerTypes.CertificateType.STAKE_DELEGATION,
       params: {
         poolKeyHashHex: certificate.poolHash,
-        path,
+        stakeCredential: {
+          type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+          keyPath: path,
+        },
       },
     }
   }
@@ -407,7 +420,10 @@ const ShelleyLedgerCryptoProvider = async ({
     addressToAbsPathMapper: AddressToPathMapper
   ): LedgerTypes.Withdrawal {
     return {
-      path: addressToAbsPathMapper(withdrawal.stakingAddress),
+      stakeCredential: {
+        type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+        keyPath: addressToAbsPathMapper(withdrawal.stakingAddress),
+      },
       amount: `${withdrawal.rewards}`,
     }
   }
@@ -460,7 +476,7 @@ const ShelleyLedgerCryptoProvider = async ({
             votingPublicKeyHex: txAuxiliaryData.votingPubKey,
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             rewardsDestination: {
-              type: LedgerTypes.AddressType.REWARD,
+              type: LedgerTypes.AddressType.REWARD_KEY,
               params: {
                 stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
               },
