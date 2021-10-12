@@ -9,6 +9,7 @@ import {Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
 import styles from './voting.module.scss'
 import * as QRious from '../../../libs/qrious'
+import {ADALITE_CONFIG} from '../../../config'
 
 const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   <div className={styles.catalystAppPair}>
@@ -37,7 +38,7 @@ const VotingCard = (): h.JSX.Element => {
 
   const getUnmetPreconditionMessage = (): string | null => {
     if (!isVotingRegistrationOpen()) {
-      return 'Registration for Fund6 Voting is closed.'
+      return `Registration for ${ADALITE_CONFIG.ADALITE_NEXT_VOTING_ROUND_NAME} Voting is closed.`
     }
     if (!hasEnoughFundsForCatalyst) {
       return `Only users with more than ${toAda(
