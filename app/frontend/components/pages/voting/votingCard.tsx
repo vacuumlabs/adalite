@@ -37,7 +37,7 @@ const VotingCard = (): h.JSX.Element => {
 
   const getUnmetPreconditionMessage = (): string | null => {
     if (!isVotingRegistrationOpen()) {
-      return 'Registration for Fund5 Voting is closed.'
+      return 'Registration for Fund6 Voting is closed.'
     }
     if (!hasEnoughFundsForCatalyst) {
       return `Only users with more than ${toAda(
