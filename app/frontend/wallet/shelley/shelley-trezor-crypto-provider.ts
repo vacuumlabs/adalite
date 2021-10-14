@@ -413,9 +413,10 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
-  async function signTx(
+  async function trezorSignTransaction(
     txAux: TxAux,
-    addressToAbsPathMapper: AddressToPathMapper
+    addressToAbsPathMapper: AddressToPathMapper,
+    signingMode: TrezorTypes.CardanoTxSigningMode
   ): Promise<TxSigned> {
     const inputs = txAux.inputs.map((input) => prepareInput(input, addressToAbsPathMapper))
     const outputs = txAux.outputs.map((output) => prepareOutput(output))
@@ -435,7 +436,7 @@ const ShelleyTrezorCryptoProvider = async ({
       ? formatAuxiliaryData(txAux.auxiliaryData)
       : null
     const request: TrezorTypes.CommonParams & TrezorTypes.CardanoSignTransaction = {
-      signingMode: TrezorTypes.CardanoTxSigningMode.ORDINARY_TRANSACTION,
+      signingMode,
       inputs,
       outputs,
       protocolMagic: network.protocolMagic,
@@ -481,11 +482,26 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
+  async function signTx(
+    txAux: TxAux,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): Promise<TxSigned> {
+    return await trezorSignTransaction(
+      txAux,
+      addressToAbsPathMapper,
+      TrezorTypes.CardanoTxSigningMode.ORDINARY_TRANSACTION
+    )
+  }
+
   async function witnessPoolRegTx(
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper
   ): Promise<CborizedCliWitness> {
-    const txSigned = await signTx(txAux, addressToAbsPathMapper)
+    const txSigned = await trezorSignTransaction(
+      txAux,
+      addressToAbsPathMapper,
+      TrezorTypes.CardanoTxSigningMode.POOL_REGISTRATION_AS_OWNER
+    )
     return cborizeCliWitness(txSigned)
   }
 
