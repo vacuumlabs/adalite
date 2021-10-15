@@ -123,7 +123,7 @@ describe('Token registry api', () => {
         },
       })
     )
-    const actual = new TokenRegistry().parseTokensMetadata({Right: [wmtMetadata]})
+    const actual = TokenRegistry.parseTokensMetadata({Right: [wmtMetadata]})
 
     assert.deepStrictEqual(expected, actual)
   }).timeout(5000)

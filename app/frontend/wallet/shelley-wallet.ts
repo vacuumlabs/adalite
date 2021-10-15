@@ -20,8 +20,7 @@ type WalletParams = {
 const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   const blockchainExplorer = BlockchainExplorer(config)
   const tokenRegistry = new TokenRegistry(
-    `${config.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/tokens/metadata`,
-    5 * 60 * 1000
+    `${config.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/tokens/metadata`
   )
   const maxAccountIndex = MAX_ACCOUNT_INDEX
 

@@ -14,10 +14,11 @@ export class TokenRegistry {
   private readonly url: string
   private readonly fetchTokensMetadata: (subjects: string[]) => Promise<TokenMetadataResponse>
 
-  constructor(url: string, cacheTimeout?: number) {
+  constructor(url: string, enableCaching: boolean = true) {
     this.url = url
-    this.fetchTokensMetadata = cacheTimeout
-      ? cacheResults(cacheTimeout)(this._fetchTokensMetadata)
+    this.fetchTokensMetadata = enableCaching
+      ? // 1 hour, not really needed to refresh the cache during a single app session
+      cacheResults(60 * 60 * 1000)(this._fetchTokensMetadata)
       : this._fetchTokensMetadata
   }
 
@@ -40,7 +41,7 @@ export class TokenRegistry {
     }
   }
 
-  public readonly parseTokensMetadata = (
+  public static readonly parseTokensMetadata = (
     toParse: TokenMetadataResponse
   ): Map<TokenRegistrySubject, RegisteredTokenMetadata> => {
     const isSuccessResponse = (
@@ -74,6 +75,6 @@ export class TokenRegistry {
       ),
     ]
     const tokensMetadata = await this.fetchTokensMetadata(subjects)
-    return this.parseTokensMetadata(tokensMetadata)
+    return TokenRegistry.parseTokensMetadata(tokensMetadata)
   }
 }
