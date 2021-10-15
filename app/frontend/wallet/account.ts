@@ -438,9 +438,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
 
   async function getUtxos(): Promise<Array<UTxO>> {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
-    const baseUtxos = await blockchainExplorer.fetchUnspentTxOutputs(base)
-    const nonStakingUtxos = await blockchainExplorer.fetchUnspentTxOutputs(legacy)
-    return [...nonStakingUtxos, ...baseUtxos]
+    return await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...base])
   }
 
   async function getVisibleAddresses() {

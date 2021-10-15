@@ -233,17 +233,22 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   async function fetchUnspentTxOutputs(addresses: Array<string>): Promise<UTxO[]> {
-    const chunks = range(0, Math.ceil(addresses.length / gapLimit))
+    // utxos can be fetched by chunks of 50 (backend limit) instead of discovery gap limit, because
+    // differently from the rest of calls, these are not involved in address discovery
+    // so they don't have to align with the gap limit in order to always request the same
+    // addresses to hit the cache (the caching key is the stringified list of addresses requested)
+    const chunkSize = 50
+    const chunks = range(0, Math.ceil(addresses.length / chunkSize))
 
     const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`
     const response = (
       await Promise.all(
         chunks.map(async (index) => {
-          const beginIndex = index * gapLimit
+          const beginIndex = index * chunkSize
           const response: BulkAdressesUtxoResponse = await request(
             url,
             'POST',
-            JSON.stringify(addresses.slice(beginIndex, beginIndex + gapLimit)),
+            JSON.stringify(addresses.slice(beginIndex, beginIndex + chunkSize)),
             {
               'Accept': 'application/json',
               'Content-Type': 'application/json',

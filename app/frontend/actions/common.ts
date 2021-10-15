@@ -49,11 +49,9 @@ export default (store: Store) => {
   const prepareTxPlan = async (args: TxPlanArgs): Promise<TxPlanResult> => {
     const state = getState()
     try {
-      const utxos = getSourceAccountInfo(state).utxos
-
       return await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .getTxPlan(args, utxos)
+        .getTxPlan(args, getSourceAccountInfo(state).utxos)
     } catch (e) {
       // TODO: refactor setErrorState to check all errors if there unexpected
       if (
