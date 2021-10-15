@@ -57,6 +57,7 @@ it('Should properly load shelley wallet', async () => {
   mockNet.mockPoolRecommendation()
   mockNet.mockPoolRecommendation()
   mockNet.mockTokenRegistry()
+  mockNet.mockUtxoEndpoint()
 
   await action.loadWallet(state, {
     cryptoProviderType: CryptoProviderType.WALLET_SECRET,

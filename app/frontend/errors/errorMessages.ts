@@ -58,6 +58,8 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     `TransactionNotFoundInBlockchainAfterSubmission: 
     Transaction ${txHash ||
       ''} not found in blockchain after being submitted. The transaction may or may not have succeeded, check again later please.`,
+  [InternalErrorReason.TransactionSubmissionTimedOut]: () =>
+    'Transaction submission timed out, the blockchain is likely congested. It may take up to an hour for the transaction to appear on the blockchain, if it was successful.',
   [InternalErrorReason.TxSerializationError]: ({message}) => `TxSerializationError: ${message}`,
 
   [InternalErrorReason.TrezorSignTxError]: ({message}) => `TrezorSignTxError: ${message}`,

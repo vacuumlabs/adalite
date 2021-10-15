@@ -33,6 +33,7 @@ module.exports = function(app, env) {
           },
         }
       )
+
       if (response.status === 200) {
         return res.json({
           Right: {txHash},
@@ -56,7 +57,7 @@ module.exports = function(app, env) {
       }
 
       return res.json({
-        Left: `Transaction rejected by network - ${errorMessage}`,
+        Left: `Transaction network error - ${errorMessage}`,
         statusCode: response.status,
       })
     } catch (err) {

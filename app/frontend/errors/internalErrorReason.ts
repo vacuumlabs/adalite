@@ -21,6 +21,7 @@ export enum InternalErrorReason {
   TransactionRejectedByNetwork = 'TransactionRejectedByNetwork',
   TransactionRejectedWhileSigning = 'TransactionRejectedWhileSigning',
   TransactionNotFoundInBlockchainAfterSubmission = 'TransactionNotFoundInBlockchainAfterSubmission',
+  TransactionSubmissionTimedOut = 'TransactionSubmissionTimedOut',
   TxSerializationError = 'TxSerializationError',
   TrezorSignTxError = 'TrezorSignTxError',
   TrezorError = 'TrezorError',

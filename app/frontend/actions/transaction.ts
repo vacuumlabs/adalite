@@ -1,4 +1,4 @@
-import {Store, State, getSourceAccountInfo} from '../state'
+import {Store, State, getSourceAccountInfo, getActiveAccountInfo} from '../state'
 import {getWallet} from './wallet'
 import reloadWalletActions from './reloadWallet'
 import loadingActions from './loading'
@@ -280,7 +280,7 @@ export default (store: Store) => {
     const sendAmount = await getWallet()
       .getAccount(state.sourceAccountIndex)
       // TODO: we should pass something more sensible
-      .getMaxNonStakingAmount(address, {
+      .getMaxNonStakingAmount(getActiveAccountInfo(state).utxos, address, {
         assetFamily: AssetFamily.ADA,
         fieldValue: '',
         coins: 0 as Lovelace,

@@ -1,4 +1,4 @@
-import {State, Store} from '../state'
+import {getActiveAccountInfo, State, Store} from '../state'
 import {getWallet} from './wallet'
 import {
   AssetFamily,
@@ -48,10 +48,11 @@ export default (store: Store) => {
 
   const prepareTxPlan = async (args: TxPlanArgs): Promise<TxPlanResult> => {
     const state = getState()
+    const utxos = getActiveAccountInfo(state).utxos
     try {
       return await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .getTxPlan(args)
+        .getTxPlan(args, utxos)
     } catch (e) {
       // TODO: refactor setErrorState to check all errors if there unexpected
       if (

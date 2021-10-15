@@ -205,10 +205,24 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     )
     if (!('Right' in response)) {
       debugLog(`Unexpected tx submission response: ${JSON.stringify(response)}`)
-      if (response.statusCode && response.statusCode === 400) {
+      if (!response.statusCode) {
+        throwIfEpochBoundary()
+        throw new InternalError(InternalErrorReason.ServerError)
+      }
+
+      if (response.statusCode === 400) {
         throw new InternalError(InternalErrorReason.TransactionRejectedByNetwork, {
           message: response.Left,
         })
+      } else if (response.statusCode === 504) {
+        // Usually happens when a gateway timeout is received from the adalite-backend
+        // where a gateway-timeout is sent from the load balancer after the backend not
+        // responding for too long (~20 seconds).
+        // The backend itself may still be trying to submit the transaction though
+        // with eventual success.
+        //
+        // context: https://github.com/input-output-hk/cardano-wallet/issues/2963
+        throw new InternalError(InternalErrorReason.TransactionSubmissionTimedOut)
       } else {
         throwIfEpochBoundary()
         throw new InternalError(InternalErrorReason.ServerError)

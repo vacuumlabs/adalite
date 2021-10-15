@@ -3,7 +3,13 @@ import {throwIfEpochBoundary} from '../../helpers/epochBoundaryUtils'
 import sleep from '../../helpers/sleep'
 import {DELAY_AFTER_TOO_MANY_REQUESTS} from '../constants'
 
-const request = async function request(url, method = 'GET', body = null, headers = {}) {
+const request = async function request(
+  url,
+  method = 'GET',
+  body = null,
+  headers = {},
+  callback: (response: Response) => void = null
+) {
   let requestParams = {
     method,
     headers,
@@ -23,6 +29,8 @@ const request = async function request(url, method = 'GET', body = null, headers
       message: `No response from ${method} ${url}`,
     })
   }
+
+  callback && callback(response)
 
   if (response.status === 429) {
     await sleep(DELAY_AFTER_TOO_MANY_REQUESTS)

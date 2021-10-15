@@ -46,7 +46,7 @@ export const NETWORKS: {[key: string]: Network} = {
   },
 }
 
-export const DEFAULT_TTL_SLOTS = 3600
+export const DEFAULT_TTL_SLOTS = 3600 // 1 hour
 
 export const DELAY_AFTER_TOO_MANY_REQUESTS = 2000
 

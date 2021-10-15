@@ -27,7 +27,7 @@ module.exports = function(app, env) {
         Right: {txHash},
       })
       : res.json({
-        Left: 'Transaction rejected by network',
+        Left: 'Transaction network error',
       })
   })
 

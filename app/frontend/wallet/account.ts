@@ -266,22 +266,25 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return txWitness
   }
 
-  async function getMaxSendableAmount(
+  function getMaxSendableAmount(
+    utxos: UTxO[],
     address: Address,
     sendAmount: SendAmount,
     decimals: number = 0
   ) {
-    // TODO: why do we need hasDonation?
-    const utxos = await getUtxos()
     return _getMaxSendableAmount(utxos, address, sendAmount, decimals)
   }
 
-  async function getMaxNonStakingAmount(address: Address, sendAmount: SendAmount) {
-    const utxos = (await getUtxos()).filter(({address}) => !isBase(addressToHex(address)))
-    return _getMaxSendableAmount(utxos, address, sendAmount)
+  function getMaxNonStakingAmount(utxos: UTxO[], address: Address, sendAmount: SendAmount) {
+    const filteredUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
+    return _getMaxSendableAmount(filteredUtxos, address, sendAmount)
   }
 
   const arrangeUtxos = (utxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
+    const sortUtxos = (utxos: UTxO[]): UTxO[] =>
+      utxos.sort((a, b) =>
+        a.txHash === b.txHash ? a.outputIndex - b.outputIndex : a.txHash.localeCompare(b.txHash)
+      )
     const nonStakingUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
     const baseAddressUtxos = utxos.filter(({address}) => isBase(addressToHex(address)))
     const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
@@ -299,13 +302,17 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
         ({tokenBundle}) =>
           !tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
       )
-      return [...targetTokenUtxos, ...nonStakingUtxos, ...adaOnlyUtxos, ...nonTargetTokenUtxos]
+      return sortUtxos([
+        ...targetTokenUtxos,
+        ...nonStakingUtxos,
+        ...adaOnlyUtxos,
+        ...nonTargetTokenUtxos,
+      ])
     }
-    return [...nonStakingUtxos, ...adaOnlyUtxos, ...tokenUtxos]
+    return sortUtxos([...nonStakingUtxos, ...adaOnlyUtxos, ...tokenUtxos])
   }
 
-  const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
-    const utxos = await getUtxos()
+  const getTxPlan = async (txPlanArgs: TxPlanArgs, utxos: UTxO[]): Promise<TxPlanResult> => {
     const changeAddress = await getChangeAddress()
     const arrangedUtxos = arrangeUtxos(utxos, txPlanArgs)
     return selectMinimalTxPlan(arrangedUtxos, changeAddress, txPlanArgs)
@@ -323,6 +330,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
     const stakingAddress = await myAddresses.getStakingAddress()
     const {baseAddressBalance, nonStakingBalance, balance, tokenBalance} = await getBalance()
+    const utxos = await getUtxos()
     const shelleyAccountInfo = await getStakingInfo(validStakepoolDataProvider)
     const stakingHistory = await getStakingHistory(validStakepoolDataProvider)
     const visibleAddresses = await getVisibleAddresses()
@@ -338,6 +346,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       stakingXpub,
       stakingAddress,
       balance,
+      utxos,
       tokenBalance,
       shelleyBalances: {
         nonStakingBalance,

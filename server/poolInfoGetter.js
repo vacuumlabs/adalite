@@ -19,6 +19,8 @@ module.exports = function(app, env) {
           ...a,
         })
       }
+
+      return res.json({})
     } catch (err) {
       return res.json({})
     }

@@ -159,7 +159,7 @@ const mock = (ADALITE_CONFIG) => {
       response: {
         status: 200,
         body: {
-          Left: 'Transaction rejected by network',
+          Left: 'Transaction network error',
         },
         sendAsJson: true,
       },

@@ -75,6 +75,6 @@ export const utxoSettings = {
       txType: TxType.SEND_ADA,
     },
     availableUtxos: [utxos.adaOnly, utxos.withTokens2, utxos.legacy, utxos.withTokens1],
-    selectedUtxos: [utxos.withTokens1, utxos.legacy, utxos.adaOnly, utxos.withTokens2],
+    selectedUtxos: [utxos.legacy, utxos.adaOnly, utxos.withTokens1, utxos.withTokens2],
   },
 }
