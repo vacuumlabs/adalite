@@ -281,12 +281,15 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
   }
 
   const arrangeUtxos = (utxos: UTxO[], txPlanArgs: TxPlanArgs): UTxO[] => {
-    const sortUtxos = (utxos: UTxO[]): UTxO[] =>
-      utxos.sort((a, b) =>
-        a.txHash === b.txHash ? a.outputIndex - b.outputIndex : a.txHash.localeCompare(b.txHash)
-      )
-    const nonStakingUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
-    const baseAddressUtxos = utxos.filter(({address}) => isBase(addressToHex(address)))
+    // utxos are sorted deterministically to prevent the scenario of two transactions
+    // based on the same set of utxos with the same intent getting through (provided the
+    // transaction planning itself is deterministic, which it is ATM), causing kind of
+    // a "double spend" from user's perspective
+    const sortedUtxos = utxos.sort((a, b) =>
+      a.txHash === b.txHash ? a.outputIndex - b.outputIndex : a.txHash.localeCompare(b.txHash)
+    )
+    const nonStakingUtxos = sortedUtxos.filter(({address}) => !isBase(addressToHex(address)))
+    const baseAddressUtxos = sortedUtxos.filter(({address}) => isBase(addressToHex(address)))
     const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
     const tokenUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
 
@@ -302,16 +305,17 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
         ({tokenBundle}) =>
           !tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
       )
-      return sortUtxos([
-        ...targetTokenUtxos,
-        ...nonStakingUtxos,
-        ...adaOnlyUtxos,
-        ...nonTargetTokenUtxos,
-      ])
+      return [...targetTokenUtxos, ...nonStakingUtxos, ...adaOnlyUtxos, ...nonTargetTokenUtxos]
     }
-    return sortUtxos([...nonStakingUtxos, ...adaOnlyUtxos, ...tokenUtxos])
+    return [...nonStakingUtxos, ...adaOnlyUtxos, ...tokenUtxos]
   }
 
+  /*
+   * utxos being passed from outside is a tradeoff against encapsulation of the Account object
+   * which should otherwise manage them internally
+   *
+   * TODO: refactor as suggested in https://github.com/vacuumlabs/adalite/issues/1181
+   */
   const getTxPlan = async (txPlanArgs: TxPlanArgs, utxos: UTxO[]): Promise<TxPlanResult> => {
     const changeAddress = await getChangeAddress()
     const arrangedUtxos = arrangeUtxos(utxos, txPlanArgs)
