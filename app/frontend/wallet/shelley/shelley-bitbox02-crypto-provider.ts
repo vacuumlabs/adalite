@@ -53,9 +53,11 @@ const ShelleyBitBox02CryptoProvider = async ({
       bitbox02 = new BitBox02API(devicePath)
       await bitbox02.connect(
         (pairingCode) => {
-          /* TODO */
+          config.bitbox02OnPairingCode(pairingCode)
         },
-        () => {},
+        () => {
+          config.bitbox02OnPairingCode(null)
+        },
         (attestationResult) => {
           debugLog(`BitBox02 attestation: ${attestationResult}`)
         },
@@ -64,7 +66,7 @@ const ShelleyBitBox02CryptoProvider = async ({
         },
         (status) => {
           if (status === bitbox02Constants.Status.PairingFailed) {
-            throw new Error('Pairing failed')
+            config.bitbox02OnPairingCode(null)
           }
         }
       )
