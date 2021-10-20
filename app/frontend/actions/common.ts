@@ -1,4 +1,4 @@
-import {getSourceAccountInfo, State, Store} from '../state'
+import {State, Store} from '../state'
 import {getWallet} from './wallet'
 import {
   AssetFamily,
@@ -51,7 +51,7 @@ export default (store: Store) => {
     try {
       return await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .getTxPlan(args, getSourceAccountInfo(state).utxos)
+        .getTxPlan(args)
     } catch (e) {
       // TODO: refactor setErrorState to check all errors if there unexpected
       if (

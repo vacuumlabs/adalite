@@ -186,6 +186,8 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     blockchainExplorer,
   })
 
+  let utxos: Array<UTxO> = null
+
   async function ensureXpubIsExported(): Promise<void> {
     // get first address to ensure that public key was exported
     await myAddresses.baseExtAddrManager._deriveAddress(0)
@@ -266,16 +268,11 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return txWitness
   }
 
-  function getMaxSendableAmount(
-    utxos: UTxO[],
-    address: Address,
-    sendAmount: SendAmount,
-    decimals: number = 0
-  ) {
+  function getMaxSendableAmount(address: Address, sendAmount: SendAmount, decimals: number = 0) {
     return _getMaxSendableAmount(utxos, address, sendAmount, decimals)
   }
 
-  function getMaxNonStakingAmount(utxos: UTxO[], address: Address, sendAmount: SendAmount) {
+  function getMaxNonStakingAmount(address: Address, sendAmount: SendAmount) {
     const filteredUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
     return _getMaxSendableAmount(filteredUtxos, address, sendAmount)
   }
@@ -316,7 +313,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
    *
    * TODO: refactor as suggested in https://github.com/vacuumlabs/adalite/issues/1181
    */
-  const getTxPlan = async (txPlanArgs: TxPlanArgs, utxos: UTxO[]): Promise<TxPlanResult> => {
+  const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
     const changeAddress = await getChangeAddress()
     const arrangedUtxos = arrangeUtxos(utxos, txPlanArgs)
     return selectMinimalTxPlan(arrangedUtxos, changeAddress, txPlanArgs)
@@ -329,12 +326,11 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return config.isShelleyCompatible && myAddresses.areAddressesUsed()
   }
 
-  async function getAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
+  async function loadAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
     const accountXpubs = await getAccountXpubs()
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
     const stakingAddress = await myAddresses.getStakingAddress()
     const {baseAddressBalance, nonStakingBalance, balance, tokenBalance} = await getBalance()
-    const utxos = await getUtxos()
     const shelleyAccountInfo = await getStakingInfo(validStakepoolDataProvider)
     const stakingHistory = await getStakingHistory(validStakepoolDataProvider)
     const visibleAddresses = await getVisibleAddresses()
@@ -344,13 +340,13 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       baseAddressBalance
     )
     const isUsed = await isAccountUsed()
+    utxos = await getUtxos()
 
     return {
       accountXpubs,
       stakingXpub,
       stakingAddress,
       balance,
-      utxos,
       tokenBalance,
       shelleyBalances: {
         nonStakingBalance,
@@ -497,7 +493,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     getVisibleAddresses,
     prepareTxAux,
     verifyAddress,
-    getAccountInfo,
+    loadAccountInfo,
     getStakingInfo,
     accountIndex,
     getPoolRecommendation,

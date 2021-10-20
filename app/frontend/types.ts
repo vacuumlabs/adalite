@@ -1,6 +1,6 @@
 import {TxSigned, TxAux, CborizedCliWitness} from './wallet/shelley/types'
 import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
-import {Network, UTxO, WalletName} from './wallet/types'
+import {Network, WalletName} from './wallet/types'
 import {TxPlan} from './wallet/shelley/transaction'
 import {_UnsignedTxParsed} from './helpers/cliParser/types'
 
@@ -151,7 +151,6 @@ export type AccountInfo = {
   stakingXpub: _XPubKey
   stakingAddress: Address
   balance: number
-  utxos: Array<UTxO>
   tokenBalance: TokenBundle
   shelleyBalances: {
     stakingBalance?: number

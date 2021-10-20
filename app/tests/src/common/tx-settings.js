@@ -20,17 +20,6 @@ const inputTokens = [
   },
 ]
 
-const utxos = [
-  {
-    txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
-    address:
-      'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3',
-    coins: 10000000,
-    tokenBundle: inputTokens,
-    outputIndex: 1,
-  },
-]
-
 const transactionSettings = {
   sendAda: {
     args: {
@@ -40,7 +29,6 @@ const transactionSettings = {
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: `${1.5}`, coins: 1500000},
       txType: TxType.SEND_ADA,
     },
-    utxos,
     txPlanResult: {
       success: true,
       txPlan: {
@@ -106,7 +94,6 @@ const transactionSettings = {
       },
       txType: TxType.SEND_ADA,
     },
-    utxos,
     txPlanResult: {
       success: true,
       txPlan: {
@@ -186,7 +173,6 @@ const transactionSettings = {
       stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
       txType: TxType.DELEGATE,
     },
-    utxos,
     txPlanResult: {
       success: true,
       txPlan: {
@@ -245,7 +231,6 @@ const transactionSettings = {
       txType: TxType.WITHDRAW,
       stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
     },
-    utxos,
     txPlanResult: {
       success: true,
       txPlan: {
@@ -301,7 +286,6 @@ const transactionSettings = {
       stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
       nonce: BigInt(25000000),
     },
-    utxos,
     txPlanResult: {
       success: true,
       txPlan: {

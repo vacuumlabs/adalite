@@ -228,7 +228,6 @@ const initialState: State = {
       },
       stakingXpub: null,
       stakingAddress: null,
-      utxos: [],
       balance: 0,
       tokenBalance: [],
       shelleyBalances: {

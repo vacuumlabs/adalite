@@ -280,7 +280,7 @@ export default (store: Store) => {
     const sendAmount = await getWallet()
       .getAccount(state.sourceAccountIndex)
       // TODO: we should pass something more sensible
-      .getMaxNonStakingAmount(getSourceAccountInfo(state).utxos, address, {
+      .getMaxNonStakingAmount(address, {
         assetFamily: AssetFamily.ADA,
         fieldValue: '',
         coins: 0 as Lovelace,

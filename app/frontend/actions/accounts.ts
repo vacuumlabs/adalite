@@ -29,7 +29,7 @@ export default (store: Store) => {
     try {
       loadingAction(state, 'Loading account')
       const nextAccount = await getWallet().exploreNextAccount()
-      const accountInfo = await nextAccount.getAccountInfo(state.validStakepoolDataProvider)
+      const accountInfo = await nextAccount.loadAccountInfo(state.validStakepoolDataProvider)
       // TODO: remove the type conversion
       const accountsInfo = [...state.accountsInfo, accountInfo] as AccountInfo[]
       // TODO: how about other states? is big delegator etc.

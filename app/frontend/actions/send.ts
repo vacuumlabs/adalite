@@ -191,12 +191,7 @@ export default (store: Store) => {
     try {
       const maxAmounts = await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .getMaxSendableAmount(
-          getSourceAccountInfo(state).utxos,
-          state.sendAddress.fieldValue as Address,
-          state.sendAmount,
-          decimals
-        )
+        .getMaxSendableAmount(state.sendAddress.fieldValue as Address, state.sendAmount, decimals)
       validateAndSetMaxFunds(state, maxAmounts)
     } catch (e) {
       setState({
