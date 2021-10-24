@@ -28,6 +28,7 @@ const witnessTypes = {
   TxUnsignedShelley: 'TxWitnessShelley',
   TxBodyAllegra: 'TxWitness AllegraEra',
   TxBodyMary: 'TxWitness MaryEra',
+  TxBodyAlonzo: 'TxWitness AlonzoEra',
 }
 
 const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: string) => {
