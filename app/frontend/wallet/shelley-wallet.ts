@@ -78,7 +78,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     const accounts = await accountManager.discoverAccounts()
     //@ts-ignore TODO: refactor type AccountInfo
     return Promise.all(
-      accounts.map((account) => account.loadAccountInfo(validStakepoolDataProvider))
+      accounts.map((account) => account.loadCurrentState(validStakepoolDataProvider))
     )
   }
 

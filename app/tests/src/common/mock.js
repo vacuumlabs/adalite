@@ -44,7 +44,7 @@ const mock = (ADALITE_CONFIG) => {
     })
   }
 
-  function mockLoadAccountInfo() {
+  function mockLoadCurrentState() {
     fetchMock.config.overwriteRoutes = true
     const acctInfoMock = {
       delegation: {},
@@ -314,7 +314,7 @@ const mock = (ADALITE_CONFIG) => {
 
   return {
     mockBulkAddressSummaryEndpoint,
-    mockLoadAccountInfo,
+    mockLoadCurrentState,
     mockGetStakePools,
     mockGetConversionRates,
     mockTransactionSubmitter,

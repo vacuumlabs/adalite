@@ -7,4 +7,5 @@ export enum UnexpectedErrorReason {
   InvalidTxPlanType = 'InvalidTxPlanType',
   InvalidRelayType = 'InvalidRelayType',
   CannotConstructTxPlan = 'CannotConstructTxPlan',
+  AccountNotLoaded = 'AccountNotLoaded',
 }

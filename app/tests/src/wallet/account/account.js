@@ -54,7 +54,7 @@ before(async () => {
   ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
   mockNet.mockBulkAddressSummaryEndpoint()
-  mockNet.mockLoadAccountInfo()
+  mockNet.mockLoadCurrentState()
   mockNet.mockGetStakePools()
   mockNet.mockGetConversionRates()
   mockNet.mockUtxoEndpoint()
@@ -87,7 +87,7 @@ describe('Tx plan', () => {
   Object.entries(transactionSettings).forEach(([name, setting]) =>
     it(`should create the right tx plan for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
-      await account.loadAccountInfo({getPoolInfoByPoolHash: () => null})
+      await account.loadCurrentState({getPoolInfoByPoolHash: () => null})
       const txPlanResult = await account.getTxPlan({...setting.args})
       assert.deepEqual(txPlanResult, setting.txPlanResult)
     })

@@ -186,7 +186,25 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     blockchainExplorer,
   })
 
-  let utxos: Array<UTxO> = null
+  let isLoaded = false
+  let utxos: Array<UTxO> | null = null
+
+  // must be called before using other methods of the account object
+  async function loadCurrentState(validStakepoolDataProvider: StakepoolDataProvider) {
+    const [accountInfo, newUtxos] = await Promise.all([
+      _fetchAccountInfo(validStakepoolDataProvider),
+      _fetchUtxos(),
+    ])
+    utxos = newUtxos
+    isLoaded = true
+    return accountInfo
+  }
+
+  function _assertAccountLoaded() {
+    if (!isLoaded) {
+      throw new UnexpectedError(UnexpectedErrorReason.AccountNotLoaded)
+    }
+  }
 
   async function ensureXpubIsExported(): Promise<void> {
     // get first address to ensure that public key was exported
@@ -269,10 +287,12 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
   }
 
   function getMaxSendableAmount(address: Address, sendAmount: SendAmount, decimals: number = 0) {
+    _assertAccountLoaded()
     return _getMaxSendableAmount(utxos, address, sendAmount, decimals)
   }
 
   function getMaxNonStakingAmount(address: Address, sendAmount: SendAmount) {
+    _assertAccountLoaded()
     const filteredUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
     return _getMaxSendableAmount(filteredUtxos, address, sendAmount)
   }
@@ -315,6 +335,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
    */
   const getTxPlan = async (txPlanArgs: TxPlanArgs): Promise<TxPlanResult> => {
     const changeAddress = await getChangeAddress()
+    _assertAccountLoaded()
     const arrangedUtxos = arrangeUtxos(utxos, txPlanArgs)
     return selectMinimalTxPlan(arrangedUtxos, changeAddress, txPlanArgs)
   }
@@ -326,7 +347,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return config.isShelleyCompatible && myAddresses.areAddressesUsed()
   }
 
-  async function loadAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
+  async function _fetchAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
     const accountXpubs = await getAccountXpubs()
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
     const stakingAddress = await myAddresses.getStakingAddress()
@@ -340,7 +361,6 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       baseAddressBalance
     )
     const isUsed = await isAccountUsed()
-    utxos = await getUtxos()
 
     return {
       accountXpubs,
@@ -436,7 +456,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return choice.address
   }
 
-  async function getUtxos(): Promise<Array<UTxO>> {
+  async function _fetchUtxos(): Promise<Array<UTxO>> {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
     return await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...base])
   }
@@ -493,7 +513,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     getVisibleAddresses,
     prepareTxAux,
     verifyAddress,
-    loadAccountInfo,
+    loadCurrentState,
     getStakingInfo,
     accountIndex,
     getPoolRecommendation,

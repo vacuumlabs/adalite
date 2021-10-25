@@ -17,7 +17,7 @@ before(() => {
   ADALITE_CONFIG.ADALITE_NETWORK = 'MAINNET'
   const mockNet = mockNetwork(ADALITE_CONFIG)
   mockNet.mockBulkAddressSummaryEndpoint()
-  mockNet.mockLoadAccountInfo()
+  mockNet.mockLoadCurrentState()
   mockNet.mockGetStakePools()
   mockNet.mockGetConversionRates()
   mockNet.mockUtxoEndpoint()
