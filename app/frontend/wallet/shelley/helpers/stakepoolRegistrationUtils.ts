@@ -1,5 +1,5 @@
 import {Address, CertificateType, Lovelace, Token} from '../../../types'
-import {decode} from 'borc'
+import {encode, decode} from 'borc'
 import {parseUnsignedTx} from '../../../helpers/cliParser/txParser'
 import {
   TxCertificateKeys,
@@ -16,6 +16,14 @@ import {ensureIsSafeInt, parseStakepoolRegistrationCertificate} from './poolCert
 import * as _ from 'lodash'
 import {TxPlan} from '../transaction/types'
 import {encodeAddress} from './addresses'
+import {CborizedCliWitness} from '../types'
+
+const witnessTypes = {
+  TxUnsignedShelley: 'TxWitnessShelley',
+  TxBodyAllegra: 'TxWitness AllegraEra',
+  TxBodyMary: 'TxWitness MaryEra',
+  TxBodyAlonzo: 'TxWitness AlonzoEra',
+}
 
 const validatePoolRegUnsignedTx = (unsignedTx: _UnsignedTxParsed) => {
   if (
@@ -134,10 +142,20 @@ const parseCliUnsignedTx = (fileContentStr: string) => {
   }
 }
 
+const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: string) => {
+  const type = witnessTypes[txBodyType]
+  return {
+    type,
+    description: '',
+    cborHex: encode(witness).toString('hex'),
+  }
+}
+
 export {
   parseCliUnsignedTx,
   parseCliTtl,
   parseCliValidityIntervalStart,
   parseCliFee,
   unsignedPoolTxToTxPlan,
+  transformSignatureToCliFormat,
 }

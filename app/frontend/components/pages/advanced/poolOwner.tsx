@@ -8,10 +8,10 @@ import {getErrorMessage} from '../../../errors'
 import SignPoolCertTxModal from './signPoolCertTxModal'
 import {State} from '../../../state'
 import {PoolRegTransactionSummary} from '../../../../frontend/types'
-import * as cbor from 'borc'
 import {saveAs} from '../../../libs/file-saver'
 import {CborizedCliWitness} from '../../../wallet/shelley/types'
 import {usingHwWalletSelector} from '../../../../frontend/selectors'
+import {transformSignatureToCliFormat} from '../../../../frontend/wallet/shelley/helpers/stakepoolRegistrationUtils'
 
 interface Props {
   loadPoolCertificateTx: any
@@ -21,23 +21,6 @@ interface Props {
   openPoolRegTransactionModal: any
   usingHwWallet: boolean
   resetPoolRegTransactionSummary: any
-}
-
-// TODO: this should defined somewhere in cli tool
-const witnessTypes = {
-  TxUnsignedShelley: 'TxWitnessShelley',
-  TxBodyAllegra: 'TxWitness AllegraEra',
-  TxBodyMary: 'TxWitness MaryEra',
-  TxBodyAlonzo: 'TxWitness AlonzoEra',
-}
-
-const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: string) => {
-  const type = witnessTypes[txBodyType]
-  return {
-    type,
-    description: '',
-    cborHex: cbor.encode(witness).toString('hex'),
-  }
 }
 
 const downloadPoolWitness = (witness: CborizedCliWitness, txBodyType: string) => {
