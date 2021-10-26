@@ -15,9 +15,12 @@ export default (store: Store) => {
           waitingForHwWallet: true,
           addressVerificationError: false,
         })
-        await getWallet()
-          .getAccount(state.targetAccountIndex)
-          .verifyAddress(address || newState.showAddressDetail.address)
+        const addressToVerify = address || newState.showAddressDetail?.address
+        if (addressToVerify) {
+          await getWallet()
+            ?.getAccount(state.targetAccountIndex)
+            .verifyAddress(addressToVerify)
+        }
         setState({
           waitingForHwWallet: false,
         })

@@ -13,6 +13,8 @@ import {getWallet} from './wallet'
 import errorActions from './error'
 import {txPlanValidator} from '../helpers/validators'
 import {xpub2pub} from '../wallet/shelley/helpers/addresses'
+import {TxPlanResult, isTxPlanResultSuccess} from '../wallet/shelley/transaction/types'
+import {InternalErrorReason} from '../errors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -38,7 +40,7 @@ export default (store: Store) => {
     state: State,
     {votingPubKey}: {votingPubKey: HexString}
   ): Promise<void> => {
-    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.VOTING)
+    const supportError = getWallet()?.ensureFeatureIsSupported(CryptoProviderFeature.VOTING)
     if (supportError) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -54,21 +56,25 @@ export default (store: Store) => {
     state = getState()
 
     const stakePubKey = xpub2pub(
-      Buffer.from(getSourceAccountInfo(state).stakingXpub.xpubHex, 'hex')
+      Buffer.from(getSourceAccountInfo(state).stakingXpub?.xpubHex || '', 'hex')
     ).toString('hex')
-    const nonce = await getWallet()
-      .getAccount(state.sourceAccountIndex)
-      .calculateTtl()
+    const nonce =
+      (await getWallet()
+        ?.getAccount(state.sourceAccountIndex)
+        .calculateTtl()) || ''
     const sourceAccount = getSourceAccountInfo(state)
-    const txPlanResult = await prepareTxPlan({
-      txType: TxType.REGISTER_VOTING,
-      votingPubKey,
-      stakePubKey,
-      stakingAddress: sourceAccount.stakingAddress,
-      nonce: BigInt(nonce),
-    })
+    let txPlanResult: TxPlanResult | null | undefined = null
+    if (sourceAccount.stakingAddress) {
+      txPlanResult = await prepareTxPlan({
+        txType: TxType.REGISTER_VOTING,
+        votingPubKey,
+        stakePubKey,
+        stakingAddress: sourceAccount.stakingAddress,
+        nonce: BigInt(nonce),
+      })
+    }
 
-    if (txPlanResult.success === true) {
+    if (isTxPlanResultSuccess(txPlanResult)) {
       const summary = {
         type: TxType.REGISTER_VOTING,
       } as VotingRegistrationTransactionSummary
@@ -84,9 +90,9 @@ export default (store: Store) => {
       })
     } else {
       const balance = getSourceAccountInfo(state).balance as Lovelace
-      const validationError =
-        txPlanValidator(0 as Lovelace, 0 as Lovelace, balance, txPlanResult.estimatedFee) ||
-        txPlanResult.error
+      const validationError = (txPlanResult?.estimatedFee &&
+        txPlanValidator(0 as Lovelace, 0 as Lovelace, balance, txPlanResult.estimatedFee)) ||
+        txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
       setError(state, {
         errorName: 'transactionSubmissionError',
         error: validationError,

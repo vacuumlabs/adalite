@@ -23,6 +23,7 @@ import {encode} from 'borc'
 import {InternalError, InternalErrorReason} from '../errors'
 import {usingHwWalletSelector} from '../selectors'
 import {TxSummary} from '../wallet/backend-types'
+import {TxPlanResult, isTxPlanResultSuccess} from '../wallet/shelley/transaction/types'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -50,21 +51,23 @@ export default (store: Store) => {
       txConfirmType,
       txPlan,
       sourceAccountIndex,
-    }: {txConfirmType: TxType; txPlan: TxPlan; sourceAccountIndex: number}
+    }: {txConfirmType: TxType; txPlan: TxPlan | null; sourceAccountIndex: number}
   ): Promise<void> => {
     let txAux
     try {
       if (txPlan) {
         txAux = await getWallet()
-          .getAccount(sourceAccountIndex)
+          ?.getAccount(sourceAccountIndex)
           .prepareTxAux(txPlan)
       } else {
         loadingAction(state, 'Preparing transaction plan...')
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
         const retriedState = getState()
-        txAux = await getWallet()
-          .getAccount(sourceAccountIndex)
-          .prepareTxAux(retriedState.sendTransactionSummary.plan)
+        if (retriedState.sendTransactionSummary.plan) {
+          txAux = await getWallet()
+            ?.getAccount(sourceAccountIndex)
+            .prepareTxAux(retriedState.sendTransactionSummary.plan)
+        }
       }
     } catch (e) {
       throw new InternalError(InternalErrorReason.TransactionCorrupted, {causedBy: e})
@@ -105,7 +108,7 @@ export default (store: Store) => {
       txConfirmType,
       txPlan,
       sourceAccountIndex,
-    }: {txConfirmType: TxType; txPlan: TxPlan; sourceAccountIndex: number}
+    }: {txConfirmType: TxType; txPlan: TxPlan | null; sourceAccountIndex: number}
   ): Promise<void> => {
     return await _confirmTransaction(state, {txConfirmType, txPlan, sourceAccountIndex})
   }
@@ -151,7 +154,7 @@ export default (store: Store) => {
       setWalletOperationStatusType(state, 'txPending')
       let txInfo: TxSummary | undefined
       try {
-        txInfo = await getWallet().fetchTxInfo(txHash)
+        txInfo = await getWallet()?.fetchTxInfo(txHash)
         // eslint-disable-next-line no-empty
       } catch {}
       if (txInfo !== undefined) {
@@ -214,18 +217,20 @@ export default (store: Store) => {
     let txSubmitResult
     const txTab = txSummary.type
     try {
-      const txAux = await getWallet()
-        .getAccount(sourceAccountIndex)
-        .prepareTxAux(txSummary.plan)
-      const signedTx = await getWallet()
-        .getAccount(sourceAccountIndex)
-        .signTxAux(txAux)
-      if (usingHwWalletSelector(state)) {
-        setState({waitingForHwWallet: false})
-        stopLoadingAction(state)
-        setWalletOperationStatusType(state, 'txSubmitting')
+      const wallet = getWallet()
+      if (!wallet) {
+        throw new Error('Wallet is not loaded')
       }
-      txSubmitResult = await getWallet().submitTx(signedTx, txSummary.type)
+      if (txSummary.plan) {
+        const txAux = await wallet.getAccount(sourceAccountIndex).prepareTxAux(txSummary.plan)
+        const signedTx = await wallet.getAccount(sourceAccountIndex).signTxAux(txAux)
+        if (usingHwWalletSelector(state)) {
+          setState({waitingForHwWallet: false})
+          stopLoadingAction(state)
+          setWalletOperationStatusType(state, 'txSubmitting')
+        }
+        txSubmitResult = await wallet.submitTx(signedTx, txSummary.type)
+      }
 
       if (!txSubmitResult) {
         // TODO: this seems useless here
@@ -274,50 +279,56 @@ export default (store: Store) => {
 
   const convertNonStakingUtxos = async (state: State): Promise<void> => {
     loadingAction(state, 'Preparing transaction...')
-    const address = await getWallet()
-      .getAccount(state.sourceAccountIndex)
-      .getChangeAddress()
-    const sendAmount = await getWallet()
-      .getAccount(state.sourceAccountIndex)
-      // TODO: we should pass something more sensible
-      .getMaxNonStakingAmount(getSourceAccountInfo(state).utxos, address, {
-        assetFamily: AssetFamily.ADA,
-        fieldValue: '',
-        coins: 0 as Lovelace,
-      })
-    const coins = sendAmount.assetFamily === AssetFamily.ADA && sendAmount.coins
-    const txPlanResult = await prepareTxPlan({
-      address,
-      sendAmount,
-      txType: TxType.CONVERT_LEGACY,
-    })
-    const balance = getSourceAccountInfo(state).balance as Lovelace
+    const wallet = getWallet()
+    if (wallet) {
+      const address = await wallet.getAccount(state.sourceAccountIndex).getChangeAddress()
+      const sendAmount = await wallet
+        .getAccount(state.sourceAccountIndex)
+        // TODO: we should pass something more sensible
+        .getMaxNonStakingAmount(getSourceAccountInfo(state).utxos, address, {
+          assetFamily: AssetFamily.ADA,
+          fieldValue: '',
+          coins: 0 as Lovelace,
+        })
+      if (sendAmount) {
+        const coins = sendAmount.assetFamily === AssetFamily.ADA && sendAmount.coins
+        const txPlanResult = await prepareTxPlan({
+          address,
+          sendAmount,
+          txType: TxType.CONVERT_LEGACY,
+        })
+        const balance = getSourceAccountInfo(state).balance as Lovelace
 
-    if (txPlanResult.success === true) {
-      const sendTransactionSummary: SendTransactionSummary = {
-        type: TxType.SEND_ADA,
-        address,
-        coins,
-        token: null,
-        minimalLovelaceAmount: 0 as Lovelace,
+        if (isTxPlanResultSuccess(txPlanResult)) {
+          if (coins) {
+            const sendTransactionSummary: SendTransactionSummary = {
+              type: TxType.SEND_ADA,
+              address,
+              coins,
+              token: null,
+              minimalLovelaceAmount: 0 as Lovelace,
+            }
+            setTransactionSummaryOld(txPlanResult.txPlan, sendTransactionSummary)
+          }
+          await confirmTransactionOld(getState(), TxType.CONVERT_LEGACY)
+        } else {
+          const validationError = (txPlanResult?.estimatedFee &&
+            coins &&
+            txPlanValidator(coins, 0 as Lovelace, balance, txPlanResult.estimatedFee)) ||
+            txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
+          setError(state, {
+            errorName: 'transactionSubmissionError',
+            error: validationError,
+          })
+          setState({shouldShowTransactionErrorModal: true})
+        }
       }
-      setTransactionSummaryOld(txPlanResult.txPlan, sendTransactionSummary)
-      await confirmTransactionOld(getState(), TxType.CONVERT_LEGACY)
-    } else {
-      const validationError =
-        txPlanValidator(coins, 0 as Lovelace, balance, txPlanResult.estimatedFee) ||
-        txPlanResult.error
-      setError(state, {
-        errorName: 'transactionSubmissionError',
-        error: validationError,
-      })
-      setState({shouldShowTransactionErrorModal: true})
     }
     stopLoadingAction(state)
   }
 
   const withdrawRewards = async (state: State): Promise<void> => {
-    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
+    const supportError = getWallet()?.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
     if (supportError) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -327,14 +338,17 @@ export default (store: Store) => {
       return
     }
     loadingAction(state, 'Preparing transaction...')
+    let txPlanResult: TxPlanResult | null | undefined = null
     // TODO: rewards should be of type Lovelace
     const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
-    const txPlanResult = await prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
+    if (stakingAddress) {
+      txPlanResult = await prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
+    }
     // TODO: balance should be of type Lovelace
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
-    if (txPlanResult.success === true) {
+    if (isTxPlanResultSuccess(txPlanResult)) {
       const withdrawTransactionSummary: WithdrawTransactionSummary = {
         type: TxType.WITHDRAW,
         rewards,
@@ -342,10 +356,12 @@ export default (store: Store) => {
       setTransactionSummaryOld(txPlanResult.txPlan, withdrawTransactionSummary)
       await confirmTransactionOld(getState(), TxType.WITHDRAW)
     } else {
-      const withdrawalValidationError =
-        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee) ||
-        getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
-        txPlanResult.error
+      const wallet = getWallet()
+      const withdrawalValidationError = (txPlanResult?.estimatedFee &&
+        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee)) ||
+        (wallet?.ensureFeatureIsSupported &&
+          wallet.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)) ||
+        txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
       setError(state, {
         errorName: 'transactionSubmissionError',
         error: withdrawalValidationError,

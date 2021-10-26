@@ -23,18 +23,18 @@ const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
   accountsInfo.some(({poolRecommendation}) => poolRecommendation.shouldShowSaturatedBanner)
 
 type Wallet = ReturnType<typeof ShelleyWallet>
-let wallet: Wallet
-export const setWallet = (w: Wallet) => {
+let wallet: Wallet | null
+export const setWallet = (w: Wallet | null) => {
   wallet = w
 }
-export const getWallet = (): Wallet => wallet
+export const getWallet = (): Wallet | null => wallet
 
 const accountsIncludeStakingAddresses = (
   accountsInfo: Array<AccountInfo>,
   soughtAddresses: Array<string>
 ): boolean => {
   const stakingAddresses = accountsInfo.map((accountInfo) => accountInfo.stakingAddress)
-  return stakingAddresses.some((address) => soughtAddresses.includes(address))
+  return stakingAddresses.some((address) => address && soughtAddresses.includes(address))
 }
 
 export default (store: Store) => {
@@ -46,7 +46,7 @@ export default (store: Store) => {
     const asyncFetchAndUpdate = async <T extends Partial<State>>(
       fetchFn: () => Promise<T>,
       fallbackValue: T,
-      debugMessage: string = null
+      debugMessage: string | null = null
     ): Promise<void> => {
       try {
         setState(await fetchFn())
@@ -63,7 +63,7 @@ export default (store: Store) => {
         'Could not fetch conversion rates.'
       ),
       asyncFetchAndUpdate(
-        async () => ({tokensMetadata: await wallet.getTokensMetadata(getState().accountsInfo)}),
+        async () => ({tokensMetadata: await wallet?.getTokensMetadata(getState().accountsInfo)}),
         {tokensMetadata: new Map()},
         'Could not fetch tokens metadata.'
       ),
@@ -117,25 +117,27 @@ export default (store: Store) => {
         }
       )
       loadingAction(state, 'Loading wallet data...')
+      if (cryptoProvider) {
+        setWallet(
+          await ShelleyWallet({
+            config,
+            cryptoProvider,
+          })
+        )
+      }
 
-      setWallet(
-        await ShelleyWallet({
-          config,
-          cryptoProvider,
-        })
-      )
+      const validStakepoolDataProvider = await wallet?.getStakepoolDataProvider()
+      const accountsInfo = validStakepoolDataProvider
+        ? await wallet?.getAccountsInfo(validStakepoolDataProvider)
+        : []
+      const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo || [])
 
-      const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
-      const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
-      const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
-
-      const usingHwWallet = wallet.isHwWallet()
-      const maxAccountIndex = wallet.getMaxAccountIndex()
-      const shouldShowWantedAddressesModal = accountsIncludeStakingAddresses(
-        accountsInfo,
-        WANTED_DELEGATOR_STAKING_ADDRESSES
-      )
-      const hwWalletName = usingHwWallet ? wallet.getWalletName() : null
+      const usingHwWallet = wallet?.isHwWallet()
+      const maxAccountIndex = wallet?.getMaxAccountIndex()
+      const shouldShowWantedAddressesModal = accountsInfo
+        ? accountsIncludeStakingAddresses(accountsInfo, WANTED_DELEGATOR_STAKING_ADDRESSES)
+        : false
+      const hwWalletName = usingHwWallet ? wallet?.getWalletName() : undefined
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (
         await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)
@@ -208,7 +210,7 @@ export default (store: Store) => {
 
   const exportJsonWallet = async (state, password, walletName) => {
     const walletExport = JSON.stringify(
-      await exportWalletSecretDef(getWallet().getWalletSecretDef(), password, walletName)
+      await exportWalletSecretDef(getWallet()?.getWalletSecretDef(), password, walletName)
     )
 
     const blob = new Blob([walletExport], {

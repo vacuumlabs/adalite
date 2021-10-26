@@ -46,10 +46,14 @@ export default (store: Store) => {
     })
   }
 
-  const prepareTxPlan = async (args: TxPlanArgs): Promise<TxPlanResult> => {
+  const prepareTxPlan = async (args: TxPlanArgs): Promise<TxPlanResult | undefined> => {
     const state = getState()
+    const wallet = await getWallet()
     try {
-      return await getWallet()
+      if (!wallet) {
+        throw new Error('Wallet is not loaded')
+      }
+      return await wallet
         .getAccount(state.sourceAccountIndex)
         .getTxPlan(args, getSourceAccountInfo(state).utxos)
     } catch (e) {

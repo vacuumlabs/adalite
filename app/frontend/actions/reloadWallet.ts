@@ -26,13 +26,15 @@ export default (store: Store) => {
     const previousWalletReloadTime = _lastWalletReloadTime
     try {
       updateLastReloadTime()
-      const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
-      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
+      const accountsInfo = state.validStakepoolDataProvider
+        ? await wallet?.getAccountsInfo(state.validStakepoolDataProvider)
+        : []
+      const tokensMetadata = await wallet?.getTokensMetadata(accountsInfo || [])
 
       setState({
         accountsInfo,
         tokensMetadata,
-        shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo),
+        shouldShowSaturatedBanner: getShouldShowSaturatedBanner(accountsInfo || []),
       })
       loadAsyncWalletData()
 

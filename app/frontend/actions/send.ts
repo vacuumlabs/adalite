@@ -9,8 +9,10 @@ import {
   txPlanValidator,
 } from '../helpers/validators'
 import {SendTransactionSummary, TxType, Lovelace, AssetFamily, Address, SendAmount} from '../types'
+import {InternalErrorReason} from '../errors'
 import debounceEvent from '../helpers/debounceEvent'
 import {createTokenRegistrySubject} from '../tokenRegistry/tokenRegistry'
+import {isTxPlanResultSuccess} from '../wallet/shelley/transaction/types'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -36,16 +38,16 @@ export default (store: Store) => {
     if (state.sendAmount.assetFamily === AssetFamily.TOKEN) {
       const {policyId, assetName, quantity} = state.sendAmount.token
       // TODO: we should have a tokenProvider to get token O(1)
-      const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
-        (token) => token.policyId === policyId && token.assetName === assetName
-      ).quantity
+      const tokenBalance = getSourceAccountInfo(state)?.tokenBalance?.find(
+        (token) => token?.policyId === policyId && token?.assetName === assetName
+      )?.quantity
       const decimals =
         getState().tokensMetadata.get(createTokenRegistrySubject(policyId, assetName))?.decimals ||
         0
       const sendAmountValidationError = tokenAmountValidator(
         state.sendAmount.fieldValue,
         quantity,
-        tokenBalance,
+        tokenBalance || 0,
         decimals
       )
       setError(state, {
@@ -94,7 +96,7 @@ export default (store: Store) => {
     REFACTOR: (calculateFee)
     Setting transaction summary should not be the responsibility of action called "calculateFee"
     */
-    if (txPlanResult.success === true) {
+    if (isTxPlanResultSuccess(txPlanResult)) {
       const newState = getState() // if the values changed meanwhile
       if (
         newState.sendAmount.fieldValue !== state.sendAmount.fieldValue ||
@@ -121,18 +123,19 @@ export default (store: Store) => {
       REFACTOR: (calculateFee)
       Handling validation error should not be the responsibility of action called "calculateFee"
       */
-      const validationError =
+      const validationError = (txPlanResult &&
         txPlanValidator(
           coins,
           txPlanResult.minimalLovelaceAmount,
           balance,
           txPlanResult.estimatedFee
-        ) || txPlanResult.error
+        )) ||
+        txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
       setError(state, {errorName: 'sendAmountValidationError', error: validationError})
       setState({
         calculatingFee: false,
         txSuccessTab: '',
-        transactionFee: txPlanResult.estimatedFee,
+        transactionFee: txPlanResult?.estimatedFee,
       })
     }
   }
@@ -190,14 +193,16 @@ export default (store: Store) => {
     setState({calculatingFee: true})
     try {
       const maxAmounts = await getWallet()
-        .getAccount(state.sourceAccountIndex)
+        ?.getAccount(state.sourceAccountIndex)
         .getMaxSendableAmount(
           getSourceAccountInfo(state).utxos,
           state.sendAddress.fieldValue as Address,
           state.sendAmount,
           decimals
         )
-      validateAndSetMaxFunds(state, maxAmounts)
+      if (maxAmounts) {
+        validateAndSetMaxFunds(state, maxAmounts)
+      }
     } catch (e) {
       setState({
         calculatingFee: false,

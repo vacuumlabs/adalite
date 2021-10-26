@@ -28,17 +28,23 @@ export default (store: Store) => {
   const exploreNextAccount = async (state: State) => {
     try {
       loadingAction(state, 'Loading account')
-      const nextAccount = await getWallet().exploreNextAccount()
-      const accountInfo = await nextAccount.getAccountInfo(state.validStakepoolDataProvider)
-      // TODO: remove the type conversion
-      const accountsInfo = [...state.accountsInfo, accountInfo] as AccountInfo[]
-      // TODO: how about other states? is big delegator etc.
-      const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
-      setState({
-        accountsInfo,
-        shouldShowSaturatedBanner,
-      })
-      setActiveAccount(state, nextAccount.accountIndex)
+      const wallet = getWallet()
+      if (!wallet) {
+        throw new Error('Wallet is not loaded')
+      }
+      const nextAccount = await wallet.exploreNextAccount()
+      if (state.validStakepoolDataProvider) {
+        const accountInfo = await nextAccount.getAccountInfo(state.validStakepoolDataProvider)
+        // TODO: remove the type conversion
+        const accountsInfo = [...state.accountsInfo, accountInfo] as AccountInfo[]
+        // TODO: how about other states? is big delegator etc.
+        const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
+        setState({
+          accountsInfo,
+          shouldShowSaturatedBanner,
+        })
+        setActiveAccount(state, nextAccount.accountIndex)
+      }
     } catch (e) {
       setError(state, {errorName: 'walletLoadingError', error: e})
       setState({
@@ -54,7 +60,7 @@ export default (store: Store) => {
       targetAccountIndex: accountIndex,
     })
     const targetAddress = await getWallet()
-      .getAccount(accountIndex)
+      ?.getAccount(accountIndex)
       .getChangeAddress()
     updateAddress(state, null, targetAddress)
   }
@@ -65,7 +71,7 @@ export default (store: Store) => {
       sourceAccountIndex: accountIndex,
     })
     const targetAddress = await getWallet()
-      .getAccount(getState().targetAccountIndex)
+      ?.getAccount(getState().targetAccountIndex)
       .getChangeAddress()
     updateAddress(state, null, targetAddress)
   }
@@ -85,7 +91,7 @@ export default (store: Store) => {
       transactionFee: 0,
     })
     const targetAddress = await getWallet()
-      .getAccount(targetAccountIndex)
+      ?.getAccount(targetAccountIndex)
       .getChangeAddress()
     updateAddress(getState(), null, targetAddress)
   }
@@ -112,7 +118,7 @@ export default (store: Store) => {
       targetAccountIndex,
     })
     const targetAddress = await getWallet()
-      .getAccount(targetAccountIndex)
+      ?.getAccount(targetAccountIndex)
       .getChangeAddress()
     updateAddress(state, null, targetAddress)
   }

@@ -21,9 +21,10 @@ export default (store: Store) => {
       const {txBodyType, unsignedTxParsed, ttl, validityIntervalStart} = parseCliUnsignedTx(
         fileContentStr
       )
-      const txPlan = await getWallet()
-        .getAccount(state.activeAccountIndex)
-        .getPoolRegistrationTxPlan({txType: TxType.POOL_REG_OWNER, unsignedTxParsed})
+      const txPlan =
+        (await getWallet()
+          ?.getAccount(state.activeAccountIndex)
+          .getPoolRegistrationTxPlan({txType: TxType.POOL_REG_OWNER, unsignedTxParsed})) || null
       setState({
         poolRegTransactionSummary: {
           shouldShowPoolCertSignModal: false,
@@ -80,7 +81,7 @@ export default (store: Store) => {
   const signPoolCertificateTx = async (state: State) => {
     try {
       // TODO: refactor feature support logic
-      const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)
+      const supportError = getWallet()?.ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)
       if (supportError) {
         throw new InternalError(supportError.code, {message: supportError.params.message})
       }
@@ -92,21 +93,20 @@ export default (store: Store) => {
       }
 
       const {plan, ttl, validityIntervalStart} = state.poolRegTransactionSummary
-
-      const txAux = await getWallet()
-        .getAccount(state.sourceAccountIndex)
-        .prepareTxAux(plan, ttl, validityIntervalStart)
-      const witness = await getWallet()
-        .getAccount(state.sourceAccountIndex)
-        .witnessPoolRegTxAux(txAux)
-
-      setState({
-        poolRegTransactionSummary: {
-          ...state.poolRegTransactionSummary,
-          shouldShowPoolCertSignModal: false,
-          witness,
-        },
-      })
+      const wallet = getWallet()
+      if (plan && ttl && validityIntervalStart && wallet) {
+        const txAux = await wallet
+          .getAccount(state.sourceAccountIndex)
+          .prepareTxAux(plan, ttl, validityIntervalStart)
+        const witness = await wallet.getAccount(state.sourceAccountIndex).witnessPoolRegTxAux(txAux)
+        setState({
+          poolRegTransactionSummary: {
+            ...state.poolRegTransactionSummary,
+            shouldShowPoolCertSignModal: false,
+            witness,
+          },
+        })
+      }
     } catch (e) {
       debugLog(`Certificate transaction file signing failure: ${e}`)
       resetPoolRegTransactionSummary(state)

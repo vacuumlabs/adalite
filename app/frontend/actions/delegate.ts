@@ -12,7 +12,9 @@ import {
   TxType,
   DeregisterStakingKeyTransactionSummary,
 } from '../types'
+import {TxPlanResult, isTxPlanResultSuccess} from '../wallet/shelley/transaction/types'
 import debounceEvent from '../helpers/debounceEvent'
+import {InternalErrorReason} from '../errors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -34,9 +36,13 @@ export default (store: Store) => {
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const poolInfo = !state.shelleyDelegation?.selectedPool?.name
-      ? await getWallet().getPoolInfo(state.shelleyDelegation?.selectedPool?.url)
-      : {}
+    const poolInfo = (!state.shelleyDelegation?.selectedPool?.name &&
+      (await getWallet()?.getPoolInfo(state.shelleyDelegation?.selectedPool?.url))) || {
+      name: '',
+      ticker: '',
+      homepage: '',
+      description: '',
+    }
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
@@ -45,7 +51,13 @@ export default (store: Store) => {
       shelleyDelegation: {
         ...state.shelleyDelegation,
         selectedPool: {
-          ...state.shelleyDelegation?.selectedPool,
+          ...(state.shelleyDelegation?.selectedPool || {
+            pledge: '',
+            margin: 0,
+            fixedCost: '',
+            url: '',
+            poolHash: '',
+          }),
           ...poolInfo,
         },
         delegationFee: newState.shelleyDelegation?.delegationFee,
@@ -64,59 +76,64 @@ export default (store: Store) => {
     const poolHash = state.shelleyDelegation?.selectedPool?.poolHash as string
     const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
-    const txPlanResult = await prepareTxPlan({
-      poolHash,
-      stakingAddress,
-      isStakingKeyRegistered,
-      txType: TxType.DELEGATE,
-    })
-    const newState = getState()
-    if (hasPoolIdentifiersChanged(newState)) {
-      return
-    }
-    const balance = getSourceAccountInfo(state).balance as Lovelace
-
-    if (txPlanResult.success === true) {
-      setState({
-        shelleyDelegation: {
-          ...newState.shelleyDelegation,
-          delegationFee: (txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit) as Lovelace,
-        },
+    if (stakingAddress && poolHash) {
+      const txPlanResult = await prepareTxPlan({
+        poolHash,
+        stakingAddress,
+        isStakingKeyRegistered,
+        txType: TxType.DELEGATE,
       })
-      const delegationTransactionSummary: DelegateTransactionSummary = {
-        type: TxType.DELEGATE,
-        deposit: txPlanResult.txPlan.deposit,
-        stakePool: newState.shelleyDelegation?.selectedPool,
+      const newState = getState()
+      if (hasPoolIdentifiersChanged(newState)) {
+        return
       }
-      setTransactionSummary(getState(), {
-        plan: txPlanResult.txPlan,
-        transactionSummary: delegationTransactionSummary,
-      })
-      setState({
-        calculatingDelegationFee: false,
-        txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
-      })
-      setError(state, {
-        errorName: 'delegationValidationError',
-        error: null,
-      })
-    } else {
-      // REFACTOR: (Untyped errors)
-      const validationError =
-        delegationPlanValidator(balance, txPlanResult.deposit, txPlanResult.estimatedFee) ||
-        txPlanResult.error
-      setError(state, {
-        errorName: 'delegationValidationError',
-        error: validationError,
-      })
-      setState({calculatingDelegationFee: false})
+      const balance = getSourceAccountInfo(state).balance as Lovelace
+
+      if (isTxPlanResultSuccess(txPlanResult)) {
+        setState({
+          shelleyDelegation: {
+            ...newState.shelleyDelegation,
+            delegationFee: (txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit) as Lovelace,
+          },
+        })
+        const delegationTransactionSummary: DelegateTransactionSummary = {
+          type: TxType.DELEGATE,
+          deposit: txPlanResult.txPlan.deposit,
+          stakePool: newState.shelleyDelegation?.selectedPool,
+        }
+        setTransactionSummary(getState(), {
+          plan: txPlanResult.txPlan,
+          transactionSummary: delegationTransactionSummary,
+        })
+        setState({
+          calculatingDelegationFee: false,
+          txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
+        })
+        setError(state, {
+          errorName: 'delegationValidationError',
+          error: null,
+        })
+      } else {
+        // REFACTOR: (Untyped errors)
+        const validationError = (txPlanResult &&
+          delegationPlanValidator(balance, txPlanResult.deposit, txPlanResult.estimatedFee)) ||
+          txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
+        setError(state, {
+          errorName: 'delegationValidationError',
+          error: validationError,
+        })
+        setState({calculatingDelegationFee: false})
+      }
     }
   }
 
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
 
-  const updateStakePoolIdentifier = (state: State, poolHash: string): void => {
-    const newPool = poolHash && state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
+  const updateStakePoolIdentifier = (state: State, poolHash: string | null): void => {
+    const newPool =
+      poolHash && state.validStakepoolDataProvider
+        ? state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
+        : null
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -147,13 +164,13 @@ export default (store: Store) => {
   const delegate = async (state: State): Promise<void> => {
     return await confirmTransaction(state, {
       txConfirmType: TxType.DELEGATE,
-      txPlan: state.cachedTransactionSummaries[TxType.DELEGATE].plan,
+      txPlan: state.cachedTransactionSummaries[TxType.DELEGATE]?.plan || null,
       sourceAccountIndex: state.sourceAccountIndex,
     })
   }
 
   const deregisterStakingKey = async (state: State): Promise<void> => {
-    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
+    const supportError = getWallet()?.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
     if (supportError) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -169,13 +186,15 @@ export default (store: Store) => {
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
     loadingAction(state, 'Preparing transaction...')
-
-    const txPlanResult = await prepareTxPlan({
-      txType: TxType.DEREGISTER_STAKE_KEY,
-      rewards,
-      stakingAddress: sourceAccount.stakingAddress,
-    })
-    if (txPlanResult.success === true) {
+    let txPlanResult: TxPlanResult | null | undefined = null
+    if (sourceAccount.stakingAddress) {
+      txPlanResult = await prepareTxPlan({
+        txType: TxType.DEREGISTER_STAKE_KEY,
+        rewards,
+        stakingAddress: sourceAccount.stakingAddress,
+      })
+    }
+    if (isTxPlanResultSuccess(txPlanResult)) {
       const summary = {
         type: TxType.DEREGISTER_STAKE_KEY,
         deposit: txPlanResult.txPlan.deposit,
@@ -190,10 +209,10 @@ export default (store: Store) => {
       })
     } else {
       // Handled the same way as for withdrawal
-      const withdrawalValidationError =
-        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee) ||
-        getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
-        txPlanResult.error
+      const withdrawalValidationError = (txPlanResult?.estimatedFee &&
+        withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee)) ||
+        getWallet()?.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
+        txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
       setError(state, {
         errorName: 'transactionSubmissionError',
         error: withdrawalValidationError,
