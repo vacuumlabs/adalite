@@ -4,7 +4,7 @@ import {useState, useCallback} from 'preact/hooks'
 import submitEmailRaw from '../../../helpers/submitEmailRaw'
 import debugLog from '../../../helpers/debugLog'
 
-const newPools = new Set([])
+const newPools: Set<string> = new Set([])
 const ADLTPools = [
   ['ADLTA', 'e5c947f0a4f6a6dd0946d8971dafaf263c88a1b086527fdf24223c21'],
   ['ADLTB', '7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6'],
@@ -27,8 +27,16 @@ const isValidEmail = (email) => {
   return re.test(email)
 }
 
+interface UseEmailSubmitPropsState {
+  email: string
+  emailValid: boolean
+  errorMessage: string
+  emailSubmitSuccess: boolean
+  emailSubmitMessage: string
+}
+
 const useEmailSubmitProps = () => {
-  const [state, setState] = useState({
+  const [state, setState] = useState<UseEmailSubmitPropsState>({
     email: '',
     emailValid: false,
     errorMessage: '',
@@ -43,7 +51,7 @@ const useEmailSubmitProps = () => {
       setState({
         email,
         emailValid,
-        errorMessage: !emailValid && 'Invalid email format',
+        errorMessage: emailValid ? '' : 'Invalid email format',
         emailSubmitSuccess: false,
         emailSubmitMessage: '',
       })

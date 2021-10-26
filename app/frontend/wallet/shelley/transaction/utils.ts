@@ -1,7 +1,7 @@
 import distinct from '../../../helpers/distinct'
 import {Address, CertificateType, Lovelace, TokenBundle} from '../../../types'
 import {aggregateTokenBundles} from '../../helpers/tokenFormater'
-import {TxAuxiliaryData, TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../types'
+import {TxCertificate, TxPlanAuxiliaryData, TxInput, TxOutput, TxWithdrawal} from '../../types'
 import {MIN_UTXO_VALUE} from './constants'
 import {estimateTxSize} from './estimateTxSize'
 
@@ -61,7 +61,7 @@ export function computeRequiredTxFee(
   outputs: Array<TxOutput>,
   certificates: Array<TxCertificate> = [],
   withdrawals: Array<TxWithdrawal> = [],
-  auxiliaryData: TxAuxiliaryData = null
+  auxiliaryData: TxPlanAuxiliaryData | null = null
 ): Lovelace {
   const fee = txFeeFunction(
     estimateTxSize(inputs, outputs, certificates, withdrawals, auxiliaryData)

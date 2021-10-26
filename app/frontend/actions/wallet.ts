@@ -8,7 +8,14 @@ import debugLog from '../helpers/debugLog'
 import getConversionRates from '../helpers/getConversionRates'
 
 import {ADALITE_CONFIG} from '../config'
-import {AccountInfo, Lovelace, AssetFamily, AuthMethodType, LedgerTransportType} from '../types'
+import {
+  AccountInfo,
+  Lovelace,
+  AssetFamily,
+  AuthMethodType,
+  ConversionRates,
+  LedgerTransportChoice,
+} from '../types'
 import {initialState} from '../store'
 import {State, Store} from '../state'
 import errorActions from './error'
@@ -23,12 +30,17 @@ const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
   accountsInfo.some(({poolRecommendation}) => poolRecommendation.shouldShowSaturatedBanner)
 
 type Wallet = ReturnType<typeof ShelleyWallet>
-let wallet: Wallet
-export const setWallet = (w: Wallet) => {
+let wallet: Wallet | null
+export const setWallet = (w: Wallet | null) => {
   wallet = w
 }
-export const getWallet = (): Wallet => wallet
 
+export const getWallet = (): Wallet => {
+  if (!wallet) {
+    throw new Error('Wallet is not loaded')
+  }
+  return wallet
+}
 const accountsIncludeStakingAddresses = (
   accountsInfo: Array<AccountInfo>,
   soughtAddresses: Array<string>
@@ -43,10 +55,11 @@ export default (store: Store) => {
   const {getState, setState} = store
 
   const loadAsyncWalletData = async (): Promise<void> => {
+    const wallet = getWallet()
     const asyncFetchAndUpdate = async <T extends Partial<State>>(
       fetchFn: () => Promise<T>,
       fallbackValue: T,
-      debugMessage: string = null
+      debugMessage: string | null = null
     ): Promise<void> => {
       try {
         setState(await fetchFn())
@@ -57,7 +70,7 @@ export default (store: Store) => {
     }
 
     await Promise.all([
-      asyncFetchAndUpdate(
+      asyncFetchAndUpdate<{conversionRates: ConversionRates | null}>(
         async () => ({conversionRates: await getConversionRates(getState())}),
         {conversionRates: null},
         'Could not fetch conversion rates.'
@@ -75,12 +88,12 @@ export default (store: Store) => {
     {
       cryptoProviderType,
       walletSecretDef,
-      selectedLedgerTransportType,
+      ledgerTransportChoice,
       shouldExportPubKeyBulk,
     }: {
       cryptoProviderType: CryptoProviderType
       walletSecretDef?: any // TODO: until now, arguments came in freestyle combinations, refactor
-      selectedLedgerTransportType?: LedgerTransportType
+      ledgerTransportChoice?: LedgerTransportChoice
       shouldExportPubKeyBulk: boolean
     }
   ) => {
@@ -88,9 +101,9 @@ export default (store: Store) => {
     setState({walletLoadingError: undefined})
     const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
     const ledgerTransportType =
-      selectedLedgerTransportType === LedgerTransportType.DEFAULT
+      ledgerTransportChoice === LedgerTransportChoice.DEFAULT
         ? await getDefaultLedgerTransportType()
-        : selectedLedgerTransportType
+        : ledgerTransportChoice
     const config = {
       ...ADALITE_CONFIG,
       isShelleyCompatible,
@@ -100,8 +113,8 @@ export default (store: Store) => {
 
     try {
       if (
-        ledgerTransportType === LedgerTransportType.WEB_HID ||
-        ledgerTransportType === LedgerTransportType.WEB_USB
+        ledgerTransportType === LedgerTransportChoice.WEB_HID ||
+        ledgerTransportType === LedgerTransportChoice.WEB_USB
       ) {
         loadingAction(
           state,
@@ -117,13 +130,13 @@ export default (store: Store) => {
         }
       )
       loadingAction(state, 'Loading wallet data...')
-
       setWallet(
         await ShelleyWallet({
           config,
           cryptoProvider,
         })
       )
+      const wallet = getWallet()
 
       const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
       const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
@@ -135,7 +148,7 @@ export default (store: Store) => {
         accountsInfo,
         WANTED_DELEGATOR_STAKING_ADDRESSES
       )
-      const hwWalletName = usingHwWallet ? wallet.getWalletName() : null
+      const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (
         await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)

@@ -1,4 +1,4 @@
-import {h, Fragment} from 'preact'
+import {h, Fragment, JSX} from 'preact'
 import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'
@@ -261,7 +261,7 @@ const DashboardPage = () => {
 
   const screenType = useViewport()
 
-  const MainPages: {[key in MainTabs]: any} = {
+  const MainPages: {[key in MainTabs]: h.JSX.Element} = {
     [MainTabs.ACCOUNT]: <AccountsPage screenType={screenType} />,
     [MainTabs.STAKING]: <StakingPage screenType={screenType} />,
     [MainTabs.SEND]: (
@@ -302,7 +302,9 @@ const DashboardPage = () => {
               isActive={name === activeMainTab}
               setActiveTab={setActiveMainTab}
               displayName={
-                name === MainTabs.ACCOUNT && `Account ${formatAccountIndex(activeAccountIndex)}`
+                name === MainTabs.ACCOUNT
+                  ? `Account ${formatAccountIndex(activeAccountIndex)}`
+                  : null
               }
             />
           ))}
@@ -318,7 +320,7 @@ const DashboardPage = () => {
 
 type DashboardMobileProps = {
   subTabs: SubTabs[]
-  defaultSubTab: SubTabs
+  defaultSubTab: SubTabs | null
   mainSubTab?: SubTabs
 }
 
@@ -339,7 +341,7 @@ const DashboardMobileContent = ({subTabs, defaultSubTab, mainSubTab}: DashboardM
           ))}
         </ul>
       )}
-      {SubPages[activeSubTab]}
+      {activeSubTab ? SubPages[activeSubTab] : null}
     </div>
   )
 }

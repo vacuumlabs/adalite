@@ -21,11 +21,12 @@ import {
   TxOutput,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
-  TxAuxiliaryData,
+  TxAuxiliaryDataTypes,
 } from '../../types'
 import {computeTxPlan, validateTxPlan} from './computeTxPlan'
 import {TxPlanDraft, TxPlanResult} from './types'
 import {computeMinUTxOLovelaceAmount} from './utils'
+import * as assert from 'assert'
 
 const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   const prepareSendAdaTx = (
@@ -116,8 +117,8 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
 
   const prepareVotingRegistrationTx = (txPlanArgs: VotingRegistrationTxPlanArgs): TxPlanDraft => {
     const {votingPubKey, stakePubKey, nonce, stakingAddress} = txPlanArgs
-    const auxiliaryData: TxAuxiliaryData = {
-      type: 'CATALYST_VOTING',
+    const auxiliaryData = {
+      type: 'CATALYST_VOTING' as TxAuxiliaryDataTypes,
       votingPubKey,
       stakePubKey,
       rewardDestinationAddress: {
@@ -165,7 +166,7 @@ export const selectMinimalTxPlan = (
     tokenBundle: [],
   }
 
-  let txPlanResult: TxPlanResult
+  let txPlanResult: TxPlanResult | null = null
   let numInputs = 0
   while (numInputs <= utxos.length) {
     const inputs: TxInput[] = utxos.slice(0, numInputs)
@@ -179,5 +180,6 @@ export const selectMinimalTxPlan = (
     }
     numInputs += 1
   }
+  assert(txPlanResult != null)
   return txPlanResult
 }

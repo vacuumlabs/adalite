@@ -87,9 +87,9 @@ export const poolRegTxSettings = {
           {
             txHash: '3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7',
             outputIndex: 0,
-            coins: null,
-            tokenBundle: null,
-            address: null,
+            coins: 0,
+            tokenBundle: [],
+            address: '',
           },
         ],
         outputs: [
@@ -130,7 +130,7 @@ export const poolRegTxSettings = {
                   params: {
                     portNumber: 3000,
                     ipv4: '54.228.75.154',
-                    ipv6: null,
+                    ipv6: undefined,
                   },
                 },
                 {

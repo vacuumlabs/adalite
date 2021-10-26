@@ -14,6 +14,7 @@ import DelegateInput from './delegateInput'
 import {ADALITE_CONFIG} from '../../../../frontend/config'
 import {StakepoolDataProvider} from '../../../../frontend/helpers/dataProviders/types'
 import {shouldDisableSendingButton} from '../../../helpers/common'
+import * as assert from 'assert'
 
 const CalculatingFee = (): h.JSX.Element => (
   <div className="validation-message send">Calculating fee...</div>
@@ -59,7 +60,7 @@ type Error = {
 
 type ValidatedInput = {
   poolHash: string | null
-  error: Error
+  error: Error | null
 }
 
 const validateInput = (
@@ -125,10 +126,10 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
   } = useSelector((state) => ({
     // REFACTOR: (Untyped errors)
     delegationValidationError: state.delegationValidationError,
-    stakePool: state.shelleyDelegation.selectedPool,
+    stakePool: state.shelleyDelegation?.selectedPool,
     currentDelegation: getSourceAccountInfo(state).shelleyAccountInfo.delegation,
     calculatingDelegationFee: state.calculatingDelegationFee,
-    delegationFee: state.shelleyDelegation.delegationFee,
+    delegationFee: state.shelleyDelegation?.delegationFee,
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,
     isShelleyCompatible: state.isShelleyCompatible,
@@ -141,7 +142,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
   const handleOnStopTyping = useHandleOnStopTyping()
 
   const [fieldValue, setFieldValue] = useState('')
-  const [error, setError] = useState<Error>(null)
+  const [error, setError] = useState<Error | null>(null)
 
   const handleInputValidation = useCallback(
     (value: string) => {
@@ -149,8 +150,10 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
         resetStakePoolIndentifier()
         setError(null)
       } else {
+        assert(validStakepoolDataProvider != null)
         const {poolHash, error} = validateInput(value, validStakepoolDataProvider)
         if (!error) {
+          assert(poolHash != null)
           updateStakePoolIdentifier(poolHash)
         } else {
           resetStakePoolIndentifier()
@@ -216,7 +219,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
           <AdaIcon />
         </label>
         <div className="delegation-fee" data-cy="DelegateFeeAmount">
-          {printAda(delegationFee)}
+          {delegationFee ? printAda(delegationFee) : ''}
         </div>
       </div>
       <div className="validation-row">

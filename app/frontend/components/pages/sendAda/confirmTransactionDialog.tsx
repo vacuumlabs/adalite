@@ -25,6 +25,7 @@ import {
   encodeCatalystVotingKey,
 } from '../../../../frontend/wallet/shelley/helpers/addresses'
 import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
+import * as assert from 'assert'
 
 interface ReviewBottomProps {
   onSubmit: () => any
@@ -68,7 +69,7 @@ const SendAdaReview = ({
   const {address, coins, fee, minimalLovelaceAmount, token} = transactionSummary
   const lovelaceAmount = (coins + minimalLovelaceAmount) as Lovelace
   const total = (coins + fee + minimalLovelaceAmount) as Lovelace
-  const formattedAssetItemProps: FormattedAssetItemProps = token && {
+  const formattedAssetItemProps: FormattedAssetItemProps | null = token && {
     ...token,
     fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
     type: AssetFamily.TOKEN,
@@ -88,7 +89,7 @@ const SendAdaReview = ({
         </div>
         <div className="ada-label">Amount</div>
         <div className="review-amount">{printAda(lovelaceAmount as Lovelace)}</div>
-        {token && (
+        {token && formattedAssetItemProps && (
           <FormattedAssetItem {...formattedAssetItemProps}>
             {({formattedAssetIconName, formattedAmount, formattedFingerprint}) => {
               return (
@@ -230,6 +231,7 @@ const WithdrawReview = ({
 }: {
   transactionSummary: TransactionSummary & WithdrawTransactionSummary
 }) => {
+  assert(transactionSummary.plan != null)
   const {rewards, fee} = transactionSummary
   const total = (rewards - fee) as Lovelace
   return (
@@ -263,6 +265,7 @@ const VotingRegistrationReview = ({
 }: {
   transactionSummary: TransactionSummary & VotingRegistrationTransactionSummary
 }) => {
+  assert(transactionSummary?.plan?.auxiliaryData != null)
   const {fee} = transactionSummary
   const total = fee as Lovelace
   return (
@@ -344,6 +347,7 @@ const ConfirmTransactionDialog = () => {
   }))
   const {setRawTransactionOpen, submitTransaction, cancelTransaction} = useActions(actions)
 
+  assert(txConfirmType != null)
   // Tmp, till all transaction types use `cachedTransactionSummaries`
   const isRefactoredCase =
     txConfirmType === TxType.DELEGATE ||
@@ -366,6 +370,7 @@ const ConfirmTransactionDialog = () => {
     const txSummary = isRefactoredCase
       ? cachedTransactionSummaries[txConfirmType]
       : transactionSummary
+    assert(txSummary != null)
     return submitTransaction({sendAddress, sourceAccountIndex, txSummary})
   }
 
@@ -373,24 +378,26 @@ const ConfirmTransactionDialog = () => {
   const getModalBody = () => {
     // Refactored cases:
     if (txConfirmType === TxType.DEREGISTER_STAKE_KEY) {
+      const txSummary = cachedTransactionSummaries[TxType.DEREGISTER_STAKE_KEY]
+      assert(txSummary != null)
       return (
         <DeregisterStakeKeyReview
-          transactionSummary={cachedTransactionSummaries[TxType.DEREGISTER_STAKE_KEY]}
+          transactionSummary={txSummary}
           onSubmit={onSubmit}
           onCancel={cancelTransaction}
         />
       )
     }
     if (txConfirmType === TxType.DELEGATE) {
-      return <DelegateReview transactionSummary={cachedTransactionSummaries[TxType.DELEGATE]} />
+      const txSummary = cachedTransactionSummaries[TxType.DELEGATE]
+      assert(txSummary != null)
+      return <DelegateReview transactionSummary={txSummary} />
     }
 
     if (txConfirmType === TxType.REGISTER_VOTING) {
-      return (
-        <VotingRegistrationReview
-          transactionSummary={cachedTransactionSummaries[TxType.REGISTER_VOTING]}
-        />
-      )
+      const txSummary = cachedTransactionSummaries[TxType.REGISTER_VOTING]
+      assert(txSummary != null)
+      return <VotingRegistrationReview transactionSummary={txSummary} />
     }
 
     // To be refactored cases:

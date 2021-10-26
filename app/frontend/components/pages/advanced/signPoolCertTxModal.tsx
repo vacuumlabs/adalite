@@ -18,10 +18,12 @@ const SignPoolCertTxModal = ({
   signPoolCertificateTx,
   poolCert,
 }: Props) => {
-  const cancelTx = useRef(null)
+  const cancelTx = useRef<HTMLAnchorElement>(null)
 
   useEffect(() => {
-    cancelTx.current.focus()
+    if (cancelTx.current) {
+      cancelTx.current.focus()
+    }
   }, [])
 
   return (

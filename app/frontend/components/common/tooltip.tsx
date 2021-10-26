@@ -1,4 +1,4 @@
-const tooltip = (message, enabled, displayAlways = undefined) => {
+const tooltip = (message, enabled, displayAlways?: boolean) => {
   return displayAlways !== undefined
     ? {
       'data-balloon': message,

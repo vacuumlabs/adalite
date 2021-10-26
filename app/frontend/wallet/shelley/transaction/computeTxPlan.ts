@@ -2,7 +2,7 @@ import {InternalError, InternalErrorReason, UnexpectedErrorReason} from '../../.
 import {CertificateType, Lovelace} from '../../../types'
 import {MAX_TX_OUTPUT_SIZE} from '../../constants'
 import {aggregateTokenBundles, getTokenBundlesDifference} from '../../helpers/tokenFormater'
-import {TxAuxiliaryData, TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../types'
+import {TxCertificate, TxPlanAuxiliaryData, TxInput, TxOutput, TxWithdrawal} from '../../types'
 import {cborizeSingleTxOutput} from '../shelley-transaction'
 import {TxPlanResult} from './types'
 import {
@@ -39,7 +39,7 @@ export function computeTxPlan(
   possibleChange: TxOutput,
   certificates: Array<TxCertificate>,
   withdrawals: Array<TxWithdrawal>,
-  auxiliaryData: TxAuxiliaryData
+  auxiliaryData: TxPlanAuxiliaryData | null
 ): TxPlanResult {
   const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
   const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards

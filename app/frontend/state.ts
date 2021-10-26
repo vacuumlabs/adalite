@@ -35,7 +35,7 @@ export interface State {
   error?: any
   activeMainTab: MainTabs
   shouldShowContactFormModal?: boolean
-  conversionRates?: ConversionRates
+  conversionRates: ConversionRates | null
 
   // cache
   displayWelcome: boolean
@@ -56,7 +56,7 @@ export interface State {
   shouldShowSaturatedBanner?: boolean
   mnemonicAuthForm: {
     mnemonicInputValue: string
-    mnemonicInputError: {code: InternalErrorReason}
+    mnemonicInputError: {code: InternalErrorReason} | null
     formIsValid: boolean
   }
   hwWalletName?: string
@@ -76,7 +76,7 @@ export interface State {
   // delegation form
   calculatingDelegationFee?: any
   shelleyDelegation?: {
-    selectedPool?: Stakepool
+    selectedPool?: Stakepool | null
     delegationFee?: Lovelace
   }
   delegationValidationError?: any
@@ -105,7 +105,9 @@ export interface State {
   }
 
   // pool registration
-  poolRegTransactionSummary: PoolRegTransactionSummary
+  poolRegTransactionSummary:
+    | PoolRegTransactionSummary
+    | {plan: null; shouldShowPoolCertSignModal: boolean}
   poolRegTxError?: any
 
   // address detail
@@ -125,7 +127,7 @@ export interface State {
   shouldShowDelegationModal: boolean
   shouldShowVotingDialog: boolean
 
-  validStakepoolDataProvider?: StakepoolDataProvider
+  validStakepoolDataProvider: StakepoolDataProvider | null
 }
 
 const initialState: State = {
@@ -210,64 +212,10 @@ const initialState: State = {
   },
 
   // pool registration
-  poolRegTransactionSummary: {
-    shouldShowPoolCertSignModal: false,
-    ttl: null,
-    validityIntervalStart: null,
-    witness: null,
-    plan: null,
-    txBodyType: null,
-  },
+  poolRegTransactionSummary: {plan: null, shouldShowPoolCertSignModal: false},
 
   // accounts info
-  accountsInfo: [
-    {
-      accountXpubs: {
-        shelleyAccountXpub: null,
-        byronAccountXpub: null,
-      },
-      stakingXpub: null,
-      stakingAddress: null,
-      utxos: [],
-      balance: 0,
-      tokenBalance: [],
-      shelleyBalances: {
-        stakingBalance: 0,
-        nonStakingBalance: 0,
-        rewardsAccountBalance: 0,
-      },
-      shelleyAccountInfo: {
-        accountPubkeyHex: '',
-        shelleyXpub: '',
-        byronXpub: '',
-        stakingKey: null,
-        stakingAccountAddress: '',
-        currentEpoch: 0,
-        delegation: {},
-        hasStakingKey: false,
-        rewards: 0,
-        rewardDetails: {
-          upcoming: null,
-          nearest: null,
-          currentDelegation: null,
-        },
-        value: 0,
-      },
-      transactionHistory: [],
-      stakingHistory: [],
-      visibleAddresses: [],
-      poolRecommendation: {
-        isInRecommendedPoolSet: false,
-        isInPrivatePoolSet: false,
-        isRecommendationPrivate: false,
-        recommendedPoolHash: '',
-        status: '',
-        shouldShowSaturatedBanner: false,
-      },
-      isUsed: false,
-      accountIndex: 0,
-    },
-  ],
+  accountsInfo: [],
   maxAccountIndex: 0,
   sourceAccountIndex: 0,
   activeAccountIndex: 0,
@@ -277,6 +225,8 @@ const initialState: State = {
   shouldShowSendTransactionModal: false,
   shouldShowDelegationModal: false,
   shouldShowVotingDialog: false,
+  validStakepoolDataProvider: null,
+  conversionRates: null,
 }
 export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State

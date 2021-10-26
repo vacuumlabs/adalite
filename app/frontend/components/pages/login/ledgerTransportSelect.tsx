@@ -1,19 +1,19 @@
 import {h} from 'preact'
 import SearchableSelect from '../../common/searchableSelect'
-import {LedgerTransportType} from '../../../types'
+import {LedgerTransportChoice} from '../../../types'
 import styles from './ledgerTransportSelect.module.scss'
 
 interface Props {
-  selectedItem: LedgerTransportType
-  onSelect: (ledgerTransportType: LedgerTransportType) => void
+  selectedItem: LedgerTransportChoice
+  onSelect: (ledgerTransportType: LedgerTransportChoice) => void
 }
 
 const LedgerTransportSelect = ({selectedItem, onSelect}: Props) => {
   const dropdownAssetItems = [
-    LedgerTransportType.DEFAULT,
-    LedgerTransportType.U2F,
-    LedgerTransportType.WEB_USB,
-    LedgerTransportType.WEB_HID,
+    LedgerTransportChoice.DEFAULT,
+    LedgerTransportChoice.U2F,
+    LedgerTransportChoice.WEB_USB,
+    LedgerTransportChoice.WEB_HID,
   ]
 
   return (

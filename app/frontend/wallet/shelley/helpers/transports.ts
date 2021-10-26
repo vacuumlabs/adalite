@@ -2,7 +2,7 @@ import {isWindows, isOpera} from 'react-device-detect'
 
 import LedgerTransportWebUsb from '@ledgerhq/hw-transport-webusb'
 import LedgerTransportWebHid from '@ledgerhq/hw-transport-webhid'
-import {LedgerTransportType} from '../../../types'
+import {LedgerTransportType, LedgerTransportChoice} from '../../../types'
 
 const isWebUsbSupported = async (): Promise<boolean> => {
   const isSupported = await LedgerTransportWebUsb.isSupported()
@@ -21,11 +21,11 @@ const getDefaultLedgerTransportType = async (): Promise<LedgerTransportType> => 
   const supportWebUsb = await isWebUsbSupported()
 
   if (supportWebHid) {
-    return LedgerTransportType.WEB_HID
+    return LedgerTransportChoice.WEB_HID
   } else if (supportWebUsb) {
-    return LedgerTransportType.WEB_USB
+    return LedgerTransportChoice.WEB_USB
   } else {
-    return LedgerTransportType.U2F
+    return LedgerTransportChoice.U2F
   }
 }
 

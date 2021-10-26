@@ -7,8 +7,8 @@ interface Props<T> {
   label?: string | h.JSX.Element
   labelClassName?: string
   items: T[]
-  selectedItem: T
-  displaySelectedItem?: (t: T) => string | h.JSX.Element
+  selectedItem: T | undefined
+  displaySelectedItem?: (t: T | undefined) => string | h.JSX.Element
   displaySelectedItemClassName?: string
   displayItem?: (t: T) => string | h.JSX.Element
   onSelect: (t: T) => void

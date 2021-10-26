@@ -4,11 +4,11 @@ import sleep from '../../helpers/sleep'
 import {DELAY_AFTER_TOO_MANY_REQUESTS} from '../constants'
 
 const request = async function request(
-  url,
-  method = 'GET',
-  body = null,
+  url: string,
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' = 'GET',
+  body: string | null = null,
   headers = {},
-  callback: (response: Response) => void = null
+  callback: ((response: Response) => void) | null = null
 ) {
   let requestParams = {
     method,

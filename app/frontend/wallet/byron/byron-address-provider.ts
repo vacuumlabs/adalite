@@ -24,7 +24,7 @@ const v2Path = (account: number, isChange: boolean, addrIdx: number) => {
 export const getAccountXpub = async (
   cryptoProvider: CryptoProvider,
   accountIndex: number
-): Promise<_XPubKey> => {
+): Promise<_XPubKey | null> => {
   if (accountIndex !== 0) return null
   const scheme = cryptoProvider.getDerivationScheme()
   const pathMapper = {

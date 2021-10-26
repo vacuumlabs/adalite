@@ -12,9 +12,9 @@ export type TxAux = {
   ttl: number
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
-  auxiliaryData: TxAuxiliaryData
-  auxiliaryDataHash: HexString
-  validityIntervalStart: number
+  auxiliaryData: TxAuxiliaryData | null
+  auxiliaryDataHash: HexString | null
+  validityIntervalStart: number | null
   encodeCBOR: encodeCBORFn
 }
 
@@ -118,7 +118,7 @@ export type CborizedTxStakepoolRegistrationCert = [
   Buffer,
   Array<Buffer>,
   any,
-  [string, Buffer]
+  [string, Buffer] | null
 ]
 
 export type CborizedTxCertificate =

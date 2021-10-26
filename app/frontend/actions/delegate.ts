@@ -13,6 +13,7 @@ import {
   DeregisterStakingKeyTransactionSummary,
 } from '../types'
 import debounceEvent from '../helpers/debounceEvent'
+import * as assert from 'assert'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -34,9 +35,11 @@ export default (store: Store) => {
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const poolInfo = !state.shelleyDelegation?.selectedPool?.name
-      ? await getWallet().getPoolInfo(state.shelleyDelegation?.selectedPool?.url)
-      : {}
+    const selectedPool = state.shelleyDelegation?.selectedPool
+    const poolInfo =
+      !selectedPool?.name && selectedPool?.url
+        ? await getWallet().getPoolInfo(selectedPool?.url)
+        : null
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
@@ -44,10 +47,12 @@ export default (store: Store) => {
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        selectedPool: {
-          ...state.shelleyDelegation?.selectedPool,
-          ...poolInfo,
-        },
+        selectedPool: selectedPool
+          ? {
+            ...selectedPool,
+            ...poolInfo,
+          }
+          : null,
         delegationFee: newState.shelleyDelegation?.delegationFee,
       },
       gettingPoolInfo: false,
@@ -116,7 +121,9 @@ export default (store: Store) => {
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
 
   const updateStakePoolIdentifier = (state: State, poolHash: string): void => {
-    const newPool = poolHash && state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
+    assert(state.validStakepoolDataProvider != null)
+    const newPool =
+      (poolHash && state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)) || null
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -145,9 +152,11 @@ export default (store: Store) => {
   }
 
   const delegate = async (state: State): Promise<void> => {
+    const delegationTxPlan = state.cachedTransactionSummaries[TxType.DELEGATE]?.plan
+    assert(delegationTxPlan != null)
     return await confirmTransaction(state, {
       txConfirmType: TxType.DELEGATE,
-      txPlan: state.cachedTransactionSummaries[TxType.DELEGATE].plan,
+      txPlan: delegationTxPlan,
       sourceAccountIndex: state.sourceAccountIndex,
     })
   }
@@ -169,7 +178,6 @@ export default (store: Store) => {
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
     loadingAction(state, 'Preparing transaction...')
-
     const txPlanResult = await prepareTxPlan({
       txType: TxType.DEREGISTER_STAKE_KEY,
       rewards,

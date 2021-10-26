@@ -6,6 +6,8 @@ import {
   TxByronWitness,
   TxCertificate,
   TxDelegationCert,
+  TxPlanAuxiliaryData,
+  TxPlanVotingAuxiliaryData,
   TxInput,
   TxOutput,
   TxShelleyWitness,
@@ -61,9 +63,9 @@ function ShelleyTxAux({
   ttl: number
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
-  auxiliaryDataHash: HexString
-  auxiliaryData: TxAuxiliaryData
-  validityIntervalStart: number
+  auxiliaryDataHash: HexString | null
+  auxiliaryData: TxAuxiliaryData | null
+  validityIntervalStart: number | null
 }): TxAux {
   function getId() {
     return blake2b(
@@ -333,7 +335,7 @@ const cborizeTxVotingRegistration = ({
   stakePubKey,
   rewardDestinationAddress,
   nonce,
-}: TxAuxiliaryData): [number, Map<number, Buffer | BigInt>] => [
+}: TxPlanVotingAuxiliaryData): [number, Map<number, Buffer | BigInt>] => [
   61284,
   new Map<number, Buffer | BigInt>([
     [1, Buffer.from(votingPubKey, 'hex')],
@@ -344,7 +346,7 @@ const cborizeTxVotingRegistration = ({
 ]
 
 const cborizeTxAuxiliaryVotingData = (
-  txAuxiliaryData: TxAuxiliaryData,
+  txAuxiliaryData: TxPlanAuxiliaryData,
   signatureHex: string
 ): CborizedVotingRegistrationMetadata => [
   new Map<number, Map<number, Buffer | BigInt>>([

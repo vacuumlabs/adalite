@@ -1,6 +1,7 @@
 import {Fragment, h} from 'preact'
 import {useSelector} from '../../../helpers/connect'
 import {ADALITE_CONFIG} from '../../../../frontend/config'
+import * as assert from 'assert'
 
 type StakePoolLabelProps = {
   isTicker: boolean
@@ -34,11 +35,13 @@ const DelegateInput = ({disabled, value, onChange}: Props): h.JSX.Element => {
   const {validStakepoolDataProvider} = useSelector((state) => ({
     validStakepoolDataProvider: state.validStakepoolDataProvider,
   }))
+  assert(validStakepoolDataProvider != null)
 
-  const isTicker = value && !!validStakepoolDataProvider.getPoolInfoByTicker(value)
-  const isPoolHash = value && !!validStakepoolDataProvider.getPoolInfoByPoolHash(value)
-  const tickerSearchEnabled =
-    ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER && validStakepoolDataProvider.hasTickerMapping
+  const isTicker = !!(value && !!validStakepoolDataProvider.getPoolInfoByTicker(value))
+  const isPoolHash = !!(value && !!validStakepoolDataProvider.getPoolInfoByPoolHash(value))
+  const tickerSearchEnabled = !!(
+    ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER && validStakepoolDataProvider?.hasTickerMapping
+  )
 
   return (
     <Fragment>

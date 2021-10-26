@@ -1,4 +1,4 @@
-import {Address, CertificateType, Lovelace, Token} from '../../../types'
+import {Address, CertificateType, Lovelace, Token, TokenBundle} from '../../../types'
 import {encode, decode} from 'borc'
 import {parseUnsignedTx} from '../../../helpers/cliParser/txParser'
 import {
@@ -58,12 +58,13 @@ const parseCliTokens = (tokenBundle: _MultiAsset[]): Token[] =>
 
 const parseCliInputs = (inputs: _Input[]): TxInput[] => {
   return inputs.map((input) => {
+    // TODO refactor to not override the types
     return {
       txHash: input.txHash.toString('hex'),
       outputIndex: input.outputIndex,
-      coins: null,
-      tokenBundle: null,
-      address: null,
+      coins: 0 as Lovelace,
+      tokenBundle: [] as TokenBundle,
+      address: '' as Address,
     }
   })
 }

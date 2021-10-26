@@ -118,12 +118,14 @@ export enum AuthMethodType {
   KEY_FILE = 'file',
 }
 
-export enum LedgerTransportType {
+export enum LedgerTransportChoice {
   DEFAULT = 'Default',
   U2F = 'U2F',
   WEB_USB = 'WebUSB',
   WEB_HID = 'WebHID',
 }
+
+export type LedgerTransportType = Exclude<LedgerTransportChoice, LedgerTransportChoice.DEFAULT>
 
 export enum ScreenType {
   MOBILE,
@@ -155,15 +157,15 @@ export type AccountInfo = {
   utxos: Array<UTxO>
   tokenBalance: TokenBundle
   shelleyBalances: {
-    stakingBalance?: number
-    nonStakingBalance?: number
-    rewardsAccountBalance?: number
+    stakingBalance: number
+    nonStakingBalance: number
+    rewardsAccountBalance: number
   }
   shelleyAccountInfo: {
     accountPubkeyHex: string
     shelleyXpub: any
     byronXpub: any
-    stakingKey: {path: []; pub: Buffer} | null
+    stakingKey: {path: []; pub: Buffer}
     stakingAccountAddress: string
     currentEpoch: number
     delegation: any
@@ -216,7 +218,7 @@ export interface StakingHistoryStakePool {
 
 export interface StakeDelegation extends StakingHistoryObject {
   newStakePool: StakingHistoryStakePool
-  oldStakePool?: StakingHistoryStakePool
+  oldStakePool?: StakingHistoryStakePool | null
   txHash: string
 }
 
@@ -330,7 +332,7 @@ export type RewardWithMetadata = NextRewardDetail & {
 export type NextRewardDetailsFormatted = {
   upcoming: Array<RewardWithMetadata>
   nearest: RewardWithMetadata
-  currentDelegation: RewardWithMetadata
+  currentDelegation: RewardWithMetadata | undefined
 }
 
 export type Balance = {
@@ -362,7 +364,7 @@ export type SendAddress = {
 export type TransactionSummary = {
   type: TxType
   fee: Lovelace
-  plan: TxPlan
+  plan: TxPlan | null
 } & (
   | SendTransactionSummary
   | WithdrawTransactionSummary
@@ -375,7 +377,7 @@ export type SendTransactionSummary = {
   type: TxType.SEND_ADA | TxType.CONVERT_LEGACY
   coins: Lovelace
   token: Token | null
-  address: Address
+  address: Address | null
   minimalLovelaceAmount: Lovelace
 }
 
@@ -404,7 +406,7 @@ export type PoolRegTransactionSummary = {
   shouldShowPoolCertSignModal: boolean
   ttl: number | null
   validityIntervalStart: number | null
-  witness: CborizedCliWitness
+  witness: CborizedCliWitness | null
   plan: TxPlan
   txBodyType: string
 }

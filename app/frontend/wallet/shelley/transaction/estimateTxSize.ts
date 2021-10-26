@@ -7,7 +7,7 @@ import {
   METADATA_HASH_BYTE_LENGTH,
   TX_WITNESS_SIZES,
 } from '../../constants'
-import {TxAuxiliaryData, TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../types'
+import {TxCertificate, TxPlanAuxiliaryData, TxInput, TxOutput, TxWithdrawal} from '../../types'
 import {isShelleyFormat, isV1Address} from '../helpers/addresses'
 import {
   cborizeTxAuxiliaryVotingData,
@@ -18,7 +18,7 @@ import {
 } from '../shelley-transaction'
 import {encode} from 'borc'
 
-function estimateAuxiliaryDataSize(auxiliaryData: TxAuxiliaryData) {
+function estimateAuxiliaryDataSize(auxiliaryData: TxPlanAuxiliaryData) {
   switch (auxiliaryData.type) {
     case 'CATALYST_VOTING': {
       const placeholderMetaSignature = 'x'.repeat(CATALYST_SIGNATURE_BYTE_LENGTH * 2)
@@ -36,7 +36,7 @@ export function estimateTxSize(
   outputs: Array<TxOutput>,
   certificates: Array<TxCertificate>,
   withdrawals: Array<TxWithdrawal>,
-  auxiliaryData: TxAuxiliaryData
+  auxiliaryData: TxPlanAuxiliaryData | null
 ): Lovelace {
   // the 1 is there for the key in the tx map
   const txInputsSize = encode(cborizeTxInputs(inputs)).length + 1

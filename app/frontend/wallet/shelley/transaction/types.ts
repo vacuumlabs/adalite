@@ -1,11 +1,11 @@
 import {Lovelace} from '../../../types'
-import {TxAuxiliaryData, TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../types'
+import {TxCertificate, TxInput, TxOutput, TxWithdrawal, TxPlanAuxiliaryData} from '../../types'
 
 export type TxPlanDraft = {
   outputs: TxOutput[]
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
-  auxiliaryData: TxAuxiliaryData
+  auxiliaryData: TxPlanAuxiliaryData | null
 }
 
 export type TxPlanResult =
@@ -31,5 +31,5 @@ export interface TxPlan {
   fee: Lovelace
   baseFee: Lovelace
   withdrawals: Array<TxWithdrawal>
-  auxiliaryData: TxAuxiliaryData
+  auxiliaryData: TxPlanAuxiliaryData | null
 }

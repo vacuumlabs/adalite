@@ -6,6 +6,7 @@ import delegateActions from './delegate'
 import loadingActions from './loading'
 import commonActions from './common'
 import {AccountInfo, AssetFamily, Lovelace} from '../types'
+import * as assert from 'assert'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -29,6 +30,7 @@ export default (store: Store) => {
     try {
       loadingAction(state, 'Loading account')
       const nextAccount = await getWallet().exploreNextAccount()
+      assert(state.validStakepoolDataProvider != null)
       const accountInfo = await nextAccount.getAccountInfo(state.validStakepoolDataProvider)
       // TODO: remove the type conversion
       const accountsInfo = [...state.accountsInfo, accountInfo] as AccountInfo[]

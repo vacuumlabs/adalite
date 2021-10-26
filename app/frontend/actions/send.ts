@@ -11,6 +11,7 @@ import {
 import {SendTransactionSummary, TxType, Lovelace, AssetFamily, Address, SendAmount} from '../types'
 import debounceEvent from '../helpers/debounceEvent'
 import {createTokenRegistrySubject} from '../tokenRegistry/tokenRegistry'
+import * as assert from 'assert'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -38,7 +39,8 @@ export default (store: Store) => {
       // TODO: we should have a tokenProvider to get token O(1)
       const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
         (token) => token.policyId === policyId && token.assetName === assetName
-      ).quantity
+      )?.quantity
+      assert(tokenBalance != null)
       const decimals =
         getState().tokensMetadata.get(createTokenRegistrySubject(policyId, assetName))?.decimals ||
         0
@@ -186,7 +188,7 @@ export default (store: Store) => {
     updateAmount(state, maxAmount)
   }
 
-  const sendMaxFunds = async (state: State, decimals: number) => {
+  const sendMaxFunds = async (state: State, decimals?: number) => {
     setState({calculatingFee: true})
     try {
       const maxAmounts = await getWallet()

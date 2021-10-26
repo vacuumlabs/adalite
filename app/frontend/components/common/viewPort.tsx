@@ -5,7 +5,7 @@ import {useState, useEffect} from 'preact/hooks'
 // we should optimalize it with context
 // https://blog.logrocket.com/developing-responsive-layouts-with-react-hooks/
 const useViewport = (): ScreenType => {
-  const [screenType, setScreenType] = useState<ScreenType>(undefined)
+  const [screenType, setScreenType] = useState<ScreenType>(ScreenType.DESKTOP)
 
   const handleScreenResize = () => {
     if (window.innerWidth < 768) {

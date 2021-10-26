@@ -36,6 +36,7 @@ import {
   TokenBundle,
   Address,
   LedgerTransportType,
+  LedgerTransportChoice,
 } from '../../types'
 import {
   Network,
@@ -62,8 +63,9 @@ import {
 } from '../../errors'
 import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import assertUnreachable from '../../helpers/assertUnreachable'
+import * as assert from 'assert'
 
-let _activeTransport: Transport | null = null
+let _activeTransport: Transport | null
 const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
   if (_activeTransport != null) {
     /*
@@ -79,18 +81,19 @@ const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Pro
   }
 
   switch (ledgerTransportType) {
-    case LedgerTransportType.WEB_HID:
+    case LedgerTransportChoice.WEB_HID:
       _activeTransport = await LedgerTransportWebHid.create()
       break
-    case LedgerTransportType.U2F:
+    case LedgerTransportChoice.U2F:
       _activeTransport = await LedgerTransportU2F.create()
       break
-    case LedgerTransportType.WEB_USB:
+    case LedgerTransportChoice.WEB_USB:
       _activeTransport = await LedgerTransportWebUsb.create()
       break
     default:
-      break
+      return assertUnreachable(ledgerTransportType)
   }
+  assert(_activeTransport != null)
 
   return _activeTransport
 }
@@ -166,7 +169,7 @@ const ShelleyLedgerCryptoProvider = async ({
 
   async function displayAddressForPath(
     absDerivationPath: BIP32Path,
-    stakingPath?: BIP32Path
+    stakingPath: BIP32Path
   ): Promise<void> {
     try {
       await ledger.showAddress({
@@ -455,8 +458,8 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   const prepareWitnesses = async (ledgerWitnesses: LedgerTypes.Witness[]) => {
-    const _shelleyWitnesses = []
-    const _byronWitnesses = []
+    const _shelleyWitnesses: Array<Promise<TxShelleyWitness>> = []
+    const _byronWitnesses: Array<Promise<TxByronWitness>> = []
     ledgerWitnesses.forEach((witness) => {
       isShelleyPath(witness.path)
         ? _shelleyWitnesses.push(prepareShelleyWitness(witness))
@@ -491,7 +494,7 @@ const ShelleyLedgerCryptoProvider = async ({
 
   function finalizeTxAuxWithMetadata(
     txAux: TxAux,
-    auxiliaryDataSupplement: LedgerTypes.TxAuxiliaryDataSupplement
+    auxiliaryDataSupplement: LedgerTypes.TxAuxiliaryDataSupplement | null
   ): FinalizedAuxiliaryDataTx {
     if (!txAux.auxiliaryData) {
       return {
@@ -501,6 +504,7 @@ const ShelleyLedgerCryptoProvider = async ({
     }
     switch (txAux.auxiliaryData.type) {
       case 'CATALYST_VOTING':
+        assert(auxiliaryDataSupplement != null)
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,

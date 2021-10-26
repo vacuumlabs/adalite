@@ -50,6 +50,7 @@ import {orderTokenBundle} from '../helpers/tokenFormater'
 import assertUnreachable from '../../helpers/assertUnreachable'
 import TrezorConnect, * as TrezorTypes from 'trezor-connect'
 import * as cbor from 'borc'
+import * as assert from 'assert'
 
 type CryptoProviderParams = {
   network: Network
@@ -130,7 +131,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   async function displayAddressForPath(
     absDerivationPath: BIP32Path,
-    stakingPath?: BIP32Path
+    stakingPath: BIP32Path
   ): Promise<void> {
     const addressParameters: TrezorTypes.CardanoAddressParameters = {
       addressType: AddressTypes.BASE, // TODO: retrieve from address
@@ -247,7 +248,6 @@ const ShelleyTrezorCryptoProvider = async ({
     }
     return {
       type: type as number,
-      path: null,
       poolParameters: {
         poolId: poolRegistrationParams.poolKeyHashHex,
         vrfKeyHash: poolRegistrationParams.vrfKeyHashHex,
@@ -260,6 +260,7 @@ const ShelleyTrezorCryptoProvider = async ({
         rewardAccount: encodeAddress(Buffer.from(poolRegistrationParams.rewardAccountHex, 'hex')),
         owners,
         relays: prepareStakepoolRelays(poolRegistrationParams.relays),
+        // @ts-expect-error - trezor types incorrectly enforce pool metadata to be non-null
         metadata: poolRegistrationParams.metadata
           ? {
             url: poolRegistrationParams.metadata.metadataUrl,
@@ -332,6 +333,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   const prepareByronWitness = (witness: TrezorTypes.CardanoSignedTxWitness): TxByronWitness => {
     const publicKey = Buffer.from(witness.pubKey, 'hex')
+    assert(witness.chainCode != null)
     const chainCode = Buffer.from(witness.chainCode, 'hex')
     // only v1 witnesses has address atributes
     // since trezor is v2 they are always {}
@@ -388,7 +390,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   function finalizeTxAuxWithMetadata(
     txAux: TxAux,
-    auxiliaryDataSupplement: TrezorTypes.CardanoAuxiliaryDataSupplement
+    auxiliaryDataSupplement: TrezorTypes.CardanoAuxiliaryDataSupplement | undefined
   ): FinalizedAuxiliaryDataTx {
     if (!txAux.auxiliaryData) {
       return {
@@ -398,6 +400,7 @@ const ShelleyTrezorCryptoProvider = async ({
     }
     switch (txAux.auxiliaryData.type) {
       case 'CATALYST_VOTING':
+        assert(auxiliaryDataSupplement && auxiliaryDataSupplement.catalystSignature != null)
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,
@@ -431,10 +434,10 @@ const ShelleyTrezorCryptoProvider = async ({
 
     const validityIntervalStart = txAux.validityIntervalStart
       ? `${txAux.validityIntervalStart}`
-      : null
+      : undefined
     const formattedAuxiliaryData = txAux.auxiliaryData
       ? formatAuxiliaryData(txAux.auxiliaryData)
-      : null
+      : undefined
     const request: TrezorTypes.CommonParams & TrezorTypes.CardanoSignTransaction = {
       signingMode,
       inputs,

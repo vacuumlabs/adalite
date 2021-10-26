@@ -23,6 +23,7 @@ import {encode} from 'borc'
 import {InternalError, InternalErrorReason} from '../errors'
 import {usingHwWalletSelector} from '../selectors'
 import {TxSummary} from '../wallet/backend-types'
+import * as assert from 'assert'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -62,6 +63,7 @@ export default (store: Store) => {
         loadingAction(state, 'Preparing transaction plan...')
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
         const retriedState = getState()
+        assert(retriedState.sendTransactionSummary.plan != null)
         txAux = await getWallet()
           .getAccount(sourceAccountIndex)
           .prepareTxAux(retriedState.sendTransactionSummary.plan)
@@ -113,6 +115,7 @@ export default (store: Store) => {
   const confirmTransactionOld = async (state: State, txConfirmType: TxType): Promise<void> => {
     const txPlan = state.sendTransactionSummary.plan
     const {sourceAccountIndex} = state
+    assert(txPlan != null)
     return await _confirmTransaction(state, {txConfirmType, txPlan, sourceAccountIndex})
   }
 
@@ -214,6 +217,7 @@ export default (store: Store) => {
     let txSubmitResult
     const txTab = txSummary.type
     try {
+      assert(txSummary.plan != null)
       const txAux = await getWallet()
         .getAccount(sourceAccountIndex)
         .prepareTxAux(txSummary.plan)
@@ -285,7 +289,7 @@ export default (store: Store) => {
         fieldValue: '',
         coins: 0 as Lovelace,
       })
-    const coins = sendAmount.assetFamily === AssetFamily.ADA && sendAmount.coins
+    const coins = sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
     const txPlanResult = await prepareTxPlan({
       address,
       sendAmount,

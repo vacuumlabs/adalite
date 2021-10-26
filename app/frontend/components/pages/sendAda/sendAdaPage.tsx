@@ -30,6 +30,7 @@ import {FormattedAssetItem} from '../../common/asset'
 import {shouldDisableSendingButton} from '../../../helpers/common'
 import printTokenAmount from '../../../helpers/printTokenAmount'
 import {createTokenRegistrySubject} from '../../../../frontend/tokenRegistry/tokenRegistry'
+import * as assert from 'assert'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -49,9 +50,11 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
   )
 
 type DropdownAssetItem = Token & {
-  fingerprint: string
+  fingerprint: string | null
+  policyId: string
+  assetName: string
   type: AssetFamily
-  ticker: string
+  ticker: string | undefined
   assetNameUtf8: string
 }
 
@@ -165,7 +168,7 @@ const SendAdaPage = ({
 
   const adaAsset: DropdownAssetItem = {
     type: AssetFamily.ADA,
-    policyId: null,
+    policyId: '',
     assetName: 'ADA',
     fingerprint: null,
     quantity: balance,
@@ -203,12 +206,13 @@ const SendAdaPage = ({
         item.assetName === sendAmount.token.assetName && item.policyId === sendAmount.token.policyId
     )
   }, [adaAsset, dropdownAssetItems, sendAmount])
+  assert(selectedAsset != null)
 
   const submitHandler = async () => {
     await confirmTransactionOld(TxType.SEND_ADA)
   }
 
-  const safeIncludes = (subString: string, string: string) =>
+  const safeIncludes = (subString: string, string: string | null | undefined) =>
     !!string && !!subString && string.toLowerCase().includes(subString.toLocaleLowerCase())
 
   const searchPredicate = useCallback(
@@ -226,13 +230,13 @@ const SendAdaPage = ({
 
   const updateSentAssetPair = useCallback(
     (dropdownAssetItem: DropdownAssetItem, fieldValue: string) => {
-      if (dropdownAssetItem.type === AssetFamily.ADA) {
+      if (dropdownAssetItem?.type === AssetFamily.ADA) {
         updateAmount({
           assetFamily: AssetFamily.ADA,
           fieldValue,
           coins: parseCoins(fieldValue) || (0 as Lovelace),
         })
-      } else if (dropdownAssetItem.type === AssetFamily.TOKEN) {
+      } else if (dropdownAssetItem?.type === AssetFamily.TOKEN) {
         updateAmount({
           assetFamily: AssetFamily.TOKEN,
           fieldValue,
@@ -384,7 +388,7 @@ const SendAdaPage = ({
         />
         <button
           className="button send-max"
-          onClick={() => sendMaxFunds(tokenDecimals)}
+          onClick={() => sendMaxFunds(tokenDecimals || undefined)}
           disabled={!isSendAddressValid || !balance}
         >
           Max
@@ -434,7 +438,7 @@ const SendAdaPage = ({
             </div>
           ) : (
             <div className="send-total-ada">
-              {totalTokens?.quantity != null
+              {totalTokens?.quantity != null && tokenDecimals != null
                 ? printTokenAmount(totalTokens.quantity, tokenDecimals)
                 : 0}{' '}
               <FormattedAssetItem {...selectedAsset}>

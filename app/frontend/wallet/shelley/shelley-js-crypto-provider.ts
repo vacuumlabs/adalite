@@ -39,6 +39,7 @@ import {
 } from './types'
 import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import assertUnreachable from '../../helpers/assertUnreachable'
+import * as assert from 'assert'
 
 type CryptoProviderParams = {
   walletSecretDef: any
@@ -129,8 +130,8 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   const prepareWitnesses = async (txAux: TxAux, addressToAbsPathMapper: AddressToPathMapper) => {
     const {inputs, certificates, withdrawals, getId} = txAux
     const txHash = getId()
-    const _shelleyWitnesses = []
-    const _byronWitnesses = []
+    const _shelleyWitnesses: Array<Promise<TxShelleyWitness>> = []
+    const _byronWitnesses: Array<Promise<TxByronWitness>> = []
 
     // TODO: we should create witnesses only with unique addresses
 
@@ -156,6 +157,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     const cborizedRegistrationData = new Map([cborizeTxVotingRegistration(auxiliaryData)])
     const registrationDataHash = blake2b(encode(cborizedRegistrationData), 32).toString('hex')
     const stakingPath = auxiliaryData.rewardDestinationAddress.stakingPath
+    assert(stakingPath != null)
     const registrationDataWitness = await prepareShelleyWitness(registrationDataHash, stakingPath)
     const registrationDataSignature = registrationDataWitness.signature.toString('hex')
     const txAuxiliaryData = cborizeTxAuxiliaryVotingData(auxiliaryData, registrationDataSignature)

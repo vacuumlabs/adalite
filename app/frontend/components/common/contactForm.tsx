@@ -52,7 +52,9 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
               this.setState({submitted: true})
             }}
             ref={(element) => {
-              this.contactForm = element
+              if (element) {
+                this.contactForm = element
+              }
             }}
           >
             <div className="form-row">

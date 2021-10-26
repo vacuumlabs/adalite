@@ -7,6 +7,7 @@ import printAda from '../helpers/printAda'
 import {MAX_OUTPUT_TOKENS} from './shelley/transaction/constants'
 import {createTokenChangeOutputs} from './shelley/transaction/utils'
 import printTokenAmount from '../helpers/printTokenAmount'
+import * as assert from 'assert'
 
 function getInputBalance(inputs: Array<UTxO>): Lovelace {
   return inputs.reduce((acc, input) => acc + input.coins, 0) as Lovelace
@@ -56,7 +57,7 @@ export const MaxAmountCalculator = () => {
           token.policyId === sendAmount.token.policyId &&
           token.assetName === sendAmount.token.assetName
       )
-
+      assert(sendToken != null)
       return {
         assetFamily: AssetFamily.TOKEN,
         token: sendToken,

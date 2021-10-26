@@ -12,6 +12,7 @@ import {saveAs} from '../../../libs/file-saver'
 import {CborizedCliWitness} from '../../../wallet/shelley/types'
 import {usingHwWalletSelector} from '../../../../frontend/selectors'
 import {transformSignatureToCliFormat} from '../../../../frontend/wallet/shelley/helpers/stakepoolRegistrationUtils'
+import * as assert from 'assert'
 
 interface Props {
   loadPoolCertificateTx: any
@@ -52,6 +53,7 @@ const PoolOwnerCard = ({
   }
 
   const handleDownloadWitness = () => {
+    assert(witness != null && txBodyType != null)
     downloadPoolWitness(witness, txBodyType)
   }
 

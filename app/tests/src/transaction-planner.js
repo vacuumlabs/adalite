@@ -1,7 +1,8 @@
 import assert from 'assert'
 import {selectMinimalTxPlan} from '../../frontend/wallet/shelley/transaction'
-import {AssetFamily, TxType} from '../..//frontend/types'
+import {AssetFamily, TxType} from '../../frontend/types'
 import {UnexpectedErrorReason} from '../../frontend/errors'
+
 const tokens = {
   token1: {
     policyId: 'ca37dd6b151b6a1d023ecbd22d7e881d814b0c58a3a3148b42b865a0',

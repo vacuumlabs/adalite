@@ -15,10 +15,10 @@ const LoadKeyFile = (): h.JSX.Element => {
   const [fileName, setFileName] = useState<string>('')
   const [keyFile, setKeyFile] = useState<any>(undefined)
   const [encrypted, setEncrypted] = useState<boolean>(false)
-  const [keyfileError, setKeyfileError] = useState<string>('')
+  const [keyfileError, setKeyfileError] = useState<string | undefined>('')
   const [password, setPassword] = useState<string>('')
   const [passwordError, setPasswordError] = useState<string | undefined>('')
-  const filePasswordField = useRef(null)
+  const filePasswordField = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const closePasswordModal = (e) => {
@@ -134,8 +134,8 @@ const LoadKeyFile = (): h.JSX.Element => {
           )}
           onKeyDown={(e) => {
             e.key === 'Enter' && (e.target as HTMLButtonElement).click()
-            if (e.key === 'Tab') {
-              filePasswordField.current.focus(e)
+            if (e.key === 'Tab' && filePasswordField.current) {
+              filePasswordField.current.focus(e as FocusOptions)
               e.preventDefault()
             }
           }}

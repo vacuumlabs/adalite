@@ -10,6 +10,7 @@ import {
 } from '../wallet/shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason} from '../errors'
 import {usingHwWalletSelector} from '../selectors'
+import * as assert from 'assert'
 
 export default (store: Store) => {
   const {setState} = store
@@ -66,14 +67,7 @@ export default (store: Store) => {
 
   const resetPoolRegTransactionSummary = (state: State) => {
     setState({
-      poolRegTransactionSummary: {
-        shouldShowPoolCertSignModal: false,
-        ttl: null,
-        validityIntervalStart: null,
-        witness: null,
-        plan: null,
-        txBodyType: null,
-      },
+      poolRegTransactionSummary: {plan: null, shouldShowPoolCertSignModal: false},
       poolRegTxError: null,
     })
   }
@@ -92,11 +86,11 @@ export default (store: Store) => {
         throw new InternalError(InternalErrorReason.PoolRegNoHwWallet)
       }
 
+      assert(state.poolRegTransactionSummary.plan != null)
       const {plan, ttl, validityIntervalStart} = state.poolRegTransactionSummary
-
       const txAux = await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .prepareTxAux(plan, ttl, validityIntervalStart)
+        .prepareTxAux(plan, ttl || undefined, validityIntervalStart || undefined)
       const witness = await getWallet()
         .getAccount(state.sourceAccountIndex)
         .witnessPoolRegTxAux(txAux)

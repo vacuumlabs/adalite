@@ -167,7 +167,7 @@ const FileContent = () => (
   </div>
 )
 
-const SidebarContentByAuthMethod = ({authMethod}: {authMethod: AuthMethodType}) => {
+const SidebarContentByAuthMethod = ({authMethod}: {authMethod: AuthMethodType | null}) => {
   switch (authMethod) {
     case null:
       return <InitialContent />

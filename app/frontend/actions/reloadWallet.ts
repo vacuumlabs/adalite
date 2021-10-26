@@ -4,6 +4,7 @@ import commonActions from './common'
 import walletActions, {getWallet} from './wallet'
 import sleep from '../helpers/sleep'
 import {getDateDiffInSeconds} from '../helpers/common'
+import * as assert from 'assert'
 
 export default (store: Store) => {
   const {setError} = errorActions(store)
@@ -11,7 +12,6 @@ export default (store: Store) => {
   const {setState} = store
   const {setWalletOperationStatusType} = commonActions(store)
 
-  const wallet = getWallet()
   let _lastWalletReloadTime = new Date(0)
   const setLastReloadTime = (time: Date) => {
     _lastWalletReloadTime = time
@@ -23,9 +23,11 @@ export default (store: Store) => {
 
   const reloadWalletInfo = async (state: State): Promise<void> => {
     setWalletOperationStatusType(state, 'reloading')
+    const wallet = getWallet()
     const previousWalletReloadTime = _lastWalletReloadTime
     try {
       updateLastReloadTime()
+      assert(state.validStakepoolDataProvider != null)
       const accountsInfo = await wallet.getAccountsInfo(state.validStakepoolDataProvider)
       const tokensMetadata = await wallet.getTokensMetadata(accountsInfo)
 

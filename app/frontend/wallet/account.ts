@@ -31,7 +31,7 @@ import {bechAddressToHex, isBase, addressToHex} from './shelley/helpers/addresse
 import {ShelleyTxAux} from './shelley/shelley-transaction'
 import blockchainExplorer from './blockchain-explorer'
 import {TxAux} from './shelley/types'
-import {UTxO, TxOutput, TxAuxiliaryData} from './types'
+import {UTxO, TxOutput, TxAuxiliaryData, TxPlanAuxiliaryData} from './types'
 import {aggregateTokenBundles} from './helpers/tokenFormater'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
@@ -43,7 +43,7 @@ const DummyAddressManager = () => {
     discoverAddresses: (): Promise<Address[]> => Promise.resolve([]),
     discoverAddressesWithMeta: (): Promise<AddressWithMeta[]> => Promise.resolve([]),
     getAddressToAbsPathMapping: (): AddressToPathMapping => ({}),
-    _deriveAddress: (): Promise<Address> => Promise.resolve(null),
+    _deriveAddress: (): Promise<null> => Promise.resolve(null),
   }
 }
 
@@ -202,8 +202,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     }
   }
 
-  function mapAuxiliaryData(auxiliaryData: TxAuxiliaryData): TxAuxiliaryData {
-    if (!auxiliaryData) return null
+  function mapAuxiliaryData(auxiliaryData: TxPlanAuxiliaryData): TxAuxiliaryData {
     if (auxiliaryData.type === 'CATALYST_VOTING') {
       const rewardAddress = auxiliaryData.rewardDestinationAddress.address
       return {
@@ -229,7 +228,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     }))
     const txTtl = ttl === undefined ? await calculateTtl() : ttl
     const txValidityIntervalStart = validityIntervalStart ?? null
-    const mappedAuxiliaryData = mapAuxiliaryData(auxiliaryData)
+    const mappedAuxiliaryData = auxiliaryData ? mapAuxiliaryData(auxiliaryData) : null
 
     return ShelleyTxAux({
       inputs,
@@ -290,7 +289,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     )
     const nonStakingUtxos = sortedUtxos.filter(({address}) => !isBase(addressToHex(address)))
     const baseAddressUtxos = sortedUtxos.filter(({address}) => isBase(addressToHex(address)))
-    const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
+    const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle?.length === 0)
     const tokenUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
 
     if (
