@@ -4,8 +4,8 @@ import {useState, useEffect} from 'preact/hooks'
 // we could export this and use it in other places, in that case
 // we should optimalize it with context
 // https://blog.logrocket.com/developing-responsive-layouts-with-react-hooks/
-const useViewport = (): ScreenType => {
-  const [screenType, setScreenType] = useState<ScreenType>(undefined)
+const useViewport = (): ScreenType | undefined => {
+  const [screenType, setScreenType] = useState<ScreenType | undefined>(undefined)
 
   const handleScreenResize = () => {
     if (window.innerWidth < 768) {
@@ -31,8 +31,8 @@ const isSmallerThanDesktop = (screenType: ScreenType): boolean => {
   return [ScreenType.MOBILE, ScreenType.TABLET].includes(screenType)
 }
 
-const isBiggerThanMobile = (screenType: ScreenType): boolean => {
-  return [ScreenType.TABLET, ScreenType.DESKTOP].includes(screenType)
+const isBiggerThanMobile = (screenType: ScreenType | undefined): boolean => {
+  return !!(screenType && [ScreenType.TABLET, ScreenType.DESKTOP].includes(screenType))
 }
 
 export {useViewport, isSmallerThanDesktop, isBiggerThanMobile}

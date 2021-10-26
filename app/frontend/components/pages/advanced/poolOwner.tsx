@@ -69,7 +69,9 @@ const PoolOwnerCard = ({
   }
 
   const handleDownloadWitness = () => {
-    downloadPoolWitness(witness, txBodyType)
+    if (witness && txBodyType) {
+      downloadPoolWitness(witness, txBodyType)
+    }
   }
 
   const readFile = async (targetFile) => {

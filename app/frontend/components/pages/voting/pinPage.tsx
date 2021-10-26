@@ -24,7 +24,7 @@ const PinPage = ({
   // https://github.com/preactjs/preact/issues/1899
   // PIN is encapsulated due to bug in preact which makes inputs uncontrolled
   const [confirmPin, setConfirmPin] = useState({value: ''})
-  const [validationError, setValidationError] = useState(null)
+  const [validationError, setValidationError] = useState<string | null>(null)
   const {resetWalletOperationStatusType} = useActions(actions)
 
   const updateConfirmPin = (e): void => {

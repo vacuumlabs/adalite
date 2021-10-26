@@ -159,7 +159,7 @@ const AuthCard = ({
   toggleDropdown,
 }: {
   authMethod: AuthMethodType
-  screenType: ScreenType
+  screenType: ScreenType | undefined
   isDropdownOpen: boolean
   toggleDropdown: () => void
 }) => (

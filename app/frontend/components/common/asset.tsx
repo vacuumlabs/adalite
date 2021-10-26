@@ -20,7 +20,7 @@ export const LinkToAsset = ({policyIdHex, assetNameHex}: LinkToAssetProps) => (
 )
 
 export type FormattedAssetItemProps = Token & {
-  fingerprint: string
+  fingerprint: string | null
   type: AssetFamily
 }
 
@@ -37,13 +37,13 @@ export const FormattedAssetItem = ({
     icon: h.JSX.Element
     formattedAssetName: h.JSX.Element | string
     formattedAssetIconName: h.JSX.Element
-    formattedAssetLink: h.JSX.Element
+    formattedAssetLink: h.JSX.Element | null
     formattedAmount: string
-    formattedPolicy: h.JSX.Element
-    formattedFingerprint: h.JSX.Element
-    formattedDescription: h.JSX.Element
-    formattedTicker: h.JSX.Element
-    formattedUrl: h.JSX.Element
+    formattedPolicy: h.JSX.Element | null
+    formattedFingerprint: h.JSX.Element | null
+    formattedDescription: h.JSX.Element | null
+    formattedTicker: h.JSX.Element | null
+    formattedUrl: h.JSX.Element | null
   }) => h.JSX.Element
 }) => {
   const metadata = useSelector((state) =>
@@ -107,27 +107,28 @@ export const FormattedAssetItem = ({
         <FormattedAssetName />
       </div>
     ),
-    formattedAssetLink: type === AssetFamily.TOKEN && (
-      <LinkToAsset policyIdHex={policyId} assetNameHex={assetName} />
-    ),
+    formattedAssetLink:
+      type === AssetFamily.TOKEN ? (
+        <LinkToAsset policyIdHex={policyId} assetNameHex={assetName} />
+      ) : null,
     formattedAmount: FormattedAmount(),
-    formattedPolicy: policyId && (
+    formattedPolicy: policyId ? (
       <div className="multi-asset-hash">
         <StringEllipsis value={policyId} length={6} />
       </div>
-    ),
-    formattedFingerprint: fingerprint && (
+    ) : null,
+    formattedFingerprint: fingerprint ? (
       <div className="multi-asset-hash">
         <StringEllipsis value={fingerprint} length={6} />
       </div>
-    ),
-    formattedDescription: metadata?.description && <div>{metadata.description}</div>,
-    formattedTicker: metadata?.ticker && <div>{metadata.ticker}</div>,
-    formattedUrl: metadata?.url && (
+    ) : null,
+    formattedDescription: metadata?.description ? <div>{metadata.description}</div> : null,
+    formattedTicker: metadata?.ticker ? <div>{metadata.ticker}</div> : null,
+    formattedUrl: metadata?.url ? (
       <div className={styles.homepage}>
         <HomePageIcon />
         <a href={metadata.url}>{metadata.url}</a>
       </div>
-    ),
+    ) : null,
   })
 }

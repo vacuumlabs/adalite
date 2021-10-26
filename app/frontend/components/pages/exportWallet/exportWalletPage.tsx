@@ -98,7 +98,7 @@ class ExportWalletDialog extends Component<Props, State> {
       password: e.target.value,
       isPasswordValid: passwordValid,
       showError: passwordsTouched && !passwordValid,
-      errorMessage: !passwordValid && 'Both passwords must match',
+      errorMessage: !passwordValid ? 'Both passwords must match' : '',
       warningMessage: secureWarningMsg,
     })
   }
@@ -110,7 +110,7 @@ class ExportWalletDialog extends Component<Props, State> {
       confirmation: e.target.value,
       isPasswordValid: passwordValid,
       showError: passwordsTouched && !passwordValid,
-      errorMessage: !passwordValid && 'Both passwords must match',
+      errorMessage: !passwordValid ? 'Both passwords must match' : '',
     })
   }
 
@@ -122,9 +122,9 @@ class ExportWalletDialog extends Component<Props, State> {
       walletNameValid,
       showError: !walletNameValid && walletName !== '',
       errorMessage:
-        !walletNameValid &&
-        walletName !== '' &&
-        'Allowed characters for wallet name are only a-z, A-Z, 0-9, -, _',
+        !walletNameValid && walletName !== ''
+          ? 'Allowed characters for wallet name are only a-z, A-Z, 0-9, -, _'
+          : '',
     })
   }
 
@@ -136,9 +136,8 @@ class ExportWalletDialog extends Component<Props, State> {
     this.setState({confirmationTouched: true})
   }
 
-  render(
-    props,
-    {
+  render() {
+    const {
       confirmation,
       password,
       walletName,
@@ -147,8 +146,7 @@ class ExportWalletDialog extends Component<Props, State> {
       errorMessage,
       warningMessage,
       walletNameValid,
-    }
-  ) {
+    } = this.state
     return (
       <div className="page-wrapper">
         <main className="page-main">
@@ -227,7 +225,4 @@ class ExportWalletDialog extends Component<Props, State> {
   }
 }
 
-export default connect(
-  undefined,
-  actions
-)(ExportWalletDialog)
+export default connect((state) => state, actions)(ExportWalletDialog)

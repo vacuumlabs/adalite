@@ -12,7 +12,7 @@ type TileProps = {
   accountIndex: number
   ticker: string | null
   availableBalance: number | null
-  rewardsBalance: number | null
+  rewardsBalance: number | null | undefined
   shouldShowSaturatedBanner: boolean
   shouldShowAccountInfo?: boolean
 }

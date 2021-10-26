@@ -8,13 +8,13 @@ import tooltip from '../../common/tooltip'
 // is "hasTickerMapping" something specific or general?
 type Error = {
   code: string
-  params?: {hasTickerMapping: boolean}
+  params?: {hasTickerMapping: boolean | undefined}
 }
 
 type StakePoolInfoProps = {
-  pool?: Stakepool
+  pool?: Stakepool | null
   gettingPoolInfo: boolean
-  validationError: Error
+  validationError: Error | null
 }
 
 export const StakePoolInfo = ({
@@ -23,7 +23,7 @@ export const StakePoolInfo = ({
   validationError,
 }: StakePoolInfoProps): h.JSX.Element => {
   const print = (
-    fieldValue: string | number | null,
+    fieldValue: string | number | null | undefined,
     format?: (fieldValue: string | number) => string | h.JSX.Element
   ): string | h.JSX.Element => {
     if (pool) {

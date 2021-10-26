@@ -25,8 +25,16 @@ const isValidEmail = (email) => {
   return re.test(email)
 }
 
+interface UseEmailSubmitPropsState {
+  email: string
+  emailValid: boolean
+  errorMessage: string
+  emailSubmitSuccess: boolean
+  emailSubmitMessage: string
+}
+
 const useEmailSubmitProps = () => {
-  const [state, setState] = useState({
+  const [state, setState] = useState<UseEmailSubmitPropsState>({
     email: '',
     emailValid: false,
     errorMessage: '',
@@ -41,7 +49,7 @@ const useEmailSubmitProps = () => {
       setState({
         email,
         emailValid,
-        errorMessage: !emailValid && 'Invalid email format',
+        errorMessage: emailValid ? '' : 'Invalid email format',
         emailSubmitSuccess: false,
         emailSubmitMessage: '',
       })

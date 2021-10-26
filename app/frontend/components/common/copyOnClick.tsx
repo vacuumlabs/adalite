@@ -58,16 +58,15 @@ class CopyOnClick extends Component<Props, {copied: boolean}> {
     }
   }
 
-  render(
-    {
+  render() {
+    const {
       children,
       elementClass = '',
       copy = true,
       enableTooltip = true,
       tooltipMessage = 'Copied to clipboard',
-    },
-    {copied}
-  ) {
+    } = this.props
+    const {copied} = this.state
     return (
       <span
         className={`${elementClass} thin-data-balloon`}

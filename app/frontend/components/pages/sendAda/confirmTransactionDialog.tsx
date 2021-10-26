@@ -68,7 +68,7 @@ const SendAdaReview = ({
   const {address, coins, fee, minimalLovelaceAmount, token} = transactionSummary
   const lovelaceAmount = (coins + minimalLovelaceAmount) as Lovelace
   const total = (coins + fee + minimalLovelaceAmount) as Lovelace
-  const formattedAssetItemProps: FormattedAssetItemProps = token && {
+  const formattedAssetItemProps: FormattedAssetItemProps | null = token && {
     ...token,
     fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
     type: AssetFamily.TOKEN,
@@ -88,7 +88,7 @@ const SendAdaReview = ({
         </div>
         <div className="ada-label">Amount</div>
         <div className="review-amount">{printAda(lovelaceAmount as Lovelace)}</div>
-        {token && (
+        {token && formattedAssetItemProps && (
           <FormattedAssetItem {...formattedAssetItemProps}>
             {({formattedAssetIconName, formattedAmount, formattedFingerprint}) => {
               return (
@@ -241,9 +241,9 @@ const WithdrawReview = ({
       <div className="review">
         <div className="review-label">Address</div>
         <div className="review-address">
-          {transactionSummary.plan.change[0].address}
+          {transactionSummary.plan?.change[0].address}
           <div className="review-address-verification">
-            <AddressVerification address={transactionSummary.plan.change[0].address} />
+            <AddressVerification address={transactionSummary.plan?.change[0].address} />
           </div>
         </div>
         <div className="ada-label">Rewards</div>
@@ -270,14 +270,16 @@ const VotingRegistrationReview = ({
       <div className="review">
         <div className="review-label">Reward address</div>
         <div className="review-address">
-          {transactionSummary.plan.auxiliaryData.rewardDestinationAddress.address}
+          {transactionSummary?.plan?.auxiliaryData?.rewardDestinationAddress.address}
         </div>
         <div className="review-label">Voting key</div>
         <div className="review-amount">
-          {encodeCatalystVotingKey(transactionSummary.plan.auxiliaryData.votingPubKey)}
+          {transactionSummary.plan?.auxiliaryData?.votingPubKey
+            ? encodeCatalystVotingKey(transactionSummary.plan.auxiliaryData?.votingPubKey)
+            : null}
         </div>
         <div className="review-label">Nonce</div>
-        <div className="review-amount">{`${transactionSummary.plan.auxiliaryData.nonce}`}</div>
+        <div className="review-amount">{`${transactionSummary.plan?.auxiliaryData?.nonce}`}</div>
         <div className="ada-label">Fee</div>
         <div className="review-fee" data-cy="VotingFeeAmount">
           {printAda(fee)}
@@ -363,34 +365,32 @@ const ConfirmTransactionDialog = () => {
   const hideDefaultSummary = txConfirmType === TxType.DEREGISTER_STAKE_KEY
 
   const onSubmit = () => {
-    const txSummary = isRefactoredCase
-      ? cachedTransactionSummaries[txConfirmType]
-      : transactionSummary
+    const cachedSummary = txConfirmType && cachedTransactionSummaries[txConfirmType]
+    const txSummary = isRefactoredCase && cachedSummary ? cachedSummary : transactionSummary
     return submitTransaction({sendAddress, sourceAccountIndex, txSummary})
   }
 
   // Refactor: tmp util till all transactions types use "cachedTransactionSummaries"
   const getModalBody = () => {
     // Refactored cases:
-    if (txConfirmType === TxType.DEREGISTER_STAKE_KEY) {
+    const deregisterTransactionSummary = cachedTransactionSummaries[TxType.DEREGISTER_STAKE_KEY]
+    const delegateTransactionSummary = cachedTransactionSummaries[TxType.DELEGATE]
+    const registerTransactionSummary = cachedTransactionSummaries[TxType.REGISTER_VOTING]
+    if (txConfirmType === TxType.DEREGISTER_STAKE_KEY && deregisterTransactionSummary) {
       return (
         <DeregisterStakeKeyReview
-          transactionSummary={cachedTransactionSummaries[TxType.DEREGISTER_STAKE_KEY]}
+          transactionSummary={deregisterTransactionSummary}
           onSubmit={onSubmit}
           onCancel={cancelTransaction}
         />
       )
     }
-    if (txConfirmType === TxType.DELEGATE) {
-      return <DelegateReview transactionSummary={cachedTransactionSummaries[TxType.DELEGATE]} />
+    if (txConfirmType === TxType.DELEGATE && delegateTransactionSummary) {
+      return <DelegateReview transactionSummary={delegateTransactionSummary} />
     }
 
-    if (txConfirmType === TxType.REGISTER_VOTING) {
-      return (
-        <VotingRegistrationReview
-          transactionSummary={cachedTransactionSummaries[TxType.REGISTER_VOTING]}
-        />
-      )
+    if (txConfirmType === TxType.REGISTER_VOTING && registerTransactionSummary) {
+      return <VotingRegistrationReview transactionSummary={registerTransactionSummary} />
     }
 
     // To be refactored cases:
@@ -414,7 +414,9 @@ const ConfirmTransactionDialog = () => {
   const enablesRawTransaction = !(txConfirmType === TxType.REGISTER_VOTING)
   const modalTitle = (() => {
     if (isCrossAccount) return 'Transaction between accounts review'
-    return isRefactoredCase ? titleMap[txConfirmType] : titleMap[transactionSummary.type]
+    return isRefactoredCase && txConfirmType
+      ? titleMap[txConfirmType]
+      : titleMap[transactionSummary.type]
   })()
 
   return (

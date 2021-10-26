@@ -42,7 +42,8 @@ class NavbarAuth extends Component<Props, {}> {
     }
   }
 
-  render({isDemoWallet, logout, openWelcome, openInfoModal}) {
+  render() {
+    const {isDemoWallet, logout, openWelcome, openInfoModal} = this.props
     return (
       <nav
         className={`navbar authed ${isDemoWallet ? 'demo' : ''}`}

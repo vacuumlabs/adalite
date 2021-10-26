@@ -49,9 +49,11 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
   )
 
 type DropdownAssetItem = Token & {
-  fingerprint: string
+  fingerprint: string | null
+  policyId: string
+  assetName: string
   type: AssetFamily
-  ticker: string
+  ticker: string | undefined
   assetNameUtf8: string
 }
 
@@ -119,14 +121,14 @@ const SendAdaPage = ({
     sendAmountValidationError: state.sendAmountValidationError,
     sendAmount: state.sendAmount,
     tokenDecimals:
-      state.sendAmount.assetFamily === AssetFamily.TOKEN
+      state.sendAmount.assetFamily === AssetFamily.TOKEN && state.sendAmount.token.policyId
         ? state.tokensMetadata.get(
           createTokenRegistrySubject(
             state.sendAmount.token.policyId,
             state.sendAmount.token.assetName
           )
         )?.decimals || 0
-        : null,
+        : 0,
     tokensMetadata: state.tokensMetadata,
     feeRecalculating: state.calculatingFee,
     conversionRates: state.conversionRates && state.conversionRates.data,
@@ -165,7 +167,7 @@ const SendAdaPage = ({
 
   const adaAsset: DropdownAssetItem = {
     type: AssetFamily.ADA,
-    policyId: null,
+    policyId: '',
     assetName: 'ADA',
     fingerprint: null,
     quantity: balance,
@@ -208,7 +210,7 @@ const SendAdaPage = ({
     await confirmTransactionOld(TxType.SEND_ADA)
   }
 
-  const safeIncludes = (subString: string, string: string) =>
+  const safeIncludes = (subString: string, string: string | null | undefined) =>
     !!string && !!subString && string.toLowerCase().includes(subString.toLocaleLowerCase())
 
   const searchPredicate = useCallback(
@@ -225,14 +227,14 @@ const SendAdaPage = ({
   )
 
   const updateSentAssetPair = useCallback(
-    (dropdownAssetItem: DropdownAssetItem, fieldValue: string) => {
-      if (dropdownAssetItem.type === AssetFamily.ADA) {
+    (dropdownAssetItem: DropdownAssetItem | undefined, fieldValue: string) => {
+      if (dropdownAssetItem?.type === AssetFamily.ADA) {
         updateAmount({
           assetFamily: AssetFamily.ADA,
           fieldValue,
           coins: parseCoins(fieldValue) || (0 as Lovelace),
         })
-      } else if (dropdownAssetItem.type === AssetFamily.TOKEN) {
+      } else if (dropdownAssetItem?.type === AssetFamily.TOKEN) {
         updateAmount({
           assetFamily: AssetFamily.TOKEN,
           fieldValue,
@@ -357,7 +359,7 @@ const SendAdaPage = ({
   const amountInput = (
     <Fragment>
       <label
-        className={`ada-label amount ${selectedAsset.type === AssetFamily.TOKEN ? 'token' : ''}`}
+        className={`ada-label amount ${selectedAsset?.type === AssetFamily.TOKEN ? 'token' : ''}`}
         htmlFor={`${isModal ? 'account' : ''}send-amount`}
       >
         Amount
@@ -368,7 +370,7 @@ const SendAdaPage = ({
           id={`${isModal ? 'account' : ''}send-amount`}
           name={`${isModal ? 'account' : ''}send-amount`}
           data-cy={`${isModal ? 'Account' : ''}SendAmountField`}
-          placeholder={selectedAsset.type === AssetFamily.ADA ? '0.000000' : '0'}
+          placeholder={selectedAsset?.type === AssetFamily.ADA ? '0.000000' : '0'}
           value={sendAmount.fieldValue}
           onInput={handleAmountOnInput}
           autoComplete="off"
@@ -404,7 +406,7 @@ const SendAdaPage = ({
         <div className="send-fee" data-cy="SendFeeAmount">
           {printAda(transactionFee)}
         </div>
-        {selectedAsset.type === AssetFamily.TOKEN && (
+        {selectedAsset?.type === AssetFamily.TOKEN && (
           <Fragment>
             <div className="send-label">
               Min ADA
@@ -427,7 +429,7 @@ const SendAdaPage = ({
       <div className="send-total">
         <div className="send-total-title">Total</div>
         <div className="send-total-inner">
-          {selectedAsset.type === AssetFamily.ADA ? (
+          {selectedAsset?.type === AssetFamily.ADA ? (
             <div className="send-total-ada">
               {printAda(totalLovelace)}
               <AdaIcon />
@@ -437,21 +439,23 @@ const SendAdaPage = ({
               {totalTokens?.quantity != null
                 ? printTokenAmount(totalTokens.quantity, tokenDecimals)
                 : 0}{' '}
-              <FormattedAssetItem {...selectedAsset}>
-                {({formattedAssetIconName}) => {
-                  return <Fragment>{formattedAssetIconName}</Fragment>
-                }}
-              </FormattedAssetItem>
+              {selectedAsset ? (
+                <FormattedAssetItem {...selectedAsset}>
+                  {({formattedAssetIconName}) => {
+                    return <Fragment>{formattedAssetIconName}</Fragment>
+                  }}
+                </FormattedAssetItem>
+              ) : null}
             </div>
           )}
-          {selectedAsset.type === AssetFamily.ADA
+          {selectedAsset?.type === AssetFamily.ADA
             ? conversionRates && (
               <Conversions balance={totalLovelace} conversionRates={conversionRates} />
             )
             : ''}
         </div>
         <div />
-        {selectedAsset.type === AssetFamily.TOKEN && (
+        {selectedAsset?.type === AssetFamily.TOKEN && (
           <div className="send-total-inner ma-ada-fees">
             <div>
               +{printAda(totalLovelace)}

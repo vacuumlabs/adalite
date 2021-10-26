@@ -35,17 +35,18 @@ const DelegateInput = ({disabled, value, onChange}: Props): h.JSX.Element => {
     validStakepoolDataProvider: state.validStakepoolDataProvider,
   }))
 
-  const isTicker = value && !!validStakepoolDataProvider.getPoolInfoByTicker(value)
-  const isPoolHash = value && !!validStakepoolDataProvider.getPoolInfoByPoolHash(value)
-  const tickerSearchEnabled =
-    ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER && validStakepoolDataProvider.hasTickerMapping
+  const isTicker = value && !!validStakepoolDataProvider?.getPoolInfoByTicker(value)
+  const isPoolHash = value && !!validStakepoolDataProvider?.getPoolInfoByPoolHash(value)
+  const tickerSearchEnabled = !!(
+    ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER && validStakepoolDataProvider?.hasTickerMapping
+  )
 
   return (
     <Fragment>
       <div className={`stake-pool-input-label ${tickerSearchEnabled ? '' : 'stake-pool-id-only'}`}>
         <StakePoolLabel
-          isTicker={isTicker}
-          isPoolHash={isPoolHash}
+          isTicker={!!isTicker}
+          isPoolHash={!!isPoolHash}
           tickerSearchEnabled={tickerSearchEnabled}
         />
       </div>

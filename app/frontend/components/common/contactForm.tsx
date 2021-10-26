@@ -9,7 +9,7 @@ interface Props {
 }
 
 class ContactForm extends Component<Props, {submitted: boolean}> {
-  contactForm: HTMLFormElement
+  contactForm: HTMLFormElement | null
 
   constructor(props) {
     super(props)
@@ -21,7 +21,9 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
   }
 
   closeContactFormModal() {
-    this.contactForm.reset()
+    if (this.contactForm) {
+      this.contactForm.reset()
+    }
     this.props.closeContactFormModal()
   }
 

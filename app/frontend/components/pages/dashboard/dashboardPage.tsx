@@ -1,4 +1,4 @@
-import {h, Fragment} from 'preact'
+import {h, Fragment, JSX} from 'preact'
 import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'
@@ -261,15 +261,18 @@ const DashboardPage = () => {
 
   const screenType = useViewport()
 
-  const MainPages: {[key in MainTabs]: any} = {
-    [MainTabs.ACCOUNT]: <AccountsPage screenType={screenType} />,
-    [MainTabs.STAKING]: <StakingPage screenType={screenType} />,
+  const MainPages: {[key in MainTabs]: h.JSX.Element} = {
+    [MainTabs.ACCOUNT]: <AccountsPage screenType={screenType as ScreenType} />,
+    [MainTabs.STAKING]: <StakingPage screenType={screenType as ScreenType} />,
     [MainTabs.SEND]: (
-      <SendingPage screenType={screenType} shouldShowExportOption={shouldShowExportOption} />
+      <SendingPage
+        screenType={screenType as ScreenType}
+        shouldShowExportOption={shouldShowExportOption}
+      />
     ),
-    [MainTabs.RECEIVE]: <ReceivePage screenType={screenType} />,
-    [MainTabs.ADVANCED]: <AdvancedPage screenType={screenType} />,
-    [MainTabs.VOTING]: <VotingPage screenType={screenType} />,
+    [MainTabs.RECEIVE]: <ReceivePage screenType={screenType as ScreenType} />,
+    [MainTabs.ADVANCED]: <AdvancedPage screenType={screenType as ScreenType} />,
+    [MainTabs.VOTING]: <VotingPage screenType={screenType as ScreenType} />,
   }
   return (
     <div className="page-wrapper">
@@ -302,7 +305,9 @@ const DashboardPage = () => {
               isActive={name === activeMainTab}
               setActiveTab={setActiveMainTab}
               displayName={
-                name === MainTabs.ACCOUNT && `Account ${formatAccountIndex(activeAccountIndex)}`
+                name === MainTabs.ACCOUNT
+                  ? `Account ${formatAccountIndex(activeAccountIndex)}`
+                  : null
               }
             />
           ))}
@@ -318,7 +323,7 @@ const DashboardPage = () => {
 
 type DashboardMobileProps = {
   subTabs: SubTabs[]
-  defaultSubTab: SubTabs
+  defaultSubTab: SubTabs | null
   mainSubTab?: SubTabs
 }
 
@@ -339,7 +344,7 @@ const DashboardMobileContent = ({subTabs, defaultSubTab, mainSubTab}: DashboardM
           ))}
         </ul>
       )}
-      {SubPages[activeSubTab]}
+      {activeSubTab ? SubPages[activeSubTab] : null}
     </div>
   )
 }

@@ -54,25 +54,25 @@ const BigDelegatorOffer = (): h.JSX.Element => (
 // is "hasTickerMapping" something specific or general?
 type Error = {
   code: string
-  params?: {hasTickerMapping: boolean}
+  params?: {hasTickerMapping: boolean | undefined}
 }
 
 type ValidatedInput = {
-  poolHash: string | null
-  error: Error
+  poolHash: string | undefined | null
+  error: Error | null
 }
 
 const validateInput = (
   fieldValue: string,
-  validStakepoolDataProvider: StakepoolDataProvider
+  validStakepoolDataProvider: StakepoolDataProvider | undefined
 ): ValidatedInput => {
   if (ADALITE_CONFIG.ADALITE_ENABLE_SEARCH_BY_TICKER) {
     const pool =
-      validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue) ||
-      validStakepoolDataProvider.getPoolInfoByTicker(fieldValue)
+      validStakepoolDataProvider?.getPoolInfoByPoolHash(fieldValue) ||
+      validStakepoolDataProvider?.getPoolInfoByTicker(fieldValue)
     if (pool) return {poolHash: pool.poolHash, error: null}
 
-    const hasTickerMapping = validStakepoolDataProvider.hasTickerMapping
+    const hasTickerMapping = validStakepoolDataProvider?.hasTickerMapping
     const isTickerString = fieldValue.length <= 5 && fieldValue.toUpperCase() === fieldValue
     const poolHash = null
     if (!hasTickerMapping && isTickerString) {
@@ -81,7 +81,7 @@ const validateInput = (
     return {poolHash, error: {code: 'InvalidStakepoolIdentifier', params: {hasTickerMapping}}}
   }
 
-  const pool = validStakepoolDataProvider.getPoolInfoByPoolHash(fieldValue)
+  const pool = validStakepoolDataProvider?.getPoolInfoByPoolHash(fieldValue)
   if (pool) return {poolHash: pool.poolHash, error: null}
   return {
     poolHash: null,
@@ -125,10 +125,10 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
   } = useSelector((state) => ({
     // REFACTOR: (Untyped errors)
     delegationValidationError: state.delegationValidationError,
-    stakePool: state.shelleyDelegation.selectedPool,
+    stakePool: state.shelleyDelegation?.selectedPool,
     currentDelegation: getSourceAccountInfo(state).shelleyAccountInfo.delegation,
     calculatingDelegationFee: state.calculatingDelegationFee,
-    delegationFee: state.shelleyDelegation.delegationFee,
+    delegationFee: state.shelleyDelegation?.delegationFee,
     txSuccessTab: state.txSuccessTab,
     gettingPoolInfo: state.gettingPoolInfo,
     isShelleyCompatible: state.isShelleyCompatible,
@@ -141,7 +141,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
   const handleOnStopTyping = useHandleOnStopTyping()
 
   const [fieldValue, setFieldValue] = useState('')
-  const [error, setError] = useState<Error>(null)
+  const [error, setError] = useState<Error | null>(null)
 
   const handleInputValidation = useCallback(
     (value: string) => {
@@ -151,7 +151,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
       } else {
         const {poolHash, error} = validateInput(value, validStakepoolDataProvider)
         if (!error) {
-          updateStakePoolIdentifier(poolHash)
+          updateStakePoolIdentifier(poolHash || null)
         } else {
           resetStakePoolIndentifier()
         }
@@ -216,7 +216,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
           <AdaIcon />
         </label>
         <div className="delegation-fee" data-cy="DelegateFeeAmount">
-          {printAda(delegationFee)}
+          {delegationFee ? printAda(delegationFee) : ''}
         </div>
       </div>
       <div className="validation-row">
