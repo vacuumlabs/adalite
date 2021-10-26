@@ -1,0 +1,19 @@
+{
+  "info": {
+    "social": {
+      "twitter_handle": "ellipalwallet",
+      "telegram_handle": "",
+      "facebook_handle": "ellipalclub",
+      "youtube_handle": "",
+      "twitch_handle": "",
+      "discord_handle": "",
+      "github_handle": ""
+    }
+  },
+  "my-pool-ids": {
+    "0": "879ad8338e795acb7b2bd2cf5532ed4e3603962439c91cb0bd5ae7af"
+  },
+  "when-satured-then-recommend": {
+    "0": "879ad8338e795acb7b2bd2cf5532ed4e3603962439c91cb0bd5ae7af"
+  }
+}
