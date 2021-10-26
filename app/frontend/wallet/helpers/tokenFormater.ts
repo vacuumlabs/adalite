@@ -24,7 +24,7 @@ const aggregateTokenBundlesForPolicy = (policyGroup: TokenBundle, policyId: stri
     )
     .value()
 
-export const aggregateTokenBundles = (tokenBundle: TokenBundle[]): TokenBundle =>
+export const aggregateTokenBundles = (tokenBundle: TokenBundle[] | undefined): TokenBundle =>
   _(tokenBundle)
     .filter((token) => !!token.length)
     .flatten()

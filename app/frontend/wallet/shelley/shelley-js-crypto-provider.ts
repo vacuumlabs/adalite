@@ -129,16 +129,18 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   const prepareWitnesses = async (txAux: TxAux, addressToAbsPathMapper: AddressToPathMapper) => {
     const {inputs, certificates, withdrawals, getId} = txAux
     const txHash = getId()
-    const _shelleyWitnesses = []
-    const _byronWitnesses = []
+    const _shelleyWitnesses: Array<Promise<TxShelleyWitness>> = []
+    const _byronWitnesses: Array<Promise<TxByronWitness>> = []
 
     // TODO: we should create witnesses only with unique addresses
 
     inputs.forEach(({address}) => {
-      const spendingPath = addressToAbsPathMapper(address)
-      isShelleyPath(spendingPath)
-        ? _shelleyWitnesses.push(prepareShelleyWitness(txHash, spendingPath))
-        : _byronWitnesses.push(prepareByronWitness(txHash, spendingPath, address))
+      if (address) {
+        const spendingPath = addressToAbsPathMapper(address)
+        isShelleyPath(spendingPath)
+          ? _shelleyWitnesses.push(prepareShelleyWitness(txHash, spendingPath))
+          : _byronWitnesses.push(prepareByronWitness(txHash, spendingPath, address))
+      }
     })
     ;[...certificates, ...withdrawals].forEach(({stakingAddress}) => {
       const stakingPath = addressToAbsPathMapper(stakingAddress)
@@ -156,7 +158,10 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     const cborizedRegistrationData = new Map([cborizeTxVotingRegistration(auxiliaryData)])
     const registrationDataHash = blake2b(encode(cborizedRegistrationData), 32).toString('hex')
     const stakingPath = auxiliaryData.rewardDestinationAddress.stakingPath
-    const registrationDataWitness = await prepareShelleyWitness(registrationDataHash, stakingPath)
+    const registrationDataWitness = await prepareShelleyWitness(
+      registrationDataHash,
+      stakingPath || []
+    )
     const registrationDataSignature = registrationDataWitness.signature.toString('hex')
     const txAuxiliaryData = cborizeTxAuxiliaryVotingData(auxiliaryData, registrationDataSignature)
     return txAuxiliaryData

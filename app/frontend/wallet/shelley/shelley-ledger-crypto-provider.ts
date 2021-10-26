@@ -64,7 +64,9 @@ import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCer
 import assertUnreachable from '../../helpers/assertUnreachable'
 
 let _activeTransport: Transport | null = null
-const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
+const getLedgerTransport = async (
+  ledgerTransportType: LedgerTransportType
+): Promise<Transport | null> => {
   if (_activeTransport != null) {
     /*
      * this is needed for WebHID transport where .create() is not idempotent
@@ -103,8 +105,9 @@ type CryptoProviderParams = {
 const ShelleyLedgerCryptoProvider = async ({
   network,
   config,
-}: CryptoProviderParams): Promise<CryptoProvider> => {
+}: CryptoProviderParams): Promise<CryptoProvider | null> => {
   const transport = await getLedgerTransport(config.ledgerTransportType)
+  if (!transport) return null
   transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
   const ledger = new Ledger(transport)
   const derivationScheme = derivationSchemes.v2
@@ -175,7 +178,7 @@ const ShelleyLedgerCryptoProvider = async ({
           type: LedgerTypes.AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
           params: {
             spendingPath: absDerivationPath,
-            stakingPath,
+            stakingPath: stakingPath || [],
           },
         },
       })
@@ -338,7 +341,7 @@ const ShelleyLedgerCryptoProvider = async ({
     const poolOwners: LedgerTypes.PoolOwner[] = stakepoolOwners.map((owner) => {
       // TODO: helper function for slicing first bit from staking address so its stakingKeyHash
       return !Buffer.compare(
-        Buffer.from(owner.stakingKeyHashHex, 'hex'),
+        Buffer.from(owner.stakingKeyHashHex || '', 'hex'),
         stakingAddressBuff.slice(1)
       )
         ? {
@@ -347,7 +350,7 @@ const ShelleyLedgerCryptoProvider = async ({
         }
         : {
           type: LedgerTypes.PoolOwnerType.THIRD_PARTY,
-          params: {stakingKeyHashHex: owner.stakingKeyHashHex},
+          params: {stakingKeyHashHex: owner.stakingKeyHashHex || ''},
         }
     })
     if (!poolOwners.some((owner) => owner.type === LedgerTypes.PoolOwnerType.DEVICE_OWNED)) {
@@ -455,8 +458,8 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   const prepareWitnesses = async (ledgerWitnesses: LedgerTypes.Witness[]) => {
-    const _shelleyWitnesses = []
-    const _byronWitnesses = []
+    const _shelleyWitnesses: Array<Promise<TxShelleyWitness>> = []
+    const _byronWitnesses: Array<Promise<TxByronWitness>> = []
     ledgerWitnesses.forEach((witness) => {
       isShelleyPath(witness.path)
         ? _shelleyWitnesses.push(prepareShelleyWitness(witness))
@@ -474,11 +477,11 @@ const ShelleyLedgerCryptoProvider = async ({
           type: LedgerTypes.TxAuxiliaryDataType.CATALYST_REGISTRATION,
           params: {
             votingPublicKeyHex: txAuxiliaryData.votingPubKey,
-            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath || [],
             rewardsDestination: {
               type: LedgerTypes.AddressType.REWARD_KEY,
               params: {
-                stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+                stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath || [],
               },
             },
             nonce: `${txAuxiliaryData.nonce}`,
@@ -491,7 +494,7 @@ const ShelleyLedgerCryptoProvider = async ({
 
   function finalizeTxAuxWithMetadata(
     txAux: TxAux,
-    auxiliaryDataSupplement: LedgerTypes.TxAuxiliaryDataSupplement
+    auxiliaryDataSupplement: LedgerTypes.TxAuxiliaryDataSupplement | null
   ): FinalizedAuxiliaryDataTx {
     if (!txAux.auxiliaryData) {
       return {
@@ -504,11 +507,11 @@ const ShelleyLedgerCryptoProvider = async ({
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,
-            auxiliaryDataHash: auxiliaryDataSupplement.auxiliaryDataHashHex,
+            auxiliaryDataHash: auxiliaryDataSupplement?.auxiliaryDataHashHex,
           }),
           txAuxiliaryData: cborizeTxAuxiliaryVotingData(
             txAux.auxiliaryData,
-            auxiliaryDataSupplement.catalystRegistrationSignatureHex
+            auxiliaryDataSupplement?.catalystRegistrationSignatureHex
           ),
         }
       default:

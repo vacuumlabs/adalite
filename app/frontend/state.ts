@@ -35,7 +35,7 @@ export interface State {
   error?: any
   activeMainTab: MainTabs
   shouldShowContactFormModal?: boolean
-  conversionRates?: ConversionRates
+  conversionRates?: ConversionRates | null
 
   // cache
   displayWelcome: boolean
@@ -56,7 +56,7 @@ export interface State {
   shouldShowSaturatedBanner?: boolean
   mnemonicAuthForm: {
     mnemonicInputValue: string
-    mnemonicInputError: {code: InternalErrorReason}
+    mnemonicInputError: {code: InternalErrorReason} | null
     formIsValid: boolean
   }
   hwWalletName?: string
@@ -76,7 +76,7 @@ export interface State {
   // delegation form
   calculatingDelegationFee?: any
   shelleyDelegation?: {
-    selectedPool?: Stakepool
+    selectedPool?: Stakepool | null | undefined
     delegationFee?: Lovelace
   }
   delegationValidationError?: any

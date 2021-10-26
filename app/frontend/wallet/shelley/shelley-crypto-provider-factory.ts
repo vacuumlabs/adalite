@@ -9,7 +9,7 @@ const ShelleyCryptoProviderFactory = (() => {
   const getCryptoProvider = (
     cryptoProviderType: CryptoProviderType,
     options: any
-  ): Promise<CryptoProvider> => {
+  ): Promise<CryptoProvider | null> => {
     switch (cryptoProviderType) {
       case CryptoProviderType.TREZOR:
         return ShelleyTrezorCryptoProvider(options)

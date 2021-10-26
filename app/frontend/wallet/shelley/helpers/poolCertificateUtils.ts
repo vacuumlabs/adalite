@@ -167,8 +167,8 @@ const parseStakepoolRelays = (relays: _PoolRelay[]): TxStakepoolRelay[] =>
           type: TxRelayType.SINGLE_HOST_IP,
           params: {
             portNumber: relay.portNumber,
-            ipv4: relay.ipv4 ? ipv4BufToAddress(relay.ipv4) : null,
-            ipv6: relay.ipv6 ? ipv6BufToAddress(relay.ipv6) : null,
+            ipv4: relay.ipv4 ? ipv4BufToAddress(relay.ipv4) : undefined,
+            ipv6: relay.ipv6 ? ipv6BufToAddress(relay.ipv6) : undefined,
           },
         }
       case TxRelayTypes.SINGLE_HOST_NAME:
@@ -176,14 +176,14 @@ const parseStakepoolRelays = (relays: _PoolRelay[]): TxStakepoolRelay[] =>
           type: TxRelayType.SINGLE_HOST_NAME,
           params: {
             portNumber: relay.portNumber,
-            dnsName: relay.dnsName,
+            dnsName: relay.dnsName || '',
           },
         }
       case TxRelayTypes.MULTI_HOST_NAME:
         return {
           type: TxRelayType.MULTI_HOST_NAME,
           params: {
-            dnsName: relay.dnsName,
+            dnsName: relay.dnsName || '',
           },
         }
       default:
@@ -191,9 +191,9 @@ const parseStakepoolRelays = (relays: _PoolRelay[]): TxStakepoolRelay[] =>
     }
   })
 
-const parseStakepoolMetadata = (metadata: {metadataUrl: string; metadataHash: Buffer}) => {
+const parseStakepoolMetadata = (metadata: {metadataUrl: string; metadataHash: Buffer} | null) => {
   if (!metadata) {
-    return null
+    return {metadataUrl: '', metadataHashHex: ''}
   }
   if (!metadata.metadataHash || !metadata.metadataUrl) {
     throw new InternalError(InternalErrorReason.PoolRegInvalidMetadata)

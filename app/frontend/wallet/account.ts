@@ -43,7 +43,7 @@ const DummyAddressManager = () => {
     discoverAddresses: (): Promise<Address[]> => Promise.resolve([]),
     discoverAddressesWithMeta: (): Promise<AddressWithMeta[]> => Promise.resolve([]),
     getAddressToAbsPathMapping: (): AddressToPathMapping => ({}),
-    _deriveAddress: (): Promise<Address> => Promise.resolve(null),
+    _deriveAddress: (): Promise<null> => Promise.resolve(null),
   }
 }
 
@@ -149,7 +149,7 @@ const MyAddresses = ({
     // we check only the external addresses since internal should not be used before external
     // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit
     const baseExt = await baseExtAddrManager._deriveAddresses(0, gapLimit)
-    return await blockchainExplorer.isSomeAddressUsed(baseExt)
+    return !!(await blockchainExplorer.isSomeAddressUsed(baseExt))
   }
 
   async function getStakingAddress() {
@@ -202,7 +202,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     }
   }
 
-  function mapAuxiliaryData(auxiliaryData: TxAuxiliaryData): TxAuxiliaryData {
+  function mapAuxiliaryData(auxiliaryData: TxAuxiliaryData | null): TxAuxiliaryData | null {
     if (!auxiliaryData) return null
     if (auxiliaryData.type === 'CATALYST_VOTING') {
       const rewardAddress = auxiliaryData.rewardDestinationAddress.address
@@ -276,7 +276,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
   }
 
   function getMaxNonStakingAmount(utxos: UTxO[], address: Address, sendAmount: SendAmount) {
-    const filteredUtxos = utxos.filter(({address}) => !isBase(addressToHex(address)))
+    const filteredUtxos = utxos.filter(({address}) => address && !isBase(addressToHex(address)))
     return _getMaxSendableAmount(filteredUtxos, address, sendAmount)
   }
 
@@ -288,10 +288,16 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     const sortedUtxos = utxos.sort((a, b) =>
       a.txHash === b.txHash ? a.outputIndex - b.outputIndex : a.txHash.localeCompare(b.txHash)
     )
-    const nonStakingUtxos = sortedUtxos.filter(({address}) => !isBase(addressToHex(address)))
-    const baseAddressUtxos = sortedUtxos.filter(({address}) => isBase(addressToHex(address)))
-    const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length === 0)
-    const tokenUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
+    const nonStakingUtxos = sortedUtxos.filter(
+      ({address}) => address && !isBase(addressToHex(address))
+    )
+    const baseAddressUtxos = sortedUtxos.filter(
+      ({address}) => address && isBase(addressToHex(address))
+    )
+    const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle?.length === 0)
+    const tokenUtxos = baseAddressUtxos.filter(
+      ({tokenBundle}) => tokenBundle && tokenBundle.length > 0
+    )
 
     if (
       txPlanArgs.txType === TxType.SEND_ADA &&
@@ -299,11 +305,13 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     ) {
       const {policyId, assetName} = txPlanArgs.sendAmount.token
       const targetTokenUtxos = tokenUtxos.filter(({tokenBundle}) =>
-        tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
+        tokenBundle?.some((token) => token.policyId === policyId && token.assetName === assetName)
       )
       const nonTargetTokenUtxos = tokenUtxos.filter(
         ({tokenBundle}) =>
-          !tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
+          !tokenBundle?.some(
+            (token) => token.policyId === policyId && token.assetName === assetName
+          )
       )
       return [...targetTokenUtxos, ...nonStakingUtxos, ...adaOnlyUtxos, ...nonTargetTokenUtxos]
     }
@@ -316,7 +324,10 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
    *
    * TODO: refactor as suggested in https://github.com/vacuumlabs/adalite/issues/1181
    */
-  const getTxPlan = async (txPlanArgs: TxPlanArgs, utxos: UTxO[]): Promise<TxPlanResult> => {
+  const getTxPlan = async (
+    txPlanArgs: TxPlanArgs,
+    utxos: UTxO[]
+  ): Promise<TxPlanResult | undefined> => {
     const changeAddress = await getChangeAddress()
     const arrangedUtxos = arrangeUtxos(utxos, txPlanArgs)
     return selectMinimalTxPlan(arrangedUtxos, changeAddress, txPlanArgs)

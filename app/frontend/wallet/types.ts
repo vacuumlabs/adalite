@@ -35,9 +35,9 @@ export const enum CryptoProviderType {
 
 export type UTxO = {
   txHash: string
-  address: Address
-  coins: Lovelace
-  tokenBundle: TokenBundle
+  address: Address | null
+  coins: Lovelace | null
+  tokenBundle: TokenBundle | null
   outputIndex: number
 }
 
@@ -103,7 +103,7 @@ export type TxVotingAuxiliaryData = {
   nonce: BigInt
   rewardDestinationAddress: {
     address: Address
-    stakingPath: BIP32Path
+    stakingPath: BIP32Path | null
   }
 }
 

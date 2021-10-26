@@ -61,9 +61,9 @@ function ShelleyTxAux({
   ttl: number
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
-  auxiliaryDataHash: HexString
-  auxiliaryData: TxAuxiliaryData
-  validityIntervalStart: number
+  auxiliaryDataHash: HexString | undefined
+  auxiliaryData: TxAuxiliaryData | null
+  validityIntervalStart: number | null
 }): TxAux {
   function getId() {
     return blake2b(
@@ -212,7 +212,7 @@ function cborizeStakepoolRegistrationCert(
     ),
     Buffer.from(poolRegistrationParams.rewardAccountHex, 'hex'),
     poolRegistrationParams.poolOwners.map((ownerObj) => {
-      return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
+      return Buffer.from(ownerObj.stakingKeyHashHex || '', 'hex')
     }),
     poolRegistrationParams.relays.map((relay) => {
       switch (relay.type) {
@@ -345,11 +345,11 @@ const cborizeTxVotingRegistration = ({
 
 const cborizeTxAuxiliaryVotingData = (
   txAuxiliaryData: TxAuxiliaryData,
-  signatureHex: string
+  signatureHex: string | undefined
 ): CborizedVotingRegistrationMetadata => [
   new Map<number, Map<number, Buffer | BigInt>>([
     cborizeTxVotingRegistration(txAuxiliaryData),
-    [61285, new Map<number, Buffer>([[1, Buffer.from(signatureHex, 'hex')]])],
+    [61285, new Map<number, Buffer>([[1, Buffer.from(signatureHex || '', 'hex')]])],
   ]),
   [],
 ]

@@ -145,11 +145,11 @@ export type PoolRecommendation = {
 export type AccountInfo = {
   // TODO: refactor, update type
   accountXpubs: {
-    shelleyAccountXpub: _XPubKey
-    byronAccountXpub: _XPubKey
+    shelleyAccountXpub: _XPubKey | null
+    byronAccountXpub: _XPubKey | null
   }
-  stakingXpub: _XPubKey
-  stakingAddress: Address
+  stakingXpub: _XPubKey | null
+  stakingAddress: Address | null
   balance: number
   utxos: Array<UTxO>
   tokenBalance: TokenBundle
@@ -215,7 +215,7 @@ export interface StakingHistoryStakePool {
 
 export interface StakeDelegation extends StakingHistoryObject {
   newStakePool: StakingHistoryStakePool
-  oldStakePool?: StakingHistoryStakePool
+  oldStakePool?: StakingHistoryStakePool | null
   txHash: string
 }
 
@@ -329,7 +329,7 @@ export type RewardWithMetadata = NextRewardDetail & {
 export type NextRewardDetailsFormatted = {
   upcoming: Array<RewardWithMetadata>
   nearest: RewardWithMetadata
-  currentDelegation: RewardWithMetadata
+  currentDelegation: RewardWithMetadata | undefined
 }
 
 export type Balance = {
@@ -361,7 +361,7 @@ export type SendAddress = {
 export type TransactionSummary = {
   type: TxType
   fee: Lovelace
-  plan: TxPlan
+  plan: TxPlan | null
 } & (
   | SendTransactionSummary
   | WithdrawTransactionSummary
@@ -374,7 +374,7 @@ export type SendTransactionSummary = {
   type: TxType.SEND_ADA | TxType.CONVERT_LEGACY
   coins: Lovelace
   token: Token | null
-  address: Address
+  address: Address | null
   minimalLovelaceAmount: Lovelace
 }
 
@@ -401,11 +401,11 @@ export type VotingRegistrationTransactionSummary = {
 
 export type PoolRegTransactionSummary = {
   shouldShowPoolCertSignModal: boolean
-  ttl: number | null
+  ttl: number | null | undefined
   validityIntervalStart: number | null
-  witness: CborizedCliWitness
-  plan: TxPlan
-  txBodyType: string
+  witness: CborizedCliWitness | null
+  plan: TxPlan | null
+  txBodyType: string | null
 }
 
 export type WalletOperationStatusType =

@@ -2,7 +2,7 @@ import {State} from '../state'
 import {ConversionRates} from '../types'
 import request from '../wallet/helpers/request'
 
-async function getConversionRates(state: State): Promise<ConversionRates> {
+async function getConversionRates(state: State): Promise<ConversionRates | null> {
   let conversionRates = state.conversionRates
   const maxConversionRatesAge = 1000 * 60 * 5
 

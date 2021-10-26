@@ -4,9 +4,9 @@ export type OptionalParams = {
 }
 
 export class BaseError extends Error {
-  constructor(params: OptionalParams) {
+  constructor(params: OptionalParams | undefined) {
     super()
-    this.message = params?.message
+    this.message = params?.message || ''
     this.stack = params?.causedBy && `\nError caused by:\n${params.causedBy.stack}`
   }
 }

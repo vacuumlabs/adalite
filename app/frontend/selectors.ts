@@ -18,7 +18,11 @@ export const totalWalletBalanceSelector = (state: State): number =>
   state.accountsInfo.reduce((a, {balance}) => balance + a, 0)
 
 export const totalRewardsBalanceSelector = (state: State): number =>
-  state.accountsInfo.reduce((a, {shelleyBalances}) => shelleyBalances.rewardsAccountBalance + a, 0)
+  state.accountsInfo.reduce(
+    (a, {shelleyBalances}) =>
+      shelleyBalances?.rewardsAccountBalance ? shelleyBalances.rewardsAccountBalance + a : a,
+    0
+  )
 
 export const isBigDelegatorSelector = (state: State): boolean => {
   const totalWalletBalance = totalWalletBalanceSelector(state)

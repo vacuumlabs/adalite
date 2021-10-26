@@ -14,10 +14,12 @@ export const isVotingRegistrationOpen = () => {
 export const shouldDisableSendingButton = (
   walletOperationStatusType: WalletOperationStatusType
 ): boolean =>
-  walletOperationStatusType &&
-  (walletOperationStatusType === 'reloading' ||
-    walletOperationStatusType === 'txPending' ||
-    walletOperationStatusType === 'txSubmitting')
+  !!(
+    walletOperationStatusType &&
+    (walletOperationStatusType === 'reloading' ||
+      walletOperationStatusType === 'txPending' ||
+      walletOperationStatusType === 'txSubmitting')
+  )
 
 export function filterValidTransactions<T extends CaTxEntry | TxSummaryEntry>(txs: T[]): T[] {
   // filters txs that did not pass alonzo block script validation

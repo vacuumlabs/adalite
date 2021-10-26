@@ -13,6 +13,7 @@ import {
   AssetFamily,
   VotingRegistrationTxPlanArgs,
 } from '../../../types'
+import {isTxPlanResultSuccess} from '../../../wallet/shelley/transaction/types'
 import {
   UTxO,
   TxCertificate,
@@ -156,7 +157,7 @@ export const selectMinimalTxPlan = (
   utxos: Array<UTxO>,
   changeAddress: Address,
   txPlanArgs: TxPlanArgs
-): TxPlanResult => {
+): TxPlanResult | undefined => {
   const {outputs, certificates, withdrawals, auxiliaryData} = prepareTxPlanDraft(txPlanArgs)
   const change: TxOutput = {
     isChange: false,
@@ -165,14 +166,14 @@ export const selectMinimalTxPlan = (
     tokenBundle: [],
   }
 
-  let txPlanResult: TxPlanResult
+  let txPlanResult: TxPlanResult | undefined
   let numInputs = 0
   while (numInputs <= utxos.length) {
     const inputs: TxInput[] = utxos.slice(0, numInputs)
     txPlanResult = validateTxPlan(
       computeTxPlan(inputs, outputs, change, certificates, withdrawals, auxiliaryData)
     )
-    if (txPlanResult.success === true) {
+    if (isTxPlanResultSuccess(txPlanResult)) {
       if (txPlanResult.txPlan.baseFee === txPlanResult.txPlan.fee || numInputs === utxos.length) {
         return txPlanResult
       }

@@ -153,8 +153,8 @@ const ShelleyTrezorCryptoProvider = async ({
     addressToAbsPathMapper: AddressToPathMapper
   ): TrezorTypes.CardanoInput {
     return {
-      ...(input.address && {path: addressToAbsPathMapper(input.address)}),
-      prev_hash: input.txHash,
+      path: input.address ? addressToAbsPathMapper(input.address) : [],
+      prev_hash: input.txHash || '',
       prev_index: input.outputIndex,
     }
   }
@@ -236,7 +236,7 @@ const ShelleyTrezorCryptoProvider = async ({
     const {data} = bech32.decode(certificate.stakingAddress)
     const owners = certificate.poolRegistrationParams.poolOwners.map((owner) => {
       // TODO: helper function stakingAddress2StakingKeyHash
-      return !Buffer.compare(Buffer.from(owner.stakingKeyHashHex, 'hex'), data.slice(1))
+      return !Buffer.compare(Buffer.from(owner.stakingKeyHashHex || '', 'hex'), data.slice(1))
         ? {stakingKeyPath: path}
         : {stakingKeyHash: owner.stakingKeyHashHex}
     })
@@ -247,7 +247,7 @@ const ShelleyTrezorCryptoProvider = async ({
     }
     return {
       type: type as number,
-      path: null,
+      path: '',
       poolParameters: {
         poolId: poolRegistrationParams.poolKeyHashHex,
         vrfKeyHash: poolRegistrationParams.vrfKeyHashHex,
@@ -265,7 +265,10 @@ const ShelleyTrezorCryptoProvider = async ({
             url: poolRegistrationParams.metadata.metadataUrl,
             hash: poolRegistrationParams.metadata.metadataHashHex,
           }
-          : null,
+          : {
+            url: '',
+            hash: '',
+          },
       },
     }
   }
@@ -332,7 +335,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   const prepareByronWitness = (witness: TrezorTypes.CardanoSignedTxWitness): TxByronWitness => {
     const publicKey = Buffer.from(witness.pubKey, 'hex')
-    const chainCode = Buffer.from(witness.chainCode, 'hex')
+    const chainCode = Buffer.from(witness.chainCode || '', 'hex')
     // only v1 witnesses has address atributes
     // since trezor is v2 they are always {}
     const addressAttributes = cbor.encode({})
@@ -373,10 +376,10 @@ const ShelleyTrezorCryptoProvider = async ({
         return {
           catalystRegistrationParameters: {
             votingPublicKey: txAuxiliaryData.votingPubKey,
-            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath || '',
             rewardAddressParameters: {
               addressType: AddressTypes.REWARD,
-              path: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+              path: txAuxiliaryData.rewardDestinationAddress.stakingPath || '',
             },
             nonce: `${txAuxiliaryData.nonce}`,
           },
@@ -388,7 +391,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   function finalizeTxAuxWithMetadata(
     txAux: TxAux,
-    auxiliaryDataSupplement: TrezorTypes.CardanoAuxiliaryDataSupplement
+    auxiliaryDataSupplement: TrezorTypes.CardanoAuxiliaryDataSupplement | undefined
   ): FinalizedAuxiliaryDataTx {
     if (!txAux.auxiliaryData) {
       return {
@@ -401,11 +404,11 @@ const ShelleyTrezorCryptoProvider = async ({
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,
-            auxiliaryDataHash: auxiliaryDataSupplement.auxiliaryDataHash,
+            auxiliaryDataHash: auxiliaryDataSupplement?.auxiliaryDataHash,
           }),
           txAuxiliaryData: cborizeTxAuxiliaryVotingData(
             txAux.auxiliaryData,
-            auxiliaryDataSupplement.catalystSignature
+            auxiliaryDataSupplement?.catalystSignature
           ),
         }
       default:
@@ -431,10 +434,10 @@ const ShelleyTrezorCryptoProvider = async ({
 
     const validityIntervalStart = txAux.validityIntervalStart
       ? `${txAux.validityIntervalStart}`
-      : null
+      : undefined
     const formattedAuxiliaryData = txAux.auxiliaryData
       ? formatAuxiliaryData(txAux.auxiliaryData)
-      : null
+      : undefined
     const request: TrezorTypes.CommonParams & TrezorTypes.CardanoSignTransaction = {
       signingMode,
       inputs,

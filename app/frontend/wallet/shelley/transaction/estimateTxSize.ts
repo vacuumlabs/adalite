@@ -36,7 +36,7 @@ export function estimateTxSize(
   outputs: Array<TxOutput>,
   certificates: Array<TxCertificate>,
   withdrawals: Array<TxWithdrawal>,
-  auxiliaryData: TxAuxiliaryData
+  auxiliaryData: TxAuxiliaryData | null
 ): Lovelace {
   // the 1 is there for the key in the tx map
   const txInputsSize = encode(cborizeTxInputs(inputs)).length + 1
@@ -69,14 +69,15 @@ export function estimateTxSize(
     txTllSize +
     txAuxiliaryDataHashSize
 
-  const shelleyInputs = inputs.filter(({address}) => isShelleyFormat(address))
-  const byronInputs = inputs.filter(({address}) => !isShelleyFormat(address))
+  const shelleyInputs = inputs.filter(({address}) => address && isShelleyFormat(address))
+  const byronInputs = inputs.filter(({address}) => address && !isShelleyFormat(address))
 
   const shelleyWitnessesSize =
     (withdrawals.length + certificates.length + shelleyInputs.length) * TX_WITNESS_SIZES.shelley
 
   const byronWitnessesSize = byronInputs.reduce((acc, {address}) => {
-    const witnessSize = isV1Address(address) ? TX_WITNESS_SIZES.byronV1 : TX_WITNESS_SIZES.byronv2
+    const witnessSize =
+      address && isV1Address(address) ? TX_WITNESS_SIZES.byronV1 : TX_WITNESS_SIZES.byronv2
     return acc + witnessSize
   }, 0)
 

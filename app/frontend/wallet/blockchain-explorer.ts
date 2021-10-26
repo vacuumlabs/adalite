@@ -85,9 +85,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       )
     ).reduce(
       (acc, elem) => {
-        return {
-          caTxList: [...acc.caTxList, ...elem.caTxList],
+        if (elem) {
+          return {
+            caTxList: [...acc.caTxList, ...elem.caTxList],
+          }
         }
+        return acc
       },
       {caTxList: []}
     )
@@ -144,8 +147,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response.Right
   }
 
-  async function isSomeAddressUsed(addresses: Array<string>): Promise<boolean> {
-    return (await _getAddressInfos(addresses)).caTxNum > 0
+  async function isSomeAddressUsed(addresses: Array<string>): Promise<boolean | undefined> {
+    const addressInfos = await _getAddressInfos(addresses)
+    return addressInfos ? addressInfos.caTxNum > 0 : undefined
   }
 
   // TODO: we should have an endpoint for this
@@ -172,14 +176,17 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
       })
     )
-    const addressTokenBundles = addressInfos.map((addressSummary) => {
-      return addressSummary.caBalance.getTokens.map((token) => parseToken(token))
-    })
+    const addressTokenBundles = addressInfos.reduce((acc: TokenBundle[], curr) => {
+      if (curr) {
+        acc.push(curr?.caBalance.getTokens.map((token) => parseToken(token)))
+      }
+      return acc
+    }, [])
     const tokenBundle = aggregateTokenBundles(addressTokenBundles).filter(
       (token) => token.quantity > 0
     )
     const coins = addressInfos.reduce(
-      (acc, elem) => acc + parseInt(elem.caBalance.getCoin, 10),
+      (acc, elem) => acc + parseInt(elem?.caBalance.getCoin || '', 10),
       0
     ) as Lovelace
     return {
@@ -328,8 +335,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       return map
     }, {})
 
-    const poolHashToPoolName = (poolHash) =>
-      metaUrlToPoolNameMap[extractUrl(poolHash)] || UNKNOWN_POOL_NAME
+    const poolHashToPoolName = (poolHash: string) => {
+      const poolUrl = extractUrl(poolHash)
+      if (poolUrl !== null) {
+        return metaUrlToPoolNameMap[poolUrl]
+      }
+      return UNKNOWN_POOL_NAME
+    }
 
     const parseStakePool = (stakingHistoryObject: any): StakingHistoryStakePool => ({
       id: stakingHistoryObject.poolHash,
@@ -337,7 +349,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
 
     // Prepare delegations
-    let oldPool: StakingHistoryStakePool = null
+    let oldPool: StakingHistoryStakePool | null = null
     const parsedDelegations = delegations
       .map((delegation) => ({...delegation, time: new Date(delegation.time)}))
       .sort((a, b) => a.time.getTime() - b.time.getTime()) // sort by time, oldest first

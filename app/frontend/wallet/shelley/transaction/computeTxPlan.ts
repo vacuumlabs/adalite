@@ -1,5 +1,5 @@
 import {InternalError, InternalErrorReason, UnexpectedErrorReason} from '../../../errors'
-import {CertificateType, Lovelace} from '../../../types'
+import {CertificateType, Lovelace, Token, TokenBundle} from '../../../types'
 import {MAX_TX_OUTPUT_SIZE} from '../../constants'
 import {aggregateTokenBundles, getTokenBundlesDifference} from '../../helpers/tokenFormater'
 import {TxAuxiliaryData, TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../types'
@@ -39,11 +39,19 @@ export function computeTxPlan(
   possibleChange: TxOutput,
   certificates: Array<TxCertificate>,
   withdrawals: Array<TxWithdrawal>,
-  auxiliaryData: TxAuxiliaryData
+  auxiliaryData: TxAuxiliaryData | null
 ): TxPlanResult {
   const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
-  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
-  const totalInputTokens = aggregateTokenBundles(inputs.map(({tokenBundle}) => tokenBundle))
+  const totalInput =
+    inputs.reduce((acc, input) => (input?.coins ? acc + input?.coins : acc), 0) + totalRewards
+  const totalInputTokens = aggregateTokenBundles(
+    inputs.reduce((acc: Array<TokenBundle>, {tokenBundle}: TxInput) => {
+      if (tokenBundle) {
+        acc.push(tokenBundle)
+      }
+      return acc
+    }, [])
+  )
   const deposit = computeRequiredDeposit(certificates)
   const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit
   const totalOutputTokens = aggregateTokenBundles(outputs.map(({tokenBundle}) => tokenBundle))

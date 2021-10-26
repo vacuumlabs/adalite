@@ -1,4 +1,4 @@
-import {AssetFamily, Lovelace, SendAmount, Address} from '../types'
+import {AssetFamily, Lovelace, SendAmount, Address, TokenBundle} from '../types'
 import getDonationAddress from '../helpers/getDonationAddress'
 import {computeRequiredTxFee} from './shelley/transaction'
 import {UTxO, TxOutput} from './types'
@@ -9,7 +9,7 @@ import {createTokenChangeOutputs} from './shelley/transaction/utils'
 import printTokenAmount from '../helpers/printTokenAmount'
 
 function getInputBalance(inputs: Array<UTxO>): Lovelace {
-  return inputs.reduce((acc, input) => acc + input.coins, 0) as Lovelace
+  return inputs.reduce((acc, input) => (input?.coins ? acc + input.coins : acc), 0) as Lovelace
 }
 
 // TODO: when we remove the byron functionality we can remove the computeFeeFn as argument
@@ -19,10 +19,15 @@ export const MaxAmountCalculator = () => {
     address: Address,
     sendAmount: SendAmount,
     decimals: number = 0
-  ): SendAmount {
+  ): SendAmount | undefined {
     if (sendAmount.assetFamily === AssetFamily.ADA) {
       const inputsTokenBundle = aggregateTokenBundles(
-        profitableInputs.map(({tokenBundle}) => tokenBundle)
+        profitableInputs.reduce((acc: TokenBundle[], {tokenBundle}) => {
+          if (tokenBundle) {
+            acc.push(tokenBundle)
+          }
+          return acc
+        }, [])
       )
       const inputBalance = getInputBalance(profitableInputs)
 
@@ -49,19 +54,26 @@ export const MaxAmountCalculator = () => {
       return {assetFamily: AssetFamily.ADA, coins, fieldValue: `${printAda(coins)}`}
     } else {
       const inputsTokenBundle = aggregateTokenBundles(
-        profitableInputs.map(({tokenBundle}) => tokenBundle)
+        profitableInputs.reduce((acc: TokenBundle[], {tokenBundle}) => {
+          if (tokenBundle) {
+            acc.push(tokenBundle)
+          }
+          return acc
+        }, [])
       )
       const sendToken = inputsTokenBundle.find(
         (token) =>
           token.policyId === sendAmount.token.policyId &&
           token.assetName === sendAmount.token.assetName
       )
-
-      return {
-        assetFamily: AssetFamily.TOKEN,
-        token: sendToken,
-        fieldValue: printTokenAmount(sendToken.quantity, decimals),
+      if (sendToken) {
+        return {
+          assetFamily: AssetFamily.TOKEN,
+          token: sendToken,
+          fieldValue: sendToken?.quantity ? printTokenAmount(sendToken.quantity, decimals) : '',
+        }
       }
+      return undefined
     }
   }
 
