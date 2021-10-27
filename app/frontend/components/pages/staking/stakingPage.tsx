@@ -4,8 +4,10 @@ import {useState, useCallback} from 'preact/hooks'
 import submitEmailRaw from '../../../helpers/submitEmailRaw'
 import debugLog from '../../../helpers/debugLog'
 
-const newPools = new Set(['ADLT1', 'ADLT0'])
+const newPools = new Set([])
 const ADLTPools = [
+  ['ADLTA', 'e5c947f0a4f6a6dd0946d8971dafaf263c88a1b086527fdf24223c21'],
+  ['ADLTB', '7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6'],
   ['ADLT9', '481d305a21bbbaa85177413676ba350b1e2d7b7456b8008e72b96386'],
   ['ADLT8', '03fbee96b84daa1bf91c44b51d2e1cbdda53fd504c98aeb6fd4a55b6'],
   ['ADLT7', 'd5e0f919debe82e4447cf0f0089188ae212f7efbc065a3d819daa17a'],

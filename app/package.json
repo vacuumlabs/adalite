@@ -27,7 +27,7 @@
     "@types/lodash": "^4.14.168",
     "bip39-light": "^1.0.7",
     "borc": "^2.1.2",
-    "cardano-crypto.js": "^6.0.0",
+    "cardano-crypto.js": "^6.1.0",
     "chacha": "^2.1.0",
     "lodash": "^4.17.21",
     "pbkdf2": "^3.1.2",
