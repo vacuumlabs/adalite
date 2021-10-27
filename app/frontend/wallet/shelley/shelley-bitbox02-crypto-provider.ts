@@ -1,4 +1,12 @@
-import {BitBox02API, getDevicePath, constants as bitbox02Constants} from 'bitbox02-api'
+import {
+  CardanoInput,
+  CardanoOutput,
+  CardanoCertificate,
+  CardanoShelleyWitness,
+  BitBox02API,
+  getDevicePath,
+  constants as bitbox02Constants,
+} from 'bitbox02-api'
 import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
@@ -43,8 +51,8 @@ const ShelleyBitBox02CryptoProvider = async ({
   network,
   config,
 }: CryptoProviderParams): Promise<CryptoProvider> => {
-  let bitbox02
-  const withDevice = async (f) => {
+  let bitbox02: BitBox02API | undefined
+  async function withDevice<T>(f: (BitBox02API) => Promise<T>): Promise<T> {
     if (bitbox02 !== undefined) {
       return await f(bitbox02)
     }
@@ -57,6 +65,7 @@ const ShelleyBitBox02CryptoProvider = async ({
         },
         () => {
           config.bitbox02OnPairingCode(null)
+          return Promise.resolve()
         },
         (attestationResult) => {
           debugLog(`BitBox02 attestation: ${attestationResult}`)
@@ -95,13 +104,13 @@ const ShelleyBitBox02CryptoProvider = async ({
     [NetworkId.TESTNET]: bitbox02Constants.messages.CardanoNetwork.CardanoTestnet,
   }[network.networkId]
 
-  const version = await withDevice((bitbox02) => {
+  const version = await withDevice((bitbox02: BitBox02API) => {
     const version = bitbox02.version().split('.')
-    return {
+    return Promise.resolve({
       major: version[0],
       minor: version[1],
       patch: version[2],
-    }
+    })
   })
 
   const getVersion = (): string => `${version.major}.${version.minor}.${version.patch}`
@@ -115,8 +124,8 @@ const ShelleyBitBox02CryptoProvider = async ({
     derivationScheme,
     config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeature.BULK_EXPORT),
     async (derivationPaths: BIP32Path[]) => {
-      return await withDevice(async (bitbox02) => {
-        const xpubs = await bitbox02.cardanoXPubs(derivationPaths)
+      return await withDevice(async (bitbox02: BitBox02API) => {
+        const xpubs: Uint8Array[] = await bitbox02.cardanoXPubs(derivationPaths)
         return xpubs.map(Buffer.from)
       })
     },
@@ -161,7 +170,7 @@ const ShelleyBitBox02CryptoProvider = async ({
     absDerivationPath: BIP32Path,
     stakingPath: BIP32Path
   ): Promise<void> {
-    await withDevice(async (bitbox02) => {
+    await withDevice(async (bitbox02: BitBox02API) => {
       await bitbox02.cardanoAddress(bb02Network, {
         pkhSkh: {
           keypathPayment: absDerivationPath,
@@ -181,7 +190,7 @@ const ShelleyBitBox02CryptoProvider = async ({
     return derivationScheme
   }
 
-  function prepareInput(input: TxInput, addressToAbsPathMapper: AddressToPathMapper) {
+  function prepareInput(input: TxInput, addressToAbsPathMapper: AddressToPathMapper): CardanoInput {
     return {
       keypath: addressToAbsPathMapper(input.address),
       prevOutHash: Buffer.from(input.txHash, 'hex'),
@@ -189,7 +198,7 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
-  function prepareOutput(output: TxOutput) {
+  function prepareOutput(output: TxOutput): CardanoOutput {
     return {
       encodedAddress: output.address,
       value: output.coins.toString(),
@@ -207,7 +216,7 @@ const ShelleyBitBox02CryptoProvider = async ({
   function prepareCertificate(
     certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
-  ) {
+  ): CardanoCertificate {
     switch (certificate.type) {
       case CertificateType.STAKING_KEY_REGISTRATION:
         return {
@@ -237,7 +246,7 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
-  function prepareShelleyWitness(witness): TxShelleyWitness {
+  function prepareShelleyWitness(witness: CardanoShelleyWitness): TxShelleyWitness {
     return {
       publicKey: Buffer.from(witness.publicKey),
       signature: Buffer.from(witness.signature),
@@ -261,7 +270,7 @@ const ShelleyBitBox02CryptoProvider = async ({
       ? `${txAux.validityIntervalStart}`
       : null
 
-    const response = await withDevice(async (bitbox02) => {
+    const response = await withDevice(async (bitbox02: BitBox02API) => {
       return await bitbox02.cardanoSignTransaction({
         network: bb02Network,
         inputs,
