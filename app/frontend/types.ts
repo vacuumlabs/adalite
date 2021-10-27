@@ -83,6 +83,7 @@ export type TokenRegistrySubject = string & {__typeTokenRegistrySubject: any}
 export type RegisteredTokenMetadata = {
   subject: TokenRegistrySubject
   description: string
+  name: string
   ticker?: string
   url?: string
   logoBase64?: string

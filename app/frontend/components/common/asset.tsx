@@ -74,13 +74,11 @@ export const FormattedAssetItem = ({
     if (type === AssetFamily.ADA) return <span className={styles.assetName}>ADA</span>
     return (
       <span>
-        {assetName ? (
-          <span className={styles.assetName}>{assetNameHex2Readable(assetName)}</span>
-        ) : (
-          <span className={styles.empty}>
-            {'<'}no name{'>'}
+        {
+          <span className={metadata || assetName ? styles.assetName : styles.empty}>
+            {metadata?.name ?? assetNameHex2Readable(assetName) ?? '<no name>'}
           </span>
-        )}
+        }
         <span className={styles.assetName}>{metadata?.ticker ? ` (${metadata?.ticker})` : ''}</span>
       </span>
     )

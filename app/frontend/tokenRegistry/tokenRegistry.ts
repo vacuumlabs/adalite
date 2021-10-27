@@ -55,6 +55,7 @@ export class TokenRegistry {
         map.set(tokenMetadata.subject, {
           subject: tokenMetadata.subject,
           description: tokenMetadata.description.value,
+          name: tokenMetadata.name.value,
           ticker: tokenMetadata?.ticker?.value,
           url: tokenMetadata?.url?.value,
           logoBase64: tokenMetadata?.logo?.value,
