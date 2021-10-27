@@ -660,10 +660,10 @@ call-bind@^1.0.0, call-bind@^1.0.2:
     function-bind "^1.1.1"
     get-intrinsic "^1.0.2"
 
-cardano-crypto.js@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-6.0.0.tgz#6aac02c54e0047e47477e88cebb02acd2c168616"
-  integrity sha512-r9wcFFfW+bq5+bn6ZBueMkLbUiySP901zHoyM8HNN8hfHEAkO3GHUMkzJutqpIG07qR84mQDqq0WjktMsqO8AA==
+cardano-crypto.js@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/cardano-crypto.js/-/cardano-crypto.js-6.1.0.tgz#5743b30fd4a5b1b127fc1c2bbd9ea5f27bab7f51"
+  integrity sha512-mS4cgQYv3S05wGE00tS86EGrZPAN/zwYn6w5tGkfFZE2xiS5lF7KlpSgOIbO7Bip5XZf1rXCLYSiWgxj2Qnkpg==
   dependencies:
     bech32 "^1.1.4"
     bip39 "^3.0.2"
