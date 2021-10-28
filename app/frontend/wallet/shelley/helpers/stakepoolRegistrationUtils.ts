@@ -18,9 +18,10 @@ import {TxPlan} from '../transaction/types'
 import {encodeAddress} from './addresses'
 import {CborizedCliWitness} from '../types'
 
-type SupportedEraTxBody = 'TxUnsignedShelley' | 'TxBodyAllegra' | 'TxBodyMary'
-const preferredTxEra: SupportedEraTxBody = 'TxBodyMary'
-const supportedEraWitnessMapping: {[K in SupportedEraTxBody]: string} = {
+type CliTxBodyType = 'TxUnsignedShelley' | 'TxBodyAllegra' | 'TxBodyMary'
+type CliTxWitnessType = 'TxWitnessShelley' | 'TxWitness AllegraEra' | 'TxWitness MaryEra'
+const preferredCliTxBodyType: CliTxBodyType = 'TxBodyMary'
+const cliTxBodyTypeToWitnessType: {[K in CliTxBodyType]: CliTxWitnessType} = {
   TxUnsignedShelley: 'TxWitnessShelley',
   TxBodyAllegra: 'TxWitness AllegraEra',
   TxBodyMary: 'TxWitness MaryEra',
@@ -134,8 +135,8 @@ function parsePoolRegTxFile(fileContentStr: string) {
       'Invalid file structure. Make sure the JSON file has "type" and "cborHex" keys on the top level.'
     )
   }
-  if (!Object.keys(supportedEraWitnessMapping).includes(txBodyType)) {
-    throw new Error(`Unsupported transaction era, preferably use ${preferredTxEra} era.`)
+  if (!Object.keys(cliTxBodyTypeToWitnessType).includes(txBodyType)) {
+    throw new Error(`Unsupported transaction era, preferably use ${preferredCliTxBodyType} era.`)
   }
   return {cborHex, txBodyType}
 }
@@ -155,7 +156,7 @@ const parseCliUnsignedTx = (cborHex: string) => {
 }
 
 const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: string) => {
-  const type = supportedEraWitnessMapping[txBodyType]
+  const type = cliTxBodyTypeToWitnessType[txBodyType]
   return {
     type,
     description: '',
