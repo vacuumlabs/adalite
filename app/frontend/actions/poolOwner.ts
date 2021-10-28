@@ -4,8 +4,10 @@ import loadingActions from './loading'
 import errorActions from './error'
 import {CryptoProviderFeature, TxType} from '../types'
 import debugLog from '../helpers/debugLog'
-
-import {parseCliUnsignedTx} from '../wallet/shelley/helpers/stakepoolRegistrationUtils'
+import {
+  parseCliUnsignedTx,
+  parsePoolRegTxFile,
+} from '../wallet/shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason} from '../errors'
 import {usingHwWalletSelector} from '../selectors'
 
@@ -18,9 +20,8 @@ export default (store: Store) => {
     try {
       loadingAction(state, 'Loading pool registration certificate...')
       setState({poolRegTxError: undefined})
-      const {txBodyType, unsignedTxParsed, ttl, validityIntervalStart} = parseCliUnsignedTx(
-        fileContentStr
-      )
+      const {cborHex, txBodyType} = parsePoolRegTxFile(fileContentStr)
+      const {unsignedTxParsed, ttl, validityIntervalStart} = parseCliUnsignedTx(cborHex)
       const txPlan = await getWallet()
         .getAccount(state.activeAccountIndex)
         .getPoolRegistrationTxPlan({txType: TxType.POOL_REG_OWNER, unsignedTxParsed})
