@@ -18,11 +18,12 @@ import {TxPlan} from '../transaction/types'
 import {encodeAddress} from './addresses'
 import {CborizedCliWitness} from '../types'
 
-const witnessTypes = {
+type SupportedEraTxBody = 'TxUnsignedShelley' | 'TxBodyAllegra' | 'TxBodyMary'
+const preferredTxEra: SupportedEraTxBody = 'TxBodyMary'
+const supportedEraWitnessMapping: {[K in SupportedEraTxBody]: string} = {
   TxUnsignedShelley: 'TxWitnessShelley',
   TxBodyAllegra: 'TxWitness AllegraEra',
   TxBodyMary: 'TxWitness MaryEra',
-  TxBodyAlonzo: 'TxWitness AlonzoEra',
 }
 
 const validatePoolRegUnsignedTx = (unsignedTx: _UnsignedTxParsed) => {
@@ -126,8 +127,20 @@ const unsignedPoolTxToTxPlan = (unsignedTx: _UnsignedTxParsed, stakingAddress: A
   }
 }
 
-const parseCliUnsignedTx = (fileContentStr: string) => {
+function parsePoolRegTxFile(fileContentStr: string) {
   const {cborHex, type: txBodyType} = JSON.parse(fileContentStr)
+  if (!cborHex || !txBodyType) {
+    throw new Error(
+      'Invalid file structure. Make sure the JSON file has "type" and "cborHex" keys on the top level.'
+    )
+  }
+  if (!Object.keys(supportedEraWitnessMapping).includes(txBodyType)) {
+    throw new Error(`Unsupported transaction era, preferably use ${preferredTxEra} era.`)
+  }
+  return {cborHex, txBodyType}
+}
+
+const parseCliUnsignedTx = (cborHex: string) => {
   const unsignedTxDecoded = decode(cborHex)
   const unsignedTxParsed = parseUnsignedTx(unsignedTxDecoded)
   const deserializedTxValidationError = validatePoolRegUnsignedTx(unsignedTxParsed)
@@ -135,7 +148,6 @@ const parseCliUnsignedTx = (fileContentStr: string) => {
     throw deserializedTxValidationError
   }
   return {
-    txBodyType: txBodyType as string,
     unsignedTxParsed,
     ttl: parseCliTtl(unsignedTxParsed.ttl),
     validityIntervalStart: parseCliValidityIntervalStart(unsignedTxParsed.validityIntervalStart),
@@ -143,7 +155,7 @@ const parseCliUnsignedTx = (fileContentStr: string) => {
 }
 
 const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: string) => {
-  const type = witnessTypes[txBodyType]
+  const type = supportedEraWitnessMapping[txBodyType]
   return {
     type,
     description: '',
@@ -152,6 +164,7 @@ const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: 
 }
 
 export {
+  parsePoolRegTxFile,
   parseCliUnsignedTx,
   parseCliTtl,
   parseCliValidityIntervalStart,
