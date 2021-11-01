@@ -42,6 +42,8 @@ import {
   UnexpectedErrorReason,
 } from '../../errors'
 
+let _activeBitBox02: BitBox02API | null = null
+
 type CryptoProviderParams = {
   network: Network
   config: any
@@ -51,15 +53,21 @@ const ShelleyBitBox02CryptoProvider = async ({
   network,
   config,
 }: CryptoProviderParams): Promise<CryptoProvider> => {
-  let bitbox02: BitBox02API | undefined
+  if (_activeBitBox02 !== null) {
+    try {
+      _activeBitBox02.close()
+    } finally {
+      _activeBitBox02 = null
+    }
+  }
   async function withDevice<T>(f: (BitBox02API) => Promise<T>): Promise<T> {
-    if (bitbox02 !== undefined) {
-      return await f(bitbox02)
+    if (_activeBitBox02 !== null) {
+      return await f(_activeBitBox02)
     }
     try {
       const devicePath = await getDevicePath()
-      bitbox02 = new BitBox02API(devicePath)
-      await bitbox02.connect(
+      _activeBitBox02 = new BitBox02API(devicePath)
+      await _activeBitBox02.connect(
         (pairingCode) => {
           config.bitbox02OnPairingCode(pairingCode)
         },
@@ -71,7 +79,7 @@ const ShelleyBitBox02CryptoProvider = async ({
           debugLog(`BitBox02 attestation: ${attestationResult}`)
         },
         () => {
-          bitbox02 = undefined
+          _activeBitBox02 = null
         },
         (status) => {
           if (status === bitbox02Constants.Status.PairingFailed) {
@@ -80,16 +88,19 @@ const ShelleyBitBox02CryptoProvider = async ({
         }
       )
 
-      if (bitbox02.firmware().Product() !== bitbox02Constants.Product.BitBox02Multi) {
+      if (_activeBitBox02.firmware().Product() !== bitbox02Constants.Product.BitBox02Multi) {
         throw new Error('Unsupported device')
       }
 
-      return await f(bitbox02)
+      return await f(_activeBitBox02)
     } catch (err) {
       debugLog(err)
-      if (bitbox02 !== undefined) {
-        bitbox02.close()
-        bitbox02 = undefined
+      if (_activeBitBox02 !== null) {
+        try {
+          _activeBitBox02.close()
+        } finally {
+          _activeBitBox02 = null
+        }
       }
       throw new InternalError(InternalErrorReason.BitBox02Error, {
         message: err,
