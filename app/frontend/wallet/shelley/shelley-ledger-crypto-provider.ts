@@ -36,6 +36,7 @@ import {
   TokenBundle,
   Address,
   LedgerTransportType,
+  LedgerTransportChoice,
 } from '../../types'
 import {
   Network,
@@ -63,11 +64,9 @@ import {
 import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import assertUnreachable from '../../helpers/assertUnreachable'
 
-let _activeTransport: Transport | null = null
-const getLedgerTransport = async (
-  ledgerTransportType: LedgerTransportType
-): Promise<Transport | null> => {
-  if (_activeTransport != null) {
+let _activeTransport: Transport
+const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
+  if (_activeTransport) {
     /*
      * this is needed for WebHID transport where .create() is not idempotent
      * and requires closing the previous transport first. Relevant e.g. for
@@ -75,25 +74,24 @@ const getLedgerTransport = async (
      */
     try {
       await _activeTransport.close()
-    } finally {
-      _activeTransport = null
+    } catch (e) {
+      // ignore
     }
   }
 
   switch (ledgerTransportType) {
-    case LedgerTransportType.WEB_HID:
+    case LedgerTransportChoice.WEB_HID:
       _activeTransport = await LedgerTransportWebHid.create()
       break
-    case LedgerTransportType.U2F:
+    case LedgerTransportChoice.U2F:
       _activeTransport = await LedgerTransportU2F.create()
       break
-    case LedgerTransportType.WEB_USB:
+    case LedgerTransportChoice.WEB_USB:
       _activeTransport = await LedgerTransportWebUsb.create()
       break
     default:
-      break
+      return assertUnreachable(ledgerTransportType as never)
   }
-
   return _activeTransport
 }
 

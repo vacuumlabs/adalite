@@ -9,7 +9,7 @@ import {useState, useCallback} from 'preact/hooks'
 import {localStorageVars} from '../../../localStorage'
 import {isMobileOnly} from 'react-device-detect'
 import LedgerTransportSelect from './ledgerTransportSelect'
-import {LedgerTransportType} from '../../../../frontend/types'
+import {LedgerTransportChoice} from '../../../../frontend/types'
 import styles from './hardwareAuth.module.scss'
 
 const LoadByHardwareWalletSection = () => {
@@ -18,7 +18,7 @@ const LoadByHardwareWalletSection = () => {
     window.localStorage.getItem(localStorageVars.BULK_EXPORT) !== 'true'
   )
   const [selectedLedgerTransportType, setSelectedLedgerTransportType] = useState(
-    LedgerTransportType.DEFAULT
+    LedgerTransportChoice.DEFAULT
   )
   const toggleBulkExport = useCallback(() => {
     window.localStorage.setItem(localStorageVars.BULK_EXPORT, `${enableBulkExport}`)

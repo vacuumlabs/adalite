@@ -8,7 +8,14 @@ import debugLog from '../helpers/debugLog'
 import getConversionRates from '../helpers/getConversionRates'
 
 import {ADALITE_CONFIG} from '../config'
-import {AccountInfo, Lovelace, AssetFamily, AuthMethodType, LedgerTransportType} from '../types'
+import {
+  AccountInfo,
+  Lovelace,
+  AssetFamily,
+  AuthMethodType,
+  LedgerTransportType,
+  LedgerTransportChoice,
+} from '../types'
 import {initialState} from '../store'
 import {State, Store} from '../state'
 import errorActions from './error'
@@ -86,7 +93,7 @@ export default (store: Store) => {
     }: {
       cryptoProviderType: CryptoProviderType
       walletSecretDef?: any // TODO: until now, arguments came in freestyle combinations, refactor
-      selectedLedgerTransportType?: LedgerTransportType
+      selectedLedgerTransportType?: LedgerTransportChoice
       shouldExportPubKeyBulk: boolean
     }
   ) => {
@@ -94,7 +101,7 @@ export default (store: Store) => {
     setState({walletLoadingError: undefined})
     const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
     const ledgerTransportType =
-      selectedLedgerTransportType === LedgerTransportType.DEFAULT
+      selectedLedgerTransportType === LedgerTransportChoice.DEFAULT
         ? await getDefaultLedgerTransportType()
         : selectedLedgerTransportType
     const config = {
@@ -106,8 +113,8 @@ export default (store: Store) => {
 
     try {
       if (
-        ledgerTransportType === LedgerTransportType.WEB_HID ||
-        ledgerTransportType === LedgerTransportType.WEB_USB
+        ledgerTransportType === LedgerTransportChoice.WEB_HID ||
+        ledgerTransportType === LedgerTransportChoice.WEB_USB
       ) {
         loadingAction(
           state,

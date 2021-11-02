@@ -117,12 +117,14 @@ export enum AuthMethodType {
   KEY_FILE = 'file',
 }
 
-export enum LedgerTransportType {
+export enum LedgerTransportChoice {
   DEFAULT = 'Default',
   U2F = 'U2F',
   WEB_USB = 'WebUSB',
   WEB_HID = 'WebHID',
 }
+
+export type LedgerTransportType = Exclude<LedgerTransportChoice, LedgerTransportChoice.DEFAULT>
 
 export enum ScreenType {
   MOBILE,
