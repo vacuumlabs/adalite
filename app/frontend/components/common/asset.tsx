@@ -1,6 +1,6 @@
 import {h} from 'preact'
 import printAda from '../../helpers/printAda'
-import {AssetFamily, Lovelace, Token} from '../../types'
+import {AssetFamily, Lovelace, RegisteredTokenMetadata, Token} from '../../types'
 import {AdaIcon, HomePageIcon, QuestionFillIcon, StarIcon} from './svg'
 import LinkIcon from './linkIcon'
 import {StringEllipsis} from '../pages/stringEllipsis'
@@ -70,13 +70,23 @@ export const FormattedAssetItem = ({
     }
   }
 
+  const formatAssetName = (metadata: RegisteredTokenMetadata, assetNameHex: string) => {
+    if (metadata?.name) {
+      return metadata.name
+    } else if (assetName) {
+      return assetNameHex2Readable(assetNameHex)
+    } else {
+      return '<no name>'
+    }
+  }
+
   const FormattedAssetName = () => {
     if (type === AssetFamily.ADA) return <span className={styles.assetName}>ADA</span>
     return (
       <span>
         {
           <span className={metadata || assetName ? styles.assetName : styles.empty}>
-            {metadata?.name ?? assetNameHex2Readable(assetName) ?? '<no name>'}
+            {formatAssetName(metadata, assetName)}
           </span>
         }
         <span className={styles.assetName}>{metadata?.ticker ? ` (${metadata?.ticker})` : ''}</span>
