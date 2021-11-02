@@ -108,7 +108,7 @@ describe('Succesful transaction plans', () => {
     it(`should ${name}`, () => {
       const {utxos, changeAddress, fee, args} = setting
       const txPlanResult = selectMinimalTxPlan(utxos, changeAddress, args)
-      if (isTxPlanResultSuccess(txPlanResult)) {
+      if (txPlanResult.success === true) {
         assert.equal(txPlanResult.txPlan.fee, fee)
       } else {
         assert(false, 'Transaction plan is not succesful')
