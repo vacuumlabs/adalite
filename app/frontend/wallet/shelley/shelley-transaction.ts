@@ -345,7 +345,7 @@ const cborizeTxVotingRegistration = ({
 
 const cborizeTxAuxiliaryVotingData = (
   txAuxiliaryData: TxAuxiliaryData,
-  signatureHex: string | undefined
+  signatureHex: string
 ): CborizedVotingRegistrationMetadata => [
   new Map<number, Map<number, Buffer | BigInt>>([
     cborizeTxVotingRegistration(txAuxiliaryData),

@@ -401,7 +401,7 @@ const ShelleyTrezorCryptoProvider = async ({
     }
     switch (txAux.auxiliaryData.type) {
       case 'CATALYST_VOTING':
-        if (auxiliaryDataSupplement) {
+        if (auxiliaryDataSupplement && auxiliaryDataSupplement.catalystSignature) {
           return {
             finalizedTxAux: ShelleyTxAux({
               ...txAux,
