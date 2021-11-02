@@ -36,13 +36,11 @@ export default (store: Store) => {
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
-    const poolInfo = (!state.shelleyDelegation?.selectedPool?.name &&
-      (await getWalletOrThrow().getPoolInfo(state.shelleyDelegation?.selectedPool?.url))) || {
-      name: '',
-      ticker: '',
-      homepage: '',
-      description: '',
-    }
+    const selectedPool = state.shelleyDelegation?.selectedPool
+    const poolInfo =
+      !selectedPool?.name && selectedPool?.url
+        ? await getWalletOrThrow().getPoolInfo(selectedPool?.url)
+        : null
     if (hasPoolIdentifiersChanged(state)) {
       return
     }
@@ -50,16 +48,12 @@ export default (store: Store) => {
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
-        selectedPool: {
-          ...(state.shelleyDelegation?.selectedPool || {
-            pledge: '',
-            margin: 0,
-            fixedCost: '',
-            url: '',
-            poolHash: '',
-          }),
-          ...poolInfo,
-        },
+        selectedPool: selectedPool
+          ? {
+            ...selectedPool,
+            ...poolInfo,
+          }
+          : null,
         delegationFee: newState.shelleyDelegation?.delegationFee,
       },
       gettingPoolInfo: false,
