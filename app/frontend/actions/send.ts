@@ -1,5 +1,5 @@
 import {Store, State, getSourceAccountInfo} from '../state'
-import {getWallet} from './wallet'
+import {getWalletOrThrow} from './wallet'
 import errorActions from './error'
 import commonActions from './common'
 import {
@@ -192,8 +192,8 @@ export default (store: Store) => {
   const sendMaxFunds = async (state: State, decimals: number) => {
     setState({calculatingFee: true})
     try {
-      const maxAmounts = await getWallet()
-        ?.getAccount(state.sourceAccountIndex)
+      const maxAmounts = await getWalletOrThrow()
+        .getAccount(state.sourceAccountIndex)
         .getMaxSendableAmount(
           getSourceAccountInfo(state).utxos,
           state.sendAddress.fieldValue as Address,

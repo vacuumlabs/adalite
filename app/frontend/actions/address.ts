@@ -1,5 +1,5 @@
 import {Store, State} from '../state'
-import {getWallet} from './wallet'
+import {getWalletOrThrow} from './wallet'
 import errorActions from './error'
 import {usingHwWalletSelector} from '../selectors'
 
@@ -17,8 +17,8 @@ export default (store: Store) => {
         })
         const addressToVerify = address || newState.showAddressDetail?.address
         if (addressToVerify) {
-          await getWallet()
-            ?.getAccount(state.targetAccountIndex)
+          await getWalletOrThrow()
+            .getAccount(state.targetAccountIndex)
             .verifyAddress(addressToVerify)
         }
         setState({

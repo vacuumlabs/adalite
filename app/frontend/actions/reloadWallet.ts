@@ -1,7 +1,7 @@
 import {State, Store} from '../state'
 import errorActions from './error'
 import commonActions from './common'
-import walletActions, {getWallet} from './wallet'
+import walletActions, {getWalletOrThrow} from './wallet'
 import sleep from '../helpers/sleep'
 import {getDateDiffInSeconds} from '../helpers/common'
 
@@ -11,7 +11,7 @@ export default (store: Store) => {
   const {setState} = store
   const {setWalletOperationStatusType} = commonActions(store)
 
-  const wallet = getWallet()
+  const wallet = getWalletOrThrow()
   let _lastWalletReloadTime = new Date(0)
   const setLastReloadTime = (time: Date) => {
     _lastWalletReloadTime = time

@@ -1,5 +1,5 @@
 import {getSourceAccountInfo, State, Store} from '../state'
-import {getWallet} from './wallet'
+import {getWalletOrThrow} from './wallet'
 import {
   AssetFamily,
   DelegateTransactionSummary,
@@ -48,11 +48,8 @@ export default (store: Store) => {
 
   const prepareTxPlan = async (args: TxPlanArgs): Promise<TxPlanResult | undefined> => {
     const state = getState()
-    const wallet = await getWallet()
+    const wallet = await getWalletOrThrow()
     try {
-      if (!wallet) {
-        throw new Error('Wallet is not loaded')
-      }
       return await wallet
         .getAccount(state.sourceAccountIndex)
         .getTxPlan(args, getSourceAccountInfo(state).utxos)

@@ -1,6 +1,6 @@
 import {Store, State, getSourceAccountInfo} from '../state'
 import {withdrawalPlanValidator, delegationPlanValidator} from '../helpers/validators'
-import {getWallet} from './wallet'
+import {getWalletOrThrow} from './wallet'
 import errorActions from './error'
 import loadingActions from './loading'
 import commonActions from './common'
@@ -37,7 +37,7 @@ export default (store: Store) => {
       return
     }
     const poolInfo = (!state.shelleyDelegation?.selectedPool?.name &&
-      (await getWallet()?.getPoolInfo(state.shelleyDelegation?.selectedPool?.url))) || {
+      (await getWalletOrThrow().getPoolInfo(state.shelleyDelegation?.selectedPool?.url))) || {
       name: '',
       ticker: '',
       homepage: '',
@@ -170,7 +170,9 @@ export default (store: Store) => {
   }
 
   const deregisterStakingKey = async (state: State): Promise<void> => {
-    const supportError = getWallet()?.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
+    const supportError = getWalletOrThrow().ensureFeatureIsSupported(
+      CryptoProviderFeature.WITHDRAWAL
+    )
     if (supportError) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -211,7 +213,7 @@ export default (store: Store) => {
       // Handled the same way as for withdrawal
       const withdrawalValidationError = (txPlanResult?.estimatedFee &&
         withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee)) ||
-        getWallet()?.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
+        getWalletOrThrow().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||
         txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
       setError(state, {
         errorName: 'transactionSubmissionError',
