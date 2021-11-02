@@ -404,7 +404,7 @@ const ShelleyTrezorCryptoProvider = async ({
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,
-            auxiliaryDataHash: auxiliaryDataSupplement?.auxiliaryDataHash,
+            auxiliaryDataHash: auxiliaryDataSupplement?.auxiliaryDataHash || null,
           }),
           txAuxiliaryData: cborizeTxAuxiliaryVotingData(
             txAux.auxiliaryData,

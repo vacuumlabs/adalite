@@ -61,7 +61,7 @@ function ShelleyTxAux({
   ttl: number
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
-  auxiliaryDataHash: HexString | undefined
+  auxiliaryDataHash: HexString | null
   auxiliaryData: TxAuxiliaryData | null
   validityIntervalStart: number | null
 }): TxAux {
