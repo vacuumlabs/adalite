@@ -504,18 +504,21 @@ const ShelleyLedgerCryptoProvider = async ({
     }
     switch (txAux.auxiliaryData.type) {
       case 'CATALYST_VOTING':
-        return {
-          finalizedTxAux: ShelleyTxAux({
-            ...txAux,
-            auxiliaryDataHash: auxiliaryDataSupplement?.auxiliaryDataHashHex || null,
-          }),
-          txAuxiliaryData: cborizeTxAuxiliaryVotingData(
-            txAux.auxiliaryData,
-            auxiliaryDataSupplement?.catalystRegistrationSignatureHex
-          ),
+        if (auxiliaryDataSupplement) {
+          return {
+            finalizedTxAux: ShelleyTxAux({
+              ...txAux,
+              auxiliaryDataHash: auxiliaryDataSupplement.auxiliaryDataHashHex,
+            }),
+            txAuxiliaryData: cborizeTxAuxiliaryVotingData(
+              txAux.auxiliaryData,
+              auxiliaryDataSupplement.catalystRegistrationSignatureHex
+            ),
+          }
         }
+      // eslint-disable-line no-fallthrough
       default:
-        return assertUnreachable(txAux.auxiliaryData.type)
+        return assertUnreachable(txAux.auxiliaryData.type as never)
     }
   }
 
