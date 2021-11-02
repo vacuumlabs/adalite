@@ -70,14 +70,13 @@ export const FormattedAssetItem = ({
     }
   }
 
-  const formatAssetName = (metadata: RegisteredTokenMetadata, assetNameHex: string) => {
+  const formatAssetName = (assetNameHex: string, metadata: RegisteredTokenMetadata | undefined) => {
     if (metadata?.name) {
       return metadata.name
     } else if (assetName) {
       return assetNameHex2Readable(assetNameHex)
-    } else {
-      return '<no name>'
     }
+    return '<no name>'
   }
 
   const FormattedAssetName = () => {
@@ -86,7 +85,7 @@ export const FormattedAssetItem = ({
       <span>
         {
           <span className={metadata || assetName ? styles.assetName : styles.empty}>
-            {formatAssetName(metadata, assetName)}
+            {formatAssetName(assetName, metadata)}
           </span>
         }
         <span className={styles.assetName}>{metadata?.ticker ? ` (${metadata?.ticker})` : ''}</span>
