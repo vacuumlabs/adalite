@@ -1,5 +1,5 @@
 import {Store, State} from '../state'
-import {getWalletOrThrow} from './wallet'
+import {getWallet} from './wallet'
 import loadingActions from './loading'
 import errorActions from './error'
 import {CryptoProviderFeature, TxType} from '../types'
@@ -23,7 +23,7 @@ export default (store: Store) => {
       const {cborHex, txBodyType} = parsePoolRegTxFile(fileContentStr)
       const {unsignedTxParsed, ttl, validityIntervalStart} = parseCliUnsignedTx(cborHex)
       const txPlan =
-        (await getWalletOrThrow()
+        (await getWallet()
           .getAccount(state.activeAccountIndex)
           .getPoolRegistrationTxPlan({txType: TxType.POOL_REG_OWNER, unsignedTxParsed})) || null
       setState({
@@ -82,9 +82,7 @@ export default (store: Store) => {
   const signPoolCertificateTx = async (state: State) => {
     try {
       // TODO: refactor feature support logic
-      const supportError = getWalletOrThrow().ensureFeatureIsSupported(
-        CryptoProviderFeature.POOL_OWNER
-      )
+      const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)
       if (supportError) {
         throw new InternalError(supportError.code, {message: supportError.params.message})
       }
@@ -96,7 +94,7 @@ export default (store: Store) => {
       }
 
       const {plan, ttl, validityIntervalStart} = state.poolRegTransactionSummary
-      const wallet = getWalletOrThrow()
+      const wallet = getWallet()
       if (plan && ttl && validityIntervalStart) {
         const txAux = await wallet
           .getAccount(state.sourceAccountIndex)

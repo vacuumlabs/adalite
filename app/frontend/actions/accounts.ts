@@ -1,5 +1,5 @@
 import {Store, State} from '../state'
-import walletActions, {getWalletOrThrow} from './wallet'
+import walletActions, {getWallet} from './wallet'
 import errorActions from './error'
 import sendActions from './send'
 import delegateActions from './delegate'
@@ -28,7 +28,7 @@ export default (store: Store) => {
   const exploreNextAccount = async (state: State) => {
     try {
       loadingAction(state, 'Loading account')
-      const wallet = getWalletOrThrow()
+      const wallet = getWallet()
       const nextAccount = await wallet.exploreNextAccount()
       if (state.validStakepoolDataProvider) {
         const accountInfo = await nextAccount.getAccountInfo(state.validStakepoolDataProvider)
@@ -56,7 +56,7 @@ export default (store: Store) => {
     setState({
       targetAccountIndex: accountIndex,
     })
-    const targetAddress = await getWalletOrThrow()
+    const targetAddress = await getWallet()
       .getAccount(accountIndex)
       .getChangeAddress()
     updateAddress(state, null, targetAddress)
@@ -67,7 +67,7 @@ export default (store: Store) => {
     setState({
       sourceAccountIndex: accountIndex,
     })
-    const targetAddress = await getWalletOrThrow()
+    const targetAddress = await getWallet()
       .getAccount(getState().targetAccountIndex)
       .getChangeAddress()
     updateAddress(state, null, targetAddress)
@@ -87,7 +87,7 @@ export default (store: Store) => {
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace}, // TODO: use reset function
       transactionFee: 0,
     })
-    const targetAddress = await getWalletOrThrow()
+    const targetAddress = await getWallet()
       .getAccount(targetAccountIndex)
       .getChangeAddress()
     updateAddress(getState(), null, targetAddress)
@@ -114,7 +114,7 @@ export default (store: Store) => {
       sourceAccountIndex,
       targetAccountIndex,
     })
-    const targetAddress = await getWalletOrThrow()
+    const targetAddress = await getWallet()
       .getAccount(targetAccountIndex)
       .getChangeAddress()
     updateAddress(state, null, targetAddress)

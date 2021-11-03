@@ -34,9 +34,8 @@ let wallet: Wallet | null
 export const setWallet = (w: Wallet | null) => {
   wallet = w
 }
-export const getWallet = (): Wallet | null => wallet
 
-export const getWalletOrThrow = (): Wallet => {
+export const getWallet = (): Wallet => {
   if (!wallet) {
     throw new Error('Wallet is not loaded')
   }
@@ -51,7 +50,7 @@ const accountsIncludeStakingAddresses = (
 }
 
 export default (store: Store) => {
-  const wallet = getWalletOrThrow()
+  const wallet = getWallet()
   const {loadingAction} = loadingActions(store)
   const {setError} = errorActions(store)
   const {getState, setState} = store
@@ -224,7 +223,7 @@ export default (store: Store) => {
 
   const exportJsonWallet = async (state, password, walletName) => {
     const walletExport = JSON.stringify(
-      await exportWalletSecretDef(getWalletOrThrow().getWalletSecretDef(), password, walletName)
+      await exportWalletSecretDef(getWallet().getWalletSecretDef(), password, walletName)
     )
 
     const blob = new Blob([walletExport], {

@@ -9,7 +9,7 @@ import {
 import transactionActions from './transaction'
 import loadingActions from './loading'
 import commonActions from './common'
-import {getWalletOrThrow} from './wallet'
+import {getWallet} from './wallet'
 import errorActions from './error'
 import {txPlanValidator} from '../helpers/validators'
 import {xpub2pub} from '../wallet/shelley/helpers/addresses'
@@ -40,7 +40,7 @@ export default (store: Store) => {
     state: State,
     {votingPubKey}: {votingPubKey: HexString}
   ): Promise<void> => {
-    const supportError = getWalletOrThrow().ensureFeatureIsSupported(CryptoProviderFeature.VOTING)
+    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.VOTING)
     if (supportError) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -59,7 +59,7 @@ export default (store: Store) => {
       Buffer.from(getSourceAccountInfo(state).stakingXpub?.xpubHex || '', 'hex')
     ).toString('hex')
     const nonce =
-      (await getWalletOrThrow()
+      (await getWallet()
         .getAccount(state.sourceAccountIndex)
         .calculateTtl()) || ''
     const sourceAccount = getSourceAccountInfo(state)

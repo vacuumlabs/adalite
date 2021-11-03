@@ -1,5 +1,5 @@
 import {Store, State, getSourceAccountInfo} from '../state'
-import {getWalletOrThrow} from './wallet'
+import {getWallet} from './wallet'
 import reloadWalletActions from './reloadWallet'
 import loadingActions from './loading'
 import errorActions from './error'
@@ -56,7 +56,7 @@ export default (store: Store) => {
     let txAux
     try {
       if (txPlan) {
-        txAux = await getWalletOrThrow()
+        txAux = await getWallet()
           .getAccount(sourceAccountIndex)
           .prepareTxAux(txPlan)
       } else {
@@ -64,7 +64,7 @@ export default (store: Store) => {
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
         const retriedState = getState()
         if (retriedState.sendTransactionSummary.plan) {
-          txAux = await getWalletOrThrow()
+          txAux = await getWallet()
             .getAccount(sourceAccountIndex)
             .prepareTxAux(retriedState.sendTransactionSummary.plan)
         }
@@ -154,7 +154,7 @@ export default (store: Store) => {
       setWalletOperationStatusType(state, 'txPending')
       let txInfo: TxSummary | undefined
       try {
-        txInfo = await getWalletOrThrow().fetchTxInfo(txHash)
+        txInfo = await getWallet().fetchTxInfo(txHash)
         // eslint-disable-next-line no-empty
       } catch {}
       if (txInfo !== undefined) {
@@ -217,7 +217,7 @@ export default (store: Store) => {
     let txSubmitResult
     const txTab = txSummary.type
     try {
-      const wallet = getWalletOrThrow()
+      const wallet = getWallet()
       if (txSummary.plan) {
         const txAux = await wallet.getAccount(sourceAccountIndex).prepareTxAux(txSummary.plan)
         const signedTx = await wallet.getAccount(sourceAccountIndex).signTxAux(txAux)
@@ -276,7 +276,7 @@ export default (store: Store) => {
 
   const convertNonStakingUtxos = async (state: State): Promise<void> => {
     loadingAction(state, 'Preparing transaction...')
-    const wallet = getWalletOrThrow()
+    const wallet = getWallet()
     const address = await wallet.getAccount(state.sourceAccountIndex).getChangeAddress()
     const sendAmount = await wallet
       .getAccount(state.sourceAccountIndex)
@@ -323,9 +323,7 @@ export default (store: Store) => {
   }
 
   const withdrawRewards = async (state: State): Promise<void> => {
-    const supportError = getWalletOrThrow().ensureFeatureIsSupported(
-      CryptoProviderFeature.WITHDRAWAL
-    )
+    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL)
     if (supportError) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -353,7 +351,7 @@ export default (store: Store) => {
       setTransactionSummaryOld(txPlanResult.txPlan, withdrawTransactionSummary)
       await confirmTransactionOld(getState(), TxType.WITHDRAW)
     } else {
-      const wallet = getWalletOrThrow()
+      const wallet = getWallet()
       const withdrawalValidationError = (txPlanResult?.estimatedFee &&
         withdrawalPlanValidator(rewards, balance, txPlanResult.estimatedFee)) ||
         wallet.ensureFeatureIsSupported(CryptoProviderFeature.WITHDRAWAL) ||

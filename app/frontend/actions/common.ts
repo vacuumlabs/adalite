@@ -1,5 +1,5 @@
 import {getSourceAccountInfo, State, Store} from '../state'
-import {getWalletOrThrow} from './wallet'
+import {getWallet} from './wallet'
 import {
   AssetFamily,
   DelegateTransactionSummary,
@@ -48,7 +48,7 @@ export default (store: Store) => {
 
   const prepareTxPlan = async (args: TxPlanArgs): Promise<TxPlanResult | undefined> => {
     const state = getState()
-    const wallet = await getWalletOrThrow()
+    const wallet = await getWallet()
     try {
       return await wallet
         .getAccount(state.sourceAccountIndex)
