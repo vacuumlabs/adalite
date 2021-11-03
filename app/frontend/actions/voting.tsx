@@ -61,10 +61,9 @@ export default (store: Store) => {
     const stakePubKey = xpub2pub(
       Buffer.from(sourceAccountInfo.stakingXpub.xpubHex, 'hex')
     ).toString('hex')
-    const nonce =
-      (await getWallet()
-        .getAccount(state.sourceAccountIndex)
-        .calculateTtl()) || ''
+    const nonce = await getWallet()
+      .getAccount(state.sourceAccountIndex)
+      .calculateTtl()
     const sourceAccount = getSourceAccountInfo(state)
     let txPlanResult: TxPlanResult | null | undefined = null
     if (!sourceAccount.stakingAddress) {

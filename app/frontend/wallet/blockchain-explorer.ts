@@ -186,7 +186,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       (token) => token.quantity > 0
     )
     const coins = addressInfos.reduce(
-      (acc, elem) => acc + parseInt(elem?.caBalance.getCoin || '', 10),
+      (acc, elem) => acc + parseInt(elem?.caBalance.getCoin || '0', 10),
       0
     ) as Lovelace
     return {
