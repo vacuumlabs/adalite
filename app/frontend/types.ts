@@ -156,9 +156,9 @@ export type AccountInfo = {
   utxos: Array<UTxO>
   tokenBalance: TokenBundle
   shelleyBalances: {
-    stakingBalance?: number
-    nonStakingBalance?: number
-    rewardsAccountBalance?: number
+    stakingBalance: number
+    nonStakingBalance: number
+    rewardsAccountBalance: number
   }
   shelleyAccountInfo: {
     accountPubkeyHex: string
