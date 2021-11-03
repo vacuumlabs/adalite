@@ -14,7 +14,7 @@ import errorActions from './error'
 import {txPlanValidator} from '../helpers/validators'
 import {xpub2pub} from '../wallet/shelley/helpers/addresses'
 import {TxPlanResult, isTxPlanResultSuccess} from '../wallet/shelley/transaction/types'
-import {InternalErrorReason} from '../errors'
+import {InternalErrorReason, UnexpectedError, UnexpectedErrorReason} from '../errors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -54,9 +54,12 @@ export default (store: Store) => {
     }
     loadingAction(state, 'Preparing transaction...')
     state = getState()
-
+    const sourceAccountInfo = getSourceAccountInfo(state)
+    if (!sourceAccountInfo.stakingXpub?.xpubHex) {
+      throw new UnexpectedError(UnexpectedErrorReason.MissingStakingXpub)
+    }
     const stakePubKey = xpub2pub(
-      Buffer.from(getSourceAccountInfo(state).stakingXpub?.xpubHex || '', 'hex')
+      Buffer.from(sourceAccountInfo.stakingXpub.xpubHex, 'hex')
     ).toString('hex')
     const nonce =
       (await getWallet()

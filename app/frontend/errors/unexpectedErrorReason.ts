@@ -9,4 +9,5 @@ export enum UnexpectedErrorReason {
   CannotConstructTxPlan = 'CannotConstructTxPlan',
   ByronWitnessesMissingChainCode = 'ByronWitnessesMissingChainCode',
   MissingStakingPath = 'MissingStakingPath',
+  MissingStakingXpub = 'MissingStakingXpub',
 }
