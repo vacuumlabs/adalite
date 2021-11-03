@@ -38,8 +38,8 @@ export default (store: Store) => {
     if (state.sendAmount.assetFamily === AssetFamily.TOKEN) {
       const {policyId, assetName, quantity} = state.sendAmount.token
       // TODO: we should have a tokenProvider to get token O(1)
-      const tokenBalance = getSourceAccountInfo(state)?.tokenBalance?.find(
-        (token) => token?.policyId === policyId && token?.assetName === assetName
+      const tokenBalance = getSourceAccountInfo(state).tokenBalance.find(
+        (token) => token.policyId === policyId && token.assetName === assetName
       )?.quantity
       const decimals =
         getState().tokensMetadata.get(createTokenRegistrySubject(policyId, assetName))?.decimals ||
