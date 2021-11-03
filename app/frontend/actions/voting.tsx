@@ -40,7 +40,8 @@ export default (store: Store) => {
     state: State,
     {votingPubKey}: {votingPubKey: HexString}
   ): Promise<void> => {
-    const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.VOTING)
+    const wallet = getWallet()
+    const supportError = wallet.ensureFeatureIsSupported(CryptoProviderFeature.VOTING)
     if (supportError) {
       setError(state, {
         errorName: 'transactionSubmissionError',
@@ -61,9 +62,7 @@ export default (store: Store) => {
     const stakePubKey = xpub2pub(
       Buffer.from(sourceAccountInfo.stakingXpub.xpubHex, 'hex')
     ).toString('hex')
-    const nonce = await getWallet()
-      .getAccount(state.sourceAccountIndex)
-      .calculateTtl()
+    const nonce = await wallet.getAccount(state.sourceAccountIndex).calculateTtl()
     const sourceAccount = getSourceAccountInfo(state)
     let txPlanResult: TxPlanResult | null | undefined = null
     if (!sourceAccount.stakingAddress) {
