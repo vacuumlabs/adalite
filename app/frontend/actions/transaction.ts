@@ -337,9 +337,10 @@ export default (store: Store) => {
     // TODO: rewards should be of type Lovelace
     const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
-    if (stakingAddress) {
-      txPlanResult = await prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
+    if (!stakingAddress) {
+      throw Error(InternalErrorReason.StakingAddressRequired)
     }
+    txPlanResult = await prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
     // TODO: balance should be of type Lovelace
     const balance = getSourceAccountInfo(state).balance as Lovelace
 

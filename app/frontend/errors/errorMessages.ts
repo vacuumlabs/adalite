@@ -3,7 +3,7 @@ import debugLog from '../helpers/debugLog'
 import {ADALITE_CONFIG} from '../config'
 import {LEDGER_VERSIONS, TREZOR_VERSIONS} from '../wallet/constants'
 import {Lovelace, CryptoProviderFeature} from '../types'
-import {knownExternalErrors, InternalErrorReason} from '.'
+import {knownExternalErrors, InternalErrorReason, InternalError} from '.'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -149,6 +149,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     // want to treat such errors as unexpected
     return errors[message]
   },
+  [InternalErrorReason.StakingAddressRequired]: () => 'Staking address required for operation.',
 }
 
 const externalErrorMessages: {[key: string]: (params?: any) => string} = {

@@ -64,15 +64,16 @@ export default (store: Store) => {
         .calculateTtl()) || ''
     const sourceAccount = getSourceAccountInfo(state)
     let txPlanResult: TxPlanResult | null | undefined = null
-    if (sourceAccount.stakingAddress) {
-      txPlanResult = await prepareTxPlan({
-        txType: TxType.REGISTER_VOTING,
-        votingPubKey,
-        stakePubKey,
-        stakingAddress: sourceAccount.stakingAddress,
-        nonce: BigInt(nonce),
-      })
+    if (!sourceAccount.stakingAddress) {
+      throw Error(InternalErrorReason.StakingAddressRequired)
     }
+    txPlanResult = await prepareTxPlan({
+      txType: TxType.REGISTER_VOTING,
+      votingPubKey,
+      stakePubKey,
+      stakingAddress: sourceAccount.stakingAddress,
+      nonce: BigInt(nonce),
+    })
 
     if (isTxPlanResultSuccess(txPlanResult)) {
       const summary = {

@@ -15,6 +15,7 @@ import {
 import {TxPlanResult, isTxPlanResultSuccess} from '../wallet/shelley/transaction/types'
 import debounceEvent from '../helpers/debounceEvent'
 import {InternalErrorReason} from '../errors'
+// import {Errors} from '../errors'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -70,54 +71,55 @@ export default (store: Store) => {
     const poolHash = state.shelleyDelegation?.selectedPool?.poolHash as string
     const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
-    if (stakingAddress && poolHash) {
-      const txPlanResult = await prepareTxPlan({
-        poolHash,
-        stakingAddress,
-        isStakingKeyRegistered,
-        txType: TxType.DELEGATE,
-      })
-      const newState = getState()
-      if (hasPoolIdentifiersChanged(newState)) {
-        return
-      }
-      const balance = getSourceAccountInfo(state).balance as Lovelace
+    if (!stakingAddress) {
+      throw Error(InternalErrorReason.StakingAddressRequired)
+    }
+    const txPlanResult = await prepareTxPlan({
+      poolHash,
+      stakingAddress,
+      isStakingKeyRegistered,
+      txType: TxType.DELEGATE,
+    })
+    const newState = getState()
+    if (hasPoolIdentifiersChanged(newState)) {
+      return
+    }
+    const balance = getSourceAccountInfo(state).balance as Lovelace
 
-      if (isTxPlanResultSuccess(txPlanResult)) {
-        setState({
-          shelleyDelegation: {
-            ...newState.shelleyDelegation,
-            delegationFee: (txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit) as Lovelace,
-          },
-        })
-        const delegationTransactionSummary: DelegateTransactionSummary = {
-          type: TxType.DELEGATE,
-          deposit: txPlanResult.txPlan.deposit,
-          stakePool: newState.shelleyDelegation?.selectedPool,
-        }
-        setTransactionSummary(getState(), {
-          plan: txPlanResult.txPlan,
-          transactionSummary: delegationTransactionSummary,
-        })
-        setState({
-          calculatingDelegationFee: false,
-          txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
-        })
-        setError(state, {
-          errorName: 'delegationValidationError',
-          error: null,
-        })
-      } else {
-        // REFACTOR: (Untyped errors)
-        const validationError = (txPlanResult &&
-          delegationPlanValidator(balance, txPlanResult.deposit, txPlanResult.estimatedFee)) ||
-          txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
-        setError(state, {
-          errorName: 'delegationValidationError',
-          error: validationError,
-        })
-        setState({calculatingDelegationFee: false})
+    if (isTxPlanResultSuccess(txPlanResult)) {
+      setState({
+        shelleyDelegation: {
+          ...newState.shelleyDelegation,
+          delegationFee: (txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit) as Lovelace,
+        },
+      })
+      const delegationTransactionSummary: DelegateTransactionSummary = {
+        type: TxType.DELEGATE,
+        deposit: txPlanResult.txPlan.deposit,
+        stakePool: newState.shelleyDelegation?.selectedPool,
       }
+      setTransactionSummary(getState(), {
+        plan: txPlanResult.txPlan,
+        transactionSummary: delegationTransactionSummary,
+      })
+      setState({
+        calculatingDelegationFee: false,
+        txSuccessTab: newState.txSuccessTab === 'send' ? newState.txSuccessTab : '',
+      })
+      setError(state, {
+        errorName: 'delegationValidationError',
+        error: null,
+      })
+    } else {
+      // REFACTOR: (Untyped errors)
+      const validationError = (txPlanResult &&
+        delegationPlanValidator(balance, txPlanResult.deposit, txPlanResult.estimatedFee)) ||
+        txPlanResult?.error || {code: InternalErrorReason.Error, message: ''}
+      setError(state, {
+        errorName: 'delegationValidationError',
+        error: validationError,
+      })
+      setState({calculatingDelegationFee: false})
     }
   }
 
@@ -181,13 +183,14 @@ export default (store: Store) => {
 
     loadingAction(state, 'Preparing transaction...')
     let txPlanResult: TxPlanResult | null | undefined = null
-    if (sourceAccount.stakingAddress) {
-      txPlanResult = await prepareTxPlan({
-        txType: TxType.DEREGISTER_STAKE_KEY,
-        rewards,
-        stakingAddress: sourceAccount.stakingAddress,
-      })
+    if (!sourceAccount.stakingAddress) {
+      throw Error(InternalErrorReason.StakingAddressRequired)
     }
+    txPlanResult = await prepareTxPlan({
+      txType: TxType.DEREGISTER_STAKE_KEY,
+      rewards,
+      stakingAddress: sourceAccount.stakingAddress,
+    })
     if (isTxPlanResultSuccess(txPlanResult)) {
       const summary = {
         type: TxType.DEREGISTER_STAKE_KEY,
