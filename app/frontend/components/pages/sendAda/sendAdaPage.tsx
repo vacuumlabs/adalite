@@ -12,10 +12,12 @@ import AccountDropdown from '../accounts/accountDropdown'
 import {getSourceAccountInfo} from '../../../state'
 import {useCallback, useMemo, useRef} from 'preact/hooks'
 import {
+  ADAAsset,
   AssetFamily,
   Lovelace,
   SendTransactionSummary,
   Token,
+  TokenAsset,
   TransactionSummary,
   TxType,
 } from '../../../types'
@@ -48,14 +50,7 @@ const SendValidation = ({sendFormValidationError, txSuccessTab}) =>
     )
   )
 
-type DropdownAssetItem = Token & {
-  fingerprint: string | null
-  policyId: string
-  assetName: string
-  type: AssetFamily
-  ticker: string | undefined
-  assetNameUtf8: string
-}
+type DropdownAssetItem = ADAAsset | TokenAsset
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.fingerprint} {...props}>

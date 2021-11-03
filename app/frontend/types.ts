@@ -344,6 +344,20 @@ export const enum AssetFamily {
   TOKEN,
 }
 
+export type ADAAsset = Token & {
+  fingerprint: string | null
+  type: AssetFamily.ADA
+  ticker: string | undefined
+  assetNameUtf8: string
+}
+
+export type TokenAsset = Token & {
+  fingerprint: string | null
+  type: AssetFamily.TOKEN
+  ticker: string | undefined
+  assetNameUtf8: string
+}
+
 export type SendAmount =
   | {
       assetFamily: AssetFamily.ADA
