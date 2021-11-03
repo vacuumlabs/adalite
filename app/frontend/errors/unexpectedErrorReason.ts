@@ -11,4 +11,6 @@ export enum UnexpectedErrorReason {
   MissingStakingPath = 'MissingStakingPath',
   MissingStakingXpub = 'MissingStakingXpub',
   MissingDnsName = 'MissingDnsName',
+  AccessedMissingSourceAccount = 'AccessedMissingSourceAccount',
+  AccessedMissingActiveAccount = 'AccessedMissingActiveAccount',
 }

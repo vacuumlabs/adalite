@@ -1,6 +1,6 @@
 import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
-import {InternalErrorReason} from './errors'
+import {InternalErrorReason, UnexpectedError, UnexpectedErrorReason} from './errors'
 import {StakepoolDataProvider} from './helpers/dataProviders/types'
 import {localStorageVars} from './localStorage'
 import {
@@ -235,7 +235,19 @@ export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State
 export type Store = {getState: GetStateFn; setState: SetStateFn}
 
-export const getSourceAccountInfo = (state: State) => state.accountsInfo[state.sourceAccountIndex]
-export const getActiveAccountInfo = (state: State) => state.accountsInfo[state.activeAccountIndex]
+export const getSourceAccountInfo = (state: State) => {
+  const sourceAccountInfo = state.accountsInfo[state.sourceAccountIndex]
+  if (!sourceAccountInfo) {
+    throw new UnexpectedError(UnexpectedErrorReason.AccessedMissingSourceAccount)
+  }
+  return sourceAccountInfo
+}
+export const getActiveAccountInfo = (state: State) => {
+  const activeAccountInfo = state.accountsInfo[state.activeAccountIndex]
+  if (!activeAccountInfo) {
+    throw new UnexpectedError(UnexpectedErrorReason.AccessedMissingActiveAccount)
+  }
+  return activeAccountInfo
+}
 
 export {initialState}
