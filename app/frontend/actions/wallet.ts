@@ -8,14 +8,7 @@ import debugLog from '../helpers/debugLog'
 import getConversionRates from '../helpers/getConversionRates'
 
 import {ADALITE_CONFIG} from '../config'
-import {
-  AccountInfo,
-  Lovelace,
-  AssetFamily,
-  AuthMethodType,
-  LedgerTransportType,
-  LedgerTransportChoice,
-} from '../types'
+import {AccountInfo, Lovelace, AssetFamily, AuthMethodType, LedgerTransportChoice} from '../types'
 import {initialState} from '../store'
 import {State, Store} from '../state'
 import errorActions from './error'
@@ -50,12 +43,12 @@ const accountsIncludeStakingAddresses = (
 }
 
 export default (store: Store) => {
-  const wallet = getWallet()
   const {loadingAction} = loadingActions(store)
   const {setError} = errorActions(store)
   const {getState, setState} = store
 
   const loadAsyncWalletData = async (): Promise<void> => {
+    const wallet = getWallet()
     const asyncFetchAndUpdate = async <T extends Partial<State>>(
       fetchFn: () => Promise<T>,
       fallbackValue: T,
@@ -111,6 +104,7 @@ export default (store: Store) => {
       ledgerTransportType,
     }
 
+    const wallet = getWallet()
     try {
       if (
         ledgerTransportType === LedgerTransportChoice.WEB_HID ||

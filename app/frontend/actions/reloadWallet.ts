@@ -11,7 +11,6 @@ export default (store: Store) => {
   const {setState} = store
   const {setWalletOperationStatusType} = commonActions(store)
 
-  const wallet = getWallet()
   let _lastWalletReloadTime = new Date(0)
   const setLastReloadTime = (time: Date) => {
     _lastWalletReloadTime = time
@@ -22,6 +21,7 @@ export default (store: Store) => {
   }
 
   const reloadWalletInfo = async (state: State): Promise<void> => {
+    const wallet = getWallet()
     setWalletOperationStatusType(state, 'reloading')
     const previousWalletReloadTime = _lastWalletReloadTime
     try {
