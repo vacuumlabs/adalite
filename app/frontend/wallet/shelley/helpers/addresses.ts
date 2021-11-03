@@ -39,7 +39,7 @@ export const encodeAssetFingerprint = (policyIdHex: HexString, assetNameHex: Hex
   return bech32.encode('asset', data)
 }
 
-export const encodeCatalystVotingKey = (votingKey: HexString | null): string => {
+export const encodeCatalystVotingKey = (votingKey: HexString): string => {
   return bech32.encode('ed25519_pk', Buffer.from(votingKey || '', 'hex'))
 }
 
