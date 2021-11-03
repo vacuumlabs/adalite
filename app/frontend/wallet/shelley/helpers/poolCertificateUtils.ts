@@ -35,7 +35,7 @@ const enum PoolParamsByteLengths {
 }
 
 export type TxStakepoolOwner = {
-  stakingKeyHashHex?: string
+  stakingKeyHashHex: string
 }
 
 export type TxStakepoolRelay = SingleHostIPRelay | SingleHostNameRelay | MultiHostNameRelay

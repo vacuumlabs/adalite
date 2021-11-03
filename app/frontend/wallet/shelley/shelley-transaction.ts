@@ -212,7 +212,7 @@ function cborizeStakepoolRegistrationCert(
     ),
     Buffer.from(poolRegistrationParams.rewardAccountHex, 'hex'),
     poolRegistrationParams.poolOwners.map((ownerObj) => {
-      return Buffer.from(ownerObj.stakingKeyHashHex || '', 'hex')
+      return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
     }),
     poolRegistrationParams.relays.map((relay) => {
       switch (relay.type) {
@@ -349,7 +349,7 @@ const cborizeTxAuxiliaryVotingData = (
 ): CborizedVotingRegistrationMetadata => [
   new Map<number, Map<number, Buffer | BigInt>>([
     cborizeTxVotingRegistration(txAuxiliaryData),
-    [61285, new Map<number, Buffer>([[1, Buffer.from(signatureHex || '', 'hex')]])],
+    [61285, new Map<number, Buffer>([[1, Buffer.from(signatureHex, 'hex')]])],
   ]),
   [],
 ]

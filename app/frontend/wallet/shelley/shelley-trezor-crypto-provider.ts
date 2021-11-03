@@ -154,7 +154,7 @@ const ShelleyTrezorCryptoProvider = async ({
   ): TrezorTypes.CardanoInput {
     return {
       path: input.address ? addressToAbsPathMapper(input.address) : [],
-      prev_hash: input.txHash || '',
+      prev_hash: input.txHash,
       prev_index: input.outputIndex,
     }
   }
@@ -236,7 +236,7 @@ const ShelleyTrezorCryptoProvider = async ({
     const {data} = bech32.decode(certificate.stakingAddress)
     const owners = certificate.poolRegistrationParams.poolOwners.map((owner) => {
       // TODO: helper function stakingAddress2StakingKeyHash
-      return !Buffer.compare(Buffer.from(owner.stakingKeyHashHex || '', 'hex'), data.slice(1))
+      return !Buffer.compare(Buffer.from(owner.stakingKeyHashHex, 'hex'), data.slice(1))
         ? {stakingKeyPath: path}
         : {stakingKeyHash: owner.stakingKeyHashHex}
     })

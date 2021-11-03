@@ -339,7 +339,7 @@ const ShelleyLedgerCryptoProvider = async ({
     const poolOwners: LedgerTypes.PoolOwner[] = stakepoolOwners.map((owner) => {
       // TODO: helper function for slicing first bit from staking address so its stakingKeyHash
       return !Buffer.compare(
-        Buffer.from(owner.stakingKeyHashHex || '', 'hex'),
+        Buffer.from(owner.stakingKeyHashHex, 'hex'),
         stakingAddressBuff.slice(1)
       )
         ? {
@@ -348,7 +348,7 @@ const ShelleyLedgerCryptoProvider = async ({
         }
         : {
           type: LedgerTypes.PoolOwnerType.THIRD_PARTY,
-          params: {stakingKeyHashHex: owner.stakingKeyHashHex || ''},
+          params: {stakingKeyHashHex: owner.stakingKeyHashHex},
         }
     })
     if (!poolOwners.some((owner) => owner.type === LedgerTypes.PoolOwnerType.DEVICE_OWNED)) {
