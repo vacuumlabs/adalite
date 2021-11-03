@@ -8,4 +8,5 @@ export enum UnexpectedErrorReason {
   InvalidRelayType = 'InvalidRelayType',
   CannotConstructTxPlan = 'CannotConstructTxPlan',
   ByronWitnessesMissingChainCode = 'ByronWitnessesMissingChainCode',
+  MissingStakingPath = 'MissingStakingPath',
 }

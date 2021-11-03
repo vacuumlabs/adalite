@@ -376,13 +376,16 @@ const ShelleyTrezorCryptoProvider = async ({
   ): TrezorTypes.CardanoAuxiliaryData => {
     switch (txAuxiliaryData.type) {
       case 'CATALYST_VOTING':
+        if (!txAuxiliaryData.rewardDestinationAddress.stakingPath) {
+          throw new UnexpectedError(UnexpectedErrorReason.MissingStakingPath)
+        }
         return {
           catalystRegistrationParameters: {
             votingPublicKey: txAuxiliaryData.votingPubKey,
-            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath || '',
+            stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             rewardAddressParameters: {
               addressType: AddressTypes.REWARD,
-              path: txAuxiliaryData.rewardDestinationAddress.stakingPath || '',
+              path: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             },
             nonce: `${txAuxiliaryData.nonce}`,
           },
