@@ -10,4 +10,5 @@ export enum UnexpectedErrorReason {
   ByronWitnessesMissingChainCode = 'ByronWitnessesMissingChainCode',
   MissingStakingPath = 'MissingStakingPath',
   MissingStakingXpub = 'MissingStakingXpub',
+  MissingDnsName = 'MissingDnsName',
 }

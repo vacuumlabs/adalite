@@ -4,7 +4,12 @@ import {
   _PoolRelay,
   _StakepoolRegistrationCert,
 } from '../../../helpers/cliParser/types'
-import {InternalError, InternalErrorReason} from '../../../errors'
+import {
+  InternalError,
+  InternalErrorReason,
+  UnexpectedError,
+  UnexpectedErrorReason,
+} from '../../../errors'
 
 export type TxPoolParams = {
   poolKeyHashHex: string // Hex
@@ -172,18 +177,24 @@ const parseStakepoolRelays = (relays: _PoolRelay[]): TxStakepoolRelay[] =>
           },
         }
       case TxRelayTypes.SINGLE_HOST_NAME:
+        if (!relay.dnsName) {
+          throw new UnexpectedError(UnexpectedErrorReason.MissingDnsName)
+        }
         return {
           type: TxRelayType.SINGLE_HOST_NAME,
           params: {
             portNumber: relay.portNumber,
-            dnsName: relay.dnsName || '',
+            dnsName: relay.dnsName,
           },
         }
       case TxRelayTypes.MULTI_HOST_NAME:
+        if (!relay.dnsName) {
+          throw new UnexpectedError(UnexpectedErrorReason.MissingDnsName)
+        }
         return {
           type: TxRelayType.MULTI_HOST_NAME,
           params: {
-            dnsName: relay.dnsName || '',
+            dnsName: relay.dnsName,
           },
         }
       default:
