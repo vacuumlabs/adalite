@@ -27,9 +27,9 @@ export default (store: Store) => {
     try {
       updateLastReloadTime()
       const accountsInfo = state.validStakepoolDataProvider
-        ? await wallet?.getAccountsInfo(state.validStakepoolDataProvider)
+        ? await wallet.getAccountsInfo(state.validStakepoolDataProvider)
         : []
-      const tokensMetadata = await wallet?.getTokensMetadata(accountsInfo || [])
+      const tokensMetadata = await wallet.getTokensMetadata(accountsInfo || [])
 
       setState({
         accountsInfo,

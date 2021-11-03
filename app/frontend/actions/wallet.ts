@@ -51,6 +51,7 @@ const accountsIncludeStakingAddresses = (
 }
 
 export default (store: Store) => {
+  const wallet = getWalletOrThrow()
   const {loadingAction} = loadingActions(store)
   const {setError} = errorActions(store)
   const {getState, setState} = store
@@ -76,7 +77,7 @@ export default (store: Store) => {
         'Could not fetch conversion rates.'
       ),
       asyncFetchAndUpdate(
-        async () => ({tokensMetadata: await wallet?.getTokensMetadata(getState().accountsInfo)}),
+        async () => ({tokensMetadata: await wallet.getTokensMetadata(getState().accountsInfo)}),
         {tokensMetadata: new Map()},
         'Could not fetch tokens metadata.'
       ),
@@ -139,18 +140,18 @@ export default (store: Store) => {
         )
       }
 
-      const validStakepoolDataProvider = await wallet?.getStakepoolDataProvider()
+      const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
       const accountsInfo = validStakepoolDataProvider
-        ? await wallet?.getAccountsInfo(validStakepoolDataProvider)
+        ? await wallet.getAccountsInfo(validStakepoolDataProvider)
         : []
       const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo || [])
 
-      const usingHwWallet = wallet?.isHwWallet()
-      const maxAccountIndex = wallet?.getMaxAccountIndex()
+      const usingHwWallet = wallet.isHwWallet()
+      const maxAccountIndex = wallet.getMaxAccountIndex()
       const shouldShowWantedAddressesModal = accountsInfo
         ? accountsIncludeStakingAddresses(accountsInfo, WANTED_DELEGATOR_STAKING_ADDRESSES)
         : false
-      const hwWalletName = usingHwWallet ? wallet?.getWalletName() : undefined
+      const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
       if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
       const demoRootSecret = (
         await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)
