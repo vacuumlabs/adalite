@@ -335,7 +335,10 @@ const ShelleyTrezorCryptoProvider = async ({
 
   const prepareByronWitness = (witness: TrezorTypes.CardanoSignedTxWitness): TxByronWitness => {
     const publicKey = Buffer.from(witness.pubKey, 'hex')
-    const chainCode = Buffer.from(witness.chainCode || '', 'hex')
+    if (!witness.chainCode) {
+      throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
+    }
+    const chainCode = Buffer.from(witness.chainCode, 'hex')
     // only v1 witnesses has address atributes
     // since trezor is v2 they are always {}
     const addressAttributes = cbor.encode({})
