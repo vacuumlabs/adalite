@@ -37,7 +37,7 @@ entry.push('./app/frontend/walletApp.js')
 module.exports = {
   entry,
   output: {
-    filename: 'js/frontend.bundle.js',
+    filename: 'js/[name].bundle.js',
     libraryTarget: 'var',
     library: 'CardanoFrontend',
     path: `${__dirname}/app/dist`,
@@ -45,6 +45,13 @@ module.exports = {
   },
   optimization: {
     minimize: false,
+    // Create one, not two chunks per dynamic import.
+    // See https://stackoverflow.com/questions/50275183/why-is-webpack-generating-2-chunks-per-dynamic-import
+    splitChunks: {
+      cacheGroups: {
+        defaultVendors: false,
+      },
+    },
   },
   devtool: 'source-map',
   mode: env || 'development',

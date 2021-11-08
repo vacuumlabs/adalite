@@ -4,8 +4,6 @@ import {
   CardanoCertificate,
   CardanoShelleyWitness,
   BitBox02API,
-  getDevicePath,
-  constants as bitbox02Constants,
 } from 'bitbox02-api'
 import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
@@ -53,6 +51,8 @@ const ShelleyBitBox02CryptoProvider = async ({
   network,
   config,
 }: CryptoProviderParams): Promise<CryptoProvider> => {
+  const bitbox02API = await import(/* webpackChunkName: "bitbox02-api" */ 'bitbox02-api')
+  const bitbox02Constants = bitbox02API.constants
   if (_activeBitBox02 !== null) {
     try {
       _activeBitBox02.close()
@@ -65,8 +65,8 @@ const ShelleyBitBox02CryptoProvider = async ({
       return await f(_activeBitBox02)
     }
     try {
-      const devicePath = await getDevicePath()
-      _activeBitBox02 = new BitBox02API(devicePath)
+      const devicePath = await bitbox02API.getDevicePath()
+      _activeBitBox02 = new bitbox02API.BitBox02API(devicePath)
       await _activeBitBox02.connect(
         (pairingCode) => {
           config.bitbox02OnPairingCode(pairingCode)

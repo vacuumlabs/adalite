@@ -61,7 +61,7 @@ function loadScript(success) {
     // A proper fix would require reworking the index HTML and to be assembled by webpack
     // which doesn't seem worth it at the moment. The frontend bundle changes most often and the
     // rest of assets (css mostly) is several tens of kB combined anyway.
-    mainScriptTag.src = `js/frontend.bundle.js?v=${appVersionQueryParam}`
+    mainScriptTag.src = `js/main.bundle.js?v=${appVersionQueryParam}`
     mainScriptTag.setAttribute('defer', '')
     document.getElementsByTagName('head')[0].appendChild(mainScriptTag)
   } else {

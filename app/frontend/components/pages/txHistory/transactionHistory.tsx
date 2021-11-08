@@ -20,7 +20,7 @@ import {useSelector} from '../../../helpers/connect'
 
 import styles from './transactionHistory.module.scss'
 import Alert from '../../common/alert'
-import moment = require('moment')
+import * as moment from 'moment'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
   const value = printAda(amount)
