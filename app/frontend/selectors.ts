@@ -43,6 +43,10 @@ export const usingHwWalletSelector = (state: State): boolean => {
   )
 }
 
+export const usingHwWalletWithPoolSupportSelector = (state: State): boolean => {
+  return state.hwWalletName === WalletName.TREZOR || state.hwWalletName === WalletName.LEDGER
+}
+
 /*
 TODO: decide where to keep such hooks & utils which are not really "selectors".
 As we are "in-the-middle-of-refactor", it is kept there.
