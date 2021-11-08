@@ -11,17 +11,6 @@
     padding-right: 56px;
   }
 
-  .welcome-footer {
-    position: -webkit-sticky;
-    position: sticky;
-    width: 100%;
-    bottom: -56px;
-    border-top: 1px solid var(--color-border);
-    padding: 24px 56px;
-    margin-top: 0;
-    background-color: white;
-  }
-
   .welcome .credits {
     border-bottom-width: 0;
   }
