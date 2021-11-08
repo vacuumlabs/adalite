@@ -59,6 +59,33 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'11/08/2021'}
+              children={
+                <Fragment>
+                  <Article title="We are hiring!" icon="">
+                    We are looking to hire a{' '}
+                    <a
+                      href="https://drive.google.com/file/d/1NsoD4bMAq_f5JtGebRobFr1RRC1Db1JB/view?usp=sharing"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Chief Marketing Officer
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      href="https://drive.google.com/file/d/17TNdyi4qokDo0CYGX_K4yGT5ymbot4i0/view?usp=sharing"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Community Manager
+                    </a>{' '}
+                    for one of our partner projects. Please send your inquiries to{' '}
+                    <a href={'mailto:michal@adalite.io'}>mailto:michal@adalite.io</a>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'09/13/2021'}
               children={
                 <Fragment>
