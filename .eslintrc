@@ -46,6 +46,11 @@
     "react": {
         "version": "16.8",
         "pragma": "h"
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
     }
   },
   "parser": "@typescript-eslint/parser",
