@@ -3008,11 +3008,18 @@ li.main-tab input + label.selected:after {
 }
 
 .welcome-footer {
-  margin-top: 56px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
+  position: -webkit-sticky;
+  position: sticky;
+  width: 100%;
+  bottom: -56px;
+  border-top: 1px solid var(--color-border);
+  padding: 24px 56px;
+  margin-top: 0;
+  background-color: white;
 }
 
 .welcome-footer .button {
