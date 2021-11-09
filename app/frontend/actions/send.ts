@@ -105,14 +105,14 @@ export default (store: Store) => {
       ) {
         return
       }
-      const sendTransactionSummary: SendTransactionSummary = {
+      const transactionSummary: SendTransactionSummary = {
         type: TxType.SEND_ADA,
         address: newState.sendAddress.fieldValue as Address,
         coins,
         token,
         minimalLovelaceAmount: txPlanResult.txPlan.additionalLovelaceAmount,
       }
-      setTransactionSummaryOld(txPlanResult.txPlan, sendTransactionSummary)
+      setTransactionSummaryOld(txPlanResult.txPlan, transactionSummary)
       setState({
         calculatingFee: false,
         txSuccessTab: '',

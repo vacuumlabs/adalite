@@ -24,13 +24,13 @@ import {
   CertificateType,
 } from '../../types'
 import {
+  CryptoProviderType,
   Network,
   NetworkId,
   TxCertificate,
   TxInput,
   TxOutput,
   TxShelleyWitness,
-  WalletName,
 } from '../types'
 import {TxSigned, TxAux, CborizedCliWitness} from './types'
 import {
@@ -51,6 +51,8 @@ const ShelleyBitBox02CryptoProvider = async ({
   network,
   config,
 }: CryptoProviderParams): Promise<CryptoProvider> => {
+  // loading the library asynchronously because it's big (>5MB) and it's needed
+  // just for BitBox02 users
   const bitbox02API = await import(/* webpackChunkName: "bitbox02-api" */ 'bitbox02-api')
   const bitbox02Constants = bitbox02API.constants
   if (_activeBitBox02 !== null) {
@@ -128,8 +130,7 @@ const ShelleyBitBox02CryptoProvider = async ({
 
   ensureFeatureIsSupported(CryptoProviderFeature.MINIMAL)
 
-  const isHwWallet = () => true
-  const getWalletName = (): WalletName.BITBOX02 => WalletName.BITBOX02
+  const getType = () => CryptoProviderType.BITBOX02
 
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
@@ -151,17 +152,19 @@ const ShelleyBitBox02CryptoProvider = async ({
       case CryptoProviderFeature.VOTING:
         return false
       default:
-        return BITBOX02_VERSIONS[feature]
-          ? hasRequiredVersion(version, BITBOX02_VERSIONS[feature])
-          : true
+        return hasRequiredVersion(
+          version,
+          BITBOX02_VERSIONS[feature] ?? BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL]
+        )
     }
   }
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
     if (!isFeatureSupported(feature)) {
-      throw new InternalError(BITBOX02_ERRORS[feature], {
-        message: `${version.major}.${version.minor}.${version.patch}`,
-      })
+      throw new InternalError(
+        BITBOX02_ERRORS[feature] ?? BITBOX02_ERRORS[CryptoProviderFeature.MINIMAL],
+        {message: `${version.major}.${version.minor}.${version.patch}`}
+      )
     }
   }
 
@@ -193,7 +196,7 @@ const ShelleyBitBox02CryptoProvider = async ({
 
   function getWalletSecret(): void {
     throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-      message: 'Unsupported operation!',
+      message: 'Operation not supported',
     })
   }
 
@@ -210,6 +213,13 @@ const ShelleyBitBox02CryptoProvider = async ({
   }
 
   function prepareOutput(output: TxOutput): CardanoOutput {
+    if (output.tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
+      throw new InternalError(InternalErrorReason.BitBox02MultiAssetNotSupported, {
+        message:
+          'Sending tokens is currently not supported on BitBox02. If you received tokens and cannot spend them, please contact support@shiftcrypto.ch',
+      })
+    }
+
     return {
       encodedAddress: output.address,
       value: output.coins.toString(),
@@ -281,6 +291,15 @@ const ShelleyBitBox02CryptoProvider = async ({
       ? `${txAux.validityIntervalStart}`
       : null
 
+    if (
+      txAux.auxiliaryData?.type === 'CATALYST_VOTING' &&
+      !isFeatureSupported(CryptoProviderFeature.VOTING)
+    ) {
+      throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+        message: 'Catalyst registration not supported',
+      })
+    }
+
     const response = await withDevice(async (bitbox02: BitBox02API) => {
       return await bitbox02.cardanoSignTransaction({
         network: bb02Network,
@@ -323,8 +342,7 @@ const ShelleyBitBox02CryptoProvider = async ({
     getHdPassphrase,
     displayAddressForPath,
     deriveXpub,
-    isHwWallet,
-    getWalletName,
+    getType,
     _sign: sign,
     isFeatureSupported,
     ensureFeatureIsSupported,

@@ -3,9 +3,14 @@ import actions from '../../../actions'
 import {useActions, useSelector} from '../../../helpers/connect'
 import tooltip from '../../common/tooltip'
 import {getVotingRegistrationStatus, shouldDisableSendingButton} from '../../../helpers/common'
-import {hasStakingKey, useActiveAccount, useHasEnoughFundsForCatalyst} from '../../../selectors'
+import {
+  hasStakingKey,
+  useActiveAccount,
+  useHasEnoughFundsForCatalyst,
+  useIsWalletFeatureSupported,
+} from '../../../selectors'
 import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
-import {Lovelace} from '../../../types'
+import {CryptoProviderFeature, Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
 import styles from './voting.module.scss'
 import * as QRious from '../../../libs/qrious'
@@ -31,11 +36,16 @@ const VotingCard = (): h.JSX.Element => {
   const {walletOperationStatusType} = useSelector((state) => ({
     walletOperationStatusType: state.walletOperationStatusType,
   }))
+  const isVotingRegistrationSupported = useIsWalletFeatureSupported(CryptoProviderFeature.VOTING)
   const hasEnoughFundsForCatalyst = useHasEnoughFundsForCatalyst()
   const activeAccount = useActiveAccount()
   const hasRegisteredStakingKey = hasStakingKey(activeAccount)
 
   const getUnmetPreconditionMessage = (): string | null => {
+    if (!isVotingRegistrationSupported) {
+      return 'Voting registration supported only by Trezor, Ledger or mnemonic wallets'
+    }
+
     const votingRegistrationStatus = getVotingRegistrationStatus()
     if (votingRegistrationStatus.isOpen === false) {
       return votingRegistrationStatus.explanation

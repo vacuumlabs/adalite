@@ -87,30 +87,14 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     'ServerError: Our servers are probably down. Please try again later and if the problem persists, contact us.',
   [InternalErrorReason.EpochBoundaryUnderway]: () =>
     'Our servers are temporarily down while Cardano is undergoing an epoch boundary. We should be back in a few minutes.',
-  [InternalErrorReason.BitBox02MultiAssetNotSupported]: () =>
-    'BitBox02MultiAssetNotSupported: The BitBox02 does not support this feature at the moment.',
   [InternalErrorReason.BitBox02OutdatedFirmwareError]: ({message}) =>
     `BitBox02OutdatedFirmwareError: Your BitBox02 firmware (version ${message}) is outdated. Please update your firmware to version ${
       BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL].major
     }.${BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL].minor}.${
       BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL].patch
     } or later, using the latest release of the BitBoxApp.`,
-  [InternalErrorReason.BitBox02WithdrawalNotSupported]: ({message}) =>
-    `BitBox02WithdrawalNotSupported: Your BitBox02 firmware (version ${message}) is outdated. Please update your firmware to version ${
-      BITBOX02_VERSIONS[CryptoProviderFeature.WITHDRAWAL].major
-    }.${BITBOX02_VERSIONS[CryptoProviderFeature.WITHDRAWAL].minor}.${
-      BITBOX02_VERSIONS[CryptoProviderFeature.WITHDRAWAL].patch
-    } or later, using the latest release of the BitBoxApp.`,
-  [InternalErrorReason.BitBox02PoolRegNotSupported]: () =>
-    'BitBox02PoolRegNotSupported: The BitBox02 does not support this feature at the moment.',
-  [InternalErrorReason.BitBox02CatalystNotSupported]: () =>
-    'BitBox02CatalystNotSupported: The BitBox02 does not support this feature at the moment.',
-  [InternalErrorReason.BitBox02BulkExportNotSupported]: ({message}) =>
-    `BitBox02BulkExportNotSupported: Your BitBox02 firmware (version ${message}) is outdated. Please update your firmware to version ${
-      BITBOX02_VERSIONS[CryptoProviderFeature.BULK_EXPORT].major
-    }.${BITBOX02_VERSIONS[CryptoProviderFeature.BULK_EXPORT].minor}.${
-      BITBOX02_VERSIONS[CryptoProviderFeature.BULK_EXPORT].patch
-    } or later, using the latest release of the BitBoxApp.`,
+  [InternalErrorReason.BitBox02MultiAssetNotSupported]: () =>
+    'BitBox02MultiAssetNotSupported: The BitBox02 does not support this feature at the moment.',
   [InternalErrorReason.LedgerMultiAssetNotSupported]: () =>
     'LedgerMultiAssetNotSupported: Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
   [InternalErrorReason.LedgerOutdatedCardanoAppError]: ({message}) =>

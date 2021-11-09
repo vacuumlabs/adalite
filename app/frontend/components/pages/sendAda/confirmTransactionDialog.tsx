@@ -10,7 +10,6 @@ import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import {
   AssetFamily,
-  AuthMethodType,
   DelegateTransactionSummary,
   DeregisterStakingKeyTransactionSummary,
   Lovelace,
@@ -23,9 +22,11 @@ import {
 import {
   encodeAssetFingerprint,
   encodeCatalystVotingKey,
-} from '../../../../frontend/wallet/shelley/helpers/addresses'
+} from '../../../wallet/shelley/helpers/addresses'
 import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
 import * as assert from 'assert'
+import {isHwWallet, getDeviceBrandName} from '../../../wallet/helpers/cryptoProviderUtils'
+import {useGetCryptoProviderType} from '../../../selectors'
 
 interface ReviewBottomProps {
   onSubmit: () => any
@@ -64,8 +65,7 @@ const SendAdaReview = ({
   transactionSummary: TransactionSummary & SendTransactionSummary
   shouldShowAddressVerification: boolean
 }) => {
-  const authMethod = useSelector((state) => state.authMethod)
-  const hwWalletName = useSelector((state) => state.hwWalletName)
+  const cryptoProviderType = useGetCryptoProviderType()
   const {address, coins, fee, minimalLovelaceAmount, token} = transactionSummary
   const lovelaceAmount = (coins + minimalLovelaceAmount) as Lovelace
   const total = (coins + fee + minimalLovelaceAmount) as Lovelace
@@ -81,7 +81,7 @@ const SendAdaReview = ({
         <div className="review-label">Address</div>
         <div className="review-address">
           {address}
-          {shouldShowAddressVerification && (
+          {shouldShowAddressVerification && address && (
             <div className="review-address-verification">
               <AddressVerification address={address} />
             </div>
@@ -104,9 +104,11 @@ const SendAdaReview = ({
                   <div className="review-amount" data-cy="SendTokenAmount">
                     {formattedAmount}
                   </div>
-                  {authMethod === AuthMethodType.HW_WALLET && (
+                  {isHwWallet(cryptoProviderType) && (
                     <Fragment>
-                      <div className="review-label">Token amount on {hwWalletName}</div>
+                      <div className="review-label">
+                        Token amount on {getDeviceBrandName(cryptoProviderType)}
+                      </div>
                       <div className="review-amount" data-cy="SendTokenAmount">
                         {token.quantity}
                       </div>
@@ -337,7 +339,7 @@ const ConfirmTransactionDialog = () => {
     sendAddress,
     sourceAccountIndex,
   } = useSelector((state) => ({
-    transactionSummary: state.sendTransactionSummary,
+    transactionSummary: state.transactionSummary,
     rawTransactionOpen: state.rawTransactionOpen,
     txConfirmType: state.txConfirmType,
     isCrossAccount: state.isCrossAccount,
@@ -401,7 +403,7 @@ const ConfirmTransactionDialog = () => {
     }
 
     // To be refactored cases:
-    switch (transactionSummary.type) {
+    switch (transactionSummary?.type) {
       case TxType.CONVERT_LEGACY:
         return <ConvertFundsReview transactionSummary={transactionSummary} />
       case TxType.WITHDRAW:
@@ -421,7 +423,12 @@ const ConfirmTransactionDialog = () => {
   const enablesRawTransaction = !(txConfirmType === TxType.REGISTER_VOTING)
   const modalTitle = (() => {
     if (isCrossAccount) return 'Transaction between accounts review'
-    return isRefactoredCase ? titleMap[txConfirmType] : titleMap[transactionSummary.type]
+
+    if (isRefactoredCase) {
+      return titleMap[txConfirmType]
+    }
+
+    return transactionSummary?.type ? titleMap[transactionSummary.type] : undefined
   })()
 
   return (

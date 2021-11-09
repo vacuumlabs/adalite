@@ -48,7 +48,7 @@ const sendAdaTxSettings = {
       },
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '1', coins: 1500000},
     },
-    sendTransactionSummary: {
+    transactionSummary: {
       fee: 177882,
     },
   },
@@ -66,7 +66,7 @@ const sendAdaTxSettings = {
   //       quantity: 2,
   //     }},
   //   },
-  //   sendTransactionSummary: {
+  //   transactionSummary: {
   //     fee: 176871,
   //   },
   // },
@@ -82,7 +82,7 @@ const delegationSettings = {
         },
       },
     },
-    sendTransactionSummary: {
+    transactionSummary: {
       fee: 191022,
     },
   },
@@ -91,7 +91,7 @@ const delegationSettings = {
 const withdrawalSettings = {
   rewardWithdrawal: {
     state: {},
-    sendTransactionSummary: {
+    transactionSummary: {
       fee: 182189,
     },
   },
@@ -101,7 +101,7 @@ const votingSettings = {
   voting: {
     state: {},
     votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
-    sendTransactionSummary: {
+    transactionSummary: {
       fee: 182804,
     },
   },
@@ -112,7 +112,7 @@ describe('Send ADA fee calculation', () => {
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
       await action.calculateFee()
-      assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
+      assert.deepEqual(state.transactionSummary.fee, setting.transactionSummary.fee)
     })
   )
 })
@@ -124,7 +124,7 @@ describe('Delegation fee calculation', () => {
       await action.calculateDelegationFee(setting.state)
       assert.deepEqual(
         state.cachedTransactionSummaries[TxType.DELEGATE].fee,
-        setting.sendTransactionSummary.fee
+        setting.transactionSummary.fee
       )
     })
   )
@@ -135,7 +135,7 @@ describe('Withdrawal fee calculation', () => {
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
       await action.withdrawRewards(state)
-      assert.deepEqual(state.sendTransactionSummary.fee, setting.sendTransactionSummary.fee)
+      assert.deepEqual(state.transactionSummary.fee, setting.transactionSummary.fee)
     })
   )
 })
@@ -147,7 +147,7 @@ describe('Voting fee calculation', () => {
       await action.registerVotingKey(state, {votingPubKey: setting.votingPubKey})
       assert.deepEqual(
         state.cachedTransactionSummaries[TxType.REGISTER_VOTING].fee,
-        setting.sendTransactionSummary.fee
+        setting.transactionSummary.fee
       )
     })
   )

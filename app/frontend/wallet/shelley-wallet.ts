@@ -11,6 +11,8 @@ import {
 import {MAX_ACCOUNT_INDEX} from './constants'
 import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {TokenRegistry} from '../tokenRegistry/tokenRegistry'
+import {CryptoProviderInfo} from './types'
+import {getWalletName} from './helpers/cryptoProviderUtils'
 
 type WalletParams = {
   config: any
@@ -31,17 +33,23 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     maxAccountIndex,
   })
 
-  function isHwWallet() {
-    return cryptoProvider.isHwWallet()
-  }
+  function getCryptoProviderInfo(): CryptoProviderInfo {
+    const supportedFeatures: CryptoProviderFeature[] = []
+    for (const feature of Object.values(CryptoProviderFeature)) {
+      if (cryptoProvider.isFeatureSupported(feature)) {
+        supportedFeatures.push(feature)
+      }
+    }
 
-  function getWalletName() {
-    return cryptoProvider.getWalletName()
+    return {
+      type: cryptoProvider.getType(),
+      supportedFeatures,
+    }
   }
 
   function submitTx(signedTx, txType: TxType): Promise<any> {
     const params = {
-      walletType: getWalletName(),
+      walletType: getWalletName(cryptoProvider.getType()),
       walletVersion: cryptoProvider.getVersion(),
       walletDerivationScheme: cryptoProvider.getDerivationScheme().type,
       txType,
@@ -109,13 +117,12 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   }
 
   return {
-    isHwWallet,
-    getWalletName,
     submitTx,
     getWalletSecretDef,
     fetchTxInfo,
     ensureFeatureIsSupported,
     getAccountsInfo,
+    getCryptoProviderInfo,
     getTokensMetadata,
     getStakepoolDataProvider,
     getAccount: accountManager.getAccount,

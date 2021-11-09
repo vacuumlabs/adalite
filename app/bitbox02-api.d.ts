@@ -97,7 +97,7 @@ declare module 'bitbox02-api' {
       ttl: string
       certificates: CardanoCertificate[]
       withdrawals: CardanoWithdrawal[]
-      validityIntervalStart: string
+      validityIntervalStart: string | null
     }): Promise<{
       shelleyWitnesses: CardanoShelleyWitness[]
     }>

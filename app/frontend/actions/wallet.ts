@@ -23,6 +23,7 @@ import loadingActions from './loading'
 import {saveAs} from '../libs/file-saver'
 import {exportWalletSecretDef} from '../wallet/keypass-json'
 import {getDefaultLedgerTransportType} from '../wallet/shelley/helpers/transports'
+import {getDeviceBrandName, isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
 
 // TODO: we may be able to remove this, kept for backwards compatibility
 const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
@@ -149,14 +150,18 @@ export default (store: Store) => {
       const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
       const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
 
-      const usingHwWallet = wallet.isHwWallet()
       const maxAccountIndex = wallet.getMaxAccountIndex()
       const shouldShowWantedAddressesModal = accountsIncludeStakingAddresses(
         accountsInfo,
         WANTED_DELEGATOR_STAKING_ADDRESSES
       )
-      const hwWalletName = usingHwWallet ? wallet.getWalletName() : undefined
-      if (usingHwWallet) loadingAction(state, `Waiting for ${hwWalletName}...`)
+
+      const cryptoProviderInfo = wallet.getCryptoProviderInfo()
+      const usingHwWallet = isHwWallet(cryptoProviderInfo.type)
+      if (isHwWallet(cryptoProviderInfo.type)) {
+        loadingAction(state, `Waiting for ${getDeviceBrandName(cryptoProviderInfo.type)}...`)
+      }
+
       const demoRootSecret = (
         await mnemonicToWalletSecretDef(ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC)
       ).rootSecret
@@ -173,7 +178,7 @@ export default (store: Store) => {
           mnemonicInputError: null,
           formIsValid: false,
         },
-        hwWalletName,
+        cryptoProviderInfo,
         isDemoWallet,
         shouldShowNonShelleyCompatibleDialog: !isShelleyCompatible,
         shouldShowWantedAddressesModal,

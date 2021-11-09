@@ -1,5 +1,13 @@
 import {TxPoolParams} from './shelley/helpers/poolCertificateUtils'
-import {BIP32Path, CertificateType, Lovelace, Address, TokenBundle, HexString} from '../types'
+import {
+  BIP32Path,
+  CertificateType,
+  Lovelace,
+  Address,
+  TokenBundle,
+  HexString,
+  CryptoProviderFeature,
+} from '../types'
 
 export const enum WalletName {
   BITBOX02 = 'BitBox02',
@@ -28,11 +36,21 @@ export type Network = {
   minimalOutput: number
 }
 
-export const enum CryptoProviderType {
+export enum CryptoProviderType {
   BITBOX02 = 'BITBOX02',
   LEDGER = 'LEDGER',
   TREZOR = 'TREZOR',
   WALLET_SECRET = 'WALLET_SECRET',
+}
+
+export type HwWalletCryptoProviderType = Exclude<
+  CryptoProviderType,
+  CryptoProviderType.WALLET_SECRET
+>
+
+export type CryptoProviderInfo = {
+  type: CryptoProviderType
+  supportedFeatures: Array<CryptoProviderFeature>
 }
 
 export type UTxO = {

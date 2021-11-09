@@ -21,6 +21,7 @@ import {
   TokenBundle,
 } from '../../types'
 import {
+  CryptoProviderType,
   Network,
   TxAuxiliaryData,
   TxByronWitness,
@@ -33,7 +34,6 @@ import {
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
-  WalletName,
 } from '../types'
 import {TxSigned, TxAux, CborizedCliWitness, FinalizedAuxiliaryDataTx} from './types'
 import {encodeAddress} from './helpers/addresses'
@@ -84,8 +84,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   const getVersion = (): string => `${version.major}.${version.minor}.${version.patch}`
 
-  const isHwWallet = (): boolean => true
-  const getWalletName = (): WalletName.TREZOR => WalletName.TREZOR
+  const getType = () => CryptoProviderType.TREZOR
 
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
@@ -106,7 +105,9 @@ const ShelleyTrezorCryptoProvider = async ({
   )
 
   function isFeatureSupported(feature: CryptoProviderFeature): boolean {
-    return TREZOR_VERSIONS[feature] ? hasRequiredVersion(version, TREZOR_VERSIONS[feature]) : true
+    return TREZOR_VERSIONS[feature]
+      ? hasRequiredVersion(version, TREZOR_VERSIONS[feature])
+      : hasRequiredVersion(version, TREZOR_VERSIONS[CryptoProviderFeature.MINIMAL])
   }
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
@@ -510,7 +511,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
   function getWalletSecret(): void {
     throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-      message: 'Unsupported operation!',
+      message: 'Operation not supported',
     })
   }
 
@@ -525,8 +526,7 @@ const ShelleyTrezorCryptoProvider = async ({
     witnessPoolRegTx,
     displayAddressForPath,
     deriveXpub,
-    isHwWallet,
-    getWalletName,
+    getType,
     _sign: sign,
     network,
     ensureFeatureIsSupported,

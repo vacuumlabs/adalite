@@ -9,8 +9,8 @@ import {
   parsePoolRegTxFile,
 } from '../wallet/shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason} from '../errors'
-import {usingHwWalletSelector} from '../selectors'
 import * as assert from 'assert'
+import {getDeviceBrandName, isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
 
 export default (store: Store) => {
   const {setState} = store
@@ -76,12 +76,14 @@ export default (store: Store) => {
     try {
       // TODO: refactor feature support logic
       const supportError = getWallet().ensureFeatureIsSupported(CryptoProviderFeature.POOL_OWNER)
+      const cryptoProviderType = state.cryptoProviderInfo?.type
+
       if (supportError) {
         throw new InternalError(supportError.code, {message: supportError.params.message})
       }
-      if (usingHwWalletSelector(state)) {
+      if (isHwWallet(cryptoProviderType)) {
         setState({waitingForHwWallet: true})
-        loadingAction(state, `Waiting for ${state.hwWalletName}...`)
+        loadingAction(state, `Waiting for ${getDeviceBrandName(cryptoProviderType)}...`)
       } else {
         throw new InternalError(InternalErrorReason.PoolRegNoHwWallet)
       }

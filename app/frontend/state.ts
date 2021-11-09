@@ -21,6 +21,7 @@ import {
   TokenRegistrySubject,
   ConversionRates,
 } from './types'
+import {CryptoProviderInfo} from './wallet/types'
 
 export interface State {
   // general
@@ -61,7 +62,7 @@ export interface State {
     mnemonicInputError: {code: InternalErrorReason} | null
     formIsValid: boolean
   }
-  hwWalletName?: string
+  cryptoProviderInfo?: CryptoProviderInfo
   isDemoWallet?: boolean
   shouldShowGenerateMnemonicDialog?: boolean
   shouldShowMnemonicInfoAlert: boolean
@@ -85,7 +86,7 @@ export interface State {
   gettingPoolInfo: boolean
 
   // transaction
-  sendTransactionSummary: TransactionSummary
+  transactionSummary: TransactionSummary | null
   cachedTransactionSummaries: CachedTransactionSummaries
   rawTransactionOpen: boolean
   rawTransaction: string
@@ -193,16 +194,7 @@ const initialState: State = {
   gettingPoolInfo: false,
 
   // transaction
-  sendTransactionSummary: {
-    // this should be called only transactionSummary
-    type: TxType.SEND_ADA,
-    address: null,
-    coins: 0 as Lovelace,
-    token: null,
-    minimalLovelaceAmount: 0 as Lovelace,
-    fee: 0 as Lovelace,
-    plan: null,
-  },
+  transactionSummary: null,
   cachedTransactionSummaries: {},
   rawTransactionOpen: false,
   rawTransaction: '',

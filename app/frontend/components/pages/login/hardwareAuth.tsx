@@ -24,7 +24,7 @@ const LoadByHardwareWalletSection = () => {
   }, [enableBulkExport])
 
   const BitBox02AffiliateLink = (title) => (
-    <a href="https://shiftcrypto.ch/bitbox02/" target="blank">
+    <a href="https://shiftcrypto.ch/bitbox02/?ref=8s4tkJYX1x" target="blank">
       {title}
     </a>
   )

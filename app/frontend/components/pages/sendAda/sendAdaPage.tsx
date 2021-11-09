@@ -31,6 +31,7 @@ import {shouldDisableSendingButton} from '../../../helpers/common'
 import printTokenAmount from '../../../helpers/printTokenAmount'
 import {createTokenRegistrySubject} from '../../../../frontend/tokenRegistry/tokenRegistry'
 import * as assert from 'assert'
+import {BitBox02MultiAssetAlert} from '../common'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -133,14 +134,14 @@ const SendAdaPage = ({
     tokensMetadata: state.tokensMetadata,
     feeRecalculating: state.calculatingFee,
     conversionRates: state.conversionRates && state.conversionRates.data,
-    sendTransactionSummary: state.sendTransactionSummary,
+    transactionSummary: state.transactionSummary,
     transactionFee: state.transactionFee,
     txSuccessTab: state.txSuccessTab,
     balance: getSourceAccountInfo(state).balance,
     sourceAccountIndex: state.sourceAccountIndex,
     targetAccountIndex: state.targetAccountIndex,
     tokenBalance: getSourceAccountInfo(state).tokenBalance,
-    summary: state.sendTransactionSummary as TransactionSummary & SendTransactionSummary,
+    summary: state.transactionSummary as (TransactionSummary & SendTransactionSummary) | null,
     walletOperationStatusType: state.walletOperationStatusType,
   }))
   const {
@@ -161,10 +162,6 @@ const SendAdaPage = ({
 
   const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
-
-  const totalLovelace =
-    ((summary.coins + summary.fee + summary.minimalLovelaceAmount) as Lovelace) || (0 as Lovelace)
-  const totalTokens = summary.token
 
   const adaAsset: DropdownAssetItem = {
     type: AssetFamily.ADA,
@@ -397,10 +394,19 @@ const SendAdaPage = ({
     </Fragment>
   )
 
+  const totalLovelace = (summary != null
+    ? summary.coins + summary.fee + summary.minimalLovelaceAmount
+    : 0) as Lovelace
+  const totalTokens = summary?.token ?? null
+  const minimalLovelaceAmount = summary?.minimalLovelaceAmount ?? (0 as Lovelace)
+
   return (
     <div className="send card" ref={sendCardDiv}>
       <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
       {isModal ? accountSwitch : addressInput}
+      <div className="bitbox02-multiasset-warning">
+        <BitBox02MultiAssetAlert />
+      </div>
       <div className="send-values">
         {selectAssetDropdown}
         {amountInput}
@@ -423,7 +429,7 @@ const SendAdaPage = ({
             </div>
             {/* TODO: Connect to state when this values is calculated */}
             <div className="send-fee" data-cy="SendAssetMinAdaAmount">
-              {printAda(summary.minimalLovelaceAmount)}
+              {printAda(minimalLovelaceAmount)}
             </div>
           </Fragment>
         )}

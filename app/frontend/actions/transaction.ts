@@ -21,9 +21,9 @@ import {
 import {TxPlan} from '../wallet/shelley/transaction'
 import {encode} from 'borc'
 import {InternalError, InternalErrorReason} from '../errors'
-import {usingHwWalletSelector} from '../selectors'
 import {TxSummary} from '../wallet/backend-types'
 import * as assert from 'assert'
+import {getDeviceBrandName, isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -63,10 +63,10 @@ export default (store: Store) => {
         loadingAction(state, 'Preparing transaction plan...')
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
         const retriedState = getState()
-        assert(retriedState.sendTransactionSummary.plan != null)
+        assert(retriedState.transactionSummary?.plan != null)
         txAux = await getWallet()
           .getAccount(sourceAccountIndex)
-          .prepareTxAux(retriedState.sendTransactionSummary.plan)
+          .prepareTxAux(retriedState.transactionSummary.plan)
       }
     } catch (e) {
       throw new InternalError(InternalErrorReason.TransactionCorrupted, {causedBy: e})
@@ -113,7 +113,7 @@ export default (store: Store) => {
   }
 
   const confirmTransactionOld = async (state: State, txConfirmType: TxType): Promise<void> => {
-    const txPlan = state.sendTransactionSummary.plan
+    const txPlan = state.transactionSummary?.plan
     const {sourceAccountIndex} = state
     assert(txPlan != null)
     return await _confirmTransaction(state, {txConfirmType, txPlan, sourceAccountIndex})
@@ -197,7 +197,8 @@ export default (store: Store) => {
       sendAddress,
     }: {txSummary: TransactionSummary; sourceAccountIndex: number; sendAddress: string}
   ) => {
-    const {keepConfirmationDialogOpen, hwWalletName} = state
+    const {keepConfirmationDialogOpen, cryptoProviderInfo} = state
+    const cryptoProviderType = cryptoProviderInfo?.type
     setState({
       shouldShowSendTransactionModal: false,
       shouldShowDelegationModal: false,
@@ -207,9 +208,9 @@ export default (store: Store) => {
         shouldShowConfirmTransactionDialog: false,
       })
     }
-    if (usingHwWalletSelector(state)) {
+    if (isHwWallet(cryptoProviderType)) {
       setState({waitingForHwWallet: true})
-      loadingAction(state, `Waiting for ${hwWalletName}...`)
+      loadingAction(state, `Waiting for ${getDeviceBrandName(cryptoProviderType)}...`)
     } else {
       setWalletOperationStatusType(state, 'txSubmitting')
     }
@@ -224,7 +225,7 @@ export default (store: Store) => {
       const signedTx = await getWallet()
         .getAccount(sourceAccountIndex)
         .signTxAux(txAux)
-      if (usingHwWalletSelector(state)) {
+      if (isHwWallet(cryptoProviderType)) {
         setState({waitingForHwWallet: false})
         stopLoadingAction(state)
         setWalletOperationStatusType(state, 'txSubmitting')
@@ -298,14 +299,14 @@ export default (store: Store) => {
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
     if (txPlanResult.success === true) {
-      const sendTransactionSummary: SendTransactionSummary = {
+      const transactionSummary: SendTransactionSummary = {
         type: TxType.SEND_ADA,
         address,
         coins,
         token: null,
         minimalLovelaceAmount: 0 as Lovelace,
       }
-      setTransactionSummaryOld(txPlanResult.txPlan, sendTransactionSummary)
+      setTransactionSummaryOld(txPlanResult.txPlan, transactionSummary)
       await confirmTransactionOld(getState(), TxType.CONVERT_LEGACY)
     } else {
       const validationError =

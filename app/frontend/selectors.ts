@@ -5,8 +5,8 @@ import {
   PREMIUM_MEMBER_BALANCE_TRESHOLD,
 } from './wallet/constants'
 import {useSelector} from './helpers/connect'
-import {AccountInfo, AuthMethodType} from './types'
-import {WalletName} from './wallet/types'
+import {AccountInfo, AuthMethodType, CryptoProviderFeature} from './types'
+import {CryptoProviderType} from './wallet/types'
 
 /*
 This file contains hooks/selectors shared accross multiple components which
@@ -35,18 +35,6 @@ export const shouldShowExportOptionSelector = (state: State): boolean => {
   return authMethod === AuthMethodType.MNEMONIC || authMethod === AuthMethodType.KEY_FILE
 }
 
-export const usingHwWalletSelector = (state: State): boolean => {
-  return (
-    state.hwWalletName === WalletName.BITBOX02 ||
-    state.hwWalletName === WalletName.TREZOR ||
-    state.hwWalletName === WalletName.LEDGER
-  )
-}
-
-export const usingHwWalletWithPoolSupportSelector = (state: State): boolean => {
-  return state.hwWalletName === WalletName.TREZOR || state.hwWalletName === WalletName.LEDGER
-}
-
 /*
 TODO: decide where to keep such hooks & utils which are not really "selectors".
 As we are "in-the-middle-of-refactor", it is kept there.
@@ -56,6 +44,12 @@ export const useActiveAccount = (): AccountInfo =>
 
 export const hasStakingKey = (account: AccountInfo): boolean =>
   account.shelleyAccountInfo.hasStakingKey
+
+export const useIsWalletFeatureSupported = (feature: CryptoProviderFeature): boolean =>
+  useSelector((state) => state.cryptoProviderInfo?.supportedFeatures.includes(feature) ?? false)
+
+export const useGetCryptoProviderType = (): CryptoProviderType | undefined =>
+  useSelector((state) => state.cryptoProviderInfo?.type)
 
 export const useIsActiveAccountDelegating = (): boolean => {
   const activeAccount = useActiveAccount()

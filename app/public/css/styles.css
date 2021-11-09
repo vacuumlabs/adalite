@@ -4455,3 +4455,7 @@ label.button.primary.disabled {
 .staking-history-warning {
   margin-bottom: 32px;
 }
+
+.bitbox02-multiasset-warning {
+  margin-bottom: 32px;
+}

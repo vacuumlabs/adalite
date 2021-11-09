@@ -29,7 +29,13 @@ import {
   HexString,
   Address,
 } from '../../types'
-import {Network, TxAuxiliaryData, TxByronWitness, TxShelleyWitness, WalletName} from '../types'
+import {
+  CryptoProviderType,
+  Network,
+  TxAuxiliaryData,
+  TxByronWitness,
+  TxShelleyWitness,
+} from '../types'
 import {
   TxSigned,
   TxAux,
@@ -55,9 +61,7 @@ const ShelleyJsCryptoProvider = async ({
 CryptoProviderParams): Promise<CryptoProvider> => {
   const masterHdNode = HdNode(rootSecret)
 
-  const isHwWallet = () => false
-
-  const getWalletName = (): WalletName.MNEMONIC => WalletName.MNEMONIC
+  const getType = () => CryptoProviderType.WALLET_SECRET
 
   const getWalletSecret = () => masterHdNode.toBuffer()
 
@@ -203,11 +207,15 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   }
 
   function isFeatureSupported(feature: CryptoProviderFeature) {
-    return true
+    return feature !== CryptoProviderFeature.POOL_OWNER
   }
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
-    return true
+    if (!isFeatureSupported(feature)) {
+      throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+        message: 'Operation not supported',
+      })
+    }
   }
 
   function displayAddressForPath(absDerivationPath: BIP32Path, stakingPath: BIP32Path) {
@@ -229,10 +237,9 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     signTx,
     witnessPoolRegTx,
     getWalletSecret,
-    getWalletName,
+    getType,
     getDerivationScheme,
     deriveXpub,
-    isHwWallet,
     getHdPassphrase,
     _sign: sign,
     ensureFeatureIsSupported,

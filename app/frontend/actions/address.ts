@@ -1,7 +1,7 @@
 import {Store, State} from '../state'
 import {getWallet} from './wallet'
 import errorActions from './error'
-import {usingHwWalletSelector} from '../selectors'
+import {isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -9,7 +9,9 @@ export default (store: Store) => {
 
   const verifyAddress = async (state: State, address?: string) => {
     const newState = getState()
-    if (usingHwWalletSelector(newState)) {
+    const {cryptoProviderInfo, targetAccountIndex} = state
+
+    if (isHwWallet(cryptoProviderInfo?.type)) {
       try {
         setState({
           waitingForHwWallet: true,
@@ -18,7 +20,7 @@ export default (store: Store) => {
         const addressToVerify = address || newState.showAddressDetail?.address
         if (addressToVerify) {
           await getWallet()
-            .getAccount(state.targetAccountIndex)
+            .getAccount(targetAccountIndex)
             .verifyAddress(addressToVerify)
         }
         setState({

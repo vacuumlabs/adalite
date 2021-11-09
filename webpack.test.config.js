@@ -1,11 +1,10 @@
+const webpack = require('webpack')
+
 module.exports = {
   entry: `${__dirname}/app/tests/src/index.js`,
   output: {
     path: `${__dirname}/app/tests`,
     filename: 'dist/index.bundle.js',
-  },
-  node: {
-    fs: 'empty',
   },
   externals: {
     // to avoid including webpack's 'crypto' if window.crypto is available - reduces bundle size
@@ -26,5 +25,20 @@ module.exports = {
     alias: {
       react: 'preact/compat',
     },
+    fallback: {
+      fs: false,
+      path: require.resolve('path-browserify'),
+      stream: require.resolve('stream-browserify'),
+    },
   },
+  plugins: [
+    // Auto-import `Buffer`:
+    // https://github.com/webpack/changelog-v5/issues/10#issuecomment-615877593
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+  ],
 }

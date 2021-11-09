@@ -129,6 +129,16 @@ const WalletContent = () => (
     <div className="sidebar-item">
       <a
         className="sidebar-link"
+        href="https://shiftcrypto.support/help/en-us/35-adalite-cardano/176-adalite-guide"
+        rel="noopener"
+        target="blank"
+      >
+        How to use BitBox02 with AdaLite
+      </a>
+    </div>
+    <div className="sidebar-item">
+      <a
+        className="sidebar-link"
         href="https://github.com/vacuumlabs/adalite/wiki/Troubleshooting"
         rel="noopener"
         target="blank"

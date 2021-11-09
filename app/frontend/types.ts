@@ -1,6 +1,6 @@
 import {TxSigned, TxAux, CborizedCliWitness} from './wallet/shelley/types'
 import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/backend-types'
-import {Network, UTxO, WalletName} from './wallet/types'
+import {CryptoProviderType, Network, UTxO} from './wallet/types'
 import {TxPlan} from './wallet/shelley/transaction'
 import {_UnsignedTxParsed} from './helpers/cliParser/types'
 
@@ -35,10 +35,9 @@ export interface CryptoProvider {
     addressToPathMapper: AddressToPathMapper
   ) => Promise<CborizedCliWitness>
   getWalletSecret: () => Buffer | void
-  getWalletName: () => WalletName
+  getType: () => CryptoProviderType
   getDerivationScheme: () => DerivationScheme
   deriveXpub: (derivationPath: BIP32Path) => Promise<Buffer>
-  isHwWallet: () => boolean
   getHdPassphrase: () => Buffer | void
   _sign: (message: HexString, absDerivationPath: BIP32Path) => void
   ensureFeatureIsSupported: (feature: CryptoProviderFeature) => void
@@ -55,14 +54,14 @@ export enum CertificateType {
   STAKEPOOL_REGISTRATION = 3,
 }
 
-export const enum CryptoProviderFeature {
-  MINIMAL,
-  WITHDRAWAL,
-  BULK_EXPORT,
-  POOL_OWNER,
-  MULTI_ASSET,
-  VOTING,
-  BYRON,
+export enum CryptoProviderFeature {
+  MINIMAL = 'MINIMAL',
+  WITHDRAWAL = 'WITHDRAWAL',
+  BULK_EXPORT = 'BULK_EXPORT',
+  POOL_OWNER = 'POOL_OWNER',
+  MULTI_ASSET = 'MULTI_ASSET',
+  VOTING = 'VOTING',
+  BYRON = 'BYRON',
 }
 export type DerivationScheme = {
   type: 'v1' | 'v2'
@@ -378,7 +377,7 @@ export type SendTransactionSummary = {
   type: TxType.SEND_ADA | TxType.CONVERT_LEGACY
   coins: Lovelace
   token: Token | null
-  address: Address | null
+  address: Address
   minimalLovelaceAmount: Lovelace
 }
 

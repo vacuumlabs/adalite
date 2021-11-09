@@ -75,16 +75,6 @@ export const BITBOX02_VERSIONS = {
     minor: 8,
     patch: 0,
   },
-  [CryptoProviderFeature.WITHDRAWAL]: {
-    major: 9,
-    minor: 8,
-    patch: 0,
-  },
-  [CryptoProviderFeature.BULK_EXPORT]: {
-    major: 9,
-    minor: 8,
-    patch: 0,
-  },
 }
 
 export const BITBOX02_ERRORS = {

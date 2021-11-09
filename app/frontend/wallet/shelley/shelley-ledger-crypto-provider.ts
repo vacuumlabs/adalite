@@ -39,6 +39,7 @@ import {
   LedgerTransportChoice,
 } from '../../types'
 import {
+  CryptoProviderType,
   Network,
   TxAuxiliaryData,
   TxByronWitness,
@@ -51,7 +52,6 @@ import {
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
-  WalletName,
 } from '../types'
 import {TxSigned, TxAux, CborizedCliWitness, FinalizedAuxiliaryDataTx} from './types'
 import {orderTokenBundle} from '../helpers/tokenFormater'
@@ -118,8 +118,7 @@ const ShelleyLedgerCryptoProvider = async ({
 
   ensureFeatureIsSupported(CryptoProviderFeature.MINIMAL)
 
-  const isHwWallet = () => true
-  const getWalletName = (): WalletName.LEDGER => WalletName.LEDGER
+  const getType = () => CryptoProviderType.LEDGER
 
   const exportPublicKeys = async (
     derivationPaths: BIP32Path[]
@@ -144,7 +143,9 @@ const ShelleyLedgerCryptoProvider = async ({
   )
 
   function isFeatureSupported(feature: CryptoProviderFeature): boolean {
-    return LEDGER_VERSIONS[feature] ? hasRequiredVersion(version, LEDGER_VERSIONS[feature]) : true
+    return LEDGER_VERSIONS[feature]
+      ? hasRequiredVersion(version, LEDGER_VERSIONS[feature])
+      : hasRequiredVersion(version, LEDGER_VERSIONS[CryptoProviderFeature.MINIMAL])
   }
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
@@ -191,7 +192,7 @@ const ShelleyLedgerCryptoProvider = async ({
 
   function getWalletSecret(): void {
     throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-      message: 'Unsupported operation!',
+      message: 'Operation not supported',
     })
   }
 
@@ -211,7 +212,7 @@ const ShelleyLedgerCryptoProvider = async ({
   }
 
   const prepareTokenBundle = (tokenBundle: TokenBundle): LedgerTypes.AssetGroup[] => {
-    // TODO: refactor, we should check the whole tx againt the version beforehand
+    // TODO: refactor, we should check the whole tx against the version beforehand
     if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
       throw new InternalError(InternalErrorReason.LedgerMultiAssetNotSupported, {
         message:
@@ -614,8 +615,7 @@ const ShelleyLedgerCryptoProvider = async ({
     getHdPassphrase,
     displayAddressForPath,
     deriveXpub,
-    isHwWallet,
-    getWalletName,
+    getType,
     _sign: sign,
     isFeatureSupported,
     ensureFeatureIsSupported,

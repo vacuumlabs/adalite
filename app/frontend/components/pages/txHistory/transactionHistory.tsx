@@ -242,7 +242,7 @@ const TransactionHistory = (): h.JSX.Element => {
       </div>
       <div className="staking-history-warning">
         <Alert alertType="warning">
-          CSV exports might be wrong due to possibly missing rewards.{' '}
+          Some rewards may be missing from the CSV export.{' '}
           <a
             href="https://github.com/vacuumlabs/adalite/wiki/Known-issue-with-missing-rewards"
             target="_blank"

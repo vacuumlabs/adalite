@@ -31,7 +31,6 @@ export const getAccountXpub = async (
   cryptoProvider: CryptoProvider,
   accountIndex: number
 ): Promise<_XPubKey | null> => {
-  // TODO: maybe we should throw if feature isn't supported
   if (accountIndex !== 0 || !cryptoProvider.isFeatureSupported(CryptoProviderFeature.BYRON)) {
     return null
   }

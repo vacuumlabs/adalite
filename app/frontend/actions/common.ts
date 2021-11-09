@@ -8,7 +8,6 @@ import {
   Lovelace,
   SendTransactionSummary,
   TxPlanArgs,
-  TxType,
   VotingRegistrationTransactionSummary,
   WithdrawTransactionSummary,
 } from '../types'
@@ -21,16 +20,7 @@ export default (store: Store) => {
   const resetTransactionSummary = (state: State) => {
     setState({
       // Refactor: remove when `setTransactionSummaryOld` will not exist
-      sendTransactionSummary: {
-        // TODO: we should reset this to null
-        type: TxType.SEND_ADA,
-        address: null,
-        coins: 0 as Lovelace,
-        token: null,
-        minimalLovelaceAmount: 0 as Lovelace,
-        fee: 0 as Lovelace,
-        plan: null,
-      },
+      transactionSummary: null,
       // TODO: this can be smarter, dummy reset for now
       cachedTransactionSummaries: {},
     })
@@ -83,7 +73,7 @@ export default (store: Store) => {
       | DeregisterStakingKeyTransactionSummary
   ) => {
     setState({
-      sendTransactionSummary: {
+      transactionSummary: {
         ...transactionSummary,
         fee: plan.fee,
         plan,
