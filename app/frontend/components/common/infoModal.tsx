@@ -80,7 +80,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                       Community Manager
                     </a>{' '}
                     for one of our partner projects. Please send your inquiries to{' '}
-                    <a href={'mailto:michal@adalite.io'}>mailto:michal@adalite.io</a>
+                    <a href={'mailto:michal@adalite.io'}>michal@adalite.io</a>
                   </Article>
                 </Fragment>
               }
