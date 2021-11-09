@@ -67,7 +67,7 @@ export const WANTED_DELEGATOR_ADDRESSES = []
 
 export const WANTED_DELEGATOR_STAKING_ADDRESSES = []
 
-export const SATURATION_POINT = 62224967000000
+export const SATURATION_POINT = 66800000000000
 
 export const LEDGER_VERSIONS = {
   [CryptoProviderFeature.MINIMAL]: {
