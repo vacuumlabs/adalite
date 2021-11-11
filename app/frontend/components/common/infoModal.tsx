@@ -59,6 +59,42 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'11/11/2021'}
+              children={
+                <Fragment>
+                  <Article title="NuFi (Adalite 2.0) BETA" icon="">
+                    <p className="info-spaced-paragraph">
+                      <strong>
+                        We are excited to announce that our new NuFi Wallet (AdaLite 2.0) is ready
+                        for testing, and we invite you to join our community as a beta tester!
+                      </strong>
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      You asked, we listened! We are proud to announce that we are launching closed
+                      beta testing for our NuFi platform. If you are an early adopter and would like
+                      to participate in the testing that will shape our product, please register
+                      through the following Discord link and follow the instructions in Discord:{' '}
+                      <a href="https://discord.gg/jSyVPAXw3w" target="_blank" rel="noopener">
+                        https://discord.gg/jSyVPAXw3w
+                      </a>
+                      . Please note, the number of beta-tester spots is limited.
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      NuFi's beta wallet supports Cardano and Solana blockchains, and as a beta
+                      tester, you'll be able to send, receive, and stake crypto in the app. What's
+                      yet to come is the "Exchange" functionality and displaying more comprehensive
+                      info about stake pools and tokens from the respective registries. Also some
+                      less-essential content has placeholders (visibly empty or marked as
+                      "TBD"/"Coming Soon"/"...").
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      We’ll be providing regular updates on Discord.
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'11/08/2021'}
               children={
                 <Fragment>
