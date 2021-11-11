@@ -2,7 +2,6 @@ import {h, Component} from 'preact'
 import {connect} from '../../helpers/connect'
 import actions from '../../actions'
 import Modal from './modal'
-import {ADALITE_CONFIG} from '../../config'
 
 interface Props {
   closeContactFormModal: () => void
@@ -48,7 +47,7 @@ class ContactForm extends Component<Props, {submitted: boolean}> {
             id="contactForm"
             method="POST"
             target="_blank"
-            action={`//formspree.io/${ADALITE_CONFIG.ADALITE_SUPPORT_EMAIL}`}
+            action={'//formspree.io/f/mnqlrlnn'}
             onSubmit={() => {
               this.setState({submitted: true})
             }}
