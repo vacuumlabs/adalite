@@ -1,8 +1,10 @@
+import * as assert from 'assert'
 import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {InternalErrorReason} from './errors'
 import {StakepoolDataProvider} from './helpers/dataProviders/types'
 import {localStorageVars} from './localStorage'
+import {sessionStorageVars} from './sessionStorage'
 import {
   AccountInfo,
   AssetFamily,
@@ -47,7 +49,7 @@ export interface State {
   // login / logout
   autoLogin: boolean
   authMethod: AuthMethodType | null
-  logoutNotificationOpen: boolean
+  shouldShowLogoutNotification: boolean
   walletIsLoaded: boolean
   isShelleyCompatible: any
   shouldShowNonShelleyCompatibleDialog: any
@@ -130,6 +132,9 @@ export interface State {
   validStakepoolDataProvider: StakepoolDataProvider | null
 }
 
+const shouldShowLogoutNotification =
+  window.sessionStorage.getItem(sessionStorageVars.INACTIVITY_LOGOUT) === 'true'
+
 const initialState: State = {
   //general
   walletOperationStatusType: null,
@@ -149,6 +154,7 @@ const initialState: State = {
   // cache
   displayWelcome:
     !(window.localStorage.getItem(localStorageVars.WELCOME) === 'true') &&
+    !shouldShowLogoutNotification &&
     ADALITE_CONFIG.ADALITE_DEVEL_AUTO_LOGIN !== 'true',
   shouldShowStakingBanner: !(
     window.localStorage.getItem(localStorageVars.STAKING_BANNER) === 'true'
@@ -163,7 +169,7 @@ const initialState: State = {
   authMethod: ['#trezor', '#hw-wallet'].includes(window.location.hash)
     ? AuthMethodType.HW_WALLET
     : null,
-  logoutNotificationOpen: false,
+  shouldShowLogoutNotification,
   walletIsLoaded: false,
   isShelleyCompatible: true,
   shouldShowNonShelleyCompatibleDialog: false,
@@ -232,7 +238,12 @@ export type SetStateFn = (newState: Partial<State>) => void
 export type GetStateFn = () => State
 export type Store = {getState: GetStateFn; setState: SetStateFn}
 
-export const getSourceAccountInfo = (state: State) => state.accountsInfo[state.sourceAccountIndex]
-export const getActiveAccountInfo = (state: State) => state.accountsInfo[state.activeAccountIndex]
-
+export const getSourceAccountInfo = (state: State) => {
+  assert(state.accountsInfo[state.sourceAccountIndex] != null)
+  return state.accountsInfo[state.sourceAccountIndex]
+}
+export const getActiveAccountInfo = (state: State) => {
+  assert(state.accountsInfo[state.sourceAccountIndex] != null)
+  return state.accountsInfo[state.activeAccountIndex]
+}
 export {initialState}

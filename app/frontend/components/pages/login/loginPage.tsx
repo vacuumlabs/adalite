@@ -203,7 +203,7 @@ const LoginPage = () => {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
   const {
     authMethod,
-    logoutNotificationOpen,
+    shouldShowLogoutNotification,
     walletLoadingError,
     shouldShowGenerateMnemonicDialog,
     shouldShowWalletLoadingErrorModal,
@@ -212,7 +212,7 @@ const LoginPage = () => {
     errorBannerContent,
   } = useSelector((state: State) => ({
     authMethod: state.authMethod,
-    logoutNotificationOpen: state.logoutNotificationOpen,
+    shouldShowLogoutNotification: state.shouldShowLogoutNotification,
     walletLoadingError: state.walletLoadingError,
     shouldShowGenerateMnemonicDialog: state.shouldShowGenerateMnemonicDialog,
     shouldShowWalletLoadingErrorModal: state.shouldShowWalletLoadingErrorModal,
@@ -253,7 +253,7 @@ const LoginPage = () => {
         </main>
         <LoginPageSidebar />
         {shouldShowGenerateMnemonicDialog && <GenerateMnemonicDialog />}
-        {logoutNotificationOpen && <LogoutNotification />}
+        {shouldShowLogoutNotification && <LogoutNotification />}
         {shouldShowWalletLoadingErrorModal && (
           <WalletLoadingErrorModal
             onRequestClose={closeWalletLoadingErrorModal}

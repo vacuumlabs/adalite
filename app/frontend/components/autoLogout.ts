@@ -2,12 +2,12 @@ import {Component} from 'preact'
 import {connect} from '../helpers/connect'
 import actions from '../actions'
 import {ADALITE_CONFIG} from '../config'
+import {sessionStorageVars} from '../sessionStorage'
 
 const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
 interface Props {
   logout: () => void
-  setLogoutNotificationOpen: (noIdeaWhat: boolean) => void
   walletIsLoaded: boolean
 }
 
@@ -21,8 +21,8 @@ class AutoLogout extends Component<Props, {}> {
   }
 
   logout() {
+    window.sessionStorage.setItem(sessionStorageVars.INACTIVITY_LOGOUT, 'true')
     this.props.logout()
-    this.props.setLogoutNotificationOpen(true)
   }
 
   resetTimer() {

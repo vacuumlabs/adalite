@@ -3,18 +3,23 @@ import {useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Modal from '../../common/modal'
 import {useEffect, useRef} from 'preact/hooks'
+import {sessionStorageVars} from '../../../sessionStorage'
 
 const LogoutNotification = (): h.JSX.Element => {
-  const {setLogoutNotificationOpen} = useActions(actions)
+  const {closeLogoutNotification} = useActions(actions)
   const understandBtn = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     understandBtn.current.focus()
+
+    if (window.sessionStorage.getItem(sessionStorageVars.INACTIVITY_LOGOUT)) {
+      window.sessionStorage.removeItem(sessionStorageVars.INACTIVITY_LOGOUT)
+    }
   }, [])
 
   return (
     <Modal
-      onRequestClose={() => setLogoutNotificationOpen(false)}
+      onRequestClose={() => closeLogoutNotification()}
       title="You’ve been logged out"
       bodyClass="centered"
     >
@@ -22,7 +27,7 @@ const LogoutNotification = (): h.JSX.Element => {
       <div className="modal-footer">
         <button
           className="button primary"
-          onClick={() => setLogoutNotificationOpen(false)}
+          onClick={() => closeLogoutNotification()}
           onKeyDown={(e) => {
             ;['Enter', 'Escape'].includes(e.key) && (e.target as HTMLButtonElement).click()
           }}

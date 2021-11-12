@@ -16,7 +16,6 @@ import {
   ConversionRates,
   LedgerTransportChoice,
 } from '../types'
-import {initialState} from '../store'
 import {State, Store} from '../state'
 import errorActions from './error'
 import loadingActions from './loading'
@@ -206,17 +205,7 @@ export default (store: Store) => {
   }
 
   const logout = (state: State) => {
-    setWallet(null)
-    setState(
-      {
-        ...initialState,
-        displayWelcome: false,
-        autoLogin: false,
-      },
-      // @ts-ignore (we don't have types for forced state overwrite)
-      true
-    ) // force overwriting the state
-    window.history.pushState({}, '/', '/')
+    window.location.reload()
   }
 
   const exportJsonWallet = async (state, password, walletName) => {

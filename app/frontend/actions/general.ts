@@ -65,9 +65,9 @@ export default (store: Store) => {
     })
   }
 
-  const setLogoutNotificationOpen = (state, open) => {
+  const closeLogoutNotification = (state) => {
     setState({
-      logoutNotificationOpen: open,
+      shouldShowLogoutNotification: false,
     })
   }
 
@@ -125,7 +125,7 @@ export default (store: Store) => {
   return {
     openWelcome,
     closeWelcome,
-    setLogoutNotificationOpen,
+    closeLogoutNotification,
     closeUnexpectedErrorModal,
     shouldShowContactFormModal,
     closeContactFormModal,
