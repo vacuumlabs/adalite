@@ -1,11 +1,10 @@
-import {State, getActiveAccountInfo} from '../../../../frontend/state'
 import {h} from 'preact'
-import {useSelector} from '../../../helpers/connect'
 import AddressItem from './addressItem'
 import {useState} from 'preact/hooks'
+import {useActiveAccount} from '../../../selectors'
 
 const MyAddresses = (): h.JSX.Element => {
-  const addresses = useSelector((state: State) => getActiveAccountInfo(state).visibleAddresses)
+  const {visibleAddresses: addresses} = useActiveAccount()
 
   const [expandedAddress, setExpandedAddress] = useState(0)
 

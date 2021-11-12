@@ -1,12 +1,11 @@
 import {Fragment, h} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
-import {State, getActiveAccountInfo} from '../../../state'
 import {parsePath} from '../../../helpers/pathParser'
 import {LinkIconToKey} from '../delegations/common'
 import tooltip from '../../common/tooltip'
-import {Address, _XPubKey} from '../../../types'
 import {bechAddressToHex, xpubHexToCborPubHex} from '../../../wallet/shelley/helpers/addresses'
+import {useActiveAccount} from '../../../selectors'
 
 const DownloadKey = ({cborHex}) => {
   const fileContents = {
@@ -29,14 +28,13 @@ const DownloadKey = ({cborHex}) => {
   )
 }
 
-type Props = {
-  shelleyAccountXpub: _XPubKey
-  byronAccountXpub: _XPubKey
-  stakingAddress: Address
-  stakingXpub: _XPubKey
-}
+const Keys = () => {
+  const {
+    accountXpubs: {byronAccountXpub, shelleyAccountXpub},
+    stakingAddress,
+    stakingXpub,
+  } = useActiveAccount()
 
-const Keys = ({byronAccountXpub, shelleyAccountXpub, stakingAddress, stakingXpub}: Props) => {
   return (
     <div className="card" data-cy="AdvancedKeyCard">
       <h2 className="card-title small-margin">Keys</h2>
@@ -78,12 +76,4 @@ const Keys = ({byronAccountXpub, shelleyAccountXpub, stakingAddress, stakingXpub
   )
 }
 
-export default connect(
-  (state: State) => ({
-    shelleyAccountXpub: getActiveAccountInfo(state).accountXpubs.shelleyAccountXpub,
-    byronAccountXpub: getActiveAccountInfo(state).accountXpubs.byronAccountXpub,
-    stakingAddress: getActiveAccountInfo(state).stakingAddress,
-    stakingXpub: getActiveAccountInfo(state).stakingXpub,
-  }),
-  actions
-)(Keys)
+export default connect(null, actions)(Keys)

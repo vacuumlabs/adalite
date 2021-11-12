@@ -1,18 +1,17 @@
 import {h} from 'preact'
 import printAda from '../../helpers/printAda'
 import Conversions from './conversions'
-import {getActiveAccountInfo} from '../../state'
 import {AdaIcon} from './svg'
 import actions from '../../actions'
 import {useSelector, useActions} from '../../helpers/connect'
-import {Lovelace} from '../../types'
 import styles from './balance.module.scss'
+import {useActiveAccount} from '../../selectors'
 
 const Balance = () => {
   const {debouncedReloadWalletInfo} = useActions(actions)
-  const {conversionRates, balance} = useSelector((state) => ({
-    conversionRates: state.conversionRates && state.conversionRates.data,
-    balance: getActiveAccountInfo(state).balance as Lovelace,
+  const {balance} = useActiveAccount()
+  const {conversionRates} = useSelector((state) => ({
+    conversionRates: state.conversionRates?.data,
   }))
   return (
     <div className="balance card">

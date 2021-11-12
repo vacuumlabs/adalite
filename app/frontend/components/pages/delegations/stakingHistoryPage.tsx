@@ -2,7 +2,6 @@ import {h, Component} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {LinkIconToPool} from './common'
-import {getActiveAccountInfo, State} from '../../../state'
 import printAda from '../../../helpers/printAda'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
@@ -16,6 +15,7 @@ import {
   StakingKeyRegistration,
 } from '../../../types'
 import Alert from '../../common/alert'
+import {useActiveAccount} from '../../../selectors'
 
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
   return (
@@ -179,7 +179,8 @@ const StakingHistoryObjectToItem = {
 }
 
 class StakingHistoryPage extends Component<Props> {
-  render({stakingHistory}) {
+  render() {
+    const {stakingHistory} = useActiveAccount()
     const items = stakingHistory.map((data: StakingHistoryObject) => {
       try {
         return StakingHistoryObjectToItem[data.type](data)
@@ -213,9 +214,4 @@ class StakingHistoryPage extends Component<Props> {
   }
 }
 
-export default connect(
-  (state: State) => ({
-    stakingHistory: getActiveAccountInfo(state).stakingHistory,
-  }),
-  actions
-)(StakingHistoryPage)
+export default connect(null, actions)(StakingHistoryPage)

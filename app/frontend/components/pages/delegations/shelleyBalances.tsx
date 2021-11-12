@@ -5,147 +5,147 @@ import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import tooltip from '../../common/tooltip'
 import toLocalDate from '../../../../frontend/helpers/toLocalDate'
-import {getActiveAccountInfo, State} from '../../../state'
+import {State} from '../../../state'
 import {shouldDisableSendingButton} from '../../../helpers/common'
+import {useActiveAccount} from '../../../selectors'
 
-const shelleyBalances = ({
-  stakingBalance,
-  nonStakingBalance,
-  rewardsAccountBalance,
-  balance,
+const ShelleyBalances = ({
   debouncedReloadWalletInfo,
   convertNonStakingUtxos,
   withdrawRewards,
   isShelleyCompatible,
-  nearestReward,
   walletOperationStatusType,
-}) => (
-  <div className="rewards card">
-    <h2 className="card-title staking-balances-title">
-      Available balance
-      <a
-        {...tooltip(
-          'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to withdraw them.',
-          true
-        )}
-      >
-        <span className="show-info">{''}</span>
-      </a>
-    </h2>
-    <div className="staking-balances-row">
-      <div className="staking-balances-amount">
-        {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
-        <AdaIcon />
-      </div>
-      <button className="button secondary balance refresh" onClick={debouncedReloadWalletInfo}>
-        Refresh
-      </button>
-    </div>
-
-    <h2 className="card-title staking-balances-title">
-      Rewards account balance
-      <a
-        className="wide-data-balloon"
-        {...tooltip(
-          'This value represents balance on your rewards account. It contains all rewards received from delegation that were not transferred yet to your Available balance. These rewards are automatically staked. You need to Withdraw Rewards only when you want to spend them. Withdraw Rewards button will appear only once you have some rewards in your Rewards Balance.',
-          true
-        )}
-      >
-        <span className="show-info">{''}</span>
-      </a>
-    </h2>
-    <div className="staking-balances-row">
-      <div className="staking-balances-amount">
-        {isNaN(Number(rewardsAccountBalance))
-          ? rewardsAccountBalance
-          : `${printAda(rewardsAccountBalance)}`}
-        <AdaIcon />
-        {nearestReward && (
-          <div className="staking-balance-next-reward">
-            Next reward: {toLocalDate(new Date(nearestReward.rewardDate))}
-          </div>
-        )}
-      </div>
-      {!!rewardsAccountBalance && (
-        <button
-          {...tooltip(
-            'Cannot withdraw funds while transaction is pending or reloading',
-            shouldDisableSendingButton(walletOperationStatusType)
-          )}
-          className="button secondary balance withdraw"
-          onClick={withdrawRewards}
-          disabled={shouldDisableSendingButton(walletOperationStatusType)}
-        >
-          Withdraw
-        </button>
-      )}
-    </div>
-
-    <div className="total-balance-wrapper">
+}) => {
+  const {
+    shelleyBalances: {stakingBalance, nonStakingBalance, rewardsAccountBalance},
+    balance,
+    shelleyAccountInfo: {
+      rewardDetails: {nearest: nearestReward},
+    },
+  } = useActiveAccount()
+  return (
+    <div className="rewards card">
       <h2 className="card-title staking-balances-title">
-        Staking balance
+        Available balance
         <a
-          className="wide-data-balloon"
           {...tooltip(
-            "Staking Balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked). Also all staking rewards that are added to your Rewards Balance at the end of each epoch are included in your Staking Balance.",
+            'Balance on your payment addresses available to be used in transactions. In order to add your Rewards Balance to Available Balance, you need to withdraw them.',
             true
           )}
         >
           <span className="show-info">{''}</span>
         </a>
       </h2>
-      <div className="balance-row">
-        <div className="balance-amount-staking">
-          {isNaN(Number(stakingBalance)) ? stakingBalance : `${printAda(stakingBalance)}`}
+      <div className="staking-balances-row">
+        <div className="staking-balances-amount">
+          {isNaN(Number(balance)) ? balance : `${printAda(balance)}`}
           <AdaIcon />
         </div>
+        <button className="button secondary balance refresh" onClick={debouncedReloadWalletInfo}>
+          Refresh
+        </button>
       </div>
 
-      {isShelleyCompatible && !!nonStakingBalance && (
-        <Fragment>
-          <h2 className="card-title staking-balances-title">
-            Non-staking balance
-            <a
-              {...tooltip(
-                'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address by clicking on the "Convert to stakeable" button. (minimum is 1.5 ADA)',
-                true
-              )}
-            >
-              <span className="show-info">{''}</span>
-            </a>
-          </h2>
-          <div className="balance-row">
-            <div className="balance-amount-staking">
-              {isNaN(Number(nonStakingBalance))
-                ? nonStakingBalance
-                : `${printAda(nonStakingBalance)}`}
-              <AdaIcon />
+      <h2 className="card-title staking-balances-title">
+        Rewards account balance
+        <a
+          className="wide-data-balloon"
+          {...tooltip(
+            'This value represents balance on your rewards account. It contains all rewards received from delegation that were not transferred yet to your Available balance. These rewards are automatically staked. You need to Withdraw Rewards only when you want to spend them. Withdraw Rewards button will appear only once you have some rewards in your Rewards Balance.',
+            true
+          )}
+        >
+          <span className="show-info">{''}</span>
+        </a>
+      </h2>
+      <div className="staking-balances-row">
+        <div className="staking-balances-amount">
+          {isNaN(Number(rewardsAccountBalance))
+            ? rewardsAccountBalance
+            : `${printAda(rewardsAccountBalance)}`}
+          <AdaIcon />
+          {nearestReward && (
+            <div className="staking-balance-next-reward">
+              Next reward: {toLocalDate(new Date(nearestReward.rewardDate))}
             </div>
-            <button
-              {...tooltip(
-                'Cannot convert funds while transaction is pending or reloading',
-                shouldDisableSendingButton(walletOperationStatusType)
-              )}
-              className="button secondary convert"
-              onClick={convertNonStakingUtxos}
-              disabled={shouldDisableSendingButton(walletOperationStatusType)}
-            />
+          )}
+        </div>
+        {!!rewardsAccountBalance && (
+          <button
+            {...tooltip(
+              'Cannot withdraw funds while transaction is pending or reloading',
+              shouldDisableSendingButton(walletOperationStatusType)
+            )}
+            className="button secondary balance withdraw"
+            onClick={withdrawRewards}
+            disabled={shouldDisableSendingButton(walletOperationStatusType)}
+          >
+            Withdraw
+          </button>
+        )}
+      </div>
+
+      <div className="total-balance-wrapper">
+        <h2 className="card-title staking-balances-title">
+          Staking balance
+          <a
+            className="wide-data-balloon"
+            {...tooltip(
+              "Staking Balance represents the funds that are on your staking addresses. Once you delegate to a pool, all these funds are staked. Stake delegation doesn't lock the funds and they are free to move. All funds that you receive to your addresses displayed on My Addresses tab on Send screen are automatically added to this balance (and therefore automatically staked). Also all staking rewards that are added to your Rewards Balance at the end of each epoch are included in your Staking Balance.",
+              true
+            )}
+          >
+            <span className="show-info">{''}</span>
+          </a>
+        </h2>
+        <div className="balance-row">
+          <div className="balance-amount-staking">
+            {isNaN(Number(stakingBalance)) ? stakingBalance : `${printAda(stakingBalance)}`}
+            <AdaIcon />
           </div>
-        </Fragment>
-      )}
+        </div>
+
+        {isShelleyCompatible && !!nonStakingBalance && (
+          <Fragment>
+            <h2 className="card-title staking-balances-title">
+              Non-staking balance
+              <a
+                {...tooltip(
+                  'These are funds located on legacy or non-staking addresses and can be automatically transferred to your first staking address by clicking on the "Convert to stakeable" button. (minimum is 1.5 ADA)',
+                  true
+                )}
+              >
+                <span className="show-info">{''}</span>
+              </a>
+            </h2>
+            <div className="balance-row">
+              <div className="balance-amount-staking">
+                {isNaN(Number(nonStakingBalance))
+                  ? nonStakingBalance
+                  : `${printAda(nonStakingBalance)}`}
+                <AdaIcon />
+              </div>
+              <button
+                {...tooltip(
+                  'Cannot convert funds while transaction is pending or reloading',
+                  shouldDisableSendingButton(walletOperationStatusType)
+                )}
+                className="button secondary convert"
+                onClick={convertNonStakingUtxos}
+                disabled={shouldDisableSendingButton(walletOperationStatusType)}
+              />
+            </div>
+          </Fragment>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default connect(
   (state: State) => ({
-    stakingBalance: getActiveAccountInfo(state).shelleyBalances.stakingBalance,
-    nonStakingBalance: getActiveAccountInfo(state).shelleyBalances.nonStakingBalance,
-    rewardsAccountBalance: getActiveAccountInfo(state).shelleyBalances.rewardsAccountBalance,
-    balance: getActiveAccountInfo(state).balance,
     isShelleyCompatible: state.isShelleyCompatible,
-    nearestReward: getActiveAccountInfo(state).shelleyAccountInfo.rewardDetails.nearest,
     walletOperationStatusType: state.walletOperationStatusType,
   }),
   actions
-)(shelleyBalances)
+)(ShelleyBalances)

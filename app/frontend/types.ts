@@ -153,13 +153,13 @@ export type AccountInfo = {
   }
   stakingXpub: _XPubKey
   stakingAddress: Address
-  balance: number
+  balance: Lovelace
   utxos: Array<UTxO>
   tokenBalance: TokenBundle
   shelleyBalances: {
-    stakingBalance: number
-    nonStakingBalance: number
-    rewardsAccountBalance: number
+    stakingBalance: Lovelace
+    nonStakingBalance: Lovelace
+    rewardsAccountBalance: Lovelace
   }
   shelleyAccountInfo: {
     accountPubkeyHex: string

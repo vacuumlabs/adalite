@@ -1,7 +1,6 @@
 import {h, Fragment} from 'preact'
 import {encodeAssetFingerprint} from '../../../wallet/shelley/helpers/addresses'
 import printAda from '../../../helpers/printAda'
-import {getActiveAccountInfo, State} from '../../../state'
 import toLocalDate from '../../../helpers/toLocalDate'
 import {
   RewardWithdrawal,
@@ -16,11 +15,10 @@ import {
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
 import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
-import {useSelector} from '../../../helpers/connect'
-
 import styles from './transactionHistory.module.scss'
 import Alert from '../../common/alert'
-import moment = require('moment')
+import * as moment from 'moment'
+import {useActiveAccount} from '../../../selectors'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
   const value = printAda(amount)
@@ -232,10 +230,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
 }
 
 const TransactionHistory = (): h.JSX.Element => {
-  const {transactionHistory, stakingHistory} = useSelector((state: State) => ({
-    transactionHistory: getActiveAccountInfo(state).transactionHistory,
-    stakingHistory: getActiveAccountInfo(state).stakingHistory,
-  }))
+  const {transactionHistory, stakingHistory} = useActiveAccount()
 
   return (
     <div className="transactions card">

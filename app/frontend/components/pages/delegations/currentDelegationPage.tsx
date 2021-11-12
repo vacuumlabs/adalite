@@ -2,13 +2,13 @@ import {Fragment, h} from 'preact'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
-import {State, getActiveAccountInfo} from '../../../state'
+import {State} from '../../../state'
 import {LinkIconToPool} from './common'
 import {EpochDateTime} from '../common'
 import roundNumber from './../../../helpers/roundNumber'
 import {SATURATION_POINT} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
-import {useIsActiveAccountDelegating} from '../../../selectors'
+import {useActiveAccount, useIsActiveAccountDelegating} from '../../../selectors'
 
 const SaturationInfo = (pool) => {
   if (pool.liveStake == null) return <Fragment />
@@ -23,13 +23,16 @@ const SaturationInfo = (pool) => {
 }
 
 const CurrentDelegationPage = ({
-  pool,
   revokeDelegation,
   delegationValidationError,
   calculatingDelegationFee,
-  nearestReward,
-  currentDelegationReward,
 }) => {
+  const {
+    shelleyAccountInfo: {
+      delegation: pool,
+      rewardDetails: {nearest: nearestReward, currentDelegation: currentDelegationReward},
+    },
+  } = useActiveAccount()
   const isDelegating = useIsActiveAccountDelegating()
   return (
     <div className="current-delegation card">
@@ -129,12 +132,8 @@ const CurrentDelegationPage = ({
 
 export default connect(
   (state: State) => ({
-    pool: getActiveAccountInfo(state).shelleyAccountInfo.delegation,
     delegationValidationError: state.delegationValidationError,
     calculatingDelegationFee: state.calculatingDelegationFee,
-    nearestReward: getActiveAccountInfo(state).shelleyAccountInfo.rewardDetails.nearest,
-    currentDelegationReward: getActiveAccountInfo(state).shelleyAccountInfo.rewardDetails
-      .currentDelegation,
   }),
   actions
 )(CurrentDelegationPage)
