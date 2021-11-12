@@ -4,11 +4,31 @@ import {CaTxEntry} from '../wallet/backend-types'
 
 export const stripNonNumericCharacters = (text: string): string => text.replace(/[^0-9]/gi, '')
 
-export const isVotingRegistrationOpen = () => {
+type VotingRegistrationStatus =
+  | {
+      isOpen: true
+    }
+  | {
+      isOpen: false
+      explanation: string
+    }
+
+export const getVotingRegistrationStatus = (): VotingRegistrationStatus => {
   const now = Date.now()
-  return (
-    now > ADALITE_CONFIG.ADALITE_NEXT_VOTING_START && now < ADALITE_CONFIG.ADALITE_NEXT_VOTING_END
-  )
+  if (now < ADALITE_CONFIG.ADALITE_NEXT_VOTING_START) {
+    return {
+      isOpen: false,
+      explanation: `Registration for ${ADALITE_CONFIG.ADALITE_NEXT_VOTING_ROUND_NAME} Voting not open yet.`,
+    }
+  }
+  if (now > ADALITE_CONFIG.ADALITE_NEXT_VOTING_END) {
+    return {
+      isOpen: false,
+      explanation: `Registration for ${ADALITE_CONFIG.ADALITE_NEXT_VOTING_ROUND_NAME} Voting closed.`,
+    }
+  }
+
+  return {isOpen: true}
 }
 
 export const shouldDisableSendingButton = (

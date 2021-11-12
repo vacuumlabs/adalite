@@ -2,14 +2,13 @@ import {h} from 'preact'
 import actions from '../../../actions'
 import {useActions, useSelector} from '../../../helpers/connect'
 import tooltip from '../../common/tooltip'
-import {isVotingRegistrationOpen, shouldDisableSendingButton} from '../../../helpers/common'
+import {getVotingRegistrationStatus, shouldDisableSendingButton} from '../../../helpers/common'
 import {hasStakingKey, useActiveAccount, useHasEnoughFundsForCatalyst} from '../../../selectors'
 import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
 import styles from './voting.module.scss'
 import * as QRious from '../../../libs/qrious'
-import {ADALITE_CONFIG} from '../../../config'
 
 const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   <div className={styles.catalystAppPair}>
@@ -37,8 +36,9 @@ const VotingCard = (): h.JSX.Element => {
   const hasRegisteredStakingKey = hasStakingKey(activeAccount)
 
   const getUnmetPreconditionMessage = (): string | null => {
-    if (!isVotingRegistrationOpen()) {
-      return `Registration for ${ADALITE_CONFIG.ADALITE_NEXT_VOTING_ROUND_NAME} Voting is closed.`
+    const votingRegistrationStatus = getVotingRegistrationStatus()
+    if (votingRegistrationStatus.isOpen === false) {
+      return votingRegistrationStatus.explanation
     }
     if (!hasEnoughFundsForCatalyst) {
       return `Only users with more than ${toAda(
