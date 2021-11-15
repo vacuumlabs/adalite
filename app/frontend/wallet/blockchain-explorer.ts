@@ -426,19 +426,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     validStakepoolDataProvider: StakepoolDataProvider,
     epochsToRewardDistribution: number
   ): Promise<NextRewardDetailsFormatted> {
-    const getPool = async (
-      poolHash: string
-    ): Promise<StakePoolInfo | HostedPoolMetadata | string> => {
+    const getPool = async (poolHash: string): Promise<StakePoolInfo | HostedPoolMetadata> => {
       const stakePool = validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)
-      if (stakePool) {
-        if (stakePool.name) {
-          return stakePool
-        } else if (stakePool.url) {
-          return await getPoolInfo(stakePool.url).catch(() => UNKNOWN_POOL_NAME)
-        }
+      if (stakePool?.name) {
+        return stakePool
       }
-
-      return UNKNOWN_POOL_NAME
+      const poolInfo = await getPoolInfo(stakePool.url)
+      return 'name' in poolInfo ? poolInfo : ({name: UNKNOWN_POOL_NAME} as HostedPoolMetadata)
     }
 
     const nextRewardDetailsWithMetaData: Array<RewardWithMetadata> = await Promise.all(
@@ -448,12 +442,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
           return {
             ...nextRewardDetail,
             distributionEpoch: nextRewardDetail.forEpoch + epochsToRewardDistribution,
-            pool: await getPool(poolHash),
+            pool: await getPool(nextRewardDetail.poolHash),
           }
         } else {
           return {
             ...nextRewardDetail,
-            pool: {}, // TODO: why does this not have {name: UNKNOWN_POOL_NAME}?
+            pool: {},
           }
         }
       })
