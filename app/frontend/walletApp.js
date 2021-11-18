@@ -67,7 +67,7 @@ window.onhashchange = () =>
   })
 
 init({
-  dsn: ADALITE_CONFIG.SENTRY_DSN,
+  dsn: ADALITE_CONFIG.ADALITE_SENTRY_DSN_WEB,
   environment: ADALITE_CONFIG.ADALITE_ENV,
   // debug: true,
   beforeSend(event) {

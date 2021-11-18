@@ -21,7 +21,7 @@ if (!isProd) {
 }
 
 Sentry.init({
-  dsn: 'https://43eac31915bb40caa03798a51048e756@o150853.ingest.sentry.io/5421403',
+  dsn: backendConfig.ADALITE_SENTRY_DSN_SERVER,
   tracesSampleRate: 0,
   beforeSend(event) {
     return dropSensitiveEventData(event)
