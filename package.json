@@ -46,7 +46,7 @@
     ]
   },
   "dependencies": {
-    "@sentry/node": "^5.22.3",
+    "@sentry/node": "^6.15.0",
     "babel-regenerator-runtime": "^6.5.0",
     "body-parser": "^1.18.2",
     "borc": "^2.1.0",
