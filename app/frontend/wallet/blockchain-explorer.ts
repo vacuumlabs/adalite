@@ -431,8 +431,10 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       if (stakePool?.name) {
         return stakePool
       }
-      const poolInfo = await getPoolInfo(stakePool.url)
-      return 'name' in poolInfo ? poolInfo : ({name: UNKNOWN_POOL_NAME} as HostedPoolMetadata)
+      const poolInfo = stakePool ? await getPoolInfo(stakePool.url) : null
+      return poolInfo && ('name' in poolInfo)
+        ? poolInfo
+        : ({name: UNKNOWN_POOL_NAME} as HostedPoolMetadata)
     }
 
     const nextRewardDetailsWithMetaData: Array<RewardWithMetadata> = await Promise.all(

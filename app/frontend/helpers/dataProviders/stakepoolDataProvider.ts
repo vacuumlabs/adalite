@@ -19,8 +19,9 @@ const createStakepoolDataProvider = (
     [{}, {}]
   )
 
-  const getPoolInfoByTicker = (ticker: string): Stakepool => tickerMapping[ticker]
-  const getPoolInfoByPoolHash = (poolHash: string): Stakepool => poolHashMapping[poolHash]
+  const getPoolInfoByTicker = (ticker: string): Stakepool | null => tickerMapping[ticker] ?? null
+  const getPoolInfoByPoolHash = (poolHash: string): Stakepool | null =>
+    poolHashMapping[poolHash] ?? null
   const hasTickerMapping = Object.keys(tickerMapping).length !== 0
 
   return {

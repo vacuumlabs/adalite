@@ -1,7 +1,7 @@
 import {Stakepool} from '../../../frontend/types'
 
 export type StakepoolDataProvider = {
-  getPoolInfoByTicker: (ticker: string) => Stakepool
-  getPoolInfoByPoolHash: (poolHash: string) => Stakepool
+  getPoolInfoByTicker: (ticker: string) => Stakepool | null
+  getPoolInfoByPoolHash: (poolHash: string) => Stakepool | null
   hasTickerMapping: boolean
 }
