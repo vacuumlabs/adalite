@@ -30,6 +30,7 @@
     "cardano-crypto.js": "^6.1.0",
     "chacha": "^2.1.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "pbkdf2": "^3.1.2",
     "preact": "^10.5.11",
     "react-device-detect": "^1.17.0",
@@ -38,13 +39,14 @@
   "devDependencies": {
     "@testing-library/cypress": "^7.0.4",
     "assert": "^2.0.0",
-    "cypress": "^6.8.0",
+    "cypress": "^9.0.0",
     "fetch-mock": "^6.5.1",
     "fetch-readablestream": "^0.2.0",
     "sinon": "^7.3.2"
   },
   "resolutions": {
     "lodash": ">=4.17.21",
-    "ansi-regex": "<6.0.0"
+    "ansi-regex": "<6.0.0",
+    "cypress/**/json-schema": ">=0.4.0"
   }
 }

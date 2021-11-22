@@ -52,12 +52,13 @@ jobs:
       - run:
           name: Start server with correct env for cypress tests
           command: yarn cypress:dev
-          wait-on: https://localhost:3000
           background: true
       - run:
           name: Run Cypress tests
           store_artifacts: true
-          command: VIDEO=true yarn cypress:run
+          command: |
+            npx wait-on https://localhost:3000 --timeout 120000
+            VIDEO=true yarn cypress:run
       - store_artifacts:
           path: app/cypress/videos
       - store_artifacts:
