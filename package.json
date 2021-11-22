@@ -58,6 +58,7 @@
     "express-basic-auth": "^1.2.0",
     "express-ipfilter": "^1.1.2",
     "express-mung": "^0.5.1",
+    "glob": "^7.2.0",
     "isomorphic-fetch": "^3.0.0",
     "mocha-headless-chrome": "^2.0.3",
     "moment": "^2.27.0",

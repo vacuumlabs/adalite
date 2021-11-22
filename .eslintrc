@@ -31,7 +31,8 @@
           { "target": "./app", "from": "./node_modules" }
          ]
        }
-    ]
+    ],
+    "import/no-extraneous-dependencies": "error"
   },
   "overrides": [
     {

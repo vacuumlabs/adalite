@@ -25,6 +25,7 @@
     "@ledgerhq/hw-transport-webusb": "^5.53.1",
     "@sentry/browser": "^6.15.0",
     "@types/lodash": "^4.14.168",
+    "babel-polyfill": "6.26.0",
     "bip39-light": "^1.0.7",
     "borc": "^2.1.2",
     "cardano-crypto.js": "^6.1.0",
