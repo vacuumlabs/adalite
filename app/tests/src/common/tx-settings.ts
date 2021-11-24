@@ -340,4 +340,63 @@ export const transactionSettings = {
     ttl,
     txHash: 'bd14cd4375f1c9bffdec00f78b3638d32719b44b0bbf1232fb4676f919e403fb',
   },
+  sendAdaNullTtl: {
+    args: {
+      address:
+        'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0' as Address,
+      coins: 1000000,
+      sendAmount: {assetFamily: AssetFamily.ADA as const, fieldValue: `${1.5}`, coins: new BigNumber(1500000) as Lovelace},
+      txType: TxType.SEND_ADA as const,
+    },
+    utxos,
+    txPlanResult: {
+      success: true,
+      txPlan: {
+        inputs: [
+          {
+            txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+            coins: new BigNumber(10000000) as Lovelace,
+            outputIndex: 1,
+            tokenBundle: inputTokens,
+          },
+        ],
+        outputs: [
+          {
+            isChange: false as const,
+            address:
+              'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0' as Address,
+            coins: new BigNumber(1500000) as Lovelace,
+            tokenBundle: [],
+          },
+        ],
+        change: [
+          {
+            isChange: false as const,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+            coins: new BigNumber(6938608) as Lovelace,
+            tokenBundle: [],
+          },
+          {
+            isChange: false as const,
+            address:
+              'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+            coins: new BigNumber(1383510) as Lovelace,
+            tokenBundle: inputTokens,
+          },
+        ],
+        certificates: [],
+        deposit: new BigNumber(0) as Lovelace,
+        additionalLovelaceAmount: new BigNumber(0) as Lovelace,
+        fee: new BigNumber(177882) as Lovelace,
+        baseFee: new BigNumber(177882) as Lovelace,
+        withdrawals: [],
+        auxiliaryData: null,
+      },
+    },
+    ttl: null,
+    txHash: 'c986502d4efa9d31a5cb99bd18306e49ff7ed96d62e2b3095b591cf34834bdb9',
+  },
 }

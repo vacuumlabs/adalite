@@ -315,6 +315,14 @@ const ShelleyBitBox02CryptoProvider = async ({
 
     const ttl = txAux.ttl
     if (ttl == null) {
+      // not done via isFeatureSupported() because it would be too much hassle
+      // and we suppose the new new FW will support that together with missing multiasset
+      // support which once added, we'd bump the minimal suported version to that
+      //
+      // TODO: bump minimum supported version of Ledger/Trezor as well to the version
+      // that added multiasset and optional TTL support (the respective libs handle the
+      // feature checks for us and it's an edge-case for pool registration, that's why
+      // we aren't using isFeatureSupported() there either)
       throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
         message: 'Optional TTL not supported by Bitbox02 wallet',
       })
