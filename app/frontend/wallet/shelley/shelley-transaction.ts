@@ -61,7 +61,7 @@ function ShelleyTxAux({
   inputs: TxInput[]
   outputs: TxOutput[]
   fee: BigNumber
-  ttl: BigNumber
+  ttl: BigNumber | null
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
   auxiliaryDataHash: HexString | null

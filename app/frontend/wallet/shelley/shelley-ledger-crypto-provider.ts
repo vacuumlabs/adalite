@@ -537,7 +537,6 @@ const ShelleyLedgerCryptoProvider = async ({
       prepareCertificate(certificate, addressToAbsPathMapper)
     )
     const feeStr = `${txAux.fee}`
-    const ttlStr = `${txAux.ttl}`
     const withdrawals = txAux.withdrawals.map((withdrawal) =>
       prepareWithdrawal(withdrawal, addressToAbsPathMapper)
     )
@@ -555,7 +554,7 @@ const ShelleyLedgerCryptoProvider = async ({
         inputs,
         outputs,
         fee: feeStr,
-        ttl: ttlStr,
+        ttl: txAux.ttl?.toString(),
         certificates,
         withdrawals,
         auxiliaryData: formattedAuxiliaryData,

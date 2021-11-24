@@ -92,7 +92,7 @@ export default (store: Store) => {
       const {plan, ttl, validityIntervalStart} = state.poolRegTransactionSummary
       const txAux = await getWallet()
         .getAccount(state.sourceAccountIndex)
-        .prepareTxAux(plan, ttl || undefined, validityIntervalStart || undefined)
+        .prepareTxAux(plan, ttl, validityIntervalStart ?? undefined)
       const witness = await getWallet()
         .getAccount(state.sourceAccountIndex)
         .witnessPoolRegTxAux(txAux)

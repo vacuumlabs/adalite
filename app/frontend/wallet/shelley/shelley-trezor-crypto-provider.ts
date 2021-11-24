@@ -429,14 +429,10 @@ const ShelleyTrezorCryptoProvider = async ({
       prepareCertificate(certificate, addressToAbsPathMapper)
     )
     const fee = `${txAux.fee}`
-    const ttl = `${txAux.ttl}`
     const withdrawals = txAux.withdrawals.map((withdrawal) =>
       prepareWithdrawal(withdrawal, addressToAbsPathMapper)
     )
 
-    const validityIntervalStart = txAux.validityIntervalStart
-      ? `${txAux.validityIntervalStart}`
-      : undefined
     const formattedAuxiliaryData = txAux.auxiliaryData
       ? formatAuxiliaryData(txAux.auxiliaryData)
       : undefined
@@ -446,12 +442,12 @@ const ShelleyTrezorCryptoProvider = async ({
       outputs,
       protocolMagic: network.protocolMagic,
       fee,
-      ttl,
+      ttl: txAux.ttl?.toString(),
       networkId: network.networkId,
       certificates,
       withdrawals,
       auxiliaryData: formattedAuxiliaryData,
-      validityIntervalStart,
+      validityIntervalStart: txAux.validityIntervalStart?.toString(),
     }
     const response = await TrezorConnect.cardanoSignTransaction(removeNullFields(request))
 

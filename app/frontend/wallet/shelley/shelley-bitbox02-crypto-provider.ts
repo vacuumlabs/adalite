@@ -303,9 +303,6 @@ const ShelleyBitBox02CryptoProvider = async ({
     const certificates = txAux.certificates.map((certificate) =>
       prepareCertificate(certificate, addressToAbsPathMapper)
     )
-    const validityIntervalStart = txAux.validityIntervalStart
-      ? `${txAux.validityIntervalStart}`
-      : null
 
     if (
       txAux.auxiliaryData?.type === 'CATALYST_VOTING' &&
@@ -316,16 +313,23 @@ const ShelleyBitBox02CryptoProvider = async ({
       })
     }
 
+    const ttl = txAux.ttl
+    if (ttl == null) {
+      throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+        message: 'Optional TTL not supported by Bitbox02 wallet',
+      })
+    }
+
     const response = await withDevice(async (bitbox02: BitBox02API) => {
       return await bitbox02.cardanoSignTransaction({
         network: bb02Network,
         inputs,
         outputs,
         fee: txAux.fee.toString(),
-        ttl: txAux.ttl.toString(),
+        ttl: ttl.toString(),
         certificates,
         withdrawals,
-        validityIntervalStart,
+        validityIntervalStart: txAux.validityIntervalStart?.toString() ?? null,
       })
     })
 
