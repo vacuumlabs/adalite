@@ -6945,10 +6945,10 @@ unique-string@^2.0.0:
   dependencies:
     crypto-random-string "^2.0.0"
 
-universal-analytics@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/universal-analytics/-/universal-analytics-0.5.0.tgz#3a326fe3dc4abdbaffe7e9b0bf6690a26475e977"
-  integrity sha512-kLUELbj5EjaWi1tC677zfyDRBR80kj99N/A8Z4ngzFl1PXCIcqd42ZrBoeIAUHGEp5odoN9hgKMpREaOAW/mFg==
+universal-analytics@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/universal-analytics/-/universal-analytics-0.5.1.tgz#6bdaba2109d98522dd74018d8fe56f0464d21625"
+  integrity sha512-raLjYsNQmJbK0o8veSU9GXA5XG/YhfuZDzWCAB4SNDnPI4ozXLrbFSDZiRENdOFEIUqmdUTYcaQCOa0Y36EtsQ==
   dependencies:
     debug "^4.1.1"
     uuid "^8.0.0"
