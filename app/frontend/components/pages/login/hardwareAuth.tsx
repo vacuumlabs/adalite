@@ -7,7 +7,7 @@ import {useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import {useState, useCallback} from 'preact/hooks'
 import {localStorageVars} from '../../../localStorage'
-import {isMobileOnly} from 'react-device-detect'
+import {isMobileOnly, isFirefox} from 'react-device-detect'
 import LedgerTransportSelect from './ledgerTransportSelect'
 import {LedgerTransportChoice} from '../../../../frontend/types'
 import styles from './hardwareAuth.module.scss'
@@ -143,12 +143,16 @@ const LoadByHardwareWalletSection = () => {
             dangerouslySetInnerHTML={{__html: '&nbsp;'}}
           />
           <button
-            disabled={!ADALITE_CONFIG.ADALITE_ENABLE_BITBOX02 || isMobileOnly}
+            disabled={!ADALITE_CONFIG.ADALITE_ENABLE_BITBOX02 || isMobileOnly || isFirefox}
             {...tooltip(
               'Support for BitBox02 is temporarily disabled',
               !ADALITE_CONFIG.ADALITE_ENABLE_BITBOX02
             )}
             {...tooltip('Not supported on mobile devices', isMobileOnly)}
+            {...tooltip(
+              'BitBox02 currently not supported on Firefox, use Chrome instead',
+              isFirefox
+            )}
             className="button primary thin-data-balloon"
             onClick={() =>
               loadWallet({
