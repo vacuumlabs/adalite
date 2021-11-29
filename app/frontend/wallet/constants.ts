@@ -123,6 +123,11 @@ export const LEDGER_ERRORS = {
 }
 
 export const TREZOR_VERSIONS = {
+  [CryptoProviderFeature.MINIMAL]: {
+    major: 2,
+    minor: 3,
+    patch: 2,
+  },
   [CryptoProviderFeature.POOL_OWNER]: {
     major: 2,
     minor: 3,
