@@ -59,6 +59,30 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'11/29/2021'}
+              children={
+                <Article title="AdaLite now supports BitBox02" icon="">
+                  We are excited to announce that AdaLite is now compatible with{' '}
+                  <a
+                    href="https://shiftcrypto.ch/bitbox02/?ref=8s4tkJYX1x"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    BitBox02
+                  </a>{' '}
+                  hardware wallet. The device currently supports sending and staking ADA, and
+                  support for Cardano tokens/NFTs will be added in the future.{' '}
+                  <a
+                    href="https://shiftcrypto.support/help/en-us/35-adalite-cardano/176-adalite-guide"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Learn more
+                  </a>
+                </Article>
+              }
+            />
+            <NewsSection
               date={'11/18/2021'}
               children={
                 <Article title="Catalyst Fund7 registration" icon="">

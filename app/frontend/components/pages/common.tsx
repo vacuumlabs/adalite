@@ -29,8 +29,8 @@ export const BitBox02MultiAssetAlert = () => {
   // checking both conditions for future-proofness, once MA support is added to BitBox02
   return !isMultiAssetSupported && cryptoProviderInfo?.type === CryptoProviderType.BITBOX02 ? (
     <Alert alertType="warning">
-      BitBox02 currently does not support sending Cardano tokens. If you received tokens and cannot
-      spend them, please contact{' '}
+      BitBox02 currently does not support sending Cardano tokens/NFTs. If you received tokens and
+      cannot send them, please contact{' '}
       <a href={'mailto:support@shiftcrypto.ch'}>support@shiftcrypto.ch</a>.{' '}
       <a
         href="https://shiftcrypto.support/help/en-us/35-adalite-cardano/176-adalite-guide"
