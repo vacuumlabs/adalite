@@ -26,6 +26,6 @@ const directives = {
 const csp = Object.entries(directives).map(([key, value]) => `${key} ${value.join(' ')};`)
 
 module.exports = (req, res, next) => {
-  res.setHeader('Content-Security-Policy', csp.join(' '))
+  res.setHeader('Content-Security-Policy', `upgrade-insecure-requests; ${csp.join(' ')}`)
   next()
 }
