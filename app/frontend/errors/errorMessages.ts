@@ -74,7 +74,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.ChangeOutputTooSmall]: () =>
     'ChangeOutputTooSmall: Not enough funds to make this transaction, try sending a different amount.',
   [InternalErrorReason.TxTooBig]: () =>
-    'Transaction is too big, try sending lesser amount of coins.',
+    'Transaction too big, try sending less in multiple transactions.',
   [InternalErrorReason.OutputTooBig]: () =>
     'Transaction output is too big, try sending a diffrent amount.',
 
