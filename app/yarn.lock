@@ -38,6 +38,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.15.4":
+  version "7.16.3"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.3.tgz#b86f0db02a04187a3c17caa77de69840165d42d5"
+  integrity sha512-WBwekcqacdY2e9AF/Q7WLFUWmdJGJTkbjqTjoMDgXkVZ3ZRUvOPsLb5KdwISoQVsbP+DQzVZW4Zhci0DvpbNTQ==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v4.0.0-multisig-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v4.0.0-rc5.tgz":
   version "4.0.0-rc5"
   resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v4.0.0-multisig-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v4.0.0-rc5.tgz#326e6f03b1f182714af9af80ae021b110a38542d"
@@ -861,6 +868,13 @@ create-hmac@^1.1.4:
     ripemd160 "^2.0.0"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+cross-fetch@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
+  integrity sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==
+  dependencies:
+    node-fetch "2.6.1"
 
 cross-spawn@^7.0.0:
   version "7.0.3"
@@ -1728,6 +1742,11 @@ nise@^1.4.10:
     lolex "^4.1.0"
     path-to-regexp "^1.7.0"
 
+node-fetch@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
+
 npm-run-path@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/npm-run-path/-/npm-run-path-4.0.1.tgz#b7ecd1e5ed53da8e37a55e1c2269e0b97ed748ea"
@@ -2242,14 +2261,14 @@ tough-cookie@~2.5.0:
     psl "^1.1.28"
     punycode "^2.1.1"
 
-trezor-connect@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.2.0.tgz#7f677593c04b16ff49641856c8f3ac322b913b28"
-  integrity sha512-5P2DAzTPh0e0D0ru/oCp9gYKU1icmwN7JLFmMwKIBJZr48WRQkeSdK+M5GCOhCjY12gaBSQlum7TDBReA5MVcQ==
+trezor-connect@^8.2.4:
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/trezor-connect/-/trezor-connect-8.2.4.tgz#e286a87f898b698e62fb7e45a67e14cc8f3d180f"
+  integrity sha512-TKIE7p3/j7SgPS1FLrgohof42h4BXnnw0gWL+d+xzwZb1Hq82SBP7ia4oxdIf81KuTdCkfmhN0afr/4eRs2b6Q==
   dependencies:
-    "@babel/runtime" "^7.12.5"
-    events "^3.2.0"
-    whatwg-fetch "^3.5.0"
+    "@babel/runtime" "^7.15.4"
+    cross-fetch "^3.1.4"
+    events "^3.3.0"
 
 tslib@^1.9.0:
   version "1.9.3"
@@ -2363,11 +2382,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-whatwg-fetch@^3.5.0:
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.6.2.tgz#dced24f37f2624ed0281725d51d0e2e3fe677f8c"
-  integrity sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"
