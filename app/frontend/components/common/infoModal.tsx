@@ -59,6 +59,76 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'12/15/2021'}
+              children={
+                <Article
+                  title="We are thrilled to announce that NuFi (AdaLite 2.0) is now live!"
+                  icon=""
+                >
+                  <ul>
+                    <li>
+                      Stake, send and receive coins, tokens and NFTs across multiple blockchains
+                      from a single interface.
+                    </li>
+                    <li>
+                      Currently supports Cardano (ADA) and Solana (SOL) blockchains, with FLOW
+                      integration coming early 2022 and 10 additional PoS blockchains to be added
+                      throughout the year.
+                    </li>
+                    <li>
+                      Import your existing AdaLite accounts using your mnemonic, Ledger or Trezor
+                      wallet (step-by-step guides{' '}
+                      <a
+                        href="https://support.nu.fi/support/solutions/articles/80000956989-cardano-wallet-migration"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        here
+                      </a>
+                      )
+                    </li>
+                    <li>
+                      Starting Dec. '21, we're implementing a visual NFT gallery with bulk sending
+                      functionality and soon to come in-app crypto purchases by card/bank transfer,
+                      a Cardano DEX and much, much more!
+                    </li>
+                    <li>
+                      We'll announce new features on{' '}
+                      <a href="https://twitter.com/nufi_official" target="_blank" rel="noopener">
+                        Twitter
+                      </a>{' '}
+                      and in our{' '}
+                      <a href="https://discord.com/invite/ZzvxnQMT" target="_blank" rel="noopener">
+                        Discord
+                      </a>{' '}
+                      community.
+                    </li>
+                  </ul>
+                  <p>
+                    Get started at{' '}
+                    <a href="https://nu.fi" target="_blank" rel="noopener">
+                      https://nu.fi
+                    </a>{' '}
+                    or learn more about NuFi in our Medium article{' '}
+                    <a
+                      href="https://nufi-official.medium.com/7e3f80c2c19"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      HERE
+                    </a>
+                    .
+                  </p>
+                  <p>
+                    <b>
+                      We are dedicated to AdaLite, it still plays an important role in the Cardano
+                      ecosystem and will continue to operate as normal.
+                    </b>
+                  </p>
+                </Article>
+              }
+            />
+            <NewsSection
               date={'11/29/2021'}
               children={
                 <Article title="AdaLite now supports BitBox02" icon="">
