@@ -9,6 +9,18 @@ import Alert from '../../common/alert'
 const InitialContent = () => (
   <div className="sidebar-content">
     <div className="sidebar-item spacy">
+      <Alert alertType="nufi-announcement sidebar">
+        <p>
+          <strong>
+            Try NuFi - easy crypto staking on multiple PoS blockchains from a single wallet.
+          </strong>
+        </p>
+        <a className="sidebar-link" href="https://nu.fi" rel="noopener" target="blank">
+          https://nu.fi
+        </a>
+      </Alert>
+    </div>
+    <div className="sidebar-item spacy">
       <Alert alertType="info sidebar">
         <p>
           AdaLite supports three means of accessing your wallet. For enhanced security, we recommend

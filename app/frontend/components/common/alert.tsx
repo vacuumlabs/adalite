@@ -13,6 +13,7 @@ interface Props {
     | 'news'
     | 'wanted'
     | 'info'
+    | 'nufi-announcement sidebar'
   children: ComponentChildren
 }
 
