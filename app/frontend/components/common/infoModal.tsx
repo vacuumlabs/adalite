@@ -98,7 +98,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                         Twitter
                       </a>{' '}
                       and in our{' '}
-                      <a href="https://discord.com/invite/ZzvxnQMT" target="_blank" rel="noopener">
+                      <a href="https://discord.gg/jSyVPAXw3w" target="_blank" rel="noopener">
                         Discord
                       </a>{' '}
                       community.
