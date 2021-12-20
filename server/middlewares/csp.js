@@ -6,6 +6,15 @@ const directives = {
     'https://connect.trezor.io/',
     'https://widget.changelly.com/',
   ],
+  // Forbid rendering of our page in <iframe /> in order to prevent clickjacking attack
+  // Note, it is not supported by IE, but IE is already officially deprecated
+  'frame-ancestors': ["'none'"],
+  // advised for backwards compatibility of `frame-ancestors`
+  'child-src': ["'none'"],
+  'form-action': ['https://formspree.io'],
+  // `base-uri` prevents the injection of unauthorized <base /> tags which can be used to redirect
+  // all relative URLs (like scripts) to an attacker-controlled domain.
+  'base-uri': ["'none'"],
   'connect-src': ['*'],
   'img-src': ["'self'", 'data:'],
   'script-src': [
@@ -21,7 +30,11 @@ const directives = {
   ],
   'style-src': ["'self'", "'unsafe-inline'"],
   'object-src': ["'none'"],
+  'worker-src': ["'none'"],
 }
+
+// upgrade-insecure-requests left out in order to allow BitBox02 to work in Firefox
+// through the BitBox bridge app which is a locally hosted app communicating through http
 
 const csp = Object.entries(directives).map(([key, value]) => `${key} ${value.join(' ')};`)
 
