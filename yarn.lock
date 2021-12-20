@@ -1749,6 +1749,13 @@ debug@^4.1.0:
   dependencies:
     ms "2.1.2"
 
+debug@^4.3.1:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.3.tgz#04266e0b70a98d4462e6e288e38259213332b664"
+  integrity sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==
+  dependencies:
+    ms "2.1.2"
+
 decamelize@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
@@ -6197,12 +6204,12 @@ unique-string@^2.0.0:
   dependencies:
     crypto-random-string "^2.0.0"
 
-universal-analytics@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/universal-analytics/-/universal-analytics-0.5.1.tgz#6bdaba2109d98522dd74018d8fe56f0464d21625"
-  integrity sha512-raLjYsNQmJbK0o8veSU9GXA5XG/YhfuZDzWCAB4SNDnPI4ozXLrbFSDZiRENdOFEIUqmdUTYcaQCOa0Y36EtsQ==
+universal-analytics@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/universal-analytics/-/universal-analytics-0.5.3.tgz#ff2d9b850062cdd4a8f652448047982a183c8e96"
+  integrity sha512-HXSMyIcf2XTvwZ6ZZQLfxfViRm/yTGoRgDeTbojtq6rezeyKB0sTBcKH2fhddnteAHRcHiKgr/ACpbgjGOC6RQ==
   dependencies:
-    debug "^4.1.1"
+    debug "^4.3.1"
     uuid "^8.0.0"
 
 universal-user-agent@^6.0.0:
