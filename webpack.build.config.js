@@ -17,6 +17,7 @@ if (!isProd) {
   const cssPathnames = [
     './app/public/css/styles.css',
     './app/public/css/0-767px.css',
+    './app/public/css/0-1024px.css',
     './app/public/css/0-1366px.css',
     './app/public/css/767-1366px.css',
     './app/public/css/768-1024px.css',

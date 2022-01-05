@@ -1,0 +1,11 @@
+@media screen and (max-width: 1024px) {
+/* NuFi PREVIEW PAGE */
+.nufi-preview-list-section {
+    flex-direction: column;
+  }
+
+  .nufi-preview-list-section {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}

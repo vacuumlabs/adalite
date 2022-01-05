@@ -1,6 +1,5 @@
 import {h} from 'preact'
 import {connect} from '../helpers/connect'
-
 import {TopLevelRouter} from './router'
 import Welcome from './common/welcome'
 import ContactForm from './common/contactForm'
@@ -12,6 +11,7 @@ import AutoLogout from './autoLogout'
 import {ADALITE_CONFIG} from '../config'
 import UnexpectedErrorModal from './common/unexpectedErrorModal'
 import Exchange from './pages/exchange/exchange'
+import NufiPreviewPage from './pages/nufiPreview/nufiPreviewPage'
 
 const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
@@ -28,6 +28,14 @@ const App = connect((state) => ({
   const currentTab = pathname.split('/')[1]
   if (currentTab === 'exchange') {
     return <Exchange />
+  }
+  if (currentTab === 'nufi') {
+    return (
+      <div className="wrap nufi-background">
+        <NufiPreviewPage />
+        <Footer />
+      </div>
+    )
   }
   return (
     <div className="wrap">
