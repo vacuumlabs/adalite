@@ -36,6 +36,7 @@ import DelegationModal from '../accounts/delegationModal'
 import VotingCard from '../voting/votingCard'
 import VotingDialog from '../voting/votingDialog'
 import {WalletOperationStatusType} from './walletOperationStatus'
+import NufiBanner from './nufiBanner'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -309,6 +310,7 @@ const DashboardPage = () => {
             />
           ))}
         </ul>
+        {window.innerWidth < 1024 && <NufiBanner />}
         <div style={'min-width: 200px;'}>
           <WalletOperationStatusType />
         </div>

@@ -3,10 +3,10 @@ import {h, JSX, Fragment} from 'preact'
 const nufiWalletContent = {
   title: 'It’s fast and easy to access your current wallet through NuFi (AdaLite 2.0)!',
   list: [
-    'Cardano visual NFT gallery with bulk sending functionality .',
+    'Cardano visual NFT gallery with bulk sending functionality.',
     '1st In-App integrated Cardano DEX.',
     'Multi-Account & Multi-Delegation from a single wallet.',
-    'In-App pool search & node staking.',
+    'In-App pool search and node staking.',
     'Supports additional blockchain Solana (SOL), with FLOW integration coming soon!',
   ],
 }
@@ -196,6 +196,19 @@ type ComparisonRowProps = {
   thirdItem: JSX.Element
 }
 
+const YoutubeEmbed = ({embedId}) => (
+  <div className="video-responsive">
+    <iframe
+      width="853"
+      height="480"
+      src={`https://www.youtube.com/embed/${embedId}`}
+      frameBorder="0"
+      allowFullScreen
+      title="Embedded youtube"
+    />
+  </div>
+)
+
 const ComparisonRow = ({firstItem, secondItem, thirdItem, heading = false}: ComparisonRowProps) => {
   return (
     <div className="nufi-comparison-row">
@@ -248,7 +261,7 @@ const NufiPreviewPage = () => {
               <div className="nufi-preview-cards-content nufi-preview-content">
                 <NufiCard
                   href="https://support.nu.fi/support/solutions/articles/80000956989-cardano-wallet-migration"
-                  text="Import your existing AdaLite accounts using your mnemonic (seed phrase), Ledger or Trezor wallet with step-by-step guide in just a few minutes."
+                  text="Import your existing AdaLite accounts using your mnemonic (seed phrase), Ledger or Trezor wallet with step-by-step guide in less than one minute"
                   icon={<ImportIcon />}
                 />
                 <NufiCard
@@ -265,6 +278,9 @@ const NufiPreviewPage = () => {
           >
             Learn more about NuFi
           </a>
+        </div>
+        <div style={{display: 'flex', justifyContent: 'center'}}>
+          <YoutubeEmbed embedId="HQ_cVXZEbXM" />
         </div>
         <div>
           <ComparisonRow

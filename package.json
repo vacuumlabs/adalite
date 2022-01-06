@@ -111,6 +111,7 @@
     "glob-parent": ">=5.1.2",
     "set-value": ">=4.0.1",
     "acorn": ">=5.7.4",
-    "ansi-regex": "<6.0.0"
+    "ansi-regex": "<6.0.0",
+    "postcss": ">=8.2.13"
   }
 }

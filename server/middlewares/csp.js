@@ -5,6 +5,7 @@ const directives = {
     'https://connect.trezor.io/*',
     'https://connect.trezor.io/',
     'https://widget.changelly.com/',
+    'https://www.youtube.com/',
   ],
   // Forbid rendering of our page in <iframe /> in order to prevent clickjacking attack
   // Note, it is not supported by IE, but IE is already officially deprecated

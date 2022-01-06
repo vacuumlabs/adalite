@@ -11,13 +11,32 @@ const InitialContent = () => (
     <div className="sidebar-item spacy">
       <Alert alertType="nufi-announcement sidebar">
         <p>
-          <strong>
-            Try NuFi - easy crypto staking on multiple PoS blockchains from a single wallet.
-          </strong>
+          <strong>Ready for AdaLite 2.0?</strong>
+          <br />
+          <strong>Meet NuFi: </strong>
+          non-custodial ADA staking, CNFT gallery and in-app Cardano DEX from the team behind
+          AdaLite.{' '}
+          <a
+            className="sidebar-link"
+            href={`${window.location.origin}/nufi`}
+            rel="noopener"
+            target="blank"
+          >
+            Learn more
+          </a>
+          <br />
+          Video tutorial:{' '}
+          <a
+            className="sidebar-link"
+            href="https://www.youtube.com/watch?v=HQ_cVXZEbXM"
+            rel="noopener"
+            target="blank"
+          >
+            View
+          </a>
+          <br />
+          Note: Adalite 1.0 will operate as normal.
         </p>
-        <a className="sidebar-link" href="https://nu.fi" rel="noopener" target="blank">
-          https://nu.fi
-        </a>
       </Alert>
     </div>
     <div className="sidebar-item spacy">

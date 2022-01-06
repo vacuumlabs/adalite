@@ -38,6 +38,12 @@
     margin-bottom: 0;
   }
 
+  .banner.nufi {
+    width: 100%;
+    margin-top: 56px;
+    margin-bottom: -12px;
+  }
+
   .banner-inner {
     background-color: transparent;
   }

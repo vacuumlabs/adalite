@@ -1,7 +1,9 @@
-import {h, Component} from 'preact'
-import {connect} from '../../../helpers/connect'
+import {h} from 'preact'
+import {connect, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import {ADALITE_CONFIG} from '../../../config'
+import NufiBanner from '../../pages/dashboard/nufiBanner'
+import {useEffect} from 'preact/hooks'
 const APP_VERSION = ADALITE_CONFIG.ADALITE_APP_VERSION
 
 interface Router {
@@ -16,97 +18,84 @@ interface Props {
   openInfoModal: any
 }
 
-class NavbarAuth extends Component<Props, {}> {
-  scrollDestination: any
+const NavbarAuth = ({isDemoWallet}: {isDemoWallet: boolean}) => {
+  let scrollDestination: any
+  const {openWelcome, openInfoModal, logout} = useActions(actions)
 
-  constructor(props) {
-    super(props)
-    this.scrollToTop = this.scrollToTop.bind(this)
-  }
-
-  scrollToTop() {
+  const scrollToTop = () => {
     if (window.innerWidth < 767) {
-      window.scrollTo(0, this.scrollDestination.offsetHeight)
+      window.scrollTo(0, scrollDestination.offsetHeight)
     } else {
       window.scrollTo(0, 0)
     }
   }
 
-  componentDidMount() {
-    this.scrollToTop()
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.router.pathname !== prevProps.router.pathname) {
-      this.scrollToTop()
-    }
-  }
-
-  render() {
-    const {isDemoWallet, logout, openWelcome, openInfoModal} = this.props
-    return (
-      <nav
-        className={`navbar authed ${isDemoWallet ? 'demo' : ''}`}
-        ref={(element) => {
-          this.scrollDestination = element
-        }}
-      >
-        <div className="navbar-wrapper">
-          <h1 className="navbar-heading">
-            <span className="navbar-title">AdaLite - Cardano Wallet</span>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                window.history.pushState({}, 'txHistory', 'txHistory')
-              }}
-            >
-              <img
-                src="assets/adalite-logo.svg"
-                alt="AdaLite - Cardano Wallet"
-                className="navbar-logo"
-              />
-            </a>
-          </h1>
-          {isDemoWallet && <div className="navbar-demo">Accessing demo wallet</div>}
-          <div className="navbar-version">{`Ver. ${APP_VERSION}`}</div>
-          <div className="navbar-content">
-            <a
-              className="navbar-link primary"
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                openInfoModal()
-              }}
-            >
-              News
-            </a>
-            <a
-              className="navbar-link"
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                openWelcome()
-              }}
-            >
-              About
-            </a>
-            <a
-              className="navbar-link"
-              href="https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ"
-              target="_blank"
-              rel="noopener"
-            >
-              Help
-            </a>
-          </div>
-          <button className="button secondary logout" onClick={() => setTimeout(logout, 100)}>
-            Logout
-          </button>
+  useEffect(() => {
+    scrollToTop()
+  })
+  return (
+    <nav
+      className={`navbar authed ${isDemoWallet ? 'demo' : ''}`}
+      ref={(element) => {
+        scrollDestination = element
+      }}
+    >
+      <div className="navbar-wrapper">
+        <h1 className="navbar-heading">
+          <span className="navbar-title">AdaLite - Cardano Wallet</span>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              window.history.pushState({}, 'txHistory', 'txHistory')
+            }}
+          >
+            <img
+              src="assets/adalite-logo.svg"
+              alt="AdaLite - Cardano Wallet"
+              className="navbar-logo"
+            />
+          </a>
+        </h1>
+        {isDemoWallet && <div className="navbar-demo">Accessing demo wallet</div>}
+        <div className="navbar-version">{`Ver. ${APP_VERSION}`}</div>
+        <div className="navbar-content">
+          {window.innerWidth > 1024 && <NufiBanner />}
+          <a
+            className="navbar-link primary"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              openInfoModal()
+            }}
+          >
+            News
+          </a>
+          <a
+            className="navbar-link"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              openWelcome()
+            }}
+          >
+            About
+          </a>
+          <a
+            className="navbar-link"
+            href="https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ"
+            target="_blank"
+            rel="noopener"
+          >
+            Help
+          </a>
         </div>
-      </nav>
-    )
-  }
+        <button className="button secondary logout" onClick={() => setTimeout(logout, 100)}>
+          Logout
+        </button>
+      </div>
+    </nav>
+  )
 }
 
 export default connect(
