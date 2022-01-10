@@ -197,14 +197,13 @@ type ComparisonRowProps = {
 }
 
 const YoutubeEmbed = ({embedId}) => (
-  <div className="video-responsive">
+  <div className="nufi-video-container">
     <iframe
-      width="853"
-      height="480"
       src={`https://www.youtube.com/embed/${embedId}`}
       frameBorder="0"
       allowFullScreen
       title="Embedded youtube"
+      className="nufi-responsive-iframe"
     />
   </div>
 )
@@ -279,7 +278,7 @@ const NufiPreviewPage = () => {
             Learn more about NuFi
           </a>
         </div>
-        <div style={{display: 'flex', justifyContent: 'center'}}>
+        <div>
           <YoutubeEmbed embedId="HQ_cVXZEbXM" />
         </div>
         <div>

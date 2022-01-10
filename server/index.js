@@ -135,6 +135,7 @@ app.get('*', (req, res) => {
           <link rel="stylesheet" type="text/css" href="css/0-1366px.css?v=${appVersionQueryParam}">
           <link rel="stylesheet" type="text/css" href="css/767-1366px.css?v=${appVersionQueryParam}">
           <link rel="stylesheet" type="text/css" href="css/768-1024px.css?v=${appVersionQueryParam}">
+          <link rel="stylesheet" type="text/css" href="css/0-1024px.css?v=${appVersionQueryParam}">
           <link rel="stylesheet" type="text/css" href="css/1024-1112px.css?v=${appVersionQueryParam}">
           <link rel="icon" type="image/ico" href="assets/favicon.ico">
           ${

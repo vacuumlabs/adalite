@@ -4519,6 +4519,8 @@ label.button.primary.disabled {
   max-width: var(--width);
   margin: 55px auto 0 auto;
   padding: 0 15px;
+  width: 100%;
+  overflow: hidden;
 }
 
 .nufi-preview-wrapper > * {
@@ -4778,4 +4780,15 @@ label.button.primary.disabled {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.nufi-video-container{ 
+  width: 853px;
+  height: 480px;
+  margin: 0 auto;
+}
+
+.nufi-responsive-iframe{
+  height: 100%;
+  width: 100%;
 }
