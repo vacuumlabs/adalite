@@ -988,5 +988,8 @@
   .nufi-comparison-item > .nufi-comparison-item-end {
     padding: 0px;
   }
+  .nufi-comparison-tooltip::before {
+    width: 150px;
+  }
 }
   

@@ -8,4 +8,23 @@
     max-width: 800px;
     margin: 0 auto;
   }
+  
+  .nufi-video-container{
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  }
+  .nufi-responsive-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border: none;
+    max-width: 853px;
+    max-height: 480px;
+    margin: 0 auto;
+  }
 }
