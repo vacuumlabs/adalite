@@ -186,6 +186,8 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
           const tokenMetadata = tokensMetadata.get(
             createTokenRegistrySubject(tokenEffect.policyId, tokenEffect.assetName)
           )
+          const ticker = tokenMetadata?.ticker
+          const fingerprint = encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName)
           return {
             ...common,
             ...(tokenEffect.quantity > 0
@@ -198,9 +200,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
                 sent: Math.abs(tokenEffect.quantity),
               }),
             assetFamily: AssetFamily.TOKEN,
-            currency:
-              tokenMetadata?.ticker ||
-              encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName),
+            currency: ticker ? `${ticker} (${fingerprint})` : fingerprint,
             decimals: tokenMetadata?.decimals || 0,
           }
         })
