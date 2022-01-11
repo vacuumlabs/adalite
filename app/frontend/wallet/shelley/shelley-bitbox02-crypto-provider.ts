@@ -1,4 +1,5 @@
 import {
+  CardanoAssetGroup,
   CardanoInput,
   CardanoOutput,
   CardanoCertificate,
@@ -8,6 +9,7 @@ import {
 import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
+import {orderTokenBundle} from '../helpers/tokenFormater'
 import {hasRequiredVersion} from './helpers/version-check'
 import {BITBOX02_ERRORS, BITBOX02_VERSIONS} from '../constants'
 
@@ -22,6 +24,7 @@ import {
   DerivationScheme,
   AddressToPathMapper,
   CertificateType,
+  TokenBundle,
 } from '../../types'
 import {
   CryptoProviderType,
@@ -148,7 +151,6 @@ const ShelleyBitBox02CryptoProvider = async ({
     switch (feature) {
       case CryptoProviderFeature.BYRON:
       case CryptoProviderFeature.POOL_OWNER:
-      case CryptoProviderFeature.MULTI_ASSET:
       case CryptoProviderFeature.VOTING:
         return false
       default:
@@ -212,14 +214,27 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
-  function prepareOutput(output: TxOutput): CardanoOutput {
-    if (output.tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
+  function prepareTokenBundle(tokenBundle: TokenBundle): CardanoAssetGroup[] {
+    if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
       throw new InternalError(InternalErrorReason.BitBox02MultiAssetNotSupported, {
-        message:
-          'Sending tokens is currently not supported on BitBox02. If you received tokens and cannot spend them, please contact support@shiftcrypto.ch',
+        message: 'Please update your BitBox02 firmware for token support.',
       })
     }
+    const orderedTokenBundle = orderTokenBundle(tokenBundle)
+    return orderedTokenBundle.map(({policyId, assets}) => {
+      const tokens = assets.map(({assetName, quantity}) => ({
+        assetName: Buffer.from(assetName, 'hex'),
+        value: quantity.toString(),
+      }))
+      return {
+        policyId: Buffer.from(policyId, 'hex'),
+        tokens,
+      }
+    })
+  }
 
+  function prepareOutput(output: TxOutput): CardanoOutput {
+    const assetGroups = prepareTokenBundle(output.tokenBundle)
     return {
       encodedAddress: output.address,
       value: output.coins.toString(),
@@ -231,6 +246,7 @@ const ShelleyBitBox02CryptoProvider = async ({
           },
         }
         : undefined,
+      assetGroups,
     }
   }
 

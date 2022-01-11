@@ -95,7 +95,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
       BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL].patch
     } or later, using the latest release of the BitBoxApp.`,
   [InternalErrorReason.BitBox02MultiAssetNotSupported]: () =>
-    'BitBox02MultiAssetNotSupported: The BitBox02 does not support this feature at the moment.',
+    'BitBox02MultiAssetNotSupported: Please update your BitBox02 firmware for token support.',
   [InternalErrorReason.LedgerMultiAssetNotSupported]: () =>
     'LedgerMultiAssetNotSupported: Sending tokens is not supported on Ledger device. Please update your cardano application to the latest version.',
   [InternalErrorReason.LedgerOutdatedCardanoAppError]: ({message}) =>

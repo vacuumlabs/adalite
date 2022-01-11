@@ -37,10 +37,15 @@ declare module 'bitbox02-api' {
     prevOutIndex: number
   }
 
+  type CardanoAssetGroup = {
+    policyId: Uint8Array
+  }
+
   type CardanoOutput = {
     encodedAddress: string
     value: string
     scriptConfig?: ScriptConfig
+    assetGroups: CardanoAssetGroup[]
   }
 
   type CardanoCertificate =

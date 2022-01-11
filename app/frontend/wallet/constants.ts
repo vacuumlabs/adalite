@@ -75,6 +75,11 @@ export const BITBOX02_VERSIONS = {
     minor: 8,
     patch: 0,
   },
+  [CryptoProviderFeature.MULTI_ASSET]: {
+    major: 9,
+    minor: 9,
+    patch: 0,
+  },
 }
 
 export const BITBOX02_ERRORS = {
