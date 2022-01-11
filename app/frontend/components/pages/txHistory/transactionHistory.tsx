@@ -135,6 +135,8 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
   const rowsDelimiter = '\n'
 
   const headers = [
+    'Date',
+    'Transaction ID',
     'Type',
     'Received amount',
     'Received currency',
@@ -142,8 +144,6 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
     'Sent currency',
     'Fee amount',
     'Fee currency',
-    'Transaction ID',
-    'Date',
   ]
     .map((header) => `${header}${delimiter}`)
     .join('')
@@ -262,6 +262,8 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
         ? printAda(amount as Lovelace)
         : printTokenAmount(amount, entry.decimals as number)
     return [
+      entry.dateTime.format('MM/DD/YYYY hh:mm A [UTC]'),
+      entry.txHash,
       entry.type,
       entry.received && printAmount(entry.received),
       entry.received !== undefined ? entry.currency : undefined,
@@ -269,8 +271,6 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
       entry.sent !== undefined ? entry.currency : undefined,
       entry.fee && printAda(entry.fee as Lovelace),
       entry.fee !== undefined ? 'ADA' : undefined,
-      entry.txHash,
-      entry.dateTime.format('MM/DD/YYYY hh:mm A [UTC]'),
     ]
       .map((value) => (value === undefined ? delimiter : `${value}${delimiter}`))
       .join('')
