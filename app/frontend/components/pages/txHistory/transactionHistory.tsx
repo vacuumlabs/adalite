@@ -19,6 +19,9 @@ import styles from './transactionHistory.module.scss'
 import Alert from '../../common/alert'
 import * as moment from 'moment'
 import {useActiveAccount} from '../../../selectors'
+import {useSelector} from '../../../helpers/connect'
+import {createTokenRegistrySubject} from '../../../tokenRegistry/tokenRegistry'
+import printTokenAmount from '../../../helpers/printTokenAmount'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
   const value = printAda(amount)
@@ -115,6 +118,8 @@ interface Props {
 }
 
 const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element => {
+  const tokensMetadata = useSelector((state) => state.tokensMetadata)
+
   const withdrawalHistory: {[key: string]: Lovelace} = stakingHistory
     .filter((item) => item.type === StakingHistoryItemType.REWARD_WITHDRAWAL)
     .reduce((acc, withdrawal: RewardWithdrawal) => {
@@ -153,60 +158,115 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
     type: TxSummaryType
     txHash?: string
     dateTime: moment.Moment
-    sent?: Lovelace
-    received?: Lovelace
     fee?: Lovelace
-  }
+    currency: string
+  } & (
+    | {
+        assetFamily: AssetFamily.ADA
+        sent?: Lovelace
+        received?: Lovelace
+      }
+    | {
+        assetFamily: AssetFamily.TOKEN
+        sent?: number
+        received?: number
+        decimals: number
+      }
+  )
 
-  const transactionsEntries: Array<TxEntry> = transactionHistory.map(
-    (transaction: TxSummaryEntry) => {
+  const transactionsEntries: Array<TxEntry> = transactionHistory.flatMap(
+    (transaction: TxSummaryEntry): Array<TxEntry> => {
       const common = {
         txHash: transaction.ctbId,
         dateTime: moment.utc(new Date(transaction.ctbTimeIssued * 1000)),
       }
 
+      const createTokenEntries = (): Array<TxEntry> =>
+        transaction.tokenEffects.map((tokenEffect: Token) => {
+          const tokenMetadata = tokensMetadata.get(
+            createTokenRegistrySubject(tokenEffect.policyId, tokenEffect.assetName)
+          )
+          return {
+            ...common,
+            ...(tokenEffect.quantity > 0
+              ? {
+                type: TxSummaryType.RECEIVED,
+                received: tokenEffect.quantity,
+              }
+              : {
+                type: TxSummaryType.SENT,
+                sent: Math.abs(tokenEffect.quantity),
+              }),
+            assetFamily: AssetFamily.TOKEN,
+            currency:
+              tokenMetadata?.ticker ||
+              encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName),
+            decimals: tokenMetadata?.decimals || 0,
+          }
+        })
+
       if (withdrawalHistory.hasOwnProperty(transaction.ctbId)) {
-        return {
-          ...common,
-          type: TxSummaryType.SENT,
-          sent: (Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) -
-            transaction.fee) as Lovelace,
-          fee: transaction.fee,
-        }
+        return [
+          {
+            ...common,
+            type: TxSummaryType.SENT,
+            assetFamily: AssetFamily.ADA,
+            sent: (Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) -
+              transaction.fee) as Lovelace,
+            fee: transaction.fee,
+            currency: 'ADA',
+          },
+        ]
       } else if (transaction.effect > 0) {
-        return {
-          ...common,
-          type: TxSummaryType.RECEIVED,
-          received: transaction.effect,
-        }
+        return [
+          {
+            ...common,
+            type: TxSummaryType.RECEIVED,
+            assetFamily: AssetFamily.ADA,
+            received: transaction.effect,
+            currency: 'ADA',
+          },
+          ...createTokenEntries(),
+        ]
       } else {
-        return {
-          ...common,
-          type: TxSummaryType.SENT,
-          sent: (Math.abs(transaction.effect) - transaction.fee) as Lovelace,
-          fee: transaction.fee,
-        }
+        return [
+          {
+            ...common,
+            type: TxSummaryType.SENT,
+            assetFamily: AssetFamily.ADA,
+            sent: (Math.abs(transaction.effect) - transaction.fee) as Lovelace,
+            fee: transaction.fee,
+            currency: 'ADA',
+          },
+          ...createTokenEntries(),
+        ]
       }
     }
   )
 
   const rewardsEntries: Array<TxEntry> = stakingRewards.map((stakingReward: StakingReward) => ({
     type: TxSummaryType.REWARD_AWARDED,
+    assetFamily: AssetFamily.ADA,
     dateTime: moment(stakingReward.dateTime),
     received: stakingReward.reward,
+    currency: 'ADA',
   }))
 
   const entries: Array<TxEntry> = [...transactionsEntries, ...rewardsEntries].sort(
     (a, b) => b.dateTime.unix() - a.dateTime.unix()
   )
 
-  const rows: Array<string> = entries.map((entry) =>
-    [
+  const rows: Array<string> = entries.map((entry) => {
+    const printAmount = (amount: number | Lovelace) =>
+      entry.assetFamily === AssetFamily.ADA
+        ? printAda(amount as Lovelace)
+        : printTokenAmount(amount, entry.decimals as number)
+    return [
       entry.type,
-      entry.received && printAda(entry.received as Lovelace),
-      entry.received !== undefined ? 'ADA' : undefined,
-      entry.sent && printAda(entry.sent as Lovelace),
-      entry.sent !== undefined ? 'ADA' : undefined,
+      entry.received && printAmount(entry.received),
+      entry.received !== undefined ? entry.currency : undefined,
+      entry.sent && printAmount(entry.sent),
+      entry.sent !== undefined ? entry.currency : undefined,
       entry.fee && printAda(entry.fee as Lovelace),
       entry.fee !== undefined ? 'ADA' : undefined,
       entry.txHash,
@@ -214,7 +274,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
     ]
       .map((value) => (value === undefined ? delimiter : `${value}${delimiter}`))
       .join('')
-  )
+  })
 
   const fileContents = `${headers}${rowsDelimiter}${rows.join(rowsDelimiter)}`
   const filename = 'transactions.csv'
