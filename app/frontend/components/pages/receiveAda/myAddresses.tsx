@@ -2,7 +2,6 @@ import {h} from 'preact'
 import AddressItem from './addressItem'
 import {useState} from 'preact/hooks'
 import {useActiveAccount} from '../../../selectors'
-import {BitBox02MultiAssetAlert} from '../common'
 
 const MyAddresses = (): h.JSX.Element => {
   const {visibleAddresses: addresses} = useActiveAccount()
@@ -12,9 +11,6 @@ const MyAddresses = (): h.JSX.Element => {
   return (
     <div className="addresses card">
       <h2 className="card-title">My Addresses</h2>
-      <div className="bitbox02-multiasset-warning">
-        <BitBox02MultiAssetAlert />
-      </div>
       <div className="addresses-content">
         {addresses.map((adr, index) => (
           <AddressItem

@@ -31,7 +31,6 @@ import {shouldDisableSendingButton} from '../../../helpers/common'
 import printTokenAmount from '../../../helpers/printTokenAmount'
 import {createTokenRegistrySubject} from '../../../../frontend/tokenRegistry/tokenRegistry'
 import * as assert from 'assert'
-import {BitBox02MultiAssetAlert} from '../common'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -404,9 +403,6 @@ const SendAdaPage = ({
     <div className="send card" ref={sendCardDiv}>
       <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
       {isModal ? accountSwitch : addressInput}
-      <div className="bitbox02-multiasset-warning">
-        <BitBox02MultiAssetAlert />
-      </div>
       <div className="send-values">
         {selectAssetDropdown}
         {amountInput}
