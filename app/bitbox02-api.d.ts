@@ -37,8 +37,14 @@ declare module 'bitbox02-api' {
     prevOutIndex: number
   }
 
+  type CardanoAssetGroupToken = {
+    assetName: Uint8Array,
+    value: string,
+  }
+
   type CardanoAssetGroup = {
     policyId: Uint8Array
+    tokens: CardanoAssetGroupToken[]
   }
 
   type CardanoOutput = {
@@ -99,7 +105,7 @@ declare module 'bitbox02-api' {
       inputs: CardanoInput[]
       outputs: CardanoOutput[]
       fee: string
-      ttl: string
+      ttl: string | null
       certificates: CardanoCertificate[]
       withdrawals: CardanoWithdrawal[]
       validityIntervalStart: string | null
