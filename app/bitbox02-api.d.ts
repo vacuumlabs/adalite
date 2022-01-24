@@ -99,7 +99,7 @@ declare module 'bitbox02-api' {
       inputs: CardanoInput[]
       outputs: CardanoOutput[]
       fee: string
-      ttl: string
+      ttl?: string
       certificates: CardanoCertificate[]
       withdrawals: CardanoWithdrawal[]
       validityIntervalStart: string | null
