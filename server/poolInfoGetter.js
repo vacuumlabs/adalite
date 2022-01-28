@@ -1,11 +1,11 @@
-require('isomorphic-fetch')
+const fetchWithTimeout = require('./helpers/fetchWithTimeout')
 
 module.exports = function(app, env) {
   // eslint-disable-next-line consistent-return
   app.post('/api/poolMeta', async (req, res) => {
     const poolUrl = req.body.poolUrl
     try {
-      const response = await fetch(poolUrl, {
+      const response = await fetchWithTimeout(poolUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
