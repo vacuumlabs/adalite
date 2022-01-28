@@ -82,7 +82,7 @@ export default (store: Store) => {
         throw new InternalError(supportError.code, {message: supportError.params.message})
       }
       if (isHwWallet(cryptoProviderType)) {
-        setState({waitingForHwWallet: true})
+        setState({waitingHwWalletOperation: 'transaction'})
         loadingAction(state, `Waiting for ${getDeviceBrandName(cryptoProviderType)}...`)
       } else {
         throw new InternalError(InternalErrorReason.PoolRegNoHwWallet)

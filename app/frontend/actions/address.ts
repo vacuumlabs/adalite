@@ -14,7 +14,7 @@ export default (store: Store) => {
     if (isHwWallet(cryptoProviderInfo?.type)) {
       try {
         setState({
-          waitingForHwWallet: true,
+          waitingHwWalletOperation: 'address_verification',
           addressVerificationError: false,
         })
         const addressToVerify = address || newState.showAddressDetail?.address
@@ -24,11 +24,11 @@ export default (store: Store) => {
             .verifyAddress(addressToVerify)
         }
         setState({
-          waitingForHwWallet: false,
+          waitingHwWalletOperation: null,
         })
       } catch (e) {
         setState({
-          waitingForHwWallet: false,
+          waitingHwWalletOperation: null,
         })
         setError(state, {errorName: 'addressVerificationError', error: true})
       }

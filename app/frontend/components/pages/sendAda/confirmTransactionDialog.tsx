@@ -239,7 +239,7 @@ const WithdrawReview = ({
   return (
     <Fragment>
       <div>
-        We are creating transaction that will withdraw all funds from your rewards account balance
+        We are creating a transaction that will withdraw all funds from your rewards account balance
         to your first staking address
       </div>
       <div className="review">
@@ -306,8 +306,8 @@ const ConvertFundsReview = ({
   return (
     <Fragment>
       <div>
-        We are creating transaction that will send all funds from your non-staking addresses to your
-        first staking address
+        We are creating a transaction that will send all funds from your non-staking addresses to
+        your first staking address
       </div>
       <div className="review">
         <div className="review-label">Address</div>
@@ -338,6 +338,7 @@ const ConfirmTransactionDialog = () => {
     cachedTransactionSummaries,
     sendAddress,
     sourceAccountIndex,
+    waitingHwWalletOperation,
   } = useSelector((state) => ({
     transactionSummary: state.transactionSummary,
     rawTransactionOpen: state.rawTransactionOpen,
@@ -346,6 +347,7 @@ const ConfirmTransactionDialog = () => {
     cachedTransactionSummaries: state.cachedTransactionSummaries,
     sendAddress: state.sendAddress.fieldValue,
     sourceAccountIndex: state.sourceAccountIndex,
+    waitingHwWalletOperation: state.waitingHwWalletOperation,
   }))
   const {setRawTransactionOpen, submitTransaction, cancelTransaction} = useActions(actions)
 
@@ -436,7 +438,11 @@ const ConfirmTransactionDialog = () => {
       <Modal onRequestClose={cancelTransaction} title={modalTitle} closeOnClickOutside={false}>
         {getModalBody()}
         {!hideDefaultSummary && (
-          <ReviewBottom disabled={false} onSubmit={onSubmit} onCancel={cancelTransaction} />
+          <ReviewBottom
+            disabled={!!waitingHwWalletOperation}
+            onSubmit={onSubmit}
+            onCancel={cancelTransaction}
+          />
         )}
         {enablesRawTransaction && (
           <a href="#" className="send-raw" onClick={() => setRawTransactionOpen(true)}>

@@ -209,7 +209,7 @@ export default (store: Store) => {
       })
     }
     if (isHwWallet(cryptoProviderType)) {
-      setState({waitingForHwWallet: true})
+      setState({waitingHwWalletOperation: 'transaction'})
       loadingAction(state, `Waiting for ${getDeviceBrandName(cryptoProviderType)}...`)
     } else {
       setWalletOperationStatusType(state, 'txSubmitting')
@@ -225,7 +225,7 @@ export default (store: Store) => {
         .getAccount(sourceAccountIndex)
         .signTxAux(txAux)
       if (isHwWallet(cryptoProviderType)) {
-        setState({waitingForHwWallet: false})
+        setState({waitingHwWalletOperation: null})
         stopLoadingAction(state)
         setWalletOperationStatusType(state, 'txSubmitting')
       }
@@ -263,7 +263,7 @@ export default (store: Store) => {
       setWalletOperationStatusType(state, 'txFailed')
     } finally {
       setState({
-        waitingForHwWallet: false,
+        waitingHwWalletOperation: null,
         // TODO: refactor txSuccesTab!
         txSuccessTab: sendResponse && sendResponse.success ? getTxSuccessTabMapping(txTab) : '',
       })

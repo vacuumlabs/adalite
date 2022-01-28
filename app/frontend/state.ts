@@ -98,7 +98,7 @@ export interface State {
   shouldShowConfirmTransactionDialog?: boolean
   shouldShowTransactionErrorModal?: boolean
   shouldShowThanksForDonation?: boolean
-  waitingForHwWallet?: boolean
+  waitingHwWalletOperation?: 'transaction' | 'address_verification' | null
   keepConfirmationDialogOpen: boolean
 
   // router

@@ -9,8 +9,8 @@ type Props = {
 }
 
 const AddressVerification = ({address}: Props) => {
-  const {waitingForHwWallet, showVerification, verificationError} = useSelector((state) => ({
-    waitingForHwWallet: state.waitingForHwWallet,
+  const {waitingHwWalletOperation, showVerification, verificationError} = useSelector((state) => ({
+    waitingHwWalletOperation: state.waitingHwWalletOperation,
     showVerification: state.shouldShowAddressVerification,
     verificationError: state.addressVerificationError,
     cryptoProviderInfo: state.cryptoProviderInfo,
@@ -42,10 +42,10 @@ const AddressVerification = ({address}: Props) => {
         className="detail-verify"
         onClick={(e) => {
           e.preventDefault()
-          !waitingForHwWallet && verifyAddress(address)
+          !waitingHwWalletOperation && verifyAddress(address)
         }}
       >
-        {waitingForHwWallet
+        {waitingHwWalletOperation === 'address_verification'
           ? 'Verifying address..'
           : `Verify on ${getDeviceBrandName(cryptoProviderType)}`}
       </a>
