@@ -219,8 +219,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         throw new InternalError(InternalErrorReason.TransactionRejectedByNetwork, {
           message: response.Left,
         })
-      }
-      if (response.statusCode === 425) {
+      } else if (response.statusCode === 425) {
         // error 425 can be returned by blockfrost API (used by adalite-backend)
         // https://docs.blockfrost.io/#tag/Cardano-Transactions/paths/~1tx~1submit/post
         throw new InternalError(InternalErrorReason.TransactionRejectedMempoolFull, {
