@@ -214,9 +214,8 @@ export default (store: Store) => {
     } else {
       setWalletOperationStatusType(state, 'txSubmitting')
     }
-    let sendResponse
-    let txSubmitResult
     const txTab = txSummary.type
+    let sendResponse
     try {
       assert(txSummary.plan != null)
       const txAux = await getWallet()
@@ -230,12 +229,7 @@ export default (store: Store) => {
         stopLoadingAction(state)
         setWalletOperationStatusType(state, 'txSubmitting')
       }
-      txSubmitResult = await getWallet().submitTx(signedTx, txSummary.type)
-
-      if (!txSubmitResult) {
-        // TODO: this seems useless here
-        throw new InternalError(InternalErrorReason.TransactionRejectedByNetwork)
-      }
+      const txSubmitResult = await getWallet().submitTx(signedTx, txSummary.type)
 
       closeConfirmationDialog(state)
       resetTransactionSummary(state)

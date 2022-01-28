@@ -219,6 +219,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         throw new InternalError(InternalErrorReason.TransactionRejectedByNetwork, {
           message: response.Left,
         })
+      }
+      if (response.statusCode === 425) {
+        // error 425 can be returned by blockfrost API (used by adalite-backend)
+        // https://docs.blockfrost.io/#tag/Cardano-Transactions/paths/~1tx~1submit/post
+        throw new InternalError(InternalErrorReason.TransactionRejectedMempoolFull, {
+          message: response.Left,
+        })
       } else if (response.statusCode === 504) {
         // Usually happens when a gateway timeout is received from the adalite-backend
         // where a gateway-timeout is sent from the load balancer after the backend not
@@ -432,7 +439,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         return stakePool
       }
       const poolInfo = stakePool ? await getPoolInfo(stakePool.url) : null
-      return poolInfo && ('name' in poolInfo)
+      return poolInfo && 'name' in poolInfo
         ? poolInfo
         : ({name: UNKNOWN_POOL_NAME} as HostedPoolMetadata)
     }

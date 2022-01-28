@@ -19,6 +19,7 @@ export enum InternalErrorReason {
   RewardsBalanceTooLow = 'RewardsBalanceTooLow',
   InvalidMnemonic = 'InvalidMnemonic',
   TransactionRejectedByNetwork = 'TransactionRejectedByNetwork',
+  TransactionRejectedMempoolFull = 'TransactionRejectedMempoolFull',
   TransactionRejectedWhileSigning = 'TransactionRejectedWhileSigning',
   TransactionNotFoundInBlockchainAfterSubmission = 'TransactionNotFoundInBlockchainAfterSubmission',
   TransactionSubmissionTimedOut = 'TransactionSubmissionTimedOut',

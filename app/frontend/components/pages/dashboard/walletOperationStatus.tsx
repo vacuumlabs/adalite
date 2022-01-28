@@ -46,7 +46,7 @@ export const WalletOperationStatusType = () => {
     case 'txFailed':
       return (
         <div className="header-message" onClick={resetWalletOperationStatusType}>
-          <div className="loading-message black">Transaction failed!</div>
+          <div className="loading-message black">Transaction error</div>
           <div className="red-warning"> </div>
         </div>
       )

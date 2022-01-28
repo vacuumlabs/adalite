@@ -47,7 +47,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     }
   }
 
-  function submitTx(signedTx, txType: TxType): Promise<any> {
+  function submitTx(signedTx, txType: TxType) {
     const params = {
       walletType: getWalletName(cryptoProvider.getType()),
       walletVersion: cryptoProvider.getVersion(),

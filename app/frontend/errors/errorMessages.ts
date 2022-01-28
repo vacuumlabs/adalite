@@ -51,15 +51,16 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     'Invalid mnemonic, check your mnemonic for typos and try again.',
 
   [InternalErrorReason.TransactionRejectedByNetwork]: () =>
-    'TransactionRejectedByNetwork: Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
+    'Submitting the transaction into Cardano network failed. We received this error and we will investigate the cause.',
+  [InternalErrorReason.TransactionRejectedMempoolFull]: () =>
+    'Transaction rejected because the mempool is full. The blockchain is likely congested. Please, try again later.',
   [InternalErrorReason.TransactionRejectedWhileSigning]: ({message}) =>
     `Transaction rejected while signing. ${message || hwWalletTroubleshootingSuggestion}`,
   [InternalErrorReason.TransactionNotFoundInBlockchainAfterSubmission]: ({txHash}) =>
-    `TransactionNotFoundInBlockchainAfterSubmission:
-    Transaction ${txHash ||
-      ''} not found in blockchain after being submitted. The transaction may or may not have succeeded, check again later please.`,
+    `Transaction ${txHash ||
+      ''} not found in blockchain after being submitted. It may take up to an hour for the transaction to appear, if it was successful.`,
   [InternalErrorReason.TransactionSubmissionTimedOut]: () =>
-    'Transaction submission timed out, the blockchain is likely congested. It may take up to an hour for the transaction to appear on the blockchain, if it was successful.',
+    'Transaction submission timed out, the blockchain is likely congested. It may take up to an hour for the transaction to appear, if it was successful.',
   [InternalErrorReason.TxSerializationError]: ({message}) => `TxSerializationError: ${message}`,
 
   [InternalErrorReason.TrezorSignTxError]: ({message}) => `TrezorSignTxError: ${message}`,
