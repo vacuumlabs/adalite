@@ -71,7 +71,8 @@
     "universal-analytics": "^0.5.3",
     "webpack": "^5.62.1",
     "webpack-dev-middleware": "^5.2.1",
-    "webpack-hot-middleware": "^2.25.1"
+    "webpack-hot-middleware": "^2.25.1",
+    "ws": "^8.4.2"
   },
   "devDependencies": {
     "@types/node": "^16.11.6",
@@ -93,7 +94,7 @@
     "mini-css-extract-plugin": "^1.5.0",
     "prettier": "^1.19.1",
     "prettier-eslint-cli": "^5.0.1",
-    "release-it": "^13.6.2",
+    "release-it": "^14.12.4",
     "sass": "^1.32.11",
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
@@ -103,15 +104,10 @@
     "webpack-cli": "^4.9.1"
   },
   "resolutions": {
-    "ssri": ">=8.0.1",
-    "redis": ">=3.1.2",
-    "hosted-git-info": ">=3.0.8",
-    "lodash": ">=4.17.21",
-    "ws": ">=7.4.6",
-    "glob-parent": ">=5.1.2",
-    "set-value": ">=4.0.1",
-    "acorn": ">=5.7.4",
-    "ansi-regex": "<6.0.0",
-    "postcss": ">=8.2.13"
+    "redisscan/redis": "^3.1.2",
+    "eslint/**/glob-parent": "^5.1.2",
+    "eslint/**/ansi-regex": "^5",
+    "prettier-eslint-cli/**/ansi-regex": "^5",
+    "isomorphic-fetch/**/node-fetch": "^2.6.7"
   }
 }

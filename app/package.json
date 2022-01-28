@@ -36,7 +36,7 @@
     "pbkdf2": "^3.1.2",
     "preact": "^10.5.11",
     "react-device-detect": "^1.17.0",
-    "trezor-connect": "^8.2.4"
+    "trezor-connect": "^8.2.6"
   },
   "devDependencies": {
     "@testing-library/cypress": "^7.0.4",
@@ -47,8 +47,7 @@
     "sinon": "^7.3.2"
   },
   "resolutions": {
-    "lodash": ">=4.17.21",
-    "ansi-regex": "<6.0.0",
-    "cypress/**/json-schema": ">=0.4.0"
+    "trezor-connect/**/node-fetch": "^2.6.7",
+    "cypress/**/json-schema": "^0.4.0"
   }
 }
