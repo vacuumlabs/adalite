@@ -1,5 +1,5 @@
 import actions from '../../../actions'
-import {errorHasHelp} from '../../../errors'
+import {getErrorHelpType} from '../../../errors'
 import {connect} from '../../../libs/unistore/preact'
 import {State} from '../../../state'
 import {getErrorMessage} from '../../../errors/errorMessages'
@@ -24,14 +24,14 @@ const ErrorModals = ({
             transactionSubmissionError.code,
             transactionSubmissionError.params
           )}
-          showHelp={errorHasHelp(transactionSubmissionError.code)}
+          helpType={getErrorHelpType(transactionSubmissionError.code)}
         />
       )}
       {shouldShowWalletLoadingErrorModal && (
         <WalletLoadingErrorModal
           onRequestClose={closeWalletLoadingErrorModal}
           errorMessage={getErrorMessage(walletLoadingError.code, walletLoadingError.params)}
-          showHelp={errorHasHelp(walletLoadingError.code)}
+          helpType={getErrorHelpType(walletLoadingError.code)}
         />
       )}
     </Fragment>

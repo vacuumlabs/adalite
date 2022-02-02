@@ -1,18 +1,19 @@
+import {ErrorHelpType} from 'app/frontend/types'
 import ErrorModal from '../../common/errorModal'
 
 interface Props {
   onRequestClose: () => void
   errorMessage: string
-  showHelp?: boolean
+  helpType?: ErrorHelpType | null
 }
 
-const WalletLoadingErrorModal = ({onRequestClose, errorMessage, showHelp}: Props) =>
+const WalletLoadingErrorModal = ({onRequestClose, errorMessage, helpType}: Props) =>
   ErrorModal({
     onRequestClose,
     errorMessage,
     title: 'Error loading wallet',
     buttonTitle: 'OK',
-    showHelp,
+    helpType,
   })
 
 export default WalletLoadingErrorModal

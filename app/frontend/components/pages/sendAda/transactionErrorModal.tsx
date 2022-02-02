@@ -1,12 +1,12 @@
 import ErrorModal from '../../common/errorModal'
 
-const TransactionErrorModal = ({onRequestClose, errorMessage, showHelp}) =>
+const TransactionErrorModal = ({onRequestClose, errorMessage, helpType}) =>
   ErrorModal({
     onRequestClose,
     errorMessage,
     title: 'Transaction error',
     buttonTitle: 'OK',
-    showHelp,
+    helpType,
   })
 
 export default TransactionErrorModal
