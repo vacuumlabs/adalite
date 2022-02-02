@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {h, Fragment} from 'preact'
 import {useActions, useSelector} from '../../../helpers/connect'
 import actions from '../../../actions'
 import assertUnreachable from '../../../helpers/assertUnreachable'
@@ -24,7 +24,21 @@ export const WalletOperationStatusType = () => {
   }))
   switch (walletOperationStatusType) {
     case 'txPending':
-      return <PinkSpinner message={'Transaction pending...'} />
+      return (
+        <Fragment>
+          <PinkSpinner message={'Transaction pending...'} />
+          <p className="loading-helper-text">
+            Taking too long? Read why{' '}
+            <a
+              href="https://github.com/vacuumlabs/adalite/wiki/Troubleshooting#my-transaction-has-been-pending-for-a-long-time--what-should-i-do"
+              target="_blank"
+            >
+              here
+            </a>
+            .
+          </p>
+        </Fragment>
+      )
     case 'reloading':
       return <PinkSpinner message={'Reloading wallet...'} />
     case 'txSuccess':

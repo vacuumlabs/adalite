@@ -3935,6 +3935,11 @@ input:checked + .slider:before {
   margin-right: 12px;
 }
 
+.loading-helper-text {
+  font-size: 10px;
+  color: var(--color-grey-medium)
+}
+
 .spinner {
   display: block;
   height: 40px;
