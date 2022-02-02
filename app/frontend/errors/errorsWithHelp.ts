@@ -1,4 +1,6 @@
-const errorsWithHelp = new Set([
+import {ErrorHelpType} from '../types'
+
+const troubleshootAndContactErrors = new Set([
   'LedgerOperationError',
   'TxSerializationError',
   'CryptoProviderError',
@@ -13,8 +15,19 @@ const errorsWithHelp = new Set([
   'Error',
 ])
 
-function errorHasHelp(code) {
-  return errorsWithHelp.has(code)
+const troubleshootErrors = new Set([
+  'TransactionRejectedByNetwork',
+  'TransactionNotFoundInBlockchainAfterSubmission',
+])
+
+function getErrorHelpType(code): ErrorHelpType | null {
+  if (troubleshootAndContactErrors.has(code)) {
+    return 'troubleshoot_and_contact'
+  } else if (troubleshootErrors.has(code)) {
+    return 'troubleshoot'
+  }
+
+  return null
 }
 
-export {errorHasHelp}
+export {getErrorHelpType}

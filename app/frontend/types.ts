@@ -427,3 +427,5 @@ export type ConversionRates = {
   }
   timestamp: number
 }
+
+export type ErrorHelpType = 'troubleshoot' | 'troubleshoot_and_contact'

@@ -32,6 +32,10 @@
     margin: 16px 0px -42px;
   }
 
+  .helper-text-wrapper {
+    margin-bottom: -38px;
+  }
+
   /* BANNER */
 
   .banner {
