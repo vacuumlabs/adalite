@@ -81,7 +81,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                         message but submitting successfully after some time. Please read this
                         article{' '}
                         <a
-                          href="https://support.nu.fi/support/solutions/articles/80000956989-cardano-wallet-migration"
+                          href="https://github.com/vacuumlabs/adalite/wiki/Troubleshooting#my-transaction-has-been-pending-for-a-long-time--what-should-i-do"
                           target="_blank"
                           rel="noopener"
                         >
