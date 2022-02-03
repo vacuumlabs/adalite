@@ -59,6 +59,42 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'02/03/2022'}
+              children={
+                <Fragment>
+                  <Article
+                    title="Warning: The Cardano blockchain is heavily congested. This means that:"
+                    icon=""
+                  >
+                    <ul>
+                      <li>
+                        Some transactions are taking a long time to submit and you may see
+                        'Transaction pending' for longer than expected.
+                      </li>
+                      <li>
+                        You may need to wait for up to 1 hour before you see confirmation of a
+                        successful transaction in your wallet's transaction history or on a
+                        blockchain explorer.
+                      </li>
+                      <li>
+                        Some transactions are failing outright, while others are displaying an error
+                        message but submitting successfully after some time. Please read this
+                        article{' '}
+                        <a
+                          href="https://support.nu.fi/support/solutions/articles/80000956989-cardano-wallet-migration"
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          here
+                        </a>{' '}
+                        for advice on what to do if a transaction fails.
+                      </li>
+                    </ul>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'12/15/2021'}
               children={
                 <Article
