@@ -1331,6 +1331,17 @@ button[data-balloon] {
   align-items: center;
 }
 
+.helper-text-wrapper {
+  position: relative;
+  margin-top: -5px;
+}
+
+.header-message-helper-text {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+}
+
 .page-inner {
   width: 100%;
   padding-top: 72px;
@@ -3937,7 +3948,8 @@ input:checked + .slider:before {
 
 .loading-helper-text {
   font-size: 10px;
-  color: var(--color-grey-medium)
+  color: var(--color-grey-medium);
+  line-height: 1;
 }
 
 .spinner {

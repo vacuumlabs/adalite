@@ -30,6 +30,10 @@
     margin: 4px 0px 4px;
   }
 
+  .helper-text-wrapper {
+    margin-bottom: 9px;
+  }
+
   /* BANNER */
 
   .banner {
