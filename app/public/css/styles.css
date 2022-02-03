@@ -3947,8 +3947,8 @@ input:checked + .slider:before {
 }
 
 .loading-helper-text {
-  font-size: 10px;
-  color: var(--color-grey-medium);
+  font-size: 11px;
+  color: var(--color-medium);
   line-height: 1;
 }
 
