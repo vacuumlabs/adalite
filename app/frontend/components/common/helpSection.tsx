@@ -2,7 +2,7 @@ import {h} from 'preact'
 import {captureException} from '@sentry/browser'
 import actions from '../../actions'
 import {connect} from '../../helpers/connect'
-import {ErrorHelpType} from 'app/frontend/types'
+import {ErrorHelpType} from '../../types'
 
 interface Props {
   closeHandler: () => void

@@ -1,4 +1,4 @@
-import {ErrorHelpType} from 'app/frontend/types'
+import {ErrorHelpType} from '../../../types'
 import ErrorModal from '../../common/errorModal'
 
 interface Props {
