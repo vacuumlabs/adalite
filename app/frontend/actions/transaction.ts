@@ -243,7 +243,7 @@ export default (store: Store) => {
         setState({shouldShowThanksForDonation: true})
       }
 
-      sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 180)
+      sendResponse = await waitForTxToAppearOnBlockchain(state, txSubmitResult.txHash, 5000, 360)
     } catch (e) {
       setError(state, {
         errorName: 'transactionSubmissionError',

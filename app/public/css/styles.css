@@ -3948,7 +3948,7 @@ input:checked + .slider:before {
 
 .loading-helper-text {
   font-size: 11px;
-  color: var(--color-medium);
+  color: var(--color-grey);
   line-height: 1;
 }
 

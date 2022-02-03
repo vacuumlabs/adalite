@@ -15,7 +15,10 @@ const troubleshootAndContactErrors = new Set([
   'Error',
 ])
 
-const troubleshootErrors = new Set(['TransactionRejectedByNetwork'])
+const troubleshootErrors = new Set([
+  'TransactionRejectedByNetwork',
+  'TransactionNotFoundInBlockchainAfterSubmission',
+])
 
 function getErrorHelpType(code): ErrorHelpType | null {
   if (troubleshootAndContactErrors.has(code)) {
