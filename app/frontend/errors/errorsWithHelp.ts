@@ -19,7 +19,6 @@ const troubleshootErrors = new Set([
   'TransactionRejectedByNetwork',
   'TransactionNotFoundInBlockchainAfterSubmission',
   'TransactionSubmissionTimedOut',
-  'TransactionRejectedMempoolFull',
 ])
 
 function getErrorHelpType(code): ErrorHelpType | null {
