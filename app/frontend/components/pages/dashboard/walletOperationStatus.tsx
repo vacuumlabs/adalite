@@ -6,11 +6,11 @@ import actions from '../../../actions'
 import assertUnreachable from '../../../helpers/assertUnreachable'
 
 const DelayRendering = ({children}) => {
-  const [showHelperText, setShowHelperText] = useState(false)
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
     const timeId = setTimeout(() => {
-      setShowHelperText(true)
+      setShow(true)
     }, 10000)
 
     return () => {
@@ -18,7 +18,7 @@ const DelayRendering = ({children}) => {
     }
   }, [])
 
-  return <Fragment>{showHelperText && children}</Fragment>
+  return <Fragment>{show && children}</Fragment>
 }
 
 const PinkSpinner = ({message, helperText}: {message: string; helperText?: JSX.Element}) => {
