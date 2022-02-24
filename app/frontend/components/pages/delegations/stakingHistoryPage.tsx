@@ -1,4 +1,5 @@
 import {h, Component} from 'preact'
+import {unescape} from 'lodash'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {LinkIconToPool} from './common'
@@ -25,12 +26,12 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
         <EpochDateTime epoch={stakeDelegation.epoch} dateTime={stakeDelegation.dateTime} />
       </div>
       <div>
-        New pool: <span className="bold">{stakeDelegation.newStakePool.name}</span>
+        New pool: <span className="bold">{unescape(stakeDelegation.newStakePool.name)}</span>
         <LinkIconToPool poolHash={stakeDelegation.newStakePool.id} />
       </div>
       {stakeDelegation.oldStakePool ? (
         <div>
-          Previous pool: {stakeDelegation.oldStakePool.name}
+          Previous pool: {unescape(stakeDelegation.oldStakePool.name)}
           <LinkIconToPool poolHash={stakeDelegation.oldStakePool.id} />
         </div>
       ) : (
@@ -67,7 +68,8 @@ const StakingRewardItem = ({stakingReward}: {stakingReward: StakingReward}) => {
           </div>
           <div>
             <div className="grey">
-              {stakingReward.rewardType === RewardType.REGULAR && stakingReward.stakePool.name}
+              {stakingReward.rewardType === RewardType.REGULAR &&
+                unescape(stakingReward.stakePool.name)}
               {stakingReward.stakePool.id && (
                 <LinkIconToPool poolHash={stakingReward.stakePool.id} />
               )}

@@ -1,5 +1,6 @@
 import {h, Fragment} from 'preact'
 import {useState} from 'preact/hooks'
+import {unescape} from 'lodash'
 import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
@@ -146,7 +147,7 @@ const DelegateReview = ({
         <div className="review-label">Pool ID</div>
         <div className="review-amount">{stakePool.poolHash}</div>
         <div className="review-label">Pool Name</div>
-        <div className="review-amount">{stakePool.name}</div>
+        <div className="review-amount">{unescape(stakePool.name)}</div>
         <div className="review-label">Ticker</div>
         <div className="review-amount">{stakePool.ticker}</div>
         <div className="review-label">Tax</div>

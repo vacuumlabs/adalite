@@ -1,4 +1,5 @@
 import {Fragment, h} from 'preact'
+import {unescape} from 'lodash'
 import {connect} from '../../../libs/unistore/preact'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
@@ -41,7 +42,7 @@ const CurrentDelegationPage = ({
         <div>
           <div className="current-delegation-wrapper">
             <div className="current-delegation-name">
-              {pool.name || 'Pool'}
+              {unescape(pool.name) || 'Pool'}
               <LinkIconToPool poolHash={pool.poolHash} />
             </div>
             <div className="current-delegation-id">{pool.poolHash}</div>

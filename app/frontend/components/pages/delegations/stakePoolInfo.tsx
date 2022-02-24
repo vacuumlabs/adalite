@@ -1,4 +1,5 @@
 import printAda from '../../../helpers/printAda'
+import {unescape} from 'lodash'
 import {getErrorMessage} from '../../../errors'
 import {Stakepool, Lovelace} from '../../../types'
 import {h} from 'preact'
@@ -48,7 +49,7 @@ export const StakePoolInfo = ({
         <div>
           <div>
             {'Name: '}
-            {print(pool?.name)}
+            {print(unescape(pool?.name))}
           </div>
           <div className="delegation stake-pool-id">
             {'Stake Pool ID: '}
