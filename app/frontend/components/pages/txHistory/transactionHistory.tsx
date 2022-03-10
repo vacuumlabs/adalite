@@ -1,4 +1,5 @@
 import {h, Fragment} from 'preact'
+import {Base64} from 'js-base64'
 import {encodeAssetFingerprint} from '../../../wallet/shelley/helpers/addresses'
 import printAda from '../../../helpers/printAda'
 import toLocalDate from '../../../helpers/toLocalDate'
@@ -280,7 +281,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
   const filename = 'transactions.csv'
   const filetype = 'text/plain'
 
-  const dataURI = `data:${filetype};base64,${btoa(fileContents)}`
+  const dataURI = `data:${filetype};base64,${Base64.encode(fileContents)}`
 
   return (
     <a href={dataURI} download={filename} className="download-transactions-text">
