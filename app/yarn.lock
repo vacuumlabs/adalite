@@ -45,14 +45,15 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v4.0.0-multisig-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v4.0.0-rc5.tgz":
-  version "4.0.0-rc5"
-  resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v4.0.0-multisig-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v4.0.0-rc5.tgz#326e6f03b1f182714af9af80ae021b110a38542d"
+"@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v5.0.0-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v5.0.0-rc5.tgz":
+  version "5.0.0-rc5"
+  resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v5.0.0-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v5.0.0-rc5.tgz#374553408dc4258e21eb91ebc76214d1c34fa352"
   dependencies:
     "@ledgerhq/hw-transport" "^5.12.0"
     "@types/ledgerhq__hw-transport" "^4.21.3"
     base-x "^3.0.5"
     bech32 "^1.1.4"
+    blake2 "^4.0.2"
     int64-buffer "^1.0.1"
 
 "@cypress/request@^2.88.7":
@@ -608,6 +609,13 @@ bitbox02-api@^0.13.0:
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.13.0.tgz#06566f943e960199b935abb4dc948cf6f84e53e1"
   integrity sha512-Ht5Liv7xsTAfrvo7CG4v0mR33KWLcui//kvEy62q/JBSWxJFsdBjP13YJagFJCesCwwqPSQNkNAyqQodpetMGg==
+
+blake2@^4.0.2:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/blake2/-/blake2-4.1.1.tgz#0c23524776ebbf76b3ffecb6fa73422a33f20526"
+  integrity sha512-HUmkY0MUDUVgejJVNrpNKAva8C4IWD/Rd862sdexoSibu86b6iu0gO0/RjovO2lM5+w6JqjIEmkuAgGhfHlnJw==
+  dependencies:
+    nan "^2.15.0"
 
 blob-util@^2.0.2:
   version "2.0.2"
@@ -1735,6 +1743,11 @@ ms@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
+
+nan@^2.15.0:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.15.0.tgz#3f34a473ff18e15c1b5626b62903b5ad6e665fee"
+  integrity sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==
 
 nan@^2.4.0:
   version "2.14.2"
