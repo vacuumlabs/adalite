@@ -1,4 +1,4 @@
-import {h} from 'preact'
+import {Fragment, h} from 'preact'
 import {useSelector} from '../../../helpers/connect'
 import {State} from '../../../state'
 import {AuthMethodType} from '../../../types'
@@ -10,33 +10,33 @@ const InitialContent = () => (
   <div className="sidebar-content">
     <div className="sidebar-item spacy">
       <Alert alertType="nufi-announcement sidebar">
-        <p>
-          <strong>Ready for AdaLite 2.0?</strong>
-          <br />
-          <strong>Meet NuFi: </strong>
-          non-custodial ADA staking, CNFT gallery and in-app Cardano DEX from the team behind
-          AdaLite.{' '}
-          <a
-            className="sidebar-link"
-            href={`${window.location.origin}/nufi`}
-            rel="noopener"
-            target="blank"
-          >
-            Learn more
-          </a>
-          <br />
-          Video tutorial:{' '}
-          <a
-            className="sidebar-link"
-            href="https://www.youtube.com/watch?v=HQ_cVXZEbXM"
-            rel="noopener"
-            target="blank"
-          >
-            View
-          </a>
-          <br />
-          Note: Adalite 1.0 will operate as normal.
-        </p>
+        <Fragment>
+          <p className="mb-6">
+            <strong>Migrate from AdaLite to NuFi</strong>
+            <br />
+            in under 30 seconds and enjoy:
+            <br />
+          </p>
+          <ul className="list-reset list-style-check">
+            <li>Multichain asset management</li>
+            <li>Non-custodial staking</li>
+            <li>Integrated Cardano DEX &#38; NFT gallery</li>
+            <li>In-app cross-chain crypto trading</li>
+          </ul>
+          <div className="center-text my-6">
+            <a
+              className="sidebar-link"
+              href={`${window.location.origin}/nufi`}
+              rel="noopener"
+              target="blank"
+            >
+              Learn more
+            </a>
+          </div>
+          <p>
+            <i>Adalite will continue to operate as normal</i>
+          </p>
+        </Fragment>
       </Alert>
     </div>
     <div className="sidebar-item spacy">

@@ -126,6 +126,14 @@ p.hey {
   margin-left: 8px;
 }
 
+.my-6 {
+  margin: 6px 0px;
+}
+
+.mb-6 {
+  margin-bottom: 6px;
+}
+
 .space-between {
   display: flex;
   justify-content: space-between;
@@ -940,6 +948,12 @@ button[data-balloon] {
 
 .alert.nufi-announcement:before {
   background-image: url('../assets/alert_icon_nufi.svg');
+}
+
+.alert.nufi-announcement > .alert-content {
+  max-width: fit-content;
+  max-height: 300px;
+  padding-right: 5px;
 }
 
 .alert.news {
@@ -4808,4 +4822,17 @@ label.button.primary.disabled {
 .nufi-responsive-iframe{
   height: 100%;
   width: 100%;
+}
+
+/* LISTS */
+.list-reset {
+  margin:0;
+  padding:0;
+  list-style: none;
+}
+
+.list-style-check > li::before {
+  content: '\2713';
+  font-weight: 700;
+  margin-right: 6px;
 }
