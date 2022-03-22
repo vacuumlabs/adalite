@@ -73,13 +73,9 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return 'Right' in result ? result.Right : undefined
   }
 
-  // this time-based caching doesn't have a way to explicitly invalidate it
-  // which is susceptible to sync issues right after a tx goes through.
-  // Currently it seems unlikely that a tx would go through in less
-  // than 15 seconds or that the user refreshes the wallet <15 seconds before
-  // the tx going through, but still, it can happen and we should come up with
-  // a way to properly invalidate it [ADLT-1033]
-  const _getAddressInfos = cacheResults(15000)(_fetchBulkAddressInfo)
+  const {fn: _getAddressInfos, invalidate: invalidateGetAddressInfosCache} = cacheResults(15000)(
+    _fetchBulkAddressInfo
+  )
 
   async function getTxHistory(addresses: Array<string>): Promise<TxSummaryEntry[]> {
     const chunks = range(0, Math.ceil(addresses.length / gapLimit))
@@ -523,6 +519,10 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return request(`${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/v2/bestSlot`)
   }
 
+  function invalidateCache() {
+    invalidateGetAddressInfosCache()
+  }
+
   return {
     getTxHistory,
     fetchUnspentTxOutputs,
@@ -538,6 +538,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     getStakingInfo,
     getBestSlot,
     getStakepoolDataProvider,
+    invalidateCache,
   }
 }
 

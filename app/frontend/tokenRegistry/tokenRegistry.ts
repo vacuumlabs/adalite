@@ -18,7 +18,7 @@ export class TokenRegistry {
     this.url = url
     this.fetchTokensMetadata = enableCaching
       ? // 1 hour, not really needed to refresh the cache during a single app session
-      cacheResults(60 * 60 * 1000)(this._fetchTokensMetadata)
+      cacheResults(60 * 60 * 1000)(this._fetchTokensMetadata).fn
       : this._fetchTokensMetadata
   }
 
