@@ -27,8 +27,8 @@ jobs:
     <<: *defaults
     steps:
       - setup
-      - run: yarn audit
-      - run: cd app && yarn audit && cd ../
+      - run: yarn improved-yarn-audit
+      - run: cd app && yarn improved-yarn-audit && cd ../
   
   lint:
     <<: *defaults

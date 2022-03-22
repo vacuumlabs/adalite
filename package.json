@@ -90,6 +90,7 @@
     "eslint-plugin-react-hooks": "^2.3.0",
     "file-loader": "^6.2.0",
     "husky": "^3.0.0",
+    "improved-yarn-audit": "^3.0.0",
     "lint-staged": "^9.2.0",
     "mini-css-extract-plugin": "^1.5.0",
     "prettier": "^1.19.1",

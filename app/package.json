@@ -45,6 +45,7 @@
     "cypress": "^9.0.0",
     "fetch-mock": "^6.5.1",
     "fetch-readablestream": "^0.2.0",
+    "improved-yarn-audit": "^3.0.0",
     "sinon": "^7.3.2"
   },
   "resolutions": {

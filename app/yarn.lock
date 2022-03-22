@@ -1368,6 +1368,11 @@ ieee754@^1.1.4:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
   integrity sha512-GguP+DRY+pJ3soyIiGPTvdiVXjZ+DbXOxGpXn3eMvNW4x4irjqXm4wHKscC+TfxSJ0yw/S1F24tqdMNsMZTiLA==
 
+improved-yarn-audit@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/improved-yarn-audit/-/improved-yarn-audit-3.0.0.tgz#dfb09cea1a3a92c790ea2b4056431f6fb1b99bfa"
+  integrity sha512-b7CrBYYwMidtPciCBkW62C7vqGjAV10bxcAWHeJvGrltrcMSEnG5I9CQgi14nmAlUKUQiSvpz47Lo3d7Z3Vjcg==
+
 indent-string@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/indent-string/-/indent-string-4.0.0.tgz#624f8f4497d619b2d9768531d58f4122854d7251"
