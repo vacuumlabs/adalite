@@ -82,8 +82,8 @@ const AccountsDashboard = () => {
           <p>
             <b>
               This feature is not supported on other wallets yet. If you decide to move your funds
-              to an account other than the first account, you will not see these funds in other wallets
-              such as Yoroi or Daedalus.
+              to an account other than the first account, you will not see these funds in other
+              wallets such as Yoroi or Daedalus.
             </b>
           </p>
         </Alert>
