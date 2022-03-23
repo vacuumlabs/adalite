@@ -24,6 +24,13 @@ export default (store: Store) => {
   const reloadWalletInfo = async (state: State): Promise<void> => {
     setWalletOperationStatusType(state, 'reloading')
     const wallet = getWallet()
+
+    // submitting transaction and not clearing cache can cause stale values
+    // user would see old balance and history, but UTXOs for planning would be up to date
+    // we are interested only in caching for the sake of not fetching
+    // multiple requestests within context of related requests
+    wallet.invalidateCache()
+
     const previousWalletReloadTime = _lastWalletReloadTime
     try {
       updateLastReloadTime()

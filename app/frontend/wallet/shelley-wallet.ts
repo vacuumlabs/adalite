@@ -116,6 +116,10 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     return poolInfo
   }
 
+  function invalidateCache() {
+    blockchainExplorer.invalidateCache()
+  }
+
   return {
     submitTx,
     getWalletSecretDef,
@@ -129,6 +133,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     exploreNextAccount: accountManager.exploreNextAccount,
     getMaxAccountIndex,
     getPoolInfo,
+    invalidateCache,
   }
 }
 

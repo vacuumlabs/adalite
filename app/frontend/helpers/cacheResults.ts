@@ -1,18 +1,32 @@
 import getHash from './getHash'
 
-const cacheResults = (maxAge: number, cache_obj: Object = {}) => <T extends Function>(fn: T): T => {
+type Cache<T> = {
+  fn: T
+  invalidate: () => void
+}
+
+const cacheResults = (maxAge: number) => <T extends Function>(fn: T): Cache<T> => {
+  let cacheObj = {}
+
   const wrapped = (...args) => {
     const hash = getHash(JSON.stringify(args))
-    if (!cache_obj[hash] || cache_obj[hash].timestamp + maxAge < Date.now()) {
-      cache_obj[hash] = {
+    if (!cacheObj[hash] || cacheObj[hash].timestamp + maxAge < Date.now()) {
+      cacheObj[hash] = {
         timestamp: Date.now(),
         data: fn(...args),
       }
     }
-    return cache_obj[hash].data
+    return cacheObj[hash].data
   }
 
-  return (wrapped as any) as T
+  const invalidate = () => {
+    cacheObj = {}
+  }
+
+  return {
+    fn: (wrapped as any) as T,
+    invalidate,
+  }
 }
 
 export default cacheResults
