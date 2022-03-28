@@ -37,6 +37,7 @@ import VotingCard from '../voting/votingCard'
 import VotingDialog from '../voting/votingDialog'
 import {WalletOperationStatusType} from './walletOperationStatus'
 import NufiBanner from './nufiBanner'
+import {isEqual} from 'lodash'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -243,22 +244,33 @@ const DashboardPage = () => {
     shouldShowSendTransactionModal,
     shouldShowDelegationModal,
     shouldShowVotingDialog,
-  } = useSelector((state) => ({
-    activeMainTab: state.activeMainTab,
-    displayInfoModal: state.displayInfoModal,
-    isShelleyCompatible: state.isShelleyCompatible,
-    shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
-    shouldShowPremiumBanner: shouldShowPremiumBannerSelector(state),
-    shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
-    activeAccountIndex: state.activeAccountIndex,
-    shouldShowExportOption: shouldShowExportOptionSelector(state),
-    shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
-    shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
-    shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
-    shouldShowDelegationModal: state.shouldShowDelegationModal,
-    shouldShowVotingDialog: state.shouldShowVotingDialog,
-    walletOperationStatusType: state.walletOperationStatusType,
-  }))
+  } = useSelector(
+    (state) => ({
+      activeMainTab: state.activeMainTab,
+      displayInfoModal: state.displayInfoModal,
+      isShelleyCompatible: state.isShelleyCompatible,
+      shouldShowNonShelleyCompatibleDialog: state.shouldShowNonShelleyCompatibleDialog,
+      shouldShowPremiumBanner: shouldShowPremiumBannerSelector(state),
+      shouldShowSaturatedBanner: state.shouldShowSaturatedBanner,
+      activeAccountIndex: state.activeAccountIndex,
+      shouldShowExportOption: shouldShowExportOptionSelector(state),
+      shouldShowWantedAddressesModal: state.shouldShowWantedAddressesModal,
+      shouldShowConfirmTransactionDialog: state.shouldShowConfirmTransactionDialog,
+      shouldShowSendTransactionModal: state.shouldShowSendTransactionModal,
+      shouldShowDelegationModal: state.shouldShowDelegationModal,
+      shouldShowVotingDialog: state.shouldShowVotingDialog,
+      walletOperationStatusType: state.walletOperationStatusType,
+    }),
+    // Using deep comparison between old and new selected state
+    // to prevent unnecessary rerenders, causing laggy UI (delayed typing in send form etc.)
+    // as this component is high in the components tree structure
+    // and causes re-rendeders for all children.
+    // By default useSelector uses strict === reference comparison
+    // some of the state actions probably updates the state, causing change of data reference
+    // useSelector is inspired by redux (see ./libs/preact-hooks-unistore.js), therefore:
+    // https://react-redux.js.org/api/hooks#equality-comparisons-and-updates
+    isEqual
+  )
 
   const screenType = useViewport()
 

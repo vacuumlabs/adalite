@@ -48,7 +48,10 @@ const connect: Connect = _connect
 
 const useStore: any = _useStore
 
-type UseSelector = <T>(selector: (state: State) => T) => T
+type UseSelector = <T>(
+  selector: (state: State) => T,
+  isEqual?: (a: Object, b: Object) => boolean
+) => T
 const useSelector: UseSelector = _useSelector
 
 type UseActions = <T>(actions: (store: any) => T) => BindActions<T>
