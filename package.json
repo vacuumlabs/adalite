@@ -61,7 +61,7 @@
     "glob": "^7.2.0",
     "isomorphic-fetch": "^3.0.0",
     "mocha-headless-chrome": "^2.0.3",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "normalize-url": "^4.0.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
