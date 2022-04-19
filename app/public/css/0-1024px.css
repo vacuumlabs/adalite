@@ -27,4 +27,13 @@
     max-height: 480px;
     margin: 0 auto;
   }
+
+  .banner.login-nufi {
+    margin: 10px 0;
+  }
+
+  .sidebar.login {
+    margin: 0;
+    padding: 56px 32px 56px 56px;
+  }
 }

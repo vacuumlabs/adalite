@@ -1388,6 +1388,12 @@ button[data-balloon] {
   justify-content: center;
 }
 
+.banner.login-nufi {
+  display: block;
+  padding: 0;
+  margin-bottom: 25px;
+}
+
 .banner.error {
   background-color: var(--color-error);
 }
@@ -2489,6 +2495,9 @@ li.main-tab input + label.selected:after {
 
 .sidebar-item.spacy {
   margin-bottom: 64px;
+}
+.sidebar.login {
+  padding-top: 0px;
 }
 
 /* STAKING BALANCES */

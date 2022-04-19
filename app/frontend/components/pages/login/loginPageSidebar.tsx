@@ -226,7 +226,7 @@ const SidebarContentByAuthMethod = ({authMethod}: {authMethod: AuthMethodType | 
 const LoginPageSidebar = () => {
   const {authMethod} = useSelector((state: State) => ({authMethod: state.authMethod}))
   return (
-    <aside className="sidebar">
+    <aside className="sidebar login">
       <SidebarContentByAuthMethod authMethod={authMethod} />
     </aside>
   )

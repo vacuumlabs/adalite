@@ -152,6 +152,14 @@ const SubCardByAuthMethod = ({authMethod}: {authMethod: AuthMethodType}) => {
   }
 }
 
+const NuFiBanner = () => (
+  <div className="card banner login-nufi">
+    <a href={`${window.location.origin}/nufi`} rel="noopener" target="blank">
+      <img src="assets/nufiLoginBanner.gif" alt="NuFi - Crypto Wallet" style={{width: '100%'}} />
+    </a>
+  </div>
+)
+
 const AuthCard = ({
   authMethod,
   screenType,
@@ -240,6 +248,7 @@ const LoginPage = () => {
       {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
       <div className="page-inner">
         <main className="page-main">
+          <NuFiBanner />
           {authMethod === null ? (
             <AuthCardInitial />
           ) : (
