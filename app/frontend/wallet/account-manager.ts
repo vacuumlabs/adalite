@@ -2,6 +2,9 @@ import {Account} from './account'
 import {CryptoProvider, CryptoProviderFeature} from '../types'
 import blockchainExplorer from './blockchain-explorer'
 import {UnexpectedError, UnexpectedErrorReason} from '../errors'
+import assertUnreachable from '../helpers/assertUnreachable'
+import {makeBulkAccountIndexIterator} from './helpers/accountDiscovery'
+import * as _ from 'lodash'
 
 type AccountManagerParams = {
   config: any
@@ -22,12 +25,12 @@ const AccountManager = ({
     return accounts[accountIndex]
   }
 
-  function discoverNextAccount() {
+  function discoverAccount(accountIndex: number) {
     return Account({
       config,
       cryptoProvider,
       blockchainExplorer,
-      accountIndex: accounts.length,
+      accountIndex,
     })
   }
 
@@ -46,29 +49,66 @@ const AccountManager = ({
   }
 
   async function discoverAccounts() {
+    if (
+      maxAccountIndex === accounts.length - 1 || accounts.length > 0
+        ? !(await accounts[accounts.length - 1].isAccountUsed())
+        : false
+    ) {
+      return accounts
+    }
+
     const isBulkExportSupported = cryptoProvider.isFeatureSupported(
       CryptoProviderFeature.BULK_EXPORT
     )
     const shouldExplore =
       config.shouldExportPubKeyBulk && config.isShelleyCompatible && isBulkExportSupported
-    async function _discoverNextAccount(accountIndex: number) {
-      const newAccount = accounts[accountIndex] || discoverNextAccount()
-      const isAccountUsed = await newAccount.isAccountUsed()
-      if (accountIndex === accounts.length) await addNextAccount(newAccount)
 
-      return (
-        shouldExplore &&
-        isAccountUsed &&
-        accountIndex < maxAccountIndex &&
-        (await _discoverNextAccount(accountIndex + 1))
-      )
+    if (!shouldExplore) {
+      await exploreNextAccount()
+      return accounts
     }
-    await _discoverNextAccount(Math.max(0, accounts.length - 1))
-    return accounts
+
+    for (const [accountIndexStart, accountIndexEnd] of makeBulkAccountIndexIterator()) {
+      const _accountIndexStart = Math.max(accountIndexStart, accounts.length)
+      const _accountIndexEnd = Math.min(accountIndexEnd, maxAccountIndex)
+
+      if (_accountIndexStart > _accountIndexEnd) {
+        continue
+      }
+
+      const newAccountBatch = _.range(_accountIndexStart, _accountIndexEnd + 1).map(
+        (accountIndex) => accounts[accountIndex] || discoverAccount(accountIndex)
+      )
+
+      // Needs to be sequential because HW wallets can't process parallel calls
+      // xpubs keys are used in the next step when deciding if accounts are used
+      for (const account of newAccountBatch) {
+        await account.ensureXpubIsExported()
+      }
+
+      const areAccountsUsed = await Promise.all(
+        newAccountBatch.map((newAccount) => newAccount.isAccountUsed())
+      )
+
+      const firstUnusedIndex = areAccountsUsed.findIndex((isUsed) => isUsed === false)
+      const shouldContinueExploring = firstUnusedIndex === -1
+
+      const accountsToAdd = newAccountBatch.slice(
+        0,
+        shouldContinueExploring ? areAccountsUsed.length : firstUnusedIndex + 1
+      )
+      accountsToAdd.forEach((account) => accounts.push(account))
+
+      if (!(shouldExplore && shouldContinueExploring && _accountIndexEnd < maxAccountIndex)) {
+        return accounts
+      }
+    }
+
+    return assertUnreachable(null as never)
   }
 
   async function exploreNextAccount() {
-    const nextAccount = discoverNextAccount()
+    const nextAccount = discoverAccount(accounts.length)
     await addNextAccount(nextAccount)
     return nextAccount
   }

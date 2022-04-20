@@ -4,6 +4,7 @@ import {derivePublic as deriveChildXpub} from 'cardano-crypto.js'
 import {isShelleyPath} from '../../wallet/shelley/helpers/addresses'
 import {BIP32Path} from '../../types'
 import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
+import {makeBulkAccountIndexIterator} from './accountDiscovery'
 
 const BYRON_V2_PATH = [HARDENED_THRESHOLD + 44, HARDENED_THRESHOLD + 1815, HARDENED_THRESHOLD]
 
@@ -52,14 +53,6 @@ function CachedDeriveXpubFactory(
     const lastIndex = derivationPath.slice(-1)[0]
     const parentXpub = await deriveXpub(derivationPath.slice(0, -1))
     return deriveChildXpub(parentXpub, lastIndex, derivationScheme.ed25519Mode)
-  }
-
-  function* makeBulkAccountIndexIterator() {
-    yield [0, 4]
-    yield [5, 16]
-    for (let i = 17; true; i += 18) {
-      yield [i, i + 17]
-    }
   }
 
   function getAccountIndexExportInterval(accountIndex: number): [number, number] {
