@@ -330,19 +330,32 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
   }
 
   async function getAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
-    const promiseBatch1 = (async () => {
-      const [balance, shelleyAccountInfo] = await Promise.all([
-        getBalance(),
-        getStakingInfo(validStakepoolDataProvider),
-      ])
-      const poolRecommendation = await getPoolRecommendation(
-        shelleyAccountInfo.delegation,
-        balance.baseAddressBalance
-      )
-      return [balance, shelleyAccountInfo, poolRecommendation]
-    })()
-
-    const promiseBatch2 = Promise.all([
+    const [
+      [
+        {baseAddressBalance, nonStakingBalance, balance, tokenBalance},
+        shelleyAccountInfo,
+        poolRecommendation,
+      ],
+      utxos,
+      stakingHistory,
+      visibleAddresses,
+      transactionHistory,
+      isUsed,
+      accountXpubs,
+      stakingXpub,
+      stakingAddress,
+    ] = await Promise.all([
+      (async () => {
+        const [balance, shelleyAccountInfo] = await Promise.all([
+          getBalance(),
+          getStakingInfo(validStakepoolDataProvider),
+        ])
+        const poolRecommendation = await getPoolRecommendation(
+          shelleyAccountInfo.delegation,
+          balance.baseAddressBalance
+        )
+        return [balance, shelleyAccountInfo, poolRecommendation]
+      })(),
       getUtxos(),
       getStakingHistory(validStakepoolDataProvider),
       getVisibleAddresses(),
@@ -352,24 +365,6 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       getStakingXpub(cryptoProvider, accountIndex),
       myAddresses.getStakingAddress(),
     ])
-
-    const [
-      [
-        {baseAddressBalance, nonStakingBalance, balance, tokenBalance},
-        shelleyAccountInfo,
-        poolRecommendation,
-      ],
-      [
-        utxos,
-        stakingHistory,
-        visibleAddresses,
-        transactionHistory,
-        isUsed,
-        accountXpubs,
-        stakingXpub,
-        stakingAddress,
-      ],
-    ] = await Promise.all([promiseBatch1, promiseBatch2])
 
     return {
       accountXpubs,

@@ -2,7 +2,6 @@ import {Account} from './account'
 import {CryptoProvider, CryptoProviderFeature} from '../types'
 import blockchainExplorer from './blockchain-explorer'
 import {UnexpectedError, UnexpectedErrorReason} from '../errors'
-import assertUnreachable from '../helpers/assertUnreachable'
 import {makeBulkAccountIndexIterator} from './helpers/accountDiscovery'
 import * as _ from 'lodash'
 
@@ -19,7 +18,7 @@ const AccountManager = ({
   blockchainExplorer,
   maxAccountIndex,
 }: AccountManagerParams) => {
-  const accounts: Array<ReturnType<typeof Account>> = []
+  let accounts: Array<ReturnType<typeof Account>> = []
 
   function getAccount(accountIndex: number) {
     return accounts[accountIndex]
@@ -50,9 +49,8 @@ const AccountManager = ({
 
   async function discoverAccounts() {
     if (
-      maxAccountIndex === accounts.length - 1 || accounts.length > 0
-        ? !(await accounts[accounts.length - 1].isAccountUsed())
-        : false
+      maxAccountIndex === accounts.length - 1 ||
+      (accounts.length > 0 && !(await accounts[accounts.length - 1].isAccountUsed()))
     ) {
       return accounts
     }
@@ -60,10 +58,14 @@ const AccountManager = ({
     const isBulkExportSupported = cryptoProvider.isFeatureSupported(
       CryptoProviderFeature.BULK_EXPORT
     )
-    const shouldExplore =
-      config.shouldExportPubKeyBulk && config.isShelleyCompatible && isBulkExportSupported
 
-    if (!shouldExplore) {
+    const shouldExploreOnlyOne = !(
+      config.shouldExportPubKeyBulk &&
+      config.isShelleyCompatible &&
+      isBulkExportSupported
+    )
+
+    if (shouldExploreOnlyOne) {
       await exploreNextAccount()
       return accounts
     }
@@ -86,25 +88,24 @@ const AccountManager = ({
         await account.ensureXpubIsExported()
       }
 
-      const areAccountsUsed = await Promise.all(
-        newAccountBatch.map((newAccount) => newAccount.isAccountUsed())
-      )
+      const firstUnusedNewAccountIndex = (
+        await Promise.all(newAccountBatch.map((newAccount) => newAccount.isAccountUsed()))
+      ).findIndex((isUsed) => isUsed === false)
 
-      const firstUnusedIndex = areAccountsUsed.findIndex((isUsed) => isUsed === false)
-      const shouldContinueExploring = firstUnusedIndex === -1
+      const foundUnusedAccount = firstUnusedNewAccountIndex !== -1
 
       const accountsToAdd = newAccountBatch.slice(
         0,
-        shouldContinueExploring ? areAccountsUsed.length : firstUnusedIndex + 1
+        !foundUnusedAccount ? newAccountBatch.length : firstUnusedNewAccountIndex + 1
       )
-      accountsToAdd.forEach((account) => accounts.push(account))
 
-      if (!(shouldExplore && shouldContinueExploring && _accountIndexEnd < maxAccountIndex)) {
-        return accounts
+      accounts = [...accounts, ...accountsToAdd]
+      if (foundUnusedAccount || _accountIndexEnd >= maxAccountIndex) {
+        break
       }
     }
 
-    return assertUnreachable(null as never)
+    return accounts
   }
 
   async function exploreNextAccount() {
