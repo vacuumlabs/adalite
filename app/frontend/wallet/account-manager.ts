@@ -68,7 +68,7 @@ const AccountManager = ({
     )
 
     if (
-      maxAccountIndex === accounts.length - 1 ||
+      accounts.length - 1 >= maxAccountIndex ||
       (accounts.length > 0 &&
         (shouldExploreOnlyOne || !(await accounts[accounts.length - 1].isAccountUsed())))
     ) {
@@ -106,7 +106,7 @@ const AccountManager = ({
 
       const accountsToAdd = newAccountBatch.slice(
         0,
-        !foundUnusedAccount ? newAccountBatch.length : firstUnusedNewAccountIndex + 1
+        foundUnusedAccount ? firstUnusedNewAccountIndex + 1 : newAccountBatch.length
       )
 
       accounts = [...accounts, ...accountsToAdd]
