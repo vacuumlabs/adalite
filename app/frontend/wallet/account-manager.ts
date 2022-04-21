@@ -3,6 +3,7 @@ import {CryptoProvider, CryptoProviderFeature} from '../types'
 import blockchainExplorer from './blockchain-explorer'
 import {UnexpectedError, UnexpectedErrorReason} from '../errors'
 import {makeBulkAccountIndexIterator} from './helpers/accountDiscovery'
+import {isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
 import * as _ from 'lodash'
 
 type AccountManagerParams = {
@@ -18,7 +19,8 @@ const AccountManager = ({
   blockchainExplorer,
   maxAccountIndex,
 }: AccountManagerParams) => {
-  let accounts: Array<ReturnType<typeof Account>> = []
+  type Account = ReturnType<typeof Account>
+  let accounts: Array<Account> = []
 
   function getAccount(accountIndex: number) {
     return accounts[accountIndex]
@@ -33,7 +35,7 @@ const AccountManager = ({
     })
   }
 
-  async function addNextAccount(account) {
+  async function addNextAccount(account: Account) {
     await account.ensureXpubIsExported() // To ensure user exported pubkey
     const isLastAccountUsed =
       accounts.length > 0 ? await accounts[accounts.length - 1].isAccountUsed() : true
@@ -44,17 +46,17 @@ const AccountManager = ({
     ) {
       throw new UnexpectedError(UnexpectedErrorReason.AccountExplorationError)
     }
-    accounts.push(account)
+
+    // HW wallets can't handle paralell requests.
+    // Filling the cache allows us to call operations related to addresses in a parallel way later.
+    if (isHwWallet(cryptoProvider.getType())) {
+      await account.ensureAddressesAreDiscovered()
+    }
+
+    accounts = [...accounts, account]
   }
 
   async function discoverAccounts() {
-    if (
-      maxAccountIndex === accounts.length - 1 ||
-      (accounts.length > 0 && !(await accounts[accounts.length - 1].isAccountUsed()))
-    ) {
-      return accounts
-    }
-
     const isBulkExportSupported = cryptoProvider.isFeatureSupported(
       CryptoProviderFeature.BULK_EXPORT
     )
@@ -64,6 +66,14 @@ const AccountManager = ({
       config.isShelleyCompatible &&
       isBulkExportSupported
     )
+
+    if (
+      maxAccountIndex === accounts.length - 1 ||
+      (accounts.length > 0 &&
+        (shouldExploreOnlyOne || !(await accounts[accounts.length - 1].isAccountUsed())))
+    ) {
+      return accounts
+    }
 
     if (shouldExploreOnlyOne) {
       await exploreNextAccount()

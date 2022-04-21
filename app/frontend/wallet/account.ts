@@ -411,6 +411,10 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return blockchainExplorer.getTxHistory([...base, ...legacy, account])
   }
 
+  async function ensureAddressesAreDiscovered(): Promise<void> {
+    await myAddresses.discoverAllAddresses()
+  }
+
   async function getStakingHistory(
     validStakepoolDataProvider: StakepoolDataProvider
   ): Promise<StakingHistoryObject[]> {
@@ -515,6 +519,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     getMaxNonStakingAmount,
     getTxPlan,
     getTxHistory,
+    ensureAddressesAreDiscovered,
     getVisibleAddresses,
     prepareTxAux,
     verifyAddress,
