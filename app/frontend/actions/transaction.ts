@@ -24,6 +24,7 @@ import {InternalError, InternalErrorReason} from '../errors'
 import {TxSummary} from '../wallet/backend-types'
 import * as assert from 'assert'
 import {getDeviceBrandName, isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
+import {getChangeAddress} from '../wallet/account'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -273,9 +274,7 @@ export default (store: Store) => {
 
   const convertNonStakingUtxos = async (state: State): Promise<void> => {
     loadingAction(state, 'Preparing transaction...')
-    const address = await getWallet()
-      .getAccount(state.sourceAccountIndex)
-      .getChangeAddress()
+    const address = getChangeAddress(getSourceAccountInfo(state))
     const sendAmount = await getWallet()
       .getAccount(state.sourceAccountIndex)
       // TODO: we should pass something more sensible
@@ -285,7 +284,7 @@ export default (store: Store) => {
         coins: 0 as Lovelace,
       })
     const coins = sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
-    const txPlanResult = await prepareTxPlan({
+    const txPlanResult = prepareTxPlan({
       address,
       sendAmount,
       txType: TxType.CONVERT_LEGACY,
@@ -329,7 +328,7 @@ export default (store: Store) => {
     // TODO: rewards should be of type Lovelace
     const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
-    const txPlanResult = await prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
+    const txPlanResult = prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
     // TODO: balance should be of type Lovelace
     const balance = getSourceAccountInfo(state).balance as Lovelace
 

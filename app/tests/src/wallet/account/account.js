@@ -87,7 +87,11 @@ describe('Tx plan', () => {
   Object.entries(transactionSettings).forEach(([name, setting]) =>
     it(`should create the right tx plan for tx with ${name}`, async () => {
       const account = await accounts.ShelleyAccount0
-      const txPlanResult = await account.getTxPlan({...setting.args}, setting.utxos)
+      const txPlanResult = await account.getTxPlan(
+        accountSettings.ShelleyAccount0.externalAddresses[0],
+        {...setting.args},
+        setting.utxos
+      )
       assert.deepEqual(txPlanResult, setting.txPlanResult)
     })
   )

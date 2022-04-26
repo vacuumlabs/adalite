@@ -60,7 +60,7 @@ export default (store: Store) => {
       .getAccount(state.sourceAccountIndex)
       .calculateTtl()
     const sourceAccount = getSourceAccountInfo(state)
-    const txPlanResult = await prepareTxPlan({
+    const txPlanResult = prepareTxPlan({
       txType: TxType.REGISTER_VOTING,
       votingPubKey,
       stakePubKey,

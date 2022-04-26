@@ -14,6 +14,7 @@ import {
   Address,
   PoolOwnerTxPlanArgs,
   AssetFamily,
+  AccountInfo,
 } from '../types'
 import {
   getAccountXpub as getAccoutXpubShelley,
@@ -316,8 +317,11 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
    *
    * TODO: refactor as suggested in https://github.com/vacuumlabs/adalite/issues/1181
    */
-  const getTxPlan = async (txPlanArgs: TxPlanArgs, utxos: UTxO[]): Promise<TxPlanResult> => {
-    const changeAddress = await getChangeAddress()
+  const getTxPlan = (
+    changeAddress: Address,
+    txPlanArgs: TxPlanArgs,
+    utxos: UTxO[]
+  ): TxPlanResult => {
     const arrangedUtxos = arrangeUtxos(utxos, txPlanArgs)
     return selectMinimalTxPlan(arrangedUtxos, changeAddress, txPlanArgs)
   }
@@ -428,18 +432,6 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     }
   }
 
-  async function getChangeAddress(): Promise<Address> {
-    /*
-     * We use visible addresses as change addresses to mainintain
-     * AdaLite original functionality which did not consider change addresses.
-     * This is an intermediate step between legacy mode and full Yoroi compatibility.
-     */
-    const candidates = await getVisibleAddresses()
-
-    const choice = candidates[0]
-    return choice.address
-  }
-
   async function getUtxos(): Promise<Array<UTxO>> {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
     return await blockchainExplorer.fetchUnspentTxOutputs([...legacy, ...base])
@@ -489,7 +481,6 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     signTxAux,
     witnessPoolRegTxAux,
     getBalance,
-    getChangeAddress,
     getMaxSendableAmount,
     getMaxNonStakingAmount,
     getTxPlan,
@@ -511,3 +502,6 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
 }
 
 export {Account}
+
+export const getChangeAddress = (accountInfo: AccountInfo): Address =>
+  accountInfo.visibleAddresses[0].address

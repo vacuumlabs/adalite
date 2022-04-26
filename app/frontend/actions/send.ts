@@ -71,7 +71,7 @@ export default (store: Store) => {
   => components could call it directly to obtain the fee for parts of the screen where
   they need it, no need for storing it in global state (also it leads to "race-conditions")
   */
-  const calculateFee = async (): Promise<void> => {
+  const calculateFee = (): void => {
     const state = getState()
     if (!isSendFormFilledAndValid(state)) {
       setState({
@@ -83,7 +83,7 @@ export default (store: Store) => {
     const sendAmount = {...state.sendAmount}
     // TODO: sendAddress should have a validated field of type Address
     const address = state.sendAddress.fieldValue as Address
-    const txPlanResult = await prepareTxPlan({
+    const txPlanResult = prepareTxPlan({
       address,
       sendAmount,
       txType: TxType.SEND_ADA,

@@ -63,13 +63,13 @@ export default (store: Store) => {
   REFACTOR: (calculateFee)
   Same issues as with "calculateFee" applies.
   */
-  const calculateDelegationFee = async (): Promise<void> => {
+  const calculateDelegationFee = (): void => {
     const state = getState()
     setPoolInfo(state)
     const poolHash = state.shelleyDelegation?.selectedPool?.poolHash as string
     const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
-    const txPlanResult = await prepareTxPlan({
+    const txPlanResult = prepareTxPlan({
       poolHash,
       stakingAddress,
       isStakingKeyRegistered,
@@ -178,7 +178,7 @@ export default (store: Store) => {
     const balance = getSourceAccountInfo(state).balance as Lovelace
 
     loadingAction(state, 'Preparing transaction...')
-    const txPlanResult = await prepareTxPlan({
+    const txPlanResult = prepareTxPlan({
       txType: TxType.DEREGISTER_STAKE_KEY,
       rewards,
       stakingAddress: sourceAccount.stakingAddress,

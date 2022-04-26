@@ -13,6 +13,7 @@ import {
 } from '../types'
 import {TxPlan, TxPlanResult} from '../wallet/shelley/transaction'
 import {InternalErrorReason} from '../errors'
+import {getChangeAddress} from '../wallet/account'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -36,12 +37,16 @@ export default (store: Store) => {
     })
   }
 
-  const prepareTxPlan = async (args: TxPlanArgs): Promise<TxPlanResult> => {
+  const prepareTxPlan = (args: TxPlanArgs): TxPlanResult => {
     const state = getState()
     try {
-      return await getWallet()
+      return getWallet()
         .getAccount(state.sourceAccountIndex)
-        .getTxPlan(args, getSourceAccountInfo(state).utxos)
+        .getTxPlan(
+          getChangeAddress(getSourceAccountInfo(state)),
+          args,
+          getSourceAccountInfo(state).utxos
+        )
     } catch (e) {
       // TODO: refactor setErrorState to check all errors if there unexpected
       if (

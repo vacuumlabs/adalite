@@ -111,7 +111,7 @@ describe('Send ADA fee calculation', () => {
   Object.entries(sendAdaTxSettings).forEach(([name, setting]) =>
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
-      await action.calculateFee()
+      action.calculateFee()
       assert.deepEqual(state.transactionSummary.fee, setting.transactionSummary.fee)
     })
   )
@@ -121,7 +121,7 @@ describe('Delegation fee calculation', () => {
   Object.entries(delegationSettings).forEach(([name, setting]) =>
     it(`should calculate fee for tx with ${name}`, async () => {
       await loadTestWallet(setting.state)
-      await action.calculateDelegationFee(setting.state)
+      action.calculateDelegationFee(setting.state)
       assert.deepEqual(
         state.cachedTransactionSummaries[TxType.DELEGATE].fee,
         setting.transactionSummary.fee

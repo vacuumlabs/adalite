@@ -180,7 +180,7 @@ export type AccountInfo = {
   }
   transactionHistory: Array<TxSummaryEntry>
   stakingHistory: Array<StakingHistoryObject>
-  visibleAddresses: Array<any>
+  visibleAddresses: Array<AddressWithMeta>
   poolRecommendation: PoolRecommendation
   isUsed: boolean
   accountIndex: number

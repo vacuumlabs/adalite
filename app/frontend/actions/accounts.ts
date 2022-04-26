@@ -7,6 +7,7 @@ import loadingActions from './loading'
 import commonActions from './common'
 import {AccountInfo, AssetFamily, Lovelace} from '../types'
 import * as assert from 'assert'
+import {getChangeAddress} from '../wallet/account'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -51,28 +52,24 @@ export default (store: Store) => {
     }
   }
 
-  const setTargetAccount = async (state: State, accountIndex: number) => {
+  const setTargetAccount = (state: State, accountIndex: number) => {
     setState({
       targetAccountIndex: accountIndex,
     })
-    const targetAddress = await getWallet()
-      .getAccount(accountIndex)
-      .getChangeAddress()
+    const targetAddress = getChangeAddress(state.accountsInfo[accountIndex])
     updateAddress(state, null, targetAddress)
   }
 
-  const setSourceAccount = async (state: State, accountIndex: number) => {
+  const setSourceAccount = (state: State, accountIndex: number) => {
     resetTransactionSummary(state)
     setState({
       sourceAccountIndex: accountIndex,
     })
-    const targetAddress = await getWallet()
-      .getAccount(getState().targetAccountIndex)
-      .getChangeAddress()
+    const targetAddress = getChangeAddress(state.accountsInfo[getState().targetAccountIndex])
     updateAddress(state, null, targetAddress)
   }
 
-  const showSendTransactionModal = async (
+  const showSendTransactionModal = (
     state: State,
     sourceAccountIndex: number,
     targetAccountIndex: number
@@ -86,9 +83,7 @@ export default (store: Store) => {
       sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace}, // TODO: use reset function
       transactionFee: 0,
     })
-    const targetAddress = await getWallet()
-      .getAccount(targetAccountIndex)
-      .getChangeAddress()
+    const targetAddress = getChangeAddress(state.accountsInfo[targetAccountIndex])
     updateAddress(getState(), null, targetAddress)
   }
 
@@ -105,7 +100,7 @@ export default (store: Store) => {
     })
   }
 
-  const switchSourceAndTargetAccounts = async (state: State) => {
+  const switchSourceAndTargetAccounts = (state: State) => {
     const targetAccountIndex = state.sourceAccountIndex
     const sourceAccountIndex = state.targetAccountIndex
     resetTransactionSummary(state)
@@ -113,9 +108,7 @@ export default (store: Store) => {
       sourceAccountIndex,
       targetAccountIndex,
     })
-    const targetAddress = await getWallet()
-      .getAccount(targetAccountIndex)
-      .getChangeAddress()
+    const targetAddress = getChangeAddress(state.accountsInfo[targetAccountIndex])
     updateAddress(state, null, targetAddress)
   }
 
