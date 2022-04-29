@@ -114,7 +114,7 @@ Check us out at https://www.adalite.io
 
 Donations are really appreciated!
 
-BTC: [bc1q4jjxwlxs68kxv0zgv7f2sf2eh2svxlghz57e0l](https://www.blockchain.com/btc/address/bc1q4jjxwlxs68kxv0zgv7f2sf2eh2svxlghz57e0l)
+BTC: [bc1qjdvjjhm5ynucwltmrxpnk6van4ve06528x6q99](https://www.blockchain.com/btc/address/bc1qjdvjjhm5ynucwltmrxpnk6van4ve06528x6q99)
 
 ETH: [0xe1575549f79742d21E56426a1F9AD26997F5B9fb](https://etherscan.io/address/0xe1575549f79742d21E56426a1F9AD26997F5B9fb)
 
