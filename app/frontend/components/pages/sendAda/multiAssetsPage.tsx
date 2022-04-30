@@ -9,6 +9,43 @@ import {useState} from 'preact/hooks'
 import styles from './multiAssetsPage.module.scss'
 import {DropdownCaret} from '../../common/svg'
 
+type ItemProps = {
+  title: string
+  displayElement: h.JSX.Element
+  copyValue?: string
+}
+
+const Item = ({title, displayElement, copyValue}: ItemProps) => {
+  const content = (
+    <div className="multi-asset-page-copy-on-click">
+      <span className={styles.hashLabel}>{title}:</span>
+      {displayElement}
+      {copyValue ? (
+        <div className="desktop">
+          <span className="copy-text margin-left" />
+        </div>
+      ) : (
+        ''
+      )}
+    </div>
+  )
+  return (
+    <div className="multi-asset-page-policy">
+      {copyValue ? (
+        <CopyOnClick
+          value={copyValue}
+          elementClass="copy"
+          tooltipMessage={`${title} copied to clipboard`}
+        >
+          {content}
+        </CopyOnClick>
+      ) : (
+        content
+      )}
+    </div>
+  )
+}
+
 const MultiAssetsPage = () => {
   const {tokenBalance} = useSelector((state: State) => getSourceAccountInfo(state))
 
@@ -34,12 +71,15 @@ const MultiAssetsPage = () => {
         {multiAssets.map((asset, i) => (
           <FormattedAssetItem key={asset.fingerprint} {...asset}>
             {({
-              formattedAssetIconName,
+              formattedHumanReadableLabelVariants,
+              formattedOnChainName,
+              formattedOffChainName,
               formattedAssetLink,
               formattedAmount,
               formattedPolicy,
               formattedFingerprint,
               formattedDescription,
+              formattedTicker,
               formattedUrl,
             }) => {
               const isExpanded = i === expandedAsset
@@ -54,8 +94,8 @@ const MultiAssetsPage = () => {
                     }
                   }}
                 >
-                  <div className={styles.name}>
-                    {formattedAssetIconName}
+                  <div className={`${styles.name} flex-nowrap shrinkable`}>
+                    {formattedHumanReadableLabelVariants.labelWithIcon}
                     {formattedAssetLink}
                   </div>
                   <div className={styles.right}>
@@ -71,36 +111,19 @@ const MultiAssetsPage = () => {
               )
               const details = (
                 <div className={`${styles.details} ${isExpanded ? styles.expanded : ''}`}>
-                  <div className="multi-asset-page-policy">
-                    <CopyOnClick
-                      value={asset?.policyId}
-                      elementClass="copy"
-                      tooltipMessage="Policy id copied to clipboard"
-                    >
-                      <div className="multi-asset-page-copy-on-click">
-                        <span className={styles.hashLabel}>Policy ID:</span>
-                        {formattedPolicy}
-                        <div className="desktop">
-                          <span className="copy-text margin-left" />
-                        </div>
-                      </div>
-                    </CopyOnClick>
-                  </div>
-                  <div className="multi-asset-page-policy">
-                    <CopyOnClick
-                      value={asset?.fingerprint}
-                      elementClass="copy"
-                      tooltipMessage="Fingerprint copied to clipboard"
-                    >
-                      <div className="multi-asset-page-copy-on-click">
-                        <span className={styles.hashLabel}>Fingerprint:</span>
-                        {formattedFingerprint}
-                        <div className="desktop">
-                          <span className="copy-text margin-left" />
-                        </div>
-                      </div>
-                    </CopyOnClick>
-                  </div>
+                  <Item title="Name" displayElement={formattedOffChainName!} />
+                  <Item title="Ticker" displayElement={formattedTicker!} />
+                  <Item
+                    title="Policy ID"
+                    displayElement={formattedPolicy!}
+                    copyValue={asset.policyId}
+                  />
+                  <Item title="Asset name" displayElement={formattedOnChainName!} />
+                  <Item
+                    title="Fingerprint"
+                    displayElement={formattedFingerprint!}
+                    copyValue={asset.fingerprint!}
+                  />
                   {formattedDescription && (
                     <Fragment>
                       <div className={styles.detailsLabel}>Details</div>

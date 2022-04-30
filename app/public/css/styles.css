@@ -180,6 +180,15 @@ p.hey {
   text-overflow: ellipsis;
 }
 
+.flex-nowrap {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.shrinkable {
+  min-width: 0;
+}
+
 /* SELECTABILITY */
 
 .one-click-select {
@@ -1494,10 +1503,6 @@ button[data-balloon] {
 
 .dashboard-column {
   flex: 1 1 50%;
-}
-
-.dashboard-column.shrinkable {
-  min-width: 0;
 }
 
 .dashboard-column:first-child {
@@ -3771,6 +3776,8 @@ input:checked + .slider:before {
 }
 
 .send-total-ada svg, .send-total-ada img {
+  position: relative;
+  top: -2px;
   margin-left: 6px;
   height: 18px !important;
   width: unset !important;
@@ -3815,6 +3822,17 @@ input:checked + .slider:before {
   color: var(--color-grey);
   font-size: 14px;
   line-height: 32px;
+}
+
+.review-value {
+  display: flex;
+  align-items: center;
+}
+
+.review-value svg, .review-value img {
+  position: relative;
+  top: -2px;
+  margin-left: 6px;
 }
 
 .review .ada-label {

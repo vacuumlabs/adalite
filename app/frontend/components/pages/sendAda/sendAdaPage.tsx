@@ -26,7 +26,7 @@ import {
   encodeAssetFingerprint,
 } from '../../../../frontend/wallet/shelley/helpers/addresses'
 import tooltip from '../../common/tooltip'
-import {FormattedAssetItem} from '../../common/asset'
+import {FormattedAssetItem, FormattedHumanReadableLabelType} from '../../common/asset'
 import {shouldDisableSendingButton} from '../../../helpers/common'
 import printTokenAmount from '../../../helpers/printTokenAmount'
 import {createTokenRegistrySubject} from '../../../../frontend/tokenRegistry/tokenRegistry'
@@ -60,7 +60,7 @@ type DropdownAssetItem = Token & {
 
 const displayDropdownAssetItem = (props: DropdownAssetItem) => (
   <FormattedAssetItem key={props.fingerprint} {...props}>
-    {({formattedAssetIconName, formattedAssetLink, formattedAmount}) => {
+    {({formattedHumanReadableLabelVariants, formattedAssetLink, formattedAmount}) => {
       return (
         <div
           className="multi-asset-item"
@@ -71,8 +71,8 @@ const displayDropdownAssetItem = (props: DropdownAssetItem) => (
           }
         >
           <div className="multi-asset-name-amount">
-            <div className="multi-asset-name">
-              {formattedAssetIconName}
+            <div className="multi-asset-name flex-nowrap shrinkable">
+              {formattedHumanReadableLabelVariants.labelWithIcon}
               {formattedAssetLink}
             </div>
             <div
@@ -255,17 +255,19 @@ const SendAdaPage = ({
   )
 
   const displayDropdownSelectedItem = (dropdownAssetItem: DropdownAssetItem) => {
-    const {policyId, type} = dropdownAssetItem
+    const {fingerprint, type} = dropdownAssetItem
     return (
-      <div className="wrapper">
+      <div className="wrapper flex-nowrap shrinkable">
         <FormattedAssetItem {...dropdownAssetItem}>
-          {({formattedAssetIconName}) => {
+          {({formattedHumanReadableLabelVariants}) => {
+            const {type: labelType, labelWithIcon} = formattedHumanReadableLabelVariants
+            const isLabelFingerprint = labelType === FormattedHumanReadableLabelType.FINGERPRINT
             return (
               <Fragment>
-                {formattedAssetIconName}
-                {type === AssetFamily.TOKEN && (
-                  <div className="hash">
-                    (<div className="ellipsis">{policyId}</div>)
+                {labelWithIcon}
+                {type === AssetFamily.TOKEN && !isLabelFingerprint && (
+                  <div className="hash flex-nowrap shrinkable">
+                    (<div className="ellipsis">{fingerprint}</div>)
                   </div>
                 )}
               </Fragment>
@@ -432,20 +434,22 @@ const SendAdaPage = ({
       </div>
       <div className="send-total">
         <div className="send-total-title">Total</div>
-        <div className="send-total-inner">
+        <div className="send-total-inner flex-nowrap shrinkable">
           {selectedAsset.type === AssetFamily.ADA ? (
             <div className="send-total-ada">
               {printAda(totalLovelace)}
               <AdaIcon />
             </div>
           ) : (
-            <div className="send-total-ada">
+            <div className="send-total-ada flex-nowrap shrinkable">
               {totalTokens?.quantity != null && tokenDecimals != null
                 ? printTokenAmount(totalTokens.quantity, tokenDecimals)
                 : 0}{' '}
               <FormattedAssetItem {...selectedAsset}>
-                {({formattedAssetIconName}) => {
-                  return <Fragment>{formattedAssetIconName}</Fragment>
+                {({formattedHumanReadableLabelVariants}) => {
+                  return (
+                    <Fragment>{formattedHumanReadableLabelVariants.labelShortWithIcon}</Fragment>
+                  )
                 }}
               </FormattedAssetItem>
             </div>

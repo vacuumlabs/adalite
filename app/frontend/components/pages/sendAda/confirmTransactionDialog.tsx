@@ -87,41 +87,43 @@ const SendAdaReview = ({
             </div>
           )}
         </div>
-        <div className="ada-label">Amount</div>
-        <div className="review-amount">{printAda(lovelaceAmount as Lovelace)}</div>
         {token && formattedAssetItemProps && (
           <FormattedAssetItem {...formattedAssetItemProps}>
-            {({formattedAssetIconName, formattedAmount, formattedFingerprint}) => {
+            {({
+              formattedHumanReadableLabelVariants,
+              formattedOnChainName,
+              formattedAmount,
+              formattedFingerprint,
+            }) => {
               return (
                 <Fragment>
-                  <div className="review-label">Token fingerprint</div>
-                  <div className="review-amount">{formattedFingerprint}</div>
-                  <div className="review-label">Token policy Id</div>
-                  <div className="review-amount">{token.policyId}</div>
-                  <div className="review-label">Token name</div>
-                  <div className="review-amount">{formattedAssetIconName}</div>
-                  <div className="review-label">Token amount</div>
-                  <div className="review-amount" data-cy="SendTokenAmount">
-                    {formattedAmount}
+                  <div className="review-label">Fingerprint</div>
+                  <div className="review-value">{formattedFingerprint}</div>
+                  <div className="review-label">Asset name</div>
+                  <div className="review-value">{formattedOnChainName}</div>
+                  <div className="review-label">Amount</div>
+                  <div className="review-value">
+                    <span data-cy="SendTokenAmount">{formattedAmount}</span>
+                    {formattedHumanReadableLabelVariants.labelWithIcon}
                   </div>
                   {isHwWallet(cryptoProviderType) && (
                     <Fragment>
                       <div className="review-label">
                         Token amount on {getDeviceBrandName(cryptoProviderType)}
                       </div>
-                      <div className="review-amount" data-cy="SendTokenAmount">
+                      <div className="review-value" data-cy="SendTokenAmount">
                         {token.quantity}
                       </div>
                     </Fragment>
                   )}
-                  {/* <div className="ada-label">Minimal Lovelace amount</div>
-                  <div className="review-amount">{printAda(minimalLovelaceAmount)}</div> */}
                 </Fragment>
               )
             }}
           </FormattedAssetItem>
         )}
-        <div className="ada-label">Fee</div>
+        <div className="ada-label">Amount</div>
+        <div className="review-value">{printAda(lovelaceAmount as Lovelace)}</div>
+        <div className="ada-label">Network fees</div>
         <div className="review-fee">{printAda(fee as Lovelace)}</div>
         {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Total</div>
@@ -144,17 +146,17 @@ const DelegateReview = ({
     <Fragment>
       <div className="review">
         <div className="review-label">Pool ID</div>
-        <div className="review-amount">{stakePool.poolHash}</div>
+        <div className="review-value">{stakePool.poolHash}</div>
         <div className="review-label">Pool Name</div>
-        <div className="review-amount">{stakePool.name}</div>
+        <div className="review-value">{stakePool.name}</div>
         <div className="review-label">Ticker</div>
-        <div className="review-amount">{stakePool.ticker}</div>
+        <div className="review-value">{stakePool.ticker}</div>
         <div className="review-label">Tax</div>
-        <div className="review-amount">{stakePool.margin && stakePool.margin * 100}%</div>
+        <div className="review-value">{stakePool.margin && stakePool.margin * 100}%</div>
         <div className="review-label">Fixed cost</div>
-        <div className="review-amount">{stakePool.fixedCost && printAda(stakePool.fixedCost)}</div>
+        <div className="review-value">{stakePool.fixedCost && printAda(stakePool.fixedCost)}</div>
         <div className="review-label">Homepage</div>
-        <div className="review-amount">{stakePool.homepage}</div>
+        <div className="review-value">{stakePool.homepage}</div>
         <div className="ada-label">Deposit</div>
         <div className="review-fee">
           {printAda(deposit)}
@@ -251,7 +253,7 @@ const WithdrawReview = ({
           </div>
         </div>
         <div className="ada-label">Rewards</div>
-        <div className="review-amount">{printAda(rewards)}</div>
+        <div className="review-value">{printAda(rewards)}</div>
         <div className="ada-label">Fee</div>
         <div className="review-fee">{printAda(fee)}</div>
         {/* TODO: Hide ADA symbol when handling tokens */}
@@ -278,11 +280,11 @@ const VotingRegistrationReview = ({
           {transactionSummary.plan.auxiliaryData.rewardDestinationAddress.address}
         </div>
         <div className="review-label">Voting key</div>
-        <div className="review-amount">
+        <div className="review-value">
           {encodeCatalystVotingKey(transactionSummary.plan.auxiliaryData.votingPubKey)}
         </div>
         <div className="review-label">Nonce</div>
-        <div className="review-amount">{`${transactionSummary.plan.auxiliaryData.nonce}`}</div>
+        <div className="review-value">{`${transactionSummary.plan.auxiliaryData.nonce}`}</div>
         <div className="ada-label">Fee</div>
         <div className="review-fee" data-cy="VotingFeeAmount">
           {printAda(fee)}
@@ -318,7 +320,7 @@ const ConvertFundsReview = ({
           </div>
         </div>
         <div className="ada-label">Amount</div>
-        <div className="review-amount">{printAda(coins)}</div>
+        <div className="review-value">{printAda(coins)}</div>
         <div className="ada-label">Fee</div>
         <div className="review-fee">{printAda(fee as Lovelace)}</div>
         {/* TODO: Hide ADA symbol when handling tokens */}

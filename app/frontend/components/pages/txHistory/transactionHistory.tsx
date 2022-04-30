@@ -15,7 +15,11 @@ import {
   AssetFamily,
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
-import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
+import {
+  FormattedAssetItem,
+  FormattedAssetItemProps,
+  FormattedHumanReadableLabelType,
+} from '../../common/asset'
 import styles from './transactionHistory.module.scss'
 import Alert from '../../common/alert'
 import * as moment from 'moment'
@@ -83,18 +87,17 @@ const MultiAsset = (props: FormattedAssetItemProps) => {
     <FormattedAssetItem {...props}>
       {({
         icon,
-        formattedAssetName,
+        formattedHumanReadableLabelVariants,
         formattedAmount,
         formattedAssetLink,
-        formattedPolicy,
         formattedFingerprint,
       }) => {
         const {quantity} = props
         return (
           <Fragment>
             <div className={`${styles.multiAssetRow} row`}>
-              <div className="multi-asset-name">
-                {formattedAssetName}
+              <div className="multi-asset-name shrinkable flex-nowrap">
+                {formattedHumanReadableLabelVariants.label}
                 {formattedAssetLink}
               </div>
               <div className={`${styles.amount} ${quantity > 0 ? 'credit' : 'debit'}`}>
@@ -104,8 +107,10 @@ const MultiAsset = (props: FormattedAssetItemProps) => {
                 {icon}
               </div>
             </div>
-            {formattedPolicy}
-            {formattedFingerprint}
+            {formattedHumanReadableLabelVariants.type ===
+            FormattedHumanReadableLabelType.FINGERPRINT
+              ? ''
+              : formattedFingerprint}
           </Fragment>
         )
       }}
