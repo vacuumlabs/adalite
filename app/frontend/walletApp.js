@@ -89,6 +89,9 @@ init({
     // FF 83.0 specific error to be ignored
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1678243
     'XDR encoding failure',
+    // Eternl wallet error, unrelated to Adalite
+    // https://github.com/ccwalletio/tracker/issues/119
+    'WebAssembly.instantiate(): expected magic word',
   ],
 })
 
