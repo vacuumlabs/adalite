@@ -85,7 +85,7 @@ const LoadByHardwareWalletSection = () => {
               alt="Ledger Nano S/X"
             />
           </div>
-          <div className="authentication-paragraph">Ledger Nano S/X</div>
+          <div className="authentication-paragraph">Ledger Nano S/S Plus/X</div>
           <div className="authentication-paragraph small">also with Android device</div>
           <div className="authentication-paragraph small">
             {LedgerAffiliateLink('Support us by buying one')}
