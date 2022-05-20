@@ -117,11 +117,15 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const inputTokenBundle: TokenBundle[] = []
 
     let effect = new BigNumber(0) //effect on wallet balance accumulated
+    const toAddresses: Address[] = []
+    const fromAddresses: Address[] = []
     for (const [address, amount] of tx.ctbInputs || []) {
       if (addresses.includes(address)) {
         effect = effect.minus(amount.getCoin)
         const parsedInputTokenBundle = amount.getTokens.map((token) => parseToken(token))
         inputTokenBundle.push(parsedInputTokenBundle)
+      } else {
+        fromAddresses.push(address as Address)
       }
     }
     for (const [address, amount] of tx.ctbOutputs || []) {
@@ -129,12 +133,16 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         effect = effect.plus(amount.getCoin)
         const parsedOutputTokenBundle = amount.getTokens.map((token) => parseToken(token))
         outputTokenBundle.push(parsedOutputTokenBundle)
+      } else {
+        toAddresses.push(address as Address)
       }
     }
     return {
       ...tx,
       fee: new BigNumber(tx.fee) as Lovelace,
       effect: effect as Lovelace,
+      toAddresses,
+      fromAddresses,
       tokenEffects: getTokenBundlesDifference(
         aggregateTokenBundles(outputTokenBundle),
         aggregateTokenBundles(inputTokenBundle)

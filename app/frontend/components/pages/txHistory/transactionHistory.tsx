@@ -13,6 +13,7 @@ import {
   TxSummaryEntry,
   Token,
   AssetFamily,
+  Address,
 } from '../../../types'
 import {AdaIcon} from '../../common/svg'
 import {
@@ -146,6 +147,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
     'Date',
     'Transaction ID',
     'Type',
+    'Received from (disclaimer: may not be accurate - first sender address only)',
     'Received amount',
     'Received currency',
     'Sent amount',
@@ -168,6 +170,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
     dateTime: moment.Moment
     fee?: Lovelace
     currency: string
+    receivedFrom?: Address
   } & (
     | {
         assetFamily: AssetFamily.ADA
@@ -202,6 +205,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
               ? {
                 type: TxSummaryType.RECEIVED,
                 received: tokenEffect.quantity,
+                receivedFrom: transaction.fromAddresses[0],
               }
               : {
                 type: TxSummaryType.SENT,
@@ -234,6 +238,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
             type: TxSummaryType.RECEIVED,
             assetFamily: AssetFamily.ADA,
             received: transaction.effect,
+            receivedFrom: transaction.fromAddresses[0],
             currency: 'ADA',
           },
           ...createTokenEntries(),
@@ -275,6 +280,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
       entry.dateTime.format('MM/DD/YYYY hh:mm A [UTC]'),
       entry.txHash,
       entry.type,
+      entry.received && entry.receivedFrom,
       entry.received && printAmount(entry.received),
       entry.received !== undefined ? entry.currency : undefined,
       entry.sent && printAmount(entry.sent),

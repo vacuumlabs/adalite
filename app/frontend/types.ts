@@ -106,6 +106,8 @@ export type TxSummaryEntry = Omit<CaTxEntry, 'fee'> & {
   fee: Lovelace
   effect: Lovelace
   tokenEffects: TokenBundle
+  toAddresses: Address[]
+  fromAddresses: Address[]
 }
 
 export type _XPubKey = {
