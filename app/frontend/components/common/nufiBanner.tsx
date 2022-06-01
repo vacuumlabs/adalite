@@ -8,7 +8,7 @@ const NufiBanner = () => {
       rel="noopener"
       target="blank"
     >
-      <img src="assets/nufi-banner-large.gif" alt="NuFi - Crypto Wallet" style={{width: '80%'}} />
+      <img src="assets/nufi-animated-banner-light.gif" alt="NuFi - Crypto Wallet" style={{width: '100%'}} />
     </a>
   )
 }

@@ -36,7 +36,7 @@ import DelegationModal from '../accounts/delegationModal'
 import VotingCard from '../voting/votingCard'
 import VotingDialog from '../voting/votingDialog'
 import {WalletOperationStatusType} from './walletOperationStatus'
-import NufiBanner from './nufiBanner'
+import NufiBanner from '../../common/nufiBanner'
 import {isEqual} from 'lodash'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {

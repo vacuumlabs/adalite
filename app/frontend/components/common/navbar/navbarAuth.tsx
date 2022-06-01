@@ -2,7 +2,7 @@ import {h} from 'preact'
 import {connect, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import {ADALITE_CONFIG} from '../../../config'
-import NufiBanner from '../../pages/dashboard/nufiBanner'
+import NufiBanner from '../nufiBanner'
 import {useEffect} from 'preact/hooks'
 const APP_VERSION = ADALITE_CONFIG.ADALITE_APP_VERSION
 
@@ -60,7 +60,11 @@ const NavbarAuth = ({isDemoWallet}: {isDemoWallet: boolean}) => {
         {isDemoWallet && <div className="navbar-demo">Accessing demo wallet</div>}
         <div className="navbar-version">{`Ver. ${APP_VERSION}`}</div>
         <div className="navbar-content">
-          {window.innerWidth > 1024 && <NufiBanner />}
+          {window.innerWidth > 1024 && (
+            <div style={{padding: '0 10px'}}>
+              <NufiBanner />
+            </div>
+          )}
           <a
             className="navbar-link primary"
             href="#"
