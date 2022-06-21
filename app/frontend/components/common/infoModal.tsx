@@ -59,6 +59,38 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'06/21/2022'}
+              children={
+                <Fragment>
+                  <Article
+                    title="New from NuFi: Chrome extension with dApp connector now available"
+                    icon=""
+                  >
+                    <ul>
+                      <li>
+                        Connect to Cardano dApps like NFT marketplaces, DEXes and more using a NuFi
+                        wallet
+                      </li>
+                      <li>
+                        Don't have a NuFi wallet? It takes less than 30 seconds to migrate from
+                        AdaLite
+                      </li>
+                      <li>
+                        Full details and instructions{' '}
+                        <a
+                          target="_blank"
+                          rel="noopener"
+                          href=" https://nufi-official.medium.com/connect-to-nft-marketplaces-dexes-and-other-dapps-with-nufi-wallets-new-chrome-extension-a559ffe4e5a3"
+                        >
+                          here
+                        </a>
+                      </li>
+                    </ul>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'02/03/2022'}
               children={
                 <Fragment>
