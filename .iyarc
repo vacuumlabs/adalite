@@ -1,0 +1,4 @@
+# parse-path vulnerability through release-it, can be removed as soon as
+# https://github.com/release-it/release-it/issues/917 is fixed
+GHSA-3j8f-xvm3-ffx4
+

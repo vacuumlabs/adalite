@@ -95,7 +95,7 @@
     "mini-css-extract-plugin": "^1.5.0",
     "prettier": "^1.19.1",
     "prettier-eslint-cli": "^5.0.1",
-    "release-it": "^14.12.4",
+    "release-it": "^15.1.1",
     "sass": "^1.32.11",
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
