@@ -89,8 +89,10 @@ describe('Sending tab', () => {
 
     cy.dataCy('SendAssetDropdown').click()
     cy.dataCy('SendAssetDropdownTokenItem')
+      .first()
       .as('TokenItem')
       .dataCy('SendAssetTokenQuantity')
+      .first()
       .invoke('text')
       .as('TokenQuantity')
 
