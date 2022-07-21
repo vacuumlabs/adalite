@@ -59,6 +59,23 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'07/21/2022'}
+              children={
+                <Fragment>
+                  <Article title="Are you Ledger Nano S user?" icon="">
+                    <p>
+                      Please take five minutes to complete{' '}
+                      <a target="_blank" rel="noopener" href="https://iohk.link/NuFi">
+                        this survey
+                      </a>{' '}
+                      to help us improve the user experience of the{' '}
+                      <strong>Cardano app on Ledger</strong>
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'07/14/2022'}
               children={
                 <Fragment>
@@ -80,7 +97,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                         <a
                           target="_blank"
                           rel="noopener"
-                          href=" https://nufi-official.medium.com/connect-to-nft-marketplaces-dexes-and-other-dapps-with-nufi-wallets-new-chrome-extension-a559ffe4e5a3"
+                          href="https://nufi-official.medium.com/connect-to-nft-marketplaces-dexes-and-other-dapps-with-nufi-wallets-new-chrome-extension-a559ffe4e5a3"
                         >
                           here
                         </a>
