@@ -26,6 +26,7 @@
     "@sentry/browser": "^6.15.0",
     "@types/lodash": "^4.14.168",
     "babel-polyfill": "6.26.0",
+    "bignumber.js": "^9.0.2",
     "bip39-light": "^1.0.7",
     "bitbox02-api": "^0.13.0",
     "borc": "^2.1.2",
