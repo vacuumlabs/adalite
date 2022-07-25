@@ -1,5 +1,4 @@
 import {Address, CertificateType, Lovelace, Token, TokenBundle} from '../../../types'
-import {encode, decode} from 'borc'
 import {parseUnsignedTx} from '../../../helpers/cliParser/txParser'
 import {
   TxCertificateKeys,
@@ -12,11 +11,13 @@ import {
 } from '../../../helpers/cliParser/types'
 import {TxCertificate, TxInput, TxOutput, TxWithdrawal} from '../../../../frontend/wallet/types'
 import {InternalError, InternalErrorReason} from '../../../errors'
-import {ensureIsSafeInt, parseStakepoolRegistrationCertificate} from './poolCertificateUtils'
+import {parseStakepoolRegistrationCertificate} from './poolCertificateUtils'
 import * as _ from 'lodash'
 import {TxPlan} from '../transaction/types'
 import {encodeAddress} from './addresses'
 import {CborizedCliWitness} from '../types'
+import BigNumber from 'bignumber.js'
+import {decodeCbor, encodeCbor} from '../../helpers/cbor'
 
 type CliTxBodyType = 'TxUnsignedShelley' | 'TxBodyAllegra' | 'TxBodyMary'
 type CliTxWitnessType = 'TxWitnessShelley' | 'TxWitness AllegraEra' | 'TxWitness MaryEra'
@@ -50,7 +51,7 @@ const parseCliTokens = (tokenBundle: _MultiAsset[]): Token[] =>
       token.assets.map((asset) => ({
         policyId: token.policyId.toString('hex'),
         assetName: asset.assetName.toString('hex'),
-        quantity: ensureIsSafeInt(asset.amount, 'Token amount'),
+        quantity: new BigNumber(asset.amount.toString()),
       }))
     )
     .flatten()
@@ -62,7 +63,7 @@ const parseCliInputs = (inputs: _Input[]): TxInput[] => {
     return {
       txHash: input.txHash.toString('hex'),
       outputIndex: input.outputIndex,
-      coins: 0 as Lovelace,
+      coins: new BigNumber(0) as Lovelace,
       tokenBundle: [] as TokenBundle,
       address: '' as Address,
     }
@@ -74,7 +75,7 @@ const parseCliOutputs = (outputs: _Output[]): TxOutput[] => {
     return {
       isChange: false,
       address: encodeAddress(output.address),
-      coins: ensureIsSafeInt(output.coins, 'Output coins') as Lovelace,
+      coins: new BigNumber(output.coins.toString()) as Lovelace,
       tokenBundle: parseCliTokens(output.tokenBundle),
     }
   })
@@ -104,15 +105,15 @@ const parseCliWithdrawals = (
   return [] // pool reg tx cant have withdrawals
 }
 
-const parseCliTtl = (ttl: BigInt | undefined): number | null =>
-  ttl !== undefined ? ensureIsSafeInt(ttl, 'Ttl') : null
+const parseCliTtl = (ttl: BigInt | undefined): BigNumber | null =>
+  ttl !== undefined ? new BigNumber(ttl.toString()) : null
 
-const parseCliFee = (fee: BigInt): number => ensureIsSafeInt(fee, 'Fee')
+const parseCliFee = (fee: BigInt): BigNumber => new BigNumber(fee.toString())
 
-const parseCliValidityIntervalStart = (validityIntervalStart: BigInt | undefined): number | null =>
-  validityIntervalStart !== undefined
-    ? ensureIsSafeInt(validityIntervalStart, 'Validity interval start')
-    : null
+const parseCliValidityIntervalStart = (
+  validityIntervalStart: BigInt | undefined
+): BigNumber | null =>
+  validityIntervalStart !== undefined ? new BigNumber(validityIntervalStart.toString()) : null
 
 const unsignedPoolTxToTxPlan = (unsignedTx: _UnsignedTxParsed, stakingAddress: Address): TxPlan => {
   return {
@@ -120,8 +121,8 @@ const unsignedPoolTxToTxPlan = (unsignedTx: _UnsignedTxParsed, stakingAddress: A
     outputs: parseCliOutputs(unsignedTx.outputs),
     change: [],
     certificates: parseCliCertificates(unsignedTx.certificates, stakingAddress),
-    deposit: 0 as Lovelace,
-    additionalLovelaceAmount: 0 as Lovelace,
+    deposit: new BigNumber(0) as Lovelace,
+    additionalLovelaceAmount: new BigNumber(0) as Lovelace,
     fee: parseCliFee(unsignedTx.fee) as Lovelace,
     baseFee: parseCliFee(unsignedTx.fee) as Lovelace,
     withdrawals: parseCliWithdrawals(unsignedTx.withdrawals, stakingAddress),
@@ -143,7 +144,7 @@ function parsePoolRegTxFile(fileContentStr: string) {
 }
 
 const parseCliUnsignedTx = (cborHex: string) => {
-  const unsignedTxDecoded = decode(cborHex)
+  const unsignedTxDecoded = decodeCbor(cborHex)
   const unsignedTxParsed = parseUnsignedTx(unsignedTxDecoded)
   const deserializedTxValidationError = validatePoolRegUnsignedTx(unsignedTxParsed)
   if (deserializedTxValidationError) {
@@ -161,7 +162,7 @@ const transformSignatureToCliFormat = (witness: CborizedCliWitness, txBodyType: 
   return {
     type,
     description: '',
-    cborHex: encode(witness).toString('hex'),
+    cborHex: encodeCbor(witness).toString('hex'),
   }
 }
 

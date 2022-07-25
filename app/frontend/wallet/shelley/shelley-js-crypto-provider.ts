@@ -8,7 +8,6 @@ import {
   getBootstrapAddressAttributes,
   blake2b,
 } from 'cardano-crypto.js'
-import {encode} from 'borc'
 
 import HdNode, {_HdNode} from '../helpers/hd-node'
 import {
@@ -46,6 +45,7 @@ import {
 import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import assertUnreachable from '../../helpers/assertUnreachable'
 import * as assert from 'assert'
+import {encodeCbor} from '../helpers/cbor'
 
 type CryptoProviderParams = {
   walletSecretDef: any
@@ -97,7 +97,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   async function signTx(txAux: TxAux, addressToPathMapper: AddressToPathMapper): Promise<TxSigned> {
     const structuredTx = await signTxGetStructured(txAux, addressToPathMapper)
     const tx = {
-      txBody: encode(structuredTx).toString('hex'),
+      txBody: encodeCbor(structuredTx).toString('hex'),
       txHash: structuredTx.getId(),
     }
     return tx
@@ -127,7 +127,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     const publicKey = xpub2pub(xpub)
     const chainCode = xpub2ChainCode(xpub)
     // TODO: check if this works for testnet, apparently it doesnt
-    const addressAttributes = encode(getBootstrapAddressAttributes(base58.decode(address)))
+    const addressAttributes = encodeCbor(getBootstrapAddressAttributes(base58.decode(address)))
     return {publicKey, signature, chainCode, addressAttributes}
   }
 
@@ -159,7 +159,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     auxiliaryData: TxAuxiliaryData
   ): Promise<CborizedVotingRegistrationMetadata> {
     const cborizedRegistrationData = new Map([cborizeTxVotingRegistration(auxiliaryData)])
-    const registrationDataHash = blake2b(encode(cborizedRegistrationData), 32).toString('hex')
+    const registrationDataHash = blake2b(encodeCbor(cborizedRegistrationData), 32).toString('hex')
     const stakingPath = auxiliaryData.rewardDestinationAddress.stakingPath
     assert(stakingPath != null)
     const registrationDataWitness = await prepareShelleyWitness(registrationDataHash, stakingPath)
@@ -181,7 +181,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,
-            auxiliaryDataHash: blake2b(encode(txAuxiliaryData), 32).toString('hex'),
+            auxiliaryDataHash: blake2b(encodeCbor(txAuxiliaryData), 32).toString('hex'),
           }),
           txAuxiliaryData,
         }

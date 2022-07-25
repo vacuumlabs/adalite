@@ -24,6 +24,7 @@ import {saveAs} from '../libs/file-saver'
 import {exportWalletSecretDef} from '../wallet/keypass-json'
 import {getDefaultLedgerTransportType} from '../wallet/shelley/helpers/transports'
 import {getDeviceBrandName, isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
+import BigNumber from 'bignumber.js'
 
 // TODO: we may be able to remove this, kept for backwards compatibility
 const getShouldShowSaturatedBanner = (accountsInfo: Array<AccountInfo>) =>
@@ -185,7 +186,11 @@ export default (store: Store) => {
         shouldShowGenerateMnemonicDialog: false,
         shouldShowAddressVerification: usingHwWallet,
         // send form
-        sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
+        sendAmount: {
+          assetFamily: AssetFamily.ADA,
+          fieldValue: '',
+          coins: new BigNumber(0) as Lovelace,
+        },
         sendAddress: {fieldValue: ''},
         // shelley
         isShelleyCompatible,

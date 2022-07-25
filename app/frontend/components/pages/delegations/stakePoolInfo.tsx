@@ -3,6 +3,7 @@ import {getErrorMessage} from '../../../errors'
 import {Stakepool, Lovelace} from '../../../types'
 import {h} from 'preact'
 import tooltip from '../../common/tooltip'
+import BigNumber from 'bignumber.js'
 
 // REFACTOR: (Untyped errors): move to types
 // is "hasTickerMapping" something specific or general?
@@ -80,7 +81,7 @@ export const StakePoolInfo = ({
               <span className="delegation show-info">{''}</span>
             </a>
             {'Fixed cost: '}
-            {print(pool?.fixedCost, (cost: string) => printAda(parseInt(cost, 10) as Lovelace))}
+            {print(pool?.fixedCost, (cost: string) => printAda(new BigNumber(cost) as Lovelace))}
           </div>
           <div>
             {'Homepage: '}

@@ -1,4 +1,4 @@
-const cbor = require('borc')
+const cbor = require('borc') // TODO parse bignumbers properly
 
 const coinsFromOutputAmount = (outputAmount) =>
   Array.isArray(outputAmount) ? outputAmount[0] : outputAmount

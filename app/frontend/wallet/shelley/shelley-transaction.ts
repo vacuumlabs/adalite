@@ -1,5 +1,5 @@
-import * as cbor from 'borc'
 import {blake2b, base58, bech32} from 'cardano-crypto.js'
+import {encodeCbor, decodeCbor, Tagged as CborTagged} from '../helpers/cbor'
 import {isShelleyFormat} from './helpers/addresses'
 import {
   TxAuxiliaryData,
@@ -45,6 +45,7 @@ import {CertificateType, HexString, TokenBundle} from '../../types'
 import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import {ipv4AddressToBuf, ipv6AddressToBuf, TxRelayType} from './helpers/poolCertificateUtils'
 import {orderTokenBundle} from '../helpers/tokenFormater'
+import BigNumber from 'bignumber.js'
 
 function ShelleyTxAux({
   inputs,
@@ -59,17 +60,17 @@ function ShelleyTxAux({
 }: {
   inputs: TxInput[]
   outputs: TxOutput[]
-  fee: number
-  ttl: number
+  fee: BigNumber
+  ttl: BigNumber
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
   auxiliaryDataHash: HexString | null
   auxiliaryData: TxAuxiliaryData | null
-  validityIntervalStart: number | null
+  validityIntervalStart: BigNumber | null
 }): TxAux {
   function getId() {
     return blake2b(
-      cbor.encode(
+      encodeCbor(
         ShelleyTxAux({
           inputs,
           outputs,
@@ -90,9 +91,9 @@ function ShelleyTxAux({
     const txBody = new Map<TxBodyKey, any>()
     txBody.set(TxBodyKey.INPUTS, cborizeTxInputs(inputs))
     txBody.set(TxBodyKey.OUTPUTS, cborizeTxOutputs(outputs))
-    txBody.set(TxBodyKey.FEE, fee)
+    txBody.set(TxBodyKey.FEE, BigInt(fee.toString()))
     if (ttl !== null) {
-      txBody.set(TxBodyKey.TTL, ttl)
+      txBody.set(TxBodyKey.TTL, BigInt(ttl.toString()))
     }
     if (certificates.length) {
       txBody.set(TxBodyKey.CERTIFICATES, cborizeTxCertificates(certificates))
@@ -104,7 +105,7 @@ function ShelleyTxAux({
       txBody.set(TxBodyKey.AUXILIARY_DATA_HASH, Buffer.from(auxiliaryDataHash, 'hex'))
     }
     if (validityIntervalStart !== null) {
-      txBody.set(TxBodyKey.VALIDITY_INTERVAL_START, validityIntervalStart)
+      txBody.set(TxBodyKey.VALIDITY_INTERVAL_START, BigInt(validityIntervalStart.toString()))
     }
     return encoder.pushAny(txBody)
   }
@@ -133,12 +134,12 @@ function cborizeTxInputs(inputs: TxInput[]): CborizedTxInput[] {
 }
 
 function cborizeTxOutputTokenBundle(tokenBundle: TokenBundle): CborizedTxTokenBundle {
-  const policyIdMap = new Map<Buffer, Map<Buffer, number>>()
+  const policyIdMap = new Map<Buffer, Map<Buffer, BigInt>>()
   const orderedTokenBundle = orderTokenBundle(tokenBundle)
   orderedTokenBundle.forEach(({policyId, assets}) => {
-    const assetMap = new Map<Buffer, number>()
+    const assetMap = new Map<Buffer, BigInt>()
     assets.forEach(({assetName, quantity}) => {
-      assetMap.set(Buffer.from(assetName, 'hex'), quantity)
+      assetMap.set(Buffer.from(assetName, 'hex'), BigInt(quantity.toString()))
     })
     policyIdMap.set(Buffer.from(policyId, 'hex'), assetMap)
   })
@@ -148,8 +149,8 @@ function cborizeTxOutputTokenBundle(tokenBundle: TokenBundle): CborizedTxTokenBu
 function cborizeSingleTxOutput(output: TxOutput): CborizedTxOutput {
   const amount: CborizedTxAmount =
     output.tokenBundle.length > 0
-      ? [output.coins, cborizeTxOutputTokenBundle(output.tokenBundle)]
-      : output.coins
+      ? [BigInt(output.coins.toString()), cborizeTxOutputTokenBundle(output.tokenBundle)]
+      : BigInt(output.coins.toString())
   // TODO: we should have one fn for decoding
   const addressBuff: Buffer = isShelleyFormat(output.address)
     ? bech32.decode(output.address).data
@@ -204,14 +205,10 @@ function cborizeStakepoolRegistrationCert(
     Buffer.from(poolRegistrationParams.vrfKeyHashHex, 'hex'),
     parseInt(poolRegistrationParams.pledgeStr, 10),
     parseInt(poolRegistrationParams.costStr, 10),
-    new cbor.Tagged(
-      30,
-      [
-        parseInt(poolRegistrationParams.margin.numeratorStr, 10),
-        parseInt(poolRegistrationParams.margin.denominatorStr, 10),
-      ],
-      null
-    ),
+    new CborTagged(30, [
+      parseInt(poolRegistrationParams.margin.numeratorStr, 10),
+      parseInt(poolRegistrationParams.margin.denominatorStr, 10),
+    ]),
     Buffer.from(poolRegistrationParams.rewardAccountHex, 'hex'),
     poolRegistrationParams.poolOwners.map((ownerObj) => {
       return Buffer.from(ownerObj.stakingKeyHashHex, 'hex')
@@ -264,7 +261,7 @@ function cborizeTxWithdrawals(withdrawals: TxWithdrawal[]): CborizedTxWithdrawal
   const txWithdrawals: CborizedTxWithdrawals = new Map()
   withdrawals.forEach((withdrawal) => {
     const stakingAddress: Buffer = bech32.decode(withdrawal.stakingAddress).data
-    txWithdrawals.set(stakingAddress, withdrawal.rewards)
+    txWithdrawals.set(stakingAddress, BigInt(withdrawal.rewards.toString()))
   })
   return txWithdrawals
 }
@@ -324,7 +321,7 @@ function ShelleySignedTransactionStructured(
 }
 
 function cborizeCliWitness(txSigned: TxSigned): CborizedCliWitness {
-  const [, witnesses]: [any, CborizedTxWitnesses] = cbor.decode(txSigned.txBody)
+  const [, witnesses]: [any, CborizedTxWitnesses] = decodeCbor(txSigned.txBody)
   // there can be only one witness since only one signing file was passed
   const [key, [data]] = Array.from(witnesses)[0]
   return [key, data]

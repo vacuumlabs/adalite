@@ -6,6 +6,7 @@ import mnemonicToWalletSecretDef from '../../../frontend/wallet/helpers/mnemonic
 import assert from 'assert'
 import {walletSettings} from '../common/wallet-settings'
 import {AssetFamily, TxType} from '../../../frontend/types'
+import BigNumber from 'bignumber.js'
 
 let state, action
 
@@ -46,10 +47,10 @@ const sendAdaTxSettings = {
         fieldValue:
           'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0',
       },
-      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '1', coins: 1500000},
+      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '1', coins: new BigNumber(1500000)},
     },
     transactionSummary: {
-      fee: 177882,
+      fee: new BigNumber(177882),
     },
   },
   // TODO:
@@ -83,7 +84,7 @@ const delegationSettings = {
       },
     },
     transactionSummary: {
-      fee: 191022,
+      fee: new BigNumber(191022),
     },
   },
 }
@@ -92,7 +93,7 @@ const withdrawalSettings = {
   rewardWithdrawal: {
     state: {},
     transactionSummary: {
-      fee: 182189,
+      fee: new BigNumber(182189),
     },
   },
 }
@@ -102,7 +103,7 @@ const votingSettings = {
     state: {},
     votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
     transactionSummary: {
-      fee: 182804,
+      fee: new BigNumber(182804),
     },
   },
 }

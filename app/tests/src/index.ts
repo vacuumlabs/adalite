@@ -1,9 +1,6 @@
 describe('AdaLite Test Suite', () => {
   require('./common/setup-test-config')
 
-  describe('CBOR', () => {
-    require('./cbor')
-  })
   describe('Blockchain Explorer', () => {
     require('./blockchain-explorer')
   })

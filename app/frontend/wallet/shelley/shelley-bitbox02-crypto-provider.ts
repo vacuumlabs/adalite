@@ -6,7 +6,6 @@ import {
   CardanoShelleyWitness,
   BitBox02API,
 } from 'bitbox02-api'
-import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
 import {orderTokenBundle} from '../helpers/tokenFormater'
@@ -42,6 +41,7 @@ import {
   UnexpectedError,
   UnexpectedErrorReason,
 } from '../../errors'
+import {encodeCbor} from '../helpers/cbor'
 
 let _activeBitBox02: BitBox02API | null = null
 
@@ -336,7 +336,7 @@ const ShelleyBitBox02CryptoProvider = async ({
     const structuredTx = ShelleySignedTransactionStructured(txAux, txWitnesses, txAuxiliaryData)
     return {
       txHash: txAux.getId(),
-      txBody: cbor.encode(structuredTx).toString('hex'),
+      txBody: encodeCbor(structuredTx).toString('hex'),
     }
   }
 

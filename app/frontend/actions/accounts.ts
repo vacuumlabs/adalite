@@ -8,6 +8,7 @@ import commonActions from './common'
 import {AccountInfo, AssetFamily, Lovelace} from '../types'
 import * as assert from 'assert'
 import {getChangeAddress} from '../wallet/account'
+import BigNumber from 'bignumber.js'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -80,8 +81,12 @@ export default (store: Store) => {
       targetAccountIndex,
       shouldShowSendTransactionModal: true,
       txSuccessTab: '',
-      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace}, // TODO: use reset function
-      transactionFee: 0,
+      sendAmount: {
+        assetFamily: AssetFamily.ADA,
+        fieldValue: '',
+        coins: new BigNumber(0) as Lovelace,
+      }, // TODO: use reset function
+      transactionFee: new BigNumber(0) as Lovelace,
     })
     const targetAddress = getChangeAddress(state.accountsInfo[targetAccountIndex])
     updateAddress(getState(), null, targetAddress)
@@ -92,8 +97,12 @@ export default (store: Store) => {
     resetAccountIndexes(state)
     setState({
       sendAddress: {fieldValue: ''},
-      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
-      transactionFee: 0,
+      sendAmount: {
+        assetFamily: AssetFamily.ADA,
+        fieldValue: '',
+        coins: new BigNumber(0) as Lovelace,
+      },
+      transactionFee: new BigNumber(0) as Lovelace,
       shouldShowSendTransactionModal: false,
       sendAddressValidationError: null,
       sendAmountValidationError: null,

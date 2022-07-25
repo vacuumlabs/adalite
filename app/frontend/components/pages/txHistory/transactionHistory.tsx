@@ -27,12 +27,13 @@ import {useActiveAccount} from '../../../selectors'
 import {useSelector} from '../../../helpers/connect'
 import {createTokenRegistrySubject} from '../../../tokenRegistry/tokenRegistry'
 import printTokenAmount from '../../../helpers/printTokenAmount'
+import BigNumber from 'bignumber.js'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
   const value = printAda(amount)
   return (
-    <div className={`transaction-amount ${amount > 0 ? 'credit' : 'debit'}`}>
-      {amount > 0 ? `+${value}` : value}
+    <div className={`transaction-amount ${amount.gt(0) ? 'credit' : 'debit'}`}>
+      {amount.gt(0) ? `+${value}` : value}
       <AdaIcon />
     </div>
   )
@@ -100,9 +101,9 @@ const MultiAsset = (props: FormattedAssetItemProps) => {
                 {formattedHumanReadableLabelVariants.label}
                 {formattedAssetLink}
               </div>
-              <div className={`${styles.amount} ${quantity > 0 ? 'credit' : 'debit'}`}>
+              <div className={`${styles.amount} ${quantity.gt(0) ? 'credit' : 'debit'}`}>
                 <div className={`${styles.quantity}`}>
-                  {quantity > 0 ? `+${formattedAmount}` : formattedAmount}
+                  {quantity.gt(0) ? `+${formattedAmount}` : formattedAmount}
                 </div>
                 {icon}
               </div>
@@ -174,8 +175,8 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
       }
     | {
         assetFamily: AssetFamily.TOKEN
-        sent?: number
-        received?: number
+        sent?: BigNumber
+        received?: BigNumber
         decimals: number
       }
   )
@@ -196,14 +197,14 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
           const fingerprint = encodeAssetFingerprint(tokenEffect.policyId, tokenEffect.assetName)
           return {
             ...common,
-            ...(tokenEffect.quantity > 0
+            ...(tokenEffect.quantity.gt(0)
               ? {
                 type: TxSummaryType.RECEIVED,
                 received: tokenEffect.quantity,
               }
               : {
                 type: TxSummaryType.SENT,
-                sent: Math.abs(tokenEffect.quantity),
+                sent: tokenEffect.quantity.abs(),
               }),
             assetFamily: AssetFamily.TOKEN,
             currency: ticker ? `${ticker} (${fingerprint})` : fingerprint,
@@ -217,13 +218,15 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
             ...common,
             type: TxSummaryType.SENT,
             assetFamily: AssetFamily.ADA,
-            sent: (Math.abs(transaction.effect - withdrawalHistory[transaction.ctbId]) -
-              transaction.fee) as Lovelace,
+            sent: transaction.effect
+              .minus(withdrawalHistory[transaction.ctbId])
+              .abs()
+              .minus(transaction.fee) as Lovelace,
             fee: transaction.fee,
             currency: 'ADA',
           },
         ]
-      } else if (transaction.effect > 0) {
+      } else if (transaction.effect.gt(0)) {
         return [
           {
             ...common,
@@ -240,7 +243,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
             ...common,
             type: TxSummaryType.SENT,
             assetFamily: AssetFamily.ADA,
-            sent: (Math.abs(transaction.effect) - transaction.fee) as Lovelace,
+            sent: transaction.effect.abs().minus(transaction.fee) as Lovelace,
             fee: transaction.fee,
             currency: 'ADA',
           },
@@ -263,7 +266,7 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
   )
 
   const rows: Array<string> = entries.map((entry) => {
-    const printAmount = (amount: number | Lovelace) =>
+    const printAmount = (amount: BigNumber | Lovelace) =>
       entry.assetFamily === AssetFamily.ADA
         ? printAda(amount as Lovelace)
         : printTokenAmount(amount, entry.decimals as number)

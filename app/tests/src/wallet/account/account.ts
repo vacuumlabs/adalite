@@ -1,4 +1,4 @@
-import assert from 'assert'
+import * as assert from 'assert'
 import {accountSettings} from '../../common/account-settings'
 import {Account} from '../../../../frontend/wallet/account'
 import mnemonicToWalletSecretDef from '../../../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
@@ -10,10 +10,11 @@ import {poolRegTxSettings} from '../../common/pool-reg-tx-settings'
 import mockNetwork from '../../common/mock'
 import {TxType} from '../../../../frontend/types'
 import {utxoSettings} from './utxo-settings'
+import derivationSchemes from '../../../../frontend/wallet/helpers/derivation-schemes'
 
-const accounts = {}
+const accounts: Record<string, ReturnType<typeof Account>> = {}
 
-const initAccount = async (settings, i) => {
+const initAccount = async (settings) => {
   const {
     network,
     type,
@@ -24,7 +25,7 @@ const initAccount = async (settings, i) => {
     isShelleyCompatible,
   } = settings
   const config = {...ADALITE_CONFIG, isShelleyCompatible, shouldExportPubKeyBulk}
-  const blockchainExplorer = BlockchainExplorer(ADALITE_CONFIG, {})
+  const blockchainExplorer = BlockchainExplorer(ADALITE_CONFIG)
 
   let walletSecretDef
   if (type === 'walletSecretDef') {

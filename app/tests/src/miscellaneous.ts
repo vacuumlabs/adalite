@@ -1,10 +1,11 @@
-import assert from 'assert'
-import {encryptWithPassword} from '../../frontend/helpers/catalyst.ts'
+import * as assert from 'assert'
+import {encryptWithPassword} from '../../frontend/helpers/catalyst'
 
 describe('Catalyst voting encrypting with password', () => {
   it('should properly encrypt a password', async () => {
-    // overwrite getRandomValues to be deterministic
+    // @ts-expect-error overwrite getRandomValues to be deterministic
     window.crypto.getRandomValues = (randBytes) => {
+      // @ts-expect-error
       randBytes = Buffer.from('0'.repeat(randBytes.length), 'hex')
     }
 

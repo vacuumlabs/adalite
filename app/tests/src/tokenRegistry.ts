@@ -1,5 +1,5 @@
+import * as assert from 'assert'
 import {TokenRegistry} from '../../frontend/tokenRegistry/tokenRegistry'
-import assert from 'assert'
 
 describe('Token registry api', () => {
   it('parse', () => {

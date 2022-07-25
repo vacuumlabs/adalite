@@ -1,6 +1,6 @@
 import {NETWORKS} from '../../../frontend/wallet/constants'
 
-const cryptoProviderSettings = [
+export const cryptoProviderSettings = [
   {
     secret: 'cruise bike bar reopen mimic title style fence race solar million clean',
     network: NETWORKS.MAINNET,
@@ -39,7 +39,7 @@ const cryptoProviderSettings = [
   },
 ]
 
-const shelleyCryptoProviderSettings = {
+export const shelleyCryptoProviderSettings = {
   mnemonic15Word: {
     description: '',
     secret:
@@ -64,5 +64,3 @@ const shelleyCryptoProviderSettings = {
     isShelleyCompatible: true,
   },
 }
-
-export {cryptoProviderSettings, shelleyCryptoProviderSettings}

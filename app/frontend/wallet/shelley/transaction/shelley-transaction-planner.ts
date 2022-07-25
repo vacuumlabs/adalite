@@ -27,6 +27,7 @@ import {computeTxPlan, validateTxPlan} from './computeTxPlan'
 import {TxPlanDraft, TxPlanResult} from './types'
 import {computeMinUTxOLovelaceAmount} from './utils'
 import * as assert from 'assert'
+import BigNumber from 'bignumber.js'
 
 const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   const prepareSendAdaTx = (
@@ -110,7 +111,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
     return {
       outputs,
       certificates,
-      withdrawals: withdrawals.filter((w) => w.rewards > 0),
+      withdrawals: withdrawals.filter((w) => w.rewards.gt(0)),
       auxiliaryData: null,
     }
   }
@@ -162,7 +163,7 @@ export const selectMinimalTxPlan = (
   const change: TxOutput = {
     isChange: false,
     address: changeAddress,
-    coins: 0 as Lovelace,
+    coins: new BigNumber(0) as Lovelace,
     tokenBundle: [],
   }
 

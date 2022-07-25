@@ -7,6 +7,7 @@ import {
 import {useSelector} from './helpers/connect'
 import {AccountInfo, AuthMethodType, CryptoProviderFeature} from './types'
 import {CryptoProviderType} from './wallet/types'
+import BigNumber from 'bignumber.js'
 
 /*
 This file contains hooks/selectors shared accross multiple components which
@@ -14,20 +15,23 @@ use global state to infer return values.
 Once "actions.ts" is divided into multiple files consider to also divide this file.
 */
 
-export const totalWalletBalanceSelector = (state: State): number =>
-  state.accountsInfo.reduce((a, {balance}) => balance + a, 0)
+export const totalWalletBalanceSelector = (state: State): BigNumber =>
+  state.accountsInfo.reduce((a, {balance}) => balance.plus(a), new BigNumber(0))
 
-export const totalRewardsBalanceSelector = (state: State): number =>
-  state.accountsInfo.reduce((a, {shelleyBalances}) => shelleyBalances.rewardsAccountBalance + a, 0)
+export const totalRewardsBalanceSelector = (state: State): BigNumber =>
+  state.accountsInfo.reduce(
+    (a, {shelleyBalances}) => shelleyBalances.rewardsAccountBalance.plus(a),
+    new BigNumber(0)
+  )
 
 export const isBigDelegatorSelector = (state: State): boolean => {
   const totalWalletBalance = totalWalletBalanceSelector(state)
-  return totalWalletBalance > BIG_DELEGATOR_THRESHOLD
+  return totalWalletBalance.gt(BIG_DELEGATOR_THRESHOLD)
 }
 
 export const shouldShowPremiumBannerSelector = (state: State): boolean => {
   const totalWalletBalance = totalWalletBalanceSelector(state)
-  return !state.seenPremiumBanner && PREMIUM_MEMBER_BALANCE_TRESHOLD < totalWalletBalance
+  return !state.seenPremiumBanner && totalWalletBalance.gt(PREMIUM_MEMBER_BALANCE_TRESHOLD)
 }
 
 export const shouldShowExportOptionSelector = (state: State): boolean => {
@@ -59,5 +63,5 @@ export const useIsActiveAccountDelegating = (): boolean => {
 
 export const useHasEnoughFundsForCatalyst = (): boolean => {
   const activeAccount = useActiveAccount()
-  return activeAccount.balance > CATALYST_MIN_THRESHOLD
+  return activeAccount.balance.gt(CATALYST_MIN_THRESHOLD)
 }

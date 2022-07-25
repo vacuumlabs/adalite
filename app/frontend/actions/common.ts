@@ -14,6 +14,7 @@ import {
 import {TxPlan, TxPlanResult} from '../wallet/shelley/transaction'
 import {InternalErrorReason} from '../errors'
 import {getChangeAddress} from '../wallet/account'
+import BigNumber from 'bignumber.js'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -29,11 +30,15 @@ export default (store: Store) => {
 
   const resetSendFormFields = (state: State) => {
     setState({
-      sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0 as Lovelace},
+      sendAmount: {
+        assetFamily: AssetFamily.ADA,
+        fieldValue: '',
+        coins: new BigNumber(0) as Lovelace,
+      },
       sendAddress: {fieldValue: ''},
       sendAddressValidationError: null,
       sendAmountValidationError: null,
-      transactionFee: 0 as Lovelace,
+      transactionFee: new BigNumber(0) as Lovelace,
     })
   }
 
@@ -60,9 +65,9 @@ export default (store: Store) => {
       }
       return {
         success: false,
-        estimatedFee: 0 as Lovelace,
-        minimalLovelaceAmount: 0 as Lovelace,
-        deposit: 0 as Lovelace,
+        estimatedFee: new BigNumber(0) as Lovelace,
+        minimalLovelaceAmount: new BigNumber(0) as Lovelace,
+        deposit: new BigNumber(0) as Lovelace,
         error: {code: e.name},
       }
     }

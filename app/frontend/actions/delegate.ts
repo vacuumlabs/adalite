@@ -14,6 +14,7 @@ import {
 } from '../types'
 import debounceEvent from '../helpers/debounceEvent'
 import * as assert from 'assert'
+import BigNumber from 'bignumber.js'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -85,7 +86,7 @@ export default (store: Store) => {
       setState({
         shelleyDelegation: {
           ...newState.shelleyDelegation,
-          delegationFee: (txPlanResult.txPlan.fee + txPlanResult.txPlan.deposit) as Lovelace,
+          delegationFee: txPlanResult.txPlan.fee.plus(txPlanResult.txPlan.deposit) as Lovelace,
         },
       })
       const delegationTransactionSummary: DelegateTransactionSummary = {
@@ -138,7 +139,7 @@ export default (store: Store) => {
   const resetDelegation = () => {
     setState({
       shelleyDelegation: {
-        delegationFee: 0 as Lovelace,
+        delegationFee: new BigNumber(0) as Lovelace,
         selectedPool: null,
       },
     })

@@ -31,6 +31,7 @@ import {shouldDisableSendingButton} from '../../../helpers/common'
 import printTokenAmount from '../../../helpers/printTokenAmount'
 import {createTokenRegistrySubject} from '../../../../frontend/tokenRegistry/tokenRegistry'
 import * as assert from 'assert'
+import BigNumber from 'bignumber.js'
 
 const CalculatingFee = () => <div className="validation-message send">Calculating fee...</div>
 
@@ -176,7 +177,7 @@ const SendAdaPage = ({
     () => [
       adaAsset,
       ...tokenBalance
-        .sort((a: Token, b: Token) => b.quantity - a.quantity)
+        .sort((a: Token, b: Token) => b.quantity.comparedTo(a.quantity))
         .map(
           (token: Token): DropdownAssetItem => ({
             ...token,
@@ -230,7 +231,7 @@ const SendAdaPage = ({
         updateAmount({
           assetFamily: AssetFamily.ADA,
           fieldValue,
-          coins: parseCoins(fieldValue) || (0 as Lovelace),
+          coins: parseCoins(fieldValue) || (new BigNumber(0) as Lovelace),
         })
       } else if (dropdownAssetItem?.type === AssetFamily.TOKEN) {
         updateAmount({
@@ -396,10 +397,10 @@ const SendAdaPage = ({
   )
 
   const totalLovelace = (summary != null
-    ? summary.coins + summary.fee + summary.minimalLovelaceAmount
-    : 0) as Lovelace
+    ? summary.coins.plus(summary.fee).plus(summary.minimalLovelaceAmount)
+    : new BigNumber(0)) as Lovelace
   const totalTokens = summary?.token ?? null
-  const minimalLovelaceAmount = summary?.minimalLovelaceAmount ?? (0 as Lovelace)
+  const minimalLovelaceAmount = summary?.minimalLovelaceAmount ?? (new BigNumber(0) as Lovelace)
 
   return (
     <div className="send card" ref={sendCardDiv}>
@@ -410,7 +411,8 @@ const SendAdaPage = ({
         {amountInput}
         <div className="ada-label">Fee</div>
         <div className="send-fee" data-cy="SendFeeAmount">
-          {printAda(transactionFee)}
+          {// TODO figure out why tx fee may be undefined
+            printAda(transactionFee || (new BigNumber(0) as Lovelace))}
         </div>
         {selectedAsset.type === AssetFamily.TOKEN && (
           <Fragment>

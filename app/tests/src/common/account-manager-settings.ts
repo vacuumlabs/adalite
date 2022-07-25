@@ -25,4 +25,4 @@ export const accountManagerSettings = {
     expectedNumberOfDiscoveredAccounts: 1,
     maxAccountIndex: 30,
   },
-}
+} as const

@@ -215,9 +215,7 @@ const parseTxWithdrawals = (withdrawals: any): _Withdrawal[] => {
   if (!isWithdrawalsMap(withdrawals)) {
     throw Error(Errors.WithrawalsParseError)
   }
-  return Array.from(withdrawals).map(
-    ([address, coins]): _Withdrawal => ({address, coins: BigInt(coins)})
-  )
+  return Array.from(withdrawals).map(([address, coins]): _Withdrawal => ({address, coins}))
 }
 
 const parseFee = (fee: any): Lovelace => {

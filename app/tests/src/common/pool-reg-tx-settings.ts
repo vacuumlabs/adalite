@@ -1,3 +1,6 @@
+import {Address, Lovelace} from '../../../frontend/types'
+import BigNumber from 'bignumber.js'
+
 export const poolRegTxSettings = {
   'regular pool registration': {
     unsignedTxParsed: {
@@ -21,7 +24,7 @@ export const poolRegTxSettings = {
         },
       ],
       fee: BigInt(42),
-      ttl: 10n,
+      ttl: BigInt(10),
       certificates: [
         {
           type: 3,
@@ -47,7 +50,7 @@ export const poolRegTxSettings = {
           relays: [
             {
               ipv4: Buffer.from('36e44b9a', 'hex'),
-              ipv6: null,
+              ipv6: undefined,
               portNumber: 3000,
               type: 0,
             },
@@ -77,9 +80,8 @@ export const poolRegTxSettings = {
         },
       ],
       withdrawals: [],
-      metaDataHash: null,
       meta: null,
-      validityIntervalStart: null,
+      validityIntervalStart: undefined,
     },
     txPlanResult: {
       txPlan: {
@@ -87,17 +89,16 @@ export const poolRegTxSettings = {
           {
             txHash: '3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7',
             outputIndex: 0,
-            coins: 0,
+            coins: new BigNumber(0) as Lovelace,
             tokenBundle: [],
-            address: '',
+            address: '' as Address,
           },
         ],
         outputs: [
           {
-            isChange: false,
-            address:
-              'addr1q97tqh7wzy8mnx0sr2a57c4ug40zzl222877jz06nt49g4zr43fuq3k0dfpqjh3uvqcsl2qzwuwsvuhclck3scgn3vys6wkj5d',
-            coins: 1,
+            isChange: false as const,
+            address: 'addr1q97tqh7wzy8mnx0sr2a57c4ug40zzl222877jz06nt49g4zr43fuq3k0dfpqjh3uvqcsl2qzwuwsvuhclck3scgn3vys6wkj5d' as Address,
+            coins: new BigNumber(1) as Lovelace,
             tokenBundle: [],
           },
         ],
@@ -105,7 +106,7 @@ export const poolRegTxSettings = {
         certificates: [
           {
             type: 3,
-            stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks',
+            stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks' as Address,
             poolRegistrationParams: {
               poolKeyHashHex: '13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad',
               vrfKeyHashHex: '07821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d084450',
@@ -162,15 +163,15 @@ export const poolRegTxSettings = {
             },
           },
         ],
-        deposit: 0,
-        additionalLovelaceAmount: 0,
-        fee: 42,
-        baseFee: 42,
+        deposit: new BigNumber(0) as Lovelace,
+        additionalLovelaceAmount: new BigNumber(0) as Lovelace,
+        fee: new BigNumber(42) as Lovelace,
+        baseFee: new BigNumber(42) as Lovelace,
         withdrawals: [],
         auxiliaryData: null,
       },
     },
-    ttl: 10,
+    ttl: new BigNumber(10),
     txHash: 'bc678441767b195382f00f9f4c4bddc046f73e6116fa789035105ecddfdee949',
   },
 }

@@ -6,6 +6,7 @@ import assert from 'assert'
 import {assertPropertiesEqual, setupInitialMockState} from './actions'
 import {walletSettings} from '../common/wallet-settings'
 import {AssetFamily} from '../../../frontend/types'
+import BigNumber from 'bignumber.js'
 
 let state, action
 
@@ -24,7 +25,7 @@ const expectedStateChanges = {
   isDemoWallet: false,
   shouldShowGenerateMnemonicDialog: false,
   // send form
-  sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: 0},
+  sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '', coins: new BigNumber(0)},
   sendAddress: {fieldValue: ''},
   ticker2Id: null,
 }

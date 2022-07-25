@@ -7,12 +7,13 @@ import tooltip from '../../common/tooltip'
 import {Lovelace} from '../../../types'
 import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 import {shouldDisableSendingButton} from '../../../helpers/common'
+import BigNumber from 'bignumber.js'
 
 type TileProps = {
   accountIndex: number
   ticker: string | null
-  availableBalance: number | null
-  rewardsBalance: number | null
+  availableBalance: BigNumber | null
+  rewardsBalance: BigNumber | null
   shouldShowSaturatedBanner: boolean
   shouldShowAccountInfo?: boolean
 }

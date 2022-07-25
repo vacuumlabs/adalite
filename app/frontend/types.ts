@@ -3,6 +3,7 @@ import {CaTxEntry, NextRewardDetail, RewardType, TokenObject} from './wallet/bac
 import {CryptoProviderType, Network, UTxO} from './wallet/types'
 import {TxPlan} from './wallet/shelley/transaction'
 import {_UnsignedTxParsed} from './helpers/cliParser/types'
+import BigNumber from 'bignumber.js'
 
 export type BIP32Path = number[]
 
@@ -75,7 +76,7 @@ export type WalletSecretDef = {
 }
 
 export type Token = Omit<TokenObject, 'quantity'> & {
-  quantity: number
+  quantity: BigNumber
 }
 
 export type TokenRegistrySubject = string & {__typeTokenRegistrySubject: any}
@@ -96,7 +97,7 @@ export type OrderedTokenBundle = {
   policyId: string
   assets: {
     assetName: string
-    quantity: number
+    quantity: BigNumber
   }[]
 }[]
 
@@ -133,8 +134,8 @@ export enum ScreenType {
   DESKTOP,
 }
 
-export type Ada = number & {__typeAda: any}
-export type Lovelace = number & {__typeLovelace: any}
+export type Ada = BigNumber & {__typeAda: any}
+export type Lovelace = BigNumber & {__typeLovelace: any}
 
 export type PoolRecommendation = {
   isInRecommendedPoolSet: boolean
@@ -170,13 +171,13 @@ export type AccountInfo = {
     currentEpoch: number
     delegation: any
     hasStakingKey: boolean
-    rewards: number
+    rewards: string
     rewardDetails: {
       upcoming: any
       nearest: any
       currentDelegation: any
     }
-    value: number
+    value: Lovelace
   }
   transactionHistory: Array<TxSummaryEntry>
   stakingHistory: Array<StakingHistoryObject>
@@ -404,8 +405,8 @@ export type VotingRegistrationTransactionSummary = {
 
 export type PoolRegTransactionSummary = {
   shouldShowPoolCertSignModal: boolean
-  ttl: number | null
-  validityIntervalStart: number | null
+  ttl: BigNumber | null
+  validityIntervalStart: BigNumber | null
   witness: CborizedCliWitness | null
   plan: TxPlan
   txBodyType: string

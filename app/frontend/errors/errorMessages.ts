@@ -4,6 +4,7 @@ import {ADALITE_CONFIG} from '../config'
 import {BITBOX02_VERSIONS, LEDGER_VERSIONS, TREZOR_VERSIONS} from '../wallet/constants'
 import {Lovelace, CryptoProviderFeature} from '../types'
 import {knownExternalErrors, InternalErrorReason} from '.'
+import BigNumber from 'bignumber.js'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -24,7 +25,9 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.SendAmountPrecisionLimit]: () =>
     'Invalid format: Maximum allowed precision is 0.000001',
   [InternalErrorReason.SendAmountIsTooBig]: () =>
-    `Invalid format: Amount cannot exceed ${printAda(Number.MAX_SAFE_INTEGER as Lovelace)}`,
+    `Invalid format: Amount cannot exceed ${printAda(
+      new BigNumber(Number.MAX_SAFE_INTEGER) as Lovelace
+    )}`,
   [InternalErrorReason.TokenAmountOnlyWholeNumbers]: () =>
     'Invalid format: This asset amount has to be a whole number',
   [InternalErrorReason.TokenSendAmountPrecisionLimit]: ({decimals}) =>

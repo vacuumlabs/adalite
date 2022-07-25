@@ -39,6 +39,7 @@ import {StakepoolDataProvider} from '../helpers/dataProviders/types'
 import {unsignedPoolTxToTxPlan} from './shelley/helpers/stakepoolRegistrationUtils'
 import {InternalError, InternalErrorReason, UnexpectedError, UnexpectedErrorReason} from '../errors'
 import assertUnreachable from '../helpers/assertUnreachable'
+import BigNumber from 'bignumber.js'
 
 const DummyAddressManager = () => {
   return {
@@ -193,14 +194,14 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     await myAddresses.baseExtAddrManager._deriveAddress(0)
   }
 
-  async function calculateTtl(): Promise<number> {
+  async function calculateTtl(): Promise<BigNumber> {
     // TODO: move to wallet
     try {
       const bestSlot = await blockchainExplorer.getBestSlot().then((res) => res.Right.bestSlot)
-      return bestSlot + DEFAULT_TTL_SLOTS
+      return new BigNumber(bestSlot + DEFAULT_TTL_SLOTS)
     } catch (e) {
       const timePassed = Math.floor((Date.now() - cryptoProvider.network.eraStartDateTime) / 1000)
-      return cryptoProvider.network.eraStartSlot + timePassed + DEFAULT_TTL_SLOTS
+      return new BigNumber(cryptoProvider.network.eraStartSlot + timePassed + DEFAULT_TTL_SLOTS)
     }
   }
 
@@ -219,7 +220,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     }
   }
 
-  async function prepareTxAux(txPlan: TxPlan, ttl?: number, validityIntervalStart?: number) {
+  async function prepareTxAux(txPlan: TxPlan, ttl?: BigNumber, validityIntervalStart?: BigNumber) {
     const {inputs, outputs, change, fee, certificates, withdrawals, auxiliaryData} = txPlan
     const stakingAddress = await myAddresses.getStakingAddress()
     const changeOutputs: TxOutput[] = change.map((output) => ({
@@ -358,7 +359,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       tokenBalance,
       shelleyBalances: {
         nonStakingBalance,
-        stakingBalance: baseAddressBalance + shelleyAccountInfo.value,
+        stakingBalance: baseAddressBalance.plus(shelleyAccountInfo.value),
         rewardsAccountBalance: shelleyAccountInfo.value,
       },
       shelleyAccountInfo,
@@ -385,7 +386,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       tokenBalance: aggregateTokenBundles([nonStakingTokenBundle, stakingTokenBundle]),
       baseAddressBalance,
       nonStakingBalance,
-      balance: nonStakingBalance + baseAddressBalance,
+      balance: nonStakingBalance.plus(baseAddressBalance),
     }
   }
 
@@ -428,7 +429,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return {
       ...accountInfo,
       rewardDetails,
-      value: accountInfo.rewards ? parseInt(accountInfo.rewards, 10) : 0,
+      value: new BigNumber(accountInfo.rewards || 0) as Lovelace,
     }
   }
 

@@ -49,8 +49,8 @@ import {removeNullFields} from '../../helpers/removeNullFiels'
 import {orderTokenBundle} from '../helpers/tokenFormater'
 import assertUnreachable from '../../helpers/assertUnreachable'
 import TrezorConnect, * as TrezorTypes from 'trezor-connect'
-import * as cbor from 'borc'
 import * as assert from 'assert'
+import {encodeCbor} from '../helpers/cbor'
 
 type CryptoProviderParams = {
   network: Network
@@ -338,7 +338,7 @@ const ShelleyTrezorCryptoProvider = async ({
     const chainCode = Buffer.from(witness.chainCode, 'hex')
     // only v1 witnesses has address atributes
     // since trezor is v2 they are always {}
-    const addressAttributes = cbor.encode({})
+    const addressAttributes = encodeCbor({})
     const signature = Buffer.from(witness.signature, 'hex')
     return {
       publicKey,
@@ -482,7 +482,7 @@ const ShelleyTrezorCryptoProvider = async ({
 
     return {
       txHash: response.payload.hash,
-      txBody: cbor.encode(structuredTx).toString('hex'),
+      txBody: encodeCbor(structuredTx).toString('hex'),
     }
   }
 

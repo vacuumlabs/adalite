@@ -246,7 +246,7 @@ export const FormattedAssetItem = ({
     formattedAmount:
       type === AssetFamily.TOKEN
         ? printTokenAmount(quantity, metadata?.decimals || 0)
-        : printAda(Math.abs(quantity) as Lovelace),
+        : printAda(quantity.abs() as Lovelace),
     formattedPolicy: policyId ? (
       <div className="multi-asset-hash">
         <StringEllipsis value={policyId} length={6} />

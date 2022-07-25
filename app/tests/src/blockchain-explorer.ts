@@ -1,4 +1,5 @@
-import assert from 'assert'
+import * as assert from 'assert'
+import BigNumber from 'bignumber.js'
 
 import BlockchainExplorer from '../../frontend/wallet/blockchain-explorer'
 import mockNetwork from './common/mock'
@@ -10,7 +11,7 @@ const mockConfig = {
   ADALITE_GAP_LIMIT: 20,
 }
 
-const blockchainExplorer = BlockchainExplorer(mockConfig, {})
+const blockchainExplorer = BlockchainExplorer(mockConfig)
 
 const addresses = [
   'DdzFFzCqrhspzoFuJ7CyjGUzikzfWEz6DmjeYpB6Dt7WDUDYi8Wv4qaJ2YNnVsMJi8p8yTPLfaheT9NpEAwig4dL9sFNa3ynkauwWuym',
@@ -610,9 +611,9 @@ describe('wallet unspent outputs fetching', function() {
     const mockNet = mockNetwork(mockConfig)
     mockNet.mockUtxoEndpoint()
     const utxos = await blockchainExplorer.fetchUnspentTxOutputs([addresses[6], addresses[9]])
-    const utxoSum = utxos.reduce((acc, cur) => acc + cur.coins, 0)
+    const utxoSum = utxos.reduce((acc, cur) => acc.plus(cur.coins), new BigNumber(0))
 
-    assert.equal(utxoSum, 2967795)
+    assert.equal(utxoSum.toString(), '2967795')
     mockNet.clean()
   })
 })

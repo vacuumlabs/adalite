@@ -1,7 +1,7 @@
 const webpack = require('webpack')
 
 module.exports = {
-  entry: `${__dirname}/app/tests/src/index.js`,
+  entry: `${__dirname}/app/tests/src/index.ts`,
   output: {
     path: `${__dirname}/app/tests`,
     filename: 'dist/index.bundle.js',

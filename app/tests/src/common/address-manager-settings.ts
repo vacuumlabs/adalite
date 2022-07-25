@@ -1,7 +1,7 @@
 import {accountSettings} from './account-settings'
 import {cryptoProviderSettings} from './crypto-provider-settings'
 
-const byronAddressManagerSettings = [
+export const byronAddressManagerSettings = [
   {
     isChange: false,
     cryptoSettings: cryptoProviderSettings[0],
@@ -22,7 +22,7 @@ const byronAddressManagerSettings = [
     isChange: true,
     cryptoSettings: cryptoProviderSettings[3],
   },
-]
+] as const
 
 // const addressManagerSettings = [
 //   {
@@ -51,7 +51,7 @@ const byronAddressManagerSettings = [
 //   },
 // ]
 
-const addressManagerSettings = {
+export const addressManagerSettings = {
   changeAddressProviderForAccount0: {
     ...accountSettings.ShelleyAccount0,
     isChange: true,
@@ -72,6 +72,4 @@ const addressManagerSettings = {
     isChange: false,
     addresses: accountSettings.ShelleyAccount1.externalAddresses,
   },
-}
-
-export {byronAddressManagerSettings, addressManagerSettings}
+} as const

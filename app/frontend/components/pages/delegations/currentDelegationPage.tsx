@@ -9,6 +9,7 @@ import roundNumber from './../../../helpers/roundNumber'
 import {SATURATION_POINT} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
 import {useActiveAccount, useIsActiveAccountDelegating} from '../../../selectors'
+import BigNumber from 'bignumber.js'
 
 const SaturationInfo = (pool) => {
   if (pool.liveStake == null) return <Fragment />
@@ -53,7 +54,7 @@ const CurrentDelegationPage = ({
             )}
             {pool.fixedCost != null && (
               <div className="current-delegation-id">
-                Fixed cost: {printAda(parseInt(pool.fixedCost, 10) as Lovelace)}
+                Fixed cost: {printAda(new BigNumber(pool.fixedCost) as Lovelace)}
               </div>
             )}
             {pool.roa != null && pool.roa !== '0' && (

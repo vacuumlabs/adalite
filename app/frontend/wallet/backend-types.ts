@@ -161,11 +161,11 @@ export type _Utxo = {
 export type BulkAdressesUtxoResponse = SuccessResponse<Array<_Utxo>> | TxSubmissionFailure
 export type TokenMetadaField = {
   sequenceNumber: number
-  value: string
+  value: string | number
   signatures: {
     signature: string
     publicKey: string
-  }
+  }[]
 }
 export type TokenMetadata = {
   subject: string

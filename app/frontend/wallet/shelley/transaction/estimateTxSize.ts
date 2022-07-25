@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import {InternalError, InternalErrorReason} from '../../../errors'
 import assertUnreachable from '../../../helpers/assertUnreachable'
 import {Lovelace} from '../../../types'
@@ -16,13 +17,14 @@ import {
   cborizeTxOutputs,
   cborizeTxWithdrawals,
 } from '../shelley-transaction'
-import {encode} from 'borc'
+import {encodeCbor} from '../../helpers/cbor'
 
 function estimateAuxiliaryDataSize(auxiliaryData: TxPlanAuxiliaryData) {
   switch (auxiliaryData.type) {
     case 'CATALYST_VOTING': {
       const placeholderMetaSignature = 'x'.repeat(CATALYST_SIGNATURE_BYTE_LENGTH * 2)
-      return encode(cborizeTxAuxiliaryVotingData(auxiliaryData, placeholderMetaSignature)).length
+      return encodeCbor(cborizeTxAuxiliaryVotingData(auxiliaryData, placeholderMetaSignature))
+        .length
     }
     default:
       return assertUnreachable(auxiliaryData.type)
@@ -37,28 +39,29 @@ export function estimateTxSize(
   certificates: Array<TxCertificate>,
   withdrawals: Array<TxWithdrawal>,
   auxiliaryData: TxPlanAuxiliaryData | null
-): Lovelace {
+): number {
   // the 1 is there for the key in the tx map
-  const txInputsSize = encode(cborizeTxInputs(inputs)).length + 1
+  const txInputsSize = encodeCbor(cborizeTxInputs(inputs)).length + 1
   /*
    * we have to estimate size of tx outputs since we are calculating
    * fee also in cases we dont know the amount of coins in advance
    */
+  const maxInt64 = new BigNumber(Number.MAX_SAFE_INTEGER)
   const txOutputs: TxOutput[] = outputs.map((output) => ({
     isChange: false,
     address: output.address,
-    coins: Number.MAX_SAFE_INTEGER as Lovelace,
+    coins: maxInt64 as Lovelace,
     tokenBundle: output.tokenBundle,
   }))
   // TODO: max output size
-  const txOutputsSize = encode(cborizeTxOutputs(txOutputs)).length + 1
+  const txOutputsSize = encodeCbor(cborizeTxOutputs(txOutputs)).length + 1
 
-  const txCertificatesSize = encode(cborizeTxCertificates(certificates)).length + 1
-  const txWithdrawalsSize = encode(cborizeTxWithdrawals(withdrawals)).length + 1
-  const txTllSize = encode(Number.MAX_SAFE_INTEGER).length + 1
-  const txFeeSize = encode(Number.MAX_SAFE_INTEGER).length + 1
+  const txCertificatesSize = encodeCbor(cborizeTxCertificates(certificates)).length + 1
+  const txWithdrawalsSize = encodeCbor(cborizeTxWithdrawals(withdrawals)).length + 1
+  const txTllSize = encodeCbor(Number.MAX_SAFE_INTEGER).length + 1
+  const txFeeSize = encodeCbor(Number.MAX_SAFE_INTEGER).length + 1
   const txAuxiliaryDataHashSize = auxiliaryData
-    ? encode('x'.repeat(METADATA_HASH_BYTE_LENGTH * 2)).length + 1
+    ? encodeCbor('x'.repeat(METADATA_HASH_BYTE_LENGTH * 2)).length + 1
     : 0
   const txAuxSize =
     txInputsSize +

@@ -11,8 +11,9 @@ import {
   computeRequiredDeposit,
   computeRequiredTxFee,
 } from './utils'
-import {encode} from 'borc'
 import {MAX_OUTPUT_TOKENS, MIN_UTXO_VALUE} from './constants'
+import BigNumber from 'bignumber.js'
+import {encodeCbor} from '../../helpers/cbor'
 
 /*
   computing tx plan happens in multiple stages, first we calculate sums of inputs, outputs and
@@ -41,17 +42,21 @@ export function computeTxPlan(
   withdrawals: Array<TxWithdrawal>,
   auxiliaryData: TxPlanAuxiliaryData | null
 ): TxPlanResult {
-  const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
-  const totalInput = inputs.reduce((acc, input) => acc + input.coins, 0) + totalRewards
+  const totalRewards = withdrawals.reduce((acc, {rewards}) => acc.plus(rewards), new BigNumber(0))
+  const totalInput = inputs
+    .reduce((acc, input) => acc.plus(input.coins), new BigNumber(0))
+    .plus(totalRewards)
   const totalInputTokens = aggregateTokenBundles(inputs.map(({tokenBundle}) => tokenBundle))
   const deposit = computeRequiredDeposit(certificates)
-  const totalOutput = outputs.reduce((acc, {coins}) => acc + coins, 0) + deposit
+  const totalOutput = outputs
+    .reduce((acc, {coins}) => acc.plus(coins), new BigNumber(0))
+    .plus(deposit)
   const totalOutputTokens = aggregateTokenBundles(outputs.map(({tokenBundle}) => tokenBundle))
 
   // total amount of lovelace that had to be added to token-containing outputs
   const additionalLovelaceAmount = outputs.reduce(
-    (acc, {coins, tokenBundle}) => (tokenBundle.length > 0 ? acc + coins : acc),
-    0
+    (acc, {coins, tokenBundle}) => (tokenBundle.length > 0 ? acc.plus(coins) : acc),
+    new BigNumber(0)
   ) as Lovelace
 
   const feeWithoutChange = computeRequiredTxFee(
@@ -65,10 +70,10 @@ export function computeTxPlan(
   const tokenDifference = getTokenBundlesDifference(totalInputTokens, totalOutputTokens)
 
   const isTokenDifferenceEmpty =
-    tokenDifference.length === 0 || tokenDifference.every(({quantity}) => quantity === 0)
+    tokenDifference.length === 0 || tokenDifference.every(({quantity}) => quantity.isZero())
 
   // Cannot construct transaction plan, not enought tokens
-  if (tokenDifference.some(({quantity}) => quantity < 0)) {
+  if (tokenDifference.some(({quantity}) => quantity.lt(0))) {
     return {
       success: false,
       minimalLovelaceAmount: additionalLovelaceAmount,
@@ -78,10 +83,10 @@ export function computeTxPlan(
     }
   }
 
-  const remainingNoChangeLovelace = totalInput - totalOutput - feeWithoutChange
+  const remainingNoChangeLovelace = totalInput.minus(totalOutput).minus(feeWithoutChange)
 
   // Cannot construct transaction plan, not enough lovelace
-  if (inputs.length === 0 || remainingNoChangeLovelace < 0) {
+  if (inputs.length === 0 || remainingNoChangeLovelace.lt(0)) {
     return {
       success: false,
       minimalLovelaceAmount: additionalLovelaceAmount,
@@ -92,7 +97,7 @@ export function computeTxPlan(
   }
 
   // No change necessary, perfect fit
-  if (isTokenDifferenceEmpty && remainingNoChangeLovelace === 0) {
+  if (isTokenDifferenceEmpty && remainingNoChangeLovelace.isZero()) {
     return {
       success: true,
       txPlan: {
@@ -116,7 +121,7 @@ export function computeTxPlan(
   const adaOnlyChangeOutput: TxOutput = {
     isChange: false,
     address: possibleChange.address,
-    coins: 0 as Lovelace,
+    coins: new BigNumber(0) as Lovelace,
     tokenBundle: [],
   }
 
@@ -128,12 +133,12 @@ export function computeTxPlan(
     auxiliaryData
   )
 
-  const remainingAdaOnlyChangeLovelace = (totalInput -
-    totalOutput -
-    feeWithAdaOnlyChange) as Lovelace
+  const remainingAdaOnlyChangeLovelace = totalInput
+    .minus(totalOutput)
+    .minus(feeWithAdaOnlyChange) as Lovelace
 
   // We cannot create a change output with minimal ada so we add it to the fee
-  if (isTokenDifferenceEmpty && remainingAdaOnlyChangeLovelace < MIN_UTXO_VALUE) {
+  if (isTokenDifferenceEmpty && remainingAdaOnlyChangeLovelace.lt(MIN_UTXO_VALUE)) {
     return {
       success: true,
       txPlan: {
@@ -143,7 +148,7 @@ export function computeTxPlan(
         certificates,
         deposit,
         additionalLovelaceAmount,
-        fee: (totalInput - totalOutput) as Lovelace,
+        fee: totalInput.minus(totalOutput) as Lovelace,
         baseFee: feeWithoutChange,
         withdrawals,
         auxiliaryData,
@@ -189,18 +194,18 @@ export function computeTxPlan(
   )
 
   const minimalTokenChangeLovelace = tokenChangeOutputs.reduce(
-    (acc, {coins}) => acc + coins,
-    0
+    (acc, {coins}) => acc.plus(coins),
+    new BigNumber(0)
   ) as Lovelace
 
-  const remainingTokenChangeLovelace = (totalInput -
-    totalOutput -
-    minimalTokenChangeLovelace -
-    feeWithTokenChange) as Lovelace
+  const remainingTokenChangeLovelace = totalInput
+    .minus(totalOutput)
+    .minus(minimalTokenChangeLovelace)
+    .minus(feeWithTokenChange) as Lovelace
 
   // remainingTokenChangeLovelace has to be positive,
   // otherwise not enough funds to pay for change outputs
-  if (remainingTokenChangeLovelace < 0) {
+  if (remainingTokenChangeLovelace.lt(0)) {
     return {
       success: false,
       minimalLovelaceAmount: additionalLovelaceAmount,
@@ -211,7 +216,7 @@ export function computeTxPlan(
   }
 
   // if remainingTokenChangeLovelace is positive, we try to put it in ada only change output
-  if (remainingTokenChangeLovelace > MIN_UTXO_VALUE) {
+  if (remainingTokenChangeLovelace.gt(MIN_UTXO_VALUE)) {
     const feeWithAdaAndTokenChange = computeRequiredTxFee(
       inputs,
       [...outputs, ...tokenChangeOutputs, adaOnlyChangeOutput],
@@ -220,8 +225,9 @@ export function computeTxPlan(
       auxiliaryData
     )
 
-    const adaOnlyChangeOutputLovelace = (remainingTokenChangeLovelace -
-      (feeWithAdaAndTokenChange - feeWithTokenChange)) as Lovelace
+    const adaOnlyChangeOutputLovelace = remainingTokenChangeLovelace.minus(
+      feeWithAdaAndTokenChange.minus(feeWithTokenChange)
+    ) as Lovelace
 
     return {
       success: true,
@@ -248,7 +254,7 @@ export function computeTxPlan(
 
   const firstChangeOutput: TxOutput = {
     ...tokenChangeOutputs[0],
-    coins: (tokenChangeOutputs[0].coins + remainingTokenChangeLovelace) as Lovelace,
+    coins: tokenChangeOutputs[0].coins.plus(remainingTokenChangeLovelace) as Lovelace,
   }
 
   return {
@@ -293,24 +299,25 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
   }
 
   const outputsWithChange = [...outputs, ...change]
+  const maxInt64 = new BigNumber(2).pow(64)
+  // TODO figure out why this din't prevent the creation of a tx with tokens over MAX_SAFE_INTEGER
   if (
     outputsWithChange.some(({coins, tokenBundle}) => {
-      coins > Number.MAX_SAFE_INTEGER ||
-        tokenBundle.some(({quantity}) => quantity > Number.MAX_SAFE_INTEGER)
+      coins.gt(maxInt64) || tokenBundle.some(({quantity}) => quantity.gt(maxInt64))
     })
   ) {
     throw new InternalError(InternalErrorReason.CoinAmountError)
   }
 
   // we cant build the transaction with big enough change lovelace
-  if (change.some(({coins, tokenBundle}) => coins < computeMinUTxOLovelaceAmount(tokenBundle))) {
+  if (change.some(({coins, tokenBundle}) => coins.lt(computeMinUTxOLovelaceAmount(tokenBundle)))) {
     return {
       ...noTxPlan,
       error: {code: InternalErrorReason.ChangeOutputTooSmall},
     }
   }
 
-  if (outputs.some(({coins, tokenBundle}) => coins < computeMinUTxOLovelaceAmount(tokenBundle))) {
+  if (outputs.some(({coins, tokenBundle}) => coins.lt(computeMinUTxOLovelaceAmount(tokenBundle)))) {
     return {
       ...noTxPlan,
       error: {code: InternalErrorReason.OutputTooSmall},
@@ -319,7 +326,7 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
 
   if (
     outputsWithChange.some(
-      (output) => encode(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE
+      (output) => encodeCbor(cborizeSingleTxOutput(output)).length > MAX_TX_OUTPUT_SIZE
     )
   ) {
     return {
@@ -328,14 +335,19 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
     }
   }
 
-  const totalRewards = withdrawals.reduce((acc, {rewards}) => acc + rewards, 0)
-  // When deregistering stake key, returned "deposit" should be in all cases higher than the Tx fee
+  const withdrawnRewards = withdrawals.reduce(
+    (acc, {rewards}) => acc.plus(rewards),
+    new BigNumber(0)
+  )
   const isDeregisteringStakeKey = certificates.some(
     (c) => c.type === CertificateType.STAKING_KEY_DEREGISTRATION
   )
+  // Excluding deregistering stake key case
+  // because the returned "deposit" (2 ADA) is always higher than the Tx fee
   if (
+    withdrawnRewards.gt(0) &&
     !isDeregisteringStakeKey &&
-    ((totalRewards > 0 && totalRewards < fee) || (totalRewards > 0 && fee > baseFee))
+    (withdrawnRewards.lt(fee) || fee.gt(baseFee))
   ) {
     return {
       ...noTxPlan,

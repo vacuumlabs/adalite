@@ -3,7 +3,6 @@ import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
 import LedgerTransportWebUsb from '@ledgerhq/hw-transport-webusb'
 import LedgerTransportWebHid from '@ledgerhq/hw-transport-webhid'
 import Ledger, * as LedgerTypes from '@cardano-foundation/ledgerjs-hw-app-cardano'
-import * as cbor from 'borc'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
 import {
   ShelleySignedTransactionStructured,
@@ -64,6 +63,7 @@ import {
 import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCertificateUtils'
 import assertUnreachable from '../../helpers/assertUnreachable'
 import * as assert from 'assert'
+import {encodeCbor} from '../helpers/cbor'
 
 let _activeTransport: Transport | null
 const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
@@ -223,7 +223,7 @@ const ShelleyLedgerCryptoProvider = async ({
     return orderedTokenBundle.map(({policyId, assets}) => {
       const tokens = assets.map(({assetName, quantity}) => ({
         assetNameHex: assetName,
-        amount: quantity,
+        amount: quantity.toString(),
       }))
       return {
         policyIdHex: policyId,
@@ -244,7 +244,7 @@ const ShelleyLedgerCryptoProvider = async ({
               : base58AddressToHex(output.address),
           },
         },
-        amount: output.coins,
+        amount: output.coins.toString(),
         tokenBundle,
       }
       : {
@@ -258,7 +258,7 @@ const ShelleyLedgerCryptoProvider = async ({
             },
           },
         },
-        amount: output.coins,
+        amount: output.coins.toString(),
         tokenBundle,
       }
   }
@@ -438,7 +438,7 @@ const ShelleyLedgerCryptoProvider = async ({
     const chainCode = xpub2ChainCode(xpub)
     // only v1 witnesses has address atributes
     // since ledger is v2 they are always {}
-    const addressAttributes = cbor.encode({})
+    const addressAttributes = encodeCbor({})
     const signature = Buffer.from(witness.witnessSignatureHex, 'hex')
     return {
       publicKey,
@@ -579,7 +579,7 @@ const ShelleyLedgerCryptoProvider = async ({
 
     return {
       txHash: response.txHashHex,
-      txBody: cbor.encode(structuredTx).toString('hex'),
+      txBody: encodeCbor(structuredTx).toString('hex'),
     }
   }
 

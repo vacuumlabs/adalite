@@ -1,4 +1,4 @@
-import fetchMock from 'fetch-mock'
+import * as fetchMock from 'fetch-mock'
 import singleAddressesMock from './singleAddressesMock'
 import utxoMock from './utxoMock'
 
@@ -8,18 +8,16 @@ const mock = (ADALITE_CONFIG) => {
   }
 
   function mockBulkAddressSummaryEndpoint() {
-    fetchMock.config.overwriteRoutes = true
-
-    fetchMock.post({
-      name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
-      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
-      response: (url, options) => {
+    fetchMock.post(
+      `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
+      (url, options) => {
         const summary = {
-          caAddresses: [],
+          caAddresses: [] as string[],
           caTxNum: 0,
-          caBalance: {getCoin: 0, getTokens: []},
-          caTxList: [],
+          caBalance: {getCoin: '0', getTokens: []},
+          caTxList: [] as any[],
         }
+        // @ts-expect-error options.body doesn't seem to have a reasonable type
         JSON.parse(options.body).forEach((address) => {
           const singleResponse = singleAddressesMock[address]
           summary.caAddresses.push(address)
@@ -41,11 +39,14 @@ const mock = (ADALITE_CONFIG) => {
           sendAsJson: true,
         }
       },
-    })
+      {
+        name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/summary`,
+        overwriteRoutes: true,
+      }
+    )
   }
 
   function mockGetAccountInfo() {
-    fetchMock.config.overwriteRoutes = true
     const acctInfoMock = {
       delegation: {},
       rewards: 50000000,
@@ -60,12 +61,11 @@ const mock = (ADALITE_CONFIG) => {
         body: acctInfoMock,
         sendAsJson: true,
       },
+      overwriteRoutes: true,
     })
   }
 
   function mockGetStakePools() {
-    fetchMock.config.overwriteRoutes = true
-
     const stakePoolsMock = {
       '04c60c78417132a195cbb74975346462410f72612952a7c4ade7e438': {
         pledge: '30000000000',
@@ -85,12 +85,11 @@ const mock = (ADALITE_CONFIG) => {
         body: stakePoolsMock,
         sendAsJson: true,
       },
+      overwriteRoutes: true,
     })
   }
 
   function mockGetConversionRates() {
-    fetchMock.config.overwriteRoutes = true
-
     fetchMock.mock({
       matcher: 'https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR',
       response: {
@@ -101,12 +100,11 @@ const mock = (ADALITE_CONFIG) => {
         },
         sendAsJson: true,
       },
+      overwriteRoutes: true,
     })
   }
 
   function mockRawTxEndpoint() {
-    fetchMock.config.overwriteRoutes = true
-
     const requestsAndResponses = {
       '6ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765': {
         Right:
@@ -121,13 +119,12 @@ const mock = (ADALITE_CONFIG) => {
           body: requestsAndResponses[request],
           sendAsJson: true,
         },
+        overwriteRoutes: true,
       })
     }
   }
 
   function mockTransactionSubmitter() {
-    fetchMock.config.overwriteRoutes = true
-
     const requestsAndResponses = {
       '{"txHash":"fbc75523d969d65caf94e9ab4e689e220ee3d7380319db75cef90273f3ad68dc","txBody":"82839f8200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e2765008200d81858248258206ca5fde47f4ff7f256a7464dbf0cb9b4fb6bce9049eee1067eed65cf5d6e276501ff9f8282d818584283581c13f3997560a5b81f5ac680b3322a2339433424e4e589ab3d752afdb6a101581e581c2eab4601bfe583febc23a04fb0abc21557adb47cea49c68d7b2f40a5001ac63884bf182f8282d818584283581cf9a5257f805a1d378c87b0bfb09232c10d9098bc56fd21d9a6a4072aa101581e581c140539c64edded60a7f2c4692c460a154cbdd06088333fd7f75ea7e7001a0ff80ab91a002a81c7ffa0828200d81858858258406830165e81b0666850f36a4583f7a8a29b09e120f99852c56d37ded39bed1bb0464a98c35cf0f6458be6351d8f8527fb8b17fe6be0523e901d9562c2b7a52a9e584020278d74d3650abba727b78c314f7d0565778fc7a80f72918c909ddc03553c2f04b768673b9c3132b172aa01ec9c666598d10f2ac968a58c92ab9ce7fb3bd50d8200d81858858258400093f68540416f4deea889da21af1f1760edc3478bcac204a3013a046327c29c1748af9d186a7e463caa63ef2c660e5f2a051ad014a050d1b27e636128e1947e5840174f2976ee75a1b2129c4330f022863e5a4572247f18e2d4437f5b2c711506c23732d64f14ba44ba980364430ad1eca7d3b222828db2048d8e67c6224958d102"}': {
         Right: {
@@ -151,6 +148,7 @@ const mock = (ADALITE_CONFIG) => {
           body: requestsAndResponses[request],
           sendAsJson: true,
         },
+        overwriteRoutes: true,
       })
     }
 
@@ -163,17 +161,16 @@ const mock = (ADALITE_CONFIG) => {
         },
         sendAsJson: true,
       },
+      overwriteRoutes: true,
     })
   }
 
   function mockUtxoEndpoint() {
-    fetchMock.config.overwriteRoutes = true
-
-    fetchMock.post({
-      name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
-      matcher: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
-      response: (url, options) => {
+    fetchMock.post(
+      `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
+      (url, options) => {
         let utxos = []
+        // @ts-expect-error options.body doesn't seem to have a reasonable type
         JSON.parse(options.body).forEach((addr) => {
           if (utxoMock[addr]) utxos = utxos.concat(utxoMock[addr])
         })
@@ -183,13 +180,17 @@ const mock = (ADALITE_CONFIG) => {
           sendAsJson: true,
         }
       },
-    })
+      {
+        name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
+        overwriteRoutes: true,
+      },
+    )
   }
 
   function mockPoolMeta() {
-    fetchMock.post({
-      matcher: `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
-      response: {
+    fetchMock.post(
+      `${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/poolMeta`,
+      {
         status: 200,
         body: {
           name: 'XXXX',
@@ -199,13 +200,14 @@ const mock = (ADALITE_CONFIG) => {
         },
         sendAsJson: true,
       },
-    })
+      {overwriteRoutes: true},
+    )
   }
 
   function mockGetAccountState() {
-    fetchMock.post({
-      matcher: 'https://iohk-mainnet.yoroiwallet.com/api/getAccountState',
-      response: {
+    fetchMock.post(
+      'https://iohk-mainnet.yoroiwallet.com/api/getAccountState',
+      {
         status: 200,
         body: {
           e1c3892366f174a76af9252f78368f5747d3055ab3568ea3b6bf40b01e: {
@@ -217,7 +219,8 @@ const mock = (ADALITE_CONFIG) => {
         },
         sendAsJson: true,
       },
-    })
+      {overwriteRoutes: true},
+    )
   }
 
   function mockAccountDelegationHistory() {
@@ -298,18 +301,19 @@ const mock = (ADALITE_CONFIG) => {
         },
         sendAsJson: true,
       },
+      overwriteRoutes: true,
     })
   }
 
   function mockTokenRegistry() {
-    fetchMock.post({
-      matcher: `begin:${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/bulk/tokens/metadata`,
-      response: {
+    fetchMock.post(
+      `begin:${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/bulk/tokens/metadata`,
+      {
         status: 200,
         body: [],
         sendAsJson: true,
       },
-    })
+    )
   }
 
   return {

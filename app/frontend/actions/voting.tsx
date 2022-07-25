@@ -13,6 +13,7 @@ import {getWallet} from './wallet'
 import errorActions from './error'
 import {txPlanValidator} from '../helpers/validators'
 import {xpub2pub} from '../wallet/shelley/helpers/addresses'
+import BigNumber from 'bignumber.js'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -65,7 +66,7 @@ export default (store: Store) => {
       votingPubKey,
       stakePubKey,
       stakingAddress: sourceAccount.stakingAddress,
-      nonce: BigInt(nonce),
+      nonce: BigInt(nonce.toString()),
     })
 
     if (txPlanResult.success === true) {
@@ -85,8 +86,12 @@ export default (store: Store) => {
     } else {
       const balance = getSourceAccountInfo(state).balance as Lovelace
       const validationError =
-        txPlanValidator(0 as Lovelace, 0 as Lovelace, balance, txPlanResult.estimatedFee) ||
-        txPlanResult.error
+        txPlanValidator(
+          new BigNumber(0) as Lovelace,
+          new BigNumber(0) as Lovelace,
+          balance,
+          txPlanResult.estimatedFee
+        ) || txPlanResult.error
       setError(state, {
         errorName: 'transactionSubmissionError',
         error: validationError,

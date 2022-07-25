@@ -67,8 +67,8 @@ const SendAdaReview = ({
 }) => {
   const cryptoProviderType = useGetCryptoProviderType()
   const {address, coins, fee, minimalLovelaceAmount, token} = transactionSummary
-  const lovelaceAmount = (coins + minimalLovelaceAmount) as Lovelace
-  const total = (coins + fee + minimalLovelaceAmount) as Lovelace
+  const lovelaceAmount = coins.plus(minimalLovelaceAmount) as Lovelace
+  const total = coins.plus(fee).plus(minimalLovelaceAmount) as Lovelace
   const formattedAssetItemProps: FormattedAssetItemProps | null = token && {
     ...token,
     fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
@@ -141,7 +141,7 @@ const DelegateReview = ({
   transactionSummary: TransactionSummary & DelegateTransactionSummary
 }) => {
   const {stakePool, deposit, fee} = transactionSummary
-  const total = (fee + deposit) as Lovelace
+  const total = fee.plus(deposit) as Lovelace
   return (
     <Fragment>
       <div className="review">
@@ -189,7 +189,7 @@ const DeregisterStakeKeyReview = ({
   onCancel: () => any
 }) => {
   const {deposit, fee, rewards} = transactionSummary
-  const total = (fee + deposit) as Lovelace
+  const total = fee.plus(deposit) as Lovelace
   const [checked, setChecked] = useState(false)
   return (
     <div className="deregister-staking-key-dialog">
@@ -208,13 +208,13 @@ const DeregisterStakeKeyReview = ({
       </Alert>
       <div className="review deregister-staking-key">
         <div className="ada-label">Returned deposit</div>
-        <div className="review-fee">{printAda(-deposit as Lovelace)}</div>
+        <div className="review-fee">{printAda(deposit.negated() as Lovelace)}</div>
         <div className="ada-label">Withdrawn rewards</div>
         <div className="review-fee">{printAda(rewards)}</div>
         <div className="ada-label">Fee</div>
         <div className="review-fee">{printAda(transactionSummary.fee as Lovelace)}</div>
         <div className="ada-label">Returned</div>
-        <div className="review-total">{printAda(-total as Lovelace)}</div>
+        <div className="review-total">{printAda(total.negated() as Lovelace)}</div>
       </div>
       <label className="checkbox deregister-stake-key-check">
         <input
@@ -237,7 +237,7 @@ const WithdrawReview = ({
 }) => {
   assert(transactionSummary.plan != null)
   const {rewards, fee} = transactionSummary
-  const total = (rewards - fee) as Lovelace
+  const total = rewards.minus(fee) as Lovelace
   return (
     <Fragment>
       <div>
@@ -304,7 +304,7 @@ const ConvertFundsReview = ({
   transactionSummary: TransactionSummary & SendTransactionSummary
 }) => {
   const {address, coins, fee} = transactionSummary
-  const total = (coins + fee) as Lovelace
+  const total = coins.plus(fee) as Lovelace
   return (
     <Fragment>
       <div>

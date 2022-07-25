@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import distinct from '../../../helpers/distinct'
 import {Address, CertificateType, Lovelace, TokenBundle} from '../../../types'
 import {aggregateTokenBundles} from '../../helpers/tokenFormater'
@@ -10,7 +11,7 @@ export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace
   const quot = (x: number, y: number) => Math.floor(x / y)
   const roundupBytesToWords = (x: number) => quot(x + 7, 8)
   // TODO: this to network config or constants
-  const minUTxOValue = MIN_UTXO_VALUE
+  const minUTxOValue = new BigNumber(MIN_UTXO_VALUE)
   // NOTE: should be 2, but a bug in Haskell set this to 0
   const coinSize = 0
   const txOutLenNoVal = 14
@@ -42,18 +43,20 @@ export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace
   if (aggregatedTokenBundle.length === 0) {
     return minUTxOValue as Lovelace
   } else {
-    return Math.max(
+    return BigNumber.max(
       minUTxOValue,
-      quot(minUTxOValue, adaOnlyUtxoSize) * (utxoEntrySizeWithoutVal + size)
+      quot(minUTxOValue.toNumber(), adaOnlyUtxoSize) * (utxoEntrySizeWithoutVal + size)
     ) as Lovelace
   }
 }
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
-  const a = 155381
-  const b = 43.946
+  const a = new BigNumber(155381)
+  const b = new BigNumber(43.946)
 
-  return Math.ceil(a + txSizeInBytes * b) as Lovelace
+  return a
+    .plus(new BigNumber(txSizeInBytes).times(b))
+    .integerValue(BigNumber.ROUND_CEIL) as Lovelace
 }
 
 export function computeRequiredTxFee(
@@ -77,7 +80,10 @@ export function computeRequiredDeposit(certificates: Array<TxCertificate>): Love
     [CertificateType.STAKING_KEY_REGISTRATION]: 2000000,
     [CertificateType.STAKING_KEY_DEREGISTRATION]: -2000000,
   }
-  return certificates.reduce((acc, {type}) => acc + CertificateDeposit[type], 0) as Lovelace
+  return certificates.reduce(
+    (acc, {type}) => acc.plus(CertificateDeposit[type]),
+    new BigNumber(0)
+  ) as Lovelace
 }
 
 export const createTokenChangeOutputs = (

@@ -29,8 +29,8 @@
     "bignumber.js": "^9.0.2",
     "bip39-light": "^1.0.7",
     "bitbox02-api": "^0.13.0",
-    "borc": "^2.1.2",
     "cardano-crypto.js": "^6.1.0",
+    "cbor": "^8.1.0",
     "chacha": "^2.1.0",
     "js-base64": "^3.7.2",
     "lodash": "^4.17.21",
@@ -42,9 +42,10 @@
   },
   "devDependencies": {
     "@testing-library/cypress": "^7.0.4",
+    "@types/fetch-mock": "^6",
     "assert": "^2.0.0",
     "cypress": "^9.0.0",
-    "fetch-mock": "^6.5.1",
+    "fetch-mock": "^6",
     "fetch-readablestream": "^0.2.0",
     "improved-yarn-audit": "^3.0.0",
     "sinon": "^7.3.2"

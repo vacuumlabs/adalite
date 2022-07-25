@@ -19,12 +19,13 @@ import {
   TransactionSummary,
 } from '../types'
 import {TxPlan} from '../wallet/shelley/transaction'
-import {encode} from 'borc'
 import {InternalError, InternalErrorReason} from '../errors'
 import {TxSummary} from '../wallet/backend-types'
 import * as assert from 'assert'
 import {getDeviceBrandName, isHwWallet} from '../wallet/helpers/cryptoProviderUtils'
 import {getChangeAddress} from '../wallet/account'
+import BigNumber from 'bignumber.js'
+import {encodeCbor} from '../wallet/helpers/cbor'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -97,7 +98,7 @@ export default (store: Store) => {
       isCrossAccount: isTxBetweenAccounts,
       keepConfirmationDialogOpen,
       // TODO: maybe do this only on demand
-      rawTransaction: Buffer.from(encode(txAux)).toString('hex'),
+      rawTransaction: Buffer.from(encodeCbor(txAux)).toString('hex'),
       rawTransactionOpen: false,
     })
   }
@@ -281,9 +282,10 @@ export default (store: Store) => {
       .getMaxNonStakingAmount(getSourceAccountInfo(state).utxos, address, {
         assetFamily: AssetFamily.ADA,
         fieldValue: '',
-        coins: 0 as Lovelace,
+        coins: new BigNumber(0) as Lovelace,
       })
-    const coins = sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
+    const coins =
+      sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (new BigNumber(0) as Lovelace)
     const txPlanResult = prepareTxPlan({
       address,
       sendAmount,
@@ -297,13 +299,13 @@ export default (store: Store) => {
         address,
         coins,
         token: null,
-        minimalLovelaceAmount: 0 as Lovelace,
+        minimalLovelaceAmount: new BigNumber(0) as Lovelace,
       }
       setTransactionSummaryOld(txPlanResult.txPlan, transactionSummary)
       await confirmTransactionOld(getState(), TxType.CONVERT_LEGACY)
     } else {
       const validationError =
-        txPlanValidator(coins, 0 as Lovelace, balance, txPlanResult.estimatedFee) ||
+        txPlanValidator(coins, new BigNumber(0) as Lovelace, balance, txPlanResult.estimatedFee) ||
         txPlanResult.error
       setError(state, {
         errorName: 'transactionSubmissionError',

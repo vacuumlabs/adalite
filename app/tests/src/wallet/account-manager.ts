@@ -1,4 +1,4 @@
-import assert from 'assert'
+import * as assert from 'assert'
 import {AccountManager} from '../../../frontend/wallet/account-manager'
 import {accountManagerSettings} from '../common/account-manager-settings'
 import {ADALITE_CONFIG} from '../../../frontend/config'
@@ -8,9 +8,9 @@ import BlockchainExplorer from '../../../frontend/wallet/blockchain-explorer'
 import ShelleyJsCryptoProvider from '../../../frontend/wallet/shelley/shelley-js-crypto-provider'
 import mockNetwork from '../common/mock'
 
-const accountManagers = {}
+const accountManagers: Record<string, ReturnType<typeof AccountManager>> = {}
 
-const initAccountManager = async (settings, i) => {
+const initAccountManager = async (settings) => {
   const {
     type,
     derivationSchemeType,
@@ -21,7 +21,7 @@ const initAccountManager = async (settings, i) => {
     maxAccountIndex,
   } = settings
   const config = {...ADALITE_CONFIG, isShelleyCompatible, shouldExportPubKeyBulk}
-  const blockchainExplorer = BlockchainExplorer(ADALITE_CONFIG, {})
+  const blockchainExplorer = BlockchainExplorer(ADALITE_CONFIG)
 
   let walletSecretDef
   if (type === 'walletSecretDef') {

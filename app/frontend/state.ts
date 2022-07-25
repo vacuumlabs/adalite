@@ -1,4 +1,5 @@
 import * as assert from 'assert'
+import BigNumber from 'bignumber.js'
 import {ADALITE_CONFIG} from './config'
 import {MainTabs} from './constants'
 import {InternalErrorReason} from './errors'
@@ -90,7 +91,7 @@ export interface State {
   cachedTransactionSummaries: CachedTransactionSummaries
   rawTransactionOpen: boolean
   rawTransaction: string
-  transactionFee?: any
+  transactionFee?: Lovelace
   txConfirmType?: TxType
   isCrossAccount: boolean
   txSuccessTab: string
@@ -184,11 +185,11 @@ const initialState: State = {
   // send form
   // todo - object (sub-state) from send-ada form
   sendAddress: {fieldValue: ''},
-  sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '0', coins: 0 as Lovelace},
+  sendAmount: {assetFamily: AssetFamily.ADA, fieldValue: '0', coins: new BigNumber(0) as Lovelace},
 
   // delegation
   shelleyDelegation: {
-    delegationFee: 0 as Lovelace,
+    delegationFee: new BigNumber(0) as Lovelace,
     selectedPool: null,
   },
   gettingPoolInfo: false,
@@ -198,7 +199,7 @@ const initialState: State = {
   cachedTransactionSummaries: {},
   rawTransactionOpen: false,
   rawTransaction: '',
-  transactionFee: 0,
+  transactionFee: new BigNumber(0) as Lovelace,
   isCrossAccount: false,
   txSuccessTab: '',
   keepConfirmationDialogOpen: false,
@@ -222,12 +223,12 @@ const initialState: State = {
       stakingXpub: null as any,
       stakingAddress: null as any,
       utxos: [],
-      balance: 0 as Lovelace,
+      balance: new BigNumber(0) as Lovelace,
       tokenBalance: [],
       shelleyBalances: {
-        stakingBalance: 0 as Lovelace,
-        nonStakingBalance: 0 as Lovelace,
-        rewardsAccountBalance: 0 as Lovelace,
+        stakingBalance: new BigNumber(0) as Lovelace,
+        nonStakingBalance: new BigNumber(0) as Lovelace,
+        rewardsAccountBalance: new BigNumber(0) as Lovelace,
       },
       shelleyAccountInfo: {
         accountPubkeyHex: '',
@@ -238,13 +239,13 @@ const initialState: State = {
         currentEpoch: 0,
         delegation: {},
         hasStakingKey: false,
-        rewards: 0,
+        rewards: '0',
         rewardDetails: {
           upcoming: null,
           nearest: null,
           currentDelegation: null,
         },
-        value: 0,
+        value: new BigNumber(0) as Lovelace,
       },
       transactionHistory: [],
       stakingHistory: [],

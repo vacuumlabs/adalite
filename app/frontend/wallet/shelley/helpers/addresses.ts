@@ -12,7 +12,7 @@ import {
 } from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../../constants'
 import {NetworkId} from '../../types'
-import {encode} from 'borc'
+import {encodeCbor} from '../../helpers/cbor'
 
 export const encodeAddress = (address: Buffer): Address => {
   const addressType = getAddressType(address)
@@ -60,7 +60,7 @@ export const isShelleyPath = (path: BIP32Path) => path[0] - HARDENED_THRESHOLD =
 export const isV1Address = (address: string) => address.startsWith('D')
 
 export const xpubHexToCborPubHex = (xpubHex: HexString) =>
-  encode(Buffer.from(xpubHex, 'hex').slice(0, 32)).toString('hex')
+  encodeCbor(Buffer.from(xpubHex, 'hex').slice(0, 32)).toString('hex')
 
 // TODO: replace this with isValidShelleyAddress from cardano-crypto.js
 export const isShelleyFormat = (address: string): boolean => {

@@ -1,4 +1,4 @@
-import assert from 'assert'
+import * as assert from 'assert'
 
 import derivationSchemes from '../../../frontend/wallet/helpers/derivation-schemes'
 import AddressManager from '../../../frontend/wallet/address-manager'
@@ -15,10 +15,10 @@ const mockConfig = {
   ADALITE_GAP_LIMIT: 10,
 }
 
-const blockchainExplorer = BlockchainExplorer(mockConfig, {})
+const blockchainExplorer = BlockchainExplorer(mockConfig)
 const addressManagers = {}
 
-const initAddressManager = async (settings, i) => {
+const initAddressManager = async (settings) => {
   const {
     accountIndex,
     isChange,

@@ -1,11 +1,11 @@
-import assert from 'assert'
+import * as assert from 'assert'
 
 import derivationSchemes from '../../frontend/wallet/helpers/derivation-schemes'
 import AddressManager from '../../frontend/wallet/address-manager'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import {byronAddressManagerSettings} from './common/address-manager-settings'
 import BlockchainExplorer from '../../frontend/wallet/blockchain-explorer'
-import ShelleyJsCryptoProvider from './../../frontend/wallet/shelley/shelley-js-crypto-provider'
+import ShelleyJsCryptoProvider from '../../frontend/wallet/shelley/shelley-js-crypto-provider'
 import mockNetwork from './common/mock'
 import {ByronAddressProvider} from '../../frontend/wallet/byron/byron-address-provider'
 
@@ -16,9 +16,9 @@ const mockConfig = {
   ADALITE_GAP_LIMIT: 10,
 }
 
-const blockchainExplorer = BlockchainExplorer(mockConfig, {})
+const blockchainExplorer = BlockchainExplorer(mockConfig)
 
-const byronAddressManagers = []
+const byronAddressManagers: ReturnType<typeof AddressManager>[] = []
 
 const initByronAddressManager = async (settings, i) => {
   const {cryptoSettings, isChange} = settings

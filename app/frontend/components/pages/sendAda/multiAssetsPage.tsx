@@ -53,7 +53,7 @@ const MultiAssetsPage = () => {
 
   const multiAssets: FormattedAssetItemProps[] = [
     ...tokenBalance
-      .sort((a: Token, b: Token) => b.quantity - a.quantity)
+      .sort((a: Token, b: Token) => b.quantity.comparedTo(a.quantity))
       .map((token: Token) => ({
         ...token,
         assetNameHex: token.assetName,

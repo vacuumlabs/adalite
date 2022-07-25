@@ -6,6 +6,7 @@ import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
 import {CertificateType, Lovelace} from '../../../types'
 import {State} from '../../../state'
+import BigNumber from 'bignumber.js'
 
 interface Props {
   closePoolRegTransactionModal: any
@@ -44,10 +45,12 @@ const SignPoolCertTxModal = ({
           <div className="review-label">Reward address</div>
           <div className="review-value">{poolCert.rewardAccountHex}</div>
           <div className="ada-label">Fixed Cost</div>
-          <div className="review-value">{printAda(parseInt(poolCert.costStr, 10) as Lovelace)}</div>
+          <div className="review-value">
+            {printAda(new BigNumber(poolCert.costStr) as Lovelace)}
+          </div>
           <div className="ada-label">Pledge</div>
           <div className="review-value">
-            {printAda(parseInt(poolCert.pledgeStr, 10) as Lovelace)}
+            {printAda(new BigNumber(poolCert.pledgeStr) as Lovelace)}
           </div>
           <div className="review-label">Margin</div>
           <div className="review-value">

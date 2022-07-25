@@ -12,6 +12,7 @@ import {SendTransactionSummary, TxType, Lovelace, AssetFamily, Address, SendAmou
 import debounceEvent from '../helpers/debounceEvent'
 import {createTokenRegistrySubject} from '../tokenRegistry/tokenRegistry'
 import * as assert from 'assert'
+import BigNumber from 'bignumber.js'
 
 export default (store: Store) => {
   const {setState, getState} = store
@@ -76,7 +77,7 @@ export default (store: Store) => {
     if (!isSendFormFilledAndValid(state)) {
       setState({
         calculatingFee: false,
-        transactionFee: 0,
+        transactionFee: new BigNumber(0) as Lovelace,
       })
       return
     }
@@ -89,7 +90,8 @@ export default (store: Store) => {
       txType: TxType.SEND_ADA,
     })
     const balance = getSourceAccountInfo(state).balance as Lovelace
-    const coins = sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (0 as Lovelace)
+    const coins =
+      sendAmount.assetFamily === AssetFamily.ADA ? sendAmount.coins : (new BigNumber(0) as Lovelace)
     const token = sendAmount.assetFamily === AssetFamily.TOKEN ? sendAmount.token : null
 
     /*
@@ -148,7 +150,7 @@ export default (store: Store) => {
   const validateSendFormAndCalculateFee = () => {
     validateSendForm(getState())
     resetTransactionSummary(getState())
-    setState({transactionFee: 0})
+    setState({transactionFee: new BigNumber(0) as Lovelace})
     const state = getState()
     if (isSendFormFilledAndValid(state)) {
       setState({calculatingFee: true})

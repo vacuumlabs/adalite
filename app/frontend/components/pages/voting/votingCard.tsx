@@ -14,6 +14,7 @@ import {CryptoProviderFeature, Lovelace} from '../../../types'
 import {toAda} from '../../../helpers/adaConverters'
 import styles from './voting.module.scss'
 import * as QRious from '../../../libs/qrious'
+import BigNumber from 'bignumber.js'
 
 const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   <div className={styles.catalystAppPair}>
@@ -52,7 +53,7 @@ const VotingCard = (): h.JSX.Element => {
     }
     if (!hasEnoughFundsForCatalyst) {
       return `Only users with more than ${toAda(
-        CATALYST_MIN_THRESHOLD as Lovelace
+        new BigNumber(CATALYST_MIN_THRESHOLD) as Lovelace
       )} ADA\ncan participate in voting.`
     }
     if (!hasRegisteredStakingKey) {

@@ -52,6 +52,7 @@ import {throwIfEpochBoundary} from '../helpers/epochBoundaryUtils'
 import cacheResults from '../helpers/cacheResults'
 import {filterValidTransactions} from '../helpers/common'
 import * as assert from 'assert'
+import BigNumber from 'bignumber.js'
 
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
@@ -115,24 +116,24 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     const outputTokenBundle: TokenBundle[] = []
     const inputTokenBundle: TokenBundle[] = []
 
-    let effect = 0 //effect on wallet balance accumulated
+    let effect = new BigNumber(0) //effect on wallet balance accumulated
     for (const [address, amount] of tx.ctbInputs || []) {
       if (addresses.includes(address)) {
-        effect -= +amount.getCoin
+        effect = effect.minus(amount.getCoin)
         const parsedInputTokenBundle = amount.getTokens.map((token) => parseToken(token))
         inputTokenBundle.push(parsedInputTokenBundle)
       }
     }
     for (const [address, amount] of tx.ctbOutputs || []) {
       if (addresses.includes(address)) {
-        effect += +amount.getCoin
+        effect = effect.plus(amount.getCoin)
         const parsedOutputTokenBundle = amount.getTokens.map((token) => parseToken(token))
         outputTokenBundle.push(parsedOutputTokenBundle)
       }
     }
     return {
       ...tx,
-      fee: parseInt(tx.fee, 10) as Lovelace,
+      fee: new BigNumber(tx.fee) as Lovelace,
       effect: effect as Lovelace,
       tokenEffects: getTokenBundlesDifference(
         aggregateTokenBundles(outputTokenBundle),
@@ -182,13 +183,13 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
       assert(addressSummary != null)
       return addressSummary.caBalance.getTokens.map((token) => parseToken(token))
     })
-    const tokenBundle = aggregateTokenBundles(addressTokenBundles).filter(
-      (token) => token.quantity > 0
+    const tokenBundle = aggregateTokenBundles(addressTokenBundles).filter((token) =>
+      token.quantity.gt(0)
     )
     const coins = addressInfos.reduce((acc, elem) => {
       assert(elem != null)
-      return acc + parseInt(elem.caBalance.getCoin, 10)
-    }, 0) as Lovelace
+      return acc.plus(elem.caBalance.getCoin)
+    }, new BigNumber(0)) as Lovelace
     return {
       coins,
       tokenBundle,
@@ -276,12 +277,12 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     return response.map((elem) => {
       const tokenBundle: TokenBundle = elem.cuCoins.getTokens.map((token) => ({
         ...token,
-        quantity: parseInt(token.quantity, 10),
+        quantity: new BigNumber(token.quantity),
       }))
       return {
         txHash: elem.cuId,
         address: elem.cuAddress as Address,
-        coins: parseInt(elem.cuCoins.getCoin, 10) as Lovelace,
+        coins: new BigNumber(elem.cuCoins.getCoin) as Lovelace,
         tokenBundle,
         outputIndex: elem.cuOutIndex,
       }
@@ -382,7 +383,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         epoch: reward.epochNo,
         dateTime: new Date(reward.time),
         forEpoch: reward.forDelegationInEpoch,
-        reward: parseInt(reward.amount, 10) as Lovelace,
+        reward: new BigNumber(reward.amount) as Lovelace,
         stakePool: parseStakePool(reward),
         rewardType: reward.rewardType,
       }
@@ -397,7 +398,7 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
         txHash: withdrawal.txHash,
         epoch: withdrawal.epochNo,
         dateTime: new Date(withdrawal.time),
-        amount: parseInt(withdrawal.amount, 10) as Lovelace,
+        amount: new BigNumber(withdrawal.amount) as Lovelace,
       }
 
       return rewardWithdrawal

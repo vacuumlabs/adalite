@@ -1,4 +1,5 @@
-import {HexString, Lovelace} from '../../types'
+import BigNumber from 'bignumber.js'
+import {HexString} from '../../types'
 import {TxCertificate, TxInput, TxOutput, TxWithdrawal, TxAuxiliaryData} from '../types'
 import {TxRelayType} from './helpers/poolCertificateUtils'
 
@@ -8,13 +9,13 @@ export type TxAux = {
   getId: () => HexString
   inputs: TxInput[]
   outputs: TxOutput[]
-  fee: number
-  ttl: number
+  fee: BigNumber
+  ttl: BigNumber
   certificates: TxCertificate[]
   withdrawals: TxWithdrawal[]
   auxiliaryData: TxAuxiliaryData | null
   auxiliaryDataHash: HexString | null
-  validityIntervalStart: number | null
+  validityIntervalStart: BigNumber | null
   encodeCBOR: encodeCBORFn
 }
 
@@ -65,13 +66,13 @@ export enum TxStakeCredentialType {
 
 export type CborizedTxInput = [Buffer, number]
 
-export type CborizedTxTokenBundle = Map<Buffer, Map<Buffer, number>>
+export type CborizedTxTokenBundle = Map<Buffer, Map<Buffer, BigInt>>
 
-export type CborizedTxAmount = Lovelace | [Lovelace, CborizedTxTokenBundle]
+export type CborizedTxAmount = BigInt | [BigInt, CborizedTxTokenBundle]
 
 export type CborizedTxOutput = [Buffer, CborizedTxAmount]
 
-export type CborizedTxWithdrawals = Map<Buffer, Lovelace>
+export type CborizedTxWithdrawals = Map<Buffer, BigInt>
 
 export type CborizedVotingRegistrationMetadata = [Map<number, Map<number, Buffer | BigInt>>, []]
 

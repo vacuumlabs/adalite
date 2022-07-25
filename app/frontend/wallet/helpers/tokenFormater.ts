@@ -1,15 +1,16 @@
 import {OrderedTokenBundle, Token, TokenBundle} from '../../types'
 import * as _ from 'lodash' // TODO: import only needed methods
 import {TokenObject} from '../backend-types'
+import BigNumber from 'bignumber.js'
 
 // from adalite-backend
 
-export const arraySum = (numbers: Array<number>): number =>
-  numbers.reduce((acc: number, val) => acc + val, 0)
+export const arraySum = (numbers: Array<BigNumber>): BigNumber =>
+  numbers.reduce((acc, val) => acc.plus(val), new BigNumber(0))
 
 export const parseToken = (token: TokenObject): Token => ({
   ...token,
-  quantity: parseInt(token.quantity, 10),
+  quantity: new BigNumber(token.quantity),
 })
 
 const aggregateTokenBundlesForPolicy = (policyGroup: TokenBundle, policyId: string) =>
@@ -56,8 +57,11 @@ export const getTokenBundlesDifference = (
   tokenBundle1: TokenBundle,
   tokenBundle2: TokenBundle
 ): TokenBundle => {
-  const negativeTokenBundle = tokenBundle2.map((token) => ({...token, quantity: -token.quantity}))
+  const negativeTokenBundle = tokenBundle2.map((token) => ({
+    ...token,
+    quantity: token.quantity.negated(),
+  }))
   return aggregateTokenBundles([tokenBundle1, negativeTokenBundle]).filter(
-    (token) => token.quantity !== 0
+    (token) => !token.quantity.isZero()
   )
 }

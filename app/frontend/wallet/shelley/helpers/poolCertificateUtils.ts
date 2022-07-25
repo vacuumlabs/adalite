@@ -74,25 +74,6 @@ type TxStakepoolMargin = {
   denominatorStr: string
 }
 
-// TODO: remove when migrating to BigInt
-// cli tool supports bigint and adalite doesnt so we need to restrict it
-export const ensureIsSafeInt = (value: BigInt | number, variableName: string): number => {
-  const valueType = typeof value
-  if (valueType !== 'bigint' && valueType !== 'number') {
-    throw new Error(`${variableName} has invalid type ${valueType}.`)
-  }
-  const valueNumber = Number(value)
-  if (!Number.isInteger(valueNumber)) {
-    throw new Error(`${variableName} is not a valid integer.`)
-  }
-  if (valueNumber > Number.MAX_SAFE_INTEGER || valueNumber < Number.MIN_SAFE_INTEGER) {
-    throw new Error(
-      `${variableName} value is too big. Numbers bigger than ${Number.MAX_SAFE_INTEGER} are not supported.`
-    )
-  }
-  return valueNumber
-}
-
 const buf2hexLengthCheck = (buffer: Buffer, correctByteLength: number, variableName: string) => {
   if (!Buffer.isBuffer(buffer) || Buffer.byteLength(buffer) !== correctByteLength) {
     throw new InternalError(InternalErrorReason.PoolRegIncorrectBufferLength, {
@@ -227,8 +208,8 @@ export const parseStakepoolRegistrationCertificate = ({
 }: _StakepoolRegistrationCert): TxPoolParams => ({
   poolKeyHashHex: buf2hexLengthCheck(poolKeyHash, PoolParamsByteLengths.POOL_HASH, 'Pool key hash'),
   vrfKeyHashHex: buf2hexLengthCheck(vrfPubKeyHash, PoolParamsByteLengths.VRF, 'VRF key hash'),
-  pledgeStr: ensureIsSafeInt(pledge, 'Pledge').toString(),
-  costStr: ensureIsSafeInt(cost, 'Fixed cost').toString(),
+  pledgeStr: pledge.toString(),
+  costStr: cost.toString(),
   margin: parseStakepoolMargin(margin),
   rewardAccountHex: buf2hexLengthCheck(
     rewardAddress,

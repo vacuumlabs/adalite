@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js'
 import {Lovelace, Ada} from '../types'
 
-const toCoins = (value: Ada): Lovelace => (value * 1000000) as Lovelace
-const toAda = (value: Lovelace): Ada => (value * 0.000001) as Ada
-const roundWholeAdas = (value: Lovelace): Lovelace => toCoins(Math.round(toAda(value)) as Ada)
+const toCoins = (value: Ada): Lovelace =>
+  value.times(1000000).integerValue(BigNumber.ROUND_FLOOR) as Lovelace
+const toAda = (value: Lovelace): Ada => value.times(0.000001) as Ada
 
-export {toCoins, toAda, roundWholeAdas}
+export {toCoins, toAda}
