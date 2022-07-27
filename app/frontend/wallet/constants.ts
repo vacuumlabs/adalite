@@ -1,8 +1,11 @@
 import {InternalErrorReason} from '../errors'
 import {CryptoProviderFeature} from '../types'
 import {Network, NetworkId, ProtocolMagic} from './types'
+import BigNumber from 'bignumber.js'
+
 export const HARDENED_THRESHOLD = 0x80000000
 export const MAX_INT32 = 2147483647
+export const MAX_UINT64 = new BigNumber(2).pow(64).minus(1)
 export const MAX_ADDRESS_INFO_AGE = 10000
 export const BTC_BLOCKCHAIN_EXPLORER = 'https://www.blockchain.com/btc/address/'
 export const ETH_BLOCKCHAIN_EXPLORER = 'https://etherscan.io/address/'

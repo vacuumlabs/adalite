@@ -25,24 +25,21 @@ const tokens = {
 const utxos = {
   utxo1: {
     txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
-    address:
-      'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+    address: 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
     coins: new BigNumber(1000000) as Lovelace,
     outputIndex: 1,
     tokenBundle: [],
   },
   utxo2: {
     txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
-    address:
-      'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+    address: 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
     coins: new BigNumber(2000000) as Lovelace,
     outputIndex: 0,
     tokenBundle: [],
   },
   utxoWithTokens1: {
     txHash: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
-    address:
-      'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+    address: 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
     coins: new BigNumber(3000000) as Lovelace,
     outputIndex: 0,
     tokenBundle: [...Object.values(tokens)],
@@ -50,16 +47,18 @@ const utxos = {
 }
 
 const sendAdaAmountArgs = (lovelace: BigNumber) => ({
-  address:
-    'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0' as Address,
+  address: 'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0' as Address,
   coins: lovelace as Lovelace,
-  sendAmount: {assetFamily: AssetFamily.ADA as const, fieldValue: `${lovelace}`, coins: lovelace as Lovelace},
+  sendAmount: {
+    assetFamily: AssetFamily.ADA as const,
+    fieldValue: `${lovelace}`,
+    coins: lovelace as Lovelace,
+  },
   txType: TxType.SEND_ADA as const,
 })
 
 const sendTokenAmountArgs = (token: Token, quantity: BigNumber) => ({
-  address:
-    'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0' as Address,
+  address: 'addr1qjag9rgwe04haycr283datdrjv3mlttalc2waz34xcct0g4uvf6gdg3dpwrsne4uqng3y47ugp2pp5dvuq0jqlperwj83r4pwxvwuxsgds90s0' as Address,
   coins: new BigNumber(1500000),
   sendAmount: {
     assetFamily: AssetFamily.TOKEN as const,
@@ -73,8 +72,7 @@ const sendTokenAmountArgs = (token: Token, quantity: BigNumber) => ({
   txType: TxType.SEND_ADA as const,
 })
 
-const changeAddress =
-  'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address
+const changeAddress = 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address
 
 const successPlanFixtures = {
   'not add change to fee': {
@@ -90,16 +88,16 @@ const successPlanFixtures = {
     fee: new BigNumber(500000),
   },
   'fit perfectly': {
-    args: sendAdaAmountArgs(new BigNumber(1832182)),
+    args: sendAdaAmountArgs(new BigNumber(1832007)),
     changeAddress,
     utxos: [utxos.utxo2],
-    fee: new BigNumber(167818),
+    fee: new BigNumber(167993),
   },
   'not fit change into tx so should increase fee': {
-    args: sendAdaAmountArgs(new BigNumber(1832181)),
+    args: sendAdaAmountArgs(new BigNumber(1832006)),
     changeAddress,
     utxos: [utxos.utxo2],
-    fee: new BigNumber(167819),
+    fee: new BigNumber(167994),
   },
 }
 

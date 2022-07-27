@@ -1,6 +1,6 @@
 import {InternalError, InternalErrorReason, UnexpectedErrorReason} from '../../../errors'
 import {CertificateType, Lovelace} from '../../../types'
-import {MAX_TX_OUTPUT_SIZE} from '../../constants'
+import {MAX_UINT64, MAX_TX_OUTPUT_SIZE} from '../../constants'
 import {aggregateTokenBundles, getTokenBundlesDifference} from '../../helpers/tokenFormater'
 import {TxCertificate, TxPlanAuxiliaryData, TxInput, TxOutput, TxWithdrawal} from '../../types'
 import {cborizeSingleTxOutput} from '../shelley-transaction'
@@ -299,11 +299,10 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
   }
 
   const outputsWithChange = [...outputs, ...change]
-  const maxInt64 = new BigNumber(2).pow(64)
   // TODO figure out why this din't prevent the creation of a tx with tokens over MAX_SAFE_INTEGER
   if (
     outputsWithChange.some(({coins, tokenBundle}) => {
-      coins.gt(maxInt64) || tokenBundle.some(({quantity}) => quantity.gt(maxInt64))
+      coins.gt(MAX_UINT64) || tokenBundle.some(({quantity}) => quantity.gt(MAX_UINT64))
     })
   ) {
     throw new InternalError(InternalErrorReason.CoinAmountError)

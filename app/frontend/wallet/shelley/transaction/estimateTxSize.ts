@@ -1,9 +1,9 @@
-import BigNumber from 'bignumber.js'
 import {InternalError, InternalErrorReason} from '../../../errors'
 import assertUnreachable from '../../../helpers/assertUnreachable'
 import {Lovelace} from '../../../types'
 import {
   CATALYST_SIGNATURE_BYTE_LENGTH,
+  MAX_UINT64,
   MAX_TX_SIZE,
   METADATA_HASH_BYTE_LENGTH,
   TX_WITNESS_SIZES,
@@ -46,11 +46,10 @@ export function estimateTxSize(
    * we have to estimate size of tx outputs since we are calculating
    * fee also in cases we dont know the amount of coins in advance
    */
-  const maxInt64 = new BigNumber(Number.MAX_SAFE_INTEGER)
   const txOutputs: TxOutput[] = outputs.map((output) => ({
     isChange: false,
     address: output.address,
-    coins: maxInt64 as Lovelace,
+    coins: MAX_UINT64 as Lovelace,
     tokenBundle: output.tokenBundle,
   }))
   // TODO: max output size
@@ -58,8 +57,8 @@ export function estimateTxSize(
 
   const txCertificatesSize = encodeCbor(cborizeTxCertificates(certificates)).length + 1
   const txWithdrawalsSize = encodeCbor(cborizeTxWithdrawals(withdrawals)).length + 1
-  const txTllSize = encodeCbor(Number.MAX_SAFE_INTEGER).length + 1
-  const txFeeSize = encodeCbor(Number.MAX_SAFE_INTEGER).length + 1
+  const txTllSize = encodeCbor(BigInt(MAX_UINT64.toString())).length + 1
+  const txFeeSize = encodeCbor(BigInt(MAX_UINT64.toString())).length + 1
   const txAuxiliaryDataHashSize = auxiliaryData
     ? encodeCbor('x'.repeat(METADATA_HASH_BYTE_LENGTH * 2)).length + 1
     : 0
