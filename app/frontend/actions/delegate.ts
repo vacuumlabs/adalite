@@ -67,7 +67,8 @@ export default (store: Store) => {
   const calculateDelegationFee = (): void => {
     const state = getState()
     setPoolInfo(state)
-    const poolHash = state.shelleyDelegation?.selectedPool?.poolHash as string
+    assert(state.shelleyDelegation?.selectedPool != null)
+    const poolHash = state.shelleyDelegation.selectedPool.poolHash as string
     const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
     const txPlanResult = prepareTxPlan({
@@ -89,10 +90,12 @@ export default (store: Store) => {
           delegationFee: txPlanResult.txPlan.fee.plus(txPlanResult.txPlan.deposit) as Lovelace,
         },
       })
+      assert(newState.shelleyDelegation?.selectedPool != null)
       const delegationTransactionSummary: DelegateTransactionSummary = {
         type: TxType.DELEGATE,
         deposit: txPlanResult.txPlan.deposit,
-        stakePool: newState.shelleyDelegation?.selectedPool,
+        // TODO figure out why pool name/ticker is missing here and not shown in tx summary
+        stakePool: newState.shelleyDelegation.selectedPool,
       }
       setTransactionSummary(getState(), {
         plan: txPlanResult.txPlan,

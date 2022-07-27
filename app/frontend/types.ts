@@ -396,7 +396,7 @@ export type WithdrawTransactionSummary = {
 export type DelegateTransactionSummary = {
   type: TxType.DELEGATE
   deposit: Lovelace
-  stakePool: any // TODO:
+  stakePool: Stakepool
 }
 
 export type VotingRegistrationTransactionSummary = {

@@ -28,6 +28,7 @@ import * as assert from 'assert'
 import {isHwWallet, getDeviceBrandName} from '../../../wallet/helpers/cryptoProviderUtils'
 import {useGetCryptoProviderType} from '../../../selectors'
 import printTokenAmount from '../../../helpers/printTokenAmount'
+import BigNumber from 'bignumber.js'
 
 interface ReviewBottomProps {
   onSubmit: () => any
@@ -155,7 +156,9 @@ const DelegateReview = ({
         <div className="review-label">Tax</div>
         <div className="review-value">{stakePool.margin && stakePool.margin * 100}%</div>
         <div className="review-label">Fixed cost</div>
-        <div className="review-value">{stakePool.fixedCost && printAda(stakePool.fixedCost)}</div>
+        <div className="review-value">
+          {stakePool.fixedCost && printAda(new BigNumber(stakePool.fixedCost) as Lovelace)}
+        </div>
         <div className="review-label">Homepage</div>
         <div className="review-value">{stakePool.homepage}</div>
         <div className="ada-label">Deposit</div>
