@@ -91,7 +91,7 @@ export interface State {
   cachedTransactionSummaries: CachedTransactionSummaries
   rawTransactionOpen: boolean
   rawTransaction: string
-  transactionFee?: Lovelace
+  transactionFee: Lovelace
   txConfirmType?: TxType
   isCrossAccount: boolean
   txSuccessTab: string

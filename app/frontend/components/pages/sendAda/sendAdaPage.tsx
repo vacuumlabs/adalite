@@ -411,8 +411,7 @@ const SendAdaPage = ({
         {amountInput}
         <div className="ada-label">Fee</div>
         <div className="send-fee" data-cy="SendFeeAmount">
-          {// TODO figure out why tx fee may be undefined
-            printAda(transactionFee || (new BigNumber(0) as Lovelace))}
+          {printAda(transactionFee)}
         </div>
         {selectedAsset.type === AssetFamily.TOKEN && (
           <Fragment>
