@@ -1,4 +1,4 @@
-import {InternalError, InternalErrorReason, UnexpectedErrorReason} from '../../../errors'
+import {InternalErrorReason, UnexpectedErrorReason} from '../../../errors'
 import {CertificateType, Lovelace} from '../../../types'
 import {MAX_UINT64, MAX_TX_OUTPUT_SIZE} from '../../constants'
 import {aggregateTokenBundles, getTokenBundlesDifference} from '../../helpers/tokenFormater'
@@ -299,13 +299,16 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
   }
 
   const outputsWithChange = [...outputs, ...change]
-  // TODO figure out why this din't prevent the creation of a tx with tokens over MAX_SAFE_INTEGER
   if (
-    outputsWithChange.some(({coins, tokenBundle}) => {
-      coins.gt(MAX_UINT64) || tokenBundle.some(({quantity}) => quantity.gt(MAX_UINT64))
-    })
+    outputsWithChange.some(
+      ({coins, tokenBundle}) =>
+        coins.gt(MAX_UINT64) || tokenBundle.some(({quantity}) => quantity.gt(MAX_UINT64))
+    )
   ) {
-    throw new InternalError(InternalErrorReason.CoinAmountError)
+    return {
+      ...noTxPlan,
+      error: {code: InternalErrorReason.CoinAmountError},
+    }
   }
 
   // we cant build the transaction with big enough change lovelace

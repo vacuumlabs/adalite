@@ -2,9 +2,8 @@ import printAda from '../helpers/printAda'
 import debugLog from '../helpers/debugLog'
 import {ADALITE_CONFIG} from '../config'
 import {BITBOX02_VERSIONS, LEDGER_VERSIONS, TREZOR_VERSIONS} from '../wallet/constants'
-import {Lovelace, CryptoProviderFeature} from '../types'
+import {CryptoProviderFeature} from '../types'
 import {knownExternalErrors, InternalErrorReason} from '.'
-import BigNumber from 'bignumber.js'
 
 const {ADALITE_MIN_DONATION_VALUE} = ADALITE_CONFIG
 
@@ -24,10 +23,7 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
     'Sending funds is not possible since there is not enough balance to pay the transaction fee',
   [InternalErrorReason.SendAmountPrecisionLimit]: () =>
     'Invalid format: Maximum allowed precision is 0.000001',
-  [InternalErrorReason.SendAmountIsTooBig]: () =>
-    `Invalid format: Amount cannot exceed ${printAda(
-      new BigNumber(Number.MAX_SAFE_INTEGER) as Lovelace
-    )}`,
+  [InternalErrorReason.SendAmountIsTooBig]: () => 'Invalid format: Amount too big',
   [InternalErrorReason.TokenAmountOnlyWholeNumbers]: () =>
     'Invalid format: This asset amount has to be a whole number',
   [InternalErrorReason.TokenSendAmountPrecisionLimit]: ({decimals}) =>
@@ -72,7 +68,8 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.LedgerOperationError]: ({message}) =>
     `LedgerOperationError: ${message}. Please make sure you are using the latest version of the Cardano application.`,
 
-  [InternalErrorReason.CoinAmountError]: () => 'CoinAmountError: Unsupported amount of coins.',
+  [InternalErrorReason.CoinAmountError]: () =>
+    'CoinAmountError: Some of the transaction outputs exceeds the maximum supported amount.',
   [InternalErrorReason.OutputTooSmall]: () =>
     'OutputTooSmall: Not enough funds to make this transaction, try sending a different amount.',
   [InternalErrorReason.ChangeOutputTooSmall]: () =>
