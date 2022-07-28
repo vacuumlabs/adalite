@@ -64,9 +64,9 @@ export default (store: Store) => {
   REFACTOR: (calculateFee)
   Same issues as with "calculateFee" applies.
   */
-  const calculateDelegationFee = (): void => {
+  const calculateDelegationFee = async (): Promise<void> => {
     const state = getState()
-    setPoolInfo(state)
+    await setPoolInfo(state)
     assert(state.shelleyDelegation?.selectedPool != null)
     const poolHash = state.shelleyDelegation.selectedPool.poolHash as string
     const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
@@ -94,7 +94,6 @@ export default (store: Store) => {
       const delegationTransactionSummary: DelegateTransactionSummary = {
         type: TxType.DELEGATE,
         deposit: txPlanResult.txPlan.deposit,
-        // TODO figure out why pool name/ticker is missing here and not shown in tx summary
         stakePool: newState.shelleyDelegation.selectedPool,
       }
       setTransactionSummary(getState(), {
