@@ -1,5 +1,5 @@
 const getWaitTillReady = (devServerInstance) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     devServerInstance.waitUntilValid(() => resolve())
   })
 

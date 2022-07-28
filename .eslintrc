@@ -6,10 +6,7 @@
     "mocha": true,
     "es6": true
   },
-  "plugins": [
-    "react-hooks",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react-hooks", "@typescript-eslint"],
   "rules": {
     "no-bitwise": "off",
     "guard-for-in": "off",
@@ -27,26 +24,30 @@
     "import/no-restricted-paths": [
       "error",
       {
-        "zones": [
-          { "target": "./app", "from": "./node_modules" }
-         ]
-       }
+        "zones": [{"target": "./app", "from": "./node_modules"}]
+      }
     ],
     "import/no-extraneous-dependencies": "error"
   },
   "overrides": [
     {
-        "files": ["*.js"],
-        "rules": {
-            "@typescript-eslint/no-unused-vars": "off",
-            "no-unused-vars": "warn"
-        }
+      "files": ["*.js"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off",
+        "no-unused-vars": [
+          "warn",
+          {
+            "vars": "all",
+            "args": "after-used"
+          }
+        ]
+      }
     }
   ],
   "settings": {
     "react": {
-        "version": "16.8",
-        "pragma": "h"
+      "version": "16.8",
+      "pragma": "h"
     },
     "import/resolver": {
       "node": {

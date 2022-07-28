@@ -37,7 +37,7 @@ const trackVisits = (req, res, next) => {
   next()
 }
 
-const trackTxSubmissions = mung.json((body, req, res) => {
+const trackTxSubmissions = mung.json((body, req) => {
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
     const txSubmissionType =
       tokenMatches(req.get('token')) &&

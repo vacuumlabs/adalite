@@ -2,7 +2,7 @@ require('isomorphic-fetch')
 const {backendConfig} = require('./helpers/loadConfig')
 const {captureException} = require('@sentry/node')
 
-module.exports = function(app, env) {
+module.exports = function(app) {
   app.post('/api/emails/submit', async (req, res) => {
     const listId = backendConfig.ADALITE_MAILCHIMP_LIST_ID // move to config
     const APIKey = backendConfig.ADALITE_MAILCHIMP_API_KEY

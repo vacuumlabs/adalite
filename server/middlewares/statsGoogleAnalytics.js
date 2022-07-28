@@ -60,7 +60,7 @@ const trackVisits = async (req, res, next) => {
   next()
 }
 
-const trackTxSubmissions = mung.jsonAsync(async (body, req, res) => {
+const trackTxSubmissions = mung.jsonAsync(async (body, req) => {
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
     const tokenMatched = tokenMatches(req.get('token'))
     const txSubmissionType =

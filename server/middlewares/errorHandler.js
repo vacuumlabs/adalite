@@ -1,6 +1,6 @@
 const IpDeniedError = require('express-ipfilter').IpDeniedError
 
-module.exports = (err, req, res, next) => {
+module.exports = (err, req, res) => {
   if (err instanceof IpDeniedError) {
     res.status(401).send('Forbidden')
   } else {

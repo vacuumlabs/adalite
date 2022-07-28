@@ -84,7 +84,7 @@ const getStats = async () => {
 
 const isAdaAmountKey = (key) => key.search(/sentOut:|sentTotal:/) !== -1
 
-module.exports = function(app, env) {
+module.exports = function(app) {
   app.get('/usage_stats', async (req, res) => {
     try {
       const stats = await getStats()

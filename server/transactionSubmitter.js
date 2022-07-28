@@ -3,7 +3,7 @@ const Sentry = require('@sentry/node')
 const {isSameOrigin, tokenMatches} = require('./helpers/checkOrigin')
 const {backendConfig} = require('./helpers/loadConfig')
 
-module.exports = function(app, env) {
+module.exports = function(app) {
   // eslint-disable-next-line consistent-return
   app.post('/api/txs/submit', async (req, res) => {
     let txHash
