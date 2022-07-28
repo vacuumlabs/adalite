@@ -66,6 +66,9 @@ module.exports = {
         test: /\.tsx?$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          onlyCompileBundledFiles: true,
+        },
       },
       // For hot reloading of globally injected css
       {
