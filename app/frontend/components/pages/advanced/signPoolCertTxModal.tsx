@@ -1,6 +1,6 @@
 import {h, Fragment} from 'preact'
 import {useEffect, useRef} from 'preact/hooks'
-import {connect} from '../../../helpers/connect'
+import {connect, useSelector} from '../../../helpers/connect'
 import actions from '../../../actions'
 import printAda from '../../../helpers/printAda'
 import Modal from '../../common/modal'
@@ -19,8 +19,11 @@ const SignPoolCertTxModal = ({
   signPoolCertificateTx,
   poolCert,
 }: Props) => {
-  const cancelTx = useRef<HTMLAnchorElement>(null)
+  const {waitingHwWalletOperation} = useSelector((state) => ({
+    waitingHwWalletOperation: state.waitingHwWalletOperation,
+  }))
 
+  const cancelTx = useRef<HTMLAnchorElement>(null)
   useEffect(() => {
     if (cancelTx.current) {
       cancelTx.current.focus()
@@ -75,7 +78,11 @@ const SignPoolCertTxModal = ({
       </div>
 
       <div className="review-bottom">
-        <button className="button primary" onClick={signPoolCertificateTx}>
+        <button
+          className="button primary"
+          onClick={signPoolCertificateTx}
+          disabled={waitingHwWalletOperation != null}
+        >
           Sign transaction
         </button>
         <a

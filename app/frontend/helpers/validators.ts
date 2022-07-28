@@ -3,7 +3,7 @@ import {ADALITE_CONFIG} from '../config'
 import {toCoins} from './adaConverters'
 import {validateMnemonic} from '../wallet/mnemonic'
 import {Lovelace, Ada} from '../types'
-import {NETWORKS} from '../wallet/constants'
+import {MAX_UINT64, NETWORKS} from '../wallet/constants'
 import {InternalErrorReason} from '../errors'
 import printTokenAmount from './printTokenAmount'
 import BigNumber from 'bignumber.js'
@@ -34,7 +34,7 @@ const sendAddressValidator = (fieldValue: string) => {
 
 const sendAmountValidator = (fieldValue: string, coins: Lovelace | null, balance: Lovelace) => {
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
-  const maxAmount = Number.MAX_SAFE_INTEGER
+  const maxAmount = MAX_UINT64
   // TODO: we should not import NETWORK anywhere
   // we should always get it from wallet/cryptoProvider
   // and pass it as argument
@@ -79,7 +79,7 @@ const tokenAmountValidator = (
   tokenBalance: BigNumber,
   decimals: number = 0
 ) => {
-  const maxAmount = Number.MAX_SAFE_INTEGER
+  const maxAmount = MAX_UINT64
   const integerRegex = /^\d+$/
   const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
 

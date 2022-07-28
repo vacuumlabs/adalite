@@ -109,6 +109,7 @@ export default (store: Store) => {
       resetPoolRegTransactionSummary(state)
       setError(state, {errorName: 'poolRegTxError', error: e})
     } finally {
+      setState({waitingHwWalletOperation: null})
       stopLoadingAction(state)
     }
   }

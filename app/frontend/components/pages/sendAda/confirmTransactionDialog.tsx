@@ -27,6 +27,7 @@ import {FormattedAssetItem, FormattedAssetItemProps} from '../../common/asset'
 import * as assert from 'assert'
 import {isHwWallet, getDeviceBrandName} from '../../../wallet/helpers/cryptoProviderUtils'
 import {useGetCryptoProviderType} from '../../../selectors'
+import printTokenAmount from '../../../helpers/printTokenAmount'
 
 interface ReviewBottomProps {
   onSubmit: () => any
@@ -112,7 +113,7 @@ const SendAdaReview = ({
                         Token amount on {getDeviceBrandName(cryptoProviderType)}
                       </div>
                       <div className="review-value" data-cy="SendTokenAmount">
-                        {token.quantity}
+                        {printTokenAmount(token.quantity, 0)}
                       </div>
                     </Fragment>
                   )}
