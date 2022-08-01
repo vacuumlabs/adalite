@@ -123,17 +123,20 @@ const ShelleyBalances = ({
                 {printAda(nonStakingBalance)}
                 <AdaIcon />
               </div>
-              <button
+              <span
                 {...tooltip(
                   'Cannot convert funds while transaction is pending or reloading',
                   shouldDisableSendingButton(walletOperationStatusType)
                 )}
-                className="button secondary convert"
-                onClick={convertNonStakingUtxos}
-                disabled={
-                  nonStakingBalance.eq(0) || shouldDisableSendingButton(walletOperationStatusType)
-                }
-              />
+              >
+                <button
+                  className="button secondary convert"
+                  onClick={convertNonStakingUtxos}
+                  disabled={
+                    nonStakingBalance.eq(0) || shouldDisableSendingButton(walletOperationStatusType)
+                  }
+                />
+              </span>
             </div>
           </Fragment>
         )}

@@ -71,7 +71,7 @@ const LoadKeyFile = (): h.JSX.Element => {
     reader.onload = ((theFile) => {
       return async (e) => {
         try {
-          const walletExport = await JSON.parse(e.target.result)
+          const walletExport = await JSON.parse(e.target?.result as string)
           const isWalletExportEncrypted = await KeypassJson.isWalletExportEncrypted(walletExport)
           if (isWalletExportEncrypted) {
             setKeyFile(walletExport)
