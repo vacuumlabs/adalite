@@ -463,7 +463,7 @@ p.hey {
 }
 
 .button.secondary.convert::before {
-  content: 'Convert to stakable'
+  content: 'Convert to stakeable'
 }
 
 .button.secondary.logout {

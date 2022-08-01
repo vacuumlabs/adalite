@@ -120,9 +120,7 @@ const ShelleyBalances = ({
             </h2>
             <div className="balance-row">
               <div className="balance-amount-staking">
-                {isNaN(Number(nonStakingBalance))
-                  ? nonStakingBalance
-                  : `${printAda(nonStakingBalance)}`}
+                {printAda(nonStakingBalance)}
                 <AdaIcon />
               </div>
               <button
@@ -132,7 +130,9 @@ const ShelleyBalances = ({
                 )}
                 className="button secondary convert"
                 onClick={convertNonStakingUtxos}
-                disabled={shouldDisableSendingButton(walletOperationStatusType)}
+                disabled={
+                  nonStakingBalance.eq(0) || shouldDisableSendingButton(walletOperationStatusType)
+                }
               />
             </div>
           </Fragment>
