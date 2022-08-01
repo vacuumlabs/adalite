@@ -3770,6 +3770,7 @@ input:checked + .slider:before {
 
 .send-total-ada {
   display: flex;
+  flex-wrap: wrap;
   padding-left: 16px;
   text-align: left;
   font-size: 24px;

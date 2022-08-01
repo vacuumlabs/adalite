@@ -435,14 +435,14 @@ const SendAdaPage = ({
       </div>
       <div className="send-total">
         <div className="send-total-title">Total</div>
-        <div className="send-total-inner flex-nowrap shrinkable">
+        <div className="send-total-inner shrinkable">
           {selectedAsset.type === AssetFamily.ADA ? (
             <div className="send-total-ada">
               {printAda(totalLovelace)}
               <AdaIcon />
             </div>
           ) : (
-            <div className="send-total-ada flex-nowrap shrinkable">
+            <div className="send-total-ada shrinkable">
               {totalTokens?.quantity != null && tokenDecimals != null
                 ? printTokenAmount(totalTokens.quantity, tokenDecimals)
                 : 0}{' '}
