@@ -59,6 +59,31 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'08/02/2022'}
+              children={
+                <Fragment>
+                  <Article title="Vote for NuFi in Project Catalyst" icon="">
+                    <ul>
+                      <li>
+                        Register to vote in Project Catalyst before August 4th and support NuFi’s
+                        proposal: "Ethereum and Cardano Web3 Wallet"
+                      </li>
+                      <li>
+                        Full details and how to register{' '}
+                        <a
+                          target="_blank"
+                          rel="noopener"
+                          href="https://nufi-official.medium.com/catalyst-voting-starts-soon-e119f740b080"
+                        >
+                          here
+                        </a>
+                      </li>
+                    </ul>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'07/21/2022'}
               children={
                 <Fragment>
