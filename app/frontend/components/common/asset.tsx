@@ -1,7 +1,7 @@
 import {h} from 'preact'
 import printAda from '../../helpers/printAda'
 import {AssetFamily, Lovelace, RegisteredTokenMetadata, Token} from '../../types'
-import {AdaIcon, HomePageIcon, QuestionFillIcon, StarIcon} from './svg'
+import {AdaIcon, HomePageIcon, CircleFillIcon, StarIcon} from './svg'
 import LinkIcon from './linkIcon'
 import {StringEllipsis} from '../pages/stringEllipsis'
 import {useSelector} from '../../helpers/connect'
@@ -44,7 +44,7 @@ const Icon = ({type, metadata}: IconProps) => {
       return <StarIcon />
     }
   } else {
-    return <QuestionFillIcon />
+    return <CircleFillIcon />
   }
 }
 
