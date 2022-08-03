@@ -66,12 +66,12 @@ export default (store: Store) => {
   */
   const calculateDelegationFee = async (): Promise<void> => {
     const state = getState()
-    await setPoolInfo(state)
     // selectedPool may be null e.g. when switching tab and selectedPool
     // is already reset when this debounced function is executed
     if (state.shelleyDelegation?.selectedPool == null) {
       return
     }
+    await setPoolInfo(state)
     const poolHash = state.shelleyDelegation.selectedPool.poolHash as string
     const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
