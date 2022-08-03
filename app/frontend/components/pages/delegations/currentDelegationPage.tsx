@@ -63,7 +63,10 @@ const CurrentDelegationPage = ({
             {SaturationInfo(pool)}
             {pool.liveStake != null && (
               <div className="current-delegation-id">
-                Live stake: {parseFloat(printAda(pool.liveStake as Lovelace)).toLocaleString('en')}
+                Live stake:{' '}
+                {parseFloat(printAda(new BigNumber(pool.liveStake) as Lovelace)).toLocaleString(
+                  'en'
+                )}
               </div>
             )}
             {pool.homepage != null && (
