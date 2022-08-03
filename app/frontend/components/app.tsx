@@ -9,9 +9,9 @@ import NavbarAuth from './common/navbar/navbarAuth'
 import NavbarUnauth from './common/navbar/navbarUnauth'
 import AutoLogout from './autoLogout'
 import {ADALITE_CONFIG} from '../config'
-import UnexpectedErrorModal from './common/unexpectedErrorModal'
 import Exchange from './pages/exchange/exchange'
 import NufiPreviewPage from './pages/nufiPreview/nufiPreviewPage'
+import ErrorBoundary from './errorBoundary'
 
 const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
@@ -39,14 +39,15 @@ const App = connect((state) => ({
   }
   return (
     <div className="wrap">
-      <LoadingOverlay />
-      <Navbar />
-      <TopLevelRouter />
-      <Footer />
-      {ADALITE_LOGOUT_AFTER > 0 && <AutoLogout />}
-      {displayWelcome && <Welcome />}
-      {shouldShowContactFormModal && <ContactForm />}
-      {shouldShowUnexpectedErrorModal && <UnexpectedErrorModal />}
+      <ErrorBoundary>
+        <LoadingOverlay />
+        <Navbar />
+        <TopLevelRouter />
+        <Footer />
+        {ADALITE_LOGOUT_AFTER > 0 && <AutoLogout />}
+        {displayWelcome && <Welcome />}
+        {shouldShowContactFormModal && <ContactForm />}
+      </ErrorBoundary>
     </div>
   )
 })

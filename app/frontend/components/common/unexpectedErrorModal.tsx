@@ -5,13 +5,19 @@ import actions from '../../actions'
 import Modal from './modal'
 import Alert from './alert'
 import submitFeedbackToSentry from '../../helpers/submitFeedbackToSentry'
+import * as Sentry from '@sentry/browser'
 
 interface Props {
   sendSentry: any
   closeUnexpectedErrorModal: () => void
+  reloadPageOnClose: boolean
 }
 
-const UnexpectedErrorModal = ({sendSentry, closeUnexpectedErrorModal}: Props) => {
+const UnexpectedErrorModal = ({
+  sendSentry,
+  closeUnexpectedErrorModal,
+  reloadPageOnClose,
+}: Props) => {
   const [userEmail, setEmail] = useState('')
   const [userName, setName] = useState('')
   const [userComments, setComments] = useState('')
@@ -31,8 +37,14 @@ const UnexpectedErrorModal = ({sendSentry, closeUnexpectedErrorModal}: Props) =>
         sendSentry.resolve(false)
       }
       closeUnexpectedErrorModal()
+
+      if (reloadPageOnClose) {
+        // workaround to let Sentry queue up the error to be sent
+        // before the app is reloaded
+        setTimeout(() => Sentry.close(5000).then(() => window.location.reload()), 300)
+      }
     },
-    [userComments, userEmail, userName, sendSentry, closeUnexpectedErrorModal]
+    [userComments, userEmail, userName, sendSentry, closeUnexpectedErrorModal, reloadPageOnClose]
   )
   const cancelAndClose = useCallback(() => closeAndResolve(false), [closeAndResolve])
   const sendAndClose = useCallback(() => closeAndResolve(true), [closeAndResolve])
