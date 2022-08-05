@@ -130,6 +130,7 @@ app.get('*', (req, res) => {
           <meta property="og:image" content="${serverUrl}/assets/og-image.png">
 
           <script src="js/init.js?v=${appVersionQueryParam}"></script>
+          <link rel="stylesheet" type="text/css" href="css/nufi-preview-page-styles.css?v=${appVersionQueryParam}">
           <link rel="stylesheet" type="text/css" href="css/styles.css?v=${appVersionQueryParam}">
           <link rel="stylesheet" type="text/css" href="css/0-767px.css?v=${appVersionQueryParam}">
           <link rel="stylesheet" type="text/css" href="css/0-1366px.css?v=${appVersionQueryParam}">

@@ -968,32 +968,8 @@
   .card-title.small-margin {
     margin: unset;
   }
-
-  .nufi-preview-content {
-    padding: 10px 15px;
-  }
-
-  .nufi-comparison-row-highlighted, .nufi-comparison-row-heading-highlighted{ 
-    flex: 2;
-  }
-  .nufi-comparison-row-heading-highlighted > p {
-    font-size: 14px;
-    padding: 0px;
-  }
-  .nufi-comparison-label-container > p {
-    font-size: 12px;
-  }
   .navbar-logo.nufi {
     max-width: 60px;
-  }
-  .nufi-comparison-row > * {
-    padding: 5px;
-  }
-  .nufi-comparison-item > .nufi-comparison-item-end {
-    padding: 0px;
-  }
-  .nufi-comparison-tooltip::before {
-    width: 150px;
   }
 }
   

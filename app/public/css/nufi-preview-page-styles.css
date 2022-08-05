@@ -1,0 +1,401 @@
+/* NuFi PREVIEW PAGE */
+/* using 'np' (nufi-preview) prefix to avoid class collision*/
+
+/* SECTIONS */
+.np-page {
+  width: 100%;
+  height: 100%;
+  color: white;
+  max-width: var(--width);
+  margin: 0 auto;
+  padding: 40px 45px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.np-banner {
+  display: flex;
+  gap: 3rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.np-banner__image {
+  margin-right: -110px;
+}
+
+.np-banner__content {
+  max-width: 500px;
+}
+
+.np-banner__links {
+  display: flex;
+  gap: 8px;
+}
+
+.np-partners {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.np-comparison-row {
+  display: flex;
+  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+  margin-bottom: 6px;
+  border-radius: 20px 0 0 20px;
+}
+
+.np-comparison-row__item {
+  flex: 1;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.np-comparison-row__item--highlighted {
+  border-radius: 20px 0 0 20px;
+  background: var(--color-nufi-background);
+}
+
+.np-comparison-row__item--heading-highlighted {
+  border-radius: 20px 0 0 20px;
+}
+
+.np-comparison-row__title {
+  padding: 0 60px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.np-comparison-row__item--heading-regular {
+  background: #424242;
+  background: var(--color-nufi-background);
+  position: relative;
+  overflow: hidden
+}
+
+.np-preview__guide {
+  display: flex;
+  gap: 20px;
+}
+
+.np-video-section{ 
+  width: 840px;
+  height: 472.5px;
+  margin: 0 auto;
+}
+
+.np-video-section__iframe{
+  height: 100%;
+  width: 100%;
+}
+
+.np-text-section {
+  text-align: center;
+  font-size: 20px;
+  display: block;
+}
+
+.np-text-section--secondary {
+  font-size:16px;
+  color: rgba(255,255,255, 0.7)
+}
+
+ /* COMPONENTS */
+
+.np-heading {
+  letter-spacing: .5px;
+  line-height: 140%;
+  font-weight: 600;
+  margin: 0;
+}
+
+.np-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 18px;
+  color: var(--color-nufi-text);
+}
+
+.np-ul--columns {
+  display: flex;
+  justify-content: space-between;
+}
+.np-ul--columns > li {
+  flex: 1;
+}
+
+.np-text-icon, .np-ul--icon > li {
+  display: flex;
+  gap: 10px
+}
+
+.np-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  position: relative;
+}
+
+.np-btn:hover {
+  text-decoration: none;
+}
+
+.np-btn:hover::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  content: " ";
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.np-btn--primary:hover::after {
+  background-color: rgba(0,0,0, 0.15);
+}
+
+.np-btn--primary, .np-btn--primary:hover {
+  color: var(--color-nufi-secondary);
+  background-color: var(--color-nufi-primary);
+}
+
+.np-btn--secondary:hover::after {
+  background-color: rgba(255,255,255, 0.05);
+}
+
+.np-btn--secondary, .np-btn--secondary:hover {
+  color: #fff;
+  border: 1px solid #fff;
+}
+
+.np-heading--big {
+  font-size: 48px;
+}
+
+.np-heading--md {
+  font-size: 24px;
+}
+
+.np-badge {
+  padding: 0 8px;
+  background-color: var(--color-nufi-primary);
+  border-radius: 6px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-nufi-background);
+  max-width: 100%;
+  font-size: 16px;
+}
+
+.np-badge--number-list {
+  min-width: 24px;
+}
+
+.np-card {
+  display: flex;
+  padding: 12px;
+  align-items: center;
+  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+  border-radius: 4px;
+  color: var(--color-nufi-background);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  background-color: var(--color-nufi-primary);
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.np-card:hover {
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--color-nufi-background);
+  background-color: var(--color-nufi-primary);
+  opacity: 0.9;
+}
+
+.np-card__left {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  justify-content: center;
+}
+
+.np-card__icon-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  border-radius: 50%;
+  justify-content: center;
+  background-color: rgb(66, 66, 66);
+}
+
+.np-icon {
+  fill: currentColor;
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  font-size: 1.5rem;
+  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  flex-shrink: 0;
+  user-select: none;
+  color: #BAE440;
+}
+
+.np-icon--red {
+  color: #f44336
+}
+
+.np-link {
+  color: var(--color-nufi-primary);
+  text-decoration: none;
+}
+
+.np-link:hover {
+  color: var(--color-nufi-primary)
+}
+
+/* UTILS */
+
+.np-space-y-6 > *:not(:last-child)  {
+  margin-bottom: 24px;
+}
+
+.np-space-y-15 > *:not(:last-child)  {
+  margin-bottom: 60px;
+}
+
+.np-space-y-3 > *:not(:last-child)  {
+  margin-bottom: 12px;
+}
+
+.np-text-center {
+  text-align: center;
+}
+
+.np-full-width {
+  width: 100%
+}
+
+.np-flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+  /* 1024 px */
+@media screen and (max-width: 1024px) {
+  /* SECTIONS */
+  .np-banner__content {
+    margin: 0 auto;
+    text-align: center;
+    padding: 40px 10px;
+  }
+
+  .np-banner__mobile-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .np-banner__links {
+    flex-direction: column;
+    width: fit-content;
+    width: 100%;
+    align-items: center;
+  }
+
+  .np-banner__image {
+    display: none;
+  }
+
+  .np-page {
+    padding: 0px;
+    padding-bottom: 30px;
+  }
+
+  .np-page > *:not(:first-child) {
+    padding: 0 25px;
+  }
+
+  .np-preview__guide {
+    flex-direction: column;
+  }
+
+  .np-video-section{
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  }
+
+  .np-video-section__iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border: none;
+    max-width: 840px;
+    max-height: 472.5px;
+    margin: 0 auto;
+  }
+
+/* COMPONENTS */
+  .np-ul {
+    font-size: 16px;
+  }
+
+  .np-btn {
+    padding: 6px 12px;
+  }
+
+  .np-heading--big {
+    font-size: 32px;
+  }
+  .np-ul--columns {
+    flex-wrap: wrap;
+  }
+  .np-ul--columns > li {
+    flex: auto;
+  }
+}
+    
+/* MOBILE MEDIA QUERIES */
+
+@media screen and (max-width: 767px) {
+  .np-comparison-row__item--highlighted, .np-comparison-row__item--heading-highlighted{ 
+    flex: 2;
+  }
+
+  .np-comparison-row__title {
+    font-size: 14px;
+    padding: 0px;
+  }
+
+  .np-comparison-row__title {
+    font-size: 12px;
+  }
+
+  .np-comparison-row__item {
+    padding: 5px;
+  }
+  
+  .nufi-comparison-item > .nufi-comparison-item-end {
+    padding: 0px;
+  }
+}
