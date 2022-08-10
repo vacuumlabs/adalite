@@ -105,7 +105,7 @@ const ShelleyBalances = ({
           </div>
         </div>
 
-        {isShelleyCompatible && !!nonStakingBalance && (
+        {isShelleyCompatible && nonStakingBalance.gt(0) && (
           <Fragment>
             <h2 className="card-title staking-balances-title">
               Non-staking balance
@@ -132,9 +132,7 @@ const ShelleyBalances = ({
                 <button
                   className="button secondary convert"
                   onClick={convertNonStakingUtxos}
-                  disabled={
-                    nonStakingBalance.eq(0) || shouldDisableSendingButton(walletOperationStatusType)
-                  }
+                  disabled={shouldDisableSendingButton(walletOperationStatusType)}
                 />
               </span>
             </div>
