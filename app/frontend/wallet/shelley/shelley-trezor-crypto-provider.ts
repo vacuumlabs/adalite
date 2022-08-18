@@ -48,7 +48,7 @@ import {
 import {removeNullFields} from '../../helpers/removeNullFiels'
 import {orderTokenBundle} from '../helpers/tokenFormater'
 import assertUnreachable from '../../helpers/assertUnreachable'
-import TrezorConnect, * as TrezorTypes from 'trezor-connect'
+import TrezorConnect, * as TrezorTypes from '@trezor/connect-web'
 import * as assert from 'assert'
 import {encodeCbor} from '../helpers/cbor'
 
@@ -361,7 +361,7 @@ const ShelleyTrezorCryptoProvider = async ({
     const shelleyWitnesses: TxShelleyWitness[] = []
     const byronWitnesses: TxByronWitness[] = []
     witnesses.forEach((witness) => {
-      witness.type === TrezorTypes.CardanoTxWitnessType.SHELLEY_WITNESS
+      witness.type === TrezorTypes.PROTO.CardanoTxWitnessType.SHELLEY_WITNESS
         ? shelleyWitnesses.push(prepareShelleyWitness(witness))
         : byronWitnesses.push(prepareByronWitness(witness))
     })
@@ -420,7 +420,7 @@ const ShelleyTrezorCryptoProvider = async ({
   async function trezorSignTransaction(
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper,
-    signingMode: TrezorTypes.CardanoTxSigningMode
+    signingMode: TrezorTypes.PROTO.CardanoTxSigningMode
   ): Promise<TxSigned> {
     const inputs = txAux.inputs.map((input) => prepareInput(input, addressToAbsPathMapper))
     const outputs = txAux.outputs.map((output) => prepareOutput(output))
@@ -493,7 +493,7 @@ const ShelleyTrezorCryptoProvider = async ({
     return await trezorSignTransaction(
       txAux,
       addressToAbsPathMapper,
-      TrezorTypes.CardanoTxSigningMode.ORDINARY_TRANSACTION
+      TrezorTypes.PROTO.CardanoTxSigningMode.ORDINARY_TRANSACTION
     )
   }
 
@@ -504,7 +504,7 @@ const ShelleyTrezorCryptoProvider = async ({
     const txSigned = await trezorSignTransaction(
       txAux,
       addressToAbsPathMapper,
-      TrezorTypes.CardanoTxSigningMode.POOL_REGISTRATION_AS_OWNER
+      TrezorTypes.PROTO.CardanoTxSigningMode.POOL_REGISTRATION_AS_OWNER
     )
     return cborizeCliWitness(txSigned)
   }
