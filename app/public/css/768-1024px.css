@@ -308,6 +308,10 @@
     margin-bottom: 48px;
   }
 
+  .dashboard.mobile .card.compact {
+    margin-bottom: 0px;
+  }
+
   .dashboard.mobile .send.card,
   .dashboard.mobile .delegate.card {
     margin-bottom: 0px;

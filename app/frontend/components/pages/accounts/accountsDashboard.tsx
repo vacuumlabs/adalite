@@ -9,6 +9,8 @@ import {
 } from '../../../selectors'
 import {AdaIcon} from '../../common/svg'
 import Alert from '../../common/alert'
+import {visitNufiTooltip} from '../../common/tooltip'
+import NufiPageLink from '../../common/nufiPageLink'
 import AccountTile from './accountTile'
 import {Lovelace} from '../../../../frontend/types'
 import Conversions from '../../common/conversions'
@@ -94,7 +96,7 @@ const AccountsDashboard = () => {
   return (
     <Fragment>
       <div className="dashboard-column account">
-        <div className="card account-aggregated">
+        <div className="card compact account-aggregated">
           <div className="balance">
             <div className="item">
               <h2 className="card-title small-margin">Wallet available balance</h2>
@@ -132,6 +134,17 @@ const AccountsDashboard = () => {
               Refresh
             </button>
           </div>
+        </div>
+        <div>
+          {visitNufiTooltip({
+            content: (
+              <Fragment>
+                Manage accounts more easily with <NufiPageLink />
+              </Fragment>
+            ),
+            tooltipMessage:
+              'Rename accounts, hide accounts you don’t use, and display your portfolio in 25+ supported currencies. Plus, log in to your wallet quickly using a password instead of entering a seed phrase or connecting a hardware wallet device.',
+          })}
         </div>
         <div className="mobile">
           <InfoAlert />

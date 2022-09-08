@@ -25,7 +25,8 @@ import {
   assetNameHex2Readable,
   encodeAssetFingerprint,
 } from '../../../../frontend/wallet/shelley/helpers/addresses'
-import tooltip from '../../common/tooltip'
+import tooltip, {visitNufiTooltip} from '../../common/tooltip'
+import NufiPageLink from '../../common/nufiPageLink'
 import {FormattedAssetItem, FormattedHumanReadableLabelType} from '../../common/asset'
 import {shouldDisableSendingButton} from '../../../helpers/common'
 import printTokenAmount from '../../../helpers/printTokenAmount'
@@ -403,104 +404,115 @@ const SendAdaPage = ({
   const minimalLovelaceAmount = summary?.minimalLovelaceAmount ?? (new BigNumber(0) as Lovelace)
 
   return (
-    <div className="send card" ref={sendCardDiv}>
-      <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
-      {isModal ? accountSwitch : addressInput}
-      <div className="send-values">
-        {selectAssetDropdown}
-        {amountInput}
-        <div className="ada-label">Fee</div>
-        <div className="send-fee" data-cy="SendFeeAmount">
-          {printAda(transactionFee)}
-        </div>
-        {selectedAsset.type === AssetFamily.TOKEN && (
-          <Fragment>
-            <div className="send-label">
-              Min ADA
-              <a
-                {...tooltip(
-                  'Every transaction output with tokens must include a minimum amount of ADA, based on the number of different tokens in the transaction output.',
-                  true
-                )}
-              >
-                <span className="show-info">{''}</span>
-              </a>
-            </div>
-            {/* TODO: Connect to state when this values is calculated */}
-            <div className="send-fee" data-cy="SendAssetMinAdaAmount">
-              {printAda(minimalLovelaceAmount)}
-            </div>
-          </Fragment>
-        )}
-      </div>
-      <div className="send-total">
-        <div className="send-total-title">Total</div>
-        <div className="send-total-inner shrinkable">
-          {selectedAsset.type === AssetFamily.ADA ? (
-            <div className="send-total-ada">
-              {printAda(totalLovelace)}
-              <AdaIcon />
-            </div>
-          ) : (
-            <div className="send-total-ada shrinkable">
-              {totalTokens?.quantity != null && tokenDecimals != null
-                ? printTokenAmount(totalTokens.quantity, tokenDecimals)
-                : 0}{' '}
-              <FormattedAssetItem {...selectedAsset}>
-                {({formattedHumanReadableLabelVariants}) => {
-                  return (
-                    <Fragment>{formattedHumanReadableLabelVariants.labelShortWithIcon}</Fragment>
-                  )
-                }}
-              </FormattedAssetItem>
-            </div>
-          )}
-          {selectedAsset.type === AssetFamily.ADA
-            ? conversionRates && (
-              <Conversions balance={totalLovelace} conversionRates={conversionRates} />
-            )
-            : ''}
-        </div>
-        <div />
-        {selectedAsset.type === AssetFamily.TOKEN && (
-          <div className="send-total-inner ma-ada-fees">
-            <div>
-              +{printAda(totalLovelace)}
-              <AdaIcon />
-            </div>
-            {conversionRates && (
-              <Conversions balance={totalLovelace} conversionRates={conversionRates} />
-            )}
+    <div>
+      <div className="send card compact" ref={sendCardDiv}>
+        <h2 className={`card-title ${isModal ? 'show' : ''}`}>{title}</h2>
+        {isModal ? accountSwitch : addressInput}
+        <div className="send-values">
+          {selectAssetDropdown}
+          {amountInput}
+          <div className="ada-label">Fee</div>
+          <div className="send-fee" data-cy="SendFeeAmount">
+            {printAda(transactionFee)}
           </div>
-        )}
-      </div>
-      <div className="validation-row">
-        <button
-          {...tooltip(
-            'Cannot send funds while transaction is pending or reloading',
-            shouldDisableSendingButton(walletOperationStatusType)
+          {selectedAsset.type === AssetFamily.TOKEN && (
+            <Fragment>
+              <div className="send-label">
+                Min ADA
+                <a
+                  {...tooltip(
+                    'Every transaction output with tokens must include a minimum amount of ADA, based on the number of different tokens in the transaction output.',
+                    true
+                  )}
+                >
+                  <span className="show-info">{''}</span>
+                </a>
+              </div>
+              {/* TODO: Connect to state when this values is calculated */}
+              <div className="send-fee" data-cy="SendAssetMinAdaAmount">
+                {printAda(minimalLovelaceAmount)}
+              </div>
+            </Fragment>
           )}
-          className="button primary medium"
-          disabled={
-            !enableSubmit ||
-            feeRecalculating ||
-            shouldDisableSendingButton(walletOperationStatusType)
-          }
-          onClick={submitHandler}
-          ref={submitTxBtn}
-          data-cy="SendButton"
-        >
-          Send
-        </button>
-        {feeRecalculating ? (
-          <CalculatingFee />
-        ) : (
-          <SendValidation
-            sendFormValidationError={sendFormValidationError}
-            txSuccessTab={txSuccessTab}
-          />
-        )}
+        </div>
+        <div className="send-total">
+          <div className="send-total-title">Total</div>
+          <div className="send-total-inner shrinkable">
+            {selectedAsset.type === AssetFamily.ADA ? (
+              <div className="send-total-ada">
+                {printAda(totalLovelace)}
+                <AdaIcon />
+              </div>
+            ) : (
+              <div className="send-total-ada shrinkable">
+                {totalTokens?.quantity != null && tokenDecimals != null
+                  ? printTokenAmount(totalTokens.quantity, tokenDecimals)
+                  : 0}{' '}
+                <FormattedAssetItem {...selectedAsset}>
+                  {({formattedHumanReadableLabelVariants}) => {
+                    return (
+                      <Fragment>{formattedHumanReadableLabelVariants.labelShortWithIcon}</Fragment>
+                    )
+                  }}
+                </FormattedAssetItem>
+              </div>
+            )}
+            {selectedAsset.type === AssetFamily.ADA
+              ? conversionRates && (
+                <Conversions balance={totalLovelace} conversionRates={conversionRates} />
+              )
+              : ''}
+          </div>
+          <div />
+          {selectedAsset.type === AssetFamily.TOKEN && (
+            <div className="send-total-inner ma-ada-fees">
+              <div>
+                +{printAda(totalLovelace)}
+                <AdaIcon />
+              </div>
+              {conversionRates && (
+                <Conversions balance={totalLovelace} conversionRates={conversionRates} />
+              )}
+            </div>
+          )}
+        </div>
+        <div className="validation-row">
+          <button
+            {...tooltip(
+              'Cannot send funds while transaction is pending or reloading',
+              shouldDisableSendingButton(walletOperationStatusType)
+            )}
+            className="button primary medium"
+            disabled={
+              !enableSubmit ||
+              feeRecalculating ||
+              shouldDisableSendingButton(walletOperationStatusType)
+            }
+            onClick={submitHandler}
+            ref={submitTxBtn}
+            data-cy="SendButton"
+          >
+            Send
+          </button>
+          {feeRecalculating ? (
+            <CalculatingFee />
+          ) : (
+            <SendValidation
+              sendFormValidationError={sendFormValidationError}
+              txSuccessTab={txSuccessTab}
+            />
+          )}
+        </div>
       </div>
+      {visitNufiTooltip({
+        content: (
+          <Fragment>
+            Visually manage NFTs and send multiple assets together with <NufiPageLink />
+          </Fragment>
+        ),
+        tooltipMessage:
+          'Visually manage and bulk-send NFTs, and enjoy advanced asset management with multi-asset sending and the fiat value of Cardano tokens displayed in your chosen currency.',
+      })}
     </div>
   )
 }

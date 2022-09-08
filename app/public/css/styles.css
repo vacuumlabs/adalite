@@ -898,6 +898,13 @@ button[data-balloon] {
   transform: translate(0, 0);
 }
 
+.nufi-tooltip-wrapper {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+  color: var(--color-grey)
+}
+
 /* ALERTS */
 
 .alert {
@@ -1522,6 +1529,10 @@ button[data-balloon] {
 
 .dashboard-column .card:not(:last-child) {
   margin-bottom: 56px;
+}
+
+.dashboard-column .card.compact:not(:last-child) {
+  margin-bottom: 0px;
 }
 
 .dashboard-content {
@@ -3717,6 +3728,21 @@ input:checked + .slider:before {
   background-size: contain;
   background-position: center;
   background-image: url('../assets/question_symbol.svg');
+}
+
+.show-info.show-info-start{
+  width: 20px;
+  height: 15px;
+  left: 0;
+  top: -1px;
+  bottom: 0;
+  display: inline-block;
+}
+
+.show-info.show-info-start::after {
+  width: 100%;
+  height: 100%;
+  margin-left: 0px;
 }
 
 .delegation.field-na {

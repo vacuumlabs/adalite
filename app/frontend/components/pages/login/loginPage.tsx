@@ -153,9 +153,9 @@ const SubCardByAuthMethod = ({authMethod}: {authMethod: AuthMethodType}) => {
   }
 }
 
-const NuFiBannerWrapper = () => (
+const NufiBannerWrapper = () => (
   <div className="card banner login-nufi">
-    <NufiBanner />
+    <NufiBanner variant="gif" />
   </div>
 )
 
@@ -247,7 +247,7 @@ const LoginPage = () => {
       {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
       <div className="page-inner">
         <main className="page-main">
-          <NuFiBannerWrapper />
+          <NufiBannerWrapper />
           {authMethod === null ? (
             <AuthCardInitial />
           ) : (

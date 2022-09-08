@@ -322,7 +322,7 @@ const DashboardPage = () => {
             />
           ))}
         </ul>
-        {window.innerWidth < 1024 && <NufiBanner />}
+        {window.innerWidth < 1024 && <NufiBanner variant="static" />}
         <div style={'min-width: 200px;'}>
           <WalletOperationStatusType />
         </div>

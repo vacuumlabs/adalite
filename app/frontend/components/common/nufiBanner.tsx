@@ -1,6 +1,6 @@
 import {h} from 'preact'
 
-const NufiBanner = () => {
+const NufiBanner = ({variant = 'static'}: {variant: 'static' | 'gif'}) => {
   return (
     <a
       className="banner nufi"
@@ -8,7 +8,19 @@ const NufiBanner = () => {
       rel="noopener"
       target="blank"
     >
-      <img src="assets/nufi-animated-banner-light.gif" alt="NuFi - Crypto Wallet" style={{width: '100%'}} />
+      {variant === 'static' ? (
+        <img
+          src="assets/nufi-animated-banner-light.png"
+          alt="NuFi - Crypto Wallet"
+          style={{width: '100%'}}
+        />
+      ) : (
+        <img
+          src="assets/nufi-animated-banner-light.gif"
+          alt="NuFi - Crypto Wallet"
+          style={{width: '100%'}}
+        />
+      )}
     </a>
   )
 }

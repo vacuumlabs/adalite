@@ -12,18 +12,18 @@ const InitialContent = () => (
       <Alert alertType="nufi-announcement sidebar">
         <Fragment>
           <p className="mb-6">
-            <strong>Migrate from AdaLite to NuFi</strong>
+            <strong>Want to do more with your wallet?</strong>
             <br />
-            in under 30 seconds and enjoy:
+            Switch to NuFi’s browser extension:
             <br />
           </p>
           <ul className="list-reset list-style-check">
-            <li>Multichain asset management</li>
-            <li>Non-custodial staking</li>
-            <li>Integrated Cardano DEX &#38; NFT gallery</li>
-            <li>In-app cross-chain crypto trading</li>
+            <li>Buy and sell on NFT marketplaces</li>
+            <li>Trade tokens on decentralized exchanges</li>
+            <li>Import your existing AdaLite wallet</li>
+            <li>Get started in under 30 seconds</li>
           </ul>
-          <div className="center-text my-6">
+          <div className="my-6">
             <a
               className="sidebar-link"
               href={`${window.location.origin}/nufi`}
@@ -33,9 +33,6 @@ const InitialContent = () => (
               Learn more
             </a>
           </div>
-          <p>
-            <i>Adalite will continue to operate as normal</i>
-          </p>
         </Fragment>
       </Alert>
     </div>

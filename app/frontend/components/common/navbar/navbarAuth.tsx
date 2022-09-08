@@ -62,7 +62,7 @@ const NavbarAuth = ({isDemoWallet}: {isDemoWallet: boolean}) => {
         <div className="navbar-content">
           {window.innerWidth > 1024 && (
             <div style={{padding: '0 10px'}}>
-              <NufiBanner />
+              <NufiBanner variant="static" />
             </div>
           )}
           <a
