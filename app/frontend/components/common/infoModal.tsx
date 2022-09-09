@@ -59,6 +59,36 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'09/09/2022'}
+              children={
+                <Fragment>
+                  <Article
+                    title="Cardano’s Project Catalyst voting started this week and ends September 19th."
+                    icon=""
+                  >
+                    <p className="info-spaced-paragraph">
+                      Please support a proposal by NuFi (and the AdaLite team) called{' ‘'}
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://cardano.ideascale.com/c/idea/419644"
+                      >
+                        Ethereum and Cardano Web3 Wallet
+                      </a>
+                      {'’ '}in The Great Migration (from Ethereum) challenge.
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      NuFi’s proposal will help projects migrate to Cardano by making the
+                      cross-chain experience easy: you’ll be able to manage Ethereum, Milkomeda and
+                      Cardano accounts side by side, migrate assets between chains, and connect to
+                      Dapps on each chain simultaneously using just your NuFi wallet. We'd really
+                      appreciate your vote before September 19th.
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'08/02/2022'}
               children={
                 <Fragment>
