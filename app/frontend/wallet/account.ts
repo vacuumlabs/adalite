@@ -292,8 +292,14 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     )
     const nonStakingUtxos = sortedUtxos.filter(({address}) => !isBase(addressToHex(address)))
     const baseAddressUtxos = sortedUtxos.filter(({address}) => isBase(addressToHex(address)))
-    const adaOnlyUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle?.length === 0)
-    const tokenUtxos = baseAddressUtxos.filter(({tokenBundle}) => tokenBundle.length > 0)
+    const utxosPrioritizedByAddressType = [...nonStakingUtxos, ...baseAddressUtxos]
+
+    const adaOnlyUtxos = utxosPrioritizedByAddressType.filter(
+      ({tokenBundle}) => tokenBundle.length === 0
+    )
+    const tokenUtxos = utxosPrioritizedByAddressType.filter(
+      ({tokenBundle}) => tokenBundle.length > 0
+    )
 
     if (
       txPlanArgs.txType === TxType.SEND_ADA &&
@@ -307,9 +313,9 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
         ({tokenBundle}) =>
           !tokenBundle.some((token) => token.policyId === policyId && token.assetName === assetName)
       )
-      return [...targetTokenUtxos, ...nonStakingUtxos, ...adaOnlyUtxos, ...nonTargetTokenUtxos]
+      return [...targetTokenUtxos, ...adaOnlyUtxos, ...nonTargetTokenUtxos]
     }
-    return [...nonStakingUtxos, ...adaOnlyUtxos, ...tokenUtxos]
+    return [...adaOnlyUtxos, ...tokenUtxos]
   }
 
   /*
