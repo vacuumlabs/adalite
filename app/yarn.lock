@@ -45,9 +45,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v5.0.0-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v5.0.0-rc5.tgz":
-  version "5.0.0-rc5"
-  resolved "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v5.0.0-rc5/cardano-foundation-ledgerjs-hw-app-cardano-v5.0.0-rc5.tgz#374553408dc4258e21eb91ebc76214d1c34fa352"
+"@cardano-foundation/ledgerjs-hw-app-cardano@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-5.1.0.tgz#69b94f7c5055bdb19aa719ff277fa5f683d11067"
+  integrity sha512-ucuz/XbS/0ZD0Bal/GI/kiTm9jDIl8J+A7ypEqcAcBDGicFsyWmtPotOTwuDovTsiM8+eA/5OGTFX0oRqzxstQ==
   dependencies:
     "@ledgerhq/hw-transport" "^5.12.0"
     "@types/ledgerhq__hw-transport" "^4.21.3"
