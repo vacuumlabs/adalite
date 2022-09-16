@@ -2,7 +2,7 @@
   "name": "cardano",
   "version": "6.10.9",
   "engines": {
-    "node": "14.16"
+    "node": "14.17"
   },
   "description": "A simple Cardano wallet",
   "main": "app.js",
@@ -95,7 +95,7 @@
     "mini-css-extract-plugin": "^1.5.0",
     "prettier": "^1.19.1",
     "prettier-eslint-cli": "^5.0.1",
-    "release-it": "^15.1.1",
+    "release-it": "^15.4.2",
     "sass": "^1.32.11",
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
