@@ -47,3 +47,9 @@ export function filterValidTransactions<T extends CaTxEntry | TxSummaryEntry>(tx
 export function getDateDiffInSeconds(date1: Date, date2: Date) {
   return Math.abs((date1.getTime() - date2.getTime()) / 1000)
 }
+
+export function getCardanoscanUrl() {
+  return ADALITE_CONFIG.ADALITE_NETWORK === 'mainnet'
+    ? 'https://cardanoscan.io'
+    : 'https://testnet.cardanoscan.io'
+}

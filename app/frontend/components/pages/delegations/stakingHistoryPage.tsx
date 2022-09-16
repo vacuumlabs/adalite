@@ -3,6 +3,7 @@ import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {LinkIconToPool} from './common'
 import printAda from '../../../helpers/printAda'
+import {getCardanoscanUrl} from '../../../helpers/common'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
 import {RewardType} from '../../../wallet/backend-types'
@@ -145,7 +146,7 @@ const ViewOnCardanoScan = ({txHash, suffix, className = ''}) => {
       <span>
         <a
           className="transaction-address"
-          href={`https://cardanoscan.io/transaction/${txHash}${suffix}`}
+          href={`${getCardanoscanUrl()}/transaction/${txHash}${suffix}`}
           target="_blank"
           rel="noopener"
         >

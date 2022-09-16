@@ -27,6 +27,7 @@ import {useActiveAccount} from '../../../selectors'
 import {useSelector} from '../../../helpers/connect'
 import {createTokenRegistrySubject} from '../../../tokenRegistry/tokenRegistry'
 import printTokenAmount from '../../../helpers/printTokenAmount'
+import {getCardanoscanUrl} from '../../../helpers//common'
 import BigNumber from 'bignumber.js'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -55,7 +56,7 @@ const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
     <span>
       <a
         className="transaction-address"
-        href={`https://cardanoscan.io/transaction/${txid}`}
+        href={`${getCardanoscanUrl()}/transaction/${txid}`}
         target="_blank"
         rel="noopener"
       >
