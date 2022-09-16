@@ -25,7 +25,7 @@ export const encodeAddress = (address: Buffer): Address => {
     [AddressTypes.ENTERPRISE]: 'addr',
     [AddressTypes.REWARD]: 'stake',
   }
-  const isTestnet = getShelleyAddressNetworkId(address) === NetworkId.TESTNET
+  const isTestnet = getShelleyAddressNetworkId(address) === NetworkId.TESTNET_OR_PREPROD
   const addressPrefix = `${addressPrefixes[addressType]}${isTestnet ? '_test' : ''}`
   return bech32.encode(addressPrefix, address)
 }

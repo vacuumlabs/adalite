@@ -117,7 +117,7 @@ const ShelleyBitBox02CryptoProvider = async ({
 
   const bb02Network = {
     [NetworkId.MAINNET]: bitbox02Constants.messages.CardanoNetwork.CardanoMainnet,
-    [NetworkId.TESTNET]: bitbox02Constants.messages.CardanoNetwork.CardanoTestnet,
+    [NetworkId.TESTNET_OR_PREPROD]: bitbox02Constants.messages.CardanoNetwork.CardanoTestnet,
   }[network.networkId]
 
   const version = await withDevice((bitbox02: BitBox02API) => {
