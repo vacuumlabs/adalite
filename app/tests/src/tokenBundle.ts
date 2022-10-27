@@ -1,8 +1,9 @@
+import {Address} from '../../frontend/types'
 import * as assert from 'assert'
 import BigNumber from 'bignumber.js'
 import {orderTokenBundle} from '../../frontend/wallet/helpers/tokenFormater'
 import {encodeAssetFingerprint} from '../../frontend/wallet/shelley/helpers/addresses'
-import {computeMinUTxOLovelaceAmount} from '../../frontend/wallet/shelley/transaction'
+import {computeMinUtxoLovelaceAmount} from '../../frontend/wallet/shelley/transaction'
 
 describe('Token sorting', () => {
   it('should sort tokenBundle by policyId canonically', () => {
@@ -18,7 +19,7 @@ describe('Token sorting', () => {
       {policyId: 'bb', assets: [{assetName: 'xxx', quantity: new BigNumber(1)}]},
       {policyId: 'aaa', assets: [{assetName: 'xxx', quantity: new BigNumber(1)}]},
     ]
-    assert.deepEqual(sortedTokenBundle, orderTokenBundle(tokenBundle))
+    assert.deepEqual(orderTokenBundle(tokenBundle), sortedTokenBundle)
   })
 
   it('should sort assets in tokenBundle canonically', () => {
@@ -39,7 +40,7 @@ describe('Token sorting', () => {
         ],
       },
     ]
-    assert.deepEqual(sortedTokenBundle, orderTokenBundle(tokenBundle))
+    assert.deepEqual(orderTokenBundle(tokenBundle), sortedTokenBundle)
   })
 
   it('should sort tokenBundle canonically', () => {
@@ -78,13 +79,19 @@ describe('Token sorting', () => {
         ],
       },
     ]
-    assert.deepEqual(sortedTokenBundle, orderTokenBundle(tokenBundle))
+    assert.deepEqual(orderTokenBundle(tokenBundle), sortedTokenBundle)
   })
 })
 
 describe('Min ada calculation', () => {
   it('should calculate min ADA value for empty tokens', () => {
-    assert.deepEqual('1000000', computeMinUTxOLovelaceAmount([]).toString())
+    assert.deepEqual(
+      computeMinUtxoLovelaceAmount(
+        'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+        []
+      ),
+      new BigNumber(991300)
+    )
   })
   it('should calculate min ADA value for multiple assets under one policy', () => {
     const tokenBundle = [
@@ -99,7 +106,13 @@ describe('Min ada calculation', () => {
         quantity: new BigNumber(1),
       },
     ]
-    assert.deepEqual(new BigNumber(1518517), computeMinUTxOLovelaceAmount(tokenBundle))
+    assert.deepEqual(
+      computeMinUtxoLovelaceAmount(
+        'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+        tokenBundle
+      ),
+      new BigNumber(1176630)
+    )
   })
   it('should calculate min ADA value for multiple assets under multiple policies', () => {
     const tokenBundle = [
@@ -114,7 +127,13 @@ describe('Min ada calculation', () => {
         quantity: new BigNumber(1),
       },
     ]
-    assert.deepEqual('1666665', computeMinUTxOLovelaceAmount(tokenBundle).toString())
+    assert.deepEqual(
+      computeMinUtxoLovelaceAmount(
+        'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+        tokenBundle
+      ),
+      new BigNumber(1336100)
+    )
   })
   it('should calculate min ADA value for multiple assets under multiple policies with same assetName', () => {
     const tokenBundle = [
@@ -129,7 +148,13 @@ describe('Min ada calculation', () => {
         quantity: new BigNumber(1),
       },
     ]
-    assert.deepEqual('1666665', computeMinUTxOLovelaceAmount(tokenBundle).toString())
+    assert.deepEqual(
+      computeMinUtxoLovelaceAmount(
+        'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+        tokenBundle
+      ),
+      new BigNumber(1336100)
+    )
   })
 })
 
@@ -185,6 +210,6 @@ describe('Asset fingerprint encoding', () => {
     const resultFingerprints = assetFingerprintTestVectors.map(({policyid, assetname}) =>
       encodeAssetFingerprint(policyid, assetname)
     )
-    assert.deepEqual(testFingerprints, resultFingerprints)
+    assert.deepEqual(resultFingerprints, testFingerprints)
   })
 })

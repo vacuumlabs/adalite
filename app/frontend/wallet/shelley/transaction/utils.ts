@@ -1,53 +1,35 @@
 import BigNumber from 'bignumber.js'
-import distinct from '../../../helpers/distinct'
 import {Address, CertificateType, Lovelace, TokenBundle} from '../../../types'
-import {aggregateTokenBundles} from '../../helpers/tokenFormater'
+import {encodeCbor} from '../../helpers/cbor'
 import {TxCertificate, TxPlanAuxiliaryData, TxInput, TxOutput, TxWithdrawal} from '../../types'
-import {MIN_UTXO_VALUE} from './constants'
+import {cborizeSingleTxOutput} from '../shelley-transaction'
 import {estimateTxSize} from './estimateTxSize'
 
-export const computeMinUTxOLovelaceAmount = (tokenBundle: TokenBundle): Lovelace => {
-  // based on https://github.com/input-output-hk/cardano-ledger-specs/blob/master/doc/explanations/min-utxo.rst
-  const quot = (x: number, y: number) => Math.floor(x / y)
-  const roundupBytesToWords = (x: number) => quot(x + 7, 8)
-  // TODO: this to network config or constants
-  const minUTxOValue = new BigNumber(MIN_UTXO_VALUE)
-  // NOTE: should be 2, but a bug in Haskell set this to 0
-  const coinSize = 0
-  const txOutLenNoVal = 14
-  const txInLen = 7
-  const utxoEntrySizeWithoutVal = 6 + txOutLenNoVal + txInLen // 27
+export const computeMinUtxoLovelaceAmount = (
+  address: Address,
+  tokenBundle: TokenBundle
+): Lovelace => {
+  // Reference:
+  // - https://cips.cardano.org/cips/cip55/#thenewminimumlovelacecalculation
+  // - https://hydra.iohk.io/build/15339994/download/1/babbage-changes.pdf page 9
+  const OVERHEAD = 160
 
-  // NOTE: should be 29 but a bug in Haskell set this to 27
-  const adaOnlyUtxoSize = utxoEntrySizeWithoutVal + coinSize
+  // taken from https://cexplorer.io/params
+  const COINS_PER_UTXO_WORD = 34482
+  const COINS_PER_UTXO_BYTE = Math.floor(COINS_PER_UTXO_WORD / 8)
 
-  // this ensures there are only distinct (policyId, assetName) pairs
-  const aggregatedTokenBundle = aggregateTokenBundles([tokenBundle])
+  const MAX_COINS = new BigNumber(2).pow(64).minus(1) as Lovelace
 
-  const distinctAssets = aggregatedTokenBundle.map(({assetName}) => assetName)
-
-  const numAssets = distinctAssets.length
-  // number of unique policyIds
-  const numPIDs = distinct(aggregatedTokenBundle.map(({policyId}) => policyId)).length
-
-  const sumAssetNameLengths = distinctAssets.reduce(
-    (acc, assetName) => acc + Math.max(Buffer.from(assetName, 'hex').byteLength, 1),
-    0
-  )
-
-  const policyIdSize = 28 // pidSize in specs
-
-  const size =
-    6 + roundupBytesToWords(numAssets * 12 + sumAssetNameLengths + numPIDs * policyIdSize)
-
-  if (aggregatedTokenBundle.length === 0) {
-    return minUTxOValue as Lovelace
-  } else {
-    return BigNumber.max(
-      minUTxOValue,
-      quot(minUTxOValue.toNumber(), adaOnlyUtxoSize) * (utxoEntrySizeWithoutVal + size)
-    ) as Lovelace
+  const txOutput: TxOutput = {
+    isChange: false,
+    address,
+    coins: MAX_COINS,
+    tokenBundle,
   }
+
+  const serializedTxOutputSize = encodeCbor(cborizeSingleTxOutput(txOutput)).length + 1
+
+  return new BigNumber((serializedTxOutputSize + OVERHEAD) * COINS_PER_UTXO_BYTE) as Lovelace
 }
 
 export function txFeeFunction(txSizeInBytes: number): Lovelace {
@@ -98,7 +80,7 @@ export const createTokenChangeOutputs = (
     outputs.push({
       isChange: false,
       address: changeAddress,
-      coins: computeMinUTxOLovelaceAmount(tokenBundle),
+      coins: computeMinUtxoLovelaceAmount(changeAddress, tokenBundle),
       tokenBundle,
     })
   }

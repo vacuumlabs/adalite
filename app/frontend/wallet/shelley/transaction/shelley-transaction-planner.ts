@@ -25,7 +25,7 @@ import {
 } from '../../types'
 import {computeTxPlan, validateTxPlan} from './computeTxPlan'
 import {TxPlanDraft, TxPlanResult} from './types'
-import {computeMinUTxOLovelaceAmount} from './utils'
+import {computeMinUtxoLovelaceAmount} from './utils'
 import * as assert from 'assert'
 import BigNumber from 'bignumber.js'
 
@@ -45,7 +45,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       outputs.push({
         isChange: false,
         address: txPlanArgs.address,
-        coins: computeMinUTxOLovelaceAmount([txPlanArgs.sendAmount.token]),
+        coins: computeMinUtxoLovelaceAmount(txPlanArgs.address, [txPlanArgs.sendAmount.token]),
         tokenBundle: [txPlanArgs.sendAmount.token],
       })
     }

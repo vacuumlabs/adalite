@@ -7,11 +7,11 @@ import {cborizeSingleTxOutput} from '../shelley-transaction'
 import {TxPlanResult} from './types'
 import {
   createTokenChangeOutputs,
-  computeMinUTxOLovelaceAmount,
+  computeMinUtxoLovelaceAmount,
   computeRequiredDeposit,
   computeRequiredTxFee,
 } from './utils'
-import {MAX_OUTPUT_TOKENS, MIN_UTXO_VALUE} from './constants'
+import {MAX_OUTPUT_TOKENS} from './constants'
 import BigNumber from 'bignumber.js'
 import {encodeCbor} from '../../helpers/cbor'
 
@@ -138,7 +138,12 @@ export function computeTxPlan(
     .minus(feeWithAdaOnlyChange) as Lovelace
 
   // We cannot create a change output with minimal ada so we add it to the fee
-  if (isTokenDifferenceEmpty && remainingAdaOnlyChangeLovelace.lt(MIN_UTXO_VALUE)) {
+  if (
+    isTokenDifferenceEmpty &&
+    remainingAdaOnlyChangeLovelace.lt(
+      computeMinUtxoLovelaceAmount(adaOnlyChangeOutput.address, adaOnlyChangeOutput.tokenBundle)
+    )
+  ) {
     return {
       success: true,
       txPlan: {
@@ -216,7 +221,14 @@ export function computeTxPlan(
   }
 
   // if remainingTokenChangeLovelace is positive, we try to put it in ada only change output
-  if (remainingTokenChangeLovelace.gt(MIN_UTXO_VALUE)) {
+  if (
+    remainingTokenChangeLovelace.gt(
+      computeMinUtxoLovelaceAmount(
+        possibleChange.address,
+        aggregateTokenBundles(tokenChangeOutputs.map((output) => output.tokenBundle))
+      )
+    )
+  ) {
     const feeWithAdaAndTokenChange = computeRequiredTxFee(
       inputs,
       [...outputs, ...tokenChangeOutputs, adaOnlyChangeOutput],
@@ -312,14 +324,22 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
   }
 
   // we cant build the transaction with big enough change lovelace
-  if (change.some(({coins, tokenBundle}) => coins.lt(computeMinUTxOLovelaceAmount(tokenBundle)))) {
+  if (
+    change.some(({address, coins, tokenBundle}) =>
+      coins.lt(computeMinUtxoLovelaceAmount(address, tokenBundle))
+    )
+  ) {
     return {
       ...noTxPlan,
       error: {code: InternalErrorReason.ChangeOutputTooSmall},
     }
   }
 
-  if (outputs.some(({coins, tokenBundle}) => coins.lt(computeMinUTxOLovelaceAmount(tokenBundle)))) {
+  if (
+    outputs.some(({address, coins, tokenBundle}) =>
+      coins.lt(computeMinUtxoLovelaceAmount(address, tokenBundle))
+    )
+  ) {
     return {
       ...noTxPlan,
       error: {code: InternalErrorReason.OutputTooSmall},

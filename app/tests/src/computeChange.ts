@@ -24,36 +24,34 @@ const tokens = {
 
 const createOutput = (coins, tokenBundle) => ({
   isChange: false,
-  address:
-    'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
+  address: 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
   coins,
   tokenBundle,
 })
 
 const maxOutputTokens = 3
 
-const address =
-  'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address
+const address = 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address
 
 const fixtures = {
   'with number of tokens equal to max': {
     tokenBundle: Object.values(tokens),
-    outputs: [createOutput(new BigNumber(1777776), Object.values(tokens))],
+    outputs: [createOutput(new BigNumber(1383510), Object.values(tokens))],
   },
   'with number of tokens smaller than max': {
     tokenBundle: [tokens.token1, tokens.token2],
-    outputs: [createOutput(new BigNumber(1592591), [tokens.token1, tokens.token2])],
+    outputs: [createOutput(new BigNumber(1241280), [tokens.token1, tokens.token2])],
   },
   'with number of tokens bigger than max': {
     tokenBundle: [...Object.values(tokens), tokens.token1, tokens.token2],
     outputs: [
-      createOutput(new BigNumber(1777776), Object.values(tokens)),
-      createOutput(new BigNumber(1592591), [tokens.token1, tokens.token2]),
+      createOutput(new BigNumber(1383510), Object.values(tokens)),
+      createOutput(new BigNumber(1241280), [tokens.token1, tokens.token2]),
     ],
   },
   'with one token': {
     tokenBundle: [tokens.token1],
-    outputs: [createOutput(new BigNumber(1481480), [tokens.token1])],
+    outputs: [createOutput(new BigNumber(1185250), [tokens.token1])],
   },
   'without tokens': {
     tokenBundle: [],
@@ -64,6 +62,6 @@ const fixtures = {
 Object.entries(fixtures).forEach(([name, setting]) =>
   it(`should compute change ${name}`, () => {
     const {tokenBundle, outputs} = setting
-    assert.deepEqual(outputs, createTokenChangeOutputs(address, tokenBundle, maxOutputTokens))
+    assert.deepEqual(createTokenChangeOutputs(address, tokenBundle, maxOutputTokens), outputs)
   })
 )

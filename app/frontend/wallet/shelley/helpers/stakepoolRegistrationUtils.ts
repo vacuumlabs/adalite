@@ -19,13 +19,22 @@ import {CborizedCliWitness} from '../types'
 import BigNumber from 'bignumber.js'
 import {decodeCbor, encodeCbor} from '../../helpers/cbor'
 
-type CliTxBodyType = 'TxUnsignedShelley' | 'TxBodyAllegra' | 'TxBodyMary'
+type CliTxBodyType =
+  | 'TxUnsignedShelley'
+  | 'Unwitnessed Tx ShelleyEra'
+  | 'TxBodyAllegra'
+  | 'Unwitnessed Tx AllegraEra'
+  | 'TxBodyMary'
+  | 'Unwitnessed Tx MaryEra'
 type CliTxWitnessType = 'TxWitnessShelley' | 'TxWitness AllegraEra' | 'TxWitness MaryEra'
-const preferredCliTxBodyType: CliTxBodyType = 'TxBodyMary'
+const preferredCliTxBodyType: CliTxBodyType = 'Unwitnessed Tx MaryEra'
 const cliTxBodyTypeToWitnessType: {[K in CliTxBodyType]: CliTxWitnessType} = {
-  TxUnsignedShelley: 'TxWitnessShelley',
-  TxBodyAllegra: 'TxWitness AllegraEra',
-  TxBodyMary: 'TxWitness MaryEra',
+  'TxUnsignedShelley': 'TxWitnessShelley',
+  'Unwitnessed Tx ShelleyEra': 'TxWitnessShelley',
+  'TxBodyAllegra': 'TxWitness AllegraEra',
+  'Unwitnessed Tx AllegraEra': 'TxWitness AllegraEra',
+  'TxBodyMary': 'TxWitness MaryEra',
+  'Unwitnessed Tx MaryEra': 'TxWitness MaryEra',
 }
 
 const validatePoolRegUnsignedTx = (unsignedTx: _UnsignedTxParsed) => {
