@@ -2,7 +2,7 @@ version: 2.1
 
 defaults: &defaults
   docker:
-    - image: circleci/node:14.17-browsers
+    - image: cimg/node:18.12-browsers
   working_directory: ~/repo
 
 commands:
