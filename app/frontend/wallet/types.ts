@@ -132,6 +132,7 @@ export type TxVotingAuxiliaryData = TxPlanVotingAuxiliaryData & {
   rewardDestinationAddress: {
     address: Address
     stakingPath: BIP32Path
+    spendingPath: BIP32Path
   }
 }
 

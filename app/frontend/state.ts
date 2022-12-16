@@ -222,6 +222,7 @@ const initialState: State = {
       },
       stakingXpub: null as any,
       stakingAddress: null as any,
+      firstBaseAddress: null as any,
       utxos: [],
       balance: new BigNumber(0) as Lovelace,
       tokenBalance: [],

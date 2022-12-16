@@ -154,6 +154,7 @@ export type AccountInfo = {
   }
   stakingXpub: _XPubKey
   stakingAddress: Address
+  firstBaseAddress: Address
   balance: Lovelace
   utxos: Array<UTxO>
   tokenBalance: TokenBundle
@@ -291,7 +292,7 @@ export type VotingRegistrationTxPlanArgs = {
   txType: TxType.REGISTER_VOTING
   votingPubKey: HexString
   stakePubKey: HexString
-  stakingAddress: Address
+  rewardDestinationBaseAddress: Address
   nonce: BigInt
 }
 

@@ -159,6 +159,10 @@ const MyAddresses = ({
     return await accountAddrManager._deriveAddress(accountIndex)
   }
 
+  async function getFirstBaseAddress() {
+    return await baseExtAddrManager._deriveAddress(0)
+  }
+
   return {
     getAddressToAbsPathMapper,
     fixedPathMapper,
@@ -169,6 +173,7 @@ const MyAddresses = ({
     legacyExtManager,
     areAddressesUsed,
     getStakingAddress,
+    getFirstBaseAddress,
   }
 }
 
@@ -205,14 +210,16 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     }
   }
 
-  function mapAuxiliaryData(auxiliaryData: TxPlanAuxiliaryData): TxAuxiliaryData {
+  async function mapAuxiliaryData(auxiliaryData: TxPlanAuxiliaryData): Promise<TxAuxiliaryData> {
     if (auxiliaryData.type === 'CATALYST_VOTING') {
-      const rewardAddress = auxiliaryData.rewardDestinationAddress.address
+      const address = auxiliaryData.rewardDestinationAddress.address
+      const stakingAddress = await myAddresses.getStakingAddress()
       return {
         ...auxiliaryData,
         rewardDestinationAddress: {
-          address: rewardAddress,
-          stakingPath: myAddresses.getAddressToAbsPathMapper()(rewardAddress),
+          address,
+          spendingPath: myAddresses.getAddressToAbsPathMapper()(address),
+          stakingPath: myAddresses.getAddressToAbsPathMapper()(stakingAddress),
         },
       }
     } else {
@@ -231,7 +238,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     }))
     const txTtl = ttl === undefined ? await calculateTtl() : ttl
     const txValidityIntervalStart = validityIntervalStart ?? null
-    const mappedAuxiliaryData = auxiliaryData ? mapAuxiliaryData(auxiliaryData) : null
+    const mappedAuxiliaryData = auxiliaryData ? await mapAuxiliaryData(auxiliaryData) : null
 
     return ShelleyTxAux({
       inputs,
@@ -344,6 +351,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     const accountXpubs = await getAccountXpubs()
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
     const stakingAddress = await myAddresses.getStakingAddress()
+    const firstBaseAddress = await myAddresses.getFirstBaseAddress()
     const {baseAddressBalance, nonStakingBalance, balance, tokenBalance} = await getBalance()
     const utxos = await getUtxos()
     const shelleyAccountInfo = await getStakingInfo(validStakepoolDataProvider)
@@ -360,6 +368,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       accountXpubs,
       stakingXpub,
       stakingAddress,
+      firstBaseAddress,
       balance,
       utxos,
       tokenBalance,

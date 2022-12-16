@@ -287,7 +287,7 @@ export const transactionSettings = {
       txType: TxType.REGISTER_VOTING as const,
       votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
       stakePubKey: '2ef8d7c9e19bb688860a900123e5bbe2eff7187336590b3928d43a830110cd62',
-      stakingAddress: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks' as Address,
+      rewardDestinationBaseAddress: 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
       nonce: BigInt(25000000),
     },
     utxos,
@@ -308,7 +308,7 @@ export const transactionSettings = {
           {
             isChange: false as const,
             address: 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
-            coins: new BigNumber(8039420) as Lovelace,
+            coins: new BigNumber(8038190) as Lovelace,
             tokenBundle: [],
           },
           {
@@ -320,16 +320,17 @@ export const transactionSettings = {
         ],
         certificates: [],
         deposit: new BigNumber(0) as Lovelace,
-        fee: new BigNumber(182804) as Lovelace,
-        baseFee: new BigNumber(182804) as Lovelace,
+        fee: new BigNumber(184034) as Lovelace,
+        baseFee: new BigNumber(184034) as Lovelace,
         additionalLovelaceAmount: new BigNumber(0) as Lovelace,
         withdrawals: [],
         auxiliaryData: {
           type: 'CATALYST_VOTING' as TxAuxiliaryDataTypes,
           nonce: BigInt(25000000),
           rewardDestinationAddress: {
-            address: 'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks' as Address,
+            address: 'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
             stakingPath: null,
+            spendingPath: null,
           },
           stakePubKey: '2ef8d7c9e19bb688860a900123e5bbe2eff7187336590b3928d43a830110cd62',
           votingPubKey: '2145823c77df07a43210af5422e6447bb4d1f44f1af81a261205146cc67d2cf0',
@@ -337,6 +338,6 @@ export const transactionSettings = {
       },
     },
     ttl,
-    txHash: '88913ad717860e531796597c16108ef35c8a189634971051905e635b6ee78d6a',
+    txHash: '56199b82112acb8c097c7d161bbc35536f4fa569d5532096411ad6af9741a892',
   },
 }

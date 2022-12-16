@@ -480,9 +480,10 @@ const ShelleyLedgerCryptoProvider = async ({
             votingPublicKeyHex: txAuxiliaryData.votingPubKey,
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             rewardsDestination: {
-              type: LedgerTypes.AddressType.REWARD_KEY,
+              type: LedgerTypes.AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
               params: {
                 stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+                spendingPath: txAuxiliaryData.rewardDestinationAddress.spendingPath,
               },
             },
             nonce: `${txAuxiliaryData.nonce}`,

@@ -65,7 +65,7 @@ export default (store: Store) => {
       txType: TxType.REGISTER_VOTING,
       votingPubKey,
       stakePubKey,
-      stakingAddress: sourceAccount.stakingAddress,
+      rewardDestinationBaseAddress: sourceAccount.firstBaseAddress,
       nonce: BigInt(nonce.toString()),
     })
 
