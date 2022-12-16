@@ -475,15 +475,19 @@ const ShelleyLedgerCryptoProvider = async ({
     switch (txAuxiliaryData.type) {
       case 'CATALYST_VOTING':
         return {
-          type: LedgerTypes.TxAuxiliaryDataType.CATALYST_REGISTRATION,
+          type: LedgerTypes.TxAuxiliaryDataType.GOVERNANCE_VOTING_REGISTRATION,
           params: {
+            format: LedgerTypes.GovernanceVotingRegistrationFormat.CIP_15,
             votingPublicKeyHex: txAuxiliaryData.votingPubKey,
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
             rewardsDestination: {
-              type: LedgerTypes.AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+              type: LedgerTypes.TxOutputDestinationType.DEVICE_OWNED,
               params: {
-                stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
-                spendingPath: txAuxiliaryData.rewardDestinationAddress.spendingPath,
+                type: LedgerTypes.AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+                params: {
+                  stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
+                  spendingPath: txAuxiliaryData.rewardDestinationAddress.spendingPath,
+                },
               },
             },
             nonce: `${txAuxiliaryData.nonce}`,
@@ -514,7 +518,7 @@ const ShelleyLedgerCryptoProvider = async ({
           }),
           txAuxiliaryData: cborizeTxAuxiliaryVotingData(
             txAux.auxiliaryData,
-            auxiliaryDataSupplement.catalystRegistrationSignatureHex
+            auxiliaryDataSupplement.governanceVotingRegistrationSignatureHex
           ),
         }
       default:

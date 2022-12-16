@@ -18,12 +18,13 @@
   "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "scripts": {},
   "dependencies": {
-    "@cardano-foundation/ledgerjs-hw-app-cardano": "^5.1.0",
-    "@ledgerhq/hw-transport": "^5.51.1",
+    "@cardano-foundation/ledgerjs-hw-app-cardano": "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v6.0.0-rc2/cardano-foundation-ledgerjs-hw-app-cardano-v6.0.0-rc2.tgz",
+    "@ledgerhq/hw-transport": "^6.27.8",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
-    "@ledgerhq/hw-transport-webhid": "^5.51.1",
-    "@ledgerhq/hw-transport-webusb": "^5.53.1",
+    "@ledgerhq/hw-transport-webhid": "^6.27.8",
+    "@ledgerhq/hw-transport-webusb": "^6.27.8",
     "@sentry/browser": "^6.15.0",
+    "@trezor/connect-web": "9.0.0",
     "@types/lodash": "^4.14.168",
     "babel-polyfill": "6.26.0",
     "bignumber.js": "^9.0.2",
@@ -37,8 +38,7 @@
     "moment": "^2.29.4",
     "pbkdf2": "^3.1.2",
     "preact": "^10.5.11",
-    "react-device-detect": "^1.17.0",
-    "@trezor/connect-web": "9.0.0"
+    "react-device-detect": "^1.17.0"
   },
   "devDependencies": {
     "@testing-library/cypress": "^7.0.4",
