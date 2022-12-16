@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  browser-tools: circleci/browser-tools@1.4.0
+
 defaults: &defaults
   docker:
     - image: cimg/node:18.12-browsers
@@ -40,12 +43,14 @@ jobs:
     <<: *defaults
     steps:
       - setup
+      - browser-tools/install-chrome
       - run: yarn test-chrome-headless
 
   test_integration:
     <<: *defaults
     steps:
       - setup
+      - browser-tools/install-chrome
       - run:
           name: Build the app so that server can be started
           command: yarn build
