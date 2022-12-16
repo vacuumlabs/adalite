@@ -71,7 +71,7 @@ describe('Account tab', () => {
   })
 
   it('Delegates from an account', () => {
-    const poolId = '48f2c367cfe81cac6687c3f7c26613edfe73cd329402aa5cf493bb61'
+    const poolId = '1d9302a3fb4b3b1935e02b27f0339798d3f08a55fbfdcd43a449a96f'
 
     cy.dataCy('AccountTile')
       .first()

@@ -6,7 +6,7 @@
 describe('Sending tab', () => {
   it('Sends a valid transaction', () => {
     const sendAddress =
-      'addr_test1qzlaya83y9uxd2vpcfthjpefhgs2xxvc57m2epvvaj6m9r6jk3jrkjzr07qreswfvj55xvkmyayluf49gvygu5htl35q8uuu7e'
+      'addr_test1qqv3z933r88vnpgvqtwfcskw3uxg6up5n090pg330m25ke7rwgtphv6x8j32g8clqv59adsk78sgtljveyjejjt0fj6q3lwdrw'
     const sendAmount = '50'
 
     cy.dataCy('AddressTextField').type(sendAddress)
@@ -44,7 +44,7 @@ describe('Sending tab', () => {
 
   it('Validates sending form', () => {
     const sendAddress =
-      'addr_test1qzlaya83y9uxd2vpcfthjpefhgs2xxvc57m2epvvaj6m9r6jk3jrkjzr07qreswfvj55xvkmyayluf49gvygu5htl35q8uuu7e'
+      'addr_test1qqv3z933r88vnpgvqtwfcskw3uxg6up5n090pg330m25ke7rwgtphv6x8j32g8clqv59adsk78sgtljveyjejjt0fj6q3lwdrw'
 
     // incomplete address
     cy.dataCy('AddressTextField').type(sendAddress.substr(0, 5))
@@ -83,7 +83,7 @@ describe('Sending tab', () => {
 
   it('Sends a valid asset transaction', () => {
     const sendAddress =
-      'addr_test1qzlaya83y9uxd2vpcfthjpefhgs2xxvc57m2epvvaj6m9r6jk3jrkjzr07qreswfvj55xvkmyayluf49gvygu5htl35q8uuu7e'
+      'addr_test1qqv3z933r88vnpgvqtwfcskw3uxg6up5n090pg330m25ke7rwgtphv6x8j32g8clqv59adsk78sgtljveyjejjt0fj6q3lwdrw'
     cy.dataCy('AddressTextField').type(sendAddress)
     cy.contains('Invalid address').should('not.exist')
 
