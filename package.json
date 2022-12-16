@@ -26,7 +26,7 @@
     "install": "cd app && yarn install && cd ..",
     "dev": "yarn generate-cert && ADALITE_ENABLE_HTTPS=true PORT=${PORT:-3000} node server/index.js",
     "test:build": "webpack --config webpack.test.config.js",
-    "test-chrome-headless": "yarn test:build && node node_modules/.bin/mocha-headless-chrome -f app/tests/index.html -a disable-web-security -a user-data-dir=app/tests/.chrome -a disable-site-isolation-trials",
+    "test-chrome-headless": "yarn test:build && node node_modules/.bin/mocha-headless-chrome -f app/tests/index.html -a disable-web-security -a user-data-dir=app/tests/.chrome -a disable-site-isolation-trials -a no-sandbox",
     "eslint": "eslint . --max-warnings=0 --ext .ts,.tsx,.js,.jsx",
     "fix": "prettier-eslint --write \"{{app/frontend,app/tests/src,server}/**/*.{ts,tsx,js,jsx,json,css},package.json}\"",
     "generate-cert": "test -e server.cert && echo \"certificate already exists\" || openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj \"/C=US\"",
