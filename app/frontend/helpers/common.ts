@@ -49,7 +49,7 @@ export function getDateDiffInSeconds(date1: Date, date2: Date) {
 }
 
 export function getCardanoscanUrl() {
-  return ADALITE_CONFIG.ADALITE_NETWORK === 'mainnet'
+  return ADALITE_CONFIG.ADALITE_NETWORK === 'MAINNET'
     ? 'https://cardanoscan.io'
     : 'https://testnet.cardanoscan.io'
 }
