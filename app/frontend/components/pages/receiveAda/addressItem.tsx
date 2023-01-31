@@ -4,7 +4,7 @@ import AddressVerification from '../../common/addressVerification'
 import * as QRious from '../../../libs/qrious'
 import ViewAddressOn from './viewAddressOn'
 import {DropdownCaret} from '../../common/svg'
-import {getCardanoscanUrl} from '../../../helpers/common'
+import {getCexplorerUrl} from '../../../helpers/common'
 
 interface Props {
   address: string
@@ -16,19 +16,14 @@ interface Props {
 const AddressItem = ({address, bip32path, isExpanded, expand}: Props): h.JSX.Element => {
   const explorerLinksInline = (
     <div>
-      <ViewAddressOn name="CardanoScan" url={`${getCardanoscanUrl()}/address/${address}`} />
-      {' | '}
-      <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} inline />
+      <ViewAddressOn name="Cexplorer" url={`${getCexplorerUrl()}/address/${address}`} />
     </div>
   )
 
   const explorerLinks = (
     <Fragment>
       <div>
-        <ViewAddressOn name="CardanoScan" url={`${getCardanoscanUrl()}/address/${address}`} />
-      </div>
-      <div>
-        <ViewAddressOn name="ADAex" url={`https://adaex.org/${address}`} />
+        <ViewAddressOn name="Cexplorer" url={`${getCexplorerUrl()}/address/${address}`} />
       </div>
     </Fragment>
   )

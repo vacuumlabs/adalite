@@ -9,7 +9,7 @@ import styles from './asset.module.scss'
 import {assetNameHex2Readable} from '../../wallet/shelley/helpers/addresses'
 import printTokenAmount from '../../helpers/printTokenAmount'
 import {createTokenRegistrySubject} from '../../../frontend/tokenRegistry/tokenRegistry'
-import {getCardanoscanUrl} from '../../../frontend/helpers/common'
+import {getCexplorerUrl} from '../../../frontend/helpers/common'
 
 const isHumanReadable = (value: string): boolean =>
   // eslint-disable-next-line no-useless-escape
@@ -21,7 +21,7 @@ type LinkToAssetProps = {
 }
 
 export const LinkToAsset = ({policyIdHex, assetNameHex}: LinkToAssetProps) => (
-  <LinkIcon url={`${getCardanoscanUrl()}/token/${policyIdHex}.${assetNameHex}`} />
+  <LinkIcon url={`${getCexplorerUrl()}/asset/${policyIdHex}.${assetNameHex}`} />
 )
 
 type IconProps = {

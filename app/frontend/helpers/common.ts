@@ -48,8 +48,10 @@ export function getDateDiffInSeconds(date1: Date, date2: Date) {
   return Math.abs((date1.getTime() - date2.getTime()) / 1000)
 }
 
-export function getCardanoscanUrl() {
-  return ADALITE_CONFIG.ADALITE_NETWORK === 'MAINNET'
-    ? 'https://cardanoscan.io'
-    : 'https://testnet.cardanoscan.io'
+export function getCexplorerUrl() {
+  return {
+    MAINNET: 'https://cexplorer.io',
+    PREPROD: 'https://preprod.cexplorer.io',
+    TESTNET: 'https://testnet.cexplorer.io',
+  }[ADALITE_CONFIG.ADALITE_NETWORK]
 }

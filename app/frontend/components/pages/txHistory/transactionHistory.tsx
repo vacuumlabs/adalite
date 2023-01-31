@@ -28,7 +28,7 @@ import {useActiveAccount} from '../../../selectors'
 import {useSelector} from '../../../helpers/connect'
 import {createTokenRegistrySubject} from '../../../tokenRegistry/tokenRegistry'
 import printTokenAmount from '../../../helpers/printTokenAmount'
-import {getCardanoscanUrl} from '../../../helpers//common'
+import {getCexplorerUrl} from '../../../helpers//common'
 import BigNumber from 'bignumber.js'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
@@ -57,29 +57,11 @@ const FormattedTransaction = ({txid}: {txid: HexString}): h.JSX.Element => (
     <span>
       <a
         className="transaction-address"
-        href={`${getCardanoscanUrl()}/transaction/${txid}`}
+        href={`${getCexplorerUrl()}/tx/${txid}`}
         target="_blank"
         rel="noopener"
       >
-        CardanoScan
-      </a>
-      {/* <span> | </span> */}
-      {/* <a
-          className="transaction-address"
-          href={`hhttps://explorer.cardano.org/en/transaction?id=${txid}`}
-          target="_blank"
-          rel="noopener"
-        >
-          CardanoExplorer
-        </a> */}
-      <span> | </span>
-      <a
-        className="transaction-address"
-        href={`https://adaex.org/${txid}`}
-        target="_blank"
-        rel="noopener"
-      >
-        ADAex
+        Cexplorer
       </a>
     </span>
   </div>

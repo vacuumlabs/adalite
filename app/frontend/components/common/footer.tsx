@@ -9,7 +9,7 @@ import {
   ETH_DONATION_ADDRESS,
 } from '../../wallet/constants'
 import getDonationAddress from '../../helpers/getDonationAddress'
-import {getCardanoscanUrl} from '../../helpers/common'
+import {getCexplorerUrl} from '../../helpers/common'
 
 interface Props {
   showConversionRates: boolean
@@ -84,7 +84,7 @@ const Footer = () => {
             </a>
             <a
               className="donations-item ada"
-              href={`${getCardanoscanUrl()}/address/${getDonationAddress()}`}
+              href={`${getCexplorerUrl()}/address/${getDonationAddress()}`}
               target="_blank"
               title="Donate via Adalite"
               rel="noopener"

@@ -3,7 +3,7 @@ import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {LinkIconToPool} from './common'
 import printAda from '../../../helpers/printAda'
-import {getCardanoscanUrl} from '../../../helpers/common'
+import {getCexplorerUrl} from '../../../helpers/common'
 import CopyOnClick from '../../common/copyOnClick'
 import {EpochDateTime} from '../common'
 import {RewardType} from '../../../wallet/backend-types'
@@ -37,9 +37,9 @@ const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegatio
       ) : (
         ''
       )}
-      <ViewOnCardanoScan
+      <ViewOnCexplorer
         txHash={stakeDelegation.txHash}
-        suffix="?tab=delegations"
+        suffix="/delegation"
         className="margin-top"
       />
     </li>
@@ -97,7 +97,7 @@ const RewardWithdrawalItem = ({rewardWithdrawal}: {rewardWithdrawal: RewardWithd
           <div className="transaction-amount withdraw">{printAda(rewardWithdrawal.amount)}</div>
         </div>
       </div>
-      <ViewOnCardanoScan txHash={rewardWithdrawal.txHash} suffix="?tab=withdrawals" />
+      <ViewOnCexplorer txHash={rewardWithdrawal.txHash} suffix="/withdrawal" />
     </li>
   )
 }
@@ -130,27 +130,23 @@ const StakingKeyRegistrationItem = ({
           <a className="copy-text ml-8" />
         </CopyOnClick>
       </div>
-      <ViewOnCardanoScan
-        txHash={stakingKeyRegistration.txHash}
-        suffix="?tab=stakecertificates"
-        className="margin-top"
-      />
+      <ViewOnCexplorer txHash={stakingKeyRegistration.txHash} className="margin-top" />
     </li>
   )
 }
 
-const ViewOnCardanoScan = ({txHash, suffix, className = ''}) => {
+const ViewOnCexplorer = ({txHash, suffix = '', className = ''}) => {
   return (
     <div className={`blockexplorer-link ${className}`}>
       <span>View on </span>
       <span>
         <a
           className="transaction-address"
-          href={`${getCardanoscanUrl()}/transaction/${txHash}${suffix}`}
+          href={`${getCexplorerUrl()}/tx/${txHash}${suffix}`}
           target="_blank"
           rel="noopener"
         >
-          CardanoScan
+          Cexplorer
         </a>
       </span>
     </div>

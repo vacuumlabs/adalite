@@ -10,6 +10,7 @@ import {SATURATION_POINT} from '../../../wallet/constants'
 import {Lovelace} from '../../../types'
 import {useActiveAccount, useIsActiveAccountDelegating} from '../../../selectors'
 import BigNumber from 'bignumber.js'
+import {getCexplorerUrl} from '../../../helpers/common'
 
 const SaturationInfo = (pool) => {
   if (pool.liveStake == null) return <Fragment />
@@ -83,9 +84,9 @@ const CurrentDelegationPage = ({
                 <a
                   target="_blank"
                   className="transaction-address"
-                  href={`https://adapools.org/pool/${pool.poolHash}`}
+                  href={`${getCexplorerUrl()}/pool/${pool.poolHash}`}
                 >
-                  ADApools
+                  Cexplorer
                 </a>
               </div>
             )}

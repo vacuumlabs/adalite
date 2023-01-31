@@ -1,7 +1,7 @@
 import CopyOnClick from '../../common/copyOnClick'
 import LinkIcon from '../../common/linkIcon'
 import {h} from 'preact'
-import {getCardanoscanUrl} from '../../../helpers/common'
+import {getCexplorerUrl} from '../../../helpers/common'
 
 export const CopyPoolId = ({value}) => {
   return (
@@ -16,9 +16,9 @@ export const CopyPoolId = ({value}) => {
 }
 
 export const LinkIconToPool = ({poolHash}) => (
-  <LinkIcon url={`${getCardanoscanUrl()}/pool/${poolHash}`} />
+  <LinkIcon url={`${getCexplorerUrl()}/pool/${poolHash}`} />
 )
 
 export const LinkIconToKey = ({stakeKey}) => (
-  <LinkIcon url={`${getCardanoscanUrl()}/stakekey/${stakeKey}`} />
+  <LinkIcon url={`${getCexplorerUrl()}/stake/${stakeKey}`} />
 )
