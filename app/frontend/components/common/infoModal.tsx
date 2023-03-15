@@ -246,7 +246,11 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                   </ul>
                   <p>
                     Get started at{' '}
-                    <a href="https://nu.fi" target="_blank" rel="noopener">
+                    <a
+                      href="https://nu.fi?utm_source=adalite&utm_medium=infoModal"
+                      target="_blank"
+                      rel="noopener"
+                    >
                       https://nu.fi
                     </a>{' '}
                     or learn more about NuFi in our Medium article{' '}

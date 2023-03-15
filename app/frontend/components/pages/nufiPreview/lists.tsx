@@ -113,7 +113,7 @@ const howToUseNufiLinks = [
     label: 'Open Web Wallet',
     additionalText: '(Compatible with all browsers. No dApp connector)',
     Icon: WebIcon,
-    href: 'https://wallet.nu.fi',
+    href: 'https://wallet.nu.fi?utm_source=adalite&utm_medium=previewPage',
   },
 ]
 const afterImporting = {
