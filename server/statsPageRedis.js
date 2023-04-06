@@ -53,6 +53,7 @@ const getStats = async () => {
   for await (const key of client.scanIterator({COUNT: 1024})) {
     // use the key!
     const value = await client.get(key)
+    console.log(key, value)
     response.push([key, value])
   }
 
