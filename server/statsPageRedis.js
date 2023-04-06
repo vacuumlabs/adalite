@@ -1,6 +1,8 @@
-const redis = require('redis')
-const client = redis.createClient(process.env.REDIS_URL)
+const {createClient} = require('redis')
+const client = createClient({url: process.env.REDIS_URL})
 const {captureException} = require('@sentry/node')
+
+client.connect()
 
 const getStats = async () => {
   const stats = {
@@ -48,8 +50,10 @@ const getStats = async () => {
   }
 
   const response = []
-  for await (const {field, value} of client.hScanIterator()) {
-    response.push([field, value])
+  for await (const key of client.scanIterator({COUNT: 1024})) {
+    // use the key!
+    const value = await client.get(key)
+    response.push([key, value])
   }
 
   response.sort((a, b) => b[0].localeCompare(a[0]))

@@ -9,6 +9,7 @@ const {backendConfig} = require('../helpers/loadConfig')
 const getRequestIp = require('../helpers/getRequestIp')
 
 const knownIps = new Set()
+client.connect()
 
 function getSlicedDate() {
   return new Date()
