@@ -1,5 +1,4 @@
 const redis = require('redis')
-const redisScan = require('redisscan')
 const client = redis.createClient(process.env.REDIS_URL)
 const {captureException} = require('@sentry/node')
 
@@ -49,19 +48,9 @@ const getStats = async () => {
   }
 
   const response = []
-  await new Promise((resolve, reject) => {
-    redisScan({
-      redis: client,
-      count_amt: 1024,
-      each_callback(type, key, subkey, length, value, next) {
-        response.push([key, value])
-        next()
-      },
-      done_callback(err) {
-        err ? reject() : resolve()
-      },
-    })
-  })
+  for await (const {field, value} of client.hScanIterator()) {
+    response.push([field, value])
+  }
 
   response.sort((a, b) => b[0].localeCompare(a[0]))
 
