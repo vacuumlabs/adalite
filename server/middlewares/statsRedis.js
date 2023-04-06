@@ -1,6 +1,6 @@
-const redis = require('redis')
+const {createClient} = require('redis')
 const device = require('device')
-const client = redis.createClient(process.env.REDIS_URL)
+const client = createClient({url: process.env.REDIS_URL})
 const mung = require('express-mung')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const {captureException} = require('@sentry/node')
@@ -19,9 +19,9 @@ function getSlicedDate() {
 
 const incrCountersBy = (key, value) => {
   const [year, month, day] = getSlicedDate()
-  client.incrby(`${key}:total`, value)
-  client.incrby(`${key}:monthly:${year}-${month}`, value)
-  client.incrby(`${key}:daily:${year}-${month}-${day}`, value)
+  client.incrBy(`${key}:total`, value)
+  client.incrBy(`${key}:monthly:${year}-${month}`, value)
+  client.incrBy(`${key}:daily:${year}-${month}-${day}`, value)
 }
 
 const trackVisits = (req, res, next) => {

@@ -5,7 +5,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:18.12-browsers
+    - image: cimg/node:18.15.0-browsers
   working_directory: ~/repo
 
 commands:
