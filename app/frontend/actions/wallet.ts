@@ -1,4 +1,8 @@
-import {NETWORKS, WANTED_DELEGATOR_STAKING_ADDRESSES} from '../wallet/constants'
+import {
+  NETWORKS,
+  POOLS_TO_DESATURATE,
+  WANTED_DELEGATOR_STAKING_ADDRESSES,
+} from '../wallet/constants'
 import {CryptoProviderType} from '../wallet/types'
 import ShelleyCryptoProviderFactory from '../wallet/shelley/shelley-crypto-provider-factory'
 import {ShelleyWallet} from '../wallet/shelley-wallet'
@@ -42,13 +46,16 @@ export const getWallet = (): Wallet => {
   }
   return wallet
 }
-const accountsIncludeStakingAddresses = (
+const accountsAreSaturatingPools = (
   accountsInfo: Array<AccountInfo>,
-  soughtAddresses: Array<string>
-): boolean => {
-  const stakingAddresses = accountsInfo.map((accountInfo) => accountInfo.stakingAddress)
-  return stakingAddresses.some((address) => soughtAddresses.includes(address))
-}
+  soughtAddresses: Array<string>,
+  poolsToDesaturate: Array<string>
+): boolean =>
+  accountsInfo.some(
+    (ai) =>
+      soughtAddresses.includes(ai.stakingAddress) &&
+      poolsToDesaturate.includes(ai.shelleyAccountInfo?.delegation?.poolHash)
+  )
 
 export default (store: Store) => {
   const {loadingAction, stopLoadingAction} = loadingActions(store)
@@ -152,9 +159,10 @@ export default (store: Store) => {
       const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
 
       const maxAccountIndex = wallet.getMaxAccountIndex()
-      const shouldShowWantedAddressesModal = accountsIncludeStakingAddresses(
+      const shouldShowWantedAddressesModal = accountsAreSaturatingPools(
         accountsInfo,
-        WANTED_DELEGATOR_STAKING_ADDRESSES
+        WANTED_DELEGATOR_STAKING_ADDRESSES,
+        POOLS_TO_DESATURATE
       )
 
       const cryptoProviderInfo = wallet.getCryptoProviderInfo()

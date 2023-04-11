@@ -84,6 +84,8 @@ export const WANTED_DELEGATOR_STAKING_ADDRESSES = [
   'stake1uydh7fgueccyqdr630uqv32z5n46p000sd3lr60cnplh83qqjhz7u',
 ]
 
+export const POOLS_TO_DESATURATE = ['a0fc643d831b144e1dd289f5acf4274aedc331b6a0e4257ef5376520']
+
 export const SATURATION_POINT = 66800000000000
 
 export const BITBOX02_VERSIONS = {
