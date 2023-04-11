@@ -1,39 +1,29 @@
-import {Fragment, h} from 'preact'
+import {h} from 'preact'
 import {useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Modal from '../../common/modal'
-import {WANTED_DELEGATOR_ADDRESSES} from '../../../wallet/constants'
-import Alert from '../../common/alert'
 
 const WantedAddressesModal = () => {
   const {closeWantedAddressModal} = useActions(actions)
 
   return (
     <Modal onRequestClose={closeWantedAddressModal} title={'Direct message - Action required'}>
-      <div>
-        Dear owner(s) of this address:{' '}
-        <Alert alertType="wanted">
-          {WANTED_DELEGATOR_ADDRESSES.map((address, key) => (
-            <Fragment key={key}>
-              {address}
-              <br />
-            </Fragment>
-          ))}
-        </Alert>
-      </div>
       <p className="wanted-text">
-        We greatly appreciate that you chose to stake with us. However, you are saturating the pool
-        ADLT3 by delegating more than allowed 62 million ADA to it. By doing so, you are missing out
-        on a lot of rewards.
+        You are delegating to our pool NUFI0 and we are very happy that you chose to stake with us.
+        However, your substantial stake is saturating the pool to 500%. By doing so, you are missing
+        out on around 75% of your staking rewards.
       </p>
       <p className="wanted-text">
-        We have setup a dedicated staking infrastructure with the same conditions as your current
-        pool but it will be dedicated just for you. Please redelegate to the pre-filled Private
-        Adalite pool in the Staking tab. Feel free to contact us at{' '}
-        <a href={'mailto:info@adalite.io'}>info@adalite.io</a>
+        Don't worry, for such cases, we have setup a dedicated staking infrastructure. To optimize
+        your staking profits, we pre-filled more suitable pools specifically for your addresses, you
+        only need to confirm the redelegation transaction in the Staking tab.
+      </p>
+      <p className="wanted-text">
+        We are happy to provide any support just for you respecting your anonymity and privacy.
+        Please, contact us at <a href={'mailto:info@adalite.io'}>info@adalite.io</a>
         {', '}
         <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a> or +421 907
-        189 842 to avoid saturation in the future.
+        189 842 to avoid such troubles in the future.
       </p>
       <div className="modal-footer">{}</div>
     </Modal>
