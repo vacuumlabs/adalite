@@ -53,6 +53,7 @@ import cacheResults from '../helpers/cacheResults'
 import {filterValidTransactions} from '../helpers/common'
 import * as assert from 'assert'
 import BigNumber from 'bignumber.js'
+import {bechAddressToHex} from './shelley/helpers/addresses'
 
 const blockchainExplorer = (ADALITE_CONFIG) => {
   const gapLimit = ADALITE_CONFIG.ADALITE_GAP_LIMIT
@@ -487,10 +488,20 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
   }
 
   function getPoolRecommendation(
-    poolHash: string,
-    stakeAmount: Lovelace
+    stakeAddress: Address,
+    stakeAmount: Lovelace,
+    currentDelegatedPoolHash?: string
   ): Promise<PoolRecommendationResponse> {
-    const url = `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/poolRecommendation/poolHash/${poolHash}/stake/${stakeAmount}`
+    const searchParams = new URLSearchParams({
+      stakeAddress: bechAddressToHex(stakeAddress),
+      stakeAmount: stakeAmount.toString(),
+    })
+    if (currentDelegatedPoolHash) {
+      searchParams.set('currentDelegatedPoolHash', currentDelegatedPoolHash)
+    }
+    const url = `${
+      ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL
+    }/api/poolRecommendation?${searchParams.toString()}`
     return request(url).catch(() => ({
       recommendedPoolHash: ADALITE_CONFIG.ADALITE_STAKE_POOL_ID,
       isInRecommendedPoolSet: true,

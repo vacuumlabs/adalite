@@ -363,8 +363,9 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getTxHistory()
     const poolRecommendation = await getPoolRecommendation(
-      shelleyAccountInfo.delegation,
-      baseAddressBalance
+      stakingAddress,
+      baseAddressBalance,
+      shelleyAccountInfo.delegation?.poolHash
     )
     const isUsed = await isAccountUsed()
 
@@ -476,15 +477,22 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return await cryptoProvider.displayAddressForPath(absDerivationPath, stakingPath)
   }
 
-  async function getPoolRecommendation(pool: any, stakeAmount: Lovelace): Promise<any> {
-    const poolHash = pool ? pool.poolHash : null
-    const poolRecommendation = await blockchainExplorer.getPoolRecommendation(poolHash, stakeAmount)
+  async function getPoolRecommendation(
+    stakeAddress: Address,
+    stakeAmount: Lovelace,
+    poolHashHex?: string
+  ): Promise<any> {
+    const poolRecommendation = await blockchainExplorer.getPoolRecommendation(
+      stakeAddress,
+      stakeAmount,
+      poolHashHex
+    )
     if (!poolRecommendation.recommendedPoolHash || config.ADALITE_ENFORCE_STAKEPOOL) {
       Object.assign(poolRecommendation, {
         recommendedPoolHash: config.ADALITE_STAKE_POOL_ID,
       })
     }
-    const delegatesToRecommended = poolRecommendation.recommendedPoolHash === pool.poolHash
+    const delegatesToRecommended = poolRecommendation.recommendedPoolHash === poolHashHex
     return {
       ...poolRecommendation,
       shouldShowSaturatedBanner:
