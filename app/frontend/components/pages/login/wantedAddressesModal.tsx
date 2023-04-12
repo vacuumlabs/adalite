@@ -16,7 +16,7 @@ const WantedAddressesModal = () => {
       <p className="wanted-text">
         Don't worry, for such cases, we have setup a dedicated staking infrastructure. To optimize
         your staking profits, we pre-filled more suitable pools specifically for your addresses, you
-        just have to delegate again the stake from all affected accounts in the "Staking" tab.
+        just have to delegate the stake again from all affected accounts in the "Staking" tab.
       </p>
       <p className="wanted-text">
         We are happy to provide any support just for you respecting your anonymity and privacy.
