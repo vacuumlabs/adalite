@@ -77,9 +77,7 @@ export type BestSlotResponse = {
 export enum PoolRecommendationStatus {
   INVALID = 'GivenPoolInvalid',
   SATURATED = 'GivenPoolSaturated',
-  BEYOND_OPTIMUM = 'GivenPoolBeyondOptimum',
   OK = 'GivenPoolOk',
-  UNDER_MINIMUM = 'GivenPoolUnderMinimum',
 }
 
 export type PoolRecommendationResponse = StakePoolInfoExtended & {
