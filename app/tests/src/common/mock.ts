@@ -183,7 +183,7 @@ const mock = (ADALITE_CONFIG) => {
       {
         name: `${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/bulk/addresses/utxo`,
         overwriteRoutes: true,
-      },
+      }
     )
   }
 
@@ -200,7 +200,7 @@ const mock = (ADALITE_CONFIG) => {
         },
         sendAsJson: true,
       },
-      {overwriteRoutes: true},
+      {overwriteRoutes: true}
     )
   }
 
@@ -219,7 +219,7 @@ const mock = (ADALITE_CONFIG) => {
         },
         sendAsJson: true,
       },
-      {overwriteRoutes: true},
+      {overwriteRoutes: true}
     )
   }
 
@@ -289,7 +289,7 @@ const mock = (ADALITE_CONFIG) => {
 
   function mockPoolRecommendation() {
     fetchMock.mock({
-      matcher: `begin:${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/account/poolRecommendation/`,
+      matcher: `begin:${ADALITE_CONFIG.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/poolRecommendation`,
       response: {
         status: 200,
         body: {
@@ -306,14 +306,11 @@ const mock = (ADALITE_CONFIG) => {
   }
 
   function mockTokenRegistry() {
-    fetchMock.post(
-      `begin:${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/bulk/tokens/metadata`,
-      {
-        status: 200,
-        body: [],
-        sendAsJson: true,
-      },
-    )
+    fetchMock.post(`begin:${ADALITE_CONFIG.ADALITE_SERVER_URL}/api/bulk/tokens/metadata`, {
+      status: 200,
+      body: [],
+      sendAsJson: true,
+    })
   }
 
   return {
