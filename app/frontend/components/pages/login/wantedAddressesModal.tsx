@@ -9,9 +9,9 @@ const WantedAddressesModal = () => {
   return (
     <Modal onRequestClose={closeWantedAddressModal} title={'Direct message - Action required'}>
       <p className="wanted-text">
-        You are delegating to our pool NUFI0 and we are very happy that you chose to stake with us.
-        However, your substantial stake is saturating the pool to 500%. By doing so, you are missing
-        out on around 75% of your staking rewards.
+        You are delegating to our pool NUFI8 and we are very happy that you chose to stake with us.
+        However, your substantial stake is saturating the pool to 150%. By doing so, you are missing
+        out on around 35% of your staking rewards from your stake there.
       </p>
       <p className="wanted-text">
         Don't worry, for such cases, we have setup a dedicated staking infrastructure. To optimize
