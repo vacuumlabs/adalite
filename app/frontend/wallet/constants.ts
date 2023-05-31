@@ -75,9 +75,7 @@ export const BIG_DELEGATOR_THRESHOLD = 10_000_000_000_000
 
 export const CATALYST_MIN_THRESHOLD = 500_000_000
 
-export const WANTED_DELEGATOR_STAKING_ADDRESSES = [
-  'stake1u8dn2se7yl4qhdqwtry7945z73p0z43ap93xm3arggvfkuqx5th8a',
-]
+export const WANTED_DELEGATOR_STAKING_ADDRESSES = []
 
 export const POOLS_TO_DESATURATE = ['7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6']
 
