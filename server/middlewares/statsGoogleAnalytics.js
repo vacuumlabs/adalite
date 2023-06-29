@@ -66,12 +66,12 @@ const trackEvent = async ({category, action, label, value, path, originTestSucce
           {
             name: label.toLowerCase().replaceAll(' ', '_'),
             params: {
-              cd1: originTestSuccess.toString(), // cd1 stands for Custom Dimension #1
-              ec: category,
-              ea: action,
-              el: label,
-              ev: value,
-              dh: path,
+              origin_test_success: originTestSuccess.toString(),
+              event_category: category,
+              event_action: action,
+              event_label: label,
+              event_value: value,
+              document_host: path,
             },
           },
         ],
