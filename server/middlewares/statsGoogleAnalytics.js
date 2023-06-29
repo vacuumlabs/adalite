@@ -17,10 +17,35 @@ const initVisitor = (trackingID) => {
   })
 }
 
-const trackPageView = async ({path, title, hostname}) => {
-  const visitor = initVisitor(backendConfig.ADALITE_GA_TRACKING_ID)
+// GA4 solution inspired by https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag
+// and https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#required_parameters
+const ga4MeasurementId = backendConfig.ADALITE_GA4_MEASUREMENT_ID
+const ga4ApiSecret = backendConfig.ADALITE_GA4_API_SECRET
 
-  return await visitor
+const trackPageView = async ({path, title, hostname}) => {
+  // GA4
+  await fetch(
+    `https://www.google-analytics.com/mp/collect?measurement_id=${ga4MeasurementId}&api_secret=${ga4ApiSecret}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        client_id: '555.0', // anonymous user
+        events: [
+          {
+            name: 'page_view',
+            params: {
+              page_title: title,
+              page_location: `${hostname}${path}`,
+            },
+          },
+        ],
+      }),
+    }
+  )
+
+  // UA - deprecated by July 1st 2023!
+  const visitor = initVisitor(backendConfig.ADALITE_GA_TRACKING_ID)
+  await visitor
     .pageview({
       dp: path,
       dt: title,
@@ -30,10 +55,35 @@ const trackPageView = async ({path, title, hostname}) => {
 }
 
 const trackEvent = async ({category, action, label, value, path, originTestSuccess}) => {
+  // GA4
+  await fetch(
+    `https://www.google-analytics.com/mp/collect?measurement_id=${ga4MeasurementId}&api_secret=${ga4ApiSecret}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        client_id: '555.0', // anonymous user
+        events: [
+          {
+            name: label.toLowerCase().replaceAll(' ', '_'),
+            params: {
+              cd1: originTestSuccess.toString(), // cd1 stands for Custom Dimension #1
+              ec: category,
+              ea: action,
+              el: label,
+              ev: value,
+              dh: path,
+            },
+          },
+        ],
+      }),
+    }
+  )
+
+  // UA - deprecated by July 1st 2023!
   const visitor = initVisitor(backendConfig.ADALITE_GA_TRACKING_ID)
   visitor.set('cd1', originTestSuccess.toString()) // cd1 stands for Custom Dimension #1
 
-  return await visitor
+  await visitor
     .event({
       ec: category,
       ea: action,

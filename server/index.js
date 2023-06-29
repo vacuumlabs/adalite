@@ -39,7 +39,7 @@ app.enable('trust proxy') // to get the actual request protocol on heroku (impor
 app.use(require('./middlewares/redirectToBaseUrl'))
 
 // don't track in local dev => no need for local GA
-if (backendConfig.ADALITE_GA_TRACKING_ID) {
+if (backendConfig.ADALITE_GA_TRACKING_ID || backendConfig.ADALITE_GA4_MEASUREMENT_ID) {
   app.use(require('./middlewares/statsGoogleAnalytics').trackVisits)
   app.use(require('./middlewares/statsGoogleAnalytics').trackTxSubmissions)
 }
