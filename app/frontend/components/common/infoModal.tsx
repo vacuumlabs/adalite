@@ -59,6 +59,60 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'07/10/2023'}
+              children={
+                <Fragment>
+                  <Article title="Project Catalyst Fund10 is here! " icon="">
+                    <p className="info-spaced-paragraph">
+                      Help shape the future of Cardano by voting for the new products, integrations,
+                      tooling, and initiatives that you’d like to see funded.
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      <b>IMPORTANT</b>: you’ll earn ADA rewards if you vote in Fund10, but you need
+                      to re-register before August 18th to be eligible to receive voting rewards. If
+                      you registered to vote in Fund4 or later, you can still vote without
+                      re-registering but you won’t receive voting rewards.
+                    </p>
+
+                    <p className="info-spaced-paragraph">
+                      SCHEDULE:
+                      <ul>
+                        <li>Voting registration opens: June 29th 2023</li>
+                        <li>Voting registration closes: August 18th 2023</li>
+                        <li>Voting period: August 31st to September 14th 2023</li>
+                        <li>Voting results: September 21st 2023</li>
+                      </ul>
+                    </p>
+
+                    <p className="info-spaced-paragraph">
+                      What is Project Catalyst? Learn more{' '}
+                      <a target="_blank" rel="noopener" href="https://projectcatalyst.io">
+                        here
+                      </a>
+                      .<br />
+                      How do I register to vote? How-to video{' '}
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://www.youtube.com/watch?v=b9MDBIFNdaw"
+                      >
+                        here
+                      </a>{' '}
+                      and guide{' '}
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://adalite.medium.com/catalyst-voting-registration-on-adalite-71d975f75755"
+                      >
+                        here
+                      </a>
+                      .
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'09/09/2022'}
               children={
                 <Fragment>
