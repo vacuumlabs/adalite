@@ -75,9 +75,11 @@ export const BIG_DELEGATOR_THRESHOLD = 10_000_000_000_000
 
 export const CATALYST_MIN_THRESHOLD = 500_000_000
 
-export const WANTED_DELEGATOR_STAKING_ADDRESSES = []
+export const WANTED_DELEGATOR_STAKING_ADDRESSES = [
+  'stake1u80xwh0jrxudvmvu8g8c4f8fyu6tue2nfpj52kc0z7rp90skxlz6a',
+]
 
-export const POOLS_TO_DESATURATE = ['7d7ac07a2f2a25b7a4db868a40720621c4939cf6aefbb9a11464f1a6']
+export const POOLS_TO_DESATURATE = ['92229dcf782ce8a82050fdeecb9334cc4d906c6eb66cdbdcea86fb5f']
 
 export const SATURATION_POINT = 70_000_000_000_000
 

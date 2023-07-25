@@ -8,22 +8,45 @@ const WantedAddressesModal = () => {
 
   return (
     <Modal onRequestClose={closeWantedAddressModal} title={'Direct message - Action required'}>
+      <p className="wanted-text">Dear user!</p>
       <p className="wanted-text">
-        You are delegating to our pool NUFIB and we are very happy that you chose to stake with us.
-        However, your substantial stake is saturating the pool to 120%. By doing so, you are missing
-        out on around 15% of your staking rewards from your stake there.
+        Your account with address{' '}
+        <a
+          href="https://cexplorer.io/stake/stake1u80xwh0jrxudvmvu8g8c4f8fyu6tue2nfpj52kc0z7rp90skxlz6a"
+          target="_blank"
+          rel="noopener"
+        >
+          stake1u80xwh0jrxudvmvu8g8c4f8fyu6tue2nfpj52kc0z7rp90skxlz6a
+        </a>{' '}
+        that you recently delegated to us contains 74 million ADA which is more than maximal
+        possible stake pool saturation (which is 63 millions at the moment). This caused our
+        recommendation algorithm to fail and you delegated to one of our most saturated pools.
       </p>
       <p className="wanted-text">
-        Don't worry, for such cases, we have setup a dedicated staking infrastructure. To optimize
-        your staking profits, we pre-filled more suitable pools specifically for your addresses, you
-        just have to delegate the stake again from all affected accounts in the "Staking" tab.
+        We strongly recommend to divide your ADA into 2 accounts (with roughly 37 mil ADA each) and
+        redelegate them both to our emptier pools, ideally manually by pasting the pool id - one to{' '}
+        <a
+          href="https://cexplorer.io/pool/pool15r7xg0vrrv2yu8wj3866eap8ftkuxvdk5rjz2lh4xajjq5v3p5d"
+          target="_blank"
+          rel="noopener"
+        >
+          {' '}
+          Nu.Fi & AdaLite 0
+        </a>{' '}
+        and the other to{' '}
+        <a
+          href="https://cexplorer.io/pool/pool1ea568m9q882n0tx5d4vxff2dmz2n7rq5h62hx5ystq625m4tcfu"
+          target="_blank"
+          rel="noopener"
+        >
+          Nu.Fi & AdaLite 6
+        </a>
+        .
       </p>
       <p className="wanted-text">
-        We are happy to provide any support just for you respecting your anonymity and privacy.
-        Please, contact us at <a href={'mailto:info@adalite.io'}>info@adalite.io</a>
-        {', '}
-        <a href={'mailto:michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a> or +421 907
-        189 842 to avoid such troubles in the future.
+        We really appreciate your support and we would like to offer you best possible service.
+        Please reach out to <a href={'michal.petro@vacuumlabs.com'}>michal.petro@vacuumlabs.com</a>{' '}
+        and receive priority staking support. This will help you achieve optimal staking returns.
       </p>
       <div className="modal-footer">{}</div>
     </Modal>
