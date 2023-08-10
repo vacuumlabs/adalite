@@ -59,6 +59,41 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'08/10/2023'}
+              children={
+                <Fragment>
+                  <Article title="We need your help!" icon="">
+                    <p className="info-spaced-paragraph">
+                      The AdaLite/NuFi team has submitted a very special proposal in Project
+                      Catalyst – Cardano’s on-chain funding initiative – and, with your support, we
+                      can win funding to build a toolkit for DApps to onboard Web2 users/crypto
+                      beginners into Cardano; users will be able to connect to DApps simply by
+                      logging in with a social account or email address, so even Grandma can get
+                      into crypto!
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      <b>
+                        To vote in Project Catalyst Fund10 and support our proposal, you need to
+                        register before August 18th.
+                      </b>{' '}
+                      We’ve explained our groundbreaking idea and included a how-to guide for
+                      registering/voting in Project Catalyst in{' '}
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://nufi-official.medium.com/how-nufis-project-catalyst-proposal-can-onboard-cardano-s-next-1-million-web2-users-4745939c2801"
+                      >
+                        this article here
+                      </a>
+                      .
+                    </p>
+
+                    <p className="info-spaced-paragraph">Many thanks, The AdaLite/NuFi team</p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'07/10/2023'}
               children={
                 <Fragment>
