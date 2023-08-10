@@ -8,8 +8,6 @@ import HardwareAuth from './hardwareAuth'
 import GenerateMnemonicDialog from './generateMnemonicDialog'
 import LogoutNotification from './logoutNotification'
 import LoginPageSidebar from './loginPageSidebar'
-import StakingBanner from './stakingBanner'
-import ErrorBanner from './errorBanner'
 import Tag from '../../common/tag'
 import WalletLoadingErrorModal from './walletLoadingErrorModal'
 import {getErrorHelpType, getErrorMessage} from '../../../errors'
@@ -214,37 +212,39 @@ const LoginPage = () => {
     walletLoadingError,
     shouldShowGenerateMnemonicDialog,
     shouldShowWalletLoadingErrorModal,
-    shouldShowStakingBanner,
     autoLogin,
-    errorBannerContent,
   } = useSelector((state: State) => ({
     authMethod: state.authMethod,
     shouldShowLogoutNotification: state.shouldShowLogoutNotification,
     walletLoadingError: state.walletLoadingError,
     shouldShowGenerateMnemonicDialog: state.shouldShowGenerateMnemonicDialog,
     shouldShowWalletLoadingErrorModal: state.shouldShowWalletLoadingErrorModal,
-    shouldShowStakingBanner: state.shouldShowStakingBanner,
     autoLogin: state.autoLogin,
-    errorBannerContent: state.errorBannerContent,
   }))
-  const {
-    closeStakingBanner,
-    setAuthMethod,
-    closeWalletLoadingErrorModal,
-    loadErrorBannerContent,
-  } = useActions(actions)
+  const {setAuthMethod, closeWalletLoadingErrorModal} = useActions(actions)
 
   useEffect(() => {
     if (autoLogin && authMethod !== AuthMethodType.MNEMONIC) {
       setAuthMethod(AuthMethodType.MNEMONIC)
     }
-    loadErrorBannerContent()
   }, []) // eslint-disable-line
 
   return (
     <div className="page-wrapper">
-      {shouldShowStakingBanner && <StakingBanner onRequestClose={() => closeStakingBanner()} />}
-      {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
+      <div className="banner success">
+        <p>
+          {' '}
+          We need your help! The AdaLite/NuFi team has submitted a proposal in Project Catalyst
+          Fund10 and your vote can help us win funding.{' '}
+          <a
+            target="_blank"
+            href="https://nufi-official.medium.com/how-nufis-project-catalyst-proposal-can-onboard-cardano-s-next-1-million-web2-users-4745939c2801"
+          >
+            Learn more
+          </a>
+          .
+        </p>
+      </div>
       <div className="page-inner">
         <main className="page-main">
           <NufiBannerWrapper />
