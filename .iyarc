@@ -10,3 +10,5 @@ GHSA-c2qf-rxjj-qqgw
 #semver/wordwrap seems to not have a proper fix in most packages yet, ignoring ATM
 GHSA-j8xg-fqg3-53r7
 
+# request, @cypress/request, currently no fix
+GHSA-p8p7-x288-28g6
