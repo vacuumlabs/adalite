@@ -16,8 +16,8 @@ export const ADA_DONATION_ADDRESS =
 
 export const TX_WITNESS_SIZES = {
   byronv2: 139,
-  shelley: 139, //TODO: this is too much
-  byronV1: 170,
+  shelley: 139, // TODO: this is too much
+  byronV1: 177, // on mainnet 170 is enough, but testnet addresses are a bit longer
 }
 
 export const MAX_TX_SIZE = 16384

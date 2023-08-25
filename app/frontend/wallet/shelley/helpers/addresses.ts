@@ -57,7 +57,7 @@ const xpub2blake2b224Hash = (xpub: Buffer) => getPubKeyBlake2b224Hash(xpub2pub(x
 export const isShelleyPath = (path: BIP32Path) => path[0] - HARDENED_THRESHOLD === 1852
 
 // TODO: do this properly with cardano-crypto unpackAddress
-export const isV1Address = (address: string) => address.startsWith('D')
+export const isV1Address = (address: string) => address.startsWith('D') || address.startsWith('K')
 
 export const xpubHexToCborPubHex = (xpubHex: HexString) =>
   encodeCbor(Buffer.from(xpubHex, 'hex').slice(0, 32)).toString('hex')
