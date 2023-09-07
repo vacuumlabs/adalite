@@ -59,6 +59,30 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'09/07/2023'}
+              children={
+                <Fragment>
+                  <Article title="Project Catalyst Fund10 voting ends September 14th!" icon="">
+                    <p className="info-spaced-paragraph">
+                      If you’re voting, please cast your votes before September 14th, and please
+                      consider supporting NuFi's proposal: a toolkit that dApps can integrate to
+                      onboard Web2 and non-crypto users into Cardano (with this toolkit, anyone with
+                      a social account or email address can connect to a dApp simply by logging in).
+                      Read more about our proposal and its impact on Cardano{' '}
+                      <a
+                        target="_blank"
+                        href="https://nufi-official.medium.com/how-nufis-project-catalyst-proposal-can-onboard-cardano-s-next-1-million-web2-users-4745939c2801"
+                      >
+                        here
+                      </a>
+                      , and contact us at <a href="mailto:help@nu.fi">help@nu.fi</a> if you need any
+                      assistance.
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'08/10/2023'}
               children={
                 <Fragment>
