@@ -111,6 +111,14 @@
     "eslint/**/glob-parent": "^5.1.2",
     "eslint/**/ansi-regex": "^5",
     "prettier-eslint-cli/**/ansi-regex": "^5",
-    "isomorphic-fetch/**/node-fetch": "^2.6.7"
+    "isomorphic-fetch/**/node-fetch": "^2.6.7",
+    "postcss": "^8.4.31",
+    "prettier-eslint-cli/**/semver": "^5.7.2",
+    "vue-eslint-parser/debug": "^3.2.7",
+    "@typescript-eslint/eslint-plugin/**/@typescript-eslint/typescript-estree/debug": "^4.3.1",
+    "eslint/debug": "^4.3.1",
+    "babel-eslint/**/debug": "^3.2.7",
+    "mocha-headless-chrome/**/debug": "^3.2.7",
+    "@sentry/node/**/debug": "^4.3.1"
   }
 }

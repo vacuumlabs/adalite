@@ -51,6 +51,7 @@
     "sinon": "^7.3.2"
   },
   "resolutions": {
-    "@trezor/connect/**/node-fetch": "^2.6.7"
+    "@trezor/connect/**/node-fetch": "^2.6.7",
+    "cypress/**/debug": "^3.2.7"
   }
 }
