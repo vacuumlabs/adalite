@@ -59,25 +59,46 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
-              date={'09/07/2023'}
+              date={'01/10/2024'}
               children={
                 <Fragment>
-                  <Article title="Project Catalyst Fund10 voting ends September 14th!" icon="">
+                  <Article title="Help us win funding by voting in Project Catalyst" icon="">
                     <p className="info-spaced-paragraph">
-                      If you’re voting, please cast your votes before September 14th, and please
-                      consider supporting NuFi's proposal: a toolkit that dApps can integrate to
-                      onboard Web2 and non-crypto users into Cardano (with this toolkit, anyone with
-                      a social account or email address can connect to a dApp simply by logging in).
-                      Read more about our proposal and its impact on Cardano{' '}
+                      The AdaLite/NuFi team has submitted 2 very special proposals in Project
+                      Catalyst (Cardano’s on-chain funding initiative) and your support can help us
+                      win funding.
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      One proposal –{' '}
+                      <a target="_blank" href="https://cardano.ideascale.com/c/idea/114276">
+                        Google Wallet
+                      </a>{' '}
+                      – is for a service for Cardano dApps that enables Web2 users/crypto beginners
+                      to connect to a dApp simply by logging in with a social account like Google,
+                      Twitter, or Facebook – no Cardano wallet needed! The other proposal –{' '}
+                      <a target="_blank" href="https://cardano.ideascale.com/c/idea/113367">
+                        Cardano in MetaMask
+                      </a>{' '}
+                      – is a service that adds MetaMask wallet support to Cardano dApps and enables
+                      MetaMask’s 30 million users to onboard into Cardano using just their MetaMask
+                      wallet (with no need to install anything else).
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      <b>
+                        To vote in Project Catalyst Fund11 and support our proposals, you need to
+                        register for Project Catalyst (using your AdaLite wallet) before January
+                        15th, 2024.
+                      </b>{' '}
                       <a
                         target="_blank"
-                        href="https://nufi-official.medium.com/how-nufis-project-catalyst-proposal-can-onboard-cardano-s-next-1-million-web2-users-4745939c2801"
+                        href="https://nufi-official.medium.com/2024-the-year-the-world-discovered-cardano-thanks-to-nufis-project-catalyst-proposals-14cdeda63f1e"
                       >
-                        here
+                        In this article
                       </a>
-                      , and contact us at <a href="mailto:help@nu.fi">help@nu.fi</a> if you need any
-                      assistance.
+                      , we’ve explained our groundbreaking ideas and included a how-to guide for
+                      registering/voting in Project Catalyst.
                     </p>
+                    <p className="info-spaced-paragraph">Many thanks, The AdaLite/NuFi team</p>
                   </Article>
                 </Fragment>
               }
