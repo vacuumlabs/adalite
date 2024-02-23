@@ -2,7 +2,7 @@
   "name": "cardano",
   "version": "6.11.18",
   "engines": {
-    "node": "18.12"
+    "node": "20.11"
   },
   "description": "A simple Cardano wallet",
   "main": "app.js",
@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^9.1.1",
-    "@types/node": "^16.11.6",
+    "@types/node": "^20.11.20",
     "@typescript-eslint/eslint-plugin": "2",
     "@typescript-eslint/parser": "2",
     "babel-eslint": "^8.2.2",

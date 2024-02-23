@@ -32,7 +32,7 @@
     "bitbox02-api": "^0.13.0",
     "cardano-crypto.js": "^6.1.2",
     "cbor": "^8.1.0",
-    "chacha": "^2.1.0",
+    "chacha-js": "^2.1.1",
     "js-base64": "^3.7.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",

@@ -1,5 +1,5 @@
 import * as pbkdf2 from 'pbkdf2'
-import * as chacha from 'chacha'
+import * as chacha from 'chacha-js'
 
 // TODO: This is what yoroi uses - rewrite with packages we use
 

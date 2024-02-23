@@ -65,7 +65,7 @@ const PoolOwnerCard = ({
     await reader.readAsText(targetFile)
 
     reader.onload = ((theFile) => {
-      return async (e) => await loadPoolCertificateTx(e.target.result)
+      return async (e) => await loadPoolCertificateTx(e.target!.result)
     })(targetFile)
   }
 
