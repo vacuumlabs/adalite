@@ -2344,10 +2344,10 @@ pify@^2.2.0:
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
   integrity sha1-7RQaasBDqEnqWISY59yosVMw6Qw=
 
-preact@^10.5.11:
-  version "10.5.11"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.5.11.tgz#2c8a431f16613e442901068175771806cf1cc0f6"
-  integrity "sha1-LIpDHxZhPkQpAQaBdXcYBs8cwPY= sha512-BdtFePVilR1430kDuzh3VkkZktCmp8RTqHOjG8qesyGZXHNYJjdrjEBuc2f7O/vthhVENxJd0/aTjWtYeH46aw=="
+preact@^10.19.6:
+  version "10.19.6"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.19.6.tgz#66007b67aad4d11899f583df1b0116d94a89b8f5"
+  integrity sha512-gympg+T2Z1fG1unB8NH29yHJwnEaCH37Z32diPDku316OTnRPeMbiRV9kTrfZpocXjdfnWuFUl/Mj4BHaf6gnw==
 
 pretty-bytes@^5.6.0:
   version "5.6.0"

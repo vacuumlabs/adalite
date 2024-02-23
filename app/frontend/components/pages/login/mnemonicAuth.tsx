@@ -33,7 +33,7 @@ const MnemonicAuth = (): h.JSX.Element => {
 
   useEffect(() => {
     if (!formData.mnemonicInputValue && !displayWelcome) {
-      mnemonicField.current.focus()
+      mnemonicField.current?.focus()
     }
   }, [formData.mnemonicInputValue, displayWelcome])
 
@@ -76,7 +76,7 @@ const MnemonicAuth = (): h.JSX.Element => {
         onBlur={updateMnemonicValidationError}
         autoComplete="off"
         ref={mnemonicField}
-        onKeyDown={(e) => e.key === 'Enter' && goBtn?.current.click()}
+        onKeyDown={(e) => e.key === 'Enter' && goBtn?.current?.click()}
       />
       <div className="validation-row">
         <button
@@ -99,7 +99,7 @@ const MnemonicAuth = (): h.JSX.Element => {
             // resulting in AccountExplorationError
             e.key === 'Enter' && (e.target as HTMLButtonElement).click()
             if (e.key === 'Tab') {
-              mnemonicField.current.focus()
+              mnemonicField.current?.focus()
               e.preventDefault()
             }
           }}

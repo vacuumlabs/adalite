@@ -305,7 +305,7 @@ const SendAdaPage = ({
       value={sendAddress}
       onInput={updateAddress}
       autoComplete="off"
-      onKeyDown={(e) => e.key === 'Enter' && amountField?.current.focus()}
+      onKeyDown={(e) => e.key === 'Enter' && amountField?.current?.focus()}
       disabled={isModal || shouldDisableSendingButton(walletOperationStatusType)}
     />
   )
@@ -379,8 +379,7 @@ const SendAdaPage = ({
           ref={amountField}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && submitTxBtn) {
-              // eslint-disable-next-line no-unused-expressions
-              submitTxBtn?.current.click()
+              submitTxBtn?.current?.click()
               e.preventDefault()
             }
           }}

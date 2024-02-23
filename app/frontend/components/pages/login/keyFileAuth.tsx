@@ -35,7 +35,7 @@ const LoadKeyFile = (): h.JSX.Element => {
   }, [])
 
   useEffect(() => {
-    encrypted && filePasswordField.current.focus()
+    encrypted && filePasswordField.current?.focus()
   }, [encrypted])
 
   const onPasswordInput = (e) => {

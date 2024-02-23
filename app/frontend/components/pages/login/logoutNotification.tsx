@@ -10,7 +10,7 @@ const LogoutNotification = (): h.JSX.Element => {
   const understandBtn = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    understandBtn.current.focus()
+    understandBtn.current?.focus()
 
     if (window.sessionStorage.getItem(sessionStorageVars.INACTIVITY_LOGOUT)) {
       window.sessionStorage.removeItem(sessionStorageVars.INACTIVITY_LOGOUT)

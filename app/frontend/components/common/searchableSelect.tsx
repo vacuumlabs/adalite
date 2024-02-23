@@ -55,6 +55,7 @@ const SearchableSelect = <T extends {}>({
   }
 
   useEffect(() => {
+    if (!dropdownEl.current) return
     dropdownEl.current.scrollTop = 0
   })
 
