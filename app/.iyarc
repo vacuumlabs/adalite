@@ -2,9 +2,5 @@
 # awaiting this fix to be merged: https://github.com/cypress-io/request/pull/32
 GHSA-72xf-g2v4-qvf3
 
-# protbufjs vulnerability through @trezor/transport
-# awaiting update of the package
-GHSA-h755-8qp9-cq85
-
 # request, @cypress/request, currently no fix
 GHSA-p8p7-x288-28g6

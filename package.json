@@ -107,8 +107,6 @@
   },
   "resolutions": {
     "redisscan/redis": "^3.1.2",
-    "redisscan/async": "^2.6.4",
-    "prettier-eslint-cli/**/ansi-regex": "^5",
-    "isomorphic-fetch/**/node-fetch": "^2.6.7"
+    "redisscan/async": "^2.6.4"
   }
 }
