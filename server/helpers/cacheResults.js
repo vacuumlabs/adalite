@@ -1,18 +1,20 @@
 const getHash = require('./getHash')
 
-const cacheResults = (maxAge, cache_obj = {}) => (fn) => {
-  const wrapped = (...args) => {
-    const hash = getHash(JSON.stringify(args))
-    if (!cache_obj[hash] || cache_obj[hash].timestamp + maxAge < Date.now()) {
-      cache_obj[hash] = {
-        timestamp: Date.now(),
-        data: fn(...args),
+const cacheResults =
+  (maxAge, cacheObj = {}) =>
+    (fn) => {
+      const wrapped = (...args) => {
+        const hash = getHash(JSON.stringify(args))
+        if (!cacheObj[hash] || cacheObj[hash].timestamp + maxAge < Date.now()) {
+          cacheObj[hash] = {
+            timestamp: Date.now(),
+            data: fn(...args),
+          }
+        }
+        return cacheObj[hash].data
       }
-    }
-    return cache_obj[hash].data
-  }
 
-  return wrapped
-}
+      return wrapped
+    }
 
 module.exports = cacheResults

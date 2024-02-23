@@ -6,18 +6,6 @@ import NufiBanner from '../nufiBanner'
 import {useEffect} from 'preact/hooks'
 const APP_VERSION = ADALITE_CONFIG.ADALITE_APP_VERSION
 
-interface Router {
-  pathname: string
-  hash: string
-}
-interface Props {
-  router: Router
-  isDemoWallet: boolean
-  logout: () => void
-  openWelcome: any
-  openInfoModal: any
-}
-
 const NavbarAuth = ({isDemoWallet}: {isDemoWallet: boolean}) => {
   let scrollDestination: any
   const {openWelcome, openInfoModal, logout} = useActions(actions)

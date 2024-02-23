@@ -78,7 +78,7 @@ const SearchableSelect = <T extends {}>({
       ref={wrapperEl}
       data-cy="SendAssetDropdown"
       // TODO: remove @ts-ignore when onFocusOut is added to jsx.d.ts
-      // @ts-ignore
+      // eslint-disable-next-line react/no-unknown-property
       onfocusout={(e) => onSubTreeBlur(e, wrapperEl, () => showDropdown(false))}
     >
       {label && (

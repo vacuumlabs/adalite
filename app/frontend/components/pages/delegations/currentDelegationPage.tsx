@@ -122,7 +122,7 @@ const CurrentDelegationPage = ({
             </div>
             <div className="current-delegation-id">{nearestReward.poolHash}</div>
             <div className="current-delegation-id">
-                Next reward:{' '}
+              Next reward:{' '}
               <EpochDateTime
                 epoch={nearestReward.distributionEpoch}
                 dateTime={new Date(nearestReward.rewardDate)}

@@ -10,7 +10,7 @@ export type _HdNode = HdNode & {
   toString: () => string
 }
 
-function _HdNode({secretKey, publicKey, chainCode}: HdNode): _HdNode {
+function _HdNodeFn({secretKey, publicKey, chainCode}: HdNode): _HdNode {
   /**
    * HD node groups secretKey, publicKey and chainCode
    * can be initialized from Buffers or single string
@@ -39,11 +39,11 @@ function _HdNode({secretKey, publicKey, chainCode}: HdNode): _HdNode {
   }
 }
 
-function HdNode(secret: Buffer): _HdNode {
+function HdNodeFn(secret: Buffer): _HdNode {
   const secretKey = secret.slice(0, 64)
   const publicKey = secret.slice(64, 96)
   const chainCode = secret.slice(96, 128)
-  return _HdNode({secretKey, publicKey, chainCode})
+  return _HdNodeFn({secretKey, publicKey, chainCode})
 }
 
-export default HdNode
+export default HdNodeFn

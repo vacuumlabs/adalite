@@ -43,7 +43,7 @@ class Modal extends Component<Props, {}> {
                 className="button close modal-close"
                 onClick={onRequestClose}
                 {
-                ...{ariaLabel: 'Close dialog'} /* fix ts error*/
+                  ...{ariaLabel: 'Close dialog'} /* fix ts error*/
                 }
               />
             )}

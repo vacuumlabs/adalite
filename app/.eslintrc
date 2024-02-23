@@ -1,4 +1,7 @@
 {
+  "rules": {
+    "no-use-before-define": "off"
+  },
   "settings": {
     "import/resolver": {
       "webpack": {

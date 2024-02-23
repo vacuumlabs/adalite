@@ -164,15 +164,18 @@ const SendAdaPage = ({
   const enableSubmit = sendAmount.fieldValue && sendAddress && !sendFormValidationError
   const isSendAddressValid = !sendAddressValidationError && sendAddress !== ''
 
-  const adaAsset: DropdownAssetItem = {
-    type: AssetFamily.ADA,
-    policyId: '',
-    assetName: 'ADA',
-    fingerprint: null,
-    quantity: balance,
-    assetNameUtf8: 'ADA',
-    ticker: 'ADA',
-  }
+  const adaAsset: DropdownAssetItem = useMemo(
+    () => ({
+      type: AssetFamily.ADA,
+      policyId: '',
+      assetName: 'ADA',
+      fingerprint: null,
+      quantity: balance,
+      assetNameUtf8: 'ADA',
+      ticker: 'ADA',
+    }),
+    [balance]
+  )
 
   const dropdownAssetItems: Array<DropdownAssetItem> = useMemo(
     () => [
@@ -396,9 +399,11 @@ const SendAdaPage = ({
     </Fragment>
   )
 
-  const totalLovelace = (summary != null
-    ? summary.coins.plus(summary.fee).plus(summary.minimalLovelaceAmount)
-    : new BigNumber(0)) as Lovelace
+  const totalLovelace = (
+    summary != null
+      ? summary.coins.plus(summary.fee).plus(summary.minimalLovelaceAmount)
+      : new BigNumber(0)
+  ) as Lovelace
   const totalTokens = summary?.token ?? null
   const minimalLovelaceAmount = summary?.minimalLovelaceAmount ?? (new BigNumber(0) as Lovelace)
 

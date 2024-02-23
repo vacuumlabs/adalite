@@ -11,11 +11,6 @@ import {
 import getDonationAddress from '../../helpers/getDonationAddress'
 import {getCexplorerUrl} from '../../helpers/common'
 
-interface Props {
-  showConversionRates: boolean
-  shouldShowContactFormModal: any
-}
-
 const showRatesOn = ['/txHistory', '/send']
 
 const Footer = () => {

@@ -1,4 +1,4 @@
-import {h, Fragment, JSX} from 'preact'
+import {h, Fragment} from 'preact'
 import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import Balance from '../../common/balance'

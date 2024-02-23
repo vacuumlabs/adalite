@@ -15,7 +15,7 @@ const PremiumBanner = ({closePremiumBanner}: Props) => {
       <button
         className="button close banner-close"
         {
-        ...{ariaLabel: 'Close banner'} /* silence ts*/
+          ...{ariaLabel: 'Close banner'} /* silence ts*/
         }
         onClick={(e) => {
           closePremiumBanner()

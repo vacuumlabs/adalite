@@ -177,6 +177,7 @@ const StakingHistoryObjectToItem = {
 
 class StakingHistoryPage extends Component<Props> {
   render() {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const {stakingHistory} = useActiveAccount()
     const items = stakingHistory.map((data: StakingHistoryObject) => {
       try {
