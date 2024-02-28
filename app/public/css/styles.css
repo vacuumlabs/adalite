@@ -1414,21 +1414,6 @@ button[data-balloon] {
   background-color: var(--color-error);
 }
 
-.banner.success {
-  background-color: #40A75A;
-  color: white;
-  font-weight: bold;
-}
-
-.banner.success a {
-  color: white;
-  text-decoration: none;
-}
-
-.banner.success a:hover {
-  text-decoration: underline;
-}
-
 .banner.saturation {
   background-color: var(--color-grey-dark);
 }
