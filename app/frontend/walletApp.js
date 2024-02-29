@@ -92,6 +92,9 @@ init({
     // Eternl wallet error, unrelated to Adalite
     // https://github.com/ccwalletio/tracker/issues/119
     'WebAssembly.instantiate(): expected magic word',
+    // error triggered by (probably broken) Adblock Stands
+    // https://github.com/shadcn-ui/ui/issues/2837
+    'Cannot redefine property: googletag',
   ],
 })
 
