@@ -271,7 +271,7 @@ const ShelleyLedgerCryptoProvider = async ({
       type: LedgerTypes.CertificateType.STAKE_REGISTRATION,
       params: {
         stakeCredential: {
-          type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+          type: LedgerTypes.CredentialParamsType.KEY_PATH,
           keyPath: path,
         },
       },
@@ -286,7 +286,7 @@ const ShelleyLedgerCryptoProvider = async ({
       type: LedgerTypes.CertificateType.STAKE_DEREGISTRATION,
       params: {
         stakeCredential: {
-          type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+          type: LedgerTypes.CredentialParamsType.KEY_PATH,
           keyPath: path,
         },
       },
@@ -302,7 +302,7 @@ const ShelleyLedgerCryptoProvider = async ({
       params: {
         poolKeyHashHex: certificate.poolHash,
         stakeCredential: {
-          type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+          type: LedgerTypes.CredentialParamsType.KEY_PATH,
           keyPath: path,
         },
       },
@@ -425,7 +425,7 @@ const ShelleyLedgerCryptoProvider = async ({
   ): LedgerTypes.Withdrawal {
     return {
       stakeCredential: {
-        type: LedgerTypes.StakeCredentialParamsType.KEY_PATH,
+        type: LedgerTypes.CredentialParamsType.KEY_PATH,
         keyPath: addressToAbsPathMapper(withdrawal.stakingAddress),
       },
       amount: `${withdrawal.rewards}`,
@@ -475,12 +475,12 @@ const ShelleyLedgerCryptoProvider = async ({
     switch (txAuxiliaryData.type) {
       case 'CATALYST_VOTING':
         return {
-          type: LedgerTypes.TxAuxiliaryDataType.GOVERNANCE_VOTING_REGISTRATION,
+          type: LedgerTypes.TxAuxiliaryDataType.CIP36_REGISTRATION,
           params: {
-            format: LedgerTypes.GovernanceVotingRegistrationFormat.CIP_15,
-            votingPublicKeyHex: txAuxiliaryData.votingPubKey,
+            format: LedgerTypes.CIP36VoteRegistrationFormat.CIP_15,
+            voteKeyHex: txAuxiliaryData.votingPubKey,
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
-            rewardsDestination: {
+            paymentDestination: {
               type: LedgerTypes.TxOutputDestinationType.DEVICE_OWNED,
               params: {
                 type: LedgerTypes.AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
@@ -518,7 +518,7 @@ const ShelleyLedgerCryptoProvider = async ({
           }),
           txAuxiliaryData: cborizeTxAuxiliaryVotingData(
             txAux.auxiliaryData,
-            auxiliaryDataSupplement.governanceVotingRegistrationSignatureHex
+            auxiliaryDataSupplement.cip36VoteRegistrationSignatureHex
           ),
         }
       default:

@@ -374,10 +374,10 @@ const ShelleyTrezorCryptoProvider = async ({
     switch (txAuxiliaryData.type) {
       case 'CATALYST_VOTING':
         return {
-          catalystRegistrationParameters: {
-            votingPublicKey: txAuxiliaryData.votingPubKey,
+          cVoteRegistrationParameters: {
+            votePublicKey: txAuxiliaryData.votingPubKey,
             stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
-            rewardAddressParameters: {
+            paymentAddressParameters: {
               addressType: AddressTypes.BASE,
               path: txAuxiliaryData.rewardDestinationAddress.spendingPath,
               stakingPath: txAuxiliaryData.rewardDestinationAddress.stakingPath,
@@ -402,7 +402,9 @@ const ShelleyTrezorCryptoProvider = async ({
     }
     switch (txAux.auxiliaryData.type) {
       case 'CATALYST_VOTING':
-        assert(auxiliaryDataSupplement && auxiliaryDataSupplement.catalystSignature != null)
+        assert(
+          auxiliaryDataSupplement && auxiliaryDataSupplement.cVoteRegistrationSignature != null
+        )
         return {
           finalizedTxAux: ShelleyTxAux({
             ...txAux,
@@ -410,7 +412,7 @@ const ShelleyTrezorCryptoProvider = async ({
           }),
           txAuxiliaryData: cborizeTxAuxiliaryVotingData(
             txAux.auxiliaryData,
-            auxiliaryDataSupplement.catalystSignature
+            auxiliaryDataSupplement.cVoteRegistrationSignature
           ),
         }
       default:

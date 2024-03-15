@@ -18,13 +18,13 @@
   "homepage": "https://github.com/vacuumlabs/adalite#readme",
   "scripts": {},
   "dependencies": {
-    "@cardano-foundation/ledgerjs-hw-app-cardano": "https://github.com/vacuumlabs/ledgerjs-cardano-shelley/releases/download/v6.0.0-rc2/cardano-foundation-ledgerjs-hw-app-cardano-v6.0.0-rc2.tgz",
-    "@ledgerhq/hw-transport": "^6.27.8",
+    "@cardano-foundation/ledgerjs-hw-app-cardano": "^7.0.1",
+    "@ledgerhq/hw-transport": "^6.30.4",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
-    "@ledgerhq/hw-transport-webhid": "^6.27.8",
-    "@ledgerhq/hw-transport-webusb": "^6.27.8",
+    "@ledgerhq/hw-transport-webhid": "^6.28.4",
+    "@ledgerhq/hw-transport-webusb": "^6.28.4",
     "@sentry/browser": "^6.15.0",
-    "@trezor/connect-web": "9.0.0",
+    "@trezor/connect-web": "^9.2.1",
     "@types/lodash": "^4.14.168",
     "babel-polyfill": "6.26.0",
     "bignumber.js": "^9.0.2",
@@ -49,8 +49,5 @@
     "fetch-readablestream": "^0.2.0",
     "improved-yarn-audit": "^3.0.0",
     "sinon": "^7.3.2"
-  },
-  "resolutions": {
-    "@trezor/connect/**/node-fetch": "^2.6.7"
   }
 }
