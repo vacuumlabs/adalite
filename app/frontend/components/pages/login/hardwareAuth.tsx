@@ -46,9 +46,13 @@ const LoadByHardwareWalletSection = () => {
       <div className="authentication-content hardware">
         <div className="authentication-wallet">
           <div className="authentication-image-container">
-            <img className="authentication-image" src="assets/trezor.jpg" alt="Trezor model T" />
+            <img
+              className="authentication-image"
+              src="assets/trezor.jpg"
+              alt="Trezor Model T/Safe 3"
+            />
           </div>
-          <div className="authentication-paragraph">Trezor model T</div>
+          <div className="authentication-paragraph">Trezor Model T/Safe 3</div>
           <div className="authentication-paragraph small">
             {TrezorAffiliateLink('Support us by buying one')}
           </div>

@@ -132,7 +132,12 @@ const AuthCardInitial = () => (
       />
       <AuthOption
         tabName={AuthMethodType.HW_WALLET}
-        texts={['Trezor T', 'Ledger Nano S/S Plus/X', 'Android device & Ledger', 'BitBox02']}
+        texts={[
+          'Trezor Model T/Safe 3',
+          'Ledger Nano S/S Plus/X',
+          'Android device & Ledger',
+          'BitBox02',
+        ]}
         tag={'recommended'}
       />
       <AuthOption tabName={AuthMethodType.KEY_FILE} texts={['Encrypted .JSON file']} tag={''} />
@@ -227,12 +232,8 @@ const LoginPage = () => {
     autoLogin: state.autoLogin,
     errorBannerContent: state.errorBannerContent,
   }))
-  const {
-    closeStakingBanner,
-    setAuthMethod,
-    closeWalletLoadingErrorModal,
-    loadErrorBannerContent,
-  } = useActions(actions)
+  const {closeStakingBanner, setAuthMethod, closeWalletLoadingErrorModal, loadErrorBannerContent} =
+    useActions(actions)
 
   useEffect(() => {
     if (autoLogin && authMethod !== AuthMethodType.MNEMONIC) {
