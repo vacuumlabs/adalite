@@ -1,4 +1,4 @@
-import {h, Component} from 'preact'
+import {h} from 'preact'
 import actions from '../../../actions'
 import {connect} from '../../../libs/unistore/preact'
 import {LinkIconToPool} from './common'
@@ -15,8 +15,8 @@ import {
   RewardWithdrawal,
   StakingKeyRegistration,
 } from '../../../types'
-import Alert from '../../common/alert'
 import {useActiveAccount} from '../../../selectors'
+import {useState} from 'preact/hooks'
 
 const StakeDelegationItem = ({stakeDelegation}: {stakeDelegation: StakeDelegation}) => {
   return (
@@ -153,10 +153,6 @@ const ViewOnCexplorer = ({txHash, suffix = '', className = ''}) => {
   )
 }
 
-interface Props {
-  stakingHistory: any
-}
-
 const StakingHistoryObjectToItem = {
   [StakingHistoryItemType.STAKE_DELEGATION]: (x: StakingHistoryObject) => (
     <StakeDelegationItem stakeDelegation={x as StakeDelegation} />
@@ -175,41 +171,39 @@ const StakingHistoryObjectToItem = {
   ),
 }
 
-class StakingHistoryPage extends Component<Props> {
-  render() {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const {stakingHistory} = useActiveAccount()
-    const items = stakingHistory.map((data: StakingHistoryObject) => {
-      try {
-        return StakingHistoryObjectToItem[data.type](data)
-      } catch (e) {
-        return ''
-      }
-    })
+const DEFAULT_STAKING_HISTORY_LIMIT = 50
 
-    return (
-      <div className="staking-history card">
-        <h2 className="card-title">Staking and Rewards History</h2>
-        <div className="staking-history-warning">
-          <Alert alertType="warning">
-            Some rewards may be missing in the history.{' '}
-            <a
-              href="https://github.com/vacuumlabs/adalite/wiki/Known-issue-with-missing-rewards"
-              target="_blank"
-              rel="noopener"
-            >
-              More info
+const StakingHistoryPage = (): h.JSX.Element => {
+  const {stakingHistory} = useActiveAccount()
+  const [showAll, setShowAll] = useState(false)
+
+  const items = (
+    showAll ? stakingHistory : stakingHistory.slice(0, DEFAULT_STAKING_HISTORY_LIMIT)
+  ).map((data: StakingHistoryObject) => {
+    try {
+      return StakingHistoryObjectToItem[data.type](data)
+    } catch (e) {
+      return ''
+    }
+  })
+
+  return (
+    <div className="staking-history card">
+      <h2 className="card-title">Staking and Rewards History</h2>
+      {stakingHistory.length === 0 ? (
+        <div className="transactions-empty">No history found</div>
+      ) : (
+        <ul className="staking-history-content">
+          {items}
+          {stakingHistory.length > DEFAULT_STAKING_HISTORY_LIMIT && !showAll && (
+            <a className="show-all" onClick={() => setShowAll(true)}>
+              show all
             </a>
-          </Alert>
-        </div>
-        {stakingHistory.length === 0 ? (
-          <div className="transactions-empty">No history found</div>
-        ) : (
-          <ul className="staking-history-content">{items}</ul>
-        )}
-      </div>
-    )
-  }
+          )}
+        </ul>
+      )}
+    </div>
+  )
 }
 
 export default connect(null, actions)(StakingHistoryPage)
