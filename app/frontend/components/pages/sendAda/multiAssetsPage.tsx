@@ -46,8 +46,11 @@ const Item = ({title, displayElement, copyValue}: ItemProps) => {
   )
 }
 
+const DEFAULT_MULTI_ASSET_LIMIT = 50
+
 const MultiAssetsPage = () => {
   const {tokenBalance} = useSelector((state: State) => getSourceAccountInfo(state))
+  const [showAll, setShowAll] = useState(false)
 
   const [expandedAsset, setExpandedAsset] = useState(-1)
 
@@ -66,82 +69,89 @@ const MultiAssetsPage = () => {
 
   return (
     <div className="card">
-      <h2 className="card-title">Digital assets</h2>
+      <h2 className="card-title">Digital assets ({multiAssets.length})</h2>
       <div className="multi-assets-page-list">
-        {multiAssets.map((asset, i) => (
-          <FormattedAssetItem key={asset.fingerprint} {...asset}>
-            {({
-              formattedHumanReadableLabelVariants,
-              formattedOnChainName,
-              formattedOffChainName,
-              formattedAssetLink,
-              formattedAmount,
-              formattedPolicy,
-              formattedFingerprint,
-              formattedDescription,
-              formattedTicker,
-              formattedUrl,
-            }) => {
-              const isExpanded = i === expandedAsset
-              const header = (
-                <div
-                  className={styles.header}
-                  onClick={() => {
-                    if (i === expandedAsset) {
-                      setExpandedAsset(-1)
-                    } else {
-                      setExpandedAsset(i)
-                    }
-                  }}
-                >
-                  <div className={`${styles.name} flex-nowrap shrinkable`}>
-                    {formattedHumanReadableLabelVariants.labelWithIcon}
-                    {formattedAssetLink}
-                  </div>
-                  <div className={styles.right}>
-                    <div className={styles.amount}>{formattedAmount}</div>
-                    <div
-                      className={`accordion-icon flex-end ${isExpanded ? 'shown' : 'hidden'}`}
-                      data-cy="ReceiveAddressAccordion"
-                    >
-                      <DropdownCaret />
+        {(showAll ? multiAssets : multiAssets.slice(0, DEFAULT_MULTI_ASSET_LIMIT)).map(
+          (asset, i) => (
+            <FormattedAssetItem key={asset.fingerprint} {...asset}>
+              {({
+                formattedHumanReadableLabelVariants,
+                formattedOnChainName,
+                formattedOffChainName,
+                formattedAssetLink,
+                formattedAmount,
+                formattedPolicy,
+                formattedFingerprint,
+                formattedDescription,
+                formattedTicker,
+                formattedUrl,
+              }) => {
+                const isExpanded = i === expandedAsset
+                const header = (
+                  <div
+                    className={styles.header}
+                    onClick={() => {
+                      if (i === expandedAsset) {
+                        setExpandedAsset(-1)
+                      } else {
+                        setExpandedAsset(i)
+                      }
+                    }}
+                  >
+                    <div className={`${styles.name} flex-nowrap shrinkable`}>
+                      {formattedHumanReadableLabelVariants.labelWithIcon}
+                      {formattedAssetLink}
+                    </div>
+                    <div className={styles.right}>
+                      <div className={styles.amount}>{formattedAmount}</div>
+                      <div
+                        className={`accordion-icon flex-end ${isExpanded ? 'shown' : 'hidden'}`}
+                        data-cy="ReceiveAddressAccordion"
+                      >
+                        <DropdownCaret />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-              const details = (
-                <div className={`${styles.details} ${isExpanded ? styles.expanded : ''}`}>
-                  <Item title="Name" displayElement={formattedOffChainName!} />
-                  <Item title="Ticker" displayElement={formattedTicker!} />
-                  <Item
-                    title="Policy ID"
-                    displayElement={formattedPolicy!}
-                    copyValue={asset.policyId}
-                  />
-                  <Item title="Asset name" displayElement={formattedOnChainName!} />
-                  <Item
-                    title="Fingerprint"
-                    displayElement={formattedFingerprint!}
-                    copyValue={asset.fingerprint!}
-                  />
-                  {formattedDescription && (
-                    <Fragment>
-                      <div className={styles.detailsLabel}>Details</div>
-                      {formattedDescription}
-                      {formattedUrl && <div className={styles.homepage}>{formattedUrl}</div>}
-                    </Fragment>
-                  )}
-                </div>
-              )
-              return (
-                <div className={`${styles.asset} ${isExpanded ? styles.expanded : ''}`}>
-                  {header}
-                  {details}
-                </div>
-              )
-            }}
-          </FormattedAssetItem>
-        ))}
+                )
+                const details = (
+                  <div className={`${styles.details} ${isExpanded ? styles.expanded : ''}`}>
+                    <Item title="Name" displayElement={formattedOffChainName!} />
+                    <Item title="Ticker" displayElement={formattedTicker!} />
+                    <Item
+                      title="Policy ID"
+                      displayElement={formattedPolicy!}
+                      copyValue={asset.policyId}
+                    />
+                    <Item title="Asset name" displayElement={formattedOnChainName!} />
+                    <Item
+                      title="Fingerprint"
+                      displayElement={formattedFingerprint!}
+                      copyValue={asset.fingerprint!}
+                    />
+                    {formattedDescription && (
+                      <Fragment>
+                        <div className={styles.detailsLabel}>Details</div>
+                        {formattedDescription}
+                        {formattedUrl && <div className={styles.homepage}>{formattedUrl}</div>}
+                      </Fragment>
+                    )}
+                  </div>
+                )
+                return (
+                  <div className={`${styles.asset} ${isExpanded ? styles.expanded : ''}`}>
+                    {header}
+                    {details}
+                  </div>
+                )
+              }}
+            </FormattedAssetItem>
+          )
+        )}
+        {multiAssets.length > DEFAULT_MULTI_ASSET_LIMIT && !showAll && (
+          <div className={`${styles.showAll}`}>
+            <a onClick={() => setShowAll(true)}>show all</a>
+          </div>
+        )}
       </div>
     </div>
   )

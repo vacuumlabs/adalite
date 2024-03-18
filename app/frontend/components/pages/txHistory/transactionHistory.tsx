@@ -30,6 +30,7 @@ import {createTokenRegistrySubject} from '../../../tokenRegistry/tokenRegistry'
 import printTokenAmount from '../../../helpers/printTokenAmount'
 import {getCexplorerUrl} from '../../../helpers//common'
 import BigNumber from 'bignumber.js'
+import {useState} from 'preact/hooks'
 
 const FormattedAmount = ({amount}: {amount: Lovelace}): h.JSX.Element => {
   const value = printAda(amount)
@@ -287,8 +288,11 @@ const ExportCSV = ({transactionHistory, stakingHistory}: Props): h.JSX.Element =
   )
 }
 
+const DEFAULT_TRANSACTIONS_LIMIT = 50
+
 const TransactionHistory = (): h.JSX.Element => {
   const {transactionHistory, stakingHistory} = useActiveAccount()
+  const [showAll, setShowAll] = useState(false)
 
   return (
     <div className="transactions card">
@@ -298,23 +302,14 @@ const TransactionHistory = (): h.JSX.Element => {
           <ExportCSV transactionHistory={transactionHistory} stakingHistory={stakingHistory} />
         </div>
       </div>
-      <div className="staking-history-warning">
-        <Alert alertType="warning">
-          Some rewards may be missing from the CSV export.{' '}
-          <a
-            href="https://github.com/vacuumlabs/adalite/wiki/Known-issue-with-missing-rewards"
-            target="_blank"
-            rel="noopener"
-          >
-            More info
-          </a>
-        </Alert>
-      </div>
       {transactionHistory.length === 0 ? (
         <div className="transactions-empty">No transactions found</div>
       ) : (
         <ul className="transactions-content">
-          {transactionHistory.map((transaction: TxSummaryEntry) => (
+          {(showAll
+            ? transactionHistory
+            : transactionHistory.slice(0, DEFAULT_TRANSACTIONS_LIMIT)
+          ).map((transaction: TxSummaryEntry) => (
             <li key={transaction.ctbId} className="transaction-item">
               <div className="row">
                 <div className="transaction-date">
@@ -338,6 +333,13 @@ const TransactionHistory = (): h.JSX.Element => {
               ))}
             </li>
           ))}
+          {transactionHistory.length > DEFAULT_TRANSACTIONS_LIMIT && !showAll && (
+            <li>
+              <a className="show-all" onClick={() => setShowAll(true)}>
+                show all
+              </a>
+            </li>
+          )}
         </ul>
       )}
     </div>

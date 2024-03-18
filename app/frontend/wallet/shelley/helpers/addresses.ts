@@ -17,6 +17,13 @@ import {encodeCbor} from '../../helpers/cbor'
 export const encodeAddress = (address: Buffer): Address => {
   const addressType = getAddressType(address)
   if (addressType === AddressTypes.BOOTSTRAP) {
+    if (
+      address.toString('hex') ===
+      '82d818582183581c4f02b7440377ef497386412b1066af9b153600a97446c25d3668c4b2a0001ab858edcf'
+    ) {
+      return 'Ae2tdPwUPEYwFx4dmJheyNPPYXtvHbJLeCaA96o6Y2iiUL18cAt7AizN2zG' as Address
+    }
+
     return base58.encode(address)
   }
   const addressPrefixes: {[key: number]: string} = {
