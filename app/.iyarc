@@ -1,6 +1,0 @@
-# tough-cookie vulnerability through cypress
-# awaiting this fix to be merged: https://github.com/cypress-io/request/pull/32
-GHSA-72xf-g2v4-qvf3
-
-# request, @cypress/request, currently no fix
-GHSA-p8p7-x288-28g6
