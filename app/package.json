@@ -43,7 +43,7 @@
     "@testing-library/cypress": "^9.0.0",
     "@types/fetch-mock": "^6",
     "assert": "^2.0.0",
-    "cypress": "^12.1.0",
+    "cypress": "^13.8.1",
     "fetch-mock": "^6",
     "fetch-readablestream": "^0.2.0",
     "improved-yarn-audit": "^3.0.0",
