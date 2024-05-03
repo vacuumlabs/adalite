@@ -9,9 +9,7 @@ export type BIP32Path = number[]
 
 export type Address = string & {__typeAddress: any}
 
-export type AddressProvider = (
-  i: number
-) => Promise<{
+export type AddressProvider = (i: number) => Promise<{
   path: BIP32Path
   address: Address
 }>
@@ -123,7 +121,6 @@ export enum AuthMethodType {
 
 export enum LedgerTransportChoice {
   DEFAULT = 'Default',
-  U2F = 'U2F',
   WEB_USB = 'WebUSB',
   WEB_HID = 'WebHID',
 }

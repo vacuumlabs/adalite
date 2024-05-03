@@ -56,8 +56,9 @@ const internalErrorMessages: {[key in InternalErrorReason]: (params?: any) => st
   [InternalErrorReason.TransactionRejectedWhileSigning]: ({message}) =>
     `Transaction rejected while signing. ${message || hwWalletTroubleshootingSuggestion}`,
   [InternalErrorReason.TransactionNotFoundInBlockchainAfterSubmission]: ({txHash}) =>
-    `Transaction ${txHash ||
-      ''} not found in blockchain after being submitted. It may take up to an hour for the transaction to appear, if it was successful.`,
+    `Transaction ${
+      txHash || ''
+    } not found in blockchain after being submitted. It may take up to an hour for the transaction to appear, if it was successful.`,
   [InternalErrorReason.TransactionSubmissionTimedOut]: () =>
     'Transaction submission timed out, the blockchain is likely congested. It may take up to an hour for the transaction to appear, if it was successful.',
   [InternalErrorReason.TxSerializationError]: ({message}) => `TxSerializationError: ${message}`,
@@ -199,7 +200,7 @@ const externalErrorMessages: {[key: string]: (params?: any) => string} = {
         'Your browser does not support WebUSB, use e.g. Google Chrome instead.',
     }
 
-    return `TransportCanceledByUser: ${message}. ${errors[message] || ''}`
+    return `TransportCanceledByUser: ${errors[message] ?? message}`
   },
   [knownExternalErrors.TransportError]: ({message}) =>
     `TransportError: ${message}. ${hwWalletTroubleshootingSuggestion}`,

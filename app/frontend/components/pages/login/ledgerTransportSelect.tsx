@@ -11,7 +11,6 @@ interface Props {
 const LedgerTransportSelect = ({selectedItem, onSelect}: Props) => {
   const dropdownAssetItems = [
     LedgerTransportChoice.DEFAULT,
-    LedgerTransportChoice.U2F,
     LedgerTransportChoice.WEB_USB,
     LedgerTransportChoice.WEB_HID,
   ]

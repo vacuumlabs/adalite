@@ -20,7 +20,6 @@
   "dependencies": {
     "@cardano-foundation/ledgerjs-hw-app-cardano": "^7.0.1",
     "@ledgerhq/hw-transport": "^6.30.4",
-    "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webhid": "^6.28.4",
     "@ledgerhq/hw-transport-webusb": "^6.28.4",
     "@sentry/browser": "^6.15.0",

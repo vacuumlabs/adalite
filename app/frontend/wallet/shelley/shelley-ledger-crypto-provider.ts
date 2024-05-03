@@ -1,5 +1,4 @@
 import Transport from '@ledgerhq/hw-transport'
-import LedgerTransportU2F from '@ledgerhq/hw-transport-u2f'
 import LedgerTransportWebUsb from '@ledgerhq/hw-transport-webusb'
 import LedgerTransportWebHid from '@ledgerhq/hw-transport-webhid'
 import Ledger, * as LedgerTypes from '@cardano-foundation/ledgerjs-hw-app-cardano'
@@ -83,9 +82,6 @@ const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Pro
   switch (ledgerTransportType) {
     case LedgerTransportChoice.WEB_HID:
       _activeTransport = await LedgerTransportWebHid.create()
-      break
-    case LedgerTransportChoice.U2F:
-      _activeTransport = await LedgerTransportU2F.create()
       break
     case LedgerTransportChoice.WEB_USB:
       _activeTransport = await LedgerTransportWebUsb.create()
