@@ -61,8 +61,16 @@ module.exports = {
     // to avoid including webpack's 'crypto' if window.crypto is available - reduces bundle size
     crypto: 'crypto',
   },
+  experiments: {
+    asyncWebAssembly: true, // Enable async WebAssembly
+    topLevelAwait: true,
+  },
   module: {
     rules: [
+      {
+        test: /\.wasm$/,
+        type: 'webassembly/async',
+      },
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
@@ -128,10 +136,6 @@ module.exports = {
           },
         },
       },
-      // {
-      //   test: /\.wasm$/,
-      //   type: 'webassembly/experimental',
-      // },
     ],
   },
   resolve: {

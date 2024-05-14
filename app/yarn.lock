@@ -1143,6 +1143,11 @@ bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
+bitbox-api@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/bitbox-api/-/bitbox-api-0.3.2.tgz#cc0acf3170400d203cc2c3618a13c928da00e263"
+  integrity sha512-w85zT4FFtMhaK3bNGQH7PVpOPvO0VDv8ZQxhgqqElqaGVGhv+ql+pE091/+St8R869Wot8HOEwMMd36osArnDQ==
+
 bitbox02-api@^0.13.0:
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.13.0.tgz#06566f943e960199b935abb4dc948cf6f84e53e1"
@@ -3955,6 +3960,11 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
+
+yarn@^1.22.22:
+  version "1.22.22"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.22.tgz#ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  integrity sha512-prL3kGtyG7o9Z9Sv8IPfBNrWTDmXB4Qbes8A9rEzt6wkJV8mUvoirjU0Mp3GGAU06Y0XQyA3/2/RQFVuK7MTfg==
 
 yauzl@^2.10.0:
   version "2.10.0"

@@ -10,6 +10,7 @@ import {
 } from '../types'
 
 export const enum WalletName {
+  BITBOX02_NEW = 'BitBox02New',
   BITBOX02 = 'BitBox02',
   LEDGER = 'Ledger',
   TREZOR = 'Trezor',
@@ -38,6 +39,7 @@ export type Network = {
 }
 
 export enum CryptoProviderType {
+  BITBOX02_NEW = 'BITBOX02_NEW',
   BITBOX02 = 'BITBOX02',
   LEDGER = 'LEDGER',
   TREZOR = 'TREZOR',
