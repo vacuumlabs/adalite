@@ -4,6 +4,8 @@ const directives = {
     "'self'",
     'https://connect.trezor.io/*',
     'https://connect.trezor.io/',
+    'https://dev.suite.sldev.cz',
+    'https://dev.suite.sldev.cz/*',
     'https://widget.changelly.com/',
     'https://www.youtube.com/',
   ],
