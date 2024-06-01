@@ -176,8 +176,10 @@ const LoadByHardwareWalletSection = () => {
             {...tooltip('Not supported on mobile devices', isMobileOnly)}
             className="button primary thin-data-balloon"
             onClick={async () => {
-              // console.log('a')
-
+              loadWallet({
+                cryptoProviderType: CryptoProviderType.BITBOX02_NEW,
+                shouldExportPubKeyBulk: enableBulkExport,
+              })
             }
             }
           >

@@ -156,6 +156,7 @@ export default (store: Store) => {
 
       const validStakepoolDataProvider = await wallet.getStakepoolDataProvider()
       const accountsInfo = await wallet.getAccountsInfo(validStakepoolDataProvider)
+      console.log('DEBUG ACCOUNTS INFO', accountsInfo)
       const shouldShowSaturatedBanner = getShouldShowSaturatedBanner(accountsInfo)
 
       const maxAccountIndex = wallet.getMaxAccountIndex()
@@ -208,6 +209,7 @@ export default (store: Store) => {
       setState({
         loading: false,
       })
+      console.log('ERROR:', e)
       setError(state, {errorName: 'walletLoadingError', error: e})
       setState({
         shouldShowWalletLoadingErrorModal: true,

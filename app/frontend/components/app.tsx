@@ -12,8 +12,6 @@ import {ADALITE_CONFIG} from '../config'
 import Exchange from './pages/exchange/exchange'
 import NufiPreviewPage from './pages/nufiPreview/nufiPreviewPage'
 import ErrorBoundary from './errorBoundary'
-import * as bitbox from 'bitbox-api'
-import {useEffect} from 'preact/hooks'
 
 const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
@@ -27,17 +25,6 @@ const App = connect((state) => ({
   shouldShowContactFormModal: state.shouldShowContactFormModal,
   shouldShowUnexpectedErrorModal: state.shouldShowUnexpectedErrorModal,
 }))(({pathname, displayWelcome, shouldShowContactFormModal, shouldShowUnexpectedErrorModal}) => {
-  useEffect(() => {
-    try {
-      bitbox.bitbox02ConnectAuto(() => {
-        console.log('Onclose')
-      }).then((x) => {
-        console.log('Debug bitbox connect', x)
-      })
-    } catch (e) {
-      console.error('BB lib error', e)
-    }
-  }, [])
   const currentTab = pathname.split('/')[1]
   if (currentTab === 'exchange') {
     return <Exchange />

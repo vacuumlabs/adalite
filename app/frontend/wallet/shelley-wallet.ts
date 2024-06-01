@@ -84,6 +84,7 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
     validStakepoolDataProvider: StakepoolDataProvider
   ): Promise<Array<AccountInfo>> {
     const accounts = await accountManager.discoverAccounts()
+    console.log('Debug wallet acocunts', accounts)
     //@ts-ignore TODO: refactor type AccountInfo
     return Promise.all(
       accounts.map((account) => account.getAccountInfo(validStakepoolDataProvider))

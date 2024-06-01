@@ -5,7 +5,7 @@ import ShelleyTrezorCryptoProvider from './shelley-trezor-crypto-provider'
 import ShelleyLedgerCryptoProvider from './shelley-ledger-crypto-provider'
 import {CryptoProvider} from '../../types'
 import {InternalError, InternalErrorReason} from '../../errors'
-import XShelleyBitBox02CryptoProvider from './shelley-new-bb020-crypto-provider'
+import XShelleyBitBox02CryptoProvider from './shelley-new-bb02-crypto-provider'
 
 const ShelleyCryptoProviderFactory = (() => {
   const getCryptoProvider = (
