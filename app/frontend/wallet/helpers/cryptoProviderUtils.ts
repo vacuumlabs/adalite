@@ -11,8 +11,6 @@ export function getDeviceBrandName(providerType: HwWalletCryptoProviderType): Wa
 
 export function getWalletName(providerType: CryptoProviderType): WalletName {
   switch (providerType) {
-    case CryptoProviderType.BITBOX02_NEW:
-      return WalletName.BITBOX02_NEW
     case CryptoProviderType.BITBOX02:
       return WalletName.BITBOX02
     case CryptoProviderType.LEDGER:

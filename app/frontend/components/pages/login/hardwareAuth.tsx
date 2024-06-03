@@ -166,28 +166,6 @@ const LoadByHardwareWalletSection = () => {
               <BitBoxLogoWhite />
             </div>
           </button>
-
-          <button
-            disabled={!ADALITE_CONFIG.ADALITE_ENABLE_BITBOX02 || isMobileOnly}
-            {...tooltip(
-              'Support for BitBox02 is temporarily disabled',
-              !ADALITE_CONFIG.ADALITE_ENABLE_BITBOX02
-            )}
-            {...tooltip('Not supported on mobile devices', isMobileOnly)}
-            className="button primary thin-data-balloon"
-            onClick={async () => {
-              loadWallet({
-                cryptoProviderType: CryptoProviderType.BITBOX02_NEW,
-                shouldExportPubKeyBulk: enableBulkExport,
-              })
-            }
-            }
-          >
-            <span className="authentication-button-label">Unlock with NEW </span>
-            <div className="bitbox-logo-container">
-              <BitBoxLogoWhite />
-            </div>
-          </button>
         </div>
       </div>
       <div className="authentication-hw-bulk-public-export">
