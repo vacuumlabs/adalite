@@ -14,7 +14,6 @@ const ShelleyCryptoProviderFactory = (() => {
     switch (cryptoProviderType) {
       case CryptoProviderType.BITBOX02:
         return ShelleyBitBox02CryptoProvider(options)
-
       case CryptoProviderType.TREZOR:
         return ShelleyTrezorCryptoProvider(options)
 

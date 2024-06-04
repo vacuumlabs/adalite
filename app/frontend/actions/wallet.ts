@@ -209,7 +209,6 @@ export default (store: Store) => {
       setState({
         loading: false,
       })
-      console.log('ERROR:', e)
       setError(state, {errorName: 'walletLoadingError', error: e})
       setState({
         shouldShowWalletLoadingErrorModal: true,
