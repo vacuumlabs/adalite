@@ -1148,11 +1148,6 @@ bitbox-api@^0.4.0:
   resolved "https://registry.yarnpkg.com/bitbox-api/-/bitbox-api-0.4.0.tgz#2d8e47630a8bf5e577869c649b4a96fbde00ff9c"
   integrity sha512-0R+Dej56p75Mpxn1vQicSaYQ+kRTVuVkcnmJZl4QaIZxxz3qjI5SKgSbg2U4Uo3zaiZo4Z0aXh7R0HCZeb8PJQ==
 
-bitbox02-api@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.13.0.tgz#06566f943e960199b935abb4dc948cf6f84e53e1"
-  integrity "sha1-BlZvlD6WAZm5Nau03JSM9vhOU+E= sha512-Ht5Liv7xsTAfrvo7CG4v0mR33KWLcui//kvEy62q/JBSWxJFsdBjP13YJagFJCesCwwqPSQNkNAyqQodpetMGg=="
-
 bitcoin-ops@^1.3.0, bitcoin-ops@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/bitcoin-ops/-/bitcoin-ops-1.4.1.tgz#e45de620398e22fd4ca6023de43974ff42240278"

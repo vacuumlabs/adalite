@@ -68,10 +68,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.wasm$/,
-        type: 'webassembly/async',
-      },
-      {
         test: /\.tsx?$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
@@ -135,6 +131,10 @@ module.exports = {
             mimetype: 'application/font-woff',
           },
         },
+      },
+      {
+        test: /\.wasm$/,
+        type: 'webassembly/async',
       },
     ],
   },

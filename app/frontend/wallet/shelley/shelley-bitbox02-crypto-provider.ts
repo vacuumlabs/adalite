@@ -49,6 +49,8 @@ const ShelleyBitBox02CryptoProvider = async ({
   network,
   config,
 }: CryptoProviderParams): Promise<any> => {
+  const bitbox = await import('bitbox-api')
+
   if (activeBitBox02 !== null) {
     try {
       activeBitBox02.close()
@@ -61,19 +63,19 @@ const ShelleyBitBox02CryptoProvider = async ({
   const selectedNetwork = network.networkId === 1 ? 'mainnet' : 'testnet'
 
   const withDevice = async <T>(f: (device: PairedBitBox) => Promise<T>): Promise<T> => {
-    const bitbox = await import('bitbox-api')
-
     if (activeBitBox02 !== null) {
       return await f(activeBitBox02)
     }
 
     try {
-      const debugConnect = await bitbox.bitbox02ConnectAuto(() => {
+      const unpaired = await bitbox.bitbox02ConnectAuto(() => {
         activeBitBox02 = null
       })
-      const pairing = await debugConnect.unlockAndPair()
+      const pairing = await unpaired.unlockAndPair()
       const pairingCode = pairing.getPairingCode()
-      config.bitbox02OnPairingCode(pairingCode)
+      if (pairingCode) {
+        config.bitbox02OnPairingCode(pairingCode)
+      }
       const pairedBitBox = await pairing.waitConfirm()
       if (pairedBitBox.product() !== 'bitbox02-multi') {
         throw new Error('Error: unsupported device.')
@@ -93,6 +95,8 @@ const ShelleyBitBox02CryptoProvider = async ({
       throw new InternalError(InternalErrorReason.BitBox02Error, {
         message: `Error: ${typedErr.message}.`,
       })
+    } finally {
+      config.bitbox02OnPairingCode(null)
     }
   }
 
