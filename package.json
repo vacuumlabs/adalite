@@ -70,8 +70,7 @@
     "universal-analytics": "^0.5.3",
     "webpack": "^5.90.3",
     "webpack-dev-middleware": "^7.0.0",
-    "webpack-hot-middleware": "^2.26.1",
-    "ws": "^8.4.2"
+    "webpack-hot-middleware": "^2.26.1"
   },
   "devDependencies": {
     "@types/mocha": "^9.1.1",
