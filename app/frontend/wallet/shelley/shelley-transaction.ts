@@ -311,7 +311,12 @@ function ShelleySignedTransactionStructured(
   }
 
   function encodeCBOR(encoder) {
-    return encoder.pushAny([txAux, txWitnesses, txAuxiliaryData])
+    return encoder.pushAny([
+      txAux,
+      txWitnesses,
+      true, // isValid field required since Alonzo era
+      txAuxiliaryData,
+    ])
   }
 
   return {
