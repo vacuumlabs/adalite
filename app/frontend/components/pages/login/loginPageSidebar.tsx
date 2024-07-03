@@ -131,7 +131,7 @@ const WalletContent = () => (
       <p className="sidebar-paragraph">
         Computers might be vulnerable to attacks on program and system level. Typing your mnemonic
         directly may put your wallet at risk. We currently support Ledger Nano S/S Plus/X, Trezor
-        Model T/Safe 3, and BitBox02 hardware wallets.
+        Model T/Safe 3/Safe 5, and BitBox02 hardware wallets.
       </p>
     </div>
     <div className="sidebar-item">
@@ -141,7 +141,7 @@ const WalletContent = () => (
         rel="noopener"
         target="blank"
       >
-        How to use Trezor Model T/Safe 3 with AdaLite
+        How to use Trezor Model T/Safe 3/Safe 5 with AdaLite
       </a>
     </div>
     <div className="sidebar-item">
