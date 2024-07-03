@@ -7,6 +7,7 @@ import {
   TokenBundle,
   HexString,
   CryptoProviderFeature,
+  DRep,
 } from '../types'
 
 export const enum WalletName {
@@ -85,6 +86,7 @@ export type TxCertificate =
   | TxStakingKeyDeregistrationCert
   | TxDelegationCert
   | TxStakepoolRegistrationCert
+  | TxVoteDelegationCert
 
 export type TxStakingKeyRegistrationCert = {
   type: CertificateType.STAKING_KEY_REGISTRATION
@@ -106,6 +108,12 @@ export type TxStakepoolRegistrationCert = {
   type: CertificateType.STAKEPOOL_REGISTRATION
   stakingAddress: Address
   poolRegistrationParams: TxPoolParams
+}
+
+export type TxVoteDelegationCert = {
+  type: CertificateType.VOTE_DELEGATION
+  stakingAddress: Address
+  dRep: DRep
 }
 
 export type TxWithdrawal = {

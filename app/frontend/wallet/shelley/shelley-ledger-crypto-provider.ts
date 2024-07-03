@@ -49,6 +49,7 @@ import {
   TxStakepoolRegistrationCert,
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
+  TxVoteDelegationCert,
   TxWithdrawal,
 } from '../types'
 import {TxSigned, TxAux, CborizedCliWitness, FinalizedAuxiliaryDataTx} from './types'
@@ -305,6 +306,22 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
+  function prepareVoteDelegationCertificate(
+    certificate: TxVoteDelegationCert,
+    path: BIP32Path
+  ): LedgerTypes.Certificate {
+    return {
+      type: LedgerTypes.CertificateType.VOTE_DELEGATION,
+      params: {
+        dRep: {}, // TODO
+        stakeCredential: {
+          type: LedgerTypes.CredentialParamsType.KEY_PATH,
+          keyPath: path,
+        },
+      },
+    }
+  }
+
   function prepareRelays(relays: TxStakepoolRelay[]): LedgerTypes.Relay[] {
     return relays.map((relay) => {
       switch (relay.type) {
@@ -408,6 +425,8 @@ const ShelleyLedgerCryptoProvider = async ({
         return prepareStakingKeyDeregistrationCertificate(certificate, path)
       case CertificateType.DELEGATION:
         return prepareDelegationCertificate(certificate, path)
+      case CertificateType.VOTE_DELEGATION:
+        return prepareVoteDelegationCertificate(certificate, path)
       case CertificateType.STAKEPOOL_REGISTRATION:
         return prepareStakepoolRegistrationCertificate(certificate, path)
       default:
