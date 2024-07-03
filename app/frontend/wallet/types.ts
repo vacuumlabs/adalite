@@ -18,13 +18,13 @@ export const enum WalletName {
 
 export const enum NetworkId {
   MAINNET = 1,
-  TESTNET_OR_PREPROD = 0,
+  TESTNETS = 0,
 }
 
 export const enum ProtocolMagic {
   MAINNET = 764824073,
-  TESTNET = 1097911063,
   PREPROD = 1,
+  SANCHONET = 4,
 }
 
 export type Network = {

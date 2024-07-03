@@ -52,6 +52,6 @@ export function getCexplorerUrl() {
   return {
     MAINNET: 'https://cexplorer.io',
     PREPROD: 'https://preprod.cexplorer.io',
-    TESTNET: 'https://testnet.cexplorer.io',
+    SANCHONET: 'https://sancho.cexplorer.io',
   }[ADALITE_CONFIG.ADALITE_NETWORK]
 }

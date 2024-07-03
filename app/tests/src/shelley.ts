@@ -24,7 +24,7 @@ describe('shelley address derivation', () => {
   const mnemonic15Words =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon address'
   it('should derive base address from 15-words mnemonic', async () => {
-    const cp = await getCryptoProvider(mnemonic15Words, NetworkId.TESTNET_OR_PREPROD) //TODO: change discriminator to networkId for shelley
+    const cp = await getCryptoProvider(mnemonic15Words, NetworkId.TESTNETS)
     const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
     const {address} = await addrGen(0)
     const expected =
@@ -38,7 +38,7 @@ describe('shelley address derivation', () => {
   // 12-word (legacy Daedalus) mnemonics should not be used in prod to derive base addresses at all
   // we just want to test that the V1 derivation scheme is applied for 12 word mnemonics
   it('should derive base address from 12-words mnemonic', async () => {
-    const cp = await getCryptoProvider(mnemonic12Words, NetworkId.TESTNET_OR_PREPROD) //TODO: change discriminator to networkId for shelley
+    const cp = await getCryptoProvider(mnemonic12Words, NetworkId.TESTNETS)
     const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
 
     const {address} = await addrGen(0)
