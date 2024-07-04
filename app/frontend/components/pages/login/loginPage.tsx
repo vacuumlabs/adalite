@@ -133,7 +133,7 @@ const AuthCardInitial = () => (
       <AuthOption
         tabName={AuthMethodType.HW_WALLET}
         texts={[
-          'Trezor Model T/Safe 3',
+          'Trezor Model T/Safe 3/5',
           'Ledger Nano S/S Plus/X',
           'Android device & Ledger',
           'BitBox02',
