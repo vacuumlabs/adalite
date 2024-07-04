@@ -63,6 +63,7 @@ const ShelleyTrezorCryptoProvider = async ({
 }: CryptoProviderParams): Promise<CryptoProvider> => {
   const derivationScheme = derivationSchemes.v2
 
+  TrezorConnect.dispose()
   await TrezorConnect.init({
     manifest: {
       email: ADALITE_SUPPORT_EMAIL,
