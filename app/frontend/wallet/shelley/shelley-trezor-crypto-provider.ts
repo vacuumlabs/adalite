@@ -27,12 +27,14 @@ import {
   TxByronWitness,
   TxCertificate,
   TxDelegationCert,
+  TxDRepType,
   TxInput,
   TxOutput,
   TxShelleyWitness,
   TxStakepoolRegistrationCert,
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
+  TxVoteDelegationCert,
   TxWithdrawal,
 } from '../types'
 import {TxSigned, TxAux, CborizedCliWitness, FinalizedAuxiliaryDataTx} from './types'
@@ -51,6 +53,7 @@ import assertUnreachable from '../../helpers/assertUnreachable'
 import TrezorConnect, * as TrezorTypes from '@trezor/connect-web'
 import * as assert from 'assert'
 import {encodeCbor} from '../helpers/cbor'
+import {safeAssertUnreachable} from '../../helpers/common'
 
 type CryptoProviderParams = {
   network: Network
@@ -307,6 +310,22 @@ const ShelleyTrezorCryptoProvider = async ({
     }
   }
 
+  type SupportedTxVoteDelegationCert = TxVoteDelegationCert & {
+    dRep: {type: TxDRepType.ALWAYS_ABSTAIN}
+  }
+  function prepareVoteDelegationCertificate(
+    certificate: SupportedTxVoteDelegationCert,
+    path: BIP32Path
+  ): TrezorTypes.CardanoCertificate {
+    return {
+      type: certificate.type as number,
+      path,
+      dRep: {
+        type: TrezorTypes.PROTO.CardanoDRepType.ABSTAIN,
+      },
+    }
+  }
+
   function prepareCertificate(
     certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
@@ -321,8 +340,10 @@ const ShelleyTrezorCryptoProvider = async ({
         return prepareDelegationCertificate(certificate, path)
       case CertificateType.STAKEPOOL_REGISTRATION:
         return preparePoolRegistrationCertificate(certificate, path)
+      case CertificateType.VOTE_DELEGATION:
+        return prepareVoteDelegationCertificate(certificate, path)
       default:
-        throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
+        return safeAssertUnreachable(certificate)
     }
   }
 

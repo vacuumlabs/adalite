@@ -12,6 +12,8 @@ import {
   TxOutput,
   TxShelleyWitness,
 } from '../types'
+import {encodeCbor} from '../helpers/cbor'
+import {safeAssertUnreachable} from '../../helpers/common'
 
 import {
   CardanoAssetGroup,
@@ -33,7 +35,6 @@ import {CborizedCliWitness, TxAux, TxSigned} from './types'
 import {hasRequiredVersion} from './helpers/version-check'
 import {BITBOX02_ERRORS, BITBOX02_VERSIONS} from '../constants'
 import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
-import {encodeCbor} from '../helpers/cbor'
 import {orderTokenBundle} from '../helpers/tokenFormater'
 import debugLog from '../../helpers/debugLog'
 import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
@@ -202,8 +203,12 @@ const ShelleyBitBox02CryptoProvider = async ({
         throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
           message: 'Stakepool registration not supported',
         })
+      case CertificateType.VOTE_DELEGATION:
+        throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+          message: 'Vote delegation not supported',
+        })
       default:
-        throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
+        return safeAssertUnreachable(certificate)
     }
   }
 
