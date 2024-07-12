@@ -16,7 +16,7 @@ const encodeToHtml = (str) =>
     return `&#${i.charCodeAt(0)};`
   })
 
-const shelleyNetworks = ['MAINNET', 'TESTNET', 'PREPROD']
+const shelleyNetworks = ['MAINNET', 'PREPROD', 'SANCHONET']
 const isValidShelleyNetwork = (str) => shelleyNetworks.includes(str)
 const boolStrings = ['true', 'false']
 const isBoolString = (str) => boolStrings.includes(str)

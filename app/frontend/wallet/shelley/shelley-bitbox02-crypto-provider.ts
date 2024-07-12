@@ -7,6 +7,7 @@ import {
 import {
   CryptoProviderType,
   Network,
+  NetworkId,
   TxCertificate,
   TxInput,
   TxOutput,
