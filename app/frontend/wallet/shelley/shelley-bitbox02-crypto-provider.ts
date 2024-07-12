@@ -1,49 +1,44 @@
 import {
-  CardanoAssetGroup,
-  CardanoInput,
-  CardanoOutput,
-  CardanoCertificate,
-  CardanoShelleyWitness,
-  BitBox02API,
-} from 'bitbox02-api'
-import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
-import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
-import {orderTokenBundle} from '../helpers/tokenFormater'
-import {hasRequiredVersion} from './helpers/version-check'
-import {BITBOX02_ERRORS, BITBOX02_VERSIONS} from '../constants'
-
-import debugLog from '../../helpers/debugLog'
-import derivationSchemes from '../helpers/derivation-schemes'
-
-import {
-  CryptoProvider,
-  CryptoProviderFeature,
-  BIP32Path,
-  HexString,
-  DerivationScheme,
-  AddressToPathMapper,
-  CertificateType,
-  TokenBundle,
-} from '../../types'
-import {
-  CryptoProviderType,
-  Network,
-  NetworkId,
-  TxCertificate,
-  TxInput,
-  TxOutput,
-  TxShelleyWitness,
-} from '../types'
-import {TxSigned, TxAux, CborizedCliWitness} from './types'
-import {
   InternalError,
   InternalErrorReason,
   UnexpectedError,
   UnexpectedErrorReason,
 } from '../../errors'
-import {encodeCbor} from '../helpers/cbor'
+import {
+  CryptoProviderType,
+  Network,
+  TxCertificate,
+  TxInput,
+  TxOutput,
+  TxShelleyWitness,
+} from '../types'
 
-let _activeBitBox02: BitBox02API | null = null
+import {
+  CardanoAssetGroup,
+  CardanoCertificate,
+  CardanoInput,
+  CardanoOutput,
+  CardanoShelleyWitness,
+  PairedBitBox,
+} from 'bitbox-api'
+import {
+  AddressToPathMapper,
+  BIP32Path,
+  CertificateType,
+  CryptoProviderFeature,
+  TokenBundle,
+} from '../../types'
+import derivationSchemes from '../helpers/derivation-schemes'
+import {CborizedCliWitness, TxAux, TxSigned} from './types'
+import {hasRequiredVersion} from './helpers/version-check'
+import {BITBOX02_ERRORS, BITBOX02_VERSIONS} from '../constants'
+import {ShelleySignedTransactionStructured, cborizeTxWitnesses} from './shelley-transaction'
+import {encodeCbor} from '../helpers/cbor'
+import {orderTokenBundle} from '../helpers/tokenFormater'
+import debugLog from '../../helpers/debugLog'
+import CachedDeriveXpubFactory from '../helpers/CachedDeriveXpubFactory'
+
+let activeBitBox02: PairedBitBox | null = null
 
 type CryptoProviderParams = {
   network: Network
@@ -53,115 +48,61 @@ type CryptoProviderParams = {
 const ShelleyBitBox02CryptoProvider = async ({
   network,
   config,
-}: CryptoProviderParams): Promise<CryptoProvider> => {
-  // loading the library asynchronously because it's big (>5MB) and it's needed
-  // just for BitBox02 users
-  const bitbox02API = await import(/* webpackChunkName: "bitbox02-api" */ 'bitbox02-api')
-  const bitbox02Constants = bitbox02API.constants
-  if (_activeBitBox02 !== null) {
+}: CryptoProviderParams): Promise<any> => {
+  const bitbox = await import('bitbox-api')
+
+  if (activeBitBox02 !== null) {
     try {
-      _activeBitBox02.close()
+      activeBitBox02.close()
     } finally {
-      _activeBitBox02 = null
-    }
-  }
-  async function withDevice<T>(f: (BitBox02API) => Promise<T>): Promise<T> {
-    if (_activeBitBox02 !== null) {
-      return await f(_activeBitBox02)
-    }
-    try {
-      const devicePath = await bitbox02API.getDevicePath()
-      _activeBitBox02 = new bitbox02API.BitBox02API(devicePath)
-      await _activeBitBox02.connect(
-        (pairingCode) => {
-          config.bitbox02OnPairingCode(pairingCode)
-        },
-        () => {
-          config.bitbox02OnPairingCode(null)
-          return Promise.resolve()
-        },
-        (attestationResult) => {
-          debugLog(`BitBox02 attestation: ${attestationResult}`)
-        },
-        () => {
-          _activeBitBox02 = null
-        },
-        (status) => {
-          if (status === bitbox02Constants.Status.PairingFailed) {
-            config.bitbox02OnPairingCode(null)
-          }
-        }
-      )
-
-      if (_activeBitBox02.firmware().Product() !== bitbox02Constants.Product.BitBox02Multi) {
-        throw new Error('Unsupported device')
-      }
-
-      return await f(_activeBitBox02)
-    } catch (err) {
-      debugLog(err)
-      if (_activeBitBox02 !== null) {
-        try {
-          _activeBitBox02.close()
-        } finally {
-          _activeBitBox02 = null
-        }
-      }
-      throw new InternalError(InternalErrorReason.BitBox02Error, {
-        message: err,
-      })
+      activeBitBox02 = null
     }
   }
 
   const derivationScheme = derivationSchemes.v2
+  const selectedNetwork = network.networkId === 1 ? 'mainnet' : 'testnet'
 
-  const bb02Network = {
-    [NetworkId.MAINNET]: bitbox02Constants.messages.CardanoNetwork.CardanoMainnet,
-    [NetworkId.TESTNETS]: bitbox02Constants.messages.CardanoNetwork.CardanoTestnet,
-  }[network.networkId]
+  const withDevice = async <T>(f: (device: PairedBitBox) => Promise<T>): Promise<T> => {
+    if (activeBitBox02 !== null) {
+      return await f(activeBitBox02)
+    }
 
-  const version = await withDevice((bitbox02: BitBox02API) => {
-    const version = bitbox02.version().split('.')
-    return Promise.resolve({
-      major: version[0],
-      minor: version[1],
-      patch: version[2],
-    })
-  })
-
-  const getVersion = (): string => `${version.major}.${version.minor}.${version.patch}`
-
-  ensureFeatureIsSupported(CryptoProviderFeature.MINIMAL)
-
-  const getType = () => CryptoProviderType.BITBOX02
-
-  const deriveXpub = CachedDeriveXpubFactory(
-    derivationScheme,
-    config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeature.BULK_EXPORT),
-    async (derivationPaths: BIP32Path[]) => {
-      return await withDevice(async (bitbox02: BitBox02API) => {
-        const xpubs: Uint8Array[] = await bitbox02.cardanoXPubs(derivationPaths)
-        return xpubs.map(Buffer.from)
+    try {
+      const unpaired = await bitbox.bitbox02ConnectAuto(() => {
+        activeBitBox02 = null
       })
-    },
-    isFeatureSupported(CryptoProviderFeature.BYRON)
-  )
-
-  function isFeatureSupported(feature: CryptoProviderFeature): boolean {
-    switch (feature) {
-      case CryptoProviderFeature.BYRON:
-      case CryptoProviderFeature.POOL_OWNER:
-      case CryptoProviderFeature.VOTING:
-        return false
-      default:
-        return hasRequiredVersion(
-          version,
-          BITBOX02_VERSIONS[feature] ?? BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL]
-        )
+      const pairing = await unpaired.unlockAndPair()
+      const pairingCode = pairing.getPairingCode()
+      if (pairingCode) {
+        config.bitbox02OnPairingCode(pairingCode)
+      }
+      const pairedBitBox = await pairing.waitConfirm()
+      if (pairedBitBox.product() !== 'bitbox02-multi') {
+        throw new Error('Error: Unsupported device.')
+      }
+      activeBitBox02 = pairedBitBox
+      return await f(pairedBitBox)
+    } catch (err) {
+      const typedErr = bitbox.ensureError(err)
+      const isErrorUnknown = typedErr.code === 'unknown-js'
+      const errorMessage = isErrorUnknown ? err.message : typedErr.message
+      debugLog(errorMessage)
+      if (activeBitBox02 !== null) {
+        try {
+          activeBitBox02.close()
+        } finally {
+          activeBitBox02 = null
+        }
+      }
+      throw new InternalError(InternalErrorReason.BitBox02Error, {
+        message: errorMessage,
+      })
+    } finally {
+      config.bitbox02OnPairingCode(null)
     }
   }
 
-  function ensureFeatureIsSupported(feature: CryptoProviderFeature): void {
+  const ensureFeatureIsSupported = (feature: CryptoProviderFeature) => {
     if (!isFeatureSupported(feature)) {
       throw new InternalError(
         BITBOX02_ERRORS[feature] ?? BITBOX02_ERRORS[CryptoProviderFeature.MINIMAL],
@@ -170,51 +111,23 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
-  function getHdPassphrase(): void {
-    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-      message: 'Operation not supported',
-    })
-  }
-
-  function sign(message: HexString, absDerivationPath: BIP32Path): void {
-    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-      message: 'Operation not supported',
-    })
-  }
-
-  async function displayAddressForPath(
-    absDerivationPath: BIP32Path,
-    stakingPath: BIP32Path
-  ): Promise<void> {
-    await withDevice(async (bitbox02: BitBox02API) => {
-      await bitbox02.cardanoAddress(bb02Network, {
-        pkhSkh: {
-          keypathPayment: absDerivationPath,
-          keypathStake: stakingPath,
-        },
-      })
-    })
-  }
-
-  function getWalletSecret(): void {
-    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-      message: 'Operation not supported',
-    })
-  }
-
-  function getDerivationScheme(): DerivationScheme {
-    return derivationScheme
-  }
-
-  function prepareInput(input: TxInput, addressToAbsPathMapper: AddressToPathMapper): CardanoInput {
+  const prepareShelleyWitness = (witness: CardanoShelleyWitness): TxShelleyWitness => {
     return {
-      keypath: addressToAbsPathMapper(input.address),
-      prevOutHash: Buffer.from(input.txHash, 'hex'),
-      prevOutIndex: input.outputIndex,
+      publicKey: Buffer.from(witness.publicKey),
+      signature: Buffer.from(witness.signature),
     }
   }
 
-  function prepareTokenBundle(tokenBundle: TokenBundle): CardanoAssetGroup[] {
+  const version = await withDevice((pairedBitbox) => {
+    const fimrwareVersion = pairedBitbox.version().split('.')
+    return Promise.resolve({
+      major: fimrwareVersion[0],
+      minor: fimrwareVersion[1],
+      patch: fimrwareVersion[2],
+    })
+  })
+
+  const prepareTokenBundle = (tokenBundle: TokenBundle): CardanoAssetGroup[] => {
     if (tokenBundle.length > 0 && !isFeatureSupported(CryptoProviderFeature.MULTI_ASSET)) {
       throw new InternalError(InternalErrorReason.BitBox02MultiAssetNotSupported, {
         message: 'Please update your BitBox02 firmware for token support.',
@@ -224,7 +137,7 @@ const ShelleyBitBox02CryptoProvider = async ({
     return orderedTokenBundle.map(({policyId, assets}) => {
       const tokens = assets.map(({assetName, quantity}) => ({
         assetName: Buffer.from(assetName, 'hex'),
-        value: quantity.toString(),
+        value: BigInt(quantity.toString()),
       }))
       return {
         policyId: Buffer.from(policyId, 'hex'),
@@ -233,11 +146,22 @@ const ShelleyBitBox02CryptoProvider = async ({
     })
   }
 
-  function prepareOutput(output: TxOutput): CardanoOutput {
+  const prepareInput = (
+    input: TxInput,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): CardanoInput => {
+    return {
+      keypath: addressToAbsPathMapper(input.address),
+      prevOutHash: Buffer.from(input.txHash, 'hex'),
+      prevOutIndex: input.outputIndex,
+    }
+  }
+
+  const prepareOutput = (output: TxOutput): CardanoOutput => {
     const assetGroups = prepareTokenBundle(output.tokenBundle)
     return {
       encodedAddress: output.address,
-      value: output.coins.toString(),
+      value: BigInt(output.coins.toString()),
       scriptConfig: output.isChange
         ? {
           pkhSkh: {
@@ -250,10 +174,10 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
-  function prepareCertificate(
+  const prepareCertificate = (
     certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
-  ): CardanoCertificate {
+  ): CardanoCertificate => {
     switch (certificate.type) {
       case CertificateType.STAKING_KEY_REGISTRATION:
         return {
@@ -283,22 +207,29 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
-  function prepareShelleyWitness(witness: CardanoShelleyWitness): TxShelleyWitness {
-    return {
-      publicKey: Buffer.from(witness.publicKey),
-      signature: Buffer.from(witness.signature),
+  const isFeatureSupported = (feature: CryptoProviderFeature) => {
+    switch (feature) {
+      case CryptoProviderFeature.BYRON:
+      case CryptoProviderFeature.POOL_OWNER:
+      case CryptoProviderFeature.VOTING:
+        return false
+      default:
+        return hasRequiredVersion(
+          version,
+          BITBOX02_VERSIONS[feature] ?? BITBOX02_VERSIONS[CryptoProviderFeature.MINIMAL]
+        )
     }
   }
 
-  async function signTx(
+  const signTx = async (
     txAux: TxAux,
     addressToAbsPathMapper: AddressToPathMapper
-  ): Promise<TxSigned> {
+  ): Promise<TxSigned> => {
     const inputs = txAux.inputs.map((input) => prepareInput(input, addressToAbsPathMapper))
     const outputs = txAux.outputs.map(prepareOutput)
     const withdrawals = txAux.withdrawals.map((withdrawal) => ({
       keypath: addressToAbsPathMapper(withdrawal.stakingAddress),
-      value: withdrawal.rewards.toString(),
+      value: BigInt(withdrawal.rewards.toString()),
     }))
     const certificates = txAux.certificates.map((certificate) =>
       prepareCertificate(certificate, addressToAbsPathMapper)
@@ -313,16 +244,19 @@ const ShelleyBitBox02CryptoProvider = async ({
       })
     }
 
-    const response = await withDevice(async (bitbox02: BitBox02API) => {
-      return await bitbox02.cardanoSignTransaction({
-        network: bb02Network,
+    const response = await withDevice(async (pairedBitbox) => {
+      return await pairedBitbox.cardanoSignTransaction({
+        network: selectedNetwork,
         inputs,
         outputs,
-        fee: txAux.fee.toString(),
-        ttl: txAux.ttl?.toString() ?? null,
+        fee: BigInt(txAux.fee.toString()),
+        ttl: txAux.ttl ? BigInt(txAux.ttl.toString()) : BigInt(0),
         certificates,
         withdrawals,
-        validityIntervalStart: txAux.validityIntervalStart?.toString() ?? null,
+        validityIntervalStart: txAux.validityIntervalStart
+          ? BigInt(txAux.validityIntervalStart?.toString())
+          : BigInt(0),
+        allowZeroTTL: false,
       })
     })
 
@@ -337,14 +271,64 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
-  function witnessPoolRegTx(
-    txAux: TxAux,
-    addressToAbsPathMapper: AddressToPathMapper
-  ): Promise<CborizedCliWitness> {
+  const getType = () => CryptoProviderType.BITBOX02
+
+  const deriveXpub = CachedDeriveXpubFactory(
+    derivationScheme,
+    config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeature.BULK_EXPORT),
+    async (derivationPaths: BIP32Path[]) => {
+      return await withDevice(async (pairedBitBox) => {
+        const xpubs: Uint8Array[] = await pairedBitBox.cardanoXpubs(derivationPaths)
+        return xpubs.map(Buffer.from)
+      })
+    },
+    isFeatureSupported(CryptoProviderFeature.BYRON)
+  )
+
+  const displayAddressForPath = async (
+    absDerivationPath: BIP32Path,
+    stakingPath: BIP32Path
+  ): Promise<void> => {
+    await withDevice(async (pairedBitBox) => {
+      await pairedBitBox.cardanoAddress(
+        selectedNetwork,
+        {
+          pkhSkh: {
+            keypathPayment: absDerivationPath,
+            keypathStake: stakingPath,
+          },
+        },
+        true
+      )
+    })
+  }
+
+  const getHdPassphrase = () => {
     throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
       message: 'Operation not supported',
     })
   }
+
+  const witnessPoolRegTx = (): Promise<CborizedCliWitness> => {
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Operation not supported',
+    })
+  }
+
+  const getWalletSecret = () => {
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Operation not supported',
+    })
+  }
+
+  const sign = () => {
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Operation not supported',
+    })
+  }
+
+  const getDerivationScheme = () => derivationScheme
+  const getVersion = (): string => `${version.major}.${version.minor}.${version.patch}`
 
   return {
     network,
