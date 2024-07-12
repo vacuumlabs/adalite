@@ -51,6 +51,11 @@ const mock = (ADALITE_CONFIG) => {
       delegation: {},
       rewards: 50000000,
       hasStakingKey: false,
+      voteDelegation: {
+        dRepHash: '',
+        isAlwaysAbstain: true,
+        isAlwaysNoConfidence: false,
+      },
       nextRewardDetails: [{forEpoch: 212}, {forEpoch: 213}, {forEpoch: 214}, {forEpoch: 215}],
     }
 

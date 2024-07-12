@@ -66,6 +66,11 @@ export type StakingInfoResponse = {
   hasStakingKey: boolean
   rewards: string
   nextRewardDetails: Array<NextRewardDetail>
+  voteDelegation: {
+    dRepHash: string
+    isAlwaysAbstain: boolean
+    isAlwaysNoConfidence: boolean
+  } | null
 }
 
 export type BestSlotResponse = {

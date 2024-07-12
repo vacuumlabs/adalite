@@ -61,6 +61,7 @@ export function computeRequiredDeposit(certificates: Array<TxCertificate>): Love
     [CertificateType.STAKEPOOL_REGISTRATION]: 500000000,
     [CertificateType.STAKING_KEY_REGISTRATION]: 2000000,
     [CertificateType.STAKING_KEY_DEREGISTRATION]: -2000000,
+    [CertificateType.VOTE_DELEGATION]: 0,
   }
   return certificates.reduce(
     (acc, {type}) => acc.plus(CertificateDeposit[type]),

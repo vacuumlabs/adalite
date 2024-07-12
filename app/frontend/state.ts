@@ -240,6 +240,7 @@ const initialState: State = {
         currentEpoch: 0,
         delegation: {},
         hasStakingKey: false,
+        hasVoteDelegation: false,
         rewards: '0',
         rewardDetails: {
           upcoming: null,

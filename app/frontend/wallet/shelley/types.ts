@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import {HexString} from '../../types'
-import {TxCertificate, TxInput, TxOutput, TxWithdrawal, TxAuxiliaryData} from '../types'
+import {TxCertificate, TxInput, TxOutput, TxWithdrawal, TxAuxiliaryData, TxDRepType} from '../types'
 import {TxRelayType} from './helpers/poolCertificateUtils'
 
 type encodeCBORFn = any // TODO: type
@@ -57,6 +57,7 @@ export const enum TxCertificateKey { // TODO: type would be a better name
   STAKING_KEY_DEREGISTRATION = 1,
   DELEGATION = 2,
   STAKEPOOL_REGISTRATION = 3,
+  VOTE_DELEGATION = 9,
 }
 
 export enum TxStakeCredentialType {
@@ -78,18 +79,24 @@ export type CborizedVotingRegistrationMetadata = [Map<number, Map<number, Buffer
 
 export type CborizedTxStakingKeyRegistrationCert = [
   TxCertificateKey.STAKING_KEY_REGISTRATION,
-  CborizedTxStakeCredential
+  CborizedTxStakeCredential,
 ]
 
 export type CborizedTxStakingKeyDeregistrationCert = [
   TxCertificateKey.STAKING_KEY_DEREGISTRATION,
-  CborizedTxStakeCredential
+  CborizedTxStakeCredential,
 ]
 
 export type CborizedTxDelegationCert = [
   TxCertificateKey.DELEGATION,
   CborizedTxStakeCredential,
-  Buffer
+  Buffer,
+]
+
+export type CborizedVoteDelegationCert = [
+  TxCertificateKey.VOTE_DELEGATION,
+  CborizedTxStakeCredential,
+  [TxDRepType],
 ]
 
 // prettier-ignore
@@ -119,7 +126,7 @@ export type CborizedTxStakepoolRegistrationCert = [
   Buffer,
   Array<Buffer>,
   any,
-  [string, Buffer] | null
+  [string, Buffer] | null,
 ]
 
 export type CborizedTxCertificate =
@@ -127,6 +134,7 @@ export type CborizedTxCertificate =
   | CborizedTxStakepoolRegistrationCert
   | CborizedTxStakingKeyDeregistrationCert
   | CborizedTxStakingKeyRegistrationCert
+  | CborizedVoteDelegationCert
 
 export type CborizedTxWitnessByron = [Buffer, Buffer, Buffer, Buffer]
 
@@ -135,7 +143,7 @@ export type CborizedTxWitnessShelley = [Buffer, Buffer]
 export type CborizedTxSigned = [
   Map<TxBodyKey, any>,
   Map<TxWitnessKey, Array<CborizedTxWitnessByron | CborizedTxWitnessShelley>>,
-  Buffer | null
+  Buffer | null,
 ]
 
 export type CborizedTxUnsigned = [Map<TxBodyKey, any>, Buffer | null]

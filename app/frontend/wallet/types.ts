@@ -85,6 +85,7 @@ export type TxCertificate =
   | TxStakingKeyDeregistrationCert
   | TxDelegationCert
   | TxStakepoolRegistrationCert
+  | TxVoteDelegationCert
 
 export type TxStakingKeyRegistrationCert = {
   type: CertificateType.STAKING_KEY_REGISTRATION
@@ -106,6 +107,21 @@ export type TxStakepoolRegistrationCert = {
   type: CertificateType.STAKEPOOL_REGISTRATION
   stakingAddress: Address
   poolRegistrationParams: TxPoolParams
+}
+
+export const enum TxDRepType {
+  // ADDR_KEYHASH = 0,
+  // SCRIPTHASH = 1
+  ALWAYS_ABSTAIN = 2, // only always abstain is supported for now
+  // ALWAYS_NO_CONFIDENCE = 3,
+}
+
+export type TxVoteDelegationCert = {
+  type: CertificateType.VOTE_DELEGATION
+  stakingAddress: Address
+  dRep: {
+    type: TxDRepType.ALWAYS_ABSTAIN
+  }
 }
 
 export type TxWithdrawal = {

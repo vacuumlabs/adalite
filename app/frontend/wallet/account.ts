@@ -394,14 +394,10 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
 
   async function getBalance() {
     const {legacy, base} = await myAddresses.discoverAllAddresses()
-    const {
-      coins: nonStakingBalance,
-      tokenBundle: nonStakingTokenBundle,
-    } = await blockchainExplorer.getBalance(legacy)
-    const {
-      coins: baseAddressBalance,
-      tokenBundle: stakingTokenBundle,
-    } = await blockchainExplorer.getBalance(base)
+    const {coins: nonStakingBalance, tokenBundle: nonStakingTokenBundle} =
+      await blockchainExplorer.getBalance(legacy)
+    const {coins: baseAddressBalance, tokenBundle: stakingTokenBundle} =
+      await blockchainExplorer.getBalance(base)
     return {
       tokenBalance: aggregateTokenBundles([nonStakingTokenBundle, stakingTokenBundle]),
       baseAddressBalance,
@@ -436,9 +432,8 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
 
   async function getStakingInfo(validStakepoolDataProvider: StakepoolDataProvider) {
     const stakingAddressHex = bechAddressToHex(await myAddresses.getStakingAddress())
-    const {nextRewardDetails, ...accountInfo} = await blockchainExplorer.getStakingInfo(
-      stakingAddressHex
-    )
+    const {nextRewardDetails, ...accountInfo} =
+      await blockchainExplorer.getStakingInfo(stakingAddressHex)
     const rewardDetails = await blockchainExplorer.getRewardDetails(
       nextRewardDetails,
       accountInfo.delegation.poolHash,
@@ -448,6 +443,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
 
     return {
       ...accountInfo,
+      hasVoteDelegation: accountInfo.voteDelegation != null,
       rewardDetails,
       value: new BigNumber(accountInfo.rewards || 0) as Lovelace,
     }
