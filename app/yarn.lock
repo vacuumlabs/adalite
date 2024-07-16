@@ -285,10 +285,10 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@cardano-foundation/ledgerjs-hw-app-cardano@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-7.0.1.tgz#ac350d52e817c99e9f4c9383dc2fe6a8889d4ac3"
-  integrity sha512-4ky6Szzsd2WX4gttLy8RdZIIl2V2TSWDEn7Pw1rMvEw6289OZmDW+YgUlVRtp0Rs3eHMPzXx8yLqy+3Xgx7Gqw==
+"@cardano-foundation/ledgerjs-hw-app-cardano@^7.1.3":
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/@cardano-foundation/ledgerjs-hw-app-cardano/-/ledgerjs-hw-app-cardano-7.1.3.tgz#1d8bb05993c3e061029defff36e8d707221c05d5"
+  integrity sha512-1cW5WgF2pkla2pvNp/lGsPfdDh8FjnRRLUaHsyxgZd2NNtr939F9k5R/ExCuJS0Ish4wnArucbPAZ15Cq7PIUA==
   dependencies:
     "@ledgerhq/hw-transport" "^6.27.10"
     base-x "^3.0.5"

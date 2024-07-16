@@ -51,6 +51,7 @@ export enum CertificateType {
   STAKING_KEY_DEREGISTRATION = 1,
   DELEGATION = 2,
   STAKEPOOL_REGISTRATION = 3,
+  VOTE_DELEGATION = 9,
 }
 
 export enum CryptoProviderFeature {
@@ -171,6 +172,7 @@ export type AccountInfo = {
     currentEpoch: number
     delegation: any
     hasStakingKey: boolean
+    hasVoteDelegation: boolean
     rewards: string
     rewardDetails: {
       upcoming: any
@@ -267,6 +269,7 @@ export type WithdrawRewardsTxPlanArgs = {
   txType: TxType.WITHDRAW
   rewards: Lovelace
   stakingAddress: Address
+  hasVoteDelegation: boolean
 }
 
 export type DelegateAdaTxPlanArgs = {
@@ -274,6 +277,7 @@ export type DelegateAdaTxPlanArgs = {
   poolHash: string
   isStakingKeyRegistered: boolean
   stakingAddress: Address
+  hasVoteDelegation: boolean
 }
 
 export type PoolOwnerTxPlanArgs = {
@@ -285,6 +289,7 @@ export type DeregisterStakingKeyTxPlanArgs = {
   txType: TxType.DEREGISTER_STAKE_KEY
   rewards: Lovelace
   stakingAddress: Address
+  hasVoteDelegation: boolean
 }
 
 export type VotingRegistrationTxPlanArgs = {

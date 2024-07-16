@@ -22,6 +22,8 @@ import {
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
   TxAuxiliaryDataTypes,
+  TxVoteDelegationCert,
+  TxDRepType,
 } from '../../types'
 import {computeTxPlan, validateTxPlan} from './computeTxPlan'
 import {TxPlanDraft, TxPlanResult} from './types'
@@ -67,6 +69,14 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       }
       certificates.push(registrationCertificate)
     }
+    if (!txPlanArgs.hasVoteDelegation) {
+      const voteDelegationCertificate: TxVoteDelegationCert = {
+        type: CertificateType.VOTE_DELEGATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+        dRep: {type: TxDRepType.ALWAYS_ABSTAIN},
+      }
+      certificates.push(voteDelegationCertificate)
+    }
     if (txPlanArgs.poolHash) {
       const delegationCertificate: TxDelegationCert = {
         type: CertificateType.DELEGATION,
@@ -86,9 +96,19 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   const prepareWithdrawalTx = (txPlanArgs: WithdrawRewardsTxPlanArgs): TxPlanDraft => {
     const withdrawals: TxWithdrawal[] = []
     withdrawals.push({stakingAddress: txPlanArgs.stakingAddress, rewards: txPlanArgs.rewards})
+
+    const certificates: TxCertificate[] = []
+    if (!txPlanArgs.hasVoteDelegation) {
+      const voteDelegationCertificate: TxVoteDelegationCert = {
+        type: CertificateType.VOTE_DELEGATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+        dRep: {type: TxDRepType.ALWAYS_ABSTAIN},
+      }
+      certificates.push(voteDelegationCertificate)
+    }
     return {
       outputs: [],
-      certificates: [],
+      certificates,
       withdrawals,
       auxiliaryData: null,
     }
@@ -101,6 +121,7 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
       txType: TxType.WITHDRAW,
       rewards: txPlanArgs.rewards,
       stakingAddress: txPlanArgs.stakingAddress,
+      hasVoteDelegation: txPlanArgs.hasVoteDelegation,
     })
     const certificates: TxCertificate[] = [
       {
@@ -108,6 +129,14 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
         stakingAddress: txPlanArgs.stakingAddress,
       },
     ]
+    if (!txPlanArgs.hasVoteDelegation) {
+      const voteDelegationCertificate: TxVoteDelegationCert = {
+        type: CertificateType.VOTE_DELEGATION,
+        stakingAddress: txPlanArgs.stakingAddress,
+        dRep: {type: TxDRepType.ALWAYS_ABSTAIN},
+      }
+      certificates.push(voteDelegationCertificate)
+    }
     return {
       outputs,
       certificates,
