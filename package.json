@@ -68,7 +68,7 @@
     "redisscan": "^2.0.0",
     "stream-browserify": "^3.0.0",
     "universal-analytics": "^0.5.3",
-    "webpack": "^5.90.3",
+    "webpack": "^5.94.0",
     "webpack-dev-middleware": "^7.0.0",
     "webpack-hot-middleware": "^2.26.1"
   },
