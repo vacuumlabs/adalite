@@ -48,7 +48,7 @@
   "dependencies": {
     "@sentry/node": "^6.15.0",
     "babel-regenerator-runtime": "^6.5.0",
-    "body-parser": "^1.20.1",
+    "body-parser": "^1.20.3",
     "cardano-crypto.js": "^6.1.2",
     "cbor": "^8.1.0",
     "check-types": "^8.0.2",
