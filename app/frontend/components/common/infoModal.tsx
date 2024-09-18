@@ -59,46 +59,29 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
-              date={'01/10/2024'}
+              date={'09/18/2023'}
               children={
                 <Fragment>
-                  <Article title="Help us win funding by voting in Project Catalyst" icon="">
+                  <Article title="Chang Hard Fork" icon="">
                     <p className="info-spaced-paragraph">
-                      The AdaLite/NuFi team has submitted 2 very special proposals in Project
-                      Catalyst (Cardano’s on-chain funding initiative) and your support can help us
-                      win funding.
+                      Chang hard fork was a success; time for decentralized democracy!
                     </p>
                     <p className="info-spaced-paragraph">
-                      One proposal –{' '}
-                      <a target="_blank" href="https://cardano.ideascale.com/c/idea/114276">
-                        Google Wallet
-                      </a>{' '}
-                      – is for a service for Cardano dApps that enables Web2 users/crypto beginners
-                      to connect to a dApp simply by logging in with a social account like Google,
-                      Twitter, or Facebook – no Cardano wallet needed! The other proposal –{' '}
-                      <a target="_blank" href="https://cardano.ideascale.com/c/idea/113367">
-                        Cardano in MetaMask
-                      </a>{' '}
-                      – is a service that adds MetaMask wallet support to Cardano dApps and enables
-                      MetaMask’s 30 million users to onboard into Cardano using just their MetaMask
-                      wallet (with no need to install anything else).
-                    </p>
-                    <p className="info-spaced-paragraph">
-                      <b>
-                        To vote in Project Catalyst Fund11 and support our proposals, you need to
-                        register for Project Catalyst (using your AdaLite wallet) before January
-                        15th, 2024.
-                      </b>{' '}
+                      AdaLite operates as normal, and users who want to get involved in governance
+                      can restore their account (hardware wallet or mnemonic) in the{' '}
                       <a
                         target="_blank"
-                        href="https://nufi-official.medium.com/2024-the-year-the-world-discovered-cardano-thanks-to-nufis-project-catalyst-proposals-14cdeda63f1e"
+                        rel="noopener"
+                        href="https://chromewebstore.google.com/detail/nufi/gpnihlnnodeiiaakbikldcihojploeca"
                       >
-                        In this article
+                        NuFi extension
                       </a>
-                      , we’ve explained our groundbreaking ideas and included a how-to guide for
-                      registering/voting in Project Catalyst.
+                      , then vote through{' '}
+                      <a target="_blank" rel="noopener" href="https://gov.tools">
+                        GovTools
+                      </a>
+                      .
                     </p>
-                    <p className="info-spaced-paragraph">Many thanks, The AdaLite/NuFi team</p>
                   </Article>
                 </Fragment>
               }
