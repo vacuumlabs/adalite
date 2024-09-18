@@ -67,8 +67,8 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                       Chang hard fork was a success; time for decentralized democracy!
                     </p>
                     <p className="info-spaced-paragraph">
-                      AdaLite operates as normal, and users who want to get involved in governance
-                      can restore their account (hardware wallet or mnemonic) in the{' '}
+                      AdaLite operates as normal. If you want to get involved in governance, you can
+                      restore your account (Trezor, Ledger or mnemonic) in the{' '}
                       <a
                         target="_blank"
                         rel="noopener"
