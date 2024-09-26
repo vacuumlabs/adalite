@@ -36,7 +36,7 @@ const TransactionPage = ({
         requires paying the transaction fees.
       </Alert>
       <Alert alertType="warning">
-        Make sure to keep your account balance above 500 ADA at least until the voting round starts,
+        Make sure to keep your account balance above 25 ADA at least until the voting round starts,
         otherwise your voting key registration would be dismissed.
       </Alert>
       <WalletOperationStatusType />
