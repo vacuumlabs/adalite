@@ -1291,10 +1291,10 @@ bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
-bitbox-api@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/bitbox-api/-/bitbox-api-0.5.0.tgz#c1d002ba9b72a8032ff1b5d2ff3ef1113ff515f7"
-  integrity sha512-5VFN01Kk/iUgFvXm5lPBepvf6bM8cv6LQFGBjgkTiTuusGdmCcSjDiVqQrMvBhJUMLoBkAFf7QsFDw3G/RaQ9w==
+bitbox-api@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/bitbox-api/-/bitbox-api-0.8.0.tgz#17cbbb58ab040a83de9e2f724a4509985c9e9fd2"
+  integrity sha512-lRDxS818osr9hrdmkEmbpsAZ1bWPSfU3qokpAZEWVSMTBKYE2GZ0Y4ZpNwdC5Cxmqj+zEo7hrpCJXYC7mqjw9w==
 
 bitcoin-ops@^1.3.0, bitcoin-ops@^1.4.1:
   version "1.4.1"

@@ -8,14 +8,16 @@ import {
   CryptoProviderType,
   Network,
   TxCertificate,
+  TxDRepType,
   TxInput,
   TxOutput,
   TxShelleyWitness,
+  TxVoteDelegationCert,
 } from '../types'
 import {encodeCbor} from '../helpers/cbor'
 import {safeAssertUnreachable} from '../../helpers/common'
 
-import {
+import type {
   CardanoAssetGroup,
   CardanoCertificate,
   CardanoInput,
@@ -175,6 +177,23 @@ const ShelleyBitBox02CryptoProvider = async ({
     }
   }
 
+  const prepareVoteDelegation = (
+    voteDelegation: TxVoteDelegationCert,
+    addressToAbsPathMapper: AddressToPathMapper
+  ): CardanoCertificate => {
+    switch (voteDelegation.dRep.type) {
+      case TxDRepType.ALWAYS_ABSTAIN:
+        return {
+          voteDelegation: {
+            keypath: addressToAbsPathMapper(voteDelegation.stakingAddress),
+            type: 'alwaysAbstain',
+          },
+        }
+      default:
+        return safeAssertUnreachable(voteDelegation.dRep.type)
+    }
+  }
+
   const prepareCertificate = (
     certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
@@ -199,13 +218,11 @@ const ShelleyBitBox02CryptoProvider = async ({
             poolKeyhash: Buffer.from(certificate.poolHash, 'hex'),
           },
         }
+      case CertificateType.VOTE_DELEGATION:
+        return prepareVoteDelegation(certificate, addressToAbsPathMapper)
       case CertificateType.STAKEPOOL_REGISTRATION:
         throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
           message: 'Stakepool registration not supported',
-        })
-      case CertificateType.VOTE_DELEGATION:
-        throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-          message: 'Vote delegation not supported',
         })
       default:
         return safeAssertUnreachable(certificate)
