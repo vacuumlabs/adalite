@@ -15,7 +15,7 @@ import {
 import {encodeCbor} from '../helpers/cbor'
 import {safeAssertUnreachable} from '../../helpers/common'
 
-import {
+import type {
   CardanoAssetGroup,
   CardanoCertificate,
   CardanoInput,
@@ -199,13 +199,17 @@ const ShelleyBitBox02CryptoProvider = async ({
             poolKeyhash: Buffer.from(certificate.poolHash, 'hex'),
           },
         }
+      case CertificateType.VOTE_DELEGATION:
+        return {
+          voteDelegation: {
+            keypath: addressToAbsPathMapper(certificate.stakingAddress),
+            type: certificate.dRep.type,
+            drepCredhash: null,
+          },
+        }
       case CertificateType.STAKEPOOL_REGISTRATION:
         throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
           message: 'Stakepool registration not supported',
-        })
-      case CertificateType.VOTE_DELEGATION:
-        throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
-          message: 'Vote delegation not supported',
         })
       default:
         return safeAssertUnreachable(certificate)
