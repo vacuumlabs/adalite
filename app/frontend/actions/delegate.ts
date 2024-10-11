@@ -73,13 +73,16 @@ export default (store: Store) => {
     }
     await setPoolInfo(state)
     const poolHash = state.shelleyDelegation.selectedPool.poolHash as string
-    const isStakingKeyRegistered = getSourceAccountInfo(state).shelleyAccountInfo.hasStakingKey
-    const stakingAddress = getSourceAccountInfo(state).stakingAddress
+    const {
+      shelleyAccountInfo: {hasStakingKey: isStakingKeyRegistered, hasVoteDelegation},
+      stakingAddress,
+    } = getSourceAccountInfo(state)
     const txPlanResult = prepareTxPlan({
       poolHash,
       stakingAddress,
       isStakingKeyRegistered,
       txType: TxType.DELEGATE,
+      hasVoteDelegation,
     })
     const newState = getState()
     if (hasPoolIdentifiersChanged(newState)) {
@@ -180,15 +183,20 @@ export default (store: Store) => {
     }
 
     state = getState()
-    const sourceAccount = getSourceAccountInfo(state)
-    const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
-    const balance = getSourceAccountInfo(state).balance as Lovelace
+    const {
+      accountIndex,
+      balance,
+      stakingAddress,
+      shelleyAccountInfo: {hasVoteDelegation},
+      shelleyBalances: {rewardsAccountBalance: rewards},
+    } = getSourceAccountInfo(state)
 
     loadingAction(state, 'Preparing transaction...')
     const txPlanResult = prepareTxPlan({
       txType: TxType.DEREGISTER_STAKE_KEY,
       rewards,
-      stakingAddress: sourceAccount.stakingAddress,
+      stakingAddress,
+      hasVoteDelegation,
     })
     if (txPlanResult.success === true) {
       const summary = {
@@ -199,7 +207,7 @@ export default (store: Store) => {
 
       setTransactionSummary(getState(), {plan: txPlanResult.txPlan, transactionSummary: summary})
       await confirmTransaction(getState(), {
-        sourceAccountIndex: sourceAccount.accountIndex,
+        sourceAccountIndex: accountIndex,
         txPlan: txPlanResult.txPlan,
         txConfirmType: TxType.DEREGISTER_STAKE_KEY,
       })

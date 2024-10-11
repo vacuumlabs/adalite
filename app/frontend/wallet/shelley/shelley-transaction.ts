@@ -15,6 +15,8 @@ import {
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
   TxWithdrawal,
+  TxVoteDelegationCert,
+  TxDRepType,
 } from '../types'
 import {
   CborizedTxAmount,
@@ -40,12 +42,14 @@ import {
   TxSigned,
   CborizedCliWitness,
   CborizedVotingRegistrationMetadata,
+  CborizedVoteDelegationCert,
 } from './types'
 import {CertificateType, HexString, TokenBundle} from '../../types'
-import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import {ipv4AddressToBuf, ipv6AddressToBuf, TxRelayType} from './helpers/poolCertificateUtils'
 import {orderTokenBundle} from '../helpers/tokenFormater'
 import BigNumber from 'bignumber.js'
+import {safeAssertUnreachable} from '../../helpers/common'
+import * as assert from 'assert'
 
 function ShelleyTxAux({
   inputs,
@@ -239,6 +243,20 @@ function cborizeStakepoolRegistrationCert(
   ]
 }
 
+type SupportedDelegationCert = TxVoteDelegationCert & {dRep: {type: TxDRepType.ALWAYS_ABSTAIN}}
+function cborizeVoteDelegationCert(
+  certificate: SupportedDelegationCert
+): CborizedVoteDelegationCert {
+  assert(certificate.dRep.type === TxDRepType.ALWAYS_ABSTAIN)
+  const stakingKeyHash: Buffer = bech32.decode(certificate.stakingAddress).data.slice(1)
+  const stakeCredential: CborizedTxStakeCredential = [
+    TxStakeCredentialType.ADDR_KEYHASH,
+    stakingKeyHash,
+  ]
+
+  return [TxCertificateKey.VOTE_DELEGATION, stakeCredential, [TxDRepType.ALWAYS_ABSTAIN]]
+}
+
 function cborizeTxCertificates(certificates: TxCertificate[]): CborizedTxCertificate[] {
   const txCertificates = certificates.map((certificate) => {
     switch (certificate.type) {
@@ -250,8 +268,10 @@ function cborizeTxCertificates(certificates: TxCertificate[]): CborizedTxCertifi
         return cborizeDelegationCert(certificate)
       case CertificateType.STAKEPOOL_REGISTRATION:
         return cborizeStakepoolRegistrationCert(certificate)
+      case CertificateType.VOTE_DELEGATION:
+        return cborizeVoteDelegationCert(certificate)
       default:
-        throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
+        return safeAssertUnreachable(certificate)
     }
   })
   return txCertificates

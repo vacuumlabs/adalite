@@ -14,7 +14,7 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
+            - dependencies-v2-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
       - run: cp .env.example .env
       - run: yarn install
       - run: cd app && yarn install && cd ../
@@ -23,7 +23,7 @@ commands:
             - node_modules
             - app/node_modules
             - ../.cache/Cypress
-          key: dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
+          key: dependencies-v2-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
 
 jobs:
   audit:

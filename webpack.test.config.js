@@ -26,6 +26,12 @@ module.exports = {
         test: /\.wasm$/,
         type: 'webassembly/async',
       },
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
     ],
   },
   resolve: {
