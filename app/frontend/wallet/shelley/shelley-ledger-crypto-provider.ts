@@ -49,7 +49,9 @@ import {
   TxStakepoolRegistrationCert,
   TxStakingKeyDeregistrationCert,
   TxStakingKeyRegistrationCert,
+  TxVoteDelegationCert,
   TxWithdrawal,
+  TxDRepType,
 } from '../types'
 import {TxSigned, TxAux, CborizedCliWitness, FinalizedAuxiliaryDataTx} from './types'
 import {orderTokenBundle} from '../helpers/tokenFormater'
@@ -63,6 +65,7 @@ import {TxRelayType, TxStakepoolOwner, TxStakepoolRelay} from './helpers/poolCer
 import assertUnreachable from '../../helpers/assertUnreachable'
 import * as assert from 'assert'
 import {encodeCbor} from '../helpers/cbor'
+import {safeAssertUnreachable} from '../../helpers/common'
 
 let _activeTransport: Transport | null
 const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
@@ -396,6 +399,28 @@ const ShelleyLedgerCryptoProvider = async ({
     }
   }
 
+  type SupportedTxVoteDelegationCert = TxVoteDelegationCert & {
+    dRep: {type: TxDRepType.ALWAYS_ABSTAIN}
+  }
+  function prepareVoteDelegationCertificate(
+    certificate: SupportedTxVoteDelegationCert,
+    path: BIP32Path
+  ): LedgerTypes.Certificate {
+    assert(certificate.dRep.type === TxDRepType.ALWAYS_ABSTAIN)
+    return {
+      type: LedgerTypes.CertificateType.VOTE_DELEGATION,
+      params: {
+        stakeCredential: {
+          type: LedgerTypes.CredentialParamsType.KEY_PATH,
+          keyPath: path,
+        },
+        dRep: {
+          type: LedgerTypes.DRepParamsType.ABSTAIN,
+        },
+      },
+    }
+  }
+
   function prepareCertificate(
     certificate: TxCertificate,
     addressToAbsPathMapper: AddressToPathMapper
@@ -410,8 +435,10 @@ const ShelleyLedgerCryptoProvider = async ({
         return prepareDelegationCertificate(certificate, path)
       case CertificateType.STAKEPOOL_REGISTRATION:
         return prepareStakepoolRegistrationCertificate(certificate, path)
+      case CertificateType.VOTE_DELEGATION:
+        return prepareVoteDelegationCertificate(certificate, path)
       default:
-        throw new UnexpectedError(UnexpectedErrorReason.InvalidCertificateType)
+        return safeAssertUnreachable(certificate)
     }
   }
 

@@ -58,9 +58,7 @@ export default (store: Store) => {
     let txAux
     try {
       if (txPlan) {
-        txAux = await getWallet()
-          .getAccount(sourceAccountIndex)
-          .prepareTxAux(txPlan)
+        txAux = await getWallet().getAccount(sourceAccountIndex).prepareTxAux(txPlan)
       } else {
         loadingAction(state, 'Preparing transaction plan...')
         await sleep(1000) // wait for plan to be set in case of unfortunate timing
@@ -220,12 +218,8 @@ export default (store: Store) => {
     let sendResponse
     try {
       assert(txSummary.plan != null)
-      const txAux = await getWallet()
-        .getAccount(sourceAccountIndex)
-        .prepareTxAux(txSummary.plan)
-      const signedTx = await getWallet()
-        .getAccount(sourceAccountIndex)
-        .signTxAux(txAux)
+      const txAux = await getWallet().getAccount(sourceAccountIndex).prepareTxAux(txSummary.plan)
+      const signedTx = await getWallet().getAccount(sourceAccountIndex).signTxAux(txAux)
       if (isHwWallet(cryptoProviderType)) {
         setState({waitingHwWalletOperation: null})
         stopLoadingAction(state)
@@ -330,7 +324,13 @@ export default (store: Store) => {
     // TODO: rewards should be of type Lovelace
     const rewards = getSourceAccountInfo(state).shelleyBalances.rewardsAccountBalance as Lovelace
     const stakingAddress = getSourceAccountInfo(state).stakingAddress
-    const txPlanResult = prepareTxPlan({rewards, stakingAddress, txType: TxType.WITHDRAW})
+    const hasVoteDelegation = getSourceAccountInfo(state).shelleyAccountInfo.hasVoteDelegation
+    const txPlanResult = prepareTxPlan({
+      rewards,
+      stakingAddress,
+      hasVoteDelegation,
+      txType: TxType.WITHDRAW,
+    })
     // TODO: balance should be of type Lovelace
     const balance = getSourceAccountInfo(state).balance as Lovelace
 

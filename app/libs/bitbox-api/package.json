@@ -1,0 +1,33 @@
+{
+  "name": "bitbox-api",
+  "collaborators": [
+    "Marko Bencun <benma@bitbox.swiss>"
+  ],
+  "description": "A library to interact with the BitBox02 hardware wallet",
+  "version": "0.7.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BitBoxSwiss/bitbox-api-rs/"
+  },
+  "files": [
+    "bitbox_api_bg.wasm",
+    "bitbox_api.js",
+    "bitbox_api_bg.js",
+    "bitbox_api.d.ts",
+    "webhid.js"
+  ],
+  "main": "bitbox_api.js",
+  "homepage": "https://bitbox.swiss/",
+  "types": "bitbox_api.d.ts",
+  "sideEffects": [
+    "./bitbox_api.js",
+    "./snippets/*"
+  ],
+  "keywords": [
+    "bitbox",
+    "api",
+    "bitcoin",
+    "wasm"
+  ]
+}
