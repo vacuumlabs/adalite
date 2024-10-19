@@ -1,6 +1,10 @@
 const redis = require('redis')
 const device = require('device')
-const client = redis.createClient(process.env.REDIS_URL)
+const client = redis.createClient(process.env.REDIS_URL, {
+  tls: {
+    rejectUnauthorized: false,
+  },
+})
 const mung = require('express-mung')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const {captureException} = require('@sentry/node')
@@ -11,10 +15,7 @@ const getRequestIp = require('../helpers/getRequestIp')
 const knownIps = new Set()
 
 function getSlicedDate() {
-  return new Date()
-    .toISOString()
-    .split('T')[0]
-    .split('-')
+  return new Date().toISOString().split('T')[0].split('-')
 }
 
 const incrCountersBy = (key, value) => {
