@@ -85,8 +85,8 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                     </p>
                     <p>
                       One of our Catalyst proposals is to enhance Bitcoin/Cardano interoperability
-                      by enabling users to manage, swap and bridge BTC&lt;&rt;ADA in a single wallet
-                      interface (read it{' '}
+                      by enabling users to manage, swap and bridge BTC {'<'}-{'>'} ADA in a single
+                      wallet interface (read it{' '}
                       <a
                         target="_blank"
                         rel="noopener"
