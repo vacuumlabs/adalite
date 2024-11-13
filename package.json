@@ -106,6 +106,8 @@
   },
   "resolutions": {
     "redisscan/redis": "^3.1.2",
-    "redisscan/async": "^2.6.4"
+    "redisscan/async": "^2.6.4",
+    "cookie": "^0.7.0",
+    "elliptic": "^6.6.0"
   }
 }
