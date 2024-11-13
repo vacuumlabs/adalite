@@ -59,6 +59,57 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'11/13/2024'}
+              children={
+                <Fragment>
+                  <Article title="We need your help!" icon="">
+                    <p className="info-spaced-paragraph">
+                      The NuFi team has submitted 2 proposals in Project Catalyst (Cardano’s
+                      on-chain funding initiative) – please use your ADA’s voting power to help us
+                      win funding, while earning ADA rewards for yourself.
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      <b>
+                        If it’s your first time voting in Catalyst, you need to register to vote
+                        before November 20th.
+                      </b>
+                      You can do this in your AdaLite wallet, on the Voting tab (step by step guide{' '}
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://www.youtube.com/watch?v=b9MDBIFNdaw"
+                      >
+                        here
+                      </a>
+                      ).
+                    </p>
+                    <p>
+                      One of our Catalyst proposals is to enhance Bitcoin/Cardano interoperability
+                      by enabling users to manage, swap and bridge BTC&lt;&rt;ADA in a single wallet
+                      interface (read it{' '}
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://cardano.ideascale.com/c/cardano/idea/132380"
+                      >
+                        here
+                      </a>
+                      ). The other proposal is to upgrade a service that 20+ Cardano DApps use to
+                      onboard MetaMask and Web2 users (
+                      <a
+                        target="_blank"
+                        rel="noopener"
+                        href="https://cardano.ideascale.com/c/cardano/idea/132339"
+                      >
+                        here
+                      </a>
+                      ).
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'09/18/2024'}
               children={
                 <Fragment>
