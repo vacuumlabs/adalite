@@ -1,19 +1,19 @@
 import {h} from 'preact'
-import actions from '../../../actions'
-import {useActions, useSelector} from '../../../helpers/connect'
-import tooltip from '../../common/tooltip'
-import {getVotingRegistrationStatus, shouldDisableSendingButton} from '../../../helpers/common'
+import actions from '../../../../actions'
+import {useActions, useSelector} from '../../../../helpers/connect'
+import tooltip from '../../../common/tooltip'
+import {getVotingRegistrationStatus, shouldDisableSendingButton} from '../../../../helpers/common'
 import {
   hasStakingKey,
   useActiveAccount,
   useHasEnoughFundsForCatalyst,
   useIsWalletFeatureSupported,
-} from '../../../selectors'
-import {CATALYST_MIN_THRESHOLD} from '../../../wallet/constants'
-import {CryptoProviderFeature, Lovelace} from '../../../types'
-import {toAda} from '../../../helpers/adaConverters'
+} from '../../../../selectors'
+import {CATALYST_MIN_THRESHOLD} from '../../../../wallet/constants'
+import {CryptoProviderFeature, Lovelace} from '../../../../types'
+import {toAda} from '../../../../helpers/adaConverters'
 import styles from './voting.module.scss'
-import * as QRious from '../../../libs/qrious'
+import * as QRious from '../../../../libs/qrious'
 import BigNumber from 'bignumber.js'
 
 const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
@@ -32,7 +32,7 @@ const AppDownloadInfo = ({url, imageSrc}: {url: string; imageSrc: string}) => (
   </div>
 )
 
-const VotingCard = (): h.JSX.Element => {
+const CatalystVotingCard = (): h.JSX.Element => {
   const {openVotingDialog} = useActions(actions)
   const {walletOperationStatusType} = useSelector((state) => ({
     walletOperationStatusType: state.walletOperationStatusType,
@@ -67,7 +67,7 @@ const VotingCard = (): h.JSX.Element => {
 
   return (
     <div className="card" data-cy="VotingCard">
-      <h2 className="card-title">Voting</h2>
+      <h2 className="card-title">Catalyst Voting</h2>
       <p className="advanced-label">Download the Catalyst Voting APP</p>
       <p>
         In order to participate in Catalyst Funds, first you have to download the Catalyst mobile
@@ -104,4 +104,4 @@ const VotingCard = (): h.JSX.Element => {
   )
 }
 
-export default VotingCard
+export default CatalystVotingCard

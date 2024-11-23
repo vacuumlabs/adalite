@@ -59,6 +59,20 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'11/25/2024'}
+              children={
+                <Fragment>
+                  <Article title="AdaLite is now Chang Hardfork #2 ready" icon="">
+                    <p className="info-spaced-paragraph">
+                      When you delegate, re-delegate or withdraw rewards, we will automatically set
+                      the DRep delegation for you to "Always Abstain", if you weren't delegating to
+                      a DRep already. If you want to know more, please check "Voting" tab.
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'11/13/2024'}
               children={
                 <Fragment>

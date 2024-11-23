@@ -1,4 +1,4 @@
-@import '../../../variables.scss';
+@import '../../../../variables.scss';
 
 .progressBar {
   display: grid;
@@ -119,7 +119,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    background-image: url('../../../../public/assets/alert_icon_success.svg');
+    background-image: url('../../../../../public/assets/alert_icon_success.svg');
   }
 }
 

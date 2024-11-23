@@ -1,12 +1,12 @@
 import {Fragment, h} from 'preact'
-import actions from '../../../actions'
-import {useActions, useSelector} from '../../../helpers/connect'
-import {HexString} from '../../../types'
-import Alert from '../../common/alert'
+import actions from '../../../../actions'
+import {useActions, useSelector} from '../../../../helpers/connect'
+import {HexString} from '../../../../types'
+import Alert from '../../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
 import styles from './voting.module.scss'
-import {WalletOperationStatusType} from '../dashboard/walletOperationStatus'
-import {shouldDisableSendingButton} from '../../../helpers/common'
+import {WalletOperationStatusType} from '../../dashboard/walletOperationStatus'
+import {shouldDisableSendingButton} from '../../../../helpers/common'
 
 const TransactionPage = ({
   nextStep,

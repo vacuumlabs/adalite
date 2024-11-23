@@ -1,12 +1,12 @@
 import {Fragment, h} from 'preact'
 import {Ref, useState} from 'preact/hooks'
-import {stripNonNumericCharacters} from '../../../helpers/common'
-import {VOTING_PIN_LENGTH} from '../../../wallet/constants'
-import Alert from '../../common/alert'
+import {stripNonNumericCharacters} from '../../../../helpers/common'
+import {VOTING_PIN_LENGTH} from '../../../../wallet/constants'
+import Alert from '../../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
 import styles from './voting.module.scss'
-import {useActions} from '../../../../frontend/helpers/connect'
-import actions from '../../../../frontend/actions'
+import {useActions} from '../../../../../frontend/helpers/connect'
+import actions from '../../../../../frontend/actions'
 
 const PinPage = ({
   pin,

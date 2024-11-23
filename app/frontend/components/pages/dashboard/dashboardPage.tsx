@@ -33,11 +33,12 @@ import {formatAccountIndex} from '../../../helpers/formatAccountIndex'
 import ConfirmTransactionDialog from '../sendAda/confirmTransactionDialog'
 import SendTransactionModal from '../accounts/sendTransactionModal'
 import DelegationModal from '../accounts/delegationModal'
-import VotingCard from '../voting/votingCard'
-import VotingDialog from '../voting/votingDialog'
+import CatalystVotingCard from '../voting/catalyst/catalystVotingCard'
+import VotingDialog from '../voting/catalyst/votingDialog'
 import {WalletOperationStatusType} from './walletOperationStatus'
 import NufiBanner from '../../common/nufiBanner'
 import {isEqual} from 'lodash'
+import GovernanceVotingCard from '../voting/governance/governanceVotingCard'
 
 const StakingPage = ({screenType}: {screenType: ScreenType}) => {
   const subTabs = [SubTabs.DELEGATE_ADA, SubTabs.CURRENT_DELEGATION, SubTabs.STAKING_HISTORY]
@@ -171,9 +172,11 @@ const VotingPage = ({screenType}: {screenType: ScreenType}) => {
       ) : (
         <div className="dashboard desktop">
           <div className="dashboard-column">
-            <VotingCard />
+            <CatalystVotingCard />
           </div>
-          <div className="dashboard-column" />
+          <div className="dashboard-column">
+            <GovernanceVotingCard />
+          </div>
         </div>
       )}
     </Fragment>
@@ -225,7 +228,7 @@ const SubPages: {[key in SubTabs]: any} = {
   [SubTabs.BALANCE]: <Balance />,
   [SubTabs.SHELLEY_BALANCES]: <ShelleyBalances />,
   [SubTabs.MY_ADDRESSES_REDIRECT]: <ReceiveRedirect />,
-  [SubTabs.VOTING]: <VotingCard />,
+  [SubTabs.VOTING]: <CatalystVotingCard />,
 }
 
 const DashboardPage = () => {

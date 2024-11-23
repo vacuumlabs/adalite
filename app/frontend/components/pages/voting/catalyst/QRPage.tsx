@@ -1,8 +1,8 @@
 import {Fragment, h} from 'preact'
 import {useState, useEffect} from 'preact/hooks'
-import {encryptWithPassword} from '../../../helpers/catalyst'
-import * as QRious from '../../../libs/qrious'
-import Alert from '../../common/alert'
+import {encryptWithPassword} from '../../../../helpers/catalyst'
+import * as QRious from '../../../../libs/qrious'
+import Alert from '../../../common/alert'
 import VotingDialogBottom from './votingDialogBottom'
 import styles from './voting.module.scss'
 
