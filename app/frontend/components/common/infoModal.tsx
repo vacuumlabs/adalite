@@ -59,7 +59,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
-              date={'11/25/2024'}
+              date={'11/27/2024'}
               children={
                 <Fragment>
                   <Article title="AdaLite is now Chang Hardfork #2 ready" icon="">
