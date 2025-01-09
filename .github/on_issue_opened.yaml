@@ -1,0 +1,32 @@
+name: On issue opened
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  respond-to-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Post Automated Response
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueNumber = context.payload.issue.number;
+
+            // Automated response message
+            const message = `
+              Please note that GitHub issues are meant for developer support!
+
+              - If this is a **user support request**, please contact us on [help@adalite.io](help@adalite.io).
+              - ⚠️ Be cautious of **scammers** pretending to be official support. Do not trust responses from anybody other than the members of this repository.
+            `;
+
+            // Post the comment to the issue
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: message,
+            });
