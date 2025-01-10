@@ -55,7 +55,7 @@
     "compression": "^1.7.2",
     "device": "^0.3.9",
     "dotenv": "^6.0.0",
-    "express": "^4.16.3",
+    "express": "^4.21.2",
     "express-basic-auth": "^1.2.0",
     "express-ipfilter": "^1.1.2",
     "express-mung": "^0.5.1",
