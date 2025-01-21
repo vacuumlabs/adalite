@@ -2,12 +2,7 @@ import {h} from 'preact'
 
 const NufiBanner = ({variant = 'static'}: {variant: 'static' | 'gif'}) => {
   return (
-    <a
-      className="banner nufi"
-      href={`${window.location.origin}/nufi`}
-      rel="noopener"
-      target="blank"
-    >
+    <a className="banner nufi" href="https://nu.fi" rel="noopener" target="blank">
       {variant === 'static' ? (
         <img
           src="assets/nufi-animated-banner-light.png"

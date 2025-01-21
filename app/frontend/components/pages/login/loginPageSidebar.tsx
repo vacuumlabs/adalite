@@ -24,12 +24,7 @@ const InitialContent = () => (
             <li>Get started in under 30 seconds</li>
           </ul>
           <div className="my-6">
-            <a
-              className="sidebar-link"
-              href={`${window.location.origin}/nufi`}
-              rel="noopener"
-              target="blank"
-            >
+            <a className="sidebar-link" href="https://nu.fi" rel="noopener" target="blank">
               Learn more
             </a>
           </div>

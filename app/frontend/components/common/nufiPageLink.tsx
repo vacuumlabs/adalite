@@ -2,7 +2,7 @@ import {h} from 'preact'
 
 const NufiPageLink = () => {
   return (
-    <a href="http://adalite.io/nufi" target="_blank" rel="noopener">
+    <a href="https://nu.fi" target="_blank" rel="noopener">
       NuFi
     </a>
   )
