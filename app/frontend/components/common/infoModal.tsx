@@ -416,7 +416,7 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
                     </li>
                     <li>
                       We'll announce new features on{' '}
-                      <a href="https://twitter.com/nufi_official" target="_blank" rel="noopener">
+                      <a href="https://x.com/nufiwallet" target="_blank" rel="noopener">
                         Twitter
                       </a>{' '}
                       and in our{' '}

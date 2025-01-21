@@ -49,7 +49,7 @@ const Footer = () => {
               View on Github
             </a>
             <a
-              href="https://twitter.com/AdaLiteWallet"
+              href="https://x.com/AdaLiteWallet"
               target="_blank"
               rel="noopener"
               className="social-link twitter"
