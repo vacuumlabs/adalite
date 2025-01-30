@@ -79,17 +79,6 @@ const AccountsDashboard = () => {
           </p>
         </Alert>
       </div>
-      <div className="dashboard-column account info">
-        <Alert alertType="warning sidebar">
-          <p>
-            <b>
-              This feature is not supported on other wallets yet. If you decide to move your funds
-              to an account other than the first account, you will not see these funds in other
-              wallets such as Yoroi or Daedalus.
-            </b>
-          </p>
-        </Alert>
-      </div>
     </Fragment>
   )
 

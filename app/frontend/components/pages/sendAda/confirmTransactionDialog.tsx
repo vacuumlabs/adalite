@@ -463,7 +463,7 @@ const ConfirmTransactionDialog = () => {
         return <ConvertFundsReview transactionSummary={transactionSummary} />
       case TxType.WITHDRAW:
         if (
-          !transactionSummary.plan?.certificates.find(
+          transactionSummary.plan?.certificates.find(
             (cert) => cert.type === CertificateType.VOTE_DELEGATION
           )
         ) {
