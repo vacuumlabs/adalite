@@ -10,6 +10,7 @@ import tooltip from '../../common/tooltip'
 import Alert from '../../common/alert'
 import {
   AssetFamily,
+  CertificateType,
   DelegateTransactionSummary,
   DeregisterStakingKeyTransactionSummary,
   Lovelace,
@@ -234,6 +235,53 @@ const DeregisterStakeKeyReview = ({
   )
 }
 
+const WithdrawDrepDelegationReview = ({
+  transactionSummary,
+}: {
+  transactionSummary: TransactionSummary & WithdrawTransactionSummary
+}) => {
+  assert(transactionSummary.plan != null)
+  const {rewards, fee} = transactionSummary
+  const total = rewards.minus(fee) as Lovelace
+  return (
+    <Fragment>
+      <Alert alertType="info">
+        <div className="mb-6">
+          In order to be a able to withdraw rewards, we first need you to make an empty delegation
+          to a DRep. You may later modify it using{' '}
+          <a href="https://nu.fi" target="_blank">
+            NuFi wallet
+          </a>{' '}
+          through{' '}
+          <a href="https://gov.tools" target="_blank">
+            https://gov.tools
+          </a>
+          .
+        </div>
+        <div>
+          Please sign this transaction and once it is submitted, you will be able to properly
+          withdraw your staking rewards.
+        </div>
+      </Alert>
+      <div className="review">
+        <div className="review-label">Address</div>
+        <div className="review-address">
+          {transactionSummary.plan.change[0].address}
+          <div className="review-address-verification">
+            <AddressVerification address={transactionSummary.plan.change[0].address} />
+          </div>
+        </div>
+        <div className="ada-label">Rewards</div>
+        <div className="review-value">{'N/A'}</div>
+        <div className="ada-label">Fee</div>
+        <div className="review-fee">{printAda(fee)}</div>
+        <div className="ada-label">Total</div>
+        <div className="review-total">{printAda(total)}</div>
+      </div>
+    </Fragment>
+  )
+}
+
 const WithdrawReview = ({
   transactionSummary,
 }: {
@@ -260,7 +308,6 @@ const WithdrawReview = ({
         <div className="review-value">{printAda(rewards)}</div>
         <div className="ada-label">Fee</div>
         <div className="review-fee">{printAda(fee)}</div>
-        {/* TODO: Hide ADA symbol when handling tokens */}
         <div className="ada-label">Total</div>
         <div className="review-total">{printAda(total)}</div>
       </div>
@@ -415,6 +462,13 @@ const ConfirmTransactionDialog = () => {
       case TxType.CONVERT_LEGACY:
         return <ConvertFundsReview transactionSummary={transactionSummary} />
       case TxType.WITHDRAW:
+        if (
+          !transactionSummary.plan?.certificates.find(
+            (cert) => cert.type === CertificateType.VOTE_DELEGATION
+          )
+        ) {
+          return <WithdrawDrepDelegationReview transactionSummary={transactionSummary} />
+        }
         return <WithdrawReview transactionSummary={transactionSummary} />
       case TxType.SEND_ADA:
         return (

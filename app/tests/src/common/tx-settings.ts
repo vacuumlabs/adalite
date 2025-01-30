@@ -331,7 +331,7 @@ export const transactionSettings = {
             isChange: false as const,
             address:
               'addr1q8eakg39wqlye7lzyfmh900s2luc99zf7x9vs839pn4srjs2s3ps2plp2rc2qcgfmsa8kx2kk7s9s6hfq799tmcwpvpsjv0zk3' as Address,
-            coins: new BigNumber(13426611) as Lovelace,
+            coins: new BigNumber(8434301) as Lovelace,
             tokenBundle: [],
           },
           {
@@ -352,20 +352,16 @@ export const transactionSettings = {
         ],
         deposit: new BigNumber(0) as Lovelace,
         additionalLovelaceAmount: new BigNumber(0) as Lovelace,
-        fee: new BigNumber(189879) as Lovelace,
-        baseFee: new BigNumber(189879) as Lovelace,
-        withdrawals: [
-          {
-            stakingAddress:
-              'stake1uy9ggsc9qls4pu9qvyyacwnmr9tt0gzcdt5s0zj4au8qkqc65geks' as Address,
-            rewards: new BigNumber(5000000) as Lovelace,
-          },
-        ],
+        fee: new BigNumber(182189) as Lovelace,
+        baseFee: new BigNumber(182189) as Lovelace,
+        // withdrawals and vote delegation cannot be combined
+        // therefore this "withdrawal" tx has only the vote delegation
+        withdrawals: [],
         auxiliaryData: null,
       },
     },
     ttl,
-    txHash: '74cb7308c8017cc0104415062fa9ac9227816f0a4f35e733f6fa6e256da13bac',
+    txHash: 'acd01dca8aafcc158be820694c242563856e13ae85173e6d69d86881df27f7d8',
   },
   voting: {
     args: {

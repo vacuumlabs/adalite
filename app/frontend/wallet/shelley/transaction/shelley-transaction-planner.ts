@@ -94,8 +94,15 @@ const prepareTxPlanDraft = (txPlanArgs: TxPlanArgs): TxPlanDraft => {
   }
 
   const prepareWithdrawalTx = (txPlanArgs: WithdrawRewardsTxPlanArgs): TxPlanDraft => {
+    // note that if the user is not delegating to a DRep yet,
+    // we need to modify the tx to include a vote delegation.
+    // Moreover, the vote delegation cannot be done in the same tx
+    // hence we hack it by dropping the withdrawal and adding just the vote delegation
+
     const withdrawals: TxWithdrawal[] = []
-    withdrawals.push({stakingAddress: txPlanArgs.stakingAddress, rewards: txPlanArgs.rewards})
+    if (txPlanArgs.hasVoteDelegation) {
+      withdrawals.push({stakingAddress: txPlanArgs.stakingAddress, rewards: txPlanArgs.rewards})
+    }
 
     const certificates: TxCertificate[] = []
     if (!txPlanArgs.hasVoteDelegation) {
