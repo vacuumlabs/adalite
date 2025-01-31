@@ -73,17 +73,20 @@ const ShelleyBalances = ({
             )}
           </div>
           {!!rewardsAccountBalance && (
-            <button
+            <span
               {...tooltip(
                 'Cannot withdraw funds while transaction is pending or reloading',
                 shouldDisableSendingButton(walletOperationStatusType)
               )}
-              className="button secondary balance withdraw"
-              onClick={withdrawRewards}
-              disabled={shouldDisableSendingButton(walletOperationStatusType)}
             >
-              Withdraw
-            </button>
+              <button
+                className="button secondary balance withdraw"
+                onClick={withdrawRewards}
+                disabled={shouldDisableSendingButton(walletOperationStatusType)}
+              >
+                Withdraw
+              </button>
+            </span>
           )}
         </div>
 
