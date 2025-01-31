@@ -364,10 +364,12 @@ export const validateTxPlan = (txPlanResult: TxPlanResult): TxPlanResult => {
   const isDeregisteringStakeKey = certificates.some(
     (c) => c.type === CertificateType.STAKING_KEY_DEREGISTRATION
   )
-  // Excluding deregistering stake key case
-  // because the returned "deposit" (2 ADA) is always higher than the Tx fee
   if (
-    withdrawnRewards.gt(0) &&
+    // Excluding deregistering stake key case
+    // because the returned "deposit" (2 ADA) is always higher than the Tx fee
+    !isDeregisteringStakeKey &&
+    withdrawals.length > 0 &&
+    withdrawnRewards.gte(0) &&
     !isDeregisteringStakeKey &&
     (withdrawnRewards.lt(fee) || fee.gt(baseFee))
   ) {
