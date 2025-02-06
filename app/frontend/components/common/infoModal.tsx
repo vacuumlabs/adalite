@@ -5,10 +5,75 @@ import Modal from './modal'
 import Alert from './alert'
 import ImageModal from './imageModal'
 import {localStorageVars} from '../../localStorage'
+import {useEffect, useRef, useState} from 'preact/hooks'
 
-const NewsSection = ({children, date}) => (
+const transitionTimeAnimation = '2s'
+const transitionTimeNuFiButton = '2s'
+const transitionTimeAdaliteButton = '2s'
+
+export function NuFiIframe() {
+  const [showIframe, setShowIframe] = useState(false)
+  const nufiButtonRef = useRef<HTMLButtonElement | null>(null)
+  const [clipPath, setClipPath] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (showIframe && nufiButtonRef.current) {
+      const element = nufiButtonRef.current
+      const rect = element.getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const centerY = rect.top + rect.height / 2
+
+      // Reset to 0% immediately
+      setClipPath(`circle(0% at ${centerX}px ${centerY}px)`)
+
+      // Use requestAnimationFrame to ensure the 0% state is rendered
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          setClipPath(`circle(150% at ${centerX}px ${centerY}px)`)
+        })
+      )
+    } else {
+      setClipPath(null)
+    }
+  }, [showIframe])
+
+  return (
+    <div style={{display: 'flex', justifyContent: 'center'}}>
+      <button
+        id="migrate"
+        ref={nufiButtonRef}
+        onMouseEnter={() => setShowIframe(true)}
+        style={{
+          opacity: showIframe ? 0 : 1,
+          ...(showIframe ? {transition: `opacity ${transitionTimeNuFiButton} ease`} : {}),
+        }}
+      />
+
+      <button
+        id="migrate-adalite"
+        onClick={() => setShowIframe(false)}
+        style={{
+          opacity: showIframe ? 1 : 0,
+          ...(showIframe ? {transition: `opacity ${transitionTimeAdaliteButton} ease`} : {}),
+        }}
+      />
+
+      <iframe
+        id="newUI"
+        src="https://localhost:8092"
+        style={{
+          ...(clipPath ? {clipPath} : {}),
+          opacity: clipPath && showIframe ? 1 : 0,
+          transition: `clip-path ${transitionTimeAnimation} ease-in-out`,
+        }}
+      />
+    </div>
+  )
+}
+
+const NewsSection = ({children, date}: {children: any; date?: any}) => (
   <Fragment>
-    <h3 className="info-date">{date}</h3>
+    {date && <h3 className="info-date">{date}</h3>}
     {children}
     <hr className="info-separator" />
   </Fragment>
@@ -57,6 +122,68 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
       <Modal>
         <section className="welcome">
           <div className="welcome-body">
+            <NewsSection
+              children={
+                <Fragment>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      fontSize: '32px',
+                      lineHeight: 1.4,
+                      fontWeight: 'bold',
+                      margin: '20px 0',
+                      color: 'var(--color-grey-dark)',
+                    }}
+                  >
+                    Trying NuFi was never easier!
+                  </div>
+                  <div
+                    style={{
+                      maxWidth: '600px',
+                      margin: '0 auto',
+                      fontSize: '16px',
+                      lineHeight: '1.6',
+                      color: 'var(--color-grey)',
+                    }}
+                  >
+                    <p style={{marginBottom: '16px'}}>
+                      We prepared your whole profile for you. Give NuFi a chance and experience a
+                      new level of wallet experience.
+                    </p>
+                    <p>
+                      No need to connect your HW wallet every time just to see your balance. Are you
+                      a Cardano hodler? Are you active in Cardano DeFi?, do you have assets beyond
+                      Cardano?
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      fontSize: '16px',
+                      lineHeight: 1.4,
+                      fontWeight: 'bold',
+                      margin: '20px 0',
+                      color: 'var(--color-grey-dark)',
+                    }}
+                  >
+                    We got you covered.
+                  </div>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      fontSize: '24px',
+                      lineHeight: 1.4,
+                      fontWeight: 'bold',
+                      margin: '20px 0',
+                      color: 'var(--color-grey-dark)',
+                    }}
+                  >
+                    Just hover over the icon below
+                  </div>
+                  <NuFiIframe />
+                </Fragment>
+              }
+            />
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
               date={'11/27/2024'}

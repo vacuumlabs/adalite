@@ -25,7 +25,10 @@ if (!isProd) {
     './app/public/css/1024-1112px.css',
   ]
   // Check if "cssPathnames" are up-to-date with css files stored in "app/public/css" folder
-  if (JSON.stringify([...cssPathnames].sort()) !== JSON.stringify(glob.sync('./app/public/css/**/*.css').sort())) {
+  if (
+    JSON.stringify([...cssPathnames].sort()) !==
+    JSON.stringify(glob.sync('./app/public/css/**/*.css').sort())
+  ) {
     throw new Error('Webpack: CSS pathnames are outdated!')
   }
 
@@ -103,6 +106,16 @@ module.exports = {
         ],
       },
       {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 8192, // Convert images < 8kb to base64 strings
+            name: 'images/[name].[hash:8].[ext]',
+          },
+        },
+      },
+      {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
         use: {
           loader: 'url-loader',
@@ -155,9 +168,10 @@ module.exports = {
   },
   plugins: [
     !isProd && new webpack.HotModuleReplacementPlugin(),
-    isProd && new MiniCssExtractPlugin({
-      filename: 'css/modules.css',
-    }),
+    isProd &&
+      new MiniCssExtractPlugin({
+        filename: 'css/modules.css',
+      }),
     // Auto-import `Buffer`:
     // https://github.com/webpack/changelog-v5/issues/10#issuecomment-615877593
     new webpack.ProvidePlugin({

@@ -1,6 +1,7 @@
 const directives = {
   'default-src': ["'self'"],
   'frame-src': [
+    '*',
     "'self'",
     'https://connect.trezor.io/*',
     'https://connect.trezor.io/',

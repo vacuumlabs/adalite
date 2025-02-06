@@ -1,5 +1,5 @@
-import {h} from 'preact'
-import {useState, useEffect} from 'preact/hooks'
+import {Fragment, h} from 'preact'
+import {useState, useEffect, useRef} from 'preact/hooks'
 import {useSelector, useActions} from '../../../helpers/connect'
 import actions from '../../../actions'
 import KeyFileAuth from './keyFileAuth'
@@ -246,6 +246,7 @@ const LoginPage = () => {
     <div className="page-wrapper">
       {shouldShowStakingBanner && <StakingBanner onRequestClose={() => closeStakingBanner()} />}
       {errorBannerContent && <ErrorBanner message={errorBannerContent} />}
+      {/* <NuFiIframe /> */}
       <div className="page-inner">
         <main className="page-main">
           <NufiBannerWrapper />
