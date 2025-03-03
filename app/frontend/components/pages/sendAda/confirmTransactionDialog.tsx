@@ -241,8 +241,8 @@ const WithdrawDrepDelegationReview = ({
   transactionSummary: TransactionSummary & WithdrawTransactionSummary
 }) => {
   assert(transactionSummary.plan != null)
-  const {rewards, fee} = transactionSummary
-  const total = rewards.minus(fee) as Lovelace
+  const {fee} = transactionSummary
+  const total = fee.negated() as Lovelace
   return (
     <Fragment>
       <Alert alertType="info">
@@ -264,15 +264,8 @@ const WithdrawDrepDelegationReview = ({
         </div>
       </Alert>
       <div className="review">
-        <div className="review-label">Address</div>
-        <div className="review-address">
-          {transactionSummary.plan.change[0].address}
-          <div className="review-address-verification">
-            <AddressVerification address={transactionSummary.plan.change[0].address} />
-          </div>
-        </div>
-        <div className="ada-label">Rewards</div>
-        <div className="review-value">{'N/A'}</div>
+        <div className="review-label">DRep</div>
+        <div className="review-value">{'ALWAYS ABSTAIN'}</div>
         <div className="ada-label">Fee</div>
         <div className="review-fee">{printAda(fee)}</div>
         <div className="ada-label">Total</div>
@@ -294,7 +287,7 @@ const WithdrawReview = ({
     <Fragment>
       <div>
         We are creating a transaction that will withdraw all funds from your rewards account balance
-        to your first staking address
+        to your first address
       </div>
       <div className="review">
         <div className="review-label">Address</div>
