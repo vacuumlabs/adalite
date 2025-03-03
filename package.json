@@ -95,7 +95,7 @@
     "mocha-headless-chrome": "^4.0.0",
     "prettier": "^3.2.5",
     "prettier-eslint-cli": "^8.0.1",
-    "release-it": "^17.1.1",
+    "release-it": "^18.1.2",
     "sass": "^1.32.11",
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
