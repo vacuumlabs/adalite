@@ -1,5 +1,5 @@
 const device = require('device')
-const mung = require('express-mung')
+const {jsonMiddleware} = require('express-response-middleware')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const ua = require('universal-analytics')
 const {backendConfig} = require('../helpers/loadConfig')
@@ -110,7 +110,8 @@ const trackVisits = async (req, res, next) => {
   next()
 }
 
-const trackTxSubmissions = mung.jsonAsync(async (body, req) => {
+const trackTxSubmissions = jsonMiddleware(async (body, req, res) => {
+  if (res.statusCode >= 400) return body
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
     const tokenMatched = tokenMatches(req.get('token'))
     const txSubmissionType =

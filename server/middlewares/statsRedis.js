@@ -5,7 +5,7 @@ const client = redis.createClient(process.env.REDIS_URL, {
     rejectUnauthorized: false,
   },
 })
-const mung = require('express-mung')
+const {jsonMiddleware} = require('express-response-middleware')
 const {parseTxBodyOutAmount, parseTxBodyTotalAmount} = require('../helpers/parseTxBody')
 const {captureException} = require('@sentry/node')
 const {isSameOrigin, tokenMatches} = require('../helpers/checkOrigin')
@@ -38,7 +38,8 @@ const trackVisits = (req, res, next) => {
   next()
 }
 
-const trackTxSubmissions = mung.json((body, req) => {
+const trackTxSubmissions = jsonMiddleware((body, req, res) => {
+  if (res.statusCode >= 400) return body
   if (req.originalUrl === '/api/txs/submit' && req.method === 'POST') {
     const txSubmissionType =
       tokenMatches(req.get('token')) &&
@@ -70,6 +71,7 @@ const trackTxSubmissions = mung.json((body, req) => {
       incrCountersBy(`${txSubmissionType}:sentTotal`, txTotalAmount)
     }
   }
+  return body
 })
 
 module.exports = {
