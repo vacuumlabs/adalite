@@ -69,6 +69,7 @@ const ShelleyTrezorCryptoProvider = async ({
   TrezorConnect.dispose()
   await TrezorConnect.init({
     manifest: {
+      appName: 'AdaLite',
       email: ADALITE_SUPPORT_EMAIL,
       appUrl: config.ADALITE_SERVER_URL,
     },

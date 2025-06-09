@@ -23,7 +23,7 @@
     "@ledgerhq/hw-transport-webhid": "^6.28.4",
     "@ledgerhq/hw-transport-webusb": "^6.28.4",
     "@sentry/browser": "^7.120.0",
-    "@trezor/connect-web": "^9.3.0",
+    "@trezor/connect-web": "^9.6.0",
     "@types/lodash": "^4.14.168",
     "babel-polyfill": "6.26.0",
     "bignumber.js": "^9.0.2",
