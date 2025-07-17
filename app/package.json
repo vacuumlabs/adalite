@@ -28,7 +28,7 @@
     "babel-polyfill": "6.26.0",
     "bignumber.js": "^9.0.2",
     "bip39-light": "^1.0.7",
-    "bitbox-api": "^0.8.0",
+    "bitbox-api": "^0.10.0",
     "cardano-crypto.js": "^6.1.2",
     "cbor": "^8.1.0",
     "chacha-js": "^2.1.1",

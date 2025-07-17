@@ -279,6 +279,7 @@ const ShelleyBitBox02CryptoProvider = async ({
           ? BigInt(txAux.validityIntervalStart?.toString())
           : BigInt(0),
         allowZeroTTL: false,
+        tagCborSets: false,
       })
     })
 
