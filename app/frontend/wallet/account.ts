@@ -353,7 +353,9 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
 
   async function getGlacierDropEligiblity(address: Address): Promise<{gdTokenAmount: BigNumber}> {
     try {
-      const response = await fetch(`https://proof.provtree-midnight.com/check/cardano/${address}`)
+      const response = await fetch(
+        'https://proof.provtree-midnight.com/check/cardano/addr1z8srqftqemf0mjlukfszd97ljuxdp44r372txfcr75wrz2auzrlrz2kdd83wzt9u9n9qt2swgvhrmmn96k55nq6yuj4qw992w9'
+      )
       const data = await response.json()
       return {gdTokenAmount: new BigNumber(data?.value ?? 0)}
     } catch (error) {
