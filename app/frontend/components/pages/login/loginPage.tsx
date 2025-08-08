@@ -18,6 +18,7 @@ import {AuthMethodType, ScreenType} from '../../../types'
 import {useViewport, isBiggerThanMobile} from '../../common/viewPort'
 import assertUnreachable from '../../../helpers/assertUnreachable'
 import NufiBanner from '../../common/nufiBanner'
+import GlacierDropBanner from './glacierDropBanner'
 
 const getAuthMethodName = (authMethod: AuthMethodType): string => {
   switch (authMethod) {

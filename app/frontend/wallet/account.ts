@@ -351,6 +351,18 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return config.isShelleyCompatible && myAddresses.areAddressesUsed()
   }
 
+  async function getGlacierDropEligiblity(address: Address): Promise<{gdTokenAmount: BigNumber}> {
+    try {
+      const response = await fetch(
+        'https://proof.provtree-midnight.com/check/cardano/addr1z8srqftqemf0mjlukfszd97ljuxdp44r372txfcr75wrz2auzrlrz2kdd83wzt9u9n9qt2swgvhrmmn96k55nq6yuj4qw992w9'
+      )
+      const data = await response.json()
+      return {gdTokenAmount: new BigNumber(data?.value ?? 0)}
+    } catch (error) {
+      return {gdTokenAmount: new BigNumber(0)}
+    }
+  }
+
   async function getAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
     const accountXpubs = await getAccountXpubs()
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
@@ -362,6 +374,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     const stakingHistory = await getStakingHistory(validStakepoolDataProvider)
     const visibleAddresses = await getVisibleAddresses()
     const transactionHistory = await getTxHistory()
+    const glacierDropEligibility = await getGlacierDropEligiblity(firstBaseAddress)
     const poolRecommendation = await getPoolRecommendation(
       stakingAddress,
       baseAddressBalance,
@@ -389,6 +402,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       poolRecommendation,
       isUsed,
       accountIndex,
+      glacierDropEligibility,
     }
   }
 
