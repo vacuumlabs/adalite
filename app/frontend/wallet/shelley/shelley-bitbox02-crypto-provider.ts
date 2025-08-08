@@ -80,7 +80,7 @@ const ShelleyBitBox02CryptoProvider = async ({
         config.bitbox02OnPairingCode(pairingCode)
       }
       const pairedBitBox = await pairing.waitConfirm()
-      if (pairedBitBox.product() !== 'bitbox02-multi') {
+      if (!pairedBitBox.cardanoSupported()) {
         throw new Error('Error: Unsupported device.')
       }
       activeBitBox02 = pairedBitBox
