@@ -5,3 +5,5 @@ GHSA-3h5v-q93c-6h6q
 GHSA-2p57-rm9w-gvfp
 GHSA-mgfv-m47x-4wqp
 
+# tmp - low severity vulnerability with no update upstream in `device` package 
+GHSA-52f5-9888-hmc6
