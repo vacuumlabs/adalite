@@ -59,6 +59,37 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'12/31/2025'}
+              children={
+                <Fragment>
+                  <Article title="Register to vote for Project Catalyst before January 4th" icon="">
+                    <div className="info-spaced-paragraph">
+                      Anyone with 25 ADA or more can register and vote for the proposals you think
+                      deserve funding.
+                      <br />
+                      The AdaLite team is proposing two things:
+                      <ul>
+                        <li>
+                          Develop a Scavenger Mine SDK (so anybody can distribute a Cardano token
+                          fairly and easily by running their own Scavenger Mine);
+                        </li>
+                        <li>
+                          Fix Cardano's cross-chain swap liquidity crisis (by integrating a
+                          decentralized cross-chain swap solution inside NUFI that aggregates DEXes
+                          on hundreds of chains to guarantee deep-liquidity, best-value trades).
+                        </li>
+                      </ul>
+                      See how to register and read more about NUFI's proposals{' '}
+                      <a target="_blank" href="https://nu.fi/blog/project-catalyst-fund15">
+                        here
+                      </a>
+                      .
+                    </div>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'11/27/2024'}
               children={
                 <Fragment>
