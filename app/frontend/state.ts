@@ -262,9 +262,6 @@ const initialState: State = {
       },
       isUsed: false,
       accountIndex: 0,
-      glacierDropEligibility: {
-        gdTokenAmount: new BigNumber(0),
-      },
     },
   ],
   maxAccountIndex: 0,

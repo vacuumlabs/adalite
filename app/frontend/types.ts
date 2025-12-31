@@ -187,9 +187,6 @@ export type AccountInfo = {
   poolRecommendation: PoolRecommendation
   isUsed: boolean
   accountIndex: number
-  glacierDropEligibility: {
-    gdTokenAmount: BigNumber
-  }
 }
 
 export const enum TxType {
