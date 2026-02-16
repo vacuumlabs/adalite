@@ -8,26 +8,24 @@ import {sessionStorageVars} from '../../../sessionStorage'
 const LogoutNotification = (): h.JSX.Element => {
   const {closeLogoutNotification} = useActions(actions)
   const understandBtn = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    understandBtn.current?.focus()
-
+  const onClose = () => {
     if (window.sessionStorage.getItem(sessionStorageVars.INACTIVITY_LOGOUT)) {
       window.sessionStorage.removeItem(sessionStorageVars.INACTIVITY_LOGOUT)
     }
+    closeLogoutNotification()
+  }
+
+  useEffect(() => {
+    understandBtn.current?.focus()
   }, [])
 
   return (
-    <Modal
-      onRequestClose={() => closeLogoutNotification()}
-      title="You’ve been logged out"
-      bodyClass="centered"
-    >
+    <Modal onRequestClose={onClose} title="You’ve been logged out" bodyClass="centered">
       <p className="modal-paragraph">We’ve logged you out after 15 minutes of inactivity.</p>
       <div className="modal-footer">
         <button
           className="button primary"
-          onClick={() => closeLogoutNotification()}
+          onClick={onClose}
           onKeyDown={(e) => {
             ;['Enter', 'Escape'].includes(e.key) && (e.target as HTMLButtonElement).click()
           }}

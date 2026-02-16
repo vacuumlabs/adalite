@@ -21,7 +21,6 @@ const isValidShelleyNetwork = (str) => shelleyNetworks.includes(str)
 const boolStrings = ['true', 'false']
 const isBoolString = (str) => boolStrings.includes(str)
 const isPositiveIntString = (str) => check.positive(parseInt(str, 10))
-const isIntString = (str) => check.integer(parseInt(str, 10))
 const isCommaDelimitedListOfIpsOrEmpty = (str) => {
   if (!str) {
     return true
@@ -58,7 +57,6 @@ const checkMap = check.map(process.env, {
   ADALITE_DEFAULT_ADDRESS_COUNT: isPositiveIntString,
   ADALITE_GAP_LIMIT: isPositiveIntString,
   ADALITE_DEMO_WALLET_MNEMONIC: check.nonEmptyString,
-  ADALITE_LOGOUT_AFTER: isIntString,
   ADALITE_ENABLE_SERVER_MOCKING_MODE: isBoolString,
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS: isBoolString,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS: isBoolString,
@@ -91,7 +89,6 @@ const {
   ADALITE_GAP_LIMIT,
   ADALITE_STATS_PWD,
   ADALITE_DEMO_WALLET_MNEMONIC,
-  ADALITE_LOGOUT_AFTER,
   ADALITE_ENABLE_SERVER_MOCKING_MODE,
   ADALITE_MOCK_TX_SUBMISSION_SUCCESS,
   ADALITE_MOCK_TX_SUMMARY_SUCCESS,
@@ -164,7 +161,6 @@ const frontendConfig = {
   ADALITE_DEMO_WALLET_MNEMONIC,
   ADALITE_ENABLE_DEBUGGING: ADALITE_ENABLE_DEBUGGING === 'true',
   ADALITE_APP_VERSION: appVersion,
-  ADALITE_LOGOUT_AFTER,
   ADALITE_TREZOR_CONNECT_URL,
   ADALITE_BACKEND_TOKEN,
   ADALITE_FIXED_DONATION_VALUE,

@@ -6,7 +6,6 @@ const config = `{
   "ADALITE_DEMO_WALLET_MNEMONIC": "quit gloom sell coil mosquito capital silk climb around fabric drink hood patient more whip",
   "ADALITE_ENABLE_DEBUGGING": false,
   "ADALITE_APP_VERSION": "3.7.0",
-  "ADALITE_LOGOUT_AFTER": "900",
   "ADALITE_TREZOR_CONNECT_URL": "",
   "ADALITE_FIXED_DONATION_VALUE": "40",
   "ADALITE_MIN_DONATION_VALUE": "1",

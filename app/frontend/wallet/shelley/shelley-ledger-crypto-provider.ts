@@ -66,6 +66,7 @@ import assertUnreachable from '../../helpers/assertUnreachable'
 import * as assert from 'assert'
 import {encodeCbor} from '../helpers/cbor'
 import {safeAssertUnreachable} from '../../helpers/common'
+import {ADALITE_INACTIVITY_TIMEOUT_MS} from '../../constants'
 
 let _activeTransport: Transport | null
 const getLedgerTransport = async (ledgerTransportType: LedgerTransportType): Promise<Transport> => {
@@ -107,7 +108,7 @@ const ShelleyLedgerCryptoProvider = async ({
   config,
 }: CryptoProviderParams): Promise<CryptoProvider> => {
   const transport = await getLedgerTransport(config.ledgerTransportType)
-  transport.setExchangeTimeout(config.ADALITE_LOGOUT_AFTER * 1000)
+  transport.setExchangeTimeout(ADALITE_INACTIVITY_TIMEOUT_MS)
   const ledger = new Ledger(transport)
   const derivationScheme = derivationSchemes.v2
 

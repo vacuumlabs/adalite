@@ -22,3 +22,6 @@ export enum SubTabs {
   SHELLEY_BALANCES = 'Shelley Balances',
   VOTING = 'Voting',
 }
+
+// Inactivity timeout in milliseconds.
+export const ADALITE_INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000

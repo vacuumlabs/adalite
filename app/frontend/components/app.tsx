@@ -7,13 +7,11 @@ import Footer from './common/footer'
 import LoadingOverlay from './common/loadingOverlay'
 import NavbarAuth from './common/navbar/navbarAuth'
 import NavbarUnauth from './common/navbar/navbarUnauth'
-import AutoLogout from './autoLogout'
-import {ADALITE_CONFIG} from '../config'
+import AutoLogoutOrRefresh from './autoLogoutOrRefresh'
+import {ADALITE_INACTIVITY_TIMEOUT_MS} from '../constants'
 import Exchange from './pages/exchange/exchange'
 import NufiPreviewPage from './pages/nufiPreview/nufiPreviewPage'
 import ErrorBoundary from './errorBoundary'
-
-const {ADALITE_LOGOUT_AFTER} = ADALITE_CONFIG
 
 const Navbar = connect((state) => ({walletIsLoaded: state.walletIsLoaded}))(({walletIsLoaded}) =>
   walletIsLoaded ? <NavbarAuth /> : <NavbarUnauth />
@@ -44,7 +42,7 @@ const App = connect((state) => ({
         <Navbar />
         <TopLevelRouter />
         <Footer />
-        {ADALITE_LOGOUT_AFTER > 0 && <AutoLogout />}
+        <AutoLogoutOrRefresh inactivityTimeoutMs={ADALITE_INACTIVITY_TIMEOUT_MS} />
         {displayWelcome && <Welcome />}
         {shouldShowContactFormModal && <ContactForm />}
       </ErrorBoundary>
