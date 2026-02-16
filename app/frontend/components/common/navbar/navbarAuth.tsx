@@ -4,8 +4,6 @@ import actions from '../../../actions'
 import {ADALITE_CONFIG} from '../../../config'
 import NufiBanner from '../nufiBanner'
 import {useEffect} from 'preact/hooks'
-import CatalystFund15Banner from '../../pages/login/catalystFund15Banner'
-
 const APP_VERSION = ADALITE_CONFIG.ADALITE_APP_VERSION
 
 const NavbarAuth = ({isDemoWallet}: {isDemoWallet: boolean}) => {
@@ -31,7 +29,6 @@ const NavbarAuth = ({isDemoWallet}: {isDemoWallet: boolean}) => {
       }}
     >
       <div className="navbar-wrapper">
-        <CatalystFund15Banner />
         <h1 className="navbar-heading">
           <span className="navbar-title">AdaLite - Cardano Wallet</span>
           <a
