@@ -7,3 +7,6 @@ GHSA-mgfv-m47x-4wqp
 
 # tmp - low severity vulnerability with no update upstream in `device` package 
 GHSA-52f5-9888-hmc6
+
+# elliptic - no fix so far
+GHSA-848j-6mx2-7j84
