@@ -10,3 +10,11 @@ GHSA-52f5-9888-hmc6
 
 # elliptic - no fix so far
 GHSA-848j-6mx2-7j84
+
+# minimatch - recursive dependency of prettier-eslint-cli
+GHSA-3ppc-4f35-3m26
+GHSA-23c5-xmqv-rm74
+GHSA-7r86-cg39-jmmj
+
+# serialize-javascript - recursive dependency of webpack
+GHSA-5c6j-r48x-rmvq
