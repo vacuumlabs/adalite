@@ -341,11 +341,6 @@ export type NextRewardDetailsFormatted = {
   currentDelegation: RewardWithMetadata | undefined
 }
 
-export type Balance = {
-  coins: Lovelace
-  tokenBundle: TokenBundle
-}
-
 export const enum AssetFamily {
   ADA,
   TOKEN,

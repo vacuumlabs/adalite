@@ -351,13 +351,36 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     return config.isShelleyCompatible && myAddresses.areAddressesUsed()
   }
 
+  function computeBalanceFromUtxos(utxos: UTxO[]) {
+    const baseUtxos = utxos.filter((utxo) => isBase(addressToHex(utxo.address)))
+    const nonStakingUtxos = utxos.filter((utxo) => !isBase(addressToHex(utxo.address)))
+    const baseAddressBalance = baseUtxos.reduce(
+      (sum, u) => sum.plus(u.coins),
+      new BigNumber(0)
+    ) as Lovelace
+    const nonStakingBalance = nonStakingUtxos.reduce(
+      (sum, u) => sum.plus(u.coins),
+      new BigNumber(0)
+    ) as Lovelace
+    const tokenBalance = aggregateTokenBundles(
+      utxos.map((u) => u.tokenBundle).filter((t) => t.length > 0)
+    )
+    return {
+      baseAddressBalance,
+      nonStakingBalance,
+      balance: nonStakingBalance.plus(baseAddressBalance),
+      tokenBalance,
+    }
+  }
+
   async function getAccountInfo(validStakepoolDataProvider: StakepoolDataProvider) {
     const accountXpubs = await getAccountXpubs()
     const stakingXpub = await getStakingXpub(cryptoProvider, accountIndex)
     const stakingAddress = await myAddresses.getStakingAddress()
     const firstBaseAddress = await myAddresses.getFirstBaseAddress()
-    const {baseAddressBalance, nonStakingBalance, balance, tokenBalance} = await getBalance()
     const utxos = await getUtxos()
+    const {baseAddressBalance, nonStakingBalance, balance, tokenBalance} =
+      computeBalanceFromUtxos(utxos)
     const shelleyAccountInfo = await getStakingInfo(validStakepoolDataProvider)
     const stakingHistory = await getStakingHistory(validStakepoolDataProvider)
     const visibleAddresses = await getVisibleAddresses()
@@ -389,20 +412,6 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
       poolRecommendation,
       isUsed,
       accountIndex,
-    }
-  }
-
-  async function getBalance() {
-    const {legacy, base} = await myAddresses.discoverAllAddresses()
-    const {coins: nonStakingBalance, tokenBundle: nonStakingTokenBundle} =
-      await blockchainExplorer.getBalance(legacy)
-    const {coins: baseAddressBalance, tokenBundle: stakingTokenBundle} =
-      await blockchainExplorer.getBalance(base)
-    return {
-      tokenBalance: aggregateTokenBundles([nonStakingTokenBundle, stakingTokenBundle]),
-      baseAddressBalance,
-      nonStakingBalance,
-      balance: nonStakingBalance.plus(baseAddressBalance),
     }
   }
 
@@ -504,7 +513,6 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
   return {
     signTxAux,
     witnessPoolRegTxAux,
-    getBalance,
     getMaxSendableAmount,
     getMaxNonStakingAmount,
     getTxPlan,

@@ -14,7 +14,6 @@ const mock = (ADALITE_CONFIG) => {
         const summary = {
           caAddresses: [] as string[],
           caTxNum: 0,
-          caBalance: {getCoin: '0', getTokens: []},
           caTxList: [] as any[],
         }
         // @ts-expect-error options.body doesn't seem to have a reasonable type
@@ -23,11 +22,6 @@ const mock = (ADALITE_CONFIG) => {
           summary.caAddresses.push(address)
 
           if (singleResponse) {
-            //eslint-disable-next-line max-len
-            summary.caBalance.getCoin = (
-              parseInt(summary.caBalance.getCoin, 10) +
-              parseInt(singleResponse.Right.caBalance.getCoin, 10)
-            ).toString()
             summary.caTxNum = summary.caTxNum + singleResponse.Right.caTxNum
             summary.caTxList = [...summary.caTxList, ...singleResponse.Right.caTxList]
           }

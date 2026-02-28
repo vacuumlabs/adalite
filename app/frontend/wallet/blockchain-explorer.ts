@@ -15,7 +15,6 @@ import {
   HostedPoolMetadata,
   NextRewardDetailsFormatted,
   RewardWithMetadata,
-  Balance,
   Address,
   TokenBundle,
 } from '../types'
@@ -177,31 +176,6 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     })
 
     return usedAddresses
-  }
-
-  async function getBalance(addresses: Array<string>): Promise<Balance> {
-    const chunks = range(0, Math.ceil(addresses.length / gapLimit))
-    const addressInfos = await Promise.all(
-      chunks.map(async (index) => {
-        const beginIndex = index * gapLimit
-        return await _getAddressInfos(addresses.slice(beginIndex, beginIndex + gapLimit))
-      })
-    )
-    const addressTokenBundles = addressInfos.map((addressSummary) => {
-      assert(addressSummary != null)
-      return addressSummary.caBalance.getTokens.map((token) => parseToken(token))
-    })
-    const tokenBundle = aggregateTokenBundles(addressTokenBundles).filter((token) =>
-      token.quantity.gt(0)
-    )
-    const coins = addressInfos.reduce((acc, elem) => {
-      assert(elem != null)
-      return acc.plus(elem.caBalance.getCoin)
-    }, new BigNumber(0)) as Lovelace
-    return {
-      coins,
-      tokenBundle,
-    }
   }
 
   async function submitTxRaw(txHash, txBody, params): Promise<TxSubmission> {
@@ -547,7 +521,6 @@ const blockchainExplorer = (ADALITE_CONFIG) => {
     fetchUnspentTxOutputs,
     isSomeAddressUsed,
     submitTxRaw,
-    getBalance,
     fetchTxInfo,
     filterUsedAddresses,
     getPoolInfo,

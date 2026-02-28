@@ -121,7 +121,6 @@ export type CaTxEntry = {
 export type BulkAddressesSummary = {
   caAddresses: Array<string>
   caTxNum: number
-  caBalance: CoinObject
   caTxList: Array<CaTxEntry>
 }
 
