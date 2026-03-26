@@ -60,8 +60,12 @@ export const xpub2ChainCode = (xpub: Buffer) => xpub.slice(32, 64)
 // takes xpubkey, converts it to pubkey and then to 28 byte blake2b encoded hash
 const xpub2blake2b224Hash = (xpub: Buffer) => getPubKeyBlake2b224Hash(xpub2pub(xpub))
 
-// TODO: do this more precisely
-export const isShelleyPath = (path: BIP32Path) => path[0] - HARDENED_THRESHOLD === 1852
+/** CIP-1852 or Exodus BIP44 (44'/1815'/...); both use Shelley witnesses, not Byron */
+export const isShelleyPath = (path: BIP32Path): boolean => {
+  const purpose = path[0] - HARDENED_THRESHOLD
+  if (purpose === 1852) return true
+  return path.length >= 5 && purpose === 44 && path[1] - HARDENED_THRESHOLD === 1815
+}
 
 // TODO: do this properly with cardano-crypto unpackAddress
 export const isV1Address = (address: string) => address.startsWith('D') || address.startsWith('K')

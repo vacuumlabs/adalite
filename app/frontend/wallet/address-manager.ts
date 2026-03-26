@@ -6,10 +6,17 @@ import {UnexpectedError, UnexpectedErrorReason} from '../errors'
 type AddressManagerParams = {
   addressProvider: AddressProvider
   gapLimit: number
+  /** When set, skip gap scanning and return exactly this many addresses (indices 0..n-1) */
+  fixedDiscoveryCount?: number
   blockchainExplorer: ReturnType<typeof blockchainExplorer>
 }
 
-const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: AddressManagerParams) => {
+const AddressManager = ({
+  addressProvider,
+  gapLimit,
+  fixedDiscoveryCount,
+  blockchainExplorer,
+}: AddressManagerParams) => {
   if (!gapLimit) {
     throw new UnexpectedError(UnexpectedErrorReason.ParamsValidationError, {
       message: `Invalid gap limit: ${gapLimit}`,
@@ -37,14 +44,20 @@ const AddressManager = ({addressProvider, gapLimit, blockchainExplorer}: Address
   }
 
   async function discoverAddresses(): Promise<Address[]> {
+    if (fixedDiscoveryCount != null) {
+      return await deriveAddressesBlock(0, fixedDiscoveryCount)
+    }
+
     let addresses: Address[] = []
     let from = 0
     let isGapBlock = false
 
     while (!isGapBlock) {
       const currentAddressBlock = await deriveAddressesBlock(from, from + gapLimit)
+      const allAlreadyDerived = currentAddressBlock.every((address) => addresses.includes(address))
 
-      isGapBlock = !(await blockchainExplorer.isSomeAddressUsed(currentAddressBlock))
+      isGapBlock =
+        allAlreadyDerived || !(await blockchainExplorer.isSomeAddressUsed(currentAddressBlock))
 
       addresses =
         isGapBlock && addresses.length > 0 ? addresses : addresses.concat(currentAddressBlock)

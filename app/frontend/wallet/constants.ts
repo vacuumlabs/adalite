@@ -169,3 +169,6 @@ export const TREZOR_ERRORS = {
 }
 
 export const MAX_ACCOUNT_INDEX = 30
+
+/** Exodus: max receive/change path indices to scan for txs and utxos */
+export const EXODUS_ADDRESS_SCAN_LIMIT = 3
