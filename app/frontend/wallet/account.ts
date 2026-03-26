@@ -1,5 +1,5 @@
 import AddressManager from './address-manager'
-import {DEFAULT_TTL_SLOTS} from './constants'
+import {DEFAULT_TTL_SLOTS, EXODUS_ADDRESS_SCAN_LIMIT} from './constants'
 import {
   AddressToPathMapper,
   AddressToPathMapping,
@@ -56,6 +56,7 @@ type MyAddressesParams = {
   accountIndex: number
   cryptoProvider: CryptoProvider
   gapLimit: number
+  fixedDiscoveryCount?: number
   blockchainExplorer: ReturnType<typeof blockchainExplorer>
 }
 
@@ -63,6 +64,7 @@ const MyAddresses = ({
   accountIndex,
   cryptoProvider,
   gapLimit,
+  fixedDiscoveryCount,
   blockchainExplorer,
 }: MyAddressesParams) => {
   const includeByron =
@@ -71,6 +73,7 @@ const MyAddresses = ({
     ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
       gapLimit,
+      fixedDiscoveryCount,
       blockchainExplorer,
     })
     : DummyAddressManager()
@@ -79,6 +82,7 @@ const MyAddresses = ({
     ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
       gapLimit,
+      fixedDiscoveryCount,
       blockchainExplorer,
     })
     : DummyAddressManager()
@@ -92,12 +96,14 @@ const MyAddresses = ({
   const baseExtAddrManager = AddressManager({
     addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, false),
     gapLimit,
+    fixedDiscoveryCount,
     blockchainExplorer,
   })
 
   const baseIntAddrManager = AddressManager({
     addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, true),
     gapLimit,
+    fixedDiscoveryCount,
     blockchainExplorer,
   })
 
@@ -187,10 +193,12 @@ type AccountParams = {
 const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: AccountParams) => {
   const {getMaxSendableAmount: _getMaxSendableAmount} = MaxAmountCalculator()
 
+  const isExodus = config.isExodusWallet === true
   const myAddresses = MyAddresses({
     accountIndex,
     cryptoProvider,
-    gapLimit: config.ADALITE_GAP_LIMIT,
+    gapLimit: isExodus ? EXODUS_ADDRESS_SCAN_LIMIT : config.ADALITE_GAP_LIMIT,
+    fixedDiscoveryCount: isExodus ? EXODUS_ADDRESS_SCAN_LIMIT : undefined,
     blockchainExplorer,
   })
 
