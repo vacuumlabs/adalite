@@ -11,6 +11,11 @@ const derivationSchemes: {[key: string]: DerivationScheme} = {
     ed25519Mode: 2,
     keyfileVersion: '2.0.0',
   },
+  exodus: {
+    type: 'exodus',
+    ed25519Mode: 1,
+    keyfileVersion: '2.0.0-exodus',
+  },
 }
 
 export default derivationSchemes

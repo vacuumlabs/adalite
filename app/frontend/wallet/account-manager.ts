@@ -50,7 +50,10 @@ const AccountManager = ({
       CryptoProviderFeature.BULK_EXPORT
     )
     const shouldExplore =
-      config.shouldExportPubKeyBulk && config.isShelleyCompatible && isBulkExportSupported
+      config.shouldExportPubKeyBulk &&
+      config.isShelleyCompatible &&
+      !config.isExodusWallet &&
+      isBulkExportSupported
     async function _discoverNextAccount(accountIndex: number) {
       const newAccount = accounts[accountIndex] || discoverNextAccount()
       const isAccountUsed = await newAccount.isAccountUsed()
