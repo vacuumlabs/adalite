@@ -19,6 +19,17 @@ function CachedDeriveXpubFactory(
     const memoKey = JSON.stringify(absDerivationPath)
 
     if (!derivedXpubs[memoKey]) {
+      /*
+       * Exodus imports store the key already derived to m/44'/1815'/0'/0/0. The JS provider maps
+       * every path to that root xpub, but paths end with non-hardened indices (0, 0). Without this
+       * branch, deriveHardened would be false and we would derive child xpubs incorrectly.
+       */
+      if (derivationScheme.type === 'exodus') {
+        const pubKeys = await _deriveXpubsHardenedFn([absDerivationPath])
+        Object.assign(derivedXpubs, pubKeys)
+        return derivedXpubs[memoKey]
+      }
+
       const deriveHardened =
         absDerivationPath.length === 0 || indexIsHardened(absDerivationPath.slice(-1)[0])
 

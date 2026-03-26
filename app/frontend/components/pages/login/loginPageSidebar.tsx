@@ -91,7 +91,11 @@ const MnemonicContent = () => (
           >
             Daedalus-type
           </a>{' '}
-          mnemonics (12, 24 or 27 words).
+          mnemonics (12, 24 or 27 words). It is also compatible with{' '}
+          <a className="sidebar-link" href="https://exodus.com" rel="noopener" target="blank">
+            Exodus
+          </a>{' '}
+          12-word mnemonic wallets when using Exodus derivation.
         </p>
       </Alert>
     </div>

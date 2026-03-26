@@ -24,6 +24,7 @@ const MnemonicAuth = (): h.JSX.Element => {
   const {
     updateMnemonic,
     updateMnemonicValidationError,
+    updateUseExodusDerivationPath,
     loadWallet,
     openGenerateMnemonicDialog,
   } = useActions(actions)
@@ -53,6 +54,7 @@ const MnemonicAuth = (): h.JSX.Element => {
   }, [autoLogin, loadWallet])
 
   const sanitizedMnemonic = sanitizeMnemonic(formData.mnemonicInputValue)
+  const isTwelveWordMnemonic = sanitizedMnemonic.split(' ').length === 12
 
   return (
     <div className={`authentication-content ${shouldShowMnemonicInfoAlert ? '' : 'centered'}`}>
@@ -78,6 +80,20 @@ const MnemonicAuth = (): h.JSX.Element => {
         ref={mnemonicField}
         onKeyDown={(e) => e.key === 'Enter' && goBtn?.current?.click()}
       />
+      {isTwelveWordMnemonic && (
+        <div className="validation-row mnemonic-exodus-option">
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={formData.useExodusDerivationPath}
+              onChange={updateUseExodusDerivationPath}
+              className="checkbox-input"
+            />
+            <span className="checkbox-indicator" />
+            Use Exodus wallet derivation path
+          </label>
+        </div>
+      )}
       <div className="validation-row">
         <button
           className="button primary"
@@ -86,7 +102,9 @@ const MnemonicAuth = (): h.JSX.Element => {
             loadWallet({
               cryptoProviderType: CryptoProviderType.WALLET_SECRET,
               // TODO(ppershing): get rid of mnemonic sanitization in this component
-              walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic),
+              walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic, {
+                useExodusDerivationPath: formData.useExodusDerivationPath,
+              }),
               shouldExportPubKeyBulk: true,
             })
           }

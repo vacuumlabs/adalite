@@ -21,6 +21,7 @@ const expectedStateChanges = {
     mnemonicInputValue: '',
     mnemonicInputError: null,
     formIsValid: false,
+    useExodusDerivationPath: false,
   },
   isDemoWallet: false,
   shouldShowGenerateMnemonicDialog: false,

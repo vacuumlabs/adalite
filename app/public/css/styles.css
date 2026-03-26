@@ -1876,6 +1876,10 @@ li.main-tab input + label.selected:after {
   display: block;
 }
 
+.authentication-content .mnemonic-exodus-option {
+  margin-bottom: 16px;
+}
+
 .authentication-link {
   display: block;
   margin-top: 24px;

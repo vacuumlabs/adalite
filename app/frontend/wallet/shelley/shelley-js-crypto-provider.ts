@@ -7,7 +7,9 @@ import {
   base58,
   getBootstrapAddressAttributes,
   blake2b,
+  _seedToKeypairV1 as seedToKeypairV1,
 } from 'cardano-crypto.js'
+import {HDKey} from '@scure/bip32'
 
 import HdNode, {_HdNode} from '../helpers/hd-node'
 import {
@@ -46,6 +48,7 @@ import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import assertUnreachable from '../../helpers/assertUnreachable'
 import * as assert from 'assert'
 import {encodeCbor} from '../helpers/cbor'
+import {bip32PathToString} from '../helpers/bip32PathToString'
 
 type CryptoProviderParams = {
   walletSecretDef: any
@@ -54,16 +57,19 @@ type CryptoProviderParams = {
 }
 
 const ShelleyJsCryptoProvider = async ({
-  walletSecretDef: {rootSecret, derivationScheme},
+  walletSecretDef: {rootSecret, derivationScheme, exodusBip39Seed},
   network,
   config,
 }: // eslint-disable-next-line require-await
 CryptoProviderParams): Promise<CryptoProvider> => {
   const masterHdNode = HdNode(rootSecret)
+  const isExodusWallet = derivationScheme.type === 'exodus'
 
   const getType = () => CryptoProviderType.WALLET_SECRET
 
   const getWalletSecret = () => masterHdNode.toBuffer()
+
+  const getExodusBip39Seed = () => (isExodusWallet ? exodusBip39Seed : undefined)
 
   const getDerivationScheme = () => derivationScheme
 
@@ -77,7 +83,25 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     }
   )
 
+  function deriveExodusHdNodeFromSeed(derivationPath: BIP32Path): _HdNode {
+    if (!exodusBip39Seed) {
+      return masterHdNode
+    }
+    const pathStr = bip32PathToString(derivationPath)
+    const wallet = HDKey.fromMasterSeed(new Uint8Array(exodusBip39Seed)).derive(pathStr)
+    const privateKey = wallet.privateKey
+    if (!privateKey) {
+      throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+        message: 'Failed to derive Exodus key for path',
+      })
+    }
+    return HdNode(seedToKeypairV1(Buffer.from(privateKey)))
+  }
+
   function deriveHdNode(derivationPath: BIP32Path): _HdNode {
+    if (isExodusWallet) {
+      return deriveExodusHdNodeFromSeed(derivationPath)
+    }
     return derivationPath.reduce(deriveChildHdNode, masterHdNode)
   }
 
@@ -207,7 +231,14 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   }
 
   function isFeatureSupported(feature: CryptoProviderFeature) {
-    return feature !== CryptoProviderFeature.POOL_OWNER
+    if (feature === CryptoProviderFeature.POOL_OWNER) {
+      return false
+    }
+    // Exodus imports resolve to a single Shelley path; there is no v1/v2 Byron account tree.
+    if (feature === CryptoProviderFeature.BYRON && isExodusWallet) {
+      return false
+    }
+    return true
   }
 
   function ensureFeatureIsSupported(feature: CryptoProviderFeature) {
@@ -237,6 +268,7 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     signTx,
     witnessPoolRegTx,
     getWalletSecret,
+    getExodusBip39Seed,
     getType,
     getDerivationScheme,
     deriveXpub,

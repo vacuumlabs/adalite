@@ -34,6 +34,8 @@ export interface CryptoProvider {
     addressToPathMapper: AddressToPathMapper
   ) => Promise<CborizedCliWitness>
   getWalletSecret: () => Buffer | void
+  /** Exodus mnemonic login only; used when re-exporting wallet JSON */
+  getExodusBip39Seed?: () => Buffer | undefined
   getType: () => CryptoProviderType
   getDerivationScheme: () => DerivationScheme
   deriveXpub: (derivationPath: BIP32Path) => Promise<Buffer>
@@ -64,7 +66,7 @@ export enum CryptoProviderFeature {
   BYRON = 'BYRON',
 }
 export type DerivationScheme = {
-  type: 'v1' | 'v2'
+  type: 'v1' | 'v2' | 'exodus'
   ed25519Mode: number
   keyfileVersion: string
 }
@@ -72,6 +74,8 @@ export type DerivationScheme = {
 export type WalletSecretDef = {
   rootSecret: Buffer
   derivationScheme: DerivationScheme
+  /** Exodus imports: BIP39 seed so each m/44'/1815'/n'/0/0 address can be derived */
+  exodusBip39Seed?: Buffer
 }
 
 export type Token = Omit<TokenObject, 'quantity'> & {

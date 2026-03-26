@@ -108,6 +108,7 @@ export default (store: Store) => {
     loadingAction(state, 'Loading wallet data...')
     setState({walletLoadingError: undefined})
     const isShelleyCompatible = !(walletSecretDef && walletSecretDef.derivationScheme.type === 'v1')
+    const isExodusWallet = walletSecretDef?.derivationScheme.type === 'exodus'
     const ledgerTransportType =
       ledgerTransportChoice === LedgerTransportChoice.DEFAULT
         ? await getDefaultLedgerTransportType()
@@ -122,6 +123,7 @@ export default (store: Store) => {
     const config = {
       ...ADALITE_CONFIG,
       isShelleyCompatible,
+      isExodusWallet,
       shouldExportPubKeyBulk,
       ledgerTransportType,
       bitbox02OnPairingCode,
@@ -186,6 +188,7 @@ export default (store: Store) => {
           mnemonicInputValue: '',
           mnemonicInputError: null,
           formIsValid: false,
+          useExodusDerivationPath: false,
         },
         cryptoProviderInfo,
         isDemoWallet,
@@ -223,6 +226,7 @@ export default (store: Store) => {
         mnemonicInputValue: ADALITE_CONFIG.ADALITE_DEMO_WALLET_MNEMONIC,
         mnemonicInputError: null,
         formIsValid: true,
+        useExodusDerivationPath: false,
       },
       walletLoadingError: undefined,
       shouldShowWalletLoadingErrorModal: false,
