@@ -12,6 +12,7 @@ export default (store: Store) => {
         mnemonicInputValue: '',
         mnemonicInputError: null,
         formIsValid: false,
+        useExodusDerivationPath: false,
       },
       shouldShowGenerateMnemonicDialog: true,
       authMethod: AuthMethodType.MNEMONIC,
@@ -29,6 +30,7 @@ export default (store: Store) => {
     const mnemonicInputValue = e.target.value
     const sanitizedMnemonic = sanitizeMnemonic(mnemonicInputValue)
     const formIsValid = sanitizedMnemonic && mnemonicValidator(sanitizedMnemonic) === null
+    const words = sanitizedMnemonic ? sanitizedMnemonic.split(' ') : []
 
     setState({
       ...state,
@@ -36,6 +38,8 @@ export default (store: Store) => {
         mnemonicInputValue,
         mnemonicInputError: null,
         formIsValid,
+        useExodusDerivationPath:
+          words.length === 12 ? state.mnemonicAuthForm.useExodusDerivationPath : false,
       },
     })
   }
@@ -52,9 +56,20 @@ export default (store: Store) => {
     })
   }
 
+  const updateUseExodusDerivationPath = (state: State, e) => {
+    setState({
+      ...state,
+      mnemonicAuthForm: {
+        ...state.mnemonicAuthForm,
+        useExodusDerivationPath: !!e.target.checked,
+      },
+    })
+  }
+
   return {
     updateMnemonic,
     updateMnemonicValidationError,
+    updateUseExodusDerivationPath,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
   }
