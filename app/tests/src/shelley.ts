@@ -5,6 +5,7 @@ import ShelleyJsCryptoProvider from '../../frontend/wallet/shelley/shelley-js-cr
 
 import {ShelleyBaseAddressProvider} from '../../frontend/wallet/shelley/shelley-address-provider'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
+import {NETWORKS} from '../../frontend/wallet/constants'
 import {Network, NetworkId} from '../../frontend/wallet/types'
 
 const getCryptoProvider = async (mnemonic, networkId) => {
@@ -16,6 +17,17 @@ const getCryptoProvider = async (mnemonic, networkId) => {
   return await ShelleyJsCryptoProvider({
     walletSecretDef,
     network,
+    config: {shouldExportPubKeyBulk: true},
+  })
+}
+
+const getExodusCryptoProvider = async (mnemonic: string) => {
+  const walletSecretDef = await mnemonicToWalletSecretDef(mnemonic, {
+    useExodusDerivationPath: true,
+  })
+  return await ShelleyJsCryptoProvider({
+    walletSecretDef,
+    network: NETWORKS.MAINNET,
     config: {shouldExportPubKeyBulk: true},
   })
 }
@@ -46,5 +58,37 @@ describe('shelley address derivation', () => {
       'addr_test1qq3cu826yxrm8apxeata5pk5xrxxe9puqmru6ncltfv9c65a94kuhuc9jka90jnn78zd25lmm6vq8a79w9yjt8p4ykwse06frk'
 
     assert.equal(address, expected)
+  })
+})
+
+describe("Exodus mnemonic derivation (BIP39 + m/44'/1815'/0'/0/0)", () => {
+  const exodusMnemonic =
+    'sleep panda scene require front glare loud discover above wrap rail timber'
+
+  it('should derive mainnet base address #0 matching Exodus wallet', async () => {
+    const cp = await getExodusCryptoProvider(exodusMnemonic)
+    const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
+    const {address} = await addrGen(0)
+    const expected =
+      'addr1qx7vkex7xwgxljmh2fj24gjt8pprm75uswyads6r2k3m8cauedjduvusdl9hw5ny423ykwzz8hafequf6mp5x4drk03s03t9un'
+    assert.equal(address, expected)
+  })
+
+  it("should derive distinct receive addresses at m/44'/1815'/{n}'/0/0", async () => {
+    const cp = await getExodusCryptoProvider(exodusMnemonic)
+    const addrGen = ShelleyBaseAddressProvider(cp, 0, false)
+    const a0 = (await addrGen(0)).address
+    const a1 = (await addrGen(1)).address
+    const a2 = (await addrGen(2)).address
+    assert.notStrictEqual(a0, a1)
+    assert.notStrictEqual(a1, a2)
+    assert.equal(
+      a1,
+      'addr1qy430s2e40fv2m4n3qclfgzm5h8jhh0jvw3tlwc382g0zpetzlq4n27jc4ht8zp37js9hfw090wlycazh7a3zw5s7yrs4e2mxe'
+    )
+    assert.equal(
+      a2,
+      'addr1q9qhghd65zrsz93m0c3cqfp8ve5jfyuq30klr8up0fzzemzpw3wm4gy8qytrkl3rsqjzwenfyjfcpzld7x0cz7jy9nkqnf7r2s'
+    )
   })
 })
