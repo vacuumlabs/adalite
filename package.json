@@ -46,8 +46,10 @@
     ]
   },
   "dependencies": {
+    "@scure/bip32": "^2.0.1",
     "@sentry/node": "^6.15.0",
     "babel-regenerator-runtime": "^6.5.0",
+    "bip39": "^3.1.0",
     "body-parser": "^1.20.4",
     "cardano-crypto.js": "^6.1.2",
     "cbor": "^8.1.0",
@@ -108,7 +110,6 @@
     "redisscan/redis": "^3.1.2",
     "redisscan/async": "^2.6.4",
     "cookie": "^0.7.0",
-    "elliptic": "^6.6.0",
-    "mocha-headless-chrome/puppeteer/tar-fs": "2.1.4"
+    "elliptic": "^6.6.0"
   }
 }
