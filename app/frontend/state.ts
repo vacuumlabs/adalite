@@ -62,6 +62,7 @@ export interface State {
     mnemonicInputValue: string
     mnemonicInputError: {code: InternalErrorReason} | null
     formIsValid: boolean
+    useExodusDerivationPath: boolean
   }
   cryptoProviderInfo?: CryptoProviderInfo
   isDemoWallet?: boolean
@@ -179,6 +180,7 @@ const initialState: State = {
     mnemonicInputValue: '',
     mnemonicInputError: null,
     formIsValid: false,
+    useExodusDerivationPath: false,
   },
   shouldShowMnemonicInfoAlert: false,
 
