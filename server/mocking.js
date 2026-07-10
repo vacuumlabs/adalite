@@ -70,13 +70,13 @@ module.exports = function(app) {
   })
 
   // the remaining requests are redirected to the actual blockchain explorer
-  app.get('/api/*', async (req, res) => {
+  app.get('/api/*path', async (req, res) => {
     return res.json(
       await request(`${process.env.ADALITE_BLOCKCHAIN_EXPLORER_URL}${req.originalUrl}`)
     )
   })
 
-  app.post('/api/*', async (req, res, next) => {
+  app.post('/api/*path', async (req, res, next) => {
     if (req.url === '/api/poolMeta' || req.url === '/api/bulk/tokens/metadata') {
       return next()
     }

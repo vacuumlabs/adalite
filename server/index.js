@@ -30,8 +30,6 @@ Sentry.init({
 
 app.use(Sentry.Handlers.requestHandler())
 
-express.static.mime.types.wasm = 'application/wasm'
-
 app.use(bodyParser.json({limit: '256kb'}))
 app.use(compression())
 
@@ -86,7 +84,7 @@ if (backendConfig.ADALITE_ENABLE_SERVER_MOCKING_MODE === 'true') {
 }
 require('./poolInfoGetter')(app)
 
-app.get('*', (req, res) => {
+app.get('/{*splat}', (req, res) => {
   const serverUrl = backendConfig.ADALITE_SERVER_URL
 
   // This fix to invalidate browser cache with appVersionQueryParam after app deploy is not ideal

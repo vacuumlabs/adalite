@@ -143,6 +143,8 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
 
   const [fieldValue, setFieldValue] = useState('')
   const [error, setError] = useState<Error | null>(null)
+  const userEditedPoolField = useRef(false)
+  const previousRecommendedPoolHash = useRef<string | null>(null)
 
   const handleInputValidation = useCallback(
     (value: string) => {
@@ -172,6 +174,7 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
 
   const handleOnInput = (event: any): void => {
     const newValue: string = event?.target?.value
+    userEditedPoolField.current = true
     setFieldValue(newValue)
     handleOnStopTyping(() => handleInputValidation(newValue), 100)
   }
@@ -179,13 +182,23 @@ const Delegate = ({withAccordion, title}: Props): h.JSX.Element => {
   // init "stake pool input" and refresh it when "currentDelegation" changes
   useEffect(() => {
     const recommendedPoolHash =
-      poolRecommendation?.recommendedPoolHash || currentDelegation?.poolHash
+      poolRecommendation?.recommendedPoolHash || currentDelegation?.poolHash || null
 
-    if (recommendedPoolHash) {
+    if (recommendedPoolHash !== previousRecommendedPoolHash.current) {
+      previousRecommendedPoolHash.current = recommendedPoolHash
+      userEditedPoolField.current = false
+    }
+
+    if (recommendedPoolHash && !userEditedPoolField.current && validStakepoolDataProvider) {
       setFieldValue(recommendedPoolHash)
       handleInputValidation(recommendedPoolHash)
     }
-  }, [currentDelegation, handleInputValidation, poolRecommendation])
+  }, [
+    currentDelegation?.poolHash,
+    poolRecommendation?.recommendedPoolHash,
+    validStakepoolDataProvider,
+    handleInputValidation,
+  ])
 
   const delegationHandler = async (): Promise<void> => await delegate()
 

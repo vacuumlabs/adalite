@@ -1,12 +1,10 @@
-# ws - recursive dep of mocha-headless-chrome
-GHSA-3h5v-q93c-6h6q
-
 # ip - no available patch at the time
 GHSA-2p57-rm9w-gvfp
 GHSA-mgfv-m47x-4wqp
 
 # tmp - low severity vulnerability with no update upstream in `device` package 
 GHSA-52f5-9888-hmc6
+GHSA-ph9p-34f9-6g65
 
 # elliptic - no fix so far
 GHSA-848j-6mx2-7j84
@@ -16,5 +14,5 @@ GHSA-3ppc-4f35-3m26
 GHSA-23c5-xmqv-rm74
 GHSA-7r86-cg39-jmmj
 
-# serialize-javascript - recursive dependency of webpack
-GHSA-5c6j-r48x-rmvq
+# uuid - recursive dependency of universal-analytics
+GHSA-w5hq-g745-h8pq

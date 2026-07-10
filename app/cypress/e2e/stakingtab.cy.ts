@@ -26,6 +26,20 @@ describe('Staking tab', () => {
       })
   })
 
+  it('Validate invalid stake pool id', () => {
+    const poolId = 'invalid_id'
+    cy.dataCy('PoolDelegationTextField')
+      .should('be.visible')
+      .invoke('val')
+      .should('match', /^[0-9a-f]{56}$/)
+    cy.dataCy('PoolDelegationTextField').clear().type(poolId)
+
+    cy.contains(/Enter a valid (ticker or )?stakepool id\./).should('be.visible')
+    cy.get('@DelegateButton')
+      .should('be.disabled')
+      .and('be.visible')
+  })
+
   it('Delegate to a valid pool', () => {
     const poolId = '1d9302a3fb4b3b1935e02b27f0339798d3f08a55fbfdcd43a449a96f'
     cy.dataCy('PoolDelegationTextField')
@@ -49,18 +63,5 @@ describe('Staking tab', () => {
     cy.contains('Submitting transaction...').should('be.visible')
     cy.contains('Reloading wallet...').should('be.visible')
     cy.contains('Reloading wallet...').should('not.exist')
-  })
-
-  it('Validate invalid stake pool id', () => {
-    const poolId = 'invalid_id'
-    cy.dataCy('PoolDelegationTextField')
-      .should('be.visible')
-      .clear()
-      .type(poolId)
-
-    cy.contains('Enter a valid stakepool id.').should('be.visible')
-    cy.get('@DelegateButton')
-      .should('be.disabled')
-      .and('be.visible')
   })
 })
