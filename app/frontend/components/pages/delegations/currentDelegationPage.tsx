@@ -90,7 +90,7 @@ const CurrentDelegationPage = ({
                 </a>
               </div>
             )}
-            {currentDelegationReward.distributionEpoch && currentDelegationReward.rewardDate && (
+            {currentDelegationReward?.distributionEpoch && currentDelegationReward?.rewardDate && (
               <div className="current-delegation-id">
                 Next reward:{' '}
                 <EpochDateTime
@@ -112,7 +112,7 @@ const CurrentDelegationPage = ({
         <p>The funds are currently undelegated. Delegate now.</p>
       )}
       {nearestReward &&
-        nearestReward.distributionEpoch !== currentDelegationReward.distributionEpoch && (
+        nearestReward.distributionEpoch !== currentDelegationReward?.distributionEpoch && (
         <Fragment>
           <h2 className="card-title margin-top small-margin">Reward from previous pool</h2>
           <div className="current-delegation-wrapper">
