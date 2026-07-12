@@ -425,7 +425,7 @@ export type ConversionRates = {
   data: {
     USD: number
     EUR: number
-  }
+  } | null
   timestamp: number
 }
 

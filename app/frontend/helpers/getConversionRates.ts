@@ -1,7 +1,9 @@
 import {State} from '../state'
 import {ConversionRates} from '../types'
-import request from '../wallet/helpers/request'
 import * as assert from 'assert'
+
+const COINGECKO_PRICE_URL =
+  'https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd,eur'
 
 async function getConversionRates(state: State): Promise<ConversionRates> {
   let conversionRates = state.conversionRates
@@ -19,9 +21,24 @@ async function getConversionRates(state: State): Promise<ConversionRates> {
 }
 
 async function fetchConversionRates(): Promise<ConversionRates['data']> {
-  return await request('https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR').catch(
-    (e) => null
-  )
+  try {
+    const response = await fetch(COINGECKO_PRICE_URL, {credentials: 'omit'})
+    if (!response.ok) {
+      return null
+    }
+
+    const data = await response.json()
+    if (!data?.cardano) {
+      return null
+    }
+
+    return {
+      USD: data.cardano.usd,
+      EUR: data.cardano.eur,
+    }
+  } catch (e) {
+    return null
+  }
 }
 
 export default getConversionRates

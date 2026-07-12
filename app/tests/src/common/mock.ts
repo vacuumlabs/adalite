@@ -90,12 +90,14 @@ const mock = (ADALITE_CONFIG) => {
 
   function mockGetConversionRates() {
     fetchMock.mock({
-      matcher: 'https://min-api.cryptocompare.com/data/price?fsym=ADA&tsyms=USD,EUR',
+      matcher: 'https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd,eur',
       response: {
         status: 200,
         body: {
-          USD: '0.08245',
-          EUR: '0.07364',
+          cardano: {
+            usd: 0.08245,
+            eur: 0.07364,
+          },
         },
       },
       sendAsJson: true,

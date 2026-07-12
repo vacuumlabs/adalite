@@ -93,11 +93,11 @@ const Footer = () => {
             Conversion rates from{' '}
             <a
               className="conversion-link"
-              href="https://www.cryptocompare.com/api/"
+              href="https://www.coingecko.com/en/api"
               target="_blank"
               rel="noopener"
             >
-              CryptoCompare
+              CoinGecko
             </a>
           </div>
         )}
