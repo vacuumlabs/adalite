@@ -98,6 +98,10 @@ module.exports = {
             loader: 'sass-loader',
             options: {
               sourceMap: !isProd,
+              sassOptions: {
+                // Keep existing @import until migrated to @use; silence Dart Sass 1.79+ noise
+                silenceDeprecations: ['import', 'legacy-js-api'],
+              },
             },
           },
         ],
@@ -147,6 +151,7 @@ module.exports = {
     ],
   },
   resolve: {
+    fullySpecified: false,
     fallback: {
       fs: false,
       path: require.resolve('path-browserify'),

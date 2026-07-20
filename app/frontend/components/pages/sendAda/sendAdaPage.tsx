@@ -181,19 +181,16 @@ const SendAdaPage = ({
     () => [
       adaAsset,
       ...tokenBalance
-        .sort((a: Token, b: Token) => b.quantity.comparedTo(a.quantity))
-        .map(
-          (token: Token): DropdownAssetItem => ({
-            ...token,
-            fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
-            type: AssetFamily.TOKEN,
-            assetNameUtf8: assetNameHex2Readable(token.assetName),
-            ticker:
-              tokensMetadata &&
-              tokensMetadata.get(createTokenRegistrySubject(token.policyId, token.assetName))
-                ?.ticker,
-          })
-        ),
+        .sort((a: Token, b: Token) => b.quantity.comparedTo(a.quantity) ?? 0)
+        .map((token: Token): DropdownAssetItem => ({
+          ...token,
+          fingerprint: encodeAssetFingerprint(token.policyId, token.assetName),
+          type: AssetFamily.TOKEN,
+          assetNameUtf8: assetNameHex2Readable(token.assetName),
+          ticker:
+            tokensMetadata &&
+            tokensMetadata.get(createTokenRegistrySubject(token.policyId, token.assetName))?.ticker,
+        })),
     ],
     [adaAsset, tokenBalance, tokensMetadata]
   )
