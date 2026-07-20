@@ -44,7 +44,13 @@ jobs:
     steps:
       - setup
       - browser-tools/install-chrome
-      - run: yarn test-chrome-headless
+      # mocha-headless-chrome/puppeteer looks in ~/.cache/puppeteer by default;
+      # that cache is not restored in CI, so point at the system Chrome above.
+      - run:
+          name: yarn test-chrome-headless
+          environment:
+            PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome
+          command: yarn test-chrome-headless
 
   test_integration:
     <<: *defaults
