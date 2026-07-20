@@ -3,7 +3,14 @@ import {HARDENED_THRESHOLD} from './../constants'
 import {derivePublic as deriveChildXpub} from 'cardano-crypto.js'
 import {isShelleyPath} from '../../wallet/shelley/helpers/addresses'
 import {BIP32Path} from '../../types'
-import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
+import {
+  InternalError,
+  InternalErrorReason,
+  UnexpectedError,
+  UnexpectedErrorReason,
+} from '../../errors'
+
+const EXTENDED_PUBLIC_KEY_LENGTH = 64
 
 const BYRON_V2_PATH = [HARDENED_THRESHOLD + 44, HARDENED_THRESHOLD + 1815, HARDENED_THRESHOLD]
 
@@ -51,6 +58,15 @@ function CachedDeriveXpubFactory(
   async function deriveXpubNonhardenedFn(derivationPath: BIP32Path) {
     const lastIndex = derivationPath.slice(-1)[0]
     const parentXpub = await deriveXpub(derivationPath.slice(0, -1))
+    if (!Buffer.isBuffer(parentXpub) || parentXpub.length !== EXTENDED_PUBLIC_KEY_LENGTH) {
+      throw new InternalError(InternalErrorReason.CryptoProviderError, {
+        message: `Invalid parent xpub length for path ${JSON.stringify(
+          derivationPath
+        )}: expected ${EXTENDED_PUBLIC_KEY_LENGTH} bytes, got ${
+          Buffer.isBuffer(parentXpub) ? parentXpub.length : typeof parentXpub
+        }`,
+      })
+    }
     return deriveChildXpub(parentXpub, lastIndex, derivationScheme.ed25519Mode)
   }
 
