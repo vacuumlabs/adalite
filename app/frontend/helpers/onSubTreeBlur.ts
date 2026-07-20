@@ -1,10 +1,10 @@
-import {Ref} from 'preact/hooks'
+import {RefObject} from 'preact'
 
-// Put this inside onfocusout property
+// Put this inside onFocusOut property
 // This function ensure that:
 // - clicking inside root node tree does not trigger callback and
 // - clicking outside of root node tree does trigger callback
-const onSubTreeBlur = (event, root: Ref<HTMLDivElement>, callback: () => void): void => {
+const onSubTreeBlur = (event, root: RefObject<HTMLDivElement>, callback: () => void): void => {
   // node walk up the tree
   let target = event.relatedTarget // element receiving focus
   while (target && target !== root?.current) {

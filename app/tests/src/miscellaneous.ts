@@ -3,10 +3,11 @@ import {encryptWithPassword} from '../../frontend/helpers/catalyst'
 
 describe('Catalyst voting encrypting with password', () => {
   it('should properly encrypt a password', async () => {
-    // @ts-expect-error overwrite getRandomValues to be deterministic
-    window.crypto.getRandomValues = (randBytes) => {
-      // @ts-expect-error
-      randBytes = Buffer.from('0'.repeat(randBytes.length), 'hex')
+    // overwrite getRandomValues to be deterministic
+    window.crypto.getRandomValues = <T extends ArrayBufferView>(array: T): T => {
+      const bytes = new Uint8Array(array.buffer, array.byteOffset, array.byteLength)
+      bytes.fill(0)
+      return array
     }
 
     const passwordPin = Buffer.from('7777'.split('').map(Number))

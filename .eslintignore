@@ -1,5 +1,4 @@
 node_modules/
 app/dist/
 app/tests/dist/
-app/node_modules/
 sandbox.js

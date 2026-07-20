@@ -10,11 +10,6 @@
     "jsx": "react",
     "jsxFactory": "h",
     "baseUrl": ".",
-    "paths": {
-      "preact": [
-        "app/node_modules/preact/dist/preact.d.ts"
-      ]
-    },
     "noErrorTruncation": true,
     "downlevelIteration": true,
     "lib": [

@@ -1,5 +1,5 @@
-import {Fragment, h} from 'preact'
-import {Ref, useState} from 'preact/hooks'
+import {Fragment, h, RefObject} from 'preact'
+import {useState} from 'preact/hooks'
 import {stripNonNumericCharacters} from '../../../../helpers/common'
 import {VOTING_PIN_LENGTH} from '../../../../wallet/constants'
 import Alert from '../../../common/alert'
@@ -19,7 +19,7 @@ const PinPage = ({
   updatePin: (e) => void
   nextStep: () => void
   previousStep: () => void
-  confirmPinRef: Ref<HTMLInputElement>
+  confirmPinRef: RefObject<HTMLInputElement>
 }): h.JSX.Element => {
   // https://github.com/preactjs/preact/issues/1899
   // PIN is encapsulated due to bug in preact which makes inputs uncontrolled

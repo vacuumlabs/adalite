@@ -21,12 +21,6 @@
       }
     ],
     "no-unused-vars": "off",
-    "import/no-restricted-paths": [
-      "error",
-      {
-        "zones": [{"target": "./app", "from": "./node_modules"}]
-      }
-    ],
     "import/no-extraneous-dependencies": "error"
   },
   "overrides": [

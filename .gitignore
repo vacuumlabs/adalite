@@ -8,7 +8,6 @@ yarn-error.log
 .DS_Store
 sandbox.js
 node_modules/
-app/node_modules/
 app/tests/dist/
 app/dist/
 server.cert
@@ -17,3 +16,6 @@ app/tests/.chrome/*
 app/tests/*.module.wasm
 app/cypress/videos/*
 app/cypress/screenshots/*
+.yarn/cache
+.yarn/install-state.gz
+.pnp.*
