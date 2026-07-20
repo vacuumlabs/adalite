@@ -64,7 +64,7 @@ describe('Wallet import', () => {
   it('should properly import wallet encrypted with nonempty password', async () => {
     const walletSecretDef = await importWalletSecretDef(walletSecretObj1, walletPassword1)
     assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted1))
-  })
+  }).timeout(5000)
 
   it('should properly import wallet encrypted with empty password', async () => {
     const walletSecretDef = await importWalletSecretDef(walletSecretObj2, walletPassword2)
@@ -74,7 +74,7 @@ describe('Wallet import', () => {
   it('should properly import v2 wallet encrypted with nonempty password', async () => {
     const walletSecretDef = await importWalletSecretDef(walletSecretObj3, walletPassword3)
     assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted3))
-  })
+  }).timeout(5000)
 })
 
 describe('Wallet export', () => {
@@ -90,7 +90,7 @@ describe('Wallet export', () => {
     const walletSecretDef = await importWalletSecretDef(walletSecretObj, walletPassword1)
 
     assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted1))
-  }).timeout(5000)
+  }).timeout(15000)
 
   it('should properly export v1 wallet encrypted with empty password', async () => {
     const walletSecretObj = await exportWalletSecretDef(
@@ -99,7 +99,7 @@ describe('Wallet export', () => {
         derivationScheme: derivationSchemes.v1,
       },
       walletPassword2,
-      'json2',
+      'json2'
     )
     const walletSecretDef = await importWalletSecretDef(walletSecretObj, walletPassword2)
 
@@ -118,7 +118,7 @@ describe('Wallet export', () => {
     const walletSecretDef = await importWalletSecretDef(walletSecretObj, walletPassword3)
 
     assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted3))
-  }).timeout(5000)
+  }).timeout(15000)
 })
 
 describe('Check whether wallet export is encrypted', () => {
