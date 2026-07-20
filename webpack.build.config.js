@@ -136,6 +136,14 @@ module.exports = {
         test: /\.wasm$/,
         type: 'webassembly/async',
       },
+      // ESM packages (e.g. @bitboxswiss/bitbox-api / @bufbuild/protobuf) require this
+      // so webpack can resolve extensionless imports like `process/browser`.
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
     ],
   },
   resolve: {
@@ -150,6 +158,7 @@ module.exports = {
       'file-saver': `${__dirname}/app/frontend/libs/file-saver`,
       'qrious': `${__dirname}/app/frontend/libs/qrious`,
       'react': 'preact/compat',
+      'process/browser': require.resolve('process/browser.js'),
     },
     extensions: ['.tsx', '.ts', '.js', '.wasm'],
   },
@@ -164,7 +173,7 @@ module.exports = {
       Buffer: ['buffer', 'Buffer'],
     }),
     new webpack.ProvidePlugin({
-      process: 'process/browser',
+      process: 'process/browser.js',
     }),
   ].filter(Boolean),
 }

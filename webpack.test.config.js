@@ -26,12 +26,19 @@ module.exports = {
         test: /\.wasm$/,
         type: 'webassembly/async',
       },
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
     ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
-      react: 'preact/compat',
+      'react': 'preact/compat',
+      'process/browser': require.resolve('process/browser.js'),
     },
     fallback: {
       fs: false,
@@ -46,7 +53,7 @@ module.exports = {
       Buffer: ['buffer', 'Buffer'],
     }),
     new webpack.ProvidePlugin({
-      process: 'process/browser',
+      process: 'process/browser.js',
     }),
   ],
 }

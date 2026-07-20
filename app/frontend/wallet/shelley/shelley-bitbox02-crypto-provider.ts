@@ -24,7 +24,7 @@ import type {
   CardanoOutput,
   CardanoShelleyWitness,
   PairedBitBox,
-} from 'bitbox-api'
+} from '@bitboxswiss/bitbox-api'
 import {
   AddressToPathMapper,
   BIP32Path,
@@ -52,7 +52,7 @@ const ShelleyBitBox02CryptoProvider = async ({
   network,
   config,
 }: CryptoProviderParams): Promise<any> => {
-  const bitbox = await import('bitbox-api')
+  const bitbox = await import('@bitboxswiss/bitbox-api')
 
   if (activeBitBox02 !== null) {
     try {
@@ -301,8 +301,8 @@ const ShelleyBitBox02CryptoProvider = async ({
     config.shouldExportPubKeyBulk && isFeatureSupported(CryptoProviderFeature.BULK_EXPORT),
     async (derivationPaths: BIP32Path[]) => {
       return await withDevice(async (pairedBitBox) => {
-        const xpubs: Uint8Array[] = await pairedBitBox.cardanoXpubs(derivationPaths)
-        return xpubs.map(Buffer.from)
+        const xpubs = await pairedBitBox.cardanoXpubs(derivationPaths)
+        return xpubs.map((xpub) => Buffer.from(xpub))
       })
     },
     isFeatureSupported(CryptoProviderFeature.BYRON)
