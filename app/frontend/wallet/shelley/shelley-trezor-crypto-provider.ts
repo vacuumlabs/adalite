@@ -95,15 +95,13 @@ const ShelleyTrezorCryptoProvider = async ({
   const getType = () => CryptoProviderType.TREZOR
 
   // Soft derivation needs the 64-byte extended key (pubkey ‖ chain code).
-  // Connect v9 put that in `publicKey`; newer hosted Connect puts the raw
-  // 32-byte key there and exposes the full key as `xpub`. `node` is present
-  // in both shapes, so prefer `xpub` when present, otherwise rebuild from node.
-  const cardanoXpubFromResponse = (key: TrezorTypes.CardanoPublicKey & {xpub?: string}): Buffer => {
-    const xpubHex = key.xpub ?? `${key.node.public_key}${key.node.chain_code}`
-    const xpub = Buffer.from(xpubHex, 'hex')
+  // Rebuild from HD node fields, which Connect returns consistently across versions.
+  // Do not use `publicKey` — its meaning changed (full xpub vs raw 32-byte key).
+  const cardanoXpubFromResponse = (key: TrezorTypes.CardanoPublicKey): Buffer => {
+    const xpub = Buffer.from(`${key.node.public_key}${key.node.chain_code}`, 'hex')
     if (xpub.length !== 64) {
       throw new InternalError(InternalErrorReason.TrezorError, {
-        message: `Invalid Cardano xpub length: expected 64 bytes, got ${xpub.length} (hex length ${xpubHex.length})`,
+        message: `Invalid Cardano xpub length: expected 64 bytes, got ${xpub.length}`,
       })
     }
     return xpub
