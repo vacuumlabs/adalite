@@ -94,6 +94,34 @@ const ShelleyTrezorCryptoProvider = async ({
 
   const getType = () => CryptoProviderType.TREZOR
 
+  // Connect v9 maps the device xpub into `publicKey`. Newer Connect (hosted iframe)
+  // puts the raw 32-byte key in `publicKey` and the 64-byte extended key in `xpub`.
+  // Soft derivation requires the full 64-byte xpub (pubkey ‖ chain code).
+  const cardanoXpubFromResponse = (
+    key: TrezorTypes.CardanoPublicKey & {
+      xpub?: string
+      node?: {public_key?: string; chain_code?: string}
+    }
+  ): Buffer => {
+    const fromNode =
+      key.node?.public_key && key.node?.chain_code
+        ? `${key.node.public_key}${key.node.chain_code}`
+        : undefined
+    const xpubHex = key.xpub ?? fromNode ?? key.publicKey
+    if (typeof xpubHex !== 'string') {
+      throw new InternalError(InternalErrorReason.TrezorError, {
+        message: `Invalid Cardano xpub: expected hex string, got ${typeof xpubHex}`,
+      })
+    }
+    const xpub = Buffer.from(xpubHex, 'hex')
+    if (xpub.length !== 64) {
+      throw new InternalError(InternalErrorReason.TrezorError, {
+        message: `Invalid Cardano xpub length: expected 64 bytes, got ${xpub.length} (hex length ${xpubHex.length})`,
+      })
+    }
+    return xpub
+  }
+
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk,
@@ -108,7 +136,7 @@ const ShelleyTrezorCryptoProvider = async ({
       if (!isSuccessful(response.payload)) {
         throw new InternalError(InternalErrorReason.TrezorError, {message: response.payload.error})
       }
-      return response.payload.map(({publicKey}) => Buffer.from(publicKey, 'hex'))
+      return response.payload.map(cardanoXpubFromResponse)
     }
   )
 
