@@ -5,7 +5,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:22.20-browsers
+    - image: cimg/node:24.18-browsers
   working_directory: ~/repo
 
 commands:
@@ -14,16 +14,15 @@ commands:
       - checkout
       - restore_cache:
           keys:
-            - dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
+            - dependencies-{{ checksum "yarn.lock" }}-{{ checksum ".yarnrc.yml" }}
       - run: cp .env.example .env
-      - run: yarn install
-      - run: cd app && yarn install && cd ../
+      - run: corepack enable
+      - run: yarn install --immutable
       - save_cache:
           paths:
             - node_modules
-            - app/node_modules
             - ../.cache/Cypress
-          key: dependencies-{{ checksum "yarn.lock" }}-{{ checksum "app/yarn.lock"}}
+          key: dependencies-{{ checksum "yarn.lock" }}-{{ checksum ".yarnrc.yml" }}
 
 jobs:
   audit:
@@ -31,7 +30,6 @@ jobs:
     steps:
       - setup
       - run: yarn improved-yarn-audit
-      - run: cd app && yarn improved-yarn-audit && cd ../
 
   lint:
     <<: *defaults

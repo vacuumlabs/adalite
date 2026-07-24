@@ -35,6 +35,7 @@ module.exports = {
     ],
   },
   resolve: {
+    fullySpecified: false,
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
       'react': 'preact/compat',

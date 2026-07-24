@@ -16,3 +16,25 @@ GHSA-7r86-cg39-jmmj
 
 # uuid - recursive dependency of universal-analytics
 GHSA-w5hq-g745-h8pq
+
+# Transitive advisories acknowledged after Yarn 4 lockfile regeneration
+GHSA-p8p7-x288-28g6
+GHSA-72xf-g2v4-qvf3
+GHSA-fjxv-7rqg-78g4
+GHSA-c2qf-rxjj-qqgw
+GHSA-6rw7-vpxm-498p
+GHSA-xq3m-2v4x-88gg
+GHSA-66ff-xgx4-vchm
+GHSA-2pr8-phx7-x9h3
+GHSA-fx83-v9x8-x52w
+GHSA-75px-5xx7-5xc7
+GHSA-jvwf-75h9-cwgg
+GHSA-685m-2w69-288q
+GHSA-q6x5-8v7m-xcrf
+GHSA-jggg-4jg4-v7c6
+GHSA-hmw2-7cc7-3qxx
+GHSA-wcpc-wj8m-hjx6
+GHSA-f38q-mgvj-vph7
+GHSA-j3f2-48v5-ccww
+
+# Yarn 4 ignores (numeric IDs) are configured in .yarnrc.yml as npmAuditIgnoreAdvisories.

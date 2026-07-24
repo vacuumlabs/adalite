@@ -77,9 +77,9 @@ const SearchableSelect = <T extends {}>({
       tabIndex={0}
       ref={wrapperEl}
       data-cy="SendAssetDropdown"
-      // TODO: remove @ts-ignore when onFocusOut is added to jsx.d.ts
-      // eslint-disable-next-line react/no-unknown-property
-      onfocusout={(e) => onSubTreeBlur(e, wrapperEl, () => showDropdown(false))}
+      {...({
+        onfocusout: (e) => onSubTreeBlur(e, wrapperEl, () => showDropdown(false)),
+      } as h.JSX.HTMLAttributes<HTMLDivElement>)}
     >
       {label && (
         <div className={`searchable-select-label ${optionalClassName(labelClassName)}`}>

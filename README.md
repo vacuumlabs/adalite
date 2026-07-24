@@ -24,6 +24,12 @@ See https://github.com/vacuumlabs/adalite/wiki/AdaLite-FAQ#compatibility-with-ot
 
 ## Run project locally
 
+Requires **Node.js 24** and **Yarn 4** (via [Corepack](https://nodejs.org/api/corepack.html)).
+
+```
+corepack enable
+```
+
 #### Configuration
 
 Prepare `.env` file

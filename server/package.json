@@ -1,0 +1,32 @@
+{
+  "name": "adalite-server",
+  "version": "6.18.1",
+  "private": true,
+  "description": "Express server for AdaLite wallet",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node index.js"
+  },
+  "dependencies": {
+    "@sentry/node": "^6.15.0",
+    "body-parser": "^2.3.0",
+    "cbor": "^8.1.0",
+    "check-types": "^8.0.2",
+    "compression": "^1.7.2",
+    "device": "^0.3.12",
+    "dotenv": "^6.0.0",
+    "express": "^5.2.1",
+    "express-basic-auth": "^1.2.0",
+    "express-ipfilter": "^1.1.2",
+    "express-mung": "^0.5.1",
+    "isomorphic-fetch": "^3.0.0",
+    "normalize-url": "^4.0.0",
+    "redis": "^3.1.2",
+    "redisscan": "^2.0.0",
+    "universal-analytics": "^0.5.3",
+    "webpack": "^5.90.3",
+    "webpack-dev-middleware": "^7.0.0",
+    "webpack-hot-middleware": "^2.26.1"
+  }
+}
