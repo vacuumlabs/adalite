@@ -16,3 +16,13 @@ GHSA-7r86-cg39-jmmj
 
 # uuid - recursive dependency of universal-analytics
 GHSA-w5hq-g745-h8pq
+
+# @typescript-eslint
+GHSA-mh99-v99m-4gvg
+
+# css-loader
+GHSA-r28c-9q8g-f849
+
+# webpack
+GHSA-v2hh-gcrm-f6hx
+
