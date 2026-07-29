@@ -13,7 +13,6 @@ import {
   DeregisterStakingKeyTransactionSummary,
 } from '../types'
 import debounceEvent from '../helpers/debounceEvent'
-import * as assert from 'assert'
 import BigNumber from 'bignumber.js'
 
 export default (store: Store) => {
@@ -97,11 +96,15 @@ export default (store: Store) => {
           delegationFee: txPlanResult.txPlan.fee.plus(txPlanResult.txPlan.deposit) as Lovelace,
         },
       })
-      assert(newState.shelleyDelegation?.selectedPool != null)
+      const selectedPool = newState.shelleyDelegation?.selectedPool
+      if (selectedPool == null) {
+        setState({calculatingDelegationFee: false})
+        return
+      }
       const delegationTransactionSummary: DelegateTransactionSummary = {
         type: TxType.DELEGATE,
         deposit: txPlanResult.txPlan.deposit,
-        stakePool: newState.shelleyDelegation.selectedPool,
+        stakePool: selectedPool,
       }
       setTransactionSummary(getState(), {
         plan: txPlanResult.txPlan,
@@ -131,9 +134,11 @@ export default (store: Store) => {
   const debouncedCalculateDelegationFee = debounceEvent(calculateDelegationFee, 500)
 
   const updateStakePoolIdentifier = (state: State, poolHash: string): void => {
-    assert(state.validStakepoolDataProvider != null)
-    const newPool =
-      (poolHash && state.validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)) || null
+    const validStakepoolDataProvider = state.validStakepoolDataProvider
+    if (validStakepoolDataProvider == null) {
+      return
+    }
+    const newPool = (poolHash && validStakepoolDataProvider.getPoolInfoByPoolHash(poolHash)) || null
     setState({
       shelleyDelegation: {
         ...state.shelleyDelegation,
@@ -162,9 +167,17 @@ export default (store: Store) => {
   }
 
   const delegate = async (state: State): Promise<void> => {
-    const delegationTxPlan = state.cachedTransactionSummaries[TxType.DELEGATE]?.plan
-    assert(delegationTxPlan != null)
-    return await confirmTransaction(state, {
+    let delegationTxPlan = state.cachedTransactionSummaries[TxType.DELEGATE]?.plan
+    if (delegationTxPlan == null) {
+      // Cache can be cleared by unrelated flows while the UI still looks ready.
+      await calculateDelegationFee()
+      state = getState()
+      delegationTxPlan = state.cachedTransactionSummaries[TxType.DELEGATE]?.plan
+    }
+    if (delegationTxPlan == null) {
+      return
+    }
+    await confirmTransaction(state, {
       txConfirmType: TxType.DELEGATE,
       txPlan: delegationTxPlan,
       sourceAccountIndex: state.sourceAccountIndex,
