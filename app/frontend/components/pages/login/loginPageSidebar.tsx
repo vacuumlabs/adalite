@@ -106,6 +106,10 @@ const MnemonicContent = () => (
           </a>{' '}
           derivation.
         </p>
+        <p>
+          If balance looks wrong or empty after unlocking, try another derivation option — the wrong
+          scheme produces a different wallet.
+        </p>
       </Alert>
     </div>
     <Alert alertType="warning sidebar">
