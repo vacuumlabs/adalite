@@ -11,7 +11,8 @@ import StakingPage from './pages/staking/stakingPage'
 const TopLevelRouter = connect((state) => ({
   pathname: state.router.pathname,
   walletIsLoaded: state.walletIsLoaded,
-}))(({pathname, walletIsLoaded}) => {
+  isExodusWallet: state.isExodusWallet,
+}))(({pathname, walletIsLoaded, isExodusWallet}) => {
   // unlock not wrapped in main
   const currentTab = pathname.split('/')[1]
   if (!walletIsLoaded && currentTab !== 'staking') {
@@ -30,7 +31,12 @@ const TopLevelRouter = connect((state) => ({
       content = <SendPage />
       break
     case 'exportWallet':
-      content = <ExportWalletPage />
+      if (isExodusWallet) {
+        window.history.pushState({}, 'txHistory', 'txHistory')
+        content = <DashboardPage />
+      } else {
+        content = <ExportWalletPage />
+      }
       break
     case 'staking':
       content = <StakingPage />

@@ -35,7 +35,10 @@ export const shouldShowPremiumBannerSelector = (state: State): boolean => {
 }
 
 export const shouldShowExportOptionSelector = (state: State): boolean => {
-  const {authMethod} = state
+  const {authMethod, isExodusWallet} = state
+  if (isExodusWallet) {
+    return false
+  }
   return authMethod === AuthMethodType.MNEMONIC || authMethod === AuthMethodType.KEY_FILE
 }
 

@@ -54,6 +54,7 @@ export interface State {
   shouldShowLogoutNotification: boolean
   walletIsLoaded: boolean
   isShelleyCompatible: any
+  isExodusWallet: boolean
   shouldShowNonShelleyCompatibleDialog: any
   walletLoadingError?: any
   shouldShowWalletLoadingErrorModal?: boolean
@@ -175,6 +176,7 @@ const initialState: State = {
   shouldShowLogoutNotification,
   walletIsLoaded: false,
   isShelleyCompatible: true,
+  isExodusWallet: false,
   shouldShowNonShelleyCompatibleDialog: false,
   mnemonicAuthForm: {
     mnemonicInputValue: '',

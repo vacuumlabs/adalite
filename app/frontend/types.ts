@@ -34,7 +34,7 @@ export interface CryptoProvider {
     addressToPathMapper: AddressToPathMapper
   ) => Promise<CborizedCliWitness>
   getWalletSecret: () => Buffer | void
-  /** Exodus mnemonic login only; used when re-exporting wallet JSON */
+  /** Exodus mnemonic login: BIP39 seed kept in memory for path derivation */
   getExodusBip39Seed?: () => Buffer | undefined
   getType: () => CryptoProviderType
   getDerivationScheme: () => DerivationScheme

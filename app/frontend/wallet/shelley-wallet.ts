@@ -61,12 +61,10 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   }
 
   function getWalletSecretDef() {
-    const def = {
+    return {
       rootSecret: cryptoProvider.getWalletSecret(),
       derivationScheme: cryptoProvider.getDerivationScheme(),
     }
-    const exodusSeed = cryptoProvider.getExodusBip39Seed?.()
-    return exodusSeed != null ? {...def, exodusBip39Seed: exodusSeed} : def
   }
 
   async function fetchTxInfo(txHash) {

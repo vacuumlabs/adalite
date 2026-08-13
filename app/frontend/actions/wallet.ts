@@ -205,6 +205,7 @@ export default (store: Store) => {
         sendAddress: {fieldValue: ''},
         // shelley
         isShelleyCompatible,
+        isExodusWallet,
       })
       loadAsyncWalletData()
     } catch (e) {
@@ -239,6 +240,9 @@ export default (store: Store) => {
   }
 
   const exportJsonWallet = async (state, password, walletName) => {
+    if (state.isExodusWallet) {
+      throw new Error('JSON key file export is not supported for Exodus wallets')
+    }
     const walletExport = JSON.stringify(
       await exportWalletSecretDef(getWallet().getWalletSecretDef(), password, walletName)
     )
