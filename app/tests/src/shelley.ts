@@ -102,4 +102,20 @@ describe("Exodus mnemonic derivation (BIP39 + m/44'/1815'/0'/0/0)", () => {
       'addr1qy430s2e40fv2m4n3qclfgzm5h8jhh0jvw3tlwc382g0zpetzlq4n27jc4ht8zp37js9hfw090wlycazh7a3zw5s7yrs4e2mxe'
     )
   })
+
+  it('should refuse to construct Exodus crypto provider without BIP39 seed', async () => {
+    const walletSecretDef = await mnemonicToWalletSecretDef(exodusMnemonic, {
+      twelveWordDerivation: 'exodus',
+    })
+    delete walletSecretDef.exodusBip39Seed
+    await assert.rejects(
+      () =>
+        ShelleyJsCryptoProvider({
+          walletSecretDef,
+          network: NETWORKS.MAINNET,
+          config: {shouldExportPubKeyBulk: true},
+        }),
+      /require a BIP39 seed/
+    )
+  })
 })
