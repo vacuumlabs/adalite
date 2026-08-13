@@ -1541,7 +1541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip39@npm:^1.2.1, @scure/bip39@npm:^1.5.1":
+"@scure/bip39@npm:^1.2.1, @scure/bip39@npm:^1.5.1, @scure/bip39@npm:^1.6.0":
   version: 1.6.0
   resolution: "@scure/bip39@npm:1.6.0"
   dependencies:
@@ -3322,6 +3322,7 @@ __metadata:
     "@noble/curves": "npm:^1.9.0"
     "@noble/hashes": "npm:^1.8.0"
     "@scure/bip32": "npm:^2.0.1"
+    "@scure/bip39": "npm:^1.6.0"
     "@sentry/browser": "npm:^7.120.0"
     "@testing-library/cypress": "npm:^9.0.0"
     "@trezor/connect-web": "npm:^9.7.3"
@@ -3330,7 +3331,6 @@ __metadata:
     assert: "npm:^2.0.0"
     babel-polyfill: "npm:6.26.0"
     bignumber.js: "npm:^9.0.2"
-    bip39: "npm:^3.1.0"
     bip39-light: "npm:^1.0.7"
     cardano-crypto.js: "npm:^6.1.2"
     cbor: "npm:^8.1.0"
@@ -4033,7 +4033,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bip39@npm:^3.0.2, bip39@npm:^3.1.0":
+"bip39@npm:^3.0.2":
   version: 3.1.0
   resolution: "bip39@npm:3.1.0"
   dependencies:
