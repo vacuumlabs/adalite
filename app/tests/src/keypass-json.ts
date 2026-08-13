@@ -75,6 +75,17 @@ describe('Wallet import', () => {
     const walletSecretDef = await importWalletSecretDef(walletSecretObj3, walletPassword3)
     assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted3))
   }).timeout(5000)
+
+  it('should reject Exodus keyfile imports', async () => {
+    const exodusExport = {
+      ...walletSecretObj3,
+      fileVersion: derivationSchemes.exodus.keyfileVersion,
+    }
+    await assert.rejects(
+      () => importWalletSecretDef(exodusExport, walletPassword3),
+      /Exodus wallet JSON key files are not supported/
+    )
+  })
 })
 
 describe('Wallet export', () => {
@@ -119,6 +130,21 @@ describe('Wallet export', () => {
 
     assert(walletSecretDef.rootSecret.equals(walletSecretUnencrypted3))
   }).timeout(15000)
+
+  it('should reject Exodus keyfile exports', async () => {
+    await assert.rejects(
+      () =>
+        exportWalletSecretDef(
+          {
+            rootSecret: walletSecretUnencrypted3,
+            derivationScheme: derivationSchemes.exodus,
+          },
+          walletPassword3,
+          'exodus'
+        ),
+      /not supported for Exodus/
+    )
+  })
 })
 
 describe('Check whether wallet export is encrypted', () => {

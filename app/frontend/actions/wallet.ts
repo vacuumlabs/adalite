@@ -240,11 +240,12 @@ export default (store: Store) => {
   }
 
   const exportJsonWallet = async (state, password, walletName) => {
-    if (state.isExodusWallet) {
+    const walletSecretDef = getWallet().getWalletSecretDef()
+    if (walletSecretDef.derivationScheme.type === 'exodus' || state.isExodusWallet) {
       throw new Error('JSON key file export is not supported for Exodus wallets')
     }
     const walletExport = JSON.stringify(
-      await exportWalletSecretDef(getWallet().getWalletSecretDef(), password, walletName)
+      await exportWalletSecretDef(walletSecretDef, password, walletName)
     )
 
     const blob = new Blob([walletExport], {
