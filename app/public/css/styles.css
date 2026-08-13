@@ -1876,21 +1876,6 @@ li.main-tab input + label.selected:after {
   display: block;
 }
 
-.authentication-content .mnemonic-derivation-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0 0 16px;
-  padding: 0;
-  border: none;
-}
-
-.authentication-content .mnemonic-derivation-legend {
-  margin-bottom: 4px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
 .authentication-link {
   display: block;
   margin-top: 24px;

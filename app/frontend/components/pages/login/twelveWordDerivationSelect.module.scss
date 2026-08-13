@@ -1,0 +1,42 @@
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 12px 0 16px;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.label {
+  margin-right: 16px;
+  white-space: nowrap;
+  line-height: 40px;
+}
+
+.infoLink {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 15px;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+.infoLink:global(.thin-data-balloon)[data-balloon]::after {
+  text-align: left;
+}
+
+.wrapper {
+  width: 140px;
+  flex: 0 0 140px;
+}
+
+.dropdown {
+  width: 140px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 32px 0 12px;
+  line-height: 1;
+}
