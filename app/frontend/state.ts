@@ -21,6 +21,7 @@ import {
   RegisteredTokenMetadata,
   TokenRegistrySubject,
   ConversionRates,
+  TwelveWordDerivationMode,
 } from './types'
 import {CryptoProviderInfo} from './wallet/types'
 
@@ -63,7 +64,7 @@ export interface State {
     mnemonicInputValue: string
     mnemonicInputError: {code: InternalErrorReason} | null
     formIsValid: boolean
-    useExodusDerivationPath: boolean
+    twelveWordDerivation: TwelveWordDerivationMode
   }
   cryptoProviderInfo?: CryptoProviderInfo
   isDemoWallet?: boolean
@@ -182,7 +183,7 @@ const initialState: State = {
     mnemonicInputValue: '',
     mnemonicInputError: null,
     formIsValid: false,
-    useExodusDerivationPath: false,
+    twelveWordDerivation: 'legacy',
   },
   shouldShowMnemonicInfoAlert: false,
 

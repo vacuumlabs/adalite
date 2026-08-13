@@ -23,7 +23,7 @@ const getCryptoProvider = async (mnemonic, networkId) => {
 
 const getExodusCryptoProvider = async (mnemonic: string) => {
   const walletSecretDef = await mnemonicToWalletSecretDef(mnemonic, {
-    useExodusDerivationPath: true,
+    twelveWordDerivation: 'exodus',
   })
   return await ShelleyJsCryptoProvider({
     walletSecretDef,
@@ -58,6 +58,22 @@ describe('shelley address derivation', () => {
       'addr_test1qq3cu826yxrm8apxeata5pk5xrxxe9puqmru6ncltfv9c65a94kuhuc9jka90jnn78zd25lmm6vq8a79w9yjt8p4ykwse06frk'
 
     assert.equal(address, expected)
+  })
+
+  it('should use Icarus (v2) derivation for 12-word mnemonic when selected', async () => {
+    const legacyAddress =
+      'addr_test1qq3cu826yxrm8apxeata5pk5xrxxe9puqmru6ncltfv9c65a94kuhuc9jka90jnn78zd25lmm6vq8a79w9yjt8p4ykwse06frk'
+    const walletSecretDef = await mnemonicToWalletSecretDef(mnemonic12Words, {
+      twelveWordDerivation: 'icarus',
+    })
+    assert.equal(walletSecretDef.derivationScheme.type, 'v2')
+    const cp = await ShelleyJsCryptoProvider({
+      walletSecretDef,
+      network: {networkId: NetworkId.TESTNETS} as Network,
+      config: {shouldExportPubKeyBulk: true},
+    })
+    const {address} = await ShelleyBaseAddressProvider(cp, 0, false)(0)
+    assert.notStrictEqual(address, legacyAddress)
   })
 })
 

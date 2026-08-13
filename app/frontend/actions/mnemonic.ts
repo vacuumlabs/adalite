@@ -1,5 +1,5 @@
 import {Store, State} from '../state'
-import {AuthMethodType} from '../types'
+import {AuthMethodType, TwelveWordDerivationMode} from '../types'
 import sanitizeMnemonic from '../helpers/sanitizeMnemonic'
 import {mnemonicValidator} from '../helpers/validators'
 
@@ -12,7 +12,7 @@ export default (store: Store) => {
         mnemonicInputValue: '',
         mnemonicInputError: null,
         formIsValid: false,
-        useExodusDerivationPath: false,
+        twelveWordDerivation: 'legacy',
       },
       shouldShowGenerateMnemonicDialog: true,
       authMethod: AuthMethodType.MNEMONIC,
@@ -38,8 +38,8 @@ export default (store: Store) => {
         mnemonicInputValue,
         mnemonicInputError: null,
         formIsValid,
-        useExodusDerivationPath:
-          words.length === 12 ? state.mnemonicAuthForm.useExodusDerivationPath : false,
+        twelveWordDerivation:
+          words.length === 12 ? state.mnemonicAuthForm.twelveWordDerivation : 'legacy',
       },
     })
   }
@@ -56,12 +56,15 @@ export default (store: Store) => {
     })
   }
 
-  const updateUseExodusDerivationPath = (state: State, e) => {
+  const updateTwelveWordDerivation = (
+    state: State,
+    twelveWordDerivation: TwelveWordDerivationMode
+  ) => {
     setState({
       ...state,
       mnemonicAuthForm: {
         ...state.mnemonicAuthForm,
-        useExodusDerivationPath: !!e.target.checked,
+        twelveWordDerivation,
       },
     })
   }
@@ -69,7 +72,7 @@ export default (store: Store) => {
   return {
     updateMnemonic,
     updateMnemonicValidationError,
-    updateUseExodusDerivationPath,
+    updateTwelveWordDerivation,
     openGenerateMnemonicDialog,
     closeGenerateMnemonicDialog,
   }

@@ -91,11 +91,20 @@ const MnemonicContent = () => (
           >
             Daedalus-type
           </a>{' '}
-          mnemonics (12, 24 or 27 words). It is also compatible with{' '}
+          mnemonics (12, 24 or 27 words). For 12-word phrases you can choose Legacy,{' '}
+          <a
+            className="sidebar-link"
+            href="https://cips.cardano.org/cip/CIP-1852"
+            rel="noopener"
+            target="blank"
+          >
+            Icarus
+          </a>{' '}
+          (Shelley), or{' '}
           <a className="sidebar-link" href="https://exodus.com" rel="noopener" target="blank">
             Exodus
           </a>{' '}
-          12-word mnemonic wallets when using Exodus derivation.
+          derivation.
         </p>
       </Alert>
     </div>

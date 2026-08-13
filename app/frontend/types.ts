@@ -71,6 +71,9 @@ export type DerivationScheme = {
   keyfileVersion: string
 }
 
+/** Derivation choice for 12-word mnemonics (longer phrases always use Icarus/v2) */
+export type TwelveWordDerivationMode = 'legacy' | 'icarus' | 'exodus'
+
 export type WalletSecretDef = {
   rootSecret: Buffer
   derivationScheme: DerivationScheme

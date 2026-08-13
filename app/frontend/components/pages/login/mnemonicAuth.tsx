@@ -9,8 +9,18 @@ import Alert from '../../common/alert'
 import sanitizeMnemonic from '../../../helpers/sanitizeMnemonic'
 import {ADALITE_CONFIG} from '../../../config'
 import {useEffect, useRef} from 'preact/hooks'
+import {TwelveWordDerivationMode} from '../../../types'
 
 const {ADALITE_DEMO_WALLET_MNEMONIC} = ADALITE_CONFIG
+
+const TWELVE_WORD_DERIVATION_OPTIONS: {
+  value: TwelveWordDerivationMode
+  label: string
+}[] = [
+  {value: 'legacy', label: 'Legacy (Byron / Daedalus 12-word)'},
+  {value: 'icarus', label: 'Icarus (Shelley / same as 15+ word wallets)'},
+  {value: 'exodus', label: 'Exodus'},
+]
 
 const MnemonicAuth = (): h.JSX.Element => {
   const {formData, shouldShowMnemonicInfoAlert, autoLogin, displayWelcome} = useSelector(
@@ -24,7 +34,7 @@ const MnemonicAuth = (): h.JSX.Element => {
   const {
     updateMnemonic,
     updateMnemonicValidationError,
-    updateUseExodusDerivationPath,
+    updateTwelveWordDerivation,
     loadWallet,
     openGenerateMnemonicDialog,
   } = useActions(actions)
@@ -81,18 +91,23 @@ const MnemonicAuth = (): h.JSX.Element => {
         onKeyDown={(e) => e.key === 'Enter' && goBtn?.current?.click()}
       />
       {isTwelveWordMnemonic && (
-        <div className="validation-row mnemonic-exodus-option">
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              checked={formData.useExodusDerivationPath}
-              onChange={updateUseExodusDerivationPath}
-              className="checkbox-input"
-            />
-            <span className="checkbox-indicator" />
-            Use Exodus wallet derivation path
-          </label>
-        </div>
+        <fieldset className="mnemonic-derivation-options">
+          <legend className="mnemonic-derivation-legend">12-word derivation</legend>
+          {TWELVE_WORD_DERIVATION_OPTIONS.map(({value, label}) => (
+            <label key={value} className="checkbox">
+              <input
+                type="radio"
+                name="twelve-word-derivation"
+                value={value}
+                checked={formData.twelveWordDerivation === value}
+                onChange={() => updateTwelveWordDerivation(value)}
+                className="checkbox-input"
+              />
+              <span className="checkbox-indicator" />
+              {label}
+            </label>
+          ))}
+        </fieldset>
       )}
       <div className="validation-row">
         <button
@@ -103,7 +118,9 @@ const MnemonicAuth = (): h.JSX.Element => {
               cryptoProviderType: CryptoProviderType.WALLET_SECRET,
               // TODO(ppershing): get rid of mnemonic sanitization in this component
               walletSecretDef: await mnemonicToWalletSecretDef(sanitizedMnemonic, {
-                useExodusDerivationPath: formData.useExodusDerivationPath,
+                twelveWordDerivation: isTwelveWordMnemonic
+                  ? formData.twelveWordDerivation
+                  : undefined,
               }),
               shouldExportPubKeyBulk: true,
             })
