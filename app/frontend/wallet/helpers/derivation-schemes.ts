@@ -11,6 +11,8 @@ const derivationSchemes: {[key: string]: DerivationScheme} = {
     ed25519Mode: 2,
     keyfileVersion: '2.0.0',
   },
+  // keyfileVersion is only used to reject stale/unsupported Exodus JSON imports;
+  // Exodus wallets cannot be exported as keyfiles (BIP39 seed is not serializable this way).
   exodus: {
     type: 'exodus',
     ed25519Mode: 1,

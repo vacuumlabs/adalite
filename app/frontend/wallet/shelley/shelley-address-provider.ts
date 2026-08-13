@@ -12,13 +12,19 @@ const shelleyPath = (account: number, isChange: boolean, addrIdx: number): BIP32
   ]
 }
 
-/** BIP44 m/44'/1815'/{account}'/{change}/0; Exodus increments account per new receive address */
-const exodusPath = (accountSlot: number, isChange: boolean): BIP32Path => {
+/**
+ * Exodus (AdaLite): BIP44 m/44'/1815'/{slot}'/0/0.
+ * Address index maps to BIP44 account slot (not CIP-1852 address index).
+ * Only the external chain (change=0) is used; AdaLite does not discover change addresses.
+ * Base addresses use the same xpub for payment and stake credentials (single-key model).
+ * Multi-account / multi-slot staking is not supported beyond wallet account 0.
+ */
+const exodusPath = (accountSlot: number): BIP32Path => {
   return [
     HARDENED_THRESHOLD + 44,
     HARDENED_THRESHOLD + 1815,
     HARDENED_THRESHOLD + accountSlot,
-    isChange ? 1 : 0,
+    0,
     0,
   ]
 }
@@ -49,7 +55,7 @@ export const getStakingXpub = async (
   accountIndex: number
 ): Promise<_XPubKey> => {
   const path = isExodusScheme(cryptoProvider)
-    ? exodusPath(accountIndex, false)
+    ? exodusPath(accountIndex)
     : shelleyStakeAccountPath(accountIndex)
   const xpubHex = (await cryptoProvider.deriveXpub(path)).toString('hex')
   return {
@@ -77,7 +83,7 @@ export const ShelleyStakingAccountProvider =
   (cryptoProvider: CryptoProvider, accountIndex: number): AddressProvider =>
     async () => {
       const pathStake = isExodusScheme(cryptoProvider)
-        ? exodusPath(accountIndex, false)
+        ? exodusPath(accountIndex)
         : shelleyStakeAccountPath(accountIndex)
       const stakeXpub = await cryptoProvider.deriveXpub(pathStake)
 
@@ -91,7 +97,8 @@ export const ShelleyBaseAddressProvider =
   (cryptoProvider: CryptoProvider, accountIndex: number, isChange: boolean): AddressProvider =>
     async (i: number) => {
       if (isExodusScheme(cryptoProvider)) {
-        const path = exodusPath(i, isChange)
+        // i = BIP44 account slot; payment and stake share the same key (see exodusPath docs)
+        const path = exodusPath(i)
         const xpub = await cryptoProvider.deriveXpub(path)
         return {
           path,

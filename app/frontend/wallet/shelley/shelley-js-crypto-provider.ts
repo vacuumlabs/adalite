@@ -69,11 +69,15 @@ CryptoProviderParams): Promise<CryptoProvider> => {
 
   const getWalletSecret = () => masterHdNode.toBuffer()
 
-  const getExodusBip39Seed = () => (isExodusWallet ? exodusBip39Seed : undefined)
-
   const getDerivationScheme = () => derivationScheme
 
   const getVersion = () => null
+
+  if (isExodusWallet && !exodusBip39Seed) {
+    throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+      message: 'Exodus wallets require a BIP39 seed; JSON keyfile import is not supported',
+    })
+  }
 
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
@@ -84,9 +88,8 @@ CryptoProviderParams): Promise<CryptoProvider> => {
   )
 
   function deriveExodusHdNodeFromSeed(derivationPath: BIP32Path): _HdNode {
-    if (!exodusBip39Seed) {
-      return masterHdNode
-    }
+    // Guarded at provider construction; required for every Exodus path derivation.
+    assert(exodusBip39Seed != null)
     const pathStr = bip32PathToString(derivationPath)
     const wallet = HDKey.fromMasterSeed(new Uint8Array(exodusBip39Seed)).derive(pathStr)
     const privateKey = wallet.privateKey
@@ -268,7 +271,6 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     signTx,
     witnessPoolRegTx,
     getWalletSecret,
-    getExodusBip39Seed,
     getType,
     getDerivationScheme,
     deriveXpub,

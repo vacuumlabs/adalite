@@ -3,7 +3,7 @@ import {
   mnemonicToRootKeypair,
   _seedToKeypairV1 as seedToKeypairV1,
 } from 'cardano-crypto.js'
-import * as bip39 from 'bip39'
+import {mnemonicToSeed} from '@scure/bip39'
 import {HDKey} from '@scure/bip32'
 import {DerivationScheme, TwelveWordDerivationMode, WalletSecretDef} from '../../types'
 
@@ -48,7 +48,7 @@ const walletSecretDefFromTwelveWordMnemonic = async (
     case 'icarus':
       return await walletSecretDefFromMnemonicAndScheme(mnemonic, derivationScheme)
     case 'exodus': {
-      const seed = bip39.mnemonicToSeedSync(mnemonic)
+      const seed = Buffer.from(await mnemonicToSeed(mnemonic))
       return {
         rootSecret: getExodusRootSecretFromSeed(seed),
         derivationScheme,
