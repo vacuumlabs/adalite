@@ -71,6 +71,11 @@ const AccountManager = ({
   }
 
   async function exploreNextAccount() {
+    if (config.isExodusWallet) {
+      throw new UnexpectedError(UnexpectedErrorReason.AccountExplorationError, {
+        message: 'Multi-account is not supported for Exodus wallets',
+      })
+    }
     const nextAccount = discoverNextAccount()
     await addNextAccount(nextAccount)
     return nextAccount

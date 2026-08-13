@@ -57,6 +57,8 @@ type MyAddressesParams = {
   cryptoProvider: CryptoProvider
   gapLimit: number
   fixedDiscoveryCount?: number
+  /** Exodus: no change chain; only the first external receive address is used */
+  skipInternalAddresses?: boolean
   blockchainExplorer: ReturnType<typeof blockchainExplorer>
 }
 
@@ -65,6 +67,7 @@ const MyAddresses = ({
   cryptoProvider,
   gapLimit,
   fixedDiscoveryCount,
+  skipInternalAddresses,
   blockchainExplorer,
 }: MyAddressesParams) => {
   const includeByron =
@@ -100,12 +103,14 @@ const MyAddresses = ({
     blockchainExplorer,
   })
 
-  const baseIntAddrManager = AddressManager({
-    addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, true),
-    gapLimit,
-    fixedDiscoveryCount,
-    blockchainExplorer,
-  })
+  const baseIntAddrManager = skipInternalAddresses
+    ? DummyAddressManager()
+    : AddressManager({
+      addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, true),
+      gapLimit,
+      fixedDiscoveryCount,
+      blockchainExplorer,
+    })
 
   async function discoverAllAddresses() {
     const baseInt = await baseIntAddrManager.discoverAddresses()
@@ -199,6 +204,7 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
     cryptoProvider,
     gapLimit: isExodus ? EXODUS_ADDRESS_SCAN_LIMIT : config.ADALITE_GAP_LIMIT,
     fixedDiscoveryCount: isExodus ? EXODUS_ADDRESS_SCAN_LIMIT : undefined,
+    skipInternalAddresses: isExodus,
     blockchainExplorer,
   })
 

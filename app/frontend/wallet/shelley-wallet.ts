@@ -24,7 +24,8 @@ const ShelleyWallet = ({config, cryptoProvider}: WalletParams) => {
   const tokenRegistry = new TokenRegistry(
     `${config.ADALITE_BLOCKCHAIN_EXPLORER_URL}/api/tokens/metadata`
   )
-  const maxAccountIndex = MAX_ACCOUNT_INDEX
+  // Exodus uses a single BIP44 account slot as the receive address; no multi-account tree.
+  const maxAccountIndex = config.isExodusWallet ? 0 : MAX_ACCOUNT_INDEX
 
   const accountManager = AccountManager({
     config,
