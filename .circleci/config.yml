@@ -16,7 +16,9 @@ commands:
           keys:
             - dependencies-{{ checksum "yarn.lock" }}-{{ checksum ".yarnrc.yml" }}
       - run: cp .env.example .env
-      - run: corepack enable
+      # cimg/node ships pnpm shims in /usr/local/bin; plain `corepack enable` cannot
+      # replace them without elevated permissions (EACCES unlink /usr/local/bin/pnpm).
+      - run: sudo corepack enable
       - run: yarn install --immutable
       - save_cache:
           paths:
