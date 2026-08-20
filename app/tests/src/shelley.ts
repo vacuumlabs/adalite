@@ -4,8 +4,9 @@ import * as assert from 'assert'
 import ShelleyJsCryptoProvider from '../../frontend/wallet/shelley/shelley-js-crypto-provider'
 
 import {ShelleyBaseAddressProvider} from '../../frontend/wallet/shelley/shelley-address-provider'
+import {isShelleyPath} from '../../frontend/wallet/shelley/helpers/addresses'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
-import {NETWORKS} from '../../frontend/wallet/constants'
+import {HARDENED_THRESHOLD, NETWORKS} from '../../frontend/wallet/constants'
 import {Network, NetworkId} from '../../frontend/wallet/types'
 
 const getCryptoProvider = async (mnemonic, networkId) => {
@@ -61,8 +62,6 @@ describe('shelley address derivation', () => {
   })
 
   it('should use Icarus (v2) derivation for 12-word mnemonic when selected', async () => {
-    const legacyAddress =
-      'addr_test1qq3cu826yxrm8apxeata5pk5xrxxe9puqmru6ncltfv9c65a94kuhuc9jka90jnn78zd25lmm6vq8a79w9yjt8p4ykwse06frk'
     const walletSecretDef = await mnemonicToWalletSecretDef(mnemonic12Words, {
       twelveWordDerivation: 'icarus',
     })
@@ -73,7 +72,22 @@ describe('shelley address derivation', () => {
       config: {shouldExportPubKeyBulk: true},
     })
     const {address} = await ShelleyBaseAddressProvider(cp, 0, false)(0)
-    assert.notStrictEqual(address, legacyAddress)
+    assert.equal(
+      address,
+      'addr_test1qq8ac7qqy0vtulyl7wntmsxc6wex80gvcyjy33qffrhm7sh927ysx5sftuw0dlft05dz3c7revpf7jx0xnlcjz3g69mqkt5dmn'
+    )
+  })
+})
+
+describe('isShelleyPath', () => {
+  const H = HARDENED_THRESHOLD
+
+  it('should treat CIP-1852 paths as Shelley', () => {
+    assert.equal(isShelleyPath([H + 1852, H + 1815, H, 0, 0]), true)
+  })
+
+  it('should not treat Byron BIP44 paths as Shelley', () => {
+    assert.equal(isShelleyPath([H + 44, H + 1815, H, 0, 0]), false)
   })
 })
 
