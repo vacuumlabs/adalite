@@ -48,7 +48,7 @@ import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
 import assertUnreachable from '../../helpers/assertUnreachable'
 import * as assert from 'assert'
 import {encodeCbor} from '../helpers/cbor'
-import {bip32PathToString} from '../helpers/bip32PathToString'
+import {toBip32StringPath} from '../helpers/bip32'
 
 type CryptoProviderParams = {
   walletSecretDef: any
@@ -79,6 +79,10 @@ CryptoProviderParams): Promise<CryptoProvider> => {
     })
   }
 
+  const exodusMasterHdKey = exodusBip39Seed
+    ? HDKey.fromMasterSeed(new Uint8Array(exodusBip39Seed))
+    : null
+
   const deriveXpub = CachedDeriveXpubFactory(
     derivationScheme,
     config.shouldExportPubKeyBulk,
@@ -89,9 +93,8 @@ CryptoProviderParams): Promise<CryptoProvider> => {
 
   function deriveExodusHdNodeFromSeed(derivationPath: BIP32Path): _HdNode {
     // Guarded at provider construction; required for every Exodus path derivation.
-    assert(exodusBip39Seed != null)
-    const pathStr = bip32PathToString(derivationPath)
-    const wallet = HDKey.fromMasterSeed(new Uint8Array(exodusBip39Seed)).derive(pathStr)
+    assert(exodusMasterHdKey != null)
+    const wallet = exodusMasterHdKey.derive(toBip32StringPath(derivationPath))
     const privateKey = wallet.privateKey
     if (!privateKey) {
       throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
@@ -168,7 +171,8 @@ CryptoProviderParams): Promise<CryptoProvider> => {
 
     inputs.forEach(({address}) => {
       const spendingPath = addressToAbsPathMapper(address)
-      isShelleyPath(spendingPath)
+      // Exodus uses BIP44 44'/1815' paths with Shelley witnesses, not Byron bootstrap ones.
+      isExodusWallet || isShelleyPath(spendingPath)
         ? _shelleyWitnesses.push(prepareShelleyWitness(txHash, spendingPath))
         : _byronWitnesses.push(prepareByronWitness(txHash, spendingPath, address))
     })
