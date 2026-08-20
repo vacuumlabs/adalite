@@ -123,7 +123,6 @@ export default (store: Store) => {
     const config = {
       ...ADALITE_CONFIG,
       isShelleyCompatible,
-      isExodusWallet,
       shouldExportPubKeyBulk,
       ledgerTransportType,
       bitbox02OnPairingCode,
@@ -241,7 +240,7 @@ export default (store: Store) => {
 
   const exportJsonWallet = async (state, password, walletName) => {
     const walletSecretDef = getWallet().getWalletSecretDef()
-    if (walletSecretDef.derivationScheme.type === 'exodus' || state.isExodusWallet) {
+    if (walletSecretDef.derivationScheme.type === 'exodus') {
       throw new Error('JSON key file export is not supported for Exodus wallets')
     }
     const walletExport = JSON.stringify(

@@ -76,7 +76,6 @@ const MyAddresses = ({
     ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
       gapLimit,
-      fixedDiscoveryCount,
       blockchainExplorer,
     })
     : DummyAddressManager()
@@ -85,7 +84,6 @@ const MyAddresses = ({
     ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
       gapLimit,
-      fixedDiscoveryCount,
       blockchainExplorer,
     })
     : DummyAddressManager()
@@ -198,7 +196,7 @@ type AccountParams = {
 const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: AccountParams) => {
   const {getMaxSendableAmount: _getMaxSendableAmount} = MaxAmountCalculator()
 
-  const isExodus = config.isExodusWallet === true
+  const isExodus = cryptoProvider.getDerivationScheme().type === 'exodus'
   const myAddresses = MyAddresses({
     accountIndex,
     cryptoProvider,

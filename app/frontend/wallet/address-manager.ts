@@ -54,10 +54,8 @@ const AddressManager = ({
 
     while (!isGapBlock) {
       const currentAddressBlock = await deriveAddressesBlock(from, from + gapLimit)
-      const allAlreadyDerived = currentAddressBlock.every((address) => addresses.includes(address))
 
-      isGapBlock =
-        allAlreadyDerived || !(await blockchainExplorer.isSomeAddressUsed(currentAddressBlock))
+      isGapBlock = !(await blockchainExplorer.isSomeAddressUsed(currentAddressBlock))
 
       addresses =
         isGapBlock && addresses.length > 0 ? addresses : addresses.concat(currentAddressBlock)

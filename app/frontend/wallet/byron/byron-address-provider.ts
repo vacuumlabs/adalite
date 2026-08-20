@@ -2,12 +2,15 @@ import {
   AddressProvider,
   CryptoProvider,
   CryptoProviderFeature,
+  DerivationScheme,
   HexString,
   _XPubKey,
 } from '../../types'
 import {packBootstrapAddress} from 'cardano-crypto.js'
 import {HARDENED_THRESHOLD} from '../constants'
 import {encodeAddress} from '../shelley/helpers/addresses'
+import {UnexpectedError, UnexpectedErrorReason} from '../../errors'
+import assertUnreachable from '../../helpers/assertUnreachable'
 
 const v1Path = (account: number, isChange: boolean, addrIdx: number) => {
   return [
@@ -27,6 +30,21 @@ const v2Path = (account: number, isChange: boolean, addrIdx: number) => {
   ]
 }
 
+const byronPathForScheme = (schemeType: DerivationScheme['type']) => {
+  switch (schemeType) {
+    case 'v1':
+      return v1Path
+    case 'v2':
+      return v2Path
+    case 'exodus':
+      throw new UnexpectedError(UnexpectedErrorReason.UnsupportedOperationError, {
+        message: 'Byron paths are not supported for Exodus wallets',
+      })
+    default:
+      return assertUnreachable(schemeType)
+  }
+}
+
 export const getAccountXpub = async (
   cryptoProvider: CryptoProvider,
   accountIndex: number
@@ -35,11 +53,7 @@ export const getAccountXpub = async (
     return null
   }
   const scheme = cryptoProvider.getDerivationScheme()
-  const pathMapper = {
-    v1: v1Path,
-    v2: v2Path,
-  }
-  const path = pathMapper[scheme.type](accountIndex, false, 0).slice(0, 3)
+  const path = byronPathForScheme(scheme.type)(accountIndex, false, 0).slice(0, 3)
   const xpubHex: HexString = (await cryptoProvider.deriveXpub(path)).toString('hex')
 
   return {
@@ -54,12 +68,7 @@ export const ByronAddressProvider = (
   isChange: boolean
 ): AddressProvider => async (i: number) => {
   const scheme = cryptoProvider.getDerivationScheme()
-  const pathMapper = {
-    v1: v1Path,
-    v2: v2Path,
-  }
-
-  const path = pathMapper[scheme.type](accountIndex, isChange, i)
+  const path = byronPathForScheme(scheme.type)(accountIndex, isChange, i)
 
   const xpub = await cryptoProvider.deriveXpub(path)
   const hdPassphrase = scheme.type === 'v1' ? await cryptoProvider.getHdPassphrase() : undefined

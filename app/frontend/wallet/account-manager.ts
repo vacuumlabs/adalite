@@ -50,10 +50,7 @@ const AccountManager = ({
       CryptoProviderFeature.BULK_EXPORT
     )
     const shouldExplore =
-      config.shouldExportPubKeyBulk &&
-      config.isShelleyCompatible &&
-      !config.isExodusWallet &&
-      isBulkExportSupported
+      config.shouldExportPubKeyBulk && config.isShelleyCompatible && isBulkExportSupported
     async function _discoverNextAccount(accountIndex: number) {
       const newAccount = accounts[accountIndex] || discoverNextAccount()
       const isAccountUsed = await newAccount.isAccountUsed()
@@ -71,7 +68,7 @@ const AccountManager = ({
   }
 
   async function exploreNextAccount() {
-    if (config.isExodusWallet) {
+    if (cryptoProvider.getDerivationScheme().type === 'exodus') {
       throw new UnexpectedError(UnexpectedErrorReason.AccountExplorationError, {
         message: 'Multi-account is not supported for Exodus wallets',
       })
