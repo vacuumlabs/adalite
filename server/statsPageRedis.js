@@ -35,6 +35,9 @@ const getStats = async () => {
       'Mnemonic:total': [],
       'Mnemonic:monthly': [],
       'Mnemonic:daily': [],
+      'MnemonicExodus:total': [],
+      'MnemonicExodus:monthly': [],
+      'MnemonicExodus:daily': [],
     },
     otherTxSubmissions: {
       'successful:total': [],

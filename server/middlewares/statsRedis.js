@@ -52,6 +52,11 @@ const trackTxSubmissions = mung.json((body, req) => {
     const txWalletType = req.get('walletType')
     incrCountersBy(`${txSubmissionType}:${txWalletType}`, 1)
 
+    const txWalletDerivationScheme = req.get('walletDerivationScheme')
+    if (txWalletType === 'Mnemonic' && txWalletDerivationScheme === 'exodus') {
+      incrCountersBy(`${txSubmissionType}:MnemonicExodus`, 1)
+    }
+
     if (txSubmissionSuccess === 'successful') {
       const {txBody} = req.body
       let txOutAmount = 0

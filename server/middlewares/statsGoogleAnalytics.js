@@ -136,6 +136,15 @@ const trackTxSubmissions = mung.jsonAsync(async (body, req) => {
         value: undefined,
       })
 
+      if (txWalletType === 'Mnemonic' && txWalletDerivationScheme === 'exodus') {
+        await trackEvent({
+          ...baseEventData,
+          action: `${txSubmissionType}:MnemonicExodus`,
+          label: 'Wallet type',
+          value: undefined,
+        })
+      }
+
       if (txWalletType === 'Mnemonic') {
         await trackEvent({
           ...baseEventData,
