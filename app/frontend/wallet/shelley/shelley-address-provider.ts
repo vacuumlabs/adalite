@@ -29,14 +29,6 @@ const exodusPath = (accountSlot: number): BIP32Path => {
   ]
 }
 
-const exodusAccountPathPrefix = (walletAccountIndex: number): BIP32Path => {
-  return [
-    HARDENED_THRESHOLD + 44,
-    HARDENED_THRESHOLD + 1815,
-    HARDENED_THRESHOLD + walletAccountIndex,
-  ]
-}
-
 const isExodusScheme = (cryptoProvider: CryptoProvider): boolean =>
   cryptoProvider.getDerivationScheme().type === 'exodus'
 
@@ -67,11 +59,15 @@ export const getStakingXpub = async (
 export const getAccountXpub = async (
   cryptoProvider: CryptoProvider,
   accountIndex: number
-): Promise<_XPubKey> => {
-  const path = isExodusScheme(cryptoProvider)
-    ? exodusAccountPathPrefix(accountIndex)
-    : shelleyStakeAccountPath(accountIndex).slice(0, 3)
+): Promise<_XPubKey | null> => {
+  // Exodus derives each path independently (HDKey.derive → seedToKeypairV1), so the
+  // xpub at m/44'/1815'/0' is not the BIP32 parent of m/44'/1815'/0'/0/0. Do not
+  // surface it as a Shelley account key (watch-only tools would show the wrong wallet).
+  if (isExodusScheme(cryptoProvider)) {
+    return null
+  }
 
+  const path = shelleyStakeAccountPath(accountIndex).slice(0, 3)
   const xpubHex: HexString = (await cryptoProvider.deriveXpub(path)).toString('hex')
   return {
     path,

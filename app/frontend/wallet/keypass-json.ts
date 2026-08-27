@@ -81,20 +81,20 @@ function parseWalletExportObj(walletExportObj) {
     throw new Error('Invalid file type')
   }
 
-  // Exodus keyfiles cannot carry the BIP39 seed required for derivation.
-  if (walletExportObj.fileVersion === derivationSchemes.exodus.keyfileVersion) {
-    throw new Error(
-      'Exodus wallet JSON key files are not supported. Unlock with your 12-word mnemonic and Exodus derivation instead.'
-    )
-  }
-
   const {passwordHash: b64PasswordHash, walletSecretKey: b64WalletSecret} = walletExportObj.wallet
   const passwordHash = Buffer.from(b64PasswordHash, 'base64')
   const derivationScheme = Object.values(derivationSchemes).find(
     (x) => x.keyfileVersion === walletExportObj.fileVersion
   )
 
-  if (derivationScheme === undefined || derivationScheme.type === 'exodus') {
+  // Exodus keyfiles cannot carry the BIP39 seed required for derivation.
+  if (derivationScheme?.type === 'exodus') {
+    throw new Error(
+      'Exodus wallet JSON key files are not supported. Unlock with your 12-word mnemonic and Exodus derivation instead.'
+    )
+  }
+
+  if (derivationScheme === undefined) {
     throw new Error(`Invalid file version: ${walletExportObj.fileVersion}`)
   }
 

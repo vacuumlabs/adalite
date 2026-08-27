@@ -3,7 +3,7 @@ import * as assert from 'assert'
 
 import ShelleyJsCryptoProvider from '../../frontend/wallet/shelley/shelley-js-crypto-provider'
 
-import {ShelleyBaseAddressProvider} from '../../frontend/wallet/shelley/shelley-address-provider'
+import {ShelleyBaseAddressProvider, getAccountXpub} from '../../frontend/wallet/shelley/shelley-address-provider'
 import {isShelleyPath} from '../../frontend/wallet/shelley/helpers/addresses'
 import mnemonicToWalletSecretDef from '../../frontend/wallet/helpers/mnemonicToWalletSecretDef'
 import {HARDENED_THRESHOLD, NETWORKS} from '../../frontend/wallet/constants'
@@ -115,6 +115,11 @@ describe("Exodus mnemonic derivation (BIP39 + m/44'/1815'/0'/0/0)", () => {
       a1,
       'addr1qy430s2e40fv2m4n3qclfgzm5h8jhh0jvw3tlwc382g0zpetzlq4n27jc4ht8zp37js9hfw090wlycazh7a3zw5s7yrs4e2mxe'
     )
+  })
+
+  it('should not expose a Shelley account xpub for Exodus wallets', async () => {
+    const cp = await getExodusCryptoProvider(exodusMnemonic)
+    assert.equal(await getAccountXpub(cp, 0), null)
   })
 
   it('should refuse to construct Exodus crypto provider without BIP39 seed', async () => {

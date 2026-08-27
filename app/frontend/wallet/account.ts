@@ -1,4 +1,4 @@
-import AddressManager from './address-manager'
+import AddressManager, {AddressDiscovery} from './address-manager'
 import {DEFAULT_TTL_SLOTS, EXODUS_ADDRESS_SCAN_LIMIT} from './constants'
 import {
   AddressToPathMapper,
@@ -55,8 +55,7 @@ export default DummyAddressManager
 type MyAddressesParams = {
   accountIndex: number
   cryptoProvider: CryptoProvider
-  gapLimit: number
-  fixedDiscoveryCount?: number
+  discovery: AddressDiscovery
   /** Exodus: no change chain; only the first external receive address is used */
   skipInternalAddresses?: boolean
   blockchainExplorer: ReturnType<typeof blockchainExplorer>
@@ -65,8 +64,7 @@ type MyAddressesParams = {
 const MyAddresses = ({
   accountIndex,
   cryptoProvider,
-  gapLimit,
-  fixedDiscoveryCount,
+  discovery,
   skipInternalAddresses,
   blockchainExplorer,
 }: MyAddressesParams) => {
@@ -75,7 +73,7 @@ const MyAddresses = ({
   const legacyExtManager = includeByron
     ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, false),
-      gapLimit,
+      discovery,
       blockchainExplorer,
     })
     : DummyAddressManager()
@@ -83,21 +81,20 @@ const MyAddresses = ({
   const legacyIntManager = includeByron
     ? AddressManager({
       addressProvider: ByronAddressProvider(cryptoProvider, accountIndex, true),
-      gapLimit,
+      discovery,
       blockchainExplorer,
     })
     : DummyAddressManager()
 
   const accountAddrManager = AddressManager({
     addressProvider: ShelleyStakingAccountProvider(cryptoProvider, accountIndex),
-    gapLimit: 1,
+    discovery: {mode: 'gap', gapLimit: 1},
     blockchainExplorer,
   })
 
   const baseExtAddrManager = AddressManager({
     addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, false),
-    gapLimit,
-    fixedDiscoveryCount,
+    discovery,
     blockchainExplorer,
   })
 
@@ -105,8 +102,7 @@ const MyAddresses = ({
     ? DummyAddressManager()
     : AddressManager({
       addressProvider: ShelleyBaseAddressProvider(cryptoProvider, accountIndex, true),
-      gapLimit,
-      fixedDiscoveryCount,
+      discovery,
       blockchainExplorer,
     })
 
@@ -160,7 +156,8 @@ const MyAddresses = ({
   async function areAddressesUsed(): Promise<boolean> {
     // we check only the external addresses since internal should not be used before external
     // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit
-    const baseExt = await baseExtAddrManager._deriveAddresses(0, gapLimit)
+    const scanCount = discovery.mode === 'fixed' ? discovery.count : discovery.gapLimit
+    const baseExt = await baseExtAddrManager._deriveAddresses(0, scanCount)
     return await blockchainExplorer.isSomeAddressUsed(baseExt)
   }
 
@@ -200,8 +197,9 @@ const Account = ({config, cryptoProvider, blockchainExplorer, accountIndex}: Acc
   const myAddresses = MyAddresses({
     accountIndex,
     cryptoProvider,
-    gapLimit: isExodus ? EXODUS_ADDRESS_SCAN_LIMIT : config.ADALITE_GAP_LIMIT,
-    fixedDiscoveryCount: isExodus ? EXODUS_ADDRESS_SCAN_LIMIT : undefined,
+    discovery: isExodus
+      ? {mode: 'fixed', count: EXODUS_ADDRESS_SCAN_LIMIT}
+      : {mode: 'gap', gapLimit: config.ADALITE_GAP_LIMIT},
     skipInternalAddresses: isExodus,
     blockchainExplorer,
   })

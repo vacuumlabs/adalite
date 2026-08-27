@@ -46,24 +46,27 @@ const Keys = () => {
           <div className="advanced-value">{byronAccountXpub.xpubHex}</div>
         </Fragment>
       )}
-      <div className="advanced-label">
-        Shelley extended public key ({parsePath(shelleyAccountXpub.path)})
-      </div>
-      <div className="advanced-value">{shelleyAccountXpub.xpubHex}</div>
-      <div className="advanced-label">
-        Staking key CBOR hex ({parsePath(stakingXpub.path)})
-        <DownloadKey cborHex={xpubHexToCborPubHex(stakingXpub.xpubHex)} />
-        <a
-          {...tooltip(
-            'Staking key is needed for creating the stake pool ownership certificate.',
-            true
-          )}
-        >
-          <span className="show-info">{''}</span>
-        </a>
-      </div>
-      <div className="advanced-value">{xpubHexToCborPubHex(stakingXpub.xpubHex)}</div>
-      {}
+      {shelleyAccountXpub && (
+        <Fragment>
+          <div className="advanced-label">
+            Shelley extended public key ({parsePath(shelleyAccountXpub.path)})
+          </div>
+          <div className="advanced-value">{shelleyAccountXpub.xpubHex}</div>
+          <div className="advanced-label">
+            Staking key CBOR hex ({parsePath(stakingXpub.path)})
+            <DownloadKey cborHex={xpubHexToCborPubHex(stakingXpub.xpubHex)} />
+            <a
+              {...tooltip(
+                'Staking key is needed for creating the stake pool ownership certificate.',
+                true
+              )}
+            >
+              <span className="show-info">{''}</span>
+            </a>
+          </div>
+          <div className="advanced-value">{xpubHexToCborPubHex(stakingXpub.xpubHex)}</div>
+        </Fragment>
+      )}
       <div className="advanced-label">
         Reward address <LinkIconToKey stakeKey={stakingAddress} />
       </div>

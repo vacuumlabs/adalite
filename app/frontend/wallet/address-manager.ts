@@ -3,23 +3,29 @@ import {AddressProvider, AddressToPathMapping, AddressWithMeta, BIP32Path, Addre
 import blockchainExplorer from './blockchain-explorer'
 import {UnexpectedError, UnexpectedErrorReason} from '../errors'
 
+export type AddressDiscovery =
+  | {mode: 'gap'; gapLimit: number}
+  | {mode: 'fixed'; count: number}
+
 type AddressManagerParams = {
   addressProvider: AddressProvider
-  gapLimit: number
-  /** When set, skip gap scanning and return exactly this many addresses (indices 0..n-1) */
-  fixedDiscoveryCount?: number
+  discovery: AddressDiscovery
   blockchainExplorer: ReturnType<typeof blockchainExplorer>
 }
 
 const AddressManager = ({
   addressProvider,
-  gapLimit,
-  fixedDiscoveryCount,
+  discovery,
   blockchainExplorer,
 }: AddressManagerParams) => {
-  if (!gapLimit) {
+  if (discovery.mode === 'gap' && !discovery.gapLimit) {
     throw new UnexpectedError(UnexpectedErrorReason.ParamsValidationError, {
-      message: `Invalid gap limit: ${gapLimit}`,
+      message: `Invalid gap limit: ${discovery.gapLimit}`,
+    })
+  }
+  if (discovery.mode === 'fixed' && !discovery.count) {
+    throw new UnexpectedError(UnexpectedErrorReason.ParamsValidationError, {
+      message: `Invalid fixed discovery count: ${discovery.count}`,
     })
   }
 
@@ -44,10 +50,11 @@ const AddressManager = ({
   }
 
   async function discoverAddresses(): Promise<Address[]> {
-    if (fixedDiscoveryCount != null) {
-      return await deriveAddressesBlock(0, fixedDiscoveryCount)
+    if (discovery.mode === 'fixed') {
+      return await deriveAddressesBlock(0, discovery.count)
     }
 
+    const {gapLimit} = discovery
     let addresses: Address[] = []
     let from = 0
     let isGapBlock = false

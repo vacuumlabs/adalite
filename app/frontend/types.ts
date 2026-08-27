@@ -154,8 +154,8 @@ export type PoolRecommendation = {
 export type AccountInfo = {
   // TODO: refactor, update type
   accountXpubs: {
-    shelleyAccountXpub: _XPubKey
-    byronAccountXpub: _XPubKey
+    shelleyAccountXpub: _XPubKey | null
+    byronAccountXpub: _XPubKey | null
   }
   stakingXpub: _XPubKey
   stakingAddress: Address

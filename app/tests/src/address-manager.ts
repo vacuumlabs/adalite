@@ -43,7 +43,7 @@ const initByronAddressManager = async (settings, i) => {
 
   byronAddressManagers[i] = AddressManager({
     addressProvider,
-    gapLimit: mockConfig.ADALITE_GAP_LIMIT,
+    discovery: {mode: 'gap', gapLimit: mockConfig.ADALITE_GAP_LIMIT},
     blockchainExplorer,
   })
 }
