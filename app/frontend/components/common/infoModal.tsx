@@ -59,6 +59,25 @@ class InfoModal extends Component<Props, {dontShowAgainCheckbox: boolean; should
           <div className="welcome-body">
             <h2 className="welcome-title">AdaLite News</h2>
             <NewsSection
+              date={'08/31/2026'}
+              children={
+                <Fragment>
+                  <Article title="12-word mnemonics: Exodus and Icarus derivation" icon="">
+                    <p className="info-spaced-paragraph">
+                      AdaLite can now derive Exodus wallets from 12-word mnemonics, as well as
+                      Icarus-scheme accounts (the same Shelley derivation used by most wallets in
+                      the ecosystem). Alongside the existing Legacy (Byron/Daedalus) path, this
+                      makes AdaLite interoperable with Exodus and other Cardano wallets.
+                    </p>
+                    <p className="info-spaced-paragraph">
+                      When logging in with a 12-word mnemonic, choose the matching Derivation option
+                      so AdaLite shows the same addresses as your other wallet.
+                    </p>
+                  </Article>
+                </Fragment>
+              }
+            />
+            <NewsSection
               date={'12/31/2025'}
               children={
                 <Fragment>
