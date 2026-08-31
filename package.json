@@ -1,6 +1,6 @@
 {
   "name": "cardano",
-  "version": "6.18.3",
+  "version": "7.0.0",
   "private": true,
   "packageManager": "yarn@4.17.1",
   "engines": {
