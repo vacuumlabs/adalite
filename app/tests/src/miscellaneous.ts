@@ -1,6 +1,17 @@
 import * as assert from 'assert'
 import {encryptWithPassword} from '../../frontend/helpers/catalyst'
 
+describe('browser Buffer polyfill', () => {
+  it('can write uint64 values the way Ledger signing does', () => {
+    const data = Buffer.alloc(8)
+    data.writeBigUInt64BE(BigInt('1000000'), 0)
+    assert.strictEqual(data.toString('hex'), '00000000000f4240')
+
+    data.writeBigInt64BE(BigInt('-1'), 0)
+    assert.strictEqual(data.toString('hex'), 'ffffffffffffffff')
+  })
+})
+
 describe('Catalyst voting encrypting with password', () => {
   it('should properly encrypt a password', async () => {
     // overwrite getRandomValues to be deterministic
